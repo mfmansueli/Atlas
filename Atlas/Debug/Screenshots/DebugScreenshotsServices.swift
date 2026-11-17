@@ -1,0 +1,147 @@
+//
+//  DebugScreenshotsServices.swift
+//  Atlas
+//
+
+#if DEBUG
+import CoreGraphics
+import Foundation
+
+/// `ScreenshotsServices` for DEBUG scenes: Lumen Journal's sample
+/// screenshots (`ScreenshotsSampleData`) in one of the design's states,
+/// captures drawn from a mock of Lumen's interface, the "Northpier" brand
+/// font standing in as Futura, and renders kept in memory. Other apps have
+/// nothing yet. Never contacts App Store Connect.
+@MainActor
+final class DebugScreenshotsServices: ScreenshotsServices {
+    let scenario: ScreenshotsDebugScenario
+    let renderHoldCount: Int?
+    let fonts = ScreenshotFontCatalog(aliases: ["Northpier Display": "Futura", "Northpier": "Futura"], uploaded: ["Northpier Display"])
+    /// Answers with the sample captions, a little slowly.
+    var translator: any ListingTranslator = DebugCaptionTranslator()
+    let renderCacheDirectory: URL? = nil
+    var opening: ScreenshotsDebugOpening?
+    /// The scenes made before Preview open on Sets; Studio scenes on
+    /// Preview.
+    var initialTab: ScreenshotsTab = .sets
+    /// Scenes made before the language page open on `initialTab`.
+    var opensLanguagePage = false
+    /// Studio scenes' Autopilot, holding its stages.
+    var autopilot: AutopilotCenter?
+    var appSupport: AppSupportCenter?
+    /// Scenes report to the shared center, which the toolbar reads; tests
+    /// keep theirs apart.
+    let documentCenter: ScreenshotsDocumentCenter?
+    /// What reading each capture's text finds, by capture ID; the mock
+    /// captures have no real text.
+    var textReadings: [String: CaptureTextReading] = [:]
+    /// A change to the sample document before it's first opened, e.g. the
+    /// extras an Autopilot run saved.
+    var documentChange: (@Sendable (inout ScreenshotsDocument) -> Void)?
+    /// How long each live screenshot takes to "download", so a scene shows
+    /// the App Store preview's tiles loading.
+    var liveImageDelay: Duration?
+    /// Draws the sets Atlas pushed on Oct 12 too, as the App Store
+    /// preview shows them; otherwise only English (U.K.)'s.
+    var drawsPushedLiveSets = false
+    private let store = InMemoryScreenshotsDocumentStore()
+    private let captures = MockLumenCaptureRenderer()
+
+    init(
+        scenario: ScreenshotsDebugScenario = .standard,
+        renderHoldCount: Int? = nil,
+        opening: ScreenshotsDebugOpening? = nil,
+        documentCenter: ScreenshotsDocumentCenter? = nil
+    ) {
+        self.scenario = scenario
+        self.renderHoldCount = renderHoldCount
+        self.opening = opening
+        self.documentCenter = documentCenter
+    }
+
+    func document(for app: StoreApp, primaryLocale: StoreLocale) async throws -> ScreenshotsDocument {
+        if let saved = try store.load(appID: app.id) { return saved }
+        guard app.id == DebugFixtures.AppID.lumen else { return .empty(primary: primaryLocale.code) }
+        var document = ScreenshotsDebugDocuments.document(for: scenario)
+        documentChange?(&document)
+        return document
+    }
+
+    func save(_ document: ScreenshotsDocument, for app: StoreApp) async throws {
+        try store.save(document, appID: app.id)
+    }
+
+    func liveScreenshots(for app: StoreApp, localizations _: [StoreLocale: String]) async throws -> LiveScreenshots {
+        guard app.id == DebugFixtures.AppID.lumen, scenario != .noCaptures else { return LiveScreenshots() }
+        return scenario == .everyDevice ? DebugEveryDevice.live : ScreenshotsDebugDocuments.live
+    }
+
+    func captureImage(_ capture: ScreenshotCapture, for _: StoreApp, pixelWidth: Int) async -> CGImage? {
+        captures.image(for: capture, pixelWidth: pixelWidth)
+    }
+
+    func readText(of capture: ScreenshotCapture, for _: StoreApp, locale _: StoreLocale, primary _: StoreLocale) async -> CaptureTextReading? {
+        textReadings[capture.id]
+    }
+
+    /// Only English (U.K.)'s hand-uploaded set is shown from App Store
+    /// Connect; it's drawn with the old look it was made with.
+    func liveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
+        if let liveImageDelay {
+            try? await Task.sleep(for: liveImageDelay)
+        }
+        if let capture = DebugEveryDevice.liveWatchCapture(for: screenshot.id) {
+            return captures.image(for: capture, pixelWidth: pixelWidth)
+        }
+        if drawsPushedLiveSets, let pushed = ScreenshotsDebugDocuments.pushedSource(for: screenshot.id) {
+            return pushedImage(pushed, pixelWidth: pixelWidth)
+        }
+        guard let source = ScreenshotsDebugDocuments.legacySource(for: screenshot.id),
+              let locale = StoreLocaleCatalog.locale(code: source.locale) else { return nil }
+        let caption = ScreenshotCaption(headline: ScreenshotsSampleData.legacyCaptions[source.slot])
+        let layout = ScreenshotLayoutEngine(catalog: fonts).layout(
+            ScreenshotsSampleData.legacyTemplate, slot: source.slot, locale: locale, displayType: source.displayType, caption: caption
+        )
+        let capture = ScreenshotsSampleData.capture(locale: "en-US", display: source.displayType, slot: source.slot)
+        let image = captures.image(for: capture, pixelWidth: pixelWidth)
+        return ScreenshotImageRenderer.image(layout: layout, capture: image, pixelWidth: pixelWidth)
+    }
+
+    /// One of the sets pushed on Oct 12, in its language's captions.
+    private func pushedImage(_ cell: ScreenshotCellKey, pixelWidth: Int) -> CGImage? {
+        let data = ScreenshotsSampleData.self
+        guard let locale = StoreLocaleCatalog.locale(code: cell.locale),
+              let caption = data.caption(locale: cell.locale, slot: cell.slot, source: data.provenance) else { return nil }
+        let layout = ScreenshotLayoutEngine(catalog: fonts).layout(
+            data.template, slot: cell.slot, locale: locale, displayType: cell.displayType, caption: caption
+        )
+        let capture = captures.image(for: data.capture(locale: cell.locale, display: cell.displayType, slot: cell.slot), pixelWidth: pixelWidth)
+        return ScreenshotImageRenderer.image(layout: layout, capture: capture, pixelWidth: pixelWidth)
+    }
+
+    /// Registers the font in a temporary folder, never in Application
+    /// Support.
+    func uploadFont(from url: URL) async throws -> String {
+        try ScreenshotFontLibrary(directory: URL.temporaryDirectory.appending(path: "Atlas-DebugFonts")).upload(url)
+    }
+
+    /// Lumen's rating per country, as on the design canvas.
+    func storeRatings(for _: StoreApp, countries: Set<String>) async -> StoreRatings {
+        DebugStoreProof.storeRatings(countries: countries)
+    }
+
+    /// A few 5-star reviews in English, German, Japanese and Arabic.
+    func storeReviews(for _: StoreApp, countries: Set<String>) async -> StoreReviews {
+        DebugStoreProof.storeReviews(countries: countries)
+    }
+
+    func otherDisplayTypeNotes(for _: StoreApp) -> [ScreenshotDisplayType: String] {
+        [
+            .mac: String(localized: "Lumen runs on Mac as an iPad app, so the Mac App Store shows its iPad screenshots."),
+            .watch: String(localized: "Lumen has no watchOS app."),
+            .appleTV: String(localized: "Lumen has no tvOS app."),
+            .visionPro: String(localized: "Shown with the iPad screenshots in compatible mode."),
+        ]
+    }
+}
+#endif

@@ -1,0 +1,83 @@
+//
+//  GuidedScreensFold.swift
+//  Atlas
+//
+
+import SwiftUI
+
+/// Under the capture line: "17 screens from LumenUITests · Show", and,
+/// shown, the screens and how the assistant reaches each (the table's own
+/// footers hold Add a Screen… and Suggest Screens, for the set and for
+/// Apple Watch), the Duo's screens and whether to reuse the last captures.
+struct GuidedScreensFold: View {
+    @Bindable var studio: ScreenshotStudioModel
+    let run: AutopilotRun
+    let client: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.xSmall) {
+            Button(studio.guided.showsScreens ? String(localized: "Hide screens") : String(localized: "\(summary) · Show")) {
+                studio.guided.showsScreens.toggle()
+            }
+            .buttonStyle(.link)
+            .font(.caption)
+            .accessibilityValue(Text(studio.guided.showsScreens ? "Shown" : "Hidden"))
+            .accessibilityIdentifier("autopilot.guided.plan.screens.toggle")
+            if studio.guided.showsScreens {
+                VStack(alignment: .leading, spacing: Spacing.small) {
+                    AutopilotOptionRow(
+                        title: String(localized: "\(client) picks the screens"),
+                        detail: String(localized: "It reads the project and replaces these with the screens that show \(studio.app.name) best, before capturing. Off, it keeps yours and writes their steps."),
+                        isOn: Binding { run.plan.choosesScreens } set: { value in studio.updatePlan { $0.choosesScreens = value } }
+                    )
+                    .accessibilityIdentifier("autopilot.guided.plan.choosesScreens")
+                    AutopilotPlanTable(studio: studio, plan: run.plan, client: client, isEditable: true)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if run.plan.makesScreenshots, run.plan.plansDuo {
+                        AutopilotDuoChoiceRow(studio: studio, plan: run.plan)
+                    }
+                    if let reuse = studio.reuseTitle, studio.capturesMatter(run.plan) {
+                        Toggle(reuse, isOn: Binding { run.plan.reusesCaptures } set: { studio.setReusesCaptures($0) })
+                            .toggleStyle(.checkbox)
+                            .font(.callout)
+                            .help(Text(studio.capturesNote(run.plan, client: client)))
+                            .accessibilityIdentifier("autopilot.guided.plan.reuse")
+                    }
+                }
+                .padding(Spacing.small)
+                .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+            }
+        }
+        .padding(.top, Spacing.xxSmall)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("autopilot.guided.plan.screens")
+    }
+
+    /// "17 screens from LumenUITests/ScreenshotTests.swift", "12 screens";
+    /// "Claude Code picks the screens" when there are none yet; then what
+    /// iPhone Duo's show, so the folded Duo isn't only behind Show.
+    private var summary: String {
+        [screensSummary, Self.duoSummary(run.plan)].compactMap(\.self).joined(separator: " · ")
+    }
+
+    private var screensSummary: String {
+        let plan = run.plan
+        let count = plan.distinctScreenCount
+        guard count > 0 else { return String(localized: "\(client) picks the screens") }
+        let screens = count == 1 ? String(localized: "1 screen") : String(localized: "\(count) screens")
+        guard let file = plan.writtenFrom else { return screens }
+        return String(localized: "\(screens) from \(file)")
+    }
+
+    /// "iPhone Duo open and closed"; nil when the plan makes no Duo
+    /// screenshots.
+    static func duoSummary(_ plan: AutopilotPlan) -> String? {
+        guard plan.makesScreenshots, plan.plansDuo else { return nil }
+        return switch plan.duoScreens {
+        case .inner: String(localized: "iPhone Duo open only")
+        case .cover: String(localized: "iPhone Duo closed only")
+        case .both: String(localized: "iPhone Duo open and closed")
+        }
+    }
+}

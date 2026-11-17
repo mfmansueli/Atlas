@@ -1,0 +1,92 @@
+//
+//  ProposeEventTextsTool.swift
+//  Atlas
+//
+
+import Foundation
+
+struct ProposeEventTextsTool: MCPTool {
+    var store = InAppEventsStore.shared
+
+    static let whyLimit = 240
+
+    let definition = MCPToolDefinition(
+        name: "propose_event_texts",
+        title: "Suggest an In-App Event's texts",
+        description: """
+        Suggests an In-App Event's texts in more languages, shown in Atlas's In-App Events with Accept, Dismiss and \
+        Accept All Languages. `texts` is a list of {locale, name (≤30 characters), shortDescription (≤50), longDescription \
+        (≤120), why}: all three written in that language, natural rather than literal (a winter event isn't one where \
+        December is summer), in the voice of that language's store page. `why` is one sentence for the person on why it \
+        reads this way (≤240). Over a limit, that language is refused with its count: shorten it and send it again. Only \
+        events that get_in_app_events marks editable take texts. Accepted texts wait in Review & Push; nothing reaches App \
+        Store Connect until the person pushes.
+        """,
+        inputSchema: MCPToolDefinition.schema(
+            [
+                "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "eventId": MCPToolDefinition.string("The event's id, from get_in_app_events."),
+                "texts": [
+                    "type": "array", "description": "{locale, name, shortDescription, longDescription, why} objects, one per language.",
+                    "items": ["type": "object"],
+                ],
+            ],
+            required: ["appId", "eventId", "texts"]
+        ),
+        proposalKind: .storeText
+    )
+
+    func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
+        let app = try await context.workspace.app(matching: arguments.string("appId"))
+        let eventID = try arguments.string("eventId")
+        let events = try await context.workspace.services.inAppEvents.events(for: app)
+        guard let event = events.first(where: { $0.id == eventID }) else {
+            throw MCPToolError.notFound(String(localized: "\(app.name) has no In-App Event “\(eventID)”. Use the ids from get_in_app_events."))
+        }
+        let target = "\(app.name) · \(event.referenceName)"
+        guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: target) }
+        guard event.state.isEditable else {
+            return .refused("“\(event.referenceName)” is \(event.state.rawValue): its texts can’t be changed any more.", target: target)
+        }
+        var kept: [InAppEventTextSuggestion] = []
+        var skipped: [JSONValue] = []
+        for value in try arguments.array("texts") {
+            let locale = value["locale"]?.stringValue ?? ""
+            let suggestion = InAppEventTextSuggestion(
+                eventID: event.id, locale: locale, name: Self.trimmed(value["name"]), shortDescription: Self.trimmed(value["shortDescription"]),
+                longDescription: Self.trimmed(value["longDescription"]), why: String(Self.trimmed(value["why"]).prefix(Self.whyLimit)),
+                source: context.clientName, date: .now
+            )
+            if let reason = Self.refusal(suggestion, event: event) {
+                skipped.append(["locale": .string(locale), "reason": .string(reason)])
+            } else {
+                kept.append(suggestion)
+            }
+        }
+        guard !kept.isEmpty else {
+            return .refused("No language could be kept.", target: target, details: ["skipped": .array(skipped)])
+        }
+        store.add(kept, for: app.id)
+        return MCPToolOutcome(
+            result: [
+                "status": "suggested", "languages": .array(kept.map { .string($0.locale) }), "skipped": .array(skipped),
+                "showsIn": .string("In-App Events (⌘4) → \(event.referenceName)"),
+            ],
+            isError: false,
+            logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]
+        )
+    }
+
+    private static func trimmed(_ value: JSONValue?) -> String {
+        (value?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Why a language can't be kept, in words the assistant can act on.
+    private static func refusal(_ suggestion: InAppEventTextSuggestion, event: InAppEvent) -> String? {
+        guard StoreLocaleCatalog.locale(code: suggestion.locale) != nil else { return "“\(suggestion.locale)” isn’t an App Store locale code." }
+        if event.localization(suggestion.locale)?.isComplete == true { return "This language is already written; leave it." }
+        if let empty = InAppEventField.allCases.first(where: { suggestion.text($0).isEmpty }) { return "\(empty.rawValue) is empty: send all three." }
+        if let over = suggestion.overLimit { return "\(over.field.rawValue) has \(over.count) characters; it holds \(over.field.limit)." }
+        return nil
+    }
+}

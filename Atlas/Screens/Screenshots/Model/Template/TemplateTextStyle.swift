@@ -1,0 +1,55 @@
+//
+//  TemplateTextStyle.swift
+//  Atlas
+//
+
+import Foundation
+
+/// `caption.headline` and `caption.subhead`. Sizes are in u; the
+/// caption box is reserved at `maxLines × size × lh`, so the device
+/// never moves between locales, unless the headline is `tight`.
+struct TemplateTextStyle: Codable, Hashable, Sendable {
+    var font: String
+    /// CSS-style weight, 100–900.
+    var weight: Int
+    var size: Double
+    /// The smallest size shrink-to-fit may use; never above `size`.
+    var min: Double
+    /// Line height as a multiple of the size (`lh` in JSON).
+    var lineHeight: Double
+    var maxLines: Int
+    /// Letter spacing in em, e.g. -0.01.
+    var tracking: Double?
+    /// Uppercases with the locale's own rules (Turkish dotted İ, German
+    /// ß → SS) before measuring (`upper`).
+    var uppercase: Bool?
+    var italic: Bool?
+    /// A CSS text shadow in em, e.g. "0 0.05em 0 rgba(18,10,70,0.5)";
+    /// it scales with the size.
+    var shadow: String?
+    /// One line styled differently (`emph`); headline only.
+    var emphasis: TemplateEmphasis?
+    /// A marker bar behind each line (`mark`); headline only.
+    var highlight: TemplateHighlight?
+    /// Sizes the caption box to each language's real lines instead of
+    /// `maxLines`, so a two-line caption doesn't reserve room for a third;
+    /// headline only, and it holds for the subhead too. A device below
+    /// follows the text's height, and one pinned at `device.top` moves down
+    /// only when a language needs more room.
+    var tight: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case font, weight, size, min
+        case lineHeight = "lh"
+        case maxLines, tracking
+        case uppercase = "upper"
+        case italic, shadow
+        case emphasis = "emph"
+        case highlight = "mark"
+        case tight
+    }
+
+    var isUppercase: Bool { uppercase ?? false }
+    var isItalic: Bool { italic ?? false }
+    var isTight: Bool { tight ?? false }
+}

@@ -1,4 +1,4 @@
-# AppLocalizer
+# Atlas
 
 macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store Connect API:
 
@@ -6,7 +6,7 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
   scheduled changes, the map and the histogram, and the results of past changes.
 - **Store page:** the App Store listing's text in every locale, with import, Find and Replace, and translation by Apple
   Translation, an AI provider (Anthropic or OpenAI, with your own API key) or your assistant.
-- **Screenshots (⌘4):** an App Store preview of the live set or the new one, per device, language and appearance;
+- **Screenshots (⌘3):** an App Store preview of the live set or the new one, per device, language and appearance;
   one template, captions per locale, imported captures (the Captures tab lists each locale's; a click shows one large,
   ← → step through its screens and ↑ ↓ through the locales), and renders checked for fit before they're pushed. The
   template gallery (Templates…) offers 12 templates in four styles (Simple, Bold, Elegant, Playful): angled and leaning
@@ -23,7 +23,7 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
   percentage follows the bytes sent (`UploadProgressDelegate`), not just its parts. **Screenshot
   Autopilot** plans the screens, has a connected assistant (Claude Code, Cursor or Codex) capture them in Simulator in
   every language, lets you pick the best captures, gets three design directions (from Claude Design, a Figma file, a
-  brand folder or AppLocalizer's starters), then localizes and checks every caption; the new set waits in Review &
+  brand folder or Atlas's starters), then localizes and checks every caption; the new set waits in Review &
   Push. Once the assistant reports the Xcode project (`report_app_support`), or App Store Connect shows it (a build
   with a watch app, from the build's icons; a visionOS version), the plan covers every device the app runs on, iPhone, iPad, Apple Watch (the watch app's own screens, no captions) and Apple Vision Pro (windows of the
   same moments as iPhone, under their captions, pushed to the visionOS version), and every language its string
@@ -34,26 +34,42 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
   (`APP_IPHONE_DUO`, not in Apple's published API spec yet). Its cells stay empty, and nothing is pushed, until it has
   captures. App Store Connect's iPhone Duo set takes both displays' sizes (2007 × 2853 and 1398 × 2034, either way
   up), so either display's captures go in; full bleed, an outer-display capture is flagged as scaled too much, and
-  Autopilot asks for the inner display's. AppLocalizer treats it as required already: the Sets menu lists it with the
+  Autopilot asks for the inner display's. Atlas treats it as required already: the Sets menu lists it with the
   sizes Apple requires, and every Autopilot plan has it (turned off, it's left to upload by hand). Before capturing,
   the assistant sets Apple's 9:41 status bar on Wi-Fi with no carrier, light appearance, grants the app's permissions
   (`xcrun simctl privacy grant all`) and answers any other prompt, so no alert lands in a capture; each language
   launches in iOS's own language code and its App Store country's formats (`-AppleLanguages (nb) -AppleLocale nb_NO`),
-  with its sample data (entries, names, places) in that language too. AppLocalizer reads the text in every capture as it
+  with its sample data (entries, names, places) in that language too. Atlas reads the text in every capture as it
   arrives (Vision, then Natural Language for the language): one that reads as English or the primary language instead
   of its own, labels cut off with an ellipsis beyond the primary language's, or the app's name in quotes (a permission
   prompt) comes back to the assistant in `report_capture` with what to fix, and a clean attempt ranks above it. The
   ones the set still uses are listed at Pick and Ready as captures to check. The design AI still designs once, from the
-  primary language's picks and every language's captions; AppLocalizer renders each language with its own captures.
+  primary language's picks and every language's captions; Atlas renders each language with its own captures.
   Each device's canvas turns the way its captures are (`AutopilotLocalizer.canvas(_:matching:)`): the iPhone Duo
   simulator's inner display captures landscape, 2853 × 2007, so Duo's canvas is landscape too, in the brief and in
   the set Localize renders, instead of cropping every capture into a Wrong size render. A template with no Duo
   orientation of its own (one made before) lies each Duo render the way its capture does (`TemplateCanvas.following`),
   in the renders, their checks and render keys, the template editor and the MCP measurements.
+- **Analytics (⌘8):** the funnel from impression to paid subscriber (impressions → product page views → first-time
+  downloads → trial starts → paid starts) for the last 7, 28 or 90 days against the days before, the same funnel broken
+  down by territory, language, source, device and product page, findings that open the section where the fix is made,
+  the before-and-after of what was pushed from Atlas, and subscriptions. See [Analytics](#analytics).
 - **App Information:** general information, the age rating, accessibility declarations and an App Privacy worksheet.
+- **In-App Events (⌘4):** each event's name, short and long description in every language, with the languages an
+  assistant suggested, a preview of the card, and new events. See [In-App Events](#in-app-events).
+- **Submit for Review and release:** Overview's version card says what goes to App Review and what's missing; the
+  Submit sheet picks the build, checks What's New in every language, answers encryption and chooses how the version
+  is released; afterwards the card follows App Review and the phased release. See
+  [Submit for Review and release](#submit-for-review-and-release).
+- **Ratings & Reviews (⌘7):** the written reviews from every country, translated on this Mac, each with a reply an
+  assistant suggested in the reviewer's language; one message per language for a whole group of reviews; and the
+  ratings since the newest version. See [Ratings & Reviews](#ratings--reviews).
+- **Navigation:** the sections are in the sidebar (Overview ⌘1 · Store Listing: Store Page ⌘2, Screenshots ⌘3, In-App
+  Events ⌘4, App Information ⌘5, Pricing ⌘6 · After Release: Reviews ⌘7, Analytics ⌘8), the apps in a menu at its
+  top, and the version's status at its bottom. See [Navigation](#navigation).
 - **AI assistants (optional):** a local MCP server lets Claude Code, Claude Desktop, Cursor or Codex read the
   listing and propose text, prices, privacy answers and screenshots. Proposals wait for review like any other change;
-  assistants can't push. With a small helper saved once, AppLocalizer starts the person's own Claude Code itself, so
+  assistants can't push. With a small helper saved once, Atlas starts the person's own Claude Code itself, so
   nothing needs pasting.
 
 It works with a team API key. The design brief for the full feature set is in `DESIGN_PROMPT.md`.
@@ -79,7 +95,7 @@ It follows Bruma's patterns (`~/Projects/ios/Bruma`).
   - `Screens/<Feature>/`: the view and view model, plus `Model/` (pure logic and the services protocol), `Services/` (live implementations) and `Components/`.
   - `DesignSystem/`: tokens (`Palette`) and shared components.
   - `Debug/`: DEBUG-only scenes and fakes.
-- `MCPBridge/`: the `applocalizer-mcp` command-line tool (see [AI assistants](#ai-assistants-mcp)). `Sources/` is
+- `MCPBridge/`: the `atlas-mcp` command-line tool (see [AI assistants](#ai-assistants-mcp)). `Sources/` is
   compiled into the tool and the unit tests, and `Tool/main.swift` only into the tool.
 - **One top-level type per file.** Extensions go in `Type+Topic.swift`.
 - **State:** `@MainActor @Observable final class` view models with `private(set)` state.
@@ -90,11 +106,24 @@ It follows Bruma's patterns (`~/Projects/ios/Bruma`).
 
 ### DEBUG scenes
 
-In a Debug build, launch with `-AppLocalizerDebugScene <id>` to open one state with canned data. A scene never contacts
+In a Debug build, launch with `-AtlasDebugScene <id>` to open one state with canned data. A scene never contacts
 App Store Connect or the Keychain, and the MCP server in a scene never opens a port (except `cc-live`, below). Each area keeps its ids in its own
 `*DebugScenes` type, and `Debug/DebugSceneView.swift` routes them:
 
 - **Library and overview:** `apps`, `apps-empty`, `apps-error`, `lib-loading`, `overview`, `overview-keep`.
+- **Navigation** (`NavigationDebugScenes`): a section selected in the sidebar, `nav-ov`, `nav-sp`, `nav-ev`, `nav-rv`,
+  `nav-an`; the app menu open, `nav-apps`; the footer following a phased release, `nav-ph`; Free, `nav-free`; the
+  sidebar hidden, with the toolbar's section menu and title, `nav-s`, and that menu open, `nav-s-menu`.
+- **Ratings & Reviews** (`ReviewsDebugScenes`; "today" is Nov 16, 2026): `rv`, every review `rv-all`, Show Original
+  `rv-orig`, editing a reply `rv-edit`, one sent `rv-sent`, Reply to All `rv-bulk`, Free `rv-free`, the sidebar hidden
+  `rv-s`, no suggestions yet `rv-none`, no reviews `rv-empty`, `rv-error`, `rv-loading`, a reply Apple refuses
+  `rv-refused`, a language to download `rv-download`, and the overview's card `rv-overview`.
+- **Submit for Review and release** (`ReleaseDebugScenes`, on Overview): before submitting `rel-prep`; the sheet
+  `rel-sheet`, with changes to push `rel-sheet-push`, ready `rel-sheet-ok`; then `rel-wait`, `rel-review`,
+  `rel-pending`, `rel-phased`, `rel-paused`, `rel-rejected`, `rel-live`, and writes Apple refuses, `rel-refused`.
+- **In-App Events** (`InAppEventsDebugScenes`): an event in German `ev`, Portuguese `ev-br`, Arabic `ev-ar`, English
+  `ev-en`; every language accepted `ev-done`; the event that goes with the version `ev-mood`; an ended one
+  `ev-ended`; `ev-new`, `ev-empty`, `ev-error`.
 - **Connect:** `connect`, `connect-key`, `connect-checking`, `connect-401`, `connect-403`, `connect-rejected`,
   `connect-offline`, `sync`, and more (`ConnectDebugScenes`).
 - **Settings:** `set-account`, `set-pricing`, `set-translation`, `set-general`.
@@ -124,12 +153,18 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
   Suggest Everything waiting, its scope listing the new pages, `ev-newlang` (`NewLanguagesDebugScenes`).
 - **Review & Push:** `review`, `review-assistant`, `push-progress`, `push-partial`, `push-conflict`, `activity`, the
   `banner-*` scenes, and more (`ReviewPushDebugScenes`).
+- **Analytics** (`AnalyticsDebugScenes`; "today" is Nov 11, 2026): setup, `an-off`, `an-waiting`, `an-norole`,
+  `an-loading`; what's missing, `an-novendor`, `an-nosales`, `an-part-eng`, `an-part-sales`, `an-stale`; the funnel,
+  `an-funnel`, `an-funnel-7`, `an-funnel-dl`, `an-quiet`, `an-nosub`, `an-new`; Break It Down, `an-bd`, `an-bd-de`,
+  `an-bd-br`, `an-bd-lang`, `an-bd-src`, `an-bd-dev`, `an-bd-ppo`; What to Try, `an-find`, `an-find-wait`,
+  `an-find-done`, `an-find-dis`, `an-find-none`; After Changes, `an-chg`, `an-chg-wait`, `an-chg-few`,
+  `an-chg-price`; `an-sub`; settings, `an-set`, `an-set-vendor`; and the overview's card, `an-overview`.
 - **Pricing** (`PricingDebugScenes`) and **Store Page** (`StorePageDebugScenes`): one scene per design screenshot.
 - **App Information:** `info-*`, `a11y-*` and, for App Privacy, `priv-*` (`AppInformationDebugScenes`).
 - **Screenshots:** the Preview page and Autopilot, `st-*` (`StudioDebugScenes`): `st-home`, `st-live-ar`,
   `st-noasst`, `st-design` (Connect a Design Project), one sheet per stage (`st-plan`, `st-wait`, `st-cap`, `st-fail`,
   `st-pick`, `st-des`, `st-choose`, `st-choose-rev`, `st-nodesign`, `st-loc`, `st-ready-sheet`), Design paused
-  after AppLocalizer closed while Claude Code designed (`st-des-paused`), Localize with captions out to Claude Code
+  after Atlas closed while Claude Code designed (`st-des-paused`), Localize with captions out to Claude Code
   (`st-loc-captions`: Japanese and Arabic missing five each, German one too long), the strip on the
   page (`st-cap-page`, `st-pick-page`) and the new set (`st-ready`, `st-ready-de`, `st-ready-ar`, `st-ready-ipad`).
   On every device and with the project's new languages: `st-plan-all`, `st-cap-watch`, `st-cap-vision`,
@@ -139,9 +174,9 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
   refused command, `st-refused`; one cause on one screen in several languages, `st-group`; and iPhone Duo on a Mac
   without its simulator, `st-device` (a pretend Mac with iOS 26.5 and 27.0, `DebugSimulators`, so Install the iOS
   Simulator downloads nothing; the every-device scenes' Mac also runs Apple Vision Pro). iPhone Duo's simulator
-  running but closed, so AppLocalizer opens it and the run tries it again, `st-duo-closed`; AppLocalizer not yet
+  running but closed, so Atlas opens it and the run tries it again, `st-duo-closed`; Atlas not yet
   allowed in Accessibility, until a pretend person allows it, `st-duo-access`; a version 4 helper that can't open it,
-  opened a moment later by a pretend person, `st-duo-opens`; stuck (SpringBoard crashed, a spinner), so AppLocalizer
+  opened a moment later by a pretend person, `st-duo-opens`; stuck (SpringBoard crashed, a spinner), so Atlas
   restarts and opens it, `st-duo-stuck`; with a helper from before it could look at the Duo, `st-duo-old`; and the
   plan with it closed, with Open Now, `st-plan-duo`, and without Accessibility, `st-plan-duo-access`. A run nothing
   has arrived for in over an hour, with Continue, `st-stalled`.
@@ -151,7 +186,7 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
   (`ScreenshotsDebugScenes`). Captures, `capt*` (`capt-view`: one shown large), and assistants' proposals, `prop-*`
   (`ScreenshotsProposalsDebugScenes`). Pushing them, `shots-review`, `shots-push`, `shots-push-partial`, and
   restoring them from Activity, `shots-act` and `shots-act-restore` (`ScreenshotsPushDebugScenes`).
-- **Claude Code started by AppLocalizer:** through a pretend helper (`DebugUnixScriptRunner`), so nothing runs:
+- **Claude Code started by Atlas:** through a pretend helper (`DebugUnixScriptRunner`), so nothing runs:
   setup's step 3 before and after the helper is saved, `cc-setup` and `cc-setup-installed`, and its test run
   connecting, `cc-setup-test`; Ask working, `cc-ask`; Suggest Everything working, `cc-everything`; Show Output,
   `cc-output`; not logged in, `cc-login`; refused steps, `cc-denied`; Settings, `cc-settings`; the Assistant button
@@ -184,7 +219,7 @@ and Accept, and accepting queues an unpushed change tagged with who suggested it
   languages fill, a copyright with last year, contact details the previous version had, no advertising when App
   Privacy's scan found none); the assistant connected over MCP (`suggest_fields`); an API key; and the AI provider.
 - **An API key** (Anthropic, OpenAI or Google Gemini), set up from the same sheet or Settings → AI Assistants, lets
-  AppLocalizer ask the model itself, without an assistant (`Managers/KeyAssistant/`). Generate Suggestions… on a Store
+  Atlas ask the model itself, without an assistant (`Managers/KeyAssistant/`). Generate Suggestions… on a Store
   Page first lists what it will send and about how many tokens: the language's texts with their limits, and, when
   allowed, the commit messages since the last release tag and CHANGELOG.md's section from the project folder (git
   runs from Xcode's or the Command Line Tools' binary, else HEAD's reflog is read) and one page of the latest App Store
@@ -193,9 +228,9 @@ and Accept, and accepting queues an unpushed change tagged with who suggested it
   many need an MCP assistant. While an assistant is connected, it suggests instead of the key. The key is kept in the
   Keychain apart from Settings → Translation's, which can use it too.
 - **The bar** above each language or page counts them, filters by source, and offers Ask (copying the prompt, since
-  AppLocalizer can't start the assistant), Dismiss All, Accept All and Accept All in Every Language. Accept All asks
+  Atlas can't start the assistant), Dismiss All, Accept All and Accept All in Every Language. Accept All asks
   nothing first; its toast, and Edit → Undo, put everything back. With Claude Code's helper saved, Ask starts Claude
-  Code instead of copying (see [Starting Claude Code](#starting-claude-code-from-applocalizer)).
+  Code instead of copying (see [Starting Claude Code](#starting-claude-code-from-atlas)).
 - **Suggest Everything** (Overview's assistant and Suggestions cards, and the Assistant button) copies one prompt (or,
   with Claude Code's helper saved, starts Claude Code with it) for every field the connected assistant can suggest, listing what it covers page by page: the Store Page's fields
   that can change, General, Age Rating, Accessibility and App Review. While the version is in review only what can
@@ -223,12 +258,150 @@ and Accept, and accepting queues an unpushed change tagged with who suggested it
 - Suggestions and decisions are kept on this Mac (`FileFieldSuggestionPersistence`), and DEBUG scenes keep them in
   memory.
 
+## Analytics
+
+Analytics answers three questions for one app: where people drop off, where it's worse than it should be, and what to
+change next. It's a tool for deciding what to edit: every number leads to an action or is left out. The design is on
+the canvas's Analytics page (boards 29–37).
+
+- **Where the numbers come from:**
+  - **Apple's analytics reports** (the Analytics Reports API): impressions, product page views, first-time downloads
+    and redownloads by day, territory, source and device (the Standard "App Store Discovery and Engagement" and "App
+    Store Downloads" reports), and by product page (the Detailed ones). Apple has to be asked once per app
+    (`POST /v1/analyticsReportRequests`, an ongoing request plus a one-time snapshot of earlier data), and only an
+    Admin key may ask. The first reports take 1 to 2 days. That request and stopping it are the only writes
+    Analytics makes, and only after "Ask Apple for Reports" or "Stop Asking Apple for Reports".
+  - **Sales and Trends** (`GET /v1/salesReports`, daily, version 1_3): trial starts, conversions, renewals,
+    cancellations with Apple's reasons, charges, refunds, proceeds and active subscriptions (the Subscription Event,
+    Subscriber and Subscription reports). It needs the team's vendor number (Analytics settings) and a key that can
+    read sales. Apple's analytics reports have subscription reports too, but they leave out rows with fewer than five
+    people, which hides most of a small app's subscriptions; Sales and Trends is exact.
+  - Everything is kept as JSON in `Application Support/Atlas/Analytics` (`AnalyticsStore`) and worked out on
+    this Mac. Apple reprocesses days: a later file replaces a day's numbers, never adds to them
+    (`EngagementArchive`). Reports are downloaded once a day while Atlas is open, or only when Analytics is
+    opened (a setting); a toast says when an app's first reports arrive.
+- **How sure, everywhere the same way** (`AnalyticsStatistics`): a rate has a 90% range (Wilson interval) and a
+  three-bar meter (three bars within ±12% of the rate, two within ±30%). "Better" or "worse" than the app's average
+  only when the whole range is above or below it. Under 30 in the step before or 3 in the step itself is "too few to
+  tell": the counts are shown, "1 of 40", with no percentage. Two periods are compared with a two-proportion test
+  ("sure" beyond 99%, "fairly sure" beyond 90%) and need at least 100 and 5 on both sides. Only "worse" has a color.
+- **What's missing is said where it's missing** (`FunnelGap`): a step without a number says why on the step (needs
+  the vendor number, the key can't read sales, waiting for Apple) and offers the fix. A key that isn't Admin, and data
+  older than Apple's usual 1 to 2 days, are states of their own, not errors.
+- **The views** (`Screens/Analytics/`): Funnel (the strip, the biggest loss in words, the timeline with what was
+  pushed from Atlas marked on it), Break It Down (a ranked, sortable table; the selected row's inspector says
+  which page the territory sees, whether it's machine-translated, and its price against purchasing power), What to Try,
+  After Changes and Subscriptions. The period applies to all of them.
+- **Findings** (`FindingRules`, after each download, on the last 28 days): a step that fell against the 28 days
+  before; territories that download surely less than the app's average, with what their page looks like; territories
+  whose trials convert less where the price is well above purchasing power; many cancellations before the first
+  renewal with no retention message live. An assistant adds its own with `add_finding`. A finding's button opens its
+  section with a "From Analytics" bar and Back to Analytics; one whose section got a push afterwards moves to Acted On
+  with that change's result; a dismissed one comes back only if its number moves by more than a quarter. New findings
+  show as a gray count on the section picker (purple stays for suggestions to accept).
+- **After Changes** (`ChangeLog`, `ChangeResult`): each push is read from the push history as a change measured on
+  the step it should move (name, subtitle or keywords: tap-through from search; description: downloads per page view;
+  screenshots: page views per impression; paywall text: trials per download), 28 days before against 28 days after,
+  in the territories that see the changed languages. Price changes link to Pricing → Results.
+- **Not there, because Apple's reports don't have it:** a product page optimization test's treatments and Apple's
+  result for them, and sales by source or product page.
+
+## Navigation
+
+The sections left the toolbar for the sidebar (the design canvas's Navigation page, boards 41–43), so the window has
+room for more of them and the toolbar only holds actions.
+
+- **The sidebar** (`Screens/Main/Sidebar/`): the app menu, then the sections in three groups (`AppWorkspaceSection`,
+  `AppWorkspaceSectionGroup`): Overview; Store Listing (Store Page, Screenshots, In-App Events, App Information,
+  Pricing); After Release (Reviews, Analytics). ⌘1–⌘8 follow that order. Each row shows what's waiting there
+  (`SectionBadgeCounts`): suggestions in purple, Analytics' new findings in gray.
+- **The app menu** (`AppSwitcher`, `AppSwitcherMenu`): the selected app and its team; a click lists every app of the
+  key with its own count, a search field once there are more than eight, the sort order, and Switch Account or Key….
+- **The version's status** (`VersionStatusFooter`, `VersionStatusSummary`) stays at the bottom of the sidebar in
+  every section: "Version 1.4 · Not submitted yet" with Submit…, "Rolling out · day 3 of 7", "Rejected by App
+  Review" with Fix…. A click opens the Submit sheet before submitting and Overview's version card after.
+- **With the sidebar hidden** the toolbar gets a section menu (`SectionMenuButton`) and the app's name with the
+  version's status (`WorkspaceToolbarLayout`); under 720 points the title goes and Review & Push keeps its count.
+
+## Ratings & Reviews
+
+The design is on the canvas's "Avaliações, envio e eventos" page (board 38).
+
+- **Reading** (`LiveReviewsServices`): `GET /v1/apps/{id}/customerReviews` with `include=response`, newest first, 200
+  at a time (Show More reads the next page); the two newest released versions' reviews are matched by
+  `/v1/appStoreVersions/{id}/customerReviews` so a review says which version it's about. Apple's API only has written
+  reviews, so the ratings card's average and count come from the App Store's public lookup, per storefront that has
+  reviews (up to 40) plus the U.S. (`StoreRatingLookup`); the bars are the written reviews of the last 90 days.
+- **Kept on this Mac** (`ReviewsStore`, `Application Support/Atlas/Reviews/`): the reviews read, the suggested
+  replies, the groups, what was dismissed and the translations. A read older than 15 minutes is refreshed.
+- **Languages** are detected on this Mac (`ReviewLanguage`, NaturalLanguage) and reviews are translated by Apple
+  Translation (`AppleReviewTranslator`), once, and kept. The switch shows everything as written; Show Original
+  switches one review. A language that isn't downloaded yet offers the download.
+- **Replies** (`ReviewsViewModel+Replies`): a reply is public once Apple publishes it, so nothing is sent without Send
+  Reply (`POST /v1/customerReviewResponses`, which also replaces an earlier reply). The toast's Undo deletes the new
+  reply or puts the earlier one back. A suggested reply shows what it means in English; Edit… changes it first.
+- **What people write about** (`ReviewTheme`): groups an assistant sent, each with one action: Reply to All (one
+  message per language, sent under each review of the group that has no reply; `ReviewBulkPlan`), Open Pricing for a
+  country, Suggest for Store Page, or Show Reviews.
+- **Since the newest version** (`VersionRatingComparison`): the written reviews' average for the current version
+  against the ones before, said only as sure as the numbers allow (at least 10 on each side; fairly sure at 90%, sure
+  at 99%).
+- **Free and Pro:** Free reads, translates and replies by hand; suggested replies, groups and Reply to All are Pro.
+- **Not there, because Apple's API doesn't have it:** resetting the rating summary with a new version (the row
+  explains it and links to App Store Connect) and ratings without text.
+
+## Submit for Review and release
+
+The design is on the same page (board 39). Everything here writes to App Store Connect directly when the person
+presses the button; it isn't queued in Review & Push, though the sheet can push what is waiting there first.
+
+- **Which version** (`LiveReleaseServices.followed`): the one with App Review or rolling out, else the one being
+  prepared, else the live one, for the platform Store Page shows.
+- **The version card** (`VersionCard`, first on Overview): before submitting, what goes to Apple and what's missing
+  (the build, What's New per language, changes not pushed yet, App Review information, the events that go along);
+  after, the steps (Submitted, Waiting for Review, In Review, Approved, On the App Store) with the day this Mac
+  saw each one happen (`ReleaseStore`; a version found already live has no dates), and the action that fits: Cancel Submission, Release Now, Pause or Resume Phased
+  Release, Release to Everyone Now, Submit Again. The ones that can't be taken back ask first.
+- **The Submit sheet** (`SubmitForReviewSheet`, `ReleaseViewModel+Submit`): the build (only processed, unexpired
+  ones can be chosen); What's New in every language, with a suggestion accepted in place; "Push N changes with this
+  submission"; the In-App Events that are complete; one encryption question (kept in App Information → Export
+  Compliance and written on the build); release after approval, by hand or on a date; and the 7-day phased release.
+  The footer says exactly what's missing ("To submit, add What's New in Italian and answer the encryption question").
+- **What a submission sends** (`SubmissionPlan`): the build relationship and `usesNonExemptEncryption` when they
+  change, `releaseType` and `earliestReleaseDate`, the phased release (created or deleted), then one
+  `reviewSubmissions` with the version and the events as items, marked `submitted`. Canceling and submitting again
+  update the same submission; releasing posts an `appStoreVersionReleaseRequests`.
+- **Following it:** the status is read when an app is selected and every 15 minutes for versions on their way; a
+  move (in review, approved, rejected, released) is said in a toast and a notification (`ReleaseNotifier`).
+- **Not there, because Apple's API doesn't have it:** App Review's message for a rejected version. The card says so
+  and links to App Store Connect; the fix (the demo account, the notes) is made in App Information.
+
+## In-App Events
+
+The design is on the same page (board 40). In-App Events is its own section (⌘4), not a Store Page tab.
+
+- **Reading** (`LiveInAppEventsServices`): `GET /v1/apps/{id}/appEvents` with its localizations, and the card and
+  details images of each event's primary language. Events that can still change come first, ended ones last.
+- **Texts** (`InAppEventField`): Event Name 30 characters, Short Description 50, Long Description 120, per language.
+  The language bar lists the event's languages, the store page's and the suggested ones; a language that isn't
+  written shows what people there see instead (the primary language).
+- **Suggestions** (`InAppEventsStore`): an assistant sends all three texts for a language with one sentence on why
+  they read this way (`propose_event_texts`). Accept writes them, Accept All Languages every one, and the toast's
+  Undo puts the suggestions back.
+- **Everything goes through Review & Push** (`InAppEventChangeBuilder`): a field of a written language is a `PATCH`
+  of its localization, a new language one `POST` with everything written for it, and a new or duplicated event a
+  `POST /v1/appEvents` followed by its languages (which refer to it as `{createdID}`).
+- **To App Review:** an event that's complete (every language written, both images, dates) goes with the version
+  from the Submit sheet, or on its own with Submit Event….
+- **Not there yet:** uploading an event's images (they're added in App Store Connect) and reading how an ended event
+  did from Apple's analytics reports: the card links to App Analytics.
+
 ## AI assistants (MCP)
 
 Settings → AI Assistants turns on a Streamable HTTP MCP server at `http://127.0.0.1:47321/mcp`. It's off by default,
 only accepts connections from this Mac, and runs only while the app is open (`Managers/MCP/`). "Set Up Your AI
 Assistant" (from the toolbar's Assistant button, the overview or a suggestion bar) walks through choosing a client,
-turning the server on with Suggest only or Suggest and edit drafts, adding AppLocalizer to the client, and a first
+turning the server on with Suggest only or Suggest and edit drafts, adding Atlas to the client, and a first
 call.
 
 - **Pairing:** each assistant gets its own bearer token from the "Pair an assistant" sheet, stored in the Keychain.
@@ -245,7 +418,7 @@ call.
     the suggested ones in `locales` with `new: true`. `suggest_fields` takes them as locales: they stay suggestions
     in their own tab, even with `apply`, until the person adds the page.
   - Suggest Everything: `begin_suggestions` takes the plan, one entry per field, and returns the run's id, how
-    many AppLocalizer counts, and what it skipped with a code (`changed_by_you`, `locked`, `in_another_request`,
+    many Atlas counts, and what it skipped with a code (`changed_by_you`, `locked`, `in_another_request`,
     `already_suggested`, and the `suggest_fields` ones). `suggest_fields` calls carry the run's id, and are refused
     with `run_stopped` once the person stops receiving; `end_suggestions` ends the run.
   - Prices: `get_prices`, `get_price_points` and `propose_prices`. Proceeds use the commission from Settings →
@@ -273,7 +446,7 @@ call.
     So does a fix the assistant marks `changesProject: true`, or one that doesn't read as a command
     (`AutopilotProblem.needsProjectChange`). The plan carries `preflight` checks (`AutopilotPreflight`: identifiers
     rather than visible titles, sample data in each language, no forced `-AppleLanguages`, no `VAR=value`, derived
-    data and exports in the project folder, since AppLocalizer's Claude Code reads only there, not in `/tmp`) and a
+    data and exports in the project folder, since Atlas's Claude Code reads only there, not in `/tmp`) and a
     `rehearsal` language (another script than the primary's, else German): `next_step` gives each screen on each
     device in those two first (`phase: rehearsal`), then its other languages, so a screen or device that can't go on
     holds back only its own languages, never the rest of the run. An open problem holds the same screen on the same
@@ -287,7 +460,7 @@ call.
     `next_step` says what to do next (capture, wait, design, revise, write captions, done). `get_design_brief`,
     `report_design_source`, `propose_direction` and `revise_direction` carry the design stage. The brief carries the
     design project's summary once it was read, and says to design from the brief rather than stop when the project
-    can't be opened: the Claude Code AppLocalizer starts only has AppLocalizer's tools, so it can't open Claude
+    can't be opened: the Claude Code Atlas starts only has Atlas's tools, so it can't open Claude
     Design or Figma, and its system prompt says so too. Reading the brief is noted in the run (`briefReadAt`) and its
     log, and so is reading the design project while it designs. And
     `propose_captions` with the run's id shortens captions while localizing. The person plans, picks, chooses and
@@ -303,6 +476,18 @@ call.
     with the assistant's name.
   - When a person already changed the same field, both versions are kept and Review & Push asks which to push.
   - Settings decides what assistants may propose, and the log says why a call was refused.
+  - **Reviews:** `get_reviews` reads the written reviews (refreshing them when they're old), with each review's
+    language, version, reply and suggested reply. `propose_review_replies` leaves a reply under each review for the
+    person to send, edit or dismiss, and `propose_review_themes` sets "What people write about", with one message per
+    language for Reply to All. Neither sends anything, and both need Pro (`ProAssistantGate`).
+  - **In-App Events:** `get_in_app_events` reads the events, their texts per language and the languages still
+    missing; `propose_event_texts` suggests all three texts for a language, refused over a limit with the count.
+  - There is no tool to submit a version or release it: those are the person's.
+  - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
+    product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate
+    comes with its counts, its 90% range and `tooFewToTell` when it shouldn't be quoted, and `notes` say what's
+    missing. `add_finding` puts a finding in What to Try, marked as the assistant's; the fix itself still goes through
+    the propose_ and suggest_ tools.
 - **Prompts:** `translate_missing`, `whats_new_from_git`, `fill_privacy_from_code`, `fill_age_rating`,
   `translate_captions`, `shorten_overflowing_captions`, `revise_template`, `suggest` (with an optional `area`,
   `store` or `info`), `suggest_all`, Suggest Everything's, and `run_screenshots`, Screenshot Autopilot's. A prompt is offered only while its
@@ -310,21 +495,21 @@ call.
 - **Clients:**
   - Claude Code and Cursor connect over HTTP.
   - Claude Desktop and Codex launch servers as processes, so they run the bundled bridge,
-    `AppLocalizer.app/Contents/MacOS/applocalizer-mcp --token <token>`. It forwards stdio to the HTTP endpoint and
+    `Atlas.app/Contents/MacOS/atlas-mcp --token <token>`. It forwards stdio to the HTTP endpoint and
     starts a new session on its own when the app relaunches.
 
-### Starting Claude Code from AppLocalizer
+### Starting Claude Code from Atlas
 
 The app is sandboxed for the Mac App Store, so it can't start other programs. Instead, the person saves a small helper
-once, from a Save panel already in `~/Library/Application Scripts/com.lima.applocalizer/` (setup's step 3, Settings →
+once, from a Save panel already in `~/Library/Application Scripts/com.lima.atlas/` (setup's step 3, Settings →
 AI Assistants, or the "Skip the paste" hints). macOS runs scripts there outside the sandbox with `NSUserUnixTask`, so
 no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
 
 - **The helper** (`ClaudeCodeHelperScript`): `check` prints its version and where `claude` is; `run <folder> --
   <arguments…>` runs Claude Code in the app's project folder, streams its output and prints
-  `applocalizer-helper-exit <status>` when it ends. Claude Code writes through pipes of its own that `cat` passes on:
-  Node leaves the pipe it writes to non-blocking, which on AppLocalizer's pipe lost a run's last lines and its exit
-  line (helper version 1). AppLocalizer reads stdout and stderr each on its own (`PipeLineReader`), never with
+  `atlas-helper-exit <status>` when it ends. Claude Code writes through pipes of its own that `cat` passes on:
+  Node leaves the pipe it writes to non-blocking, which on Atlas's pipe lost a run's last lines and its exit
+  line (helper version 1). Atlas reads stdout and stderr each on its own (`PipeLineReader`), never with
   `FileHandle.bytes`: that reads every handle in the process on one serial queue, so an idle stderr stopped stdout
   from being read, the pipe filled and the helper waited forever on its last line, holding back every later call.
   A run whose helper hasn't ended a minute after Claude Code's result ends anyway (`ClaudeCodeLauncher.resultGrace`).
@@ -353,7 +538,7 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
   without starting Claude Code: a retry waits while its device has an open device-wide problem. iPhone Duo's
   simulator starts closed (only the outer 1398 × 2034 display shows the app; a UI test's `XCUIScreen.main` is that
   cover display even once it's open) and nothing public opens it: not `simctl`, `devicectl` or XCTest; Xcode 27.2's
-  Device Hub (`DeviceHub`, `com.apple.dt.Devices`) does, in the device's poses. So AppLocalizer watches the Duo
+  Device Hub (`DeviceHub`, `com.apple.dt.Devices`) does, in the device's poses. So Atlas watches the Duo
   (`Managers/Simulators/Duo/`, `DuoWatcher`): every few seconds it finds the inner display by its size
   (`SimulatorDisplayList`), screenshots it and tells black (closed), a faint spinner in the middle (starting, or
   stuck) and anything else (open) apart (`DuoInnerDisplay`). `DuoStep` decides: during a run it starts a Duo that
@@ -365,34 +550,34 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
   front, so it goes in front, then closes that window, hides Device Hub if it started it, and puts the app that was
   in front back, found with `lsappinfo`, as `NSWorkspace` gives scripts no pids here). It never quits Device Hub,
   which can shut down the simulators it started. The open inner display captures at 2853 × 2007. That needs
-  AppLocalizer allowed in Privacy & Security › Accessibility (the helper runs as AppLocalizer's): macOS asks once,
+  Atlas allowed in Privacy & Security › Accessibility (the helper runs as Atlas's): macOS asks once,
   the card and the plan say so with Open Accessibility Settings (`AccessibilitySettings`), and the watcher tries
   again once it's allowed. Two failed tries, and the card asks the person to open it in Device Hub. The assistant
-  reports a closed or stuck Duo as one device-wide problem; its card shows what AppLocalizer sees in place of the
+  reports a closed or stuck Duo as one device-wide problem; its card shows what Atlas sees in place of the
   assistant's fix, and once the Duo is open the run tries it again without a Retry (only after seeing it closed, so
   a Duo that was open all along can't loop). The plan's row says whether it's open, with Open Now. Starts,
   restarts, presses and the opening go in the run's log. With a version 4 helper it can't open it: the card asks
   to save the helper again and opens Device Hub; older than version 4, the card keeps the assistant's fix and
   says how to restart a stuck Duo by hand. A UI test's screenshot being the cover display, and the test closing the
-  app about two seconds after its screen appears (too soon to screenshot the inner display after it), AppLocalizer
+  app about two seconds after its screen appears (too soon to screenshot the inner display after it), Atlas
   records the inner display while the test runs (`Managers/Simulators/Recording/`, `DisplayRecorder`, through the
   helper's `record-display`: a frame about every 0.6 seconds). Afterwards `XcresultTimeline` reads from the test's
   result bundle when it attached each screenshot (the attachment's `timestamp`), when the step before it began and
   which simulator it ran on, and `RecordedFramePick` keeps the last frame that finished before that moment (one that
   began before that step isn't settled); the rest are deleted. The project needs no change.
-- **Keeping a run going** (`Managers/Autopilot/Continuation/`): when the Claude Code AppLocalizer started for a run
-  ends with work left and sent something since it started, AppLocalizer starts it again with the prompt that
+- **Keeping a run going** (`Managers/Autopilot/Continuation/`): when the Claude Code Atlas started for a run
+  ends with work left and sent something since it started, Atlas starts it again with the prompt that
   continues the run (`AutopilotContinuation`, through `ClaudeCodeLauncher.onRunEnded`); one that sent nothing isn't,
   so it can't loop. A run nobody works on says so in the sheet (`AutopilotStall`: Claude Code ended, with its last
-  words; AppLocalizer was closed; or nothing arrived for 30 minutes after a paste), with Continue. Answering a
-  problem continues the run too, when AppLocalizer started Claude Code for it, and so does each step that gives
+  words; Atlas was closed; or nothing arrived for 30 minutes after a paste), with Continue. Answering a
+  problem continues the run too, when Atlas started Claude Code for it, and so does each step that gives
   the assistant work again: Use These Picks, Use This Direction and Ask for Changes (`AutopilotContinuation.keepGoing`).
   A Claude Code that ended on the person's turn (before that step, `AutopilotRun.handedBackAt`) didn't stop with
   work left, so the sheet never says it stopped; without the helper the footer says it's Claude Code's turn, with
   Continue. These steps' tasks hold the center and the app, never the studio, whose view model is unowned and
   can go away with the section. The sheet says it in the stage's words (`AutopilotStall+Wording`: captures left,
   directions still to design, your changes still to make); only a stop or a silence is drawn as a warning, and a
-  run AppLocalizer was closed on is paused, not stopped. A pasted run goes quiet counting from the person's last
+  run Atlas was closed on is paused, not stopped. A pasted run goes quiet counting from the person's last
   step or the brief's reading too (`AutopilotRun.lastActivityAt`), so picking for an hour doesn't make the design
   quiet. Design shows the same status as Capture (`AutopilotAssistantStatus`: what Claude Code is doing now, for
   how long, Show Output and Stop, or why nobody is, with Continue), how many directions arrived, and cards that
@@ -403,12 +588,12 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
   each language's row spinning only while someone works on it. A version 2 helper still starts
   Claude Code (`minimumRunVersion`) and asks to be saved again for the simulator modes and iPhone Duo.
 - **Each run** (`ClaudeCodeInvocation`) is `claude -p --output-format stream-json --verbose --restricted
-  --strict-mcp-config --mcp-config … --settings … --permission-mode dontAsk --tools …`. It knows only AppLocalizer's
+  --strict-mcp-config --mcp-config … --settings … --permission-mode dontAsk --tools …`. It knows only Atlas's
   server, with a token made for that run that acts as the paired Claude Code and stops working when the run ends
   (`MCPServerController+Launch`). The person's own settings and allow rules are ignored, and anything not allowed is
-  refused and listed. `ClaudeCodePermissions`: setup's test uses only AppLocalizer's tools; suggestions, translations
+  refused and listed. `ClaudeCodePermissions`: setup's test uses only Atlas's tools; suggestions, translations
   and the privacy scan also read the project and run read-only git; Autopilot also runs `xcodebuild`, `xcrun simctl`
-  and uploads to AppLocalizer. Each command must start with an allowed program, so `VAR=value xcodebuild …` is
+  and uploads to Atlas. Each command must start with an allowed program, so `VAR=value xcodebuild …` is
   refused; Autopilot is told so. Its one deny rule is `xcrun simctl io … screenConfig`: an assistant powered iPhone
   Duo's displays off and on to open it, and the simulator's SpringBoard crashed on every start until it restarted.
 - **Where:** Ask on every suggestion bar, Suggest Everything, Screenshot Autopilot, Translate Missing, Translate
@@ -416,13 +601,13 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
   them. Without the helper, every screen copies its prompt as before.
 - **Seeing it:** a status strip where it started, the Assistant button's popover, and Show Output with each step, the
   result, refused steps and Copy Resume Command (`ClaudeCodeRun`). A failure says why (not logged in, no Claude Code,
-  folder moved, AppLocalizer unreachable) with the way through: Open in Terminal (Claude Code's `claude-cli://open`
+  folder moved, Atlas unreachable) with the way through: Open in Terminal (Claude Code's `claude-cli://open`
   link), Try Again or Choose Folder…, and Copy Prompt.
 - Claude Code uses the person's own login and plan.
 
 ## Tests
 
-- **Unit tests:** `AppLocalizerTests`, written with Swift Testing. They cover:
+- **Unit tests:** `AtlasTests`, written with Swift Testing. They cover:
   - JWT signing and verification;
   - the client's requests, pagination and errors;
   - credentials validation;
@@ -448,32 +633,45 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
     again only after progress, a run nobody works on, recapturing a screen reported out of date, what the sheet says
     in each stage's words, a paused run that isn't a warning, Design's cards and the brief's reading, Localize's
     captions to write, and each device's canvas turned the way its captures are);
-  - Claude Code started by AppLocalizer: the helper's answers and exit line, each run's arguments and permissions,
+  - Claude Code started by Atlas: the helper's answers and exit line, each run's arguments and permissions,
     reading the stream, failures, the Terminal link, runs through a pretend helper (folders, run tokens, Stop, Try
     Again, login and server problems), and setup's test run.
-- **UI tests:** `AppLocalizerUITests`, written with XCUITest, run against the DEBUG scenes.
+  - Analytics: rates, ranges and verdicts; reading Apple's report files (gzip, tab- and comma-separated, by column
+    name); the facts kept on this Mac; the funnel, breakdown, subscriptions, changes and findings; the store's asking,
+    refreshing and files; the view model; the MCP tools; and the requests sent to Apple.
+  - Navigation: the sections' order, groups and shortcuts, each section's count, the toolbar with and without the
+    sidebar, and the sidebar's version status.
+  - Ratings & Reviews: the store and its files, the list's filters and sorting, sending, Undo and dismissing, Free,
+    translation and languages to download, Reply to All, the ratings summary and the version comparison, the
+    requests sent to Apple, and the MCP tools.
+  - Submit for Review and release: App Store Connect's states as phases, which version is followed, the card's
+    checks and steps, what the sheet says is missing, the plan a submission sends and each request in order, every
+    action after submitting, what's remembered between launches, and what's announced.
+  - In-App Events: what an event still needs, its languages, editing, accepting and undoing suggestions, new and
+    duplicated events, the changes queued for Review & Push, reading events from Apple, and the MCP tools.
+- **UI tests:** `AtlasUITests`, written with XCUITest, run against the DEBUG scenes.
 
-Run everything with `xcodebuild -scheme AppLocalizer -destination 'platform=macOS' test`.
+Run everything with `xcodebuild -scheme Atlas -destination 'platform=macOS' test`.
 
 ## Lint & formatting
 
 The project is kept warning-free.
 
 - Install the tools once: `brew install swiftlint swiftformat`.
-- The `AppLocalizer` target's **Lint** build phase runs `swiftformat --lint` and `swiftlint lint` on every local build.
+- The `Atlas` target's **Lint** build phase runs `swiftformat --lint` and `swiftlint lint` on every local build.
   - Findings show up as Xcode warnings.
   - The phase is skipped on Xcode Cloud, where the tools aren't installed.
 - Format everything with `swiftformat .` from the repo root. `MCPBridge/` is linted too. The configs are `.swiftformat` and `.swiftlint.yml`, the same rules as Bruma.
 
 ### Build settings worth knowing
 
-- `ENABLE_USER_SCRIPT_SANDBOXING = NO` on the `AppLocalizer` target lets the Lint phase read the sources.
+- `ENABLE_USER_SCRIPT_SANDBOXING = NO` on the `Atlas` target lets the Lint phase read the sources.
 - The App Sandbox is on, with three exceptions:
   - outgoing connections (`ENABLE_OUTGOING_NETWORK_CONNECTIONS`), for the API and the AI provider;
   - incoming connections (`ENABLE_INCOMING_NETWORK_CONNECTIONS`), for the local MCP server;
   - user-selected files, read and write (`ENABLE_USER_SELECTED_FILES`), to import the `.p8` and listings, and to
     export listings.
-- The `applocalizer-mcp` target is sandboxed on its own, with outgoing connections only, because assistants launch it
+- The `atlas-mcp` target is sandboxed on its own, with outgoing connections only, because assistants launch it
   without the app.
   - `CREATE_INFOPLIST_SECTION_IN_BINARY` embeds the Info.plist that a sandboxed tool needs.
   - The app's **Embed Command Line Tool** phase copies the tool into `Contents/MacOS` and signs it.

@@ -1,0 +1,152 @@
+//
+//  AutopilotContinuation.swift
+//  Atlas
+//
+
+import Foundation
+
+/// Keeps a run going when Claude Code stops before it's done. One device
+/// or screen that can't be captured must not stop the whole run.
+///
+/// - When the Claude Code Atlas started for a run ends with work
+///   left, and it sent something (it made progress), Atlas starts
+///   it again with the prompt that continues the run. One that sent
+///   nothing isn't started again, so it can't loop; the sheet says it
+///   stopped, with its last words and Continue.
+/// - Before Claude Code continues, a planned device this Mac can't run
+///   becomes one problem for the device, so the rest goes on without it.
+/// - A run nobody works on says so (`stall`), whoever started it.
+@MainActor
+enum AutopilotContinuation {
+    /// How long a run whose prompt was pasted goes without news before the
+    /// sheet asks whether Claude Code stopped: long enough for a build.
+    static let quietLimit: TimeInterval = 30 * 60
+
+    // MARK: - When a session ends
+
+    /// The launcher's word that a run ended (`ClaudeCodeLauncher.onRunEnded`).
+    static func sessionEnded(_ session: ClaudeCodeRun, center: AutopilotCenter, launcher: ClaudeCodeLauncher) async {
+        if waitsForUsageLimit(after: session, center: center, launcher: launcher) { return }
+        guard session.purpose == .autopilot, let run = center.run(for: session.appID), shouldStartAgain(after: session, run: run) else { return }
+        center.update(session.appID) { run in
+            run.appendLog(String(localized: "Claude Code stopped with work left; Atlas started it again"), kind: .event, at: center.now())
+        }
+        await start(appID: session.appID, appName: session.appName, center: center, launcher: launcher)
+    }
+
+    // MARK: - The usage limit
+
+    /// The runs waiting for Claude Code's usage limit to reset, by app.
+    private static var limitWaits: [StoreApp.ID: Task<Void, Never>] = [:]
+
+    /// Claude Code stopped because the person's plan ran out of usage for
+    /// now: nothing to fix, so Atlas starts it again by itself once
+    /// the limit resets, and the log says when. True when it's waiting.
+    static func waitsForUsageLimit(
+        after session: ClaudeCodeRun, center: AutopilotCenter, launcher: ClaudeCodeLauncher, sleep: @escaping @Sendable (TimeInterval) async -> Void = {
+            try? await Task.sleep(for: .seconds($0))
+        }
+    ) -> Bool {
+        guard session.purpose == .autopilot, case let .claudeError(message)? = session.failure,
+              let limit = ClaudeCodeUsageLimit(message: message, now: center.now()),
+              let run = center.run(for: session.appID), run.startsClaudeCode == true, run.assistantHasWork
+        else { return false }
+        let (appID, appName) = (session.appID, session.appName)
+        let resume = limit.resumeDate(now: center.now())
+        let time = resume.formatted(date: .omitted, time: .shortened)
+        center.update(appID) { run in
+            run.appendLog(
+                String(localized: "Claude Code reached its usage limit. Atlas continues the run by itself at \(time)."), kind: .event, at: center.now()
+            )
+        }
+        limitWaits[appID]?.cancel()
+        limitWaits[appID] = Task { [weak launcher] in
+            await sleep(max(resume.timeIntervalSince(center.now()), 0))
+            guard !Task.isCancelled, let launcher else { return }
+            limitWaits[appID] = nil
+            // Not when the person continued, stopped or cancelled meanwhile.
+            guard let run = center.run(for: appID), run.startsClaudeCode == true, run.assistantHasWork,
+                  launcher.latestRun(appID: appID, purpose: .autopilot)?.id == session.id
+            else { return }
+            center.update(appID) { run in
+                run.appendLog(String(localized: "The usage limit has reset; Atlas started Claude Code again"), kind: .event, at: center.now())
+            }
+            await start(appID: appID, appName: appName, center: center, launcher: launcher)
+        }
+        return true
+    }
+
+    /// Only a session of this run that Atlas started, that ended by
+    /// itself (not Stop), with work left for the assistant, and that sent
+    /// something.
+    static func shouldStartAgain(after session: ClaudeCodeRun, run: AutopilotRun) -> Bool {
+        guard session.purpose == .autopilot, session.phase != .stopped, !session.isActive,
+              run.startsClaudeCode == true, run.assistantHasWork,
+              let started = run.startedAt, session.startedAt >= started.addingTimeInterval(-1)
+        else { return false }
+        return run.hasNews(since: session.startedAt)
+    }
+
+    // MARK: - Continuing
+
+    /// After the person's answer or step (a problem's answer, Use These
+    /// Picks, Use This Direction, Ask for Changes): when Atlas
+    /// started Claude Code for the run and none is working now, it
+    /// continues with what the person left it to do.
+    static func keepGoing(appID: StoreApp.ID, appName: String, center: AutopilotCenter, launcher: ClaudeCodeLauncher) async {
+        guard let run = center.run(for: appID), run.startsClaudeCode == true, run.assistantHasWork, launcher.canStart,
+              launcher.latestRun(appID: appID, purpose: .autopilot)?.isActive != true
+        else { return }
+        await start(appID: appID, appName: appName, center: center, launcher: launcher)
+    }
+
+    /// Starts Claude Code with the prompt that continues the run, after
+    /// reporting the devices this Mac can't run. Returns the session, the
+    /// one already going, or nil when nothing's left for the assistant or
+    /// it can't start here (no helper, no folder).
+    @discardableResult
+    static func start(appID: StoreApp.ID, appName: String, center: AutopilotCenter, launcher: ClaudeCodeLauncher) async -> ClaudeCodeRun.ID? {
+        guard let run = center.run(for: appID), run.assistantHasWork else { return nil }
+        if run.stage == .capture {
+            await launcher.simulators.check()
+            center.reportMissingSimulators(appID: appID, simulators: launcher.simulators)
+        }
+        guard let current = center.run(for: appID), current.assistantHasWork else { return nil }
+        let prompt = AutopilotPrompt.continuing(current, appName: appName)
+        // Marked first: the session can end before `start` returns.
+        let before = center.run(for: appID)?.startsClaudeCode
+        center.update(appID) { $0.startsClaudeCode = true }
+        guard let id = await launcher.start(.autopilot, appID: appID, appName: appName, prompt: prompt) else {
+            center.update(appID) { $0.startsClaudeCode = before }
+            return nil
+        }
+        return id
+    }
+
+    // MARK: - Nobody working
+
+    /// Why nobody is working on `run` although the assistant has work, or
+    /// nil while someone is, or should be. `session` is the newest Claude
+    /// Code Atlas started for it. A session that failed says so
+    /// itself, with Try Again. One that ended before the person's step gave
+    /// the assistant work again (`handedBackAt`) stopped because it was the
+    /// person's turn, so it didn't stop with work left: when Atlas
+    /// starts Claude Code itself (`startsItself`, `ScreenshotStudioModel.keepGoing`),
+    /// nobody is stalled while it does.
+    static func stall(of run: AutopilotRun, session: ClaudeCodeRun?, startsItself: Bool = false, now: Date) -> AutopilotStall? {
+        guard run.stage != .waiting, run.assistantHasWork else { return nil }
+        if let session, !session.isActive, let handedBack = run.handedBackAt, (session.endedAt ?? session.startedAt) <= handedBack {
+            return startsItself ? nil : .handedBack
+        }
+        if let session {
+            switch session.phase {
+            case .starting, .working, .failed: return nil
+            case .finished: return .ended(lastWords: session.result?.text.trimmingCharacters(in: .whitespacesAndNewlines))
+            case .stopped: return .ended(lastWords: nil)
+            }
+        }
+        if run.startsClaudeCode == true { return .notRunning }
+        guard let last = run.lastActivityAt, now.timeIntervalSince(last) >= quietLimit else { return nil }
+        return .quiet(since: last)
+    }
+}

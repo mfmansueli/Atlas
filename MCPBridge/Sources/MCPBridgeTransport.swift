@@ -1,6 +1,6 @@
 //
 //  MCPBridgeTransport.swift
-//  applocalizer-mcp
+//  atlas-mcp
 //
 
 import Foundation

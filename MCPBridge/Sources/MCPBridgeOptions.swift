@@ -1,11 +1,11 @@
 //
 //  MCPBridgeOptions.swift
-//  applocalizer-mcp
+//  atlas-mcp
 //
 
 import Foundation
 
-/// `applocalizer-mcp --token <token> [--url <url>]`: the token Settings → AI
+/// `atlas-mcp --token <token> [--url <url>]`: the token Settings → AI
 /// Assistants handed out when the assistant was paired, and the endpoint,
 /// which stays on this Mac.
 struct MCPBridgeOptions: Equatable, Sendable {
@@ -20,7 +20,7 @@ struct MCPBridgeOptions: Equatable, Sendable {
         var message: String {
             switch self {
             case .help: MCPBridgeOptions.usage
-            case .missingToken: "Missing --token. Pair the assistant in AppLocalizer → Settings → AI Assistants to get one.\n\(MCPBridgeOptions.usage)"
+            case .missingToken: "Missing --token. Pair the assistant in Atlas → Settings → AI Assistants to get one.\n\(MCPBridgeOptions.usage)"
             case let .missingValue(name): "\(name) needs a value.\n\(MCPBridgeOptions.usage)"
             case let .unknownArgument(argument): "Unknown argument \(argument).\n\(MCPBridgeOptions.usage)"
             case let .notLoopback(url): "\(url) isn’t on this Mac; the token only goes to http://127.0.0.1 or localhost."
@@ -28,12 +28,12 @@ struct MCPBridgeOptions: Equatable, Sendable {
         }
     }
 
-    /// AppLocalizer's endpoint (`MCPEndpoint.url(port: MCPEndpoint.defaultPort)` in the app).
+    /// Atlas's endpoint (`MCPEndpoint.url(port: MCPEndpoint.defaultPort)` in the app).
     static let defaultURL = URL(string: "http://127.0.0.1:47321/mcp")!
 
     static let usage = """
-    Usage: applocalizer-mcp --token <token> [--url \(defaultURL.absoluteString)]
-    Forwards an MCP client's stdio to AppLocalizer's local MCP server, which must be on.
+    Usage: atlas-mcp --token <token> [--url \(defaultURL.absoluteString)]
+    Forwards an MCP client's stdio to Atlas's local MCP server, which must be on.
     """
 
     var token: String

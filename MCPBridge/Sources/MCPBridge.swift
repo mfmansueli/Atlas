@@ -1,14 +1,14 @@
 //
 //  MCPBridge.swift
-//  applocalizer-mcp
+//  atlas-mcp
 //
 
 import Foundation
 
-/// Forwards an MCP client's stdio to AppLocalizer's Streamable HTTP endpoint,
+/// Forwards an MCP client's stdio to Atlas's Streamable HTTP endpoint,
 /// for clients that only launch servers as processes (Claude Desktop, Codex).
 /// Each line read is POSTed with the pairing token, and each reply becomes
-/// the lines to write back. When AppLocalizer relaunched and forgot the
+/// the lines to write back. When Atlas relaunched and forgot the
 /// session, the client's `initialize` is replayed so the client never
 /// notices.
 actor MCPBridge {
@@ -28,7 +28,7 @@ actor MCPBridge {
     private let options: MCPBridgeOptions
     private let transport: any MCPBridgeTransport
     private let log: @Sendable (String) -> Void
-    /// AppLocalizer's session, from the `initialize` reply.
+    /// Atlas's session, from the `initialize` reply.
     private(set) var sessionID: String?
     private var protocolVersion: String?
     /// The client's `initialize`, replayed to start a new session.
@@ -108,12 +108,12 @@ actor MCPBridge {
         protocolVersion = messages(in: reply).first.flatMap(Self.protocolVersion(in:))
     }
 
-    /// AppLocalizer answered 404 because it relaunched or the session went
+    /// Atlas answered 404 because it relaunched or the session went
     /// quiet: replays `initialize` and `notifications/initialized`. False
     /// when there was no session to replace, or a new one didn't start.
     private func startNewSession() async throws -> Bool {
         guard sessionID != nil, let initializeBody else { return false }
-        log("AppLocalizer forgot the session; starting a new one.")
+        log("Atlas forgot the session; starting a new one.")
         sessionID = nil
         protocolVersion = nil
         try await remember(post(initializeBody))
@@ -126,10 +126,10 @@ actor MCPBridge {
 
     private func lines(for reply: Reply, answering message: MCPBridgeMessage) -> [String] {
         let messages = messages(in: reply)
-        // AppLocalizer answers bad messages with a JSON-RPC error and a 4xx.
+        // Atlas answers bad messages with a JSON-RPC error and a 4xx.
         if reply.isSuccess || (!messages.isEmpty && messages.allSatisfy(Self.isJSONRPC)) { return messages }
         let text = String(bytes: reply.body, encoding: .utf8) ?? ""
-        log("AppLocalizer answered \(reply.status): \(text)")
+        log("Atlas answered \(reply.status): \(text)")
         guard message.isRequest else { return [] }
         return [MCPBridgeMessage.error(id: message.idJSON, code: Self.failureCode, message: Self.explanation(status: reply.status, text: text))]
     }
@@ -161,14 +161,14 @@ actor MCPBridge {
 
     // MARK: - Failures
 
-    static let unreachable = "Can’t reach AppLocalizer. Open it and turn on Settings → AI Assistants → Local MCP server."
+    static let unreachable = "Can’t reach Atlas. Open it and turn on Settings → AI Assistants → Local MCP server."
 
     private static func explanation(status: Int, text: String) -> String {
         switch status {
         case 401:
-            "AppLocalizer didn’t accept this token. Pair the assistant again in AppLocalizer → Settings → AI Assistants and use the new token."
+            "Atlas didn’t accept this token. Pair the assistant again in Atlas → Settings → AI Assistants and use the new token."
         default:
-            "AppLocalizer answered \(status): \(text)"
+            "Atlas answered \(status): \(text)"
         }
     }
 }

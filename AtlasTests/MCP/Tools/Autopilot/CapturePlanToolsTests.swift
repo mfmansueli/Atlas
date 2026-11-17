@@ -1,0 +1,306 @@
+//
+//  CapturePlanToolsTests.swift
+//  AtlasTests
+//
+
+#if DEBUG
+import Foundation
+import Testing
+@testable import Atlas
+
+/// `get_capture_plan` and `update_capture_plan`: the run the person
+/// started, picked up by the assistant, and the steps it writes from the
+/// project. Also which run a tool reaches.
+@MainActor
+@Suite("Capture plan tools")
+struct CapturePlanToolsTests {
+    @Test func readingThePlanPicksTheRunUpAndGivesEverythingToCaptureWith() async throws {
+        var waiting = StudioDebugRuns.run(.waiting)
+        waiting.plan.simulator.extraCommands = ["xcrun simctl privacy booted grant photos dev.northpier.lumen"]
+        let fixtures = MCPAutopilotFixtures(waiting)
+        let outcome = try await fixtures.call(
+            GetCapturePlanTool(), ["xcode": "26.1", "simulators": ["iPhone 17 Pro Max", "iPad Pro 13″"]], port: 4000
+        )
+
+        let plan = outcome.result
+        #expect(plan["run"] == "run-debug")
+        #expect(plan["app"] == "Lumen Journal")
+        #expect(plan["version"] == "1.4")
+        #expect(plan["stage"] == "capture")
+        #expect(plan["primaryLocale"] == "en-US")
+        #expect(plan["capturesEachLanguage"] == true)
+        #expect(plan["attemptsPerScreen"] == 3)
+        #expect(plan["captured"] == 0)
+        #expect(plan["total"] == 120)
+        #expect(plan["screens"]?.arrayValue?.first == [
+            "id": "today", "slot": 1, "name": "Today", "steps": .string(StudioDebugRuns.steps[0]),
+            "caption": .string(StudioDebugRuns.plan.screens[0].caption),
+        ])
+        #expect(plan["devices"] == [
+            ["displayType": "iphone", "simulator": "iPhone 17 Pro Max", "pixelSize": "1320 × 2868", "orientation": "portrait"],
+            [
+                "displayType": "ipad", "simulator": "iPad Pro 13-inch (M5)",
+                "pixelSize": "2752 × 2064 (landscape) or 2064 × 2752 (portrait)",
+                "orientation": "landscape, or portrait when the UI tests can't rotate",
+                "how": .string(AutopilotRun.howToCapture(.iPad) ?? ""),
+            ],
+        ])
+        let german = plan["locales"]?.arrayValue?.first { $0["locale"] == "de-DE" }
+        #expect(german?["launchArguments"] == "-AppleLanguages (de) -AppleLocale de_DE")
+        #expect(german?["testArguments"] == "-testLanguage de -testRegion DE")
+        #expect(plan["simulatorSetup"] == [
+            "lightAppearance": true,
+            "commands": [
+                .string(AutopilotSimulatorSetup.statusBarCommand), "xcrun simctl ui booted appearance light",
+                "xcrun simctl privacy booted grant all com.northpier.lumen",
+                "xcrun simctl privacy booted grant photos dev.northpier.lumen",
+            ],
+            "addedByFixes": ["xcrun simctl privacy booted grant photos dev.northpier.lumen"],
+            "alerts": .string(AutopilotSimulatorSetup.alertsNote),
+            // iPhone and iPad: `booted` reaches one of them (Bruma's run).
+            "eachSimulator": .string(AutopilotSimulatorSetup.eachSimulatorNote),
+            "sampleData": "Settings → Debug → Add Sample Week",
+            "sampleDataLanguage": .string(AutopilotSimulatorSetup.sampleDataLanguageNote),
+        ])
+        #expect(plan["upload"]?["url"] == "http://127.0.0.1:4000/autopilot/debug-token")
+        #expect(plan["upload"]?["how"] == "curl -s --data-binary @capture.png -H 'Content-Type: image/png' http://127.0.0.1:4000/autopilot/debug-token")
+        #expect(outcome.logLines == [.init(target: "Lumen Journal · Autopilot", outcome: .read)])
+
+        let run = try #require(fixtures.run)
+        #expect(run.stage == .capture)
+        #expect(run.client == "Claude Code")
+        #expect(run.environment == AutopilotEnvironment(xcode: "26.1", simulators: ["iPhone 17 Pro Max", "iPad Pro 13″"]))
+    }
+
+    /// Bruma's first capture had a notification prompt over its debug
+    /// scene: simctl can't grant notifications or tap it.
+    @Test func theAlertsNoteSaysHowToAnswerAPromptSimctlCant() {
+        let note = AutopilotSimulatorSetup.alertsNote
+        #expect(note.contains("captures' own launch arguments"))
+        #expect(note.contains("-parallel-testing-enabled NO"))
+        #expect(note.contains("com.apple.springboard"))
+        #expect(note.contains("never by erasing the simulator"))
+    }
+
+    /// Bruma's run set the iPhone up by its id and captured iPhone Duo with
+    /// the status bar an earlier run left: with one simulator, `booted` is it.
+    @Test func severalSimulatorsAreEachSetUp() async throws {
+        var several = AutopilotTestFixtures.run(.waiting)
+        several.plan.setPlans(.iPhoneDuo, true)
+        let found = try await MCPAutopilotFixtures(several).call(GetCapturePlanTool()).result
+        #expect(found["simulatorSetup"]?["eachSimulator"] == .string(AutopilotSimulatorSetup.eachSimulatorNote))
+
+        var one = several
+        for display in one.plan.displayTypes where display != .iPhone { one.plan.setPlans(display, false) }
+        try #require(one.plan.displayTypes == [.iPhone])
+        let alone = try await MCPAutopilotFixtures(one).call(GetCapturePlanTool()).result
+        #expect(alone["simulatorSetup"]?["eachSimulator"] == nil)
+
+        var nothingToRun = several
+        nothingToRun.plan.simulator.lightAppearance = false
+        nothingToRun.plan.simulator.overridesStatusBar = false
+        nothingToRun.plan.simulator.grantsPermissions = false
+        let bare = try await MCPAutopilotFixtures(nothingToRun).call(GetCapturePlanTool()).result
+        #expect(bare["simulatorSetup"]?["commands"] == [])
+        #expect(bare["simulatorSetup"]?["eachSimulator"] == nil, "no commands to run on each simulator")
+    }
+
+    /// Bruma's plan named only "iPad Pro 13-inch (M5)": three were made, and
+    /// its iPad captures came from iOS 26.5 while Plan showed 27.2.
+    @Test func eachDeviceNamesTheSimulatorPlanChecked() async throws {
+        var run = AutopilotTestFixtures.run(.waiting)
+        run.plan.setPlans(.iPhoneDuo, true)
+        var plan = try await MCPAutopilotFixtures(run).call(GetCapturePlanTool()).result
+        #expect(plan["devices"]?.arrayValue?.first?["simulatorId"] == nil, "Unknown until This Mac is checked")
+
+        let inventory = try SimulatorInventory.parse(DebugSimulators.json(DebugSimulators.Mac(hasNewRuntime: true, hasDuo: true)))
+        GetCapturePlanTool.addSimulatorIDs(&plan, inventory: inventory)
+        let devices = plan["devices"]?.arrayValue ?? []
+        let iPhone = try #require(devices.first { $0["displayType"] == .string(ScreenshotDisplayType.iPhone.mcpValue) })
+        #expect(iPhone["simulatorId"] == "00000000-0000-0000-0000-000000000001")
+        #expect(iPhone["runtime"] == "iOS 27.0")
+        let duo = try #require(devices.first { $0["displayType"] == .string(ScreenshotDisplayType.iPhoneDuo.mcpValue) })
+        #expect(duo["simulatorId"] == "00000000-0000-0000-0000-000000000004")
+        #expect(duo["runtime"] == "iOS 27.2")
+        #expect(devices.allSatisfy { $0["simulator"] != nil })
+    }
+
+    @Test func thePlanSaysToFindTheSampleDataSwitchAndLeavesOutWhatsOff() async throws {
+        var waiting = AutopilotTestFixtures.run(.waiting)
+        waiting.plan.simulator.overridesStatusBar = false
+        waiting.plan.simulator.grantsPermissions = false
+        let found = try await MCPAutopilotFixtures(waiting).call(GetCapturePlanTool()).result
+        #expect(found["simulatorSetup"]?["commands"] == ["xcrun simctl ui booted appearance light"])
+        #expect(found["simulatorSetup"]?["sampleData"]?.stringValue?.hasPrefix("Find the app's sample-data switch") == true)
+        #expect(found["simulatorSetup"]?["sampleDataLanguage"] != nil)
+
+        var oneLanguageData = waiting
+        oneLanguageData.plan.simulator.sampleDataInEachLanguage = false
+        let oneLanguage = try await MCPAutopilotFixtures(oneLanguageData).call(GetCapturePlanTool()).result
+        #expect(oneLanguage["simulatorSetup"]?["sampleDataLanguage"] == nil)
+        var primaryOnly = waiting
+        primaryOnly.plan.capturesEachLanguage = false
+        let reused = try await MCPAutopilotFixtures(primaryOnly).call(GetCapturePlanTool()).result
+        #expect(reused["simulatorSetup"]?["sampleDataLanguage"] == nil, "English captures are reused: one language's data")
+
+        waiting.plan.simulator.usesSampleData = false
+        waiting.plan.simulator.lightAppearance = false
+        waiting.plan.capturesEachLanguage = false
+        let bare = try await MCPAutopilotFixtures(waiting).call(GetCapturePlanTool()).result
+        #expect(bare["simulatorSetup"] == ["lightAppearance": false, "commands": []])
+        #expect(bare["locales"]?.arrayValue?.count == 1)
+        #expect(bare["total"] == 4)
+    }
+
+    /// Simplified and Traditional Chinese, or Brazilian and European
+    /// Portuguese, are different captures: each launches in its own
+    /// language, not in the bare `zh` or `pt` they share, with its App
+    /// Store country's formats.
+    @Test func eachLocaleLaunchesInItsOwnLanguageAndCountry() async throws {
+        var waiting = AutopilotTestFixtures.run(.waiting)
+        waiting.plan.localeCodes = ["en-US", "zh-Hans", "zh-Hant", "pt-BR", "pt-PT", "es-MX", "it"]
+        let plan = try await MCPAutopilotFixtures(waiting).call(GetCapturePlanTool()).result
+        let arguments = try #require(plan["locales"]?.arrayValue).compactMap { $0["launchArguments"]?.stringValue }
+        #expect(arguments == [
+            "-AppleLanguages (en-US) -AppleLocale en_US", "-AppleLanguages (zh-Hans) -AppleLocale zh-Hans_CN",
+            "-AppleLanguages (zh-Hant) -AppleLocale zh-Hant_HK", "-AppleLanguages (pt-BR) -AppleLocale pt_BR",
+            "-AppleLanguages (pt-PT) -AppleLocale pt_PT", "-AppleLanguages (es-MX) -AppleLocale es_MX", "-AppleLanguages (it) -AppleLocale it_IT",
+        ])
+    }
+
+    /// The plan run before capturing: Apple's status bar on Wi-Fi without
+    /// a carrier, light appearance and the app's permissions granted.
+    @Test func thePlanSaysWhatToCheckFirstAndWhichLanguageRehearses() async throws {
+        let plan = try await MCPAutopilotFixtures(AutopilotTestFixtures.run(.waiting)).call(GetCapturePlanTool()).result
+        let checks = (plan["preflight"]?["checks"]?.arrayValue ?? []).compactMap(\.stringValue)
+        #expect(checks == AutopilotPreflight.checks)
+        #expect(checks.contains { $0.contains("accessibility identifier") && $0.contains("app.buttons[\"Styles\"]") })
+        #expect(checks.contains { $0.contains("Sample data") })
+        #expect(checks.contains { $0.contains("BUILT_PRODUCTS_DIR") && $0.contains("not in /tmp") }, "Its file tools read only the project")
+        #expect(plan["preflight"]?["whenACheckFails"]?.stringValue?.contains("changesProject: true") == true)
+        #expect(plan["rehearsal"]?["locale"] == "de-DE")
+        #expect(plan["rehearsal"]?["why"] == "Its long words show labels that don't fit.")
+
+        var japanese = AutopilotTestFixtures.smallPlan
+        japanese.localeCodes = ["en-US", "de-DE", "ja"]
+        let rehearsal = try #require(AutopilotPreflight.rehearsalJSON(for: japanese))
+        #expect(rehearsal["locale"] == "ja")
+        #expect(rehearsal["why"]?.stringValue?.contains("script") == true)
+
+        let single = try await MCPAutopilotFixtures(AutopilotTestFixtures.run(.waiting, plan: AutopilotTestFixtures.singlePlan()))
+            .call(GetCapturePlanTool()).result
+        #expect(single["rehearsal"] == nil)
+        #expect(single["preflight"] != nil)
+        #expect(GetCapturePlanTool().definition.description.contains("preflight"))
+    }
+
+    @Test func theSimulatorCommandsGrantTheAppsPermissions() {
+        var run = AutopilotTestFixtures.run(.waiting)
+        #expect(run.simulatorCommands(bundleID: "dev.northpier.lumen") == [
+            AutopilotSimulatorSetup.statusBarCommand, "xcrun simctl ui booted appearance light",
+            "xcrun simctl privacy booted grant all dev.northpier.lumen",
+        ])
+        #expect(AutopilotSimulatorSetup.statusBarCommand.contains("--dataNetwork wifi"))
+        #expect(
+            AutopilotSimulatorSetup.statusBarCommand.contains("--batteryState discharging --batteryLevel 100"),
+            "A plain full battery, not charged's green one with a bolt"
+        )
+        #expect(AutopilotSimulatorSetup.statusBarCommand.hasSuffix("--operatorName ''"))
+        #expect(!run.simulatorCommands(bundleID: "").contains { $0.contains("privacy") }, "No bundle ID, nothing to grant")
+
+        run.plan.simulator.grantsPermissions = false
+        #expect(!run.simulatorCommands(bundleID: "dev.northpier.lumen").contains { $0.contains("privacy") })
+    }
+
+    // MARK: - Which run
+
+    @Test func theToolsNeedAStartedRun() async throws {
+        let message = """
+        Lumen Journal has no Autopilot run waiting. Ask the person to open Atlas → Screenshots → Run Autopilot… \
+        and press Start Autopilot.
+        """
+        await #expect(throws: MCPToolError.notFound(message)) {
+            try await MCPAutopilotFixtures().call(GetCapturePlanTool())
+        }
+        await #expect(throws: MCPToolError.notFound(message)) {
+            try await MCPAutopilotFixtures(AutopilotTestFixtures.run(.plan)).call(ReportCaptureProblemTool())
+        }
+    }
+
+    @Test func anOldRunIsTurnedAway() async throws {
+        let fixtures = MCPAutopilotFixtures(StudioDebugRuns.run(.capture))
+        let message = "Run “run-old” is over; Lumen Journal’s current run is “run-debug”. Call get_capture_plan."
+        await #expect(throws: MCPToolError.notFound(message)) {
+            try await fixtures.call(GetCapturePlanTool(), ["run": "run-old"])
+        }
+        _ = try await fixtures.call(GetCapturePlanTool(), ["run": ""])
+    }
+
+    @Test func withoutAutopilotTheToolsSaySo() async throws {
+        let context = MCPToolContext(workspace: MCPAutopilotFixtures.withoutAutopilot, clientName: "Claude Code")
+        let arguments = MCPToolArguments(["appId": .string(MCPAutopilotFixtures.appID)])
+        await #expect(throws: MCPToolError.unavailable("Screenshot Autopilot isn’t available here.")) {
+            try await GetCapturePlanTool().call(arguments, in: context)
+        }
+        await #expect(throws: MCPToolError.unavailable("Screenshot Autopilot isn’t available here.")) {
+            try await NextStepTool().call(arguments, in: context)
+        }
+    }
+
+    // MARK: - update_capture_plan
+
+    @Test func theAssistantWritesTheStepsAndAddsScreensBeforeCapturing() async throws {
+        var waiting = AutopilotTestFixtures.run(.waiting)
+        waiting.plan.screens[1].caption = ""
+        let fixtures = MCPAutopilotFixtures(waiting)
+        let outcome = try await fixtures.call(UpdateCapturePlanTool(), [
+            "run": "run-1",
+            "screens": [
+                ["id": "today", "name": "Today", "steps": "launch -ui-sample-week", "caption": "Ignored: Today has one"],
+                ["name": "WEEK", "steps": "tab “Week”", "caption": "Your week at a glance"],
+                ["name": "Settings", "steps": "tab “Settings”", "caption": "Make it yours"],
+            ],
+            "writtenFrom": "LumenUITests/ScreenshotTests.swift",
+            "sampleData": "launch argument -ui-sample-week",
+        ])
+
+        #expect(outcome.result["status"] == "updated")
+        #expect(outcome.result["refused"] == nil)
+        #expect(outcome.result["screens"]?.arrayValue?.count == 3)
+        #expect(outcome.logLines == [.init(target: "Lumen Journal · Autopilot", outcome: .proposed)])
+        let plan = try #require(fixtures.run?.plan)
+        #expect(plan.screens.map(\.id) == ["today", "week", "settings"])
+        #expect(plan.screens.map(\.steps) == ["launch -ui-sample-week", "tab “Week”", "tab “Settings”"])
+        #expect(plan.screens.map(\.caption) == ["Write a little every day", "Your week at a glance", "Make it yours"])
+        #expect(plan.writtenFrom == "LumenUITests/ScreenshotTests.swift")
+        #expect(plan.simulator.sampleDataSteps == "launch argument -ui-sample-week")
+        #expect(fixtures.run?.log.last?.text == "Claude Code wrote the steps for 3 screens")
+    }
+
+    @Test func aNewScreenWithoutANameIsRefusedForThat() async throws {
+        let fixtures = MCPAutopilotFixtures(AutopilotTestFixtures.run(.waiting))
+        let outcome = try await fixtures.call(UpdateCapturePlanTool(), [
+            "run": "run-1",
+            "screens": [["name": "  ", "steps": "tab Settings"]],
+        ])
+
+        #expect(outcome.result["status"] == "partial")
+        #expect(outcome.result["refused"] == [["name": "", "reason": "A new screen needs a name."]])
+        #expect(fixtures.run?.log.last?.date == AutopilotTestFixtures.now)
+    }
+
+    @Test func newScreensWaitForTheNextRunOnceCapturingHasBegun() async throws {
+        var capturing = AutopilotTestFixtures.run(.capture)
+        capturing.captures = [AutopilotTestFixtures.capture(AutopilotTestFixtures.target("today"))]
+        let fixtures = MCPAutopilotFixtures(capturing)
+        let outcome = try await fixtures.call(UpdateCapturePlanTool(), [
+            "run": "run-1",
+            "screens": [["name": "Week", "steps": "tab Week"], ["name": "Settings", "steps": "tab Settings"]],
+        ])
+
+        #expect(outcome.result["status"] == "partial")
+        #expect(outcome.result["refused"] == [["name": "Settings", "reason": "Screens can only be added before the first capture."]])
+        #expect(fixtures.run?.plan.screens.map(\.steps) == ["launch → Today", "tab Week"])
+    }
+}
+#endif

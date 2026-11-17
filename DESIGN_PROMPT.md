@@ -1,9 +1,9 @@
-Design a native macOS app called **AppLocalizer**: a desktop tool for iOS/macOS developers who ship several apps and want to localize two things fast, through the App Store Connect API:
+Design a native macOS app called **Atlas**: a desktop tool for iOS/macOS developers who ship several apps and want to localize two things fast, through the App Store Connect API:
 
 - **subscription prices** for every App Store territory, set to get more people to pay: by each region's purchasing power (the Big Mac Index, World Bank PPP…) rather than a flat currency conversion;
 - the **App Store page** (listing text) for every language.
 
-Pricing is **optional**. Someone can use AppLocalizer only to translate and keep every price as it is, look at price suggestions without applying them, or apply the suggested prices in one step. See "Pricing mode" in section 4.
+Pricing is **optional**. Someone can use Atlas only to translate and keep every price as it is, look at price suggestions without applying them, or apply the suggested prices in one step. See "Pricing mode" in section 4.
 
 Build the design system and every screen listed below as an interactive prototype, plus a README handoff. The README should cover tokens, components, specs per screen, and the decisions you made where this brief is silent.
 
@@ -89,7 +89,7 @@ Build the design system and every screen listed below as an interactive prototyp
 The goal of pricing is **conversion**: more people subscribing or buying, not the highest possible price. And it's optional.
 
 - **Pricing mode**, per app, switchable at any time from the Pricing toolbar. The first time someone opens Pricing for an app, a short sheet asks which mode they want, with "Show suggestions" preselected. The default for new apps lives in Settings.
-  - **Keep my prices**, for people who only want to translate. AppLocalizer never proposes a price change: Pricing shows current prices and proceeds read-only, the sidebar and overview drop their pricing indicators, and Review & Push holds text changes only. The only nudge is a quiet "Show price suggestions" link.
+  - **Keep my prices**, for people who only want to translate. Atlas never proposes a price change: Pricing shows current prices and proceeds read-only, the sidebar and overview drop their pricing indicators, and Review & Push holds text changes only. The only nudge is a quiet "Show price suggestions" link.
   - **Show suggestions.** Each territory shows a suggested price next to the current one, with its reason and confidence, but nothing is queued. "Apply" on a row or a selection turns those suggestions into pending changes.
   - **Apply recommended prices.** One button fills every proposed price with the suggestion and opens Review & Push. Nothing is ever pushed without that review.
 - **Recommended price**, per territory: the price most likely to get someone there to pay, without going below the floor or the minimum proceeds. Otherwise "the most conversions" would just mean free.

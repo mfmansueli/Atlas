@@ -1,0 +1,100 @@
+{
+  "fill": {
+    "linear-gradient": [
+      "srgb:0.12157,0.76078,1.00000,1.00000",
+      "srgb:0.03922,0.36078,0.94902,1.00000"
+    ]
+  },
+  "groups": [
+    {
+      "name": "Frente",
+      "layers": [
+        {
+          "image-name": "7-estrela.png",
+          "name": "7-estrela",
+          "glass": true,
+          "opacity": 1.0
+        },
+        {
+          "image-name": "6-faixa.png",
+          "name": "6-faixa",
+          "glass": true,
+          "opacity": 1.0
+        },
+        {
+          "image-name": "5-orbita-fina.png",
+          "name": "5-orbita-fina",
+          "glass": true,
+          "opacity": 1.0
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.2
+      },
+      "specular": true
+    },
+    {
+      "name": "Esfera",
+      "layers": [
+        {
+          "image-name": "4-aro.png",
+          "name": "4-aro",
+          "glass": true,
+          "opacity": 1.0
+        },
+        {
+          "image-name": "3-meridiano.png",
+          "name": "3-meridiano",
+          "glass": true,
+          "opacity": 0.5
+        },
+        {
+          "image-name": "2-esfera-vidro.png",
+          "name": "2-esfera-vidro",
+          "glass": true,
+          "opacity": 0.35
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.4
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
+      },
+      "specular": true
+    },
+    {
+      "name": "Tras",
+      "layers": [
+        {
+          "image-name": "1-orbitas-tras.png",
+          "name": "1-orbitas-tras",
+          "glass": true,
+          "opacity": 0.45
+        }
+      ],
+      "shadow": {
+        "kind": "none",
+        "opacity": 0
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.4
+      },
+      "specular": false
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}

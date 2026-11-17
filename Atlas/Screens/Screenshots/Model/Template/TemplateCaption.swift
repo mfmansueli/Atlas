@@ -1,0 +1,44 @@
+//
+//  TemplateCaption.swift
+//  Atlas
+//
+
+import Foundation
+
+/// `caption`: where the caption goes and how it's set.
+struct TemplateCaption: Codable, Hashable, Sendable {
+    var placement: Placement
+    var align: Alignment
+    /// Space between the caption box and the device, as a fraction of
+    /// the canvas height.
+    var gap: Double
+    /// Headline color: hex or `rgba(…)`.
+    var ink: String
+    /// Subhead color.
+    var subInk: String
+    var band: TemplateBand
+    var headline: TemplateTextStyle
+    var subhead: TemplateTextStyle
+    /// A short topic line over the headline (`kicker`), one per slot and
+    /// language, written in Captions next to the headline and translated
+    /// like it. With one, the caption box is as tall as the real lines and
+    /// the headline sits right under it; a slot without kicker text shows
+    /// the headline alone.
+    var kicker: TemplateTextStyle?
+
+    /// Above the device; below it, at the bottom inside `safe.bottom`, with
+    /// the device leaning out of the top edge; or in a solid band while the
+    /// capture fills the canvas (the device is ignored then).
+    enum Placement: String, Codable, Hashable, Sendable, CaseIterable {
+        case above
+        case below
+        case band
+    }
+
+    /// `start` is the reading direction's start: left in English, right
+    /// in Arabic.
+    enum Alignment: String, Codable, Hashable, Sendable, CaseIterable {
+        case center
+        case start
+    }
+}

@@ -1,12 +1,12 @@
 //
 //  main.swift
-//  applocalizer-mcp
+//  atlas-mcp
 //
 
 import Foundation
 
-// The stdio bridge in AppLocalizer.app/Contents/MacOS that Claude Desktop and
-// Codex launch: JSON-RPC lines on stdin go to AppLocalizer's local MCP server
+// The stdio bridge in Atlas.app/Contents/MacOS that Claude Desktop and
+// Codex launch: JSON-RPC lines on stdin go to Atlas's local MCP server
 // with the pairing token, and its replies come back on stdout. Diagnostics go
 // to stderr, which clients keep in their logs.
 
@@ -26,7 +26,7 @@ do {
 }
 
 let bridge = MCPBridge(options: options, transport: URLSession(configuration: .ephemeral)) { message in
-    writeLine("applocalizer-mcp: \(message)", to: .standardError)
+    writeLine("atlas-mcp: \(message)", to: .standardError)
 }
 
 do {
@@ -36,7 +36,7 @@ do {
         }
     }
 } catch {
-    writeLine("applocalizer-mcp: stdin closed: \(error.localizedDescription)", to: .standardError)
+    writeLine("atlas-mcp: stdin closed: \(error.localizedDescription)", to: .standardError)
 }
 
 await bridge.close()

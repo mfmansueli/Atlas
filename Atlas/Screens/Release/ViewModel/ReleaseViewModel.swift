@@ -1,0 +1,214 @@
+//
+//  ReleaseViewModel.swift
+//  Atlas
+//
+
+import Foundation
+import Observation
+
+/// One app's version on its way to the App Store: what the Overview's
+/// version card, the Submit sheet and the sidebar's footer show, and the
+/// writes behind their buttons. Reading is cheap and kept; every write is
+/// one the person asked for.
+@MainActor
+@Observable
+final class ReleaseViewModel {
+    let app: StoreApp
+    let services: WorkspaceServices
+    let store: ReleaseStore
+    let queue: ChangeQueue
+    let suggestions: FieldSuggestionStore
+    let push: PushController
+
+    // MARK: - Loaded
+
+    private(set) var status: ReleaseStatus?
+    private(set) var hasLoaded = false
+    private(set) var isLoading = false
+    private(set) var errorMessage: String?
+    /// The version's store page: its languages and What's New.
+    private(set) var content: StorePageContent?
+    /// The app's In-App Events, for the ones that go with the version.
+    private(set) var events: [InAppEvent] = []
+
+    // MARK: - Submit sheet
+
+    var options = SubmissionOptions()
+    var isSubmitting = false
+    /// "Pushing 5 changes…", "Submitting…".
+    var submitProgress: String?
+    var submitError: String?
+
+    // MARK: - Card actions
+
+    /// The write in flight.
+    var busyAction: ReleaseAction?
+    /// The action waiting for the person's confirmation.
+    var confirming: ReleaseAction?
+    var actionError: String?
+
+    /// The Store Page's model, loaded, to accept a What's New suggestion
+    /// exactly as the Store Page does. Set by the window.
+    @ObservationIgnored var storePageModel: (@MainActor () async -> StorePageViewModel?)?
+    /// Says something in the window's toast.
+    @ObservationIgnored var onMessage: @MainActor (String) -> Void = { _ in }
+    /// The version's state changed in App Store Connect: reload what
+    /// depends on it.
+    @ObservationIgnored var onChanged: @MainActor () -> Void = {}
+    @ObservationIgnored var now: () -> Date = { .now }
+
+    init(
+        app: StoreApp, services: WorkspaceServices, store: ReleaseStore, queue: ChangeQueue, suggestions: FieldSuggestionStore, push: PushController
+    ) {
+        self.app = app
+        self.services = services
+        self.store = store
+        self.queue = queue
+        self.suggestions = suggestions
+        self.push = push
+    }
+
+    // MARK: - Reading
+
+    var phase: ReleasePhase? { status?.phase }
+
+    /// "1.4".
+    var versionString: String { status?.version.versionString ?? "" }
+
+    /// "Lumen Journal 1.4".
+    var versionName: String { "\(app.name) \(versionString)" }
+
+    /// For the sidebar's footer and the toolbar's title: the status once
+    /// read, else what was last seen.
+    var summary: VersionStatusSummary? {
+        if let status { return VersionStatusSummary(versionString: status.version.versionString, phase: status.phase) }
+        return store.snapshot(for: app.id).map { VersionStatusSummary(versionString: $0.versionString, phase: $0.phase) }
+    }
+
+    /// Changes of this app waiting in Review & Push.
+    var pendingCount: Int { queue.count(for: app.id) }
+
+    // MARK: - Loading
+
+    /// Reads the version, its builds and submission, its store page and
+    /// the app's events. `platform` follows the Store Page's version.
+    func load(platform: String? = nil) async {
+        guard !isLoading else { return }
+        isLoading = true
+        defer {
+            isLoading = false
+            hasLoaded = true
+        }
+        do {
+            let loaded = try await services.release.status(for: app, platform: platform ?? status?.version.platform)
+            status = loaded
+            errorMessage = nil
+            if let loaded {
+                if let moved = store.note(loaded, for: app.id) { announce(moved, version: loaded.version.versionString) }
+                await loadDetails(of: loaded)
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    /// What only the card before submitting and the sheet need: the
+    /// events (also while a submission carries some), and the texts.
+    private func loadDetails(of status: ReleaseStatus) async {
+        let isBeforeSubmitting = status.phase == .prepare || status.phase == .rejected
+        if isBeforeSubmitting || status.submission?.eventIDs.isEmpty == false {
+            events = await (try? services.inAppEvents.events(for: app)) ?? events
+        }
+        guard isBeforeSubmitting else { return }
+        content = await (try? services.storePage.content(for: app, versionID: status.version.id)) ?? content
+        resetOptions()
+    }
+
+    /// The sheet's choices as App Store Connect has them: the attached
+    /// build (else the newest that's ready), how the version is released,
+    /// the encryption answer already given, and the events ticked before.
+    func resetOptions() {
+        guard let status else { return }
+        var options = SubmissionOptions()
+        let selectable = status.builds.filter(\.isSelectable)
+        options.buildID = selectable.first { $0.id == status.attachedBuildID }?.id ?? selectable.first?.id
+        options.timing = status.version.timing.kind
+        options.releaseDate = status.version.timing.date ?? defaultReleaseDate
+        options.pushesChanges = true
+        let kept = Set(store.eventIDs(for: app.id))
+        let inSubmission = Set(status.submission?.eventIDs ?? [])
+        options.eventIDs = Set(submittableEvents.map(\.id)).intersection(kept.union(inSubmission))
+        self.options = options
+        self.options.encryption = knownEncryption
+    }
+
+    /// A week from now, at 9:00.
+    private var defaultReleaseDate: Date {
+        let calendar = Calendar.current
+        let day = calendar.date(byAdding: .day, value: 7, to: now()) ?? now()
+        return calendar.date(bySettingHour: 9, minute: 0, second: 0, of: day) ?? day
+    }
+
+    /// The answer the chosen build carries, else the one kept in App
+    /// Information → Export Compliance.
+    var knownEncryption: EncryptionAnswer? {
+        let saved = EncryptionAnswer(services.appInformation.notes.notes(for: app.id).exportAnswers)
+        guard let build = selectedBuild, let fromBuild = EncryptionAnswer(buildUsesNonExemptEncryption: build.usesNonExemptEncryption) else { return saved }
+        // The build says only whether documentation is needed; the saved
+        // answer says which kind, when the two agree.
+        if let saved, saved.usesNonExemptEncryption == fromBuild.usesNonExemptEncryption { return saved }
+        return fromBuild
+    }
+
+    var selectedBuild: ReleaseBuild? {
+        status?.builds.first { $0.id == options.buildID }
+    }
+
+    /// Events that could go to App Review with the version.
+    var submittableEvents: [InAppEvent] {
+        events.filter(\.canSubmit)
+    }
+
+    /// The events ticked to go with the version, for the card and for
+    /// In-App Events' "Goes with 1.4".
+    var eventsGoingWithVersion: [InAppEvent] {
+        let inSubmission = Set(status?.submission?.eventIDs ?? [])
+        let ticked = phase == .prepare || phase == .rejected ? Set(store.eventIDs(for: app.id)) : []
+        return events.filter { inSubmission.contains($0.id) || (ticked.contains($0.id) && $0.canSubmit) }
+    }
+
+    // MARK: - Telling
+
+    /// The version moved since Atlas last looked.
+    private func announce(_ phase: ReleasePhase, version: String) {
+        guard let text = Self.announcement(phase, version: version, appName: app.name) else { return }
+        onMessage(text)
+        ReleaseNotifier.shared.post(text, appName: app.name, appID: app.id)
+    }
+
+    /// "Lumen Journal 1.4 is approved and waiting for you."
+    static func announcement(_ phase: ReleasePhase, version: String, appName: String) -> String? {
+        let name = "\(appName) \(version)"
+        switch phase {
+        case .prepare, .waitingForReview: return nil
+        case .inReview: return String(localized: "App Review is looking at \(name).")
+        case .rejected: return String(localized: "App Review sent \(name) back. Its message is in App Store Connect.")
+        case .pendingDeveloperRelease: return String(localized: "\(name) is approved and waiting for you to release it.")
+        case .pendingAppleRelease: return String(localized: "\(name) is approved. Apple releases it.")
+        case .phased: return String(localized: "\(name) is on the App Store, rolling out over 7 days.")
+        case .live: return String(localized: "\(name) is on the App Store for everyone.")
+        }
+    }
+
+    #if DEBUG
+    /// DEBUG scenes and tests: the status as if just read.
+    func load(status: ReleaseStatus, content: StorePageContent?, events: [InAppEvent]) {
+        self.status = status
+        self.content = content
+        self.events = events
+        hasLoaded = true
+        store.note(status, for: app.id)
+        resetOptions()
+    }
+    #endif
+}

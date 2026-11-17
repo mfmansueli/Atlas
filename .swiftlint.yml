@@ -1,12 +1,12 @@
 # SwiftLint config: https://realm.github.io/SwiftLint/rule-directory.html
 # Formatting is SwiftFormat's job (.swiftformat); rules that would fight it
-# are disabled here. The AppLocalizer target's "Lint" build phase runs both
+# are disabled here. The Atlas target's "Lint" build phase runs both
 # tools on every local build. Goal: zero warnings.
 
 included:
-  - AppLocalizer
-  - AppLocalizerTests
-  - AppLocalizerUITests
+  - Atlas
+  - AtlasTests
+  - AtlasUITests
   - MCPBridge
 
 excluded:
