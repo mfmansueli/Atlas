@@ -474,8 +474,11 @@ The design is on the same page (board 40). In-App Events is its own section (⌘
   - **Choose** one (Claude Design marks its pick), then **Check** it under the App Store's text in the languages
     worth a look (the primary, the longest name, CJK, right-to-left), with four checks (`EventArtworkConceptChecks`).
     **Ask for Changes…** redraws only that pair.
-  - **Use This Artwork** queues the pair, accepted, for every language in Review & Push (`EventArtworkFlow.use`),
-    with the moving version where there is one; the toast's Undo takes it back.
+  - **Use This Artwork** queues the pair, accepted, for the primary language in Review & Push
+    (`EventArtworkFlow.use`), with the moving version where there is one, and for each other language that needs
+    its own: art drawn for that language, or one with its own image in App Store Connect to replace. The others
+    show the primary language's (Apple's fallback), so no copy is uploaded (`InAppEventArtworkCopies`); a
+    language the push creates gets none by itself either. The toast's Undo takes it back.
   - Runs are kept on this Mac (`EventArtworkStudio`, `EventArtworkRuns/runs.json`); one left drawing when Atlas quit
     moves on at the next launch with what arrived.
 - **Not there yet:** reading how an ended event did from Apple's analytics reports: the card links to App Analytics.
@@ -532,7 +535,8 @@ call.
     (event texts, new events, retention messages) warn the person. The caption editor warns about the caption
     being written, and the header and search artwork checks count “free” and trial lengths as a price.
   - Versions: `get_app_versions` lists each platform's versions, whether a new one can be created (one in
-    progress per platform) and the number Atlas suggests; `propose_app_version` queues "Create version 1.5" in
+    progress per platform) and the number Atlas suggests, and each version's builds (number, processing state,
+    upload date) with the one attached, read as the Submit sheet reads them; `propose_app_version` queues "Create version 1.5" in
     Review & Push (`POST /v1/appStoreVersions`), the same change as the Store Page's New Version…. A push after one
     that created it finds the version by number and platform instead of failing.
   - Field suggestions: `get_store_page` and `get_app_information` read the fields, their limits and the suggestions
@@ -612,7 +616,14 @@ call.
     language for Reply to All. Neither sends anything, and both need Pro (`ProAssistantGate`).
   - **In-App Events:** `get_in_app_events` reads the events, their texts per language and the languages still
     missing; `propose_event_texts` suggests all three texts for a language, refused over a limit with the count.
-    The art is designed like Autopilot's Claude Design pages: `get_in_app_events`' `design` carries the app's look,
+    `get_in_app_events` answers what was chosen and what App Store Connect has without notes of the assistant's
+    own: the open suggestions (`stale` once App Store Connect has that language written; `withdraw_event_texts`
+    takes back the caller's own), the queued texts and art (each file's original name, SHA-256 and origin, kept in
+    `.atlas-info.json` beside it; `queuedArtworkSummary` by file; `sameAsPrimary` and `identicalCopies` for copies
+    of the primary language's art), `mediaDetails` (App Store Connect's file name, size, poster frame and
+    processing, and the file on this Mac it came from), and the push's progress (`pushInProgress`, `pushStatus`).
+    `propose_event_artwork` goes into the primary language unless told otherwise and leaves out a copy of the
+    primary's file for a language that shows it anyway. The art is designed like Autopilot's Claude Design pages: `get_in_app_events`' `design` carries the app's look,
     what Atlas knows of it, its design project (design there when it opens, else from its summary) and how to make
     each piece. `render_event_artwork` renders a page as a 4K still or, with `motion: true`, its CSS and SVG
     animation as a 20-second seamless loop at 30 fps and 1920 × 1080 (or 1080 × 1920) in a .mov, through the same

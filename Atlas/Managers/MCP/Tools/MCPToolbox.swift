@@ -83,6 +83,7 @@ struct MCPToolbox {
             GetInAppEventsTool(),
             ProposeInAppEventTool(),
             ProposeEventTextsTool(),
+            WithdrawEventTextsTool(),
             RenderEventArtworkTool(),
             ProposeEventArtworkTool(),
             GetEventArtworkBriefTool(),

@@ -10,8 +10,8 @@ import Testing
 /// Event artwork (board 47): the Brief and its defaults, Make the Artwork
 /// starting Claude Code (or copying its prompt) and closing the Brief,
 /// Stop, the concept the event's preview shows, Change… and Keep Current,
-/// Ask for Changes, Use This Artwork into every language with Undo, and
-/// Choose Files….
+/// Ask for Changes, Use This Artwork (into the primary language, and the
+/// other languages that need their own) with Undo, and Choose Files….
 @MainActor
 @Suite("Event artwork flow")
 struct EventArtworkFlowTests {
@@ -226,7 +226,7 @@ struct EventArtworkFlowTests {
 
     // MARK: - Use This Artwork
 
-    @Test func useQueuesThePairInEveryLanguageAccepted() async throws {
+    @Test func useQueuesThePairForThePrimaryLanguageAccepted() async throws {
         let flow = flow()
         try chosen(flow)
         var undo: InAppEventsUndo?
@@ -237,12 +237,13 @@ struct EventArtworkFlowTests {
         }
         #expect(await flow.use())
         let changes = queue.changes
-        #expect(changes.count == 4)
+        // German has no image of its own: it shows the English pair
+        // without a copy.
+        #expect(changes.count == 2)
         #expect(changes.allSatisfy { $0.awaitingAcceptance == nil })
         #expect(changes.allSatisfy { $0.source == .assistant(client: "Claude Code") })
         #expect(Set(changes.map(\.id)) == [
-            "inAppEvents.\(Events.app.id).winter.artwork.card.en-US", "inAppEvents.\(Events.app.id).winter.artwork.card.de-DE",
-            "inAppEvents.\(Events.app.id).winter.artwork.details.en-US", "inAppEvents.\(Events.app.id).winter.artwork.details.de-DE",
+            "inAppEvents.\(Events.app.id).winter.artwork.card.en-US", "inAppEvents.\(Events.app.id).winter.artwork.details.en-US",
         ])
         let run = try #require(studio.run(appID: Test.key.appID, eventID: Test.key.eventID))
         #expect(run.usedConceptID == "a")
@@ -263,10 +264,46 @@ struct EventArtworkFlowTests {
             events.undo = undo
         }
         await flow.use()
-        #expect(queue.changes.count == 4)
+        #expect(queue.changes.count == 2)
         events.undoAccept()
         #expect(queue.changes.isEmpty)
         #expect(studio.run(appID: Test.key.appID, eventID: Test.key.eventID)?.usedConceptID == nil)
+    }
+
+    /// A language with its own card in App Store Connect would keep showing
+    /// it: it gets the new one too (its details page shows the English one).
+    @Test func aLanguageWithItsOwnImageGetsTheNewOneToo() async throws {
+        var event = Events.winter
+        event.localizations[1].media = [InAppEventMedia(kind: .card, width: 1920, height: 1080, fileName: "old-de.png", fileSize: 10)]
+        let flow = flow(event: event)
+        try chosen(flow)
+        #expect(await flow.use())
+        #expect(Set(queue.changes.map(\.id)) == [
+            "inAppEvents.\(Events.app.id).winter.artwork.card.en-US", "inAppEvents.\(Events.app.id).winter.artwork.details.en-US",
+            "inAppEvents.\(Events.app.id).winter.artwork.card.de-DE",
+        ])
+    }
+
+    /// Art drawn per language (the name in it) is a file of its own in each.
+    @Test func artDrawnPerLanguageGoesIntoEachLanguage() async throws {
+        func tagged(_ stills: [EventArtworkImage], _ locale: String) -> [EventArtworkImage] {
+            stills.map { still in
+                var tagged = still
+                tagged.locale = locale
+                return tagged
+            }
+        }
+        var concept = try Test.concept("a", isPick: true, in: directory)
+        // The German pair looks different: its own files.
+        let drawnInGerman = try Test.concept("de", busy: true, in: directory)
+        concept.stills = tagged(concept.stills, "en-US") + tagged(drawnInGerman.stills, "de-DE")
+        var run = Test.run(step: .check, concepts: [concept])
+        run.pickedID = "a"
+        studio.begin(run)
+        #expect(await flow().use())
+        #expect(queue.changes.count == 4)
+        let german = InAppEventChangeBuilder(appID: Events.app.id).queuedArtwork(for: "winter", in: queue.changes).filter { $0.locale == "de-DE" }
+        #expect(german.map(\.push.fileName).sorted() == ["de-card.png", "de-details.png"])
     }
 
     @Test func chosenFilesOpenFullSize() async throws {

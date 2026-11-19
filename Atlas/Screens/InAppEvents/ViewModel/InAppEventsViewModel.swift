@@ -68,7 +68,7 @@ final class InAppEventsViewModel {
             let events = try await services.events(for: app)
             state = .loaded(events)
             store.prune(for: app.id, keeping: Set(events.filter(\.state.isEditable).map(\.id)))
-            for event in events where event.state.isEditable { matchNewLanguageArtwork(of: event) }
+            for event in events where event.state.isEditable { dropArtworkOfGoneLanguages(of: event) }
             if selectedEvent == nil { select(events.first?.id) }
         } catch {
             if state.value == nil { state = .failed(error.localizedDescription) }
@@ -208,16 +208,15 @@ final class InAppEventsViewModel {
             } else {
                 queue.discard(id: id)
             }
-            matchNewLanguageArtwork(of: event)
+            dropArtworkOfGoneLanguages(of: event)
         }
     }
 
-    /// The event's new languages get the art queued for it, and images
-    /// for a language no longer coming leave the queue.
-    func matchNewLanguageArtwork(of event: InAppEvent) {
-        let (add, discard) = builder.newLanguageArtwork(of: event, in: queue.changes(for: app.id, section: .inAppEvents))
-        queue.upsert(contentsOf: add)
-        queue.discard(ids: discard)
+    /// Images queued for a new language that's no longer coming leave the
+    /// queue. A new language gets no copy of the event's art: it shows the
+    /// primary language's.
+    func dropArtworkOfGoneLanguages(of event: InAppEvent) {
+        queue.discard(ids: builder.orphanedNewLanguageArtwork(of: event, in: queue.changes(for: app.id, section: .inAppEvents)))
     }
 
     #if DEBUG

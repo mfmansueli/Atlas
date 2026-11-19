@@ -44,6 +44,52 @@ struct AppVersionToolsTests {
         #expect(iOS["versions"]?.arrayValue?.first?["live"] == true)
     }
 
+    /// Each version lists its builds as the Submit sheet reads them, and
+    /// the one attached; a version whose builds can't be read says why.
+    @Test func getAppVersionsShowsEachVersionsBuilds() async throws {
+        let release = FakeReleaseServices()
+        let uploaded = try #require(AppStoreConnectDate.date("2026-11-18T10:00:00Z"))
+        release.versionBuilds["v2"] = ReleaseVersionBuilds(
+            builds: [
+                ReleaseBuild(id: "b212", number: "212", uploaded: uploaded, processing: .processing),
+                ReleaseBuild(id: "b211", number: "211", uploaded: uploaded, processing: .valid, usesNonExemptEncryption: false),
+            ],
+            attachedBuildID: "b211", attachedBuildNumber: "211"
+        )
+        release.versionBuilds["v19"] = ReleaseVersionBuilds(attachedBuildID: "b190", attachedBuildNumber: "190")
+        var workspace = MCPTestFixtures.workspace(
+            changes: changes, storePage: FakeStorePageServices(contents: [StorePageContentFixtures.editable, StorePageContentFixtures.live])
+        )
+        workspace.services.release = release
+        let context = MCPToolContext(workspace: workspace, clientName: "Claude Code")
+
+        let outcome = try await GetAppVersionsTool().call(MCPToolArguments(["appId": "Lumen"]), in: context)
+        let versions = try #require(outcome.result["platforms"]?.arrayValue?.first?["versions"]?.arrayValue)
+        let next = try #require(versions.first { $0["versionString"] == "2.0" })
+        let builds = try #require(next["builds"]?.arrayValue)
+        #expect(builds.compactMap { $0["buildNumber"]?.stringValue } == ["212", "211"])
+        #expect(builds[0]["processingState"] == "PROCESSING")
+        #expect(builds[0]["attached"] == false)
+        #expect(builds[0]["uploaded"] == "2026-11-18T10:00:00Z")
+        #expect(builds[0]["usesNonExemptEncryption"] == nil)
+        #expect(builds[1]["attached"] == true)
+        #expect(builds[1]["usesNonExemptEncryption"] == false)
+        #expect(next["attachedBuild"]?["id"] == "b211")
+        #expect(next["attachedBuild"]?["processingState"] == "VALID")
+        // The live version's build is older than those listed: its number
+        // comes with the attachment.
+        let live = try #require(versions.first { $0["versionString"] == "1.9" })
+        #expect(live["builds"]?.arrayValue?.isEmpty == true)
+        #expect(live["attachedBuild"]?["buildNumber"] == "190")
+
+        release.failingBuilds = ["v2"]
+        let failed = try await GetAppVersionsTool().call(MCPToolArguments(["appId": "Lumen"]), in: context)
+        let unread = try #require(failed.result["platforms"]?.arrayValue?.first?["versions"]?.arrayValue?.first { $0["versionString"] == "2.0" })
+        #expect(unread["builds"] == nil)
+        #expect(unread["buildsError"]?.stringValue?.isEmpty == false)
+        #expect(!failed.isError)
+    }
+
     @Test func aVersionInProgressCantBeCreated() async throws {
         let inProgress = context([StorePageContentFixtures.editable, StorePageContentFixtures.live])
         let outcome = try await GetAppVersionsTool().call(MCPToolArguments(["appId": "Lumen"]), in: inProgress)

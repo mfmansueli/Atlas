@@ -27,6 +27,12 @@ final class ExtrasPushController {
     /// Why a push that went couldn't be noted in the set.
     var recordError: String?
 
+    /// Clears a finished push, so Review & Push shows its list again.
+    func dismissFinished() {
+        guard let run, run.phase == .finished else { return }
+        self.run = nil
+    }
+
     func plans(for appIDs: [StoreApp.ID]) -> [ExtrasReviewPlan] {
         appIDs.compactMap { plans[$0] }
     }

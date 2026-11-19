@@ -66,6 +66,16 @@ struct InAppEventMedia: Hashable, Sendable {
     /// The image at a size Atlas can show; nil for a video or
     /// while Apple processes it.
     var imageURL: URL?
+    /// The file's name and size as it was uploaded, when Apple says
+    /// (Atlas sends the name its file has on this Mac).
+    var fileName: String?
+    var fileSize: Int?
+    /// A video's poster frame, "00:00:02:00".
+    var previewFrameTimeCode: String?
+    /// Apple's processing: `COMPLETE`, `PROCESSING`, `FAILED`…
+    var state: String?
+    /// What Apple said went wrong, when it failed.
+    var stateErrors: [String] = []
 
     /// "1920 × 1080", when Apple says.
     var sizeText: String? {

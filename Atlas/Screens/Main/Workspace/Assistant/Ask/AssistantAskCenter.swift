@@ -29,6 +29,8 @@ final class AssistantAskCenter {
     @ObservationIgnored var fly: @MainActor (_ from: CGRect?, _ to: CGRect?, _ window: NSWindow?) -> Bool
     /// How long the token takes before the toolbar says Working….
     @ObservationIgnored var landing: Duration = .milliseconds(Int(AskTokenPath.landing * 1000))
+    /// The last token in the air, until it lands (tests wait for it).
+    @ObservationIgnored private(set) var flight: Task<Void, Never>?
     /// Says the send out loud.
     @ObservationIgnored var announce: @MainActor (String) -> Void = { AccessibilityNotification.Announcement($0).post() }
     /// What each ask says when its run ends; nil says nothing.
@@ -62,7 +64,7 @@ final class AssistantAskCenter {
             return true
         }
         let landing = landing
-        Task { [weak self] in
+        flight = Task { [weak self] in
             try? await Task.sleep(for: landing)
             self?.arrive(ask.id, appID: ask.appID)
         }

@@ -27,4 +27,14 @@ protocol ReleaseServices {
     func release(versionID: String) async throws
     /// Pauses, resumes or completes a phased release.
     func setPhasedRelease(_ id: PhasedRelease.ID, to state: PhasedRelease.State) async throws
+    /// The builds uploaded for one version and the one attached to it
+    /// (`get_app_versions`).
+    func builds(for app: StoreApp, versionID: String, versionString: String, platform: String?) async throws -> ReleaseVersionBuilds
+}
+
+extension ReleaseServices {
+    /// None, where builds can't be read (DEBUG scenes, fakes).
+    func builds(for _: StoreApp, versionID _: String, versionString _: String, platform _: String?) async throws -> ReleaseVersionBuilds {
+        ReleaseVersionBuilds()
+    }
 }

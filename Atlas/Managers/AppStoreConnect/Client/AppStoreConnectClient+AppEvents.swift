@@ -6,7 +6,8 @@
 import Foundation
 
 /// In-App Events: the app's events with their texts in every language,
-/// and each event's images and video. Reads only; changes are built by
+/// and each event's images and video (with the file's name and size as it
+/// was uploaded, and Apple's processing). Reads only; changes are built by
 /// `InAppEventChangeBuilder` and sent by Review & Push.
 extension AppStoreConnectClient {
     /// Every event of the app with its localizations
@@ -31,7 +32,7 @@ extension AppStoreConnectClient {
     /// (`GET /v1/appEventLocalizations/{id}/appEventScreenshots`).
     func appEventScreenshots(localizationID: String) async throws -> [AppStoreConnectResource<AppEventMediaAttributes>] {
         try await allPages(of: "/v1/appEventLocalizations/\(localizationID)/appEventScreenshots", query: [
-            URLQueryItem(name: "fields[appEventScreenshots]", value: "appEventAssetType,imageAsset"),
+            URLQueryItem(name: "fields[appEventScreenshots]", value: "appEventAssetType,imageAsset,fileName,fileSize,assetDeliveryState"),
             URLQueryItem(name: "limit", value: "20"),
         ])
     }
@@ -40,7 +41,10 @@ extension AppStoreConnectClient {
     /// (`GET /v1/appEventLocalizations/{id}/appEventVideoClips`).
     func appEventVideoClips(localizationID: String) async throws -> [AppStoreConnectResource<AppEventMediaAttributes>] {
         try await allPages(of: "/v1/appEventLocalizations/\(localizationID)/appEventVideoClips", query: [
-            URLQueryItem(name: "fields[appEventVideoClips]", value: "appEventAssetType,previewFrameImage,previewImage"),
+            URLQueryItem(
+                name: "fields[appEventVideoClips]",
+                value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState"
+            ),
             URLQueryItem(name: "limit", value: "20"),
         ])
     }

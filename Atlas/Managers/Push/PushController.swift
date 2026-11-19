@@ -7,7 +7,8 @@ import Foundation
 import Observation
 import OSLog
 
-/// Sends reviewed changes to App Store Connect, one request at a time, and
+/// Sends reviewed changes to App Store Connect, a few at once
+/// (`PushSchedule`: those that depend on each other still go in order), and
 /// keeps the progress list Review & Push shows. It lives above the sheet, so
 /// a push keeps going while the person works elsewhere.
 ///
@@ -75,6 +76,10 @@ final class PushController {
     /// Each event's languages in App Store Connect by locale, read when an
     /// upload names a language the push created (`EventLocalizationPlaceholder`).
     private var eventLocalizations: [String: [String: String]] = [:]
+    /// Wakes the send loop when Apple takes over an upload.
+    private var wakeLoop: AsyncStream<PushLoopEvent>.Continuation?
+    /// Items uploaded and processing at Apple: they don't hold a place.
+    private var waitingOnApple: Set<Int> = []
     /// How far changes that didn't finish got, by change.
     var unfinished: [PendingChange.ID: PushItem] = [:]
     /// Requests this hour, shared with screenshot pushes.
@@ -101,46 +106,9 @@ final class PushController {
         screenshots.onPushed = { [weak self] appIDs in self?.onPushed(appIDs) }
     }
 
-    // MARK: - Progress
-
-    var totalCount: Int { items.count }
-    var doneCount: Int { items.count { $0.status == .done } }
-    var failedCount: Int { items.count { $0.status.isFailure } }
-    var finishedCount: Int { items.count { $0.status.isFinished } }
-    var progress: Double { items.isEmpty ? 0 : Double(finishedCount) / Double(items.count) }
-    var isRunning: Bool { phase == .running }
-    /// Whether this push changed prices, so "View Results" applies.
-    var changedPrices: Bool {
-        items.contains { $0.status == .done && $0.change.section == .subscriptionPricing }
-    }
-
     /// Requests used this hour: Apple's own count when a response reported
     /// it, otherwise what this Mac sent in the last hour.
     var rateLimit: AppStoreConnectRateLimit { rateTracker.rateLimit }
-
-    var title: String {
-        switch phase {
-        case .idle, .running:
-            return totalCount == 1 ? String(localized: "Pushing 1 change") : String(localized: "Pushing \(totalCount) changes")
-        case .finished:
-            guard failedCount > 0 else { return String(localized: "\(doneCount) pushed") }
-            return String(localized: "\(doneCount) pushed · \(failedCount) failed")
-        }
-    }
-
-    var subtitle: String {
-        switch phase {
-        case .idle, .running:
-            let sent = String(localized: "\(finishedCount) of \(totalCount) sent")
-            let failed = failedCount > 0 ? String(localized: " · \(failedCount) failed") : ""
-            return sent + failed + String(localized: " · one request at a time")
-        case .finished:
-            if failedCount > 0 { return String(localized: "Failed changes stay here. Retry them or fix them first.") }
-            let notSent = items.count { !$0.status.isFailure && $0.status != .done }
-            if notSent > 0 { return String(localized: "\(notSent) not sent. They stay in Review & Push.") }
-            return String(localized: "Everything reached App Store Connect.")
-        }
-    }
 
     // MARK: - Running
 
@@ -161,7 +129,7 @@ final class PushController {
         run()
     }
 
-    /// Lets the request in flight finish and marks the rest as not sent.
+    /// Lets the requests in flight finish and marks the rest as not sent.
     func cancelRemaining() {
         guard phase == .running else { return }
         isCancelling = true
@@ -220,52 +188,72 @@ final class PushController {
     }
 
     private func sendQueuedItems() async {
-        var pushedApps: Set<StoreApp.ID> = []
-        var failures: [PendingChange.ID: String] = [:]
-        var stopReason: String?
-
-        // Items sent with an earlier one's merged request aren't queued
-        // anymore when the loop reaches them.
-        for index in items.indices where items[index].status == .queued {
-            if let reason = stopReason ?? (isCancelling ? String(localized: "Cancelled") : nil) {
-                items[index].status = .notSent(reason)
-                continue
+        var tally = PushTally()
+        let waits = PushSchedule.waits(for: items.map(\.change))
+        let (events, wake) = AsyncStream.makeStream(of: PushLoopEvent.self)
+        var iterator = events.makeAsyncIterator()
+        wakeLoop = wake
+        waitingOnApple = []
+        var running = 0
+        while true {
+            stopRemaining(tally.stopReason)
+            while PushSchedule.hasRoom(running: running, waitingOnApple: waitingOnApple.count), let index = nextReady(waits) {
+                let batch = mergedBatch(startingAt: index)
+                // Taken now, so the next pick skips them.
+                for item in batch { items[item].status = .sending }
+                running += 1
+                Task { await wake.yield(.finished(self.process(batch: batch))) }
             }
-            let batch = mergedBatch(startingAt: index)
-            let outcomes: [(Int, ItemOutcome)]
-            if batch.count > 1 {
-                outcomes = await processMerged(batch)
-            } else {
-                let outcome = await process(index)
-                outcomes = [(index, outcome)]
-            }
-            for (itemIndex, outcome) in outcomes {
-                switch outcome {
-                case let .pushed(appID):
-                    pushedApps.insert(appID)
-                case let .failed(text, stop):
-                    failures[items[itemIndex].id] = text
-                    stopReason = stop ?? stopReason
-                case let .stopped(reason):
-                    stopReason = reason
-                case .skipped:
-                    break
+            guard running > 0, let event = await iterator.next(isolation: #isolation) else { break }
+            switch event {
+            case let .finished(outcomes):
+                running -= 1
+                for (index, outcome) in outcomes {
+                    waitingOnApple.remove(index)
+                    tally.add(outcome, for: items[index].id)
                 }
+            case let .waitingOnApple(index):
+                waitingOnApple.insert(index)
             }
         }
-
-        record(failures: failures)
+        wake.finish()
+        wakeLoop = nil
+        record(failures: tally.failures)
         phase = .finished
         isCancelling = false
         if failedCount > 0, notice == nil {
             notice = .partialFailure(failed: failedCount, total: totalCount)
         }
-        if !pushedApps.isEmpty { onPushed(pushedApps) }
+        if !tally.pushedApps.isEmpty { onPushed(tally.pushedApps) }
         onFinished(totalCount - failedCount, failedCount)
     }
 
+    /// After a stop (rate limit, offline) or Cancel Remaining: what hasn't
+    /// started won't.
+    private func stopRemaining(_ stopReason: String?) {
+        guard let reason = stopReason ?? (isCancelling ? String(localized: "Cancelled") : nil) else { return }
+        for index in items.indices where items[index].status == .queued {
+            items[index].status = .notSent(reason)
+        }
+    }
+
+    /// The first queued item whose earlier changes it depends on are all
+    /// finished. Items sent with an earlier one's merged request aren't
+    /// queued anymore by then.
+    private func nextReady(_ waits: [[Int]]) -> Int? {
+        items.indices.first { index in
+            items[index].status == .queued && waits[index].allSatisfy { items[$0].status.isFinished }
+        }
+    }
+
+    /// Sends one item, or several that share a merged request.
+    private func process(batch: [Int]) async -> [(Int, PushItemOutcome)] {
+        if batch.count > 1 { return await processMerged(batch) }
+        return await [(batch[0], process(batch[0]))]
+    }
+
     /// Sends one item and sets its status.
-    private func process(_ index: Int) async -> ItemOutcome {
+    private func process(_ index: Int) async -> PushItemOutcome {
         guard prepare(index) else { return .skipped }
         let change = items[index].change
         do {
@@ -299,9 +287,9 @@ final class PushController {
     /// takes whole: their conflict checks (one `GET` per path), then a
     /// single `PATCH` with all their attributes. Those that go out succeed
     /// or fail together.
-    private func processMerged(_ indices: [Int]) async -> [(Int, ItemOutcome)] {
+    private func processMerged(_ indices: [Int]) async -> [(Int, PushItemOutcome)] {
         var sending = indices.filter { prepare($0) }
-        var outcomes = indices.filter { !sending.contains($0) }.map { ($0, ItemOutcome.skipped) }
+        var outcomes = indices.filter { !sending.contains($0) }.map { ($0, PushItemOutcome.skipped) }
         do {
             guard let transport else { throw AppStoreConnectError.invalidResponse }
             let conflicted = try await markMergedConflicts(among: sending, transport: transport)
@@ -375,9 +363,9 @@ final class PushController {
         }
     }
 
-    private static func outcome(_ status: PushItemStatus, stop: String?) -> ItemOutcome {
+    private static func outcome(_ status: PushItemStatus, stop: String?) -> PushItemOutcome {
         if case let .failed(text) = status { return .failed(text, stop: stop) }
-        return stop.map(ItemOutcome.stopped) ?? .skipped
+        return stop.map(PushItemOutcome.stopped) ?? .skipped
     }
 
     /// Checks for a conflict, then sends the item's remaining requests.
@@ -460,15 +448,6 @@ final class PushController {
     /// Thrown by `send` when the conflict check found a different value.
     private struct ConflictFound: Error {
         var conflict: RemoteConflict
-    }
-
-    /// What happened to one item, for the loop that sends them.
-    private enum ItemOutcome {
-        case pushed(StoreApp.ID)
-        case failed(String, stop: String?)
-        /// Not sent, and the rest stop too (rate limit, offline).
-        case stopped(String)
-        case skipped
     }
 }
 
@@ -576,7 +555,9 @@ extension PushController {
             items[index].createdID = try await artwork.send(
                 via: transport,
                 note: { noteRequest($0) },
-                progress: { items[index].progressNote = $0 }
+                progress: { items[index].progressNote = $0 },
+                processing: { wakeLoop?.yield(.waitingOnApple(index)) },
+                pollInterval: { PushSchedule.pollInterval(waitingOnApple: waitingOnApple.count) }
             )
             return true
         }

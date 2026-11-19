@@ -65,23 +65,60 @@ final class ScreenshotsPushUITests: XCTestCase {
         XCTAssertTrue(element("review.sheet").waitForNonExistence(timeout: 5))
     }
 
+    /// The same progress as every push: what it sends, how many were sent
+    /// and how many go now, the time so far, and Cancel Remaining.
     func testThePushInProgressCanCancelTheRest() {
         launch(scene: "shots-push")
         XCTAssertTrue(app.staticTexts["Pushing 40 images"].waitForExistence(timeout: 20))
-        XCTAssertTrue(app.staticTexts["15 of 40 done · reserve, upload and commit for each image"].waitForExistence(timeout: 60))
+        let subtitle = element("push.subtitle")
+        let sent = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value CONTAINS ' of 40 sent'"), object: subtitle)
+        XCTAssertEqual(XCTWaiter().wait(for: [sent], timeout: 60), .completed, text(of: subtitle))
+        let time = element("push.time")
+        XCTAssertTrue(time.waitForExistence(timeout: 10))
+        XCTAssertTrue(text(of: time).contains("so far"), text(of: time))
         XCTAssertTrue(app.buttons["push.cancelRemaining"].exists)
+        XCTAssertTrue(app.buttons["push.minimize"].exists)
     }
 
     func testFailedImagesCanBeRetried() {
         launch(scene: "shots-push-partial")
-        XCTAssertTrue(app.staticTexts["38 of 40 images pushed"].waitForExistence(timeout: 120))
+        XCTAssertTrue(app.staticTexts["38 pushed · 2 failed"].waitForExistence(timeout: 120))
         XCTAssertTrue(app.staticTexts["2 failed. Their live screenshots weren’t touched."].exists)
         let row = element("push.shots.row.zh-Hans.iPhone.1")
         let text = "\(row.label) \(row.value as? String ?? "")"
         XCTAssertTrue(text.contains("Upload timed out on part 2 of 3"), text)
+        XCTAssertTrue(element("push.failures").exists, "Each reason shows once at the top")
+        let reason = NSPredicate(format: "label CONTAINS ' failed · Upload timed out' OR value CONTAINS ' failed · Upload timed out'")
+        XCTAssertTrue(app.descendants(matching: .any).matching(reason).firstMatch.exists, "With the rows it stopped")
 
         app.buttons["push.retryFailed"].click()
         XCTAssertTrue(app.staticTexts["All 40 images pushed"].waitForExistence(timeout: 60))
+    }
+
+    /// A click on a row's thumbnail opens the image large over the
+    /// progress; Esc closes the viewer, not the sheet.
+    func testARowsThumbnailOpensTheImageLarge() {
+        launch(scene: "shots-push-partial")
+        XCTAssertTrue(app.staticTexts["38 pushed · 2 failed"].waitForExistence(timeout: 120))
+        let open = app.buttons["push.shots.row.zh-Hans.iPhone.1.open"]
+        XCTAssertTrue(open.waitForExistence(timeout: 5))
+        open.click()
+
+        let viewer = element("review.viewer")
+        XCTAssertTrue(viewer.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: element("review.viewer.title")).contains("iPhone"), text(of: element("review.viewer.title")))
+        XCTAssertTrue(text(of: element("review.viewer.count")).contains("of 40"), text(of: element("review.viewer.count")))
+        let shot = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
+        shot.name = "Push progress viewer"
+        shot.lifetime = .keepAlways
+        add(shot)
+
+        app.typeKey(.rightArrow, modifierFlags: [])
+        XCTAssertTrue(text(of: element("review.viewer.count")).hasPrefix("2 of") || text(of: element("review.viewer.count")).contains("of 40"))
+        app.typeKey(.escape, modifierFlags: [])
+        XCTAssertTrue(viewer.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["push.done"].exists, "Esc closes the viewer, not the progress")
+        XCTAssertTrue(element("review.sheet").exists)
     }
 
     func testActivityRestoresAKeptSetThroughReview() {
@@ -118,6 +155,11 @@ final class ScreenshotsPushUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    /// The label and the value, whichever it has (a text's is its value).
+    private func text(of element: XCUIElement) -> String {
+        [element.label, element.value as? String ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
     }
 
     /// Scrolls Review & Push (down for a negative `deltaY`) until `target`

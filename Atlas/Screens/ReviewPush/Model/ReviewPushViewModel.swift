@@ -238,7 +238,7 @@ final class ReviewPushViewModel {
     func confirmationMessage(for changes: [PendingChange]) -> String? {
         var lines: [String] = []
         if pushConfirmation.requiresConfirmation(changeCount: changes.count) {
-            lines.append(String(localized: "\(changes.count) changes will be sent to App Store Connect, one request at a time."))
+            lines.append(String(localized: "\(changes.count) changes will be sent to App Store Connect, up to \(PushSchedule.concurrentChanges) at once."))
         }
         let increases = changes.count { $0.section == .subscriptionPricing && ($0.deltaPercent ?? 0) > 0 }
         if confirmsPriceIncreases, increases > 0 {

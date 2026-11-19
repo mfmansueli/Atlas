@@ -69,9 +69,14 @@ final class ExtrasReviewUITests: XCTestCase {
         XCTAssertTrue(push.waitForExistence(timeout: 30))
         scrollReview(by: -400, until: push)
         push.click()
-        let progress = element("review.extras.progress")
-        XCTAssertTrue(progress.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["All 47 extras pushed"].waitForExistence(timeout: 120))
+        // Review & Push shows the push like any other: a row per extra.
+        let title = element("push.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("push.extras.row.header-en-US").waitForExistence(timeout: 10))
+        let done = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value BEGINSWITH 'All ' AND value ENDSWITH ' pushed'"), object: title)
+        XCTAssertEqual(XCTWaiter().wait(for: [done], timeout: 120), .completed, text(of: title))
+        app.buttons["push.done"].click()
+        XCTAssertTrue(element("review.sheet").waitForNonExistence(timeout: 5))
     }
 
     /// A run that made only extras, for an app without a screenshot set:
@@ -147,40 +152,52 @@ final class ExtrasReviewUITests: XCTestCase {
         add(shot)
     }
 
-    /// While extras push, the section says what's going on: the count and
-    /// bar, the next file uploading while Apple processes the ones before
-    /// it, what finished, and the time; Cancel Remaining lets the ones in
-    /// flight finish.
+    /// While extras push, Review & Push says what's going on, as for every
+    /// push: the count and bar, a row per file (the next uploading while
+    /// Apple processes the ones before it), the done ones, and the time;
+    /// Cancel Remaining lets the ones in flight finish. A click on a row's
+    /// image opens it large.
     func testThePushSaysWhatItsDoing() {
         app.launch(debugScene: "shots-extras-pushing")
-        let progress = element("review.extras.progress")
-        XCTAssertTrue(progress.waitForExistence(timeout: 30))
-        scrollReview(by: -400, until: progress)
-        XCTAssertTrue(text(of: element("review.extras.progress.count")).contains("of"), text(of: element("review.extras.progress.count")))
+        let title = element("push.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 30))
+        XCTAssertTrue(text(of: element("push.subtitle")).contains(" of "), text(of: element("push.subtitle")))
+        XCTAssertTrue(element("push.bar").exists)
 
-        let inFlight = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'review.extras.progress.now.'"))
+        let steps = "label CONTAINS 'Uploading' OR label CONTAINS 'Apple is processing' OR label CONTAINS 'Placing'"
+        let inFlight = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'push.extras.row.' AND (\(steps))"))
         let overlapping = XCTNSPredicateExpectation(predicate: NSPredicate(format: "count >= 2"), object: inFlight)
         XCTAssertEqual(XCTWaiter().wait(for: [overlapping], timeout: 30), .completed, "One uploads while Apple processes another")
-        XCTAssertTrue(element("review.extras.progress.recent").waitForExistence(timeout: 40), "What finished")
-        XCTAssertTrue(text(of: element("review.extras.progress.time")).contains("so far"), text(of: element("review.extras.progress.time")))
+        let done = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'push.extras.row.' AND label CONTAINS 'Done'"))
+        let oneDone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "count >= 1"), object: done)
+        XCTAssertEqual(XCTWaiter().wait(for: [oneDone], timeout: 40), .completed, "What finished")
+        XCTAssertTrue(text(of: element("push.time")).contains("so far"), text(of: element("push.time")))
         let shot = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
         shot.name = "Extras pushing"
         shot.lifetime = .keepAlways
         add(shot)
 
-        // The cards above change height as their status lines change, so
-        // the button can move between finding it and the click: tried again
-        // until the push says it's cancelling.
+        let open = app.buttons["push.extras.row.header-en-US.open"]
+        XCTAssertTrue(open.exists)
+        open.click()
+        let viewer = element("review.viewer")
+        XCTAssertTrue(viewer.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: element("review.viewer.title")).contains("Header"), text(of: element("review.viewer.title")))
+        app.typeKey(.escape, modifierFlags: [])
+        XCTAssertTrue(viewer.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(title.exists, "Esc closes the viewer, not the progress")
+
         let cancelling = element("review.extras.progress.cancelling")
         var tries = 0
         while !cancelling.exists, tries < 3 {
-            app.buttons["Cancel Remaining"].click()
+            app.buttons["push.cancelRemaining"].click()
             _ = cancelling.waitForExistence(timeout: 3)
             tries += 1
         }
         XCTAssertTrue(cancelling.exists)
-        let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value CONTAINS 'pushed'"), object: progress.staticTexts.firstMatch)
+        let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value CONTAINS 'pushed'"), object: title)
         XCTAssertEqual(XCTWaiter().wait(for: [finished], timeout: 60), .completed, "The ones in flight finish, the rest don't go")
+        XCTAssertTrue(text(of: title).contains("not sent"), text(of: title))
     }
 
     /// App Store Connect won't take the artwork on a treatment: both

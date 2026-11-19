@@ -26,6 +26,50 @@ struct InAppEventArtworkFilesTests {
         #expect(InAppEventArtworkFiles.url(id: "../../etc", appID: "42", in: directory) == nil)
     }
 
+    /// Beside each file: the name it came with, its SHA-256 and where it
+    /// came from. A file kept before Atlas wrote that has none.
+    @Test func aFileKeepsWhereItCameFrom() throws {
+        let bytes = Data([0x89, 0x50, 0x4E, 0x47, 1, 2, 3])
+        let id = try InAppEventArtworkFiles.save(
+            bytes, fileName: "  Card.png ", appID: "42", in: directory, origin: InAppEventArtworkOrigin(source: .page, name: "card.html")
+        )
+        let info = try #require(InAppEventArtworkFiles.info(id: id, appID: "42", in: directory))
+        #expect(info.originalName == "Card.png")
+        #expect(info.sha256 == InAppEventArtworkFileInfo.sha256(of: bytes))
+        #expect(info.sha256.count == 64)
+        #expect(info.json["origin"] == ["from": "render_event_artwork", "page": "card.html"])
+
+        // Make the Artwork names the concept, keeping the page.
+        InAppEventArtworkFiles.markConcept([id], conceptID: "c1", title: "Snow path", appID: "42", in: directory)
+        let marked = try #require(InAppEventArtworkFiles.info(id: id, appID: "42", in: directory))
+        #expect(marked.origin?.json == ["from": "makeTheArtwork", "page": "card.html", "conceptId": "c1", "title": "Snow path"])
+        #expect(marked.sha256 == info.sha256)
+
+        // Every kept file, with its info when it has one.
+        let plain = try InAppEventArtworkFiles.save(Data([0xFF, 0xD8, 0xFF, 1]), fileName: "old.jpg", appID: "42", in: directory)
+        let url = try #require(InAppEventArtworkFiles.url(id: plain, appID: "42", in: directory))
+        try FileManager.default.removeItem(at: url.deletingLastPathComponent().appending(path: InAppEventArtworkFiles.infoName))
+        #expect(InAppEventArtworkFiles.info(id: plain, appID: "42", in: directory) == nil)
+        let stored = InAppEventArtworkFiles.stored(appID: "42", in: directory)
+        #expect(Set(stored.map(\.fileID)) == [id, plain])
+        #expect(stored.first { $0.fileID == plain }?.info == nil)
+        #expect(stored.first { $0.fileID == id }?.fileSize == bytes.count)
+        #expect(InAppEventArtworkStoredFile.matching(fileName: "Card.png", fileSize: bytes.count, in: stored).map(\.fileID) == [id])
+        #expect(InAppEventArtworkStoredFile.matching(fileName: nil, fileSize: bytes.count, in: stored).isEmpty)
+    }
+
+    /// Two files are the same by path, else by hash, else by the name and
+    /// size App Store Connect keeps.
+    @Test func filesAreTheSameByPathHashOrNameAndSize() {
+        let card = InAppEventArtworkFingerprint(path: "/a/card.png", sha256: "1", fileName: "card.png", fileSize: 10)
+        #expect(card.isSameFile(as: InAppEventArtworkFingerprint(path: "/a/card.png")))
+        #expect(card.isSameFile(as: InAppEventArtworkFingerprint(path: "/b/card.png", sha256: "1")))
+        #expect(!card.isSameFile(as: InAppEventArtworkFingerprint(path: "/b/card.png", sha256: "2", fileName: "card.png", fileSize: 10)))
+        #expect(card.isSameFile(as: InAppEventArtworkFingerprint(fileName: "card.png", fileSize: 10)))
+        #expect(!card.isSameFile(as: InAppEventArtworkFingerprint(fileName: "card.png", fileSize: 11)))
+        #expect(!InAppEventArtworkFingerprint().isSameFile(as: InAppEventArtworkFingerprint()))
+    }
+
     @Test func aNameWithoutAnExtensionGetsTheBytesOne() {
         let png = Data([0x89, 0x50, 0x4E, 0x47, 0, 0, 0, 0, 0, 0, 0, 0])
         let jpeg = Data([0xFF, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0, 0, 0])

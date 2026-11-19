@@ -17,11 +17,12 @@ struct InAppEventsToolsTests {
     private let store = InAppEventsStore()
 
     private func call(
-        _ tool: some MCPTool, _ arguments: [String: JSONValue], allowed: Set<MCPProposalKind> = Set(MCPProposalKind.allCases)
+        _ tool: some MCPTool, _ arguments: [String: JSONValue], allowed: Set<MCPProposalKind> = Set(MCPProposalKind.allCases),
+        events: [InAppEvent] = InAppEventsTestData.events, client: String = "Claude Code"
     ) async throws -> MCPToolOutcome {
         var workspace = MCPTestFixtures.workspace()
-        workspace.services.inAppEvents = FakeInAppEventsServices()
-        let context = MCPToolContext(workspace: workspace, clientName: "Claude Code", allowedProposals: allowed)
+        workspace.services.inAppEvents = FakeInAppEventsServices(events)
+        let context = MCPToolContext(workspace: workspace, clientName: client, allowedProposals: allowed)
         return try await tool.call(MCPToolArguments(arguments), in: context)
     }
 
@@ -30,13 +31,82 @@ struct InAppEventsToolsTests {
     }
 
     @Test func theToolsAreInTheToolboxAndFree() {
-        let names: Set = ["get_in_app_events", "propose_event_texts"]
+        let names: Set = ["get_in_app_events", "propose_event_texts", "withdraw_event_texts"]
         #expect(MCPToolbox.standard.toolNames.isSuperset(of: names))
         let refusals = names.compactMap { ProAssistantGate.refusal(forTool: $0, isPro: false) }
         #expect(refusals.isEmpty)
         #expect(GetInAppEventsTool().definition.isReadOnly)
         #expect(ProposeEventTextsTool().definition.proposalKind == .storeText)
+        // Withdrawing touches only Atlas's own suggestions: no proposal
+        // kind, so turning off store text proposals doesn't stop it.
+        let withdraw = WithdrawEventTextsTool().definition
+        #expect(withdraw.proposalKind == nil)
+        #expect(!withdraw.isReadOnly)
         #expect(MCPEndpoint.instructions.contains("propose_event_texts"))
+        #expect(MCPEndpoint.instructions.contains("withdraw_event_texts"))
+        #expect(ProposeEventTextsTool().definition.description.contains("withdraw_event_texts"))
+    }
+
+    /// A suggestion waiting for a language App Store Connect has since
+    /// written (in App Store Connect, or by a push) is stale.
+    @Test func aSuggestionForALanguageWrittenSinceIsStale() async throws {
+        store.add([Data.suggestion("de-DE"), Data.suggestion("ja")], for: Data.app.id)
+        let tool = GetInAppEventsTool(store: store, directory: EventArtworkTestFiles.directory())
+        let before = try #require(try await call(tool, ["appId": "Lumen Journal"]).result["events"]?.arrayValue?.first)
+        let open = try #require(before["openSuggestions"]?.arrayValue)
+        #expect(open.compactMap { $0["locale"]?.stringValue } == ["de-DE", "ja"])
+        #expect(open.allSatisfy { $0["stale"] == false })
+        #expect(open[0]["by"] == "Claude Code")
+        #expect(open[0]["name"] == "Name")
+        #expect(open[0]["shortDescription"] == "Short de-DE")
+        #expect(open[0]["suggestedAt"]?.stringValue?.isEmpty == false)
+        #expect(before["staleSuggestions"]?.arrayValue?.isEmpty == true)
+
+        var winter = Data.winter
+        winter.localizations[1].shortDescription = "Drei Zeilen"
+        winter.localizations[1].longDescription = "Drei Zeilen am Tag."
+        let events = [winter] + Data.events.dropFirst()
+        let after = try #require(try await call(tool, ["appId": "Lumen Journal"], events: events).result["events"]?.arrayValue?.first)
+        #expect(after["staleSuggestions"]?.arrayValue == ["de-DE"])
+        #expect(after["openSuggestions"]?.arrayValue?.first?["stale"] == true)
+        #expect(after["openSuggestions"]?.arrayValue?.last?["stale"] == false)
+        // `suggestedLanguages` stays as it was.
+        #expect(after["suggestedLanguages"]?.arrayValue?.contains("de-DE") == true)
+    }
+
+    /// An assistant takes back only its own suggestions; another's stay for
+    /// the person.
+    @Test func withdrawRemovesOnlyTheCallersOwnSuggestions() async throws {
+        var other = Data.suggestion("pt-BR")
+        other.source = "Codex"
+        store.add([Data.suggestion("de-DE"), Data.suggestion("ja"), other], for: Data.app.id)
+
+        let outcome = try await call(WithdrawEventTextsTool(store: store), [
+            "appId": "Lumen Journal", "eventId": "winter", "locales": ["de-DE", "pt-BR", "fr-FR", "de-DE"],
+        ])
+        #expect(outcome.result["status"] == "withdrawn")
+        #expect(outcome.result["withdrawn"]?.arrayValue == ["de-DE"])
+        let left = try #require(outcome.result["left"]?.arrayValue)
+        #expect(left.compactMap { $0["locale"]?.stringValue } == ["pt-BR", "fr-FR"])
+        #expect(left[0]["reason"]?.stringValue?.contains("Codex") == true)
+        #expect(left[1]["reason"] == "No suggestion waits for this language.")
+        #expect(store.open(for: Data.app.id, eventID: "winter").map(\.locale).sorted() == ["ja", "pt-BR"])
+        #expect(outcome.logLines.first?.outcome == MCPCallOutcome.proposed)
+
+        // "all" takes the rest of this client's; Codex's stays.
+        let all = try await call(WithdrawEventTextsTool(store: store), ["appId": "Lumen Journal", "eventId": "winter", "locales": ["all"]])
+        #expect(all.result["withdrawn"]?.arrayValue == ["ja"])
+        #expect(store.open(for: Data.app.id, eventID: "winter").map(\.locale) == ["pt-BR"])
+        // Nothing of its own left: unchanged, not an error.
+        let none = try await call(WithdrawEventTextsTool(store: store), ["appId": "Lumen Journal", "eventId": "winter", "locales": ["all"]])
+        #expect(none.result["status"] == "unchanged")
+        #expect(none.isError == false)
+        // Codex can take its own back.
+        let codex = try await call(
+            WithdrawEventTextsTool(store: store), ["appId": "Lumen Journal", "eventId": "winter", "locales": ["pt-BR"]], client: "Codex"
+        )
+        #expect(codex.result["withdrawn"]?.arrayValue == ["pt-BR"])
+        #expect(store.count(for: Data.app.id) == 0)
     }
 
     @Test func eventsAreReadWithTheirTextsAndWhatIsMissing() async throws {

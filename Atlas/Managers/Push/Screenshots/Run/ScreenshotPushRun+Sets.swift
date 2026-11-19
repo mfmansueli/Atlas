@@ -6,36 +6,46 @@
 import Foundation
 
 extension ScreenshotPushRun {
-    /// Runs every set with queued images, `concurrentSets` at a time.
+    /// Runs every set with queued images, `concurrentSets` uploading at a
+    /// time. A set whose images are up waits for Apple's processing (then
+    /// deletes what they replaced and puts it in order) without holding a
+    /// place: the next set starts uploading meanwhile.
     func sendQueuedSets() async {
         let groupIDs = groupOrder.filter { id in items.contains { $0.groupID == id && $0.status == .queued } }
-        await withTaskGroup(of: Void.self) { group in
+        await withTaskGroup(of: String?.self) { group in
             var pending = groupIDs.makeIterator()
             for _ in 0..<max(1, environment.concurrentSets) {
                 guard let id = pending.next() else { break }
-                group.addTask { await self.sendSet(id) }
+                group.addTask { await self.uploadSet(id) ? id : nil }
             }
-            while await group.next() != nil {
-                if let id = pending.next() { group.addTask { await self.sendSet(id) } }
+            // A set's uploads ended (its id when it goes on to its finish),
+            // or a finish did (nil): only the first frees a place.
+            while let uploaded = await group.next() {
+                guard let uploaded else { continue }
+                group.addTask {
+                    await self.finishSet(uploaded)
+                    return nil
+                }
+                if let id = pending.next() { group.addTask { await self.uploadSet(id) ? id : nil } }
             }
         }
     }
 
-    /// One set: create it if needed, send its images one by one, then
-    /// delete what they replaced and put it in order.
-    func sendSet(_ groupID: String) async {
+    /// One set's uploads: create it if needed and send its images one by
+    /// one. True when it goes on to `finishSet`.
+    func uploadSet(_ groupID: String) async -> Bool {
         let indices = items.indices.filter { items[$0].groupID == groupID && items[$0].status == .queued }
-        guard !indices.isEmpty else { return }
+        guard !indices.isEmpty else { return false }
         if sets[groupID]?.setID == nil {
             if let halt = haltStatus {
                 for index in indices { items[index].status = halt }
-                return
+                return false
             }
             do {
                 try await createSet(groupID)
             } catch {
                 for index in indices { items[index].status = status(for: error, replaces: showsLive(index)) }
-                return
+                return false
             }
         }
         for index in indices {
@@ -45,7 +55,7 @@ extension ScreenshotPushRun {
             }
             await sendImage(index)
         }
-        await finishSet(groupID)
+        return true
     }
 
     private func createSet(_ groupID: String) async throws {

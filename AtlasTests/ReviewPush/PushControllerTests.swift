@@ -29,7 +29,9 @@ struct PushControllerTests {
         push.push(queue.changes)
         await push.waitUntilFinished()
 
-        #expect(transport.sent.map(\.path) == ["/v1/subscriptionPrices/BRA", "/v1/subscriptionPrices/MEX", "/v1/appStoreVersionLocalizations/de-Subtitle"])
+        // Prices keep their order; the other app's listing goes out beside them.
+        #expect(transport.sent.map(\.path).filter { $0.hasPrefix("/v1/subscriptionPrices") } == ["/v1/subscriptionPrices/BRA", "/v1/subscriptionPrices/MEX"])
+        #expect(transport.sent.map(\.path).contains("/v1/appStoreVersionLocalizations/de-Subtitle"))
         #expect(queue.changes.isEmpty)
         #expect(push.phase == .finished)
         #expect(push.doneCount == 3)

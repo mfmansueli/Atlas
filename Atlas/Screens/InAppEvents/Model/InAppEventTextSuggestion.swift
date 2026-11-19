@@ -30,6 +30,12 @@ struct InAppEventTextSuggestion: Identifiable, Hashable, Codable, Sendable {
         }
     }
 
+    /// App Store Connect has this language written already: accepting it
+    /// would overwrite what's there.
+    func isStale(in event: InAppEvent) -> Bool {
+        event.localization(locale)?.isComplete == true
+    }
+
     /// The first field over Apple's limit, with its length.
     var overLimit: (field: InAppEventField, count: Int)? {
         InAppEventField.allCases.lazy.map { ($0, text($0).count) }.first { $0.1 > $0.0.limit }.map { (field: $0.0, count: $0.1) }

@@ -57,10 +57,34 @@ final class ReviewPushUITests: XCTestCase {
         XCTAssertTrue(element("push.rateMeter").exists)
         let done = app.buttons["push.done"]
         XCTAssertTrue(done.waitForExistence(timeout: 30))
-        XCTAssertTrue(app.staticTexts["28 pushed"].exists)
+        XCTAssertTrue(app.staticTexts["All 28 changes pushed"].exists)
         done.click()
         XCTAssertTrue(element("review.sheet").waitForNonExistence(timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["overview.pendingChangesCard"].waitForExistence(timeout: 5))
+    }
+
+    func testMinimizingKeepsThePushGoingAndTheToolbarOpensItAgain() {
+        launch(scene: "review")
+        let pushAll = app.buttons["review.pushAll"]
+        XCTAssertTrue(pushAll.waitForExistence(timeout: 10))
+        pushAll.click()
+        XCTAssertTrue(element("push.title").waitForExistence(timeout: 5))
+        let minimize = app.buttons["push.minimize"]
+        XCTAssertTrue(minimize.exists)
+
+        minimize.click()
+        XCTAssertTrue(element("review.sheet").waitForNonExistence(timeout: 5))
+        // While it runs, the toolbar's badge counts what was sent ("3/28").
+        let badge = element("workspace.reviewPushBadge")
+        if badge.exists, let text = badge.value as? String, !text.isEmpty {
+            XCTAssertTrue(text.contains("/") || Int(text) != nil, text)
+        }
+
+        app.buttons["workspace.reviewPushButton"].click()
+        XCTAssertTrue(element("push.title").waitForExistence(timeout: 5))
+        let done = app.buttons["push.done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 30))
+        XCTAssertTrue(app.staticTexts["All 28 changes pushed"].exists)
     }
 
     func testPartialFailureShowsApplesErrorAndOffersRetry() {

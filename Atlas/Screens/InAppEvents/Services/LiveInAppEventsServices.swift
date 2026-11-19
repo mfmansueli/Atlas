@@ -103,7 +103,12 @@ struct LiveInAppEventsServices: InAppEventsServices {
     nonisolated static func media(_ attributes: AppEventMediaAttributes, isVideo: Bool) -> InAppEventMedia? {
         guard let kind = attributes.appEventAssetType.flatMap(InAppEventMedia.Kind.init(rawValue:)) else { return nil }
         let asset = attributes.shownImage
-        return InAppEventMedia(kind: kind, isVideo: isVideo, width: asset?.width, height: asset?.height, imageURL: asset?.url(width: 640))
+        let delivery = attributes.deliveryState(isVideo: isVideo)
+        return InAppEventMedia(
+            kind: kind, isVideo: isVideo, width: asset?.width, height: asset?.height, imageURL: asset?.url(width: 640), fileName: attributes.fileName,
+            fileSize: attributes.fileSize, previewFrameTimeCode: isVideo ? attributes.previewFrameTimeCode : nil, state: delivery?.state,
+            stateErrors: (delivery?.errors ?? []).compactMap { $0.description ?? $0.code }
+        )
     }
 
     /// Drafts and what's with App Review first, then what's live, then

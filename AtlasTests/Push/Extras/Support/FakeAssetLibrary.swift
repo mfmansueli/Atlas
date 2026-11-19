@@ -36,6 +36,8 @@ final class FakeAssetLibrary: AssetLibraryPushing {
         var offline: Set<String> = []
         /// The first call gets a 429.
         var rateLimitedOnce = false
+        /// How long each part's upload takes, so uploads can overlap.
+        var uploadTime: Duration = .zero
     }
 
     private struct State {
@@ -48,6 +50,8 @@ final class FakeAssetLibrary: AssetLibraryPushing {
         var spent: Set<String> = []
         var stuck: Set<String>
         var referenceNames: [String] = []
+        var uploading = 0
+        var mostUploading = 0
     }
 
     private let script: Script
@@ -63,6 +67,8 @@ final class FakeAssetLibrary: AssetLibraryPushing {
     }
 
     var log: [String] { state.withLock { $0.log } }
+    /// The most parts uploading at the same time.
+    var mostUploading: Int { state.withLock { $0.mostUploading } }
 
     /// Every reference name an asset was reserved under, in order.
     var referenceNames: [String] { state.withLock { $0.referenceNames } }
@@ -114,6 +120,14 @@ final class FakeAssetLibrary: AssetLibraryPushing {
         let parts = operation.url.components(separatedBy: "/")
         let id = parts.dropLast().last ?? ""
         log("upload \(id) \(parts.last ?? "")")
+        if script.uploadTime > .zero {
+            state.withLock { state in
+                state.uploading += 1
+                state.mostUploading = max(state.mostUploading, state.uploading)
+            }
+            try? await Task.sleep(for: script.uploadTime)
+            state.withLock { $0.uploading -= 1 }
+        }
         state.withLock { $0.uploaded[id, default: Data()].append(operation.slice(of: data)) }
         progress(Int64(operation.length))
     }

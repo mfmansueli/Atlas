@@ -10,21 +10,24 @@ extension EventArtworkFlow {
     static let filesConceptID = "files"
 
     /// Use This Artwork: the concept (the one in the preview unless said)
-    /// goes into every language of the event, in Review & Push, already
+    /// goes into the event's primary language in Review & Push, already
     /// accepted (the moving version where there is one, its first frame
-    /// the still). Undo puts the queue back.
+    /// the still), and into each other language that needs its own: art
+    /// drawn for that language, or one with its own image in App Store
+    /// Connect (or other art waiting) to replace. The rest show the primary
+    /// language's, as Apple does without a copy. Undo puts the queue back.
     @discardableResult
     func use(_ id: EventArtworkConcept.ID? = nil) async -> Bool {
         guard let concept = id.flatMap({ id in run.concepts.first { $0.id == id } }) ?? previewConcept, run.canUse(concept) else { return false }
         isWorking = true
         defer { isWorking = false }
         var reports: [String: InAppEventArtworkReport] = [:]
-        var changes: [PendingChange] = []
+        var picked: [(locale: String, report: InAppEventArtworkReport)] = []
         let source: ChangeSource = concept.isMadeByClaudeDesign ? .assistant(client: concept.client) : .you
-        // Every language: the event's, and the ones its queued texts create.
-        let existing = event.localizations.map(\.locale)
-        let coming = builder.newLanguages(of: event.id, in: queue.changes(for: app.id, section: .inAppEvents)).filter { !existing.contains($0) }
-        for locale in existing + coming {
+        // The event's languages, the primary first.
+        let primary = event.primaryLocalization?.locale ?? run.primaryLocale
+        let locales = [primary] + event.localizations.map(\.locale).filter { $0 != primary }
+        for locale in locales {
             for kind in concept.kinds {
                 guard let image = concept.video(kind, locale: locale) ?? concept.still(kind, locale: locale) else { continue }
                 if reports[image.fileID] == nil {
@@ -33,14 +36,24 @@ extension EventArtworkFlow {
                     )
                 }
                 guard let report = reports[image.fileID], report.canQueue else { continue }
-                var change = if let localization = event.localization(locale) {
-                    builder.artworkChange(report, into: localization, of: event, source: source)
-                } else {
-                    builder.artworkChange(report, newLanguage: locale, of: event, source: source)
-                }
-                change.awaitingAcceptance = nil
-                changes.append(change)
+                picked.append((locale, report))
             }
+        }
+        let queued = builder.queuedArtwork(for: event.id, in: queue.changes(for: app.id, section: .inAppEvents))
+        let infos = InAppEventArtworkFiles.infos(atPaths: queued.map(\.push.path) + picked.map { $0.report.url.path(percentEncoded: false) })
+        let fingerprint = { (report: InAppEventArtworkReport) in
+            InAppEventArtworkFingerprint(report, info: infos[report.url.path(percentEncoded: false)])
+        }
+        let proposed = Dictionary(picked.filter { $0.locale == primary }.map { ($0.report.kind, fingerprint($0.report)) }) { first, _ in first }
+        let copies = InAppEventArtworkCopies(event: event, queued: queued, infos: infos, proposed: proposed)
+        var changes: [PendingChange] = []
+        for (locale, report) in picked {
+            guard copies.needsQueuing(fingerprint(report), kind: report.kind, locale: locale, queued: queued, infos: infos),
+                  let localization = event.localization(locale)
+            else { continue }
+            var change = builder.artworkChange(report, into: localization, of: event, source: source)
+            change.awaitingAcceptance = nil
+            changes.append(change)
         }
         guard !changes.isEmpty else {
             problem = String(localized: "Atlas couldn’t read this concept’s images. Make the artwork again, or choose files.")
@@ -79,7 +92,10 @@ extension EventArtworkFlow {
         var reports: [InAppEventArtworkReport] = []
         for url in urls.prefix(4) {
             guard let data = try? Data(contentsOf: url),
-                  let id = try? InAppEventArtworkFiles.save(data, fileName: url.lastPathComponent, appID: app.id, in: directory),
+                  let id = try? InAppEventArtworkFiles.save(
+                      data, fileName: url.lastPathComponent, appID: app.id, in: directory,
+                      origin: InAppEventArtworkOrigin(source: .chosenFile, name: url.lastPathComponent)
+                  ),
                   let saved = InAppEventArtworkFiles.url(id: id, appID: app.id, in: directory),
                   let file = await InAppEventArtworkInspector.inspect(saved, fileName: url.lastPathComponent)
             else { continue }

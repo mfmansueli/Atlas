@@ -54,8 +54,9 @@ struct PushControllerMergeTests {
         push.push(queue.changes)
         await push.waitUntilFinished()
 
-        #expect(transport.sent.map(\.path) == [Self.declaration, "/v1/appStoreVersionLocalizations/de-Subtitle"])
-        let attributes = Support.attributes(transport.sent.first)
+        // The listing goes out beside the answers (PushSchedule), so only the set is fixed.
+        #expect(transport.sent.map(\.path).sorted() == [Self.declaration, "/v1/appStoreVersionLocalizations/de-Subtitle"].sorted())
+        let attributes = Support.attributes(transport.sent.first { $0.path == Self.declaration })
         #expect(attributes["profanityOrCrudeHumor"] as? String == "INFREQUENT")
         #expect(attributes["socialMedia"] as? Bool == false)
         #expect(attributes["healthOrWellnessTopics"] as? Bool == true)
@@ -88,7 +89,9 @@ struct PushControllerMergeTests {
 
         push.retryFailed()
         await push.waitUntilFinished()
-        #expect(transport.sent.map(\.path) == [Self.declaration, "/v1/appStoreVersionLocalizations/de-Subtitle", Self.declaration])
+        #expect(transport.sent.count { $0.path == Self.declaration } == 2)
+        #expect(transport.sent.count { $0.path == "/v1/appStoreVersionLocalizations/de-Subtitle" } == 1)
+        #expect(transport.sent.last?.path == Self.declaration)
     }
 
     @Test func anAnswerChangedInAppStoreConnectStaysForReview() async throws {
@@ -102,7 +105,7 @@ struct PushControllerMergeTests {
         let profanityID = Support.builder.changeID(.ageRating, AgeRatingQuestion.profanity.rawValue)
         #expect(push.items.first { $0.id == profanityID }?.status == .conflict)
         #expect(queue.change(id: profanityID)?.remoteConflict?.remoteRawValue == "FREQUENT")
-        let attributes = Support.attributes(transport.sent.first)
+        let attributes = Support.attributes(transport.sent.first { $0.path == Self.declaration })
         #expect(attributes["profanityOrCrudeHumor"] == nil)
         #expect(attributes.count == 2)
         #expect(push.doneCount == 3)
@@ -117,7 +120,7 @@ struct PushControllerMergeTests {
         await push.waitUntilFinished()
 
         #expect(transport.sent.map(\.path) == [Self.declaration])
-        #expect(Support.attributes(transport.sent.first).count == 1)
+        #expect(Support.attributes(transport.sent.first { $0.path == Self.declaration }).count == 1)
         #expect(push.doneCount == 1)
     }
 }

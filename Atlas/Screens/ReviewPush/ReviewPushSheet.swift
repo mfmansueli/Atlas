@@ -8,7 +8,8 @@ import SwiftUI
 /// Review & Push (⇧⌘P, 800 pt): every pending change grouped by app and
 /// section, each as old → new with its source, a checkbox and a discard
 /// button; a click on an image opens it large over the sheet. Once a push
-/// starts, the same sheet shows its progress.
+/// starts, the same sheet shows its progress (`PushProgressSheet`): the
+/// changes, screenshots and extras as one push.
 struct ReviewPushSheet: View {
     @State private var viewModel: ReviewPushViewModel
     @State private var pushToConfirm: [PendingChange]?
@@ -25,22 +26,20 @@ struct ReviewPushSheet: View {
     }
 
     var body: some View {
-        Group {
-            if let run = viewModel.screenshots.run {
-                ScreenshotPushProgressView(push: viewModel.push, run: run, onViewResults: viewResults, onDone: finish)
-            } else if viewModel.push.phase == .idle {
-                ZStack {
-                    // Disabled under the viewer, so Esc and Return reach it
-                    // rather than Cancel and Push.
+        ZStack {
+            // Disabled under the viewer, so Esc and Return reach it rather
+            // than Cancel and Push, or Minimize and Done.
+            Group {
+                if PushProgressSummary.isShowing(viewModel.push) {
+                    PushProgressSheet(viewModel: viewModel, onViewResults: viewResults, onDone: finish, onMinimize: { dismiss() })
+                } else {
                     review
-                        .disabled(viewModel.viewer != nil)
-                        .accessibilityHidden(viewModel.viewer != nil)
-                    if let viewer = viewModel.viewer {
-                        ReviewFullSizeViewer(viewModel: viewModel, viewer: viewer)
-                    }
                 }
-            } else {
-                PushProgressView(push: viewModel.push, onViewResults: viewResults, onDone: finish)
+            }
+            .disabled(viewModel.viewer != nil)
+            .accessibilityHidden(viewModel.viewer != nil)
+            if let viewer = viewModel.viewer {
+                ReviewFullSizeViewer(viewModel: viewModel, viewer: viewer)
             }
         }
         // Screenshots need the room for old → new side by side.
@@ -74,7 +73,7 @@ struct ReviewPushSheet: View {
     }
 
     private var showsImages: Bool {
-        viewModel.screenshots.run != nil || viewModel.showsScreenshots
+        viewModel.screenshots.run != nil || viewModel.extras.run != nil || viewModel.showsScreenshots
     }
 
     private var review: some View {
@@ -183,15 +182,21 @@ struct ReviewPushSheet: View {
     }
 
     private func viewResults() {
-        viewModel.push.dismissFinished()
-        viewModel.screenshots.dismissFinished()
+        dismissFinishedPushes()
         dismiss()
         navigator.open(.subscriptionPricing, intent: .showResults)
     }
 
     private func finish() {
+        dismissFinishedPushes()
+        dismiss()
+    }
+
+    /// Clears the finished pushes, so the sheet shows the list next time.
+    private func dismissFinishedPushes() {
+        viewModel.closeViewer()
         viewModel.push.dismissFinished()
         viewModel.screenshots.dismissFinished()
-        dismiss()
+        viewModel.extras.dismissFinished()
     }
 }

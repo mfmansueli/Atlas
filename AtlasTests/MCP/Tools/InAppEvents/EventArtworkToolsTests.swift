@@ -42,8 +42,8 @@ struct EventArtworkToolsTests {
         )
     }
 
-    private func stored(_ width: Int, _ height: Int, name: String = "card.png") throws -> String {
-        try EventArtworkTestFiles.store(EventArtworkTestFiles.png(width: width, height: height), name: name, in: directory)
+    private func stored(_ width: Int, _ height: Int, name: String = "card.png", busy: Bool = false) throws -> String {
+        try EventArtworkTestFiles.store(EventArtworkTestFiles.png(width: width, height: height, busy: busy), name: name, in: directory)
     }
 
     private static func pixelSize(_ image: MCPToolOutcome.ImageContent) -> PixelSize? {
@@ -177,25 +177,72 @@ struct EventArtworkToolsTests {
 
     // MARK: - propose_event_artwork
 
-    @Test func artIsQueuedForEveryLanguageAndWaitsForThePerson() async throws {
+    @Test func artGoesIntoThePrimaryLanguageAndWaitsForThePerson() async throws {
         let card = try stored(3840, 2160)
         let outcome = try await propose([["kind": "card", "fileId": .string(card)]])
         #expect(outcome.result["status"] == "queued")
         let ids = outcome.result["changes"]?.arrayValue?.compactMap { $0["changeId"]?.stringValue }
         let prefix = "inAppEvents.\(Data.app.id).winter.artwork.card."
-        #expect(ids == [prefix + "en-US", prefix + "de-DE"])
-        #expect(changes.changes.count == 2)
+        #expect(ids == [prefix + "en-US"])
+        #expect(outcome.result["sameAsPrimary"] == nil)
+        #expect(changes.changes.count == 1)
         #expect(changes.changes.allSatisfy { $0.awaitingAcceptance != nil && $0.isBlocked && $0.source == .assistant(client: "Claude Code") })
         #expect(changes.changes.first?.oldValue == "Image 1920 × 1080")
-        #expect(changes.changes.last?.oldValue == "None")
         #expect(outcome.result["next"] == "The person looks at it and accepts it; pushing uploads it. Never push or submit it yourself.")
-        #expect(outcome.logLines.map(\.outcome) == [.proposed, .proposed])
+        #expect(outcome.logLines.map(\.outcome) == [.proposed])
 
-        // Proposed again, the waiting one is replaced, not doubled.
+        // Another file for German is its own art: it's queued.
         _ = try await propose([["kind": "card", "fileId": .string(stored(1920, 1080, name: "card-2.png")), "locales": ["de-DE"]]])
         #expect(changes.changes.count == 2)
         let german = changes.changes.first { $0.id == prefix + "de-DE" }
-        #expect(german.flatMap { $0.requests.first.flatMap(InAppEventArtworkPush.init) }?.fileName == "card-2.png")
+        #expect(german?.oldValue == "None")
+        // Proposed again, the waiting one is replaced, not doubled.
+        _ = try await propose([["kind": "card", "fileId": .string(stored(1920, 1080, name: "card-3.png", busy: true)), "locales": ["de-DE"]]])
+        #expect(changes.changes.count == 2)
+        let replaced = changes.changes.first { $0.id == prefix + "de-DE" }
+        #expect(replaced.flatMap { $0.requests.first.flatMap(InAppEventArtworkPush.init) }?.fileName == "card-3.png")
+    }
+
+    /// One video for every language: only the primary language gets it, as
+    /// the others show the primary's; a language with its own card in App
+    /// Store Connect gets it too, to replace that one.
+    @Test func theSameFileIsntCopiedIntoLanguagesThatShowThePrimarysArt() async throws {
+        var winter = Data.winter
+        winter.localizations.append(InAppEventLocalization(
+            id: "loc-fr", locale: "fr-FR", name: "Hiver", shortDescription: "s", longDescription: "l",
+            media: [InAppEventMedia(kind: .card, width: 1920, height: 1080, fileName: "old-fr.png", fileSize: 99)]
+        ))
+        let card = try stored(1920, 1080)
+        let outcome = try await propose([["kind": "card", "fileId": .string(card), "locales": "all"]], events: [winter])
+        #expect(outcome.result["status"] == "queued")
+        let prefix = "inAppEvents.\(Data.app.id).winter.artwork.card."
+        #expect(Set(changes.changes.map(\.id)) == [prefix + "en-US", prefix + "fr-FR"])
+        let same = try #require(outcome.result["sameAsPrimary"]?.arrayValue)
+        #expect(same.count == 1)
+        #expect(same.first?["locale"] == "de-DE")
+        #expect(same.first?["note"]?.stringValue?.contains("shows en-US's") == true)
+
+        // The same bytes under another file id are the same art too.
+        let copy = try stored(1920, 1080, name: "card-again.png")
+        let again = try await propose([["kind": "card", "fileId": .string(copy), "locales": ["de-DE"]]], events: [winter])
+        #expect(again.result["status"] == "notNeeded")
+        #expect(again.isError == false)
+        #expect(again.result["sameAsPrimary"]?.arrayValue?.first?["locale"] == "de-DE")
+        #expect(changes.changes.count == 2)
+    }
+
+    /// Without a queued card, the primary language's art is App Store
+    /// Connect's: a file Atlas uploaded there (same name and size) isn't
+    /// queued again for a language that shows it.
+    @Test func theArtAlreadyInAppStoreConnectIsntCopiedEither() async throws {
+        let card = try stored(1920, 1080, name: "winter-card.png")
+        let url = try #require(InAppEventArtworkFiles.url(id: card, appID: Data.app.id, in: directory))
+        let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+        var winter = Data.winter
+        winter.localizations[0].media = [InAppEventMedia(kind: .card, width: 1920, height: 1080, fileName: "winter-card.png", fileSize: size)]
+        let outcome = try await propose([["kind": "card", "fileId": .string(card), "locales": ["de-DE"]]], events: [winter])
+        #expect(outcome.result["status"] == "notNeeded")
+        #expect(changes.changes.isEmpty)
     }
 
     @Test func aVideoDetailsPageGoesIntoSomeLanguagesWithItsPosterFrame() async throws {

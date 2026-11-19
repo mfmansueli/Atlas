@@ -129,6 +129,7 @@ struct AppWorkspaceView: View {
             ToolbarItem(placement: .primaryAction) {
                 ReviewPushToolbarButton(
                     count: changes.totalCount + push.screenshots.imageCount + push.screenshots.extras.itemCount,
+                    sending: push.sendingProgress,
                     isCompact: toolbarLayout.isReviewCompact
                 ) {
                     navigator.isReviewPresented = true

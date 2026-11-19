@@ -7,11 +7,11 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// An event's card and details page go into every language, the ones its
-/// queued texts create too: those name the language by its locale until
-/// the push has created it, a language queued after the art gets it, one
-/// taken out of the queue takes its images along, and the uploads go after
-/// everything else.
+/// Art for a language its queued texts create: Atlas no longer copies the
+/// event's art there by itself (Apple shows the primary language's in a
+/// language without its own); art someone names for it waits under the
+/// language's locale until the push has created it, leaves with its texts,
+/// and goes after everything else.
 @MainActor
 @Suite("In-App Event art in new languages")
 struct InAppEventNewLanguageArtworkTests {
@@ -73,41 +73,20 @@ struct InAppEventNewLanguageArtworkTests {
         #expect(builder.newLanguages(of: "update", in: changes).isEmpty)
     }
 
-    @Test func aNewLanguageGetsTheEventsArtAndLosesItWithItsTexts() async throws {
-        let art = try await eventArt()
-        let changes = try art + [texts("fr-FR")]
-
-        let (add, discard) = builder.newLanguageArtwork(of: Events.winter, in: changes)
-        #expect(discard.isEmpty)
-        #expect(add.map(\.id) == [
-            builder.artworkChangeID(eventID: "winter", kind: .card, locale: "fr-FR"),
-            builder.artworkChangeID(eventID: "winter", kind: .details, locale: "fr-FR"),
-        ])
-        let card = try #require(add.first)
-        #expect(localizationID(of: card) == "{eventLocalization:winter:fr-FR}")
-        #expect(card.title == "\(InAppEventChangeBuilder.localeName("fr-FR")) · \(InAppEventMedia.Kind.card.title)")
-        #expect(card.flagRegion == "FR")
-        #expect(card.oldValue == "None")
-        // The English card, as queued for the event's own language.
-        #expect(card.newValue == art[0].newValue)
-        #expect(card.source == .you)
-        #expect(card.restoreRequests.isEmpty)
-
-        // Queued: nothing more to add. Its texts gone: its images go too.
-        #expect(builder.newLanguageArtwork(of: Events.winter, in: changes + add).add.isEmpty)
-        let without = (changes + add).filter { $0.id != builder.newChangeID(eventID: "winter", locale: "fr-FR") }
-        #expect(Set(builder.newLanguageArtwork(of: Events.winter, in: without).discard) == Set(add.map(\.id)))
-    }
-
-    @Test func artQueuedForTheLanguageItselfIsKept() async throws {
+    @Test func artNamedForANewLanguageWaitsForItAndLeavesWithItsTexts() async throws {
         let art = try await eventArt()
         let french = try await builder.artworkChange(report(.card), newLanguage: "fr-FR", of: Events.winter, source: .you)
-        let (add, _) = try builder.newLanguageArtwork(of: Events.winter, in: art + [texts("fr-FR"), french])
-        #expect(add.map(\.id) == [builder.artworkChangeID(eventID: "winter", kind: .details, locale: "fr-FR")])
-    }
+        #expect(localizationID(of: french) == "{eventLocalization:winter:fr-FR}")
+        #expect(french.title == "\(InAppEventChangeBuilder.localeName("fr-FR")) · \(InAppEventMedia.Kind.card.title)")
+        #expect(french.flagRegion == "FR")
+        #expect(french.oldValue == "None")
 
-    @Test func withoutArtNothingIsAdded() throws {
-        #expect(try builder.newLanguageArtwork(of: Events.winter, in: [texts("fr-FR")]).add.isEmpty)
+        // With its texts queued, nothing leaves.
+        let changes = try art + [texts("fr-FR"), french]
+        #expect(builder.orphanedNewLanguageArtwork(of: Events.winter, in: changes).isEmpty)
+        // Its texts gone, its image goes; the event's own languages' stay.
+        let without = changes.filter { $0.id != builder.newChangeID(eventID: "winter", locale: "fr-FR") }
+        #expect(builder.orphanedNewLanguageArtwork(of: Events.winter, in: without) == [french.id])
     }
 
     @Test func theUploadsForNewLanguagesGoAfterEverythingElse() async throws {
@@ -120,23 +99,26 @@ struct InAppEventNewLanguageArtworkTests {
         #expect(!InAppEventPushOrder.waitsForANewLanguage(art[0]))
     }
 
-    @Test func writingANewLanguageBringsTheArtAlongAndEmptyingItTakesItAway() async throws {
+    @Test func writingANewLanguageCopiesNoArtAndEmptyingItTakesItsOwnAway() async throws {
         let model = InAppEventsViewModel(app: Events.app, services: FakeInAppEventsServices(), store: InAppEventsStore(), queue: queue)
         await model.load()
         try await queue.upsert(contentsOf: eventArt())
         let cardID = builder.artworkChangeID(eventID: "winter", kind: .card, locale: "fr-FR")
 
         model.write([.name: "Réflexion d’hiver"], locale: "fr-FR", of: Events.winter, source: .you)
-        let card = try #require(queue.change(id: cardID))
-        #expect(localizationID(of: card) == "{eventLocalization:winter:fr-FR}")
-        #expect(queue.change(id: builder.artworkChangeID(eventID: "winter", kind: .details, locale: "fr-FR")) != nil)
+        // French shows the English art: no copy is queued for it.
+        #expect(queue.change(id: cardID) == nil)
+        #expect(queue.change(id: builder.artworkChangeID(eventID: "winter", kind: .details, locale: "fr-FR")) == nil)
 
+        // Art someone queued for French leaves once its texts do.
+        try await queue.upsert(builder.artworkChange(report(.card), newLanguage: "fr-FR", of: Events.winter, source: .you))
         model.write([.name: ""], locale: "fr-FR", of: Events.winter, source: .you)
         #expect(queue.change(id: builder.newChangeID(eventID: "winter", locale: "fr-FR")) == nil)
         #expect(queue.change(id: cardID) == nil)
+        #expect(queue.changes.count == 4)
     }
 
-    @Test func useThisArtworkCoversTheLanguagesBeingCreated() async throws {
+    @Test func useThisArtworkLeavesTheLanguagesBeingCreatedToThePrimarysArt() async throws {
         let studio = EventArtworkStudio()
         try studio.begin(Studio.run(step: .choose, concepts: [Studio.concept("a", isPick: true, in: directory)]))
         let flow = EventArtworkFlow(app: Events.app, event: Events.winter, studio: studio, queue: queue, hasDesignSystem: true)
@@ -145,10 +127,10 @@ struct InAppEventNewLanguageArtworkTests {
         try queue.upsert(texts("fr-FR"))
 
         #expect(await flow.use("a"))
-        let card = try #require(queue.change(id: builder.artworkChangeID(eventID: "winter", kind: .card, locale: "fr-FR")))
-        #expect(localizationID(of: card) == "{eventLocalization:winter:fr-FR}")
+        #expect(queue.change(id: builder.artworkChangeID(eventID: "winter", kind: .card, locale: "fr-FR")) == nil)
+        // German has no image of its own either: it shows the English one.
         let queued = Set(builder.queuedArtwork(for: "winter", in: queue.changes).map(\.locale))
-        #expect(queued == ["en-US", "de-DE", "fr-FR"])
-        #expect(flow.run.queuedChangeIDs.count == 6)
+        #expect(queued == ["en-US"])
+        #expect(flow.run.queuedChangeIDs.count == 2)
     }
 }

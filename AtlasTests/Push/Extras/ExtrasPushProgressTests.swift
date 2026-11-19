@@ -46,7 +46,27 @@ struct ExtrasPushProgressTests {
     }
 
     @Test func itDefaultsToTenFilesWithAppleAtOnce() {
-        #expect(ExtrasPushEnvironment(library: FakeAssetLibrary(), rate: RequestRateTracker()).processingWindow == 10)
+        let environment = ExtrasPushEnvironment(library: FakeAssetLibrary(), rate: RequestRateTracker())
+        #expect(environment.processingWindow == 10)
+        #expect(environment.concurrentUploads == 3)
+    }
+
+    /// A few files upload side by side; a window of one still sends them
+    /// one after another.
+    @Test func severalFilesUploadAtOnceWithinTheWindow() async {
+        var script = FakeAssetLibrary.Script()
+        script.uploadTime = .milliseconds(30)
+        let items = [Fixtures.header(), Fixtures.wide(), Fixtures.preview()]
+
+        let together = FakeAssetLibrary(script)
+        let run = await Fixtures.push(items, environment: Fixtures.environment(together, processingWindow: 10))
+        #expect(items.allSatisfy { run.status(of: $0).isDone })
+        #expect(together.mostUploading > 1)
+
+        let alone = FakeAssetLibrary(script)
+        let sequential = await Fixtures.push(items, environment: Fixtures.environment(alone, processingWindow: 1))
+        #expect(items.allSatisfy { sequential.status(of: $0).isDone })
+        #expect(alone.mostUploading == 1)
     }
 
     @Test func waitingForRoomSaysSo() {

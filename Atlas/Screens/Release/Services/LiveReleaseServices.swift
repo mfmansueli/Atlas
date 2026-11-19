@@ -36,6 +36,14 @@ struct LiveReleaseServices: ReleaseServices {
         return status
     }
 
+    /// The version's builds, as the Submit sheet reads them, and the one
+    /// attached to it.
+    func builds(for app: StoreApp, versionID: String, versionString: String, platform: String?) async throws -> ReleaseVersionBuilds {
+        let builds = try await client.builds(appID: app.id, versionString: versionString, platform: platform).map(Self.build)
+        let attached = try await client.versionBuild(versionID: versionID)
+        return ReleaseVersionBuilds(builds: builds, attachedBuildID: attached?.id, attachedBuildNumber: attached?.attributes.version)
+    }
+
     /// The submission the version is in; else one made and never sent.
     private func submission(versionID: String, platform: String?, appID: String) async throws -> VersionSubmission? {
         let submissions = try await client.openReviewSubmissions(appID: appID, platform: platform).map { resource in

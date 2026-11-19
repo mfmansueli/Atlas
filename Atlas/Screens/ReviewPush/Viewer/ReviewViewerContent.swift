@@ -7,12 +7,15 @@ import Foundation
 
 /// What Review & Push's viewer draws: a slot's live screenshot or the one
 /// a push sends there, a header or search image (a motion one plays on
-/// repeat), or an App Preview, which plays with its controls.
+/// repeat), or an App Preview, which plays with its controls; while a
+/// push runs, a file it sends (an extra, an event's art).
 enum ReviewViewerContent: Hashable {
     case screenshot(ScreenshotPlanItem)
     case artwork(ExtrasReviewItem)
     /// `musicTitle` is the music it was mixed with, when known.
     case appPreview(ExtrasReviewItem, file: ExtrasPreviewFile, musicTitle: String?)
+    /// A file a push sends: a still, or a movie on repeat.
+    case file(ReviewViewerFile)
 
     var isAppPreview: Bool {
         if case .appPreview = self { return true }
@@ -21,8 +24,11 @@ enum ReviewViewerContent: Hashable {
 
     /// A motion header or search image: it plays on repeat.
     var isMotion: Bool {
-        if case let .artwork(item) = self { return item.isMotion }
-        return false
+        switch self {
+        case let .artwork(item): item.isMotion
+        case let .file(file): file.isVideo
+        case .screenshot, .appPreview: false
+        }
     }
 
     /// It plays in place: Space plays or pauses it.
@@ -36,6 +42,7 @@ enum ReviewViewerContent: Hashable {
             return Double(ScreenshotThumbnail.aspect(of: item))
         case let .artwork(item): return Self.aspect(item.pixelSize)
         case let .appPreview(_, file, _): return Self.aspect(file.pixelSize)
+        case let .file(file): return Self.aspect(file.pixelSize)
         }
     }
 
@@ -46,6 +53,7 @@ enum ReviewViewerContent: Hashable {
             side == .live ? item.old?.pixelSize : item.content.renderJob?.layout.canvas.pixelSize ?? item.content.backupImage?.pixelSize
         case let .artwork(item): item.pixelSize
         case let .appPreview(_, file, _): file.pixelSize
+        case let .file(file): file.pixelSize
         }
     }
 

@@ -16,14 +16,18 @@ extension RenderEventArtworkTool {
         guard motion else {
             let render = try await still(of: page)
             guard let png = ScreenshotPNG.data(render.image) else { return nil }
-            return try InAppEventArtworkFiles.save(png, fileName: page.stillName, appID: page.app.id, in: directory)
+            return try InAppEventArtworkFiles.save(
+                png, fileName: page.stillName, appID: page.app.id, in: directory, origin: InAppEventArtworkOrigin(source: .page, name: page.stillName)
+            )
         }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let draft = directory.appending(path: "loop-\(UUID().uuidString).mov")
         defer { try? FileManager.default.removeItem(at: draft) }
         _ = try await ArtworkWebLoop.write(page.request, to: draft, frames: loopFrames, size: InAppEventArtworkRules.minimumSize(for: page.kind))
         let movie = try Data(contentsOf: draft)
-        return try InAppEventArtworkFiles.save(movie, fileName: page.movieName, appID: page.app.id, in: directory)
+        return try InAppEventArtworkFiles.save(
+            movie, fileName: page.movieName, appID: page.app.id, in: directory, origin: InAppEventArtworkOrigin(source: .page, name: page.movieName)
+        )
     }
 
     /// The still at 3840 × 2160 (or 2160 × 3840). When WebKit's page process

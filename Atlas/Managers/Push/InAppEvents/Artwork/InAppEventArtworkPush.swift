@@ -81,7 +81,9 @@ struct InAppEventArtworkPush: Hashable, Sendable {
         readFile: (String) throws -> Data = { try Data(contentsOf: URL(fileURLWithPath: $0)) },
         sleep: (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         note: (AppStoreConnectRateLimit?) -> Void = { _ in },
-        progress: (String) -> Void = { _ in }
+        progress: (String) -> Void = { _ in },
+        processing: () -> Void = {},
+        pollInterval: () -> Duration = { Self.pollInterval }
     ) async throws -> String {
         guard let uploads = transport as? any ScreenshotUploadTransport else { throw InAppEventArtworkPushError.cannotUpload }
         let data: Data
@@ -114,7 +116,9 @@ struct InAppEventArtworkPush: Hashable, Sendable {
         let commit = try await transport.send(commitRequest)
         note(commit.rateLimit)
         progress(String(localized: "Apple is processing the \(kind.name)"))
-        try await waitUntilProcessed(reservation.id, via: transport, sleep: sleep, note: note)
+        // Uploaded: the push goes on with the next while Apple processes it.
+        processing()
+        try await waitUntilProcessed(reservation.id, via: transport, sleep: sleep, note: note, interval: pollInterval)
         try await delete(old, via: transport, note: note)
         return reservation.id
     }
@@ -144,7 +148,8 @@ struct InAppEventArtworkPush: Hashable, Sendable {
 
     @MainActor
     private func waitUntilProcessed(
-        _ id: String, via transport: any PushTransport, sleep: (Duration) async throws -> Void, note: (AppStoreConnectRateLimit?) -> Void
+        _ id: String, via transport: any PushTransport, sleep: (Duration) async throws -> Void, note: (AppStoreConnectRateLimit?) -> Void,
+        interval: () -> Duration
     ) async throws {
         let timeout = isVideo ? Self.videoTimeout : Self.imageTimeout
         var waited: Duration = .zero
@@ -158,8 +163,9 @@ struct InAppEventArtworkPush: Hashable, Sendable {
                 throw InAppEventArtworkPushError.refused(fileName: fileName, details: details?.isEmpty == false ? details : nil)
             }
             guard waited < timeout else { throw InAppEventArtworkPushError.timedOut(fileName: fileName) }
-            try await sleep(Self.pollInterval)
-            waited += Self.pollInterval
+            let pause = interval()
+            try await sleep(pause)
+            waited += pause
         }
     }
 }

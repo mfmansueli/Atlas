@@ -34,7 +34,11 @@ extension ReviewsViewModel {
 
     var isSendingBulk: Bool { bulkProgress != nil }
 
-    /// Sends the ticked languages' messages, one review at a time. The
+    /// Replies sent at once: each is its own review, so none waits for
+    /// another.
+    static let concurrentReplies = 6
+
+    /// Sends the ticked languages' messages, several reviews at a time. The
     /// sheet closes when every reply went; what Apple refused stays to try
     /// again, with the reason.
     func sendBulk() async {
@@ -46,24 +50,44 @@ extension ReviewsViewModel {
         var sent = 0
         var languages: Set<String> = []
         var failure: String?
-        for row in rows {
-            for reviewID in row.reviewIDs {
-                guard let review = archive.review(id: reviewID), !review.hasReply else { continue }
-                do {
-                    let reply = try await services.sendReply(row.text, to: reviewID)
-                    store.setReply(reply, reviewID: reviewID, for: app.id)
-                    keptVisible.insert(reviewID)
-                    sentNow.insert(reviewID)
+        var pending = rows.flatMap { row in
+            row.reviewIDs.filter { archive.review(id: $0)?.hasReply == false }.map { (text: row.text, reviewID: $0, language: row.languageCode) }
+        }[...]
+        await withTaskGroup(of: (reviewID: AppReview.ID, language: String, result: Result<ReviewReply, any Error>).self) { group in
+            for reply in pending.prefix(Self.concurrentReplies) {
+                group.addTask { await self.sendBulkReply(reply.text, to: reply.reviewID, language: reply.language) }
+            }
+            pending = pending.dropFirst(Self.concurrentReplies)
+            while let done = await group.next() {
+                switch done.result {
+                case let .success(reply):
+                    store.setReply(reply, reviewID: done.reviewID, for: app.id)
+                    keptVisible.insert(done.reviewID)
+                    sentNow.insert(done.reviewID)
                     sent += 1
-                    languages.insert(row.languageCode)
-                } catch {
+                    languages.insert(done.language)
+                case let .failure(error):
                     failure = error.localizedDescription
                 }
                 bulkProgress = ReviewBulkProgress(sent: sent, total: total)
+                if let reply = pending.popFirst() {
+                    group.addTask { await self.sendBulkReply(reply.text, to: reply.reviewID, language: reply.language) }
+                }
             }
         }
         bulkProgress = nil
         finishBulk(plan, sent: sent, languageCount: languages.count, failure: failure)
+    }
+
+    /// One reply of a bulk send, with what it was for.
+    private func sendBulkReply(
+        _ text: String, to reviewID: AppReview.ID, language: String
+    ) async -> (reviewID: AppReview.ID, language: String, result: Result<ReviewReply, any Error>) {
+        do {
+            return try await (reviewID, language, .success(services.sendReply(text, to: reviewID)))
+        } catch {
+            return (reviewID, language, .failure(error))
+        }
     }
 
     private func finishBulk(_ plan: ReviewBulkPlan, sent: Int, languageCount: Int, failure: String?) {

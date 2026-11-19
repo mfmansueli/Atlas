@@ -67,10 +67,12 @@ enum MCPEndpoint {
     reply, you never do. In-App Event texts, retention messages and review replies have their own rules (no prices \
     or offers in events and retention messages, no marketing in replies), in their tools and get_ results' \
     textRules; a text that breaks one is refused. For In-App Events, read get_in_app_events; propose a new one with propose_in_app_event and \
-    write the missing languages with propose_event_texts. Make an event's card (16:9) and details page (9:16) with \
+    write the missing languages with propose_event_texts. Withdraw your own suggestions that went stale with \
+    withdraw_event_texts. Make an event's card (16:9) and details page (9:16) with \
     render_event_artwork (an HTML page, or an image or video loop sent to get_in_app_events' artworkUpload link), \
     which shows it under the event's text and checks it against Apple's rules, then queue it with \
-    propose_event_artwork: the person accepts it and pushes it. When the person asked for an event's artwork in Atlas \
+    propose_event_artwork, for the primary language unless a language needs art of its own (the others show the \
+    primary's): the person accepts it and pushes it. When the person asked for an event's artwork in Atlas \
     (Make the Artwork), read get_event_artwork_brief and send each concept with propose_event_artwork_concept: the \
     person chooses one there. When a release needs a new App Store version, read \
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \

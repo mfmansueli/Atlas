@@ -77,6 +77,10 @@ struct ProposeEventArtworkConceptTool: MCPTool {
             arrivedAt: .now
         )
         guard let updated = studio.add(concept, to: run.key, replacing: replaces) else { return .refused(GetEventArtworkBriefTool.noRun, target: target) }
+        // Its files say which concept they are, for get_in_app_events.
+        InAppEventArtworkFiles.markConcept(
+            (concept.stills + concept.videos).map(\.fileID), conceptID: concept.id, title: name, appID: app.id, in: directory
+        )
         let warnings = concept.checks.filter { !$0.isOK }.map { JSONValue.string("\($0.title): \($0.detail)") }
         let left = max(0, updated.expectedCount - updated.designedCount)
         let motionLeft = updated.animatingIDs?.count ?? 0

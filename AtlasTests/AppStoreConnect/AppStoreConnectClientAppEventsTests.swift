@@ -46,18 +46,22 @@ struct AppStoreConnectClientAppEventsTests {
 
     private static let screenshots = CannedHTTPResponse(body: #"""
     {"data":[{"type":"appEventScreenshots","id":"s1","attributes":{
-      "appEventAssetType":"EVENT_CARD",
+      "appEventAssetType":"EVENT_CARD","fileName":"winter-card-en-us.png","fileSize":482113,
+      "assetDeliveryState":{"state":"COMPLETE","errors":[],"warnings":[]},
       "imageAsset":{"templateUrl":"https://example.com/card/{w}x{h}.{f}","width":1920,"height":1080}}}]}
     """#)
     private static let clips = CannedHTTPResponse(body: #"""
     {"data":[{"type":"appEventVideoClips","id":"c1","attributes":{
-      "appEventAssetType":"EVENT_DETAILS_PAGE",
-      "previewFrameImage":{"image":{"templateUrl":"https://example.com/details/{w}x{h}.{f}","width":1080,"height":1920}},
+      "appEventAssetType":"EVENT_DETAILS_PAGE","fileName":"winter-details-en-us.mov","fileSize":9120334,
+      "previewFrameTimeCode":"00:00:02:00","videoDeliveryState":{"state":"COMPLETE","errors":[]},
+      "previewFrameImage":{"image":{"templateUrl":"https://example.com/details/{w}x{h}.{f}","width":1080,"height":1920},
+        "state":{"state":"COMPLETE"}},
       "previewImage":{"templateUrl":"https://example.com/old/{w}x{h}.{f}","width":1080,"height":1920}}}]}
     """#)
     private static let germanCard = CannedHTTPResponse(body: #"""
     {"data":[{"type":"appEventScreenshots","id":"s2","attributes":{
-      "appEventAssetType":"EVENT_CARD",
+      "appEventAssetType":"EVENT_CARD","fileName":"winter-card-de.png","fileSize":1203,
+      "assetDeliveryState":{"state":"FAILED","errors":[{"code":"IMAGE_TOOL_FAILURE","description":"The image couldn't be read."}]},
       "imageAsset":{"templateUrl":"https://example.com/de/{w}x{h}.{f}","width":3840,"height":2160}}}]}
     """#)
     private static let none = CannedHTTPResponse(body: #"{"data":[]}"#)
@@ -113,9 +117,24 @@ struct AppStoreConnectClientAppEventsTests {
         // deprecated previewImage.
         #expect(winter.media(.details)?.imageURL?.absoluteString == "https://example.com/details/640x1137.jpg")
         #expect(winter.missing == ["write every language"])
+        // The files as they were uploaded, and Apple's processing.
+        let card = try #require(winter.media(.card))
+        #expect(card.fileName == "winter-card-en-us.png")
+        #expect(card.fileSize == 482_113)
+        #expect(card.state == "COMPLETE")
+        #expect(card.stateErrors.isEmpty)
+        #expect(card.previewFrameTimeCode == nil)
+        let details = try #require(winter.media(.details))
+        #expect(details.fileName == "winter-details-en-us.mov")
+        #expect(details.fileSize == 9_120_334)
+        #expect(details.previewFrameTimeCode == "00:00:02:00")
+        #expect(details.state == "COMPLETE")
         // German has its own card; it shows the English details page.
         #expect(winter.localization("de-DE")?.media == [
-            InAppEventMedia(kind: .card, width: 3840, height: 2160, imageURL: URL(string: "https://example.com/de/640x360.jpg")),
+            InAppEventMedia(
+                kind: .card, width: 3840, height: 2160, imageURL: URL(string: "https://example.com/de/640x360.jpg"), fileName: "winter-card-de.png",
+                fileSize: 1203, state: "FAILED", stateErrors: ["The image couldn't be read."]
+            ),
         ])
 
         // An ended event's dates are in its archived schedule.
@@ -134,7 +153,29 @@ struct AppStoreConnectClientAppEventsTests {
         ])
         let clipFields = transport.requests.first { $0.url?.path().hasSuffix("l-en/appEventVideoClips") == true }
             .flatMap { $0.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems } } ?? []
-        #expect(clipFields.contains(URLQueryItem(name: "fields[appEventVideoClips]", value: "appEventAssetType,previewFrameImage,previewImage")))
+        #expect(clipFields.contains(URLQueryItem(
+            name: "fields[appEventVideoClips]",
+            value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState"
+        )))
+        let imageFields = transport.requests.first { $0.url?.path().hasSuffix("l-en/appEventScreenshots") == true }
+            .flatMap { $0.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems } } ?? []
+        #expect(imageFields.contains(URLQueryItem(
+            name: "fields[appEventScreenshots]", value: "appEventAssetType,imageAsset,fileName,fileSize,assetDeliveryState"
+        )))
+    }
+
+    /// Media read before Apple returned the file's name and size, or
+    /// without processing, still read.
+    @Test func mediaWithoutTheFileFieldsStillRead() throws {
+        let attributes = try JSONDecoder().decode(AppEventMediaAttributes.self, from: Data(#"""
+        {"appEventAssetType":"EVENT_CARD","imageAsset":{"templateUrl":"https://example.com/{w}x{h}.{f}","width":1920,"height":1080},
+         "assetDeliveryState":{"errors":null}}
+        """#.utf8))
+        let media = try #require(LiveInAppEventsServices.media(attributes, isVideo: false))
+        #expect(media.fileName == nil)
+        #expect(media.fileSize == nil)
+        #expect(media.state == nil)
+        #expect(media.sizeText == "1920 × 1080")
     }
 
     @Test func aFailedReadOfTheEventsIsAnError() async {

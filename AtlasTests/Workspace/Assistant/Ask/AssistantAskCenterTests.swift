@@ -66,11 +66,12 @@ struct AssistantAskCenterTests {
         #expect(center.ask(for: "1")?.phase == .working)
     }
 
-    @Test func theToolbarWorksOnceTheTokenLands() async throws {
+    @Test func theToolbarWorksOnceTheTokenLands() async {
         let (center, _) = center(flies: true)
         center.send(ask(), from: nil, reduceMotion: false)
         #expect(center.ask(for: "1")?.phase == .sending)
-        try await Task.sleep(for: .milliseconds(200))
+        // Waits for the landing itself, not a guess at how long a busy run takes.
+        await center.flight?.value
         #expect(center.ask(for: "1")?.phase == .working)
     }
 

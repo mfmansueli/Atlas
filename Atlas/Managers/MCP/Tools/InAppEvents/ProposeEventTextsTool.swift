@@ -21,8 +21,10 @@ struct ProposeEventTextsTool: MCPTool {
         reads this way (≤240). Over a limit, that language is refused with its count: shorten it and send it again. A \
         language get_in_app_events lists in `queuedTexts` already has texts waiting in Review & Push and is refused: \
         leave it. Only \
-        events that get_in_app_events marks editable take texts. Accepted texts wait in Review & Push; nothing reaches App \
-        Store Connect until the person pushes. \(StoreTextGuidelinePlace.eventText.summary)
+        events that get_in_app_events marks editable take texts. Sending a language again replaces its waiting \
+        suggestion. get_in_app_events' `openSuggestions` shows what waits and who sent it, `stale` once App Store \
+        Connect has that language written; take your own back with withdraw_event_texts. Accepted texts wait in Review \
+        & Push; nothing reaches App Store Connect until the person pushes. \(StoreTextGuidelinePlace.eventText.summary)
         """,
         inputSchema: MCPToolDefinition.schema(
             [

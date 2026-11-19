@@ -33,6 +33,8 @@ struct ExtrasPushEnvironment {
     /// keeps the state checks from bunching up. 1 sends them one after
     /// another.
     var processingWindow = 10
+    /// Files uploading at the same time, within `processingWindow`.
+    var concurrentUploads = 3
     /// Ends each upload's name in the asset library. Apple refuses a
     /// reference name that's already in use (`ENTITY_ERROR.ATTRIBUTE.
     /// INVALID.DUPLICATE`), so a file pushed again (made again, or after a

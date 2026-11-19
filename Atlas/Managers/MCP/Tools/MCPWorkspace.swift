@@ -25,6 +25,9 @@ struct MCPWorkspace {
     /// Where `suggest_fields` puts suggestions; nil answers that
     /// suggestions aren't available.
     var suggestions: FieldSuggestionStore?
+    /// What Review & Push's push is doing now, read when a tool runs (nil
+    /// without one: tests, DEBUG scenes). Read-only.
+    var push: @MainActor () -> MCPPushSnapshot? = { nil }
 
     /// The app an assistant means: its Apple ID, bundle ID, SKU or name (case
     /// and accents ignored). A name may also be the start of one, when only

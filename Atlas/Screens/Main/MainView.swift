@@ -376,7 +376,8 @@ struct MainView: View {
             apps: loadedApps,
             glossary: { [translation] in translation.glossary },
             commission: { [preferences] in Commission(preferenceRate: preferences.commissionRate) },
-            suggestions: suggestions
+            suggestions: suggestions,
+            push: { [push] in MCPPushSnapshot(push) }
         )
     }
 

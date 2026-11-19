@@ -58,8 +58,10 @@ struct ReviewBulkTests {
         #expect(model.bulkReplyCount == 3)
         #expect(model.bulkSendTitle == "Send 3 Replies")
         await model.sendBulk()
-        #expect(services.sent.map(\.reviewID) == ["de1", "de2", "us1"])
-        #expect(services.sent.map(\.text) == ["Danke. 1.4 repariert das.", "Danke. 1.4 repariert das.", "Thanks. 1.4 fixes it."])
+        // Several go at once, so in any order; each in its review's language.
+        let sent = Dictionary(uniqueKeysWithValues: services.sent.map { ($0.reviewID, $0.text) })
+        #expect(services.sent.count == 3)
+        #expect(sent == ["de1": "Danke. 1.4 repariert das.", "de2": "Danke. 1.4 repariert das.", "us1": "Thanks. 1.4 fixes it."])
         #expect(model.bulkPlan == nil)
         #expect(model.toast?.text == "3 replies sent in 2 languages. Apple shows them under the reviews, usually within a day.")
         #expect(model.count(for: .needsReply) == 1)
@@ -82,7 +84,7 @@ struct ReviewBulkTests {
         let model = makeModel(services)
         model.openBulk(Data.sync)
         await model.sendBulk()
-        #expect(services.sent.map(\.reviewID) == ["de1", "us1"])
+        #expect(Set(services.sent.map(\.reviewID)) == ["de1", "us1"])
         #expect(model.bulkPlan?.rows.map(\.reviewIDs) == [["de2"]])
         #expect(model.errorMessage?.hasPrefix("2 replies sent; the rest couldn’t be:") == true)
     }

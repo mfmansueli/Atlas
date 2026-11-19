@@ -10,10 +10,10 @@ import OSLog
 /// One push of Autopilot's extras (header and search results artwork, App
 /// Previews) through the App Asset Library. Each file is reserved in the
 /// app's library, uploaded in parts, committed and processed; only then is
-/// it placed, so a failed upload never touches the page. Uploads go one at
-/// a time, and the next starts while Apple processes the ones before it (up
-/// to `ExtrasPushEnvironment.processingWindow` at once); placements go one
-/// at a time too. Artwork takes the place of what's in its slot; an App
+/// it placed, so a failed upload never touches the page. A few files upload
+/// at once (`ExtrasPushEnvironment.concurrentUploads`), and the next start
+/// while Apple processes the ones before them (up to `processingWindow` in
+/// flight); placements go one at a time. Artwork takes the place of what's in its slot; an App
 /// Preview replaces the ones it names and goes first in its group. Apple's
 /// reference data decides which groups a file belongs in, by its size.
 ///
@@ -164,29 +164,51 @@ final class ExtrasPushRun {
         await task?.value
     }
 
-    /// Uploads the waiting items one by one; each goes on to processing
-    /// and placing while the next uploads, with at most
-    /// `processingWindow` uploaded and not finished.
+    /// Uploads the waiting items, `concurrentUploads` at a time; each goes
+    /// on to processing and placing while the next upload, with at most
+    /// `processingWindow` uploading or not finished.
     private func sendWaiting() async {
         let window = max(1, environment.processingWindow)
-        await withTaskGroup(of: Void.self) { group in
-            var inFlight = 0
-            for item in items where status(of: item) == .waiting {
-                waitsForRoom = inFlight >= window
-                while inFlight >= window, await group.next() != nil {
-                    inFlight -= 1
+        let uploadsAtOnce = max(1, environment.concurrentUploads)
+        var waiting = items.filter { status(of: $0) == .waiting }[...]
+        var uploading = 0
+        var withApple = 0
+        await withTaskGroup(of: SendStep.self) { group in
+            while true {
+                while uploading < uploadsAtOnce, uploading + withApple < window, let item = waiting.popFirst() {
+                    if isCancelling {
+                        statuses[item.id] = .cancelled
+                    } else if let stopReason {
+                        statuses[item.id] = .failed(stopReason)
+                    } else {
+                        uploading += 1
+                        group.addTask { await .uploaded(self.upload(item)) }
+                    }
                 }
-                waitsForRoom = false
-                if isCancelling {
-                    statuses[item.id] = .cancelled
-                } else if let stopReason {
-                    statuses[item.id] = .failed(stopReason)
-                } else if let upload = await upload(item) {
-                    inFlight += 1
-                    group.addTask { await self.finish(upload) }
+                waitsForRoom = !waiting.isEmpty && uploading + withApple >= window
+                guard let step = await group.next() else { break }
+                switch step {
+                case let .uploaded(upload):
+                    uploading -= 1
+                    guard let upload else { continue }
+                    withApple += 1
+                    group.addTask {
+                        await self.finish(upload)
+                        return .finished
+                    }
+                case .finished:
+                    withApple -= 1
                 }
             }
         }
+        waitsForRoom = false
+    }
+
+    /// What ended in `sendWaiting`: an upload (nil when it failed) or a
+    /// file's processing and placing.
+    private enum SendStep: Sendable {
+        case uploaded(Upload?)
+        case finished
     }
 
     private func finishRound() async {

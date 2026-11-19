@@ -47,6 +47,16 @@ final class FakeReleaseServices: ReleaseServices {
         actions.append("phased \(id) \(state.rawValue)")
     }
 
+    /// Each version's builds, by version id.
+    var versionBuilds: [String: ReleaseVersionBuilds] = [:]
+    /// Versions whose builds can't be read.
+    var failingBuilds: Set<String> = []
+
+    func builds(for _: StoreApp, versionID: String, versionString _: String, platform _: String?) async throws -> ReleaseVersionBuilds {
+        if failingBuilds.contains(versionID) { throw AppStoreConnectError.forbidden(detail: nil) }
+        return versionBuilds[versionID] ?? ReleaseVersionBuilds()
+    }
+
     private func check() throws {
         if refuses { throw AppStoreConnectError.forbidden(detail: nil) }
     }

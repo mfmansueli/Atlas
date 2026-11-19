@@ -39,9 +39,6 @@ struct ExtrasReviewSection: View {
             if let discarded = plan.discardedTitle {
                 discardedNote(discarded)
             }
-            if let run = extras.run, run.items.contains(where: { $0.appID == plan.appID }) {
-                ExtrasPushProgressView(run: run)
-            }
             if let error = extras.recordError {
                 Text(error).font(.caption).foregroundStyle(Palette.danger).padding(.horizontal, Spacing.small)
             }

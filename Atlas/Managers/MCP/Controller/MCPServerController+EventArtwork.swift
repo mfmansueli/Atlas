@@ -29,7 +29,9 @@ extension MCPServerController {
         do {
             let app = try await workspace.app(matching: String(parts[1]).removingPercentEncoding ?? String(parts[1]))
             let name = Self.queryValue("name", in: request.target)
-            let id = try InAppEventArtworkFiles.save(request.body, fileName: name, appID: app.id, in: eventArtworkDirectory)
+            let id = try InAppEventArtworkFiles.save(
+                request.body, fileName: name, appID: app.id, in: eventArtworkDirectory, origin: InAppEventArtworkOrigin(source: .upload, name: name)
+            )
             guard let url = InAppEventArtworkFiles.url(id: id, appID: app.id, in: eventArtworkDirectory),
                   let file = await InAppEventArtworkInspector.inspect(url)
             else {
@@ -43,6 +45,7 @@ extension MCPServerController {
                 "then": "render_event_artwork with this fileId to check it and see it with the event's text, then propose_event_artwork",
             ]
             if let seconds = file.seconds { result["seconds"] = .double((seconds * 10).rounded() / 10) }
+            if let info = InAppEventArtworkFiles.info(atPath: url.path(percentEncoded: false)) { result["sha256"] = .string(info.sha256) }
             return .json(JSONValue.object(result))
         } catch {
             return .json(["error": .string(error.localizedDescription)] as JSONValue, status: 422)

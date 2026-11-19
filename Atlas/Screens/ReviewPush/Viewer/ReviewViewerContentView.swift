@@ -8,7 +8,8 @@ import SwiftUI
 /// One item in Review & Push's viewer, as large as the room allows: a
 /// screenshot rendered again (or read) at that size, the thumbnail
 /// meanwhile; a header or search image read at it; an App Preview playing
-/// with its controls; a motion image playing on repeat. Pinch to zoom.
+/// with its controls; a motion image playing on repeat; a file a push
+/// sends, a still or a movie on repeat. Pinch to zoom.
 struct ReviewViewerContentView: View {
     let viewModel: ReviewPushViewModel
     let item: ReviewViewerItem
@@ -43,6 +44,7 @@ struct ReviewViewerContentView: View {
         switch item.content {
         case .screenshot: true
         case let .artwork(extra): extra.loopFileURL == nil
+        case let .file(file): !file.isVideo
         case .appPreview: false
         }
     }
@@ -79,6 +81,28 @@ struct ReviewViewerContentView: View {
                 model: previewPlayer, file: file, url: extra.fileURL, musicTitle: musicTitle, poster: nil, width: width.rounded(),
                 zoomIdentifier: Self.zoomIdentifier
             )
+        case let .file(file):
+            fileContent(file)
+        }
+    }
+
+    /// A pushed file: a movie on repeat with its first frame as the
+    /// poster, or the still read at the size it's drawn.
+    @ViewBuilder
+    private func fileContent(_ file: ReviewViewerFile) -> some View {
+        if file.isVideo {
+            // Its length is read from the movie.
+            FullSizeLoopPlayer(
+                model: loopPlayer, url: file.url, poster: large, width: width, aspect: aspect, identifier: "review.viewer.loop",
+                zoomIdentifier: Self.zoomIdentifier, controlsHeight: Self.loopControlsHeight, seconds: 0
+            ) { EmptyView() }
+                .task { large = await fileImage(file) }
+        } else {
+            ZoomableContainer(identifier: Self.zoomIdentifier, label: item.title) {
+                StudioShotImage(image: large, width: width, aspect: aspect, cornerFraction: 0.01)
+                    .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+            }
+            .task { large = await fileImage(file) }
         }
     }
 
@@ -108,6 +132,8 @@ struct ReviewViewerContentView: View {
             max(160, min(380, size.width, (size.height - Self.previewControlsHeight) / aspect))
         case let .artwork(extra) where extra.isMotion:
             max(80, min(size.width, (size.height - Self.loopControlsHeight) / aspect))
+        case let .file(file) where file.isVideo:
+            max(80, min(size.width, (size.height - Self.loopControlsHeight) / aspect))
         default:
             max(80, min(size.width, size.height / aspect))
         }
@@ -134,5 +160,11 @@ struct ReviewViewerContentView: View {
     /// The PNG (a motion image's poster) at the size it's drawn.
     private func artworkImage(_ extra: ExtrasReviewItem) async -> CGImage? {
         await ExtrasFileThumbnail.thumbnail(extra.fileURL, maxPixels: ScreenshotPushController.longSide(of: extra.pixelSize, width: pixelWidth))
+    }
+
+    /// The image, or a movie's first frame, at the size it's drawn.
+    private func fileImage(_ file: ReviewViewerFile) async -> CGImage? {
+        let maxPixel = ScreenshotPushController.longSide(of: file.pixelSize, width: pixelWidth)
+        return await InAppEventArtworkInspector.thumbnail(file.url, isVideo: file.isVideo, maxPixel: maxPixel)
     }
 }

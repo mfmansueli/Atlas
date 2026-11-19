@@ -132,7 +132,7 @@ extension ExtrasPushRun {
     }
 
     /// "0:42", "1:02:05".
-    static func clock(_ seconds: TimeInterval) -> String {
+    nonisolated static func clock(_ seconds: TimeInterval) -> String {
         let whole = max(0, Int(seconds.rounded(.down)))
         let pattern: Duration.TimeFormatStyle.Pattern = whole >= 3600 ? .hourMinuteSecond : .minuteSecond
         return Duration.seconds(whole).formatted(.time(pattern: pattern))

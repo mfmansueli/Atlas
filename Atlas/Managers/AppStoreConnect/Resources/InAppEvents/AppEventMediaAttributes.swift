@@ -6,7 +6,8 @@
 import Foundation
 
 /// An `appEventScreenshots` or `appEventVideoClips` resource: the image or
-/// video of an event's card or details page.
+/// video of an event's card or details page, with the file's name and size
+/// as it was uploaded and how Apple's processing went.
 struct AppEventMediaAttributes: Decodable, Sendable {
     struct ImageAsset: Decodable, Sendable {
         /// Ends in `{w}x{h}bb.{f}`.
@@ -25,9 +26,17 @@ struct AppEventMediaAttributes: Decodable, Sendable {
         }
     }
 
+    /// Where Apple's processing is: `AWAITING_UPLOAD`, `UPLOAD_COMPLETE`,
+    /// `PROCESSING` (a video), `COMPLETE` or `FAILED`, with its errors.
+    struct DeliveryState: Decodable, Sendable {
+        var state: String?
+        var errors: [ScreenshotDeliveryMessage]?
+    }
+
     /// A video clip's poster frame (`previewImage` is deprecated).
     struct PreviewFrameImage: Decodable, Sendable {
         var image: ImageAsset?
+        var state: DeliveryState?
     }
 
     /// `EVENT_CARD` or `EVENT_DETAILS_PAGE`.
@@ -38,7 +47,21 @@ struct AppEventMediaAttributes: Decodable, Sendable {
     var previewFrameImage: PreviewFrameImage?
     /// A video clip's poster, before `previewFrameImage`.
     var previewImage: ImageAsset?
+    /// The name and size of the file as it was uploaded.
+    var fileName: String?
+    var fileSize: Int?
+    /// A video clip's poster frame, "00:00:02:00".
+    var previewFrameTimeCode: String?
+    /// A screenshot's processing.
+    var assetDeliveryState: DeliveryState?
+    /// A video clip's processing.
+    var videoDeliveryState: DeliveryState?
 
     /// The image to show: a screenshot's, or a clip's poster frame.
     var shownImage: ImageAsset? { imageAsset ?? previewFrameImage?.image ?? previewImage }
+
+    /// The processing that counts for this kind of resource.
+    func deliveryState(isVideo: Bool) -> DeliveryState? {
+        isVideo ? videoDeliveryState ?? assetDeliveryState : assetDeliveryState
+    }
 }

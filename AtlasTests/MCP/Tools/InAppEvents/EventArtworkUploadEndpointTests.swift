@@ -44,6 +44,23 @@ struct EventArtworkUploadEndpointTests {
         #expect(InAppEventArtworkFiles.url(id: fileID, appID: Self.appID, in: directory)?.lastPathComponent == "card.png")
     }
 
+    /// The name the file came with and its SHA-256 are kept beside it, so
+    /// get_in_app_events can tell which file a queued upload is.
+    @Test func anUploadKeepsItsNameAndHash() async throws {
+        let png = EventArtworkTestFiles.png(width: 1920, height: 1080)
+        let response = try await send(png, query: "?name=Winter%20card%20final.png")
+        let json = try MCPTestFixtures.json(response)
+        let fileID = try #require(json["fileId"]?.stringValue)
+        #expect(json["sha256"] == .string(InAppEventArtworkFileInfo.sha256(of: png)))
+        let info = try #require(InAppEventArtworkFiles.info(id: fileID, appID: Self.appID, in: directory))
+        #expect(info.originalName == "Winter card final.png")
+        #expect(info.sha256 == InAppEventArtworkFileInfo.sha256(of: png))
+        #expect(info.origin == InAppEventArtworkOrigin(source: .upload, name: "Winter card final.png"))
+        #expect(info.savedAt != nil)
+        // The info isn't one of the files.
+        #expect(InAppEventArtworkFiles.url(id: fileID, appID: Self.appID, in: directory)?.lastPathComponent == "Winter card final.png")
+    }
+
     @Test func aVideoIsKeptWithItsLength() async throws {
         let movie = try await EventArtworkTestFiles.movie(width: 1920, height: 1080, fps: 30, frames: 30, in: EventArtworkTestFiles.directory())
         let response = try await send(Data(contentsOf: movie), query: "?name=Gratitude%20loop.mov")

@@ -96,7 +96,9 @@ struct RenderEventArtworkTool: MCPTool {
         case let .file(id):
             fileID = id
         case let .base64(data, name):
-            fileID = try InAppEventArtworkFiles.save(data, fileName: name, appID: app.id, in: directory)
+            fileID = try InAppEventArtworkFiles.save(
+                data, fileName: name, appID: app.id, in: directory, origin: InAppEventArtworkOrigin(source: .image, name: name)
+            )
         case let .html(html, name):
             let page = EventArtworkPage(html: html, fileName: name, kind: kind, locale: locale, event: event, app: app)
             guard let rendered = try await render(page, motion: arguments.optionalBool("motion") ?? false) else {
@@ -117,27 +119,42 @@ struct RenderEventArtworkTool: MCPTool {
         }
         let texts = InAppEventArtworkOverlayTexts(event: event, kind: kind, locale: locale, appName: app.name)
         var result = report.json
+        result.merge(Self.infoJSON(of: report)) { old, _ in old }
         result["locale"] = .string(locale)
         result["overlay"] = .object(texts.json)
         result["then"] = .string(next(report, appID: app.id, eventID: event.id))
-        var images: [MCPToolOutcome.ImageContent] = []
-        if let still = report.still {
-            if let art = InAppEventArtworkInspector.jpeg(still, maxPixel: Self.previewPixels) {
-                images.append(MCPToolOutcome.ImageContent(data: art, mimeType: "image/jpeg"))
-            }
-            if let laid = await InAppEventArtworkOverlayRenderer.render(still, kind: kind, texts: texts),
-               let overlay = InAppEventArtworkInspector.jpeg(laid, maxPixel: Self.previewPixels)
-            {
-                images.append(MCPToolOutcome.ImageContent(data: overlay, mimeType: "image/jpeg"))
-                result["images"] = "the art, then the art with the event's text as the App Store lays it"
-            }
-        }
+        var images = await Self.previewImages(of: report, kind: kind, texts: texts)
+        if images.count == 2 { result["images"] = "the art, then the art with the event's text as the App Store lays it" }
         if let framesPage {
             let frames = try await motionFrames(framesPage)
             result["motionFrames"] = frames.json
             images += frames.images
         }
         return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .read)], images: images)
+    }
+
+    /// The art, then the art under the event's text as the App Store lays
+    /// it, as JPEGs for the assistant to look at.
+    private static func previewImages(
+        of report: InAppEventArtworkReport, kind: InAppEventMedia.Kind, texts: InAppEventArtworkOverlayTexts
+    ) async -> [MCPToolOutcome.ImageContent] {
+        guard let still = report.still else { return [] }
+        var images: [MCPToolOutcome.ImageContent] = []
+        if let art = InAppEventArtworkInspector.jpeg(still, maxPixel: previewPixels) {
+            images.append(MCPToolOutcome.ImageContent(data: art, mimeType: "image/jpeg"))
+        }
+        if let laid = await InAppEventArtworkOverlayRenderer.render(still, kind: kind, texts: texts),
+           let overlay = InAppEventArtworkInspector.jpeg(laid, maxPixel: previewPixels)
+        {
+            images.append(MCPToolOutcome.ImageContent(data: overlay, mimeType: "image/jpeg"))
+        }
+        return images
+    }
+
+    /// The file's original name, SHA-256 and origin; nothing for a file
+    /// kept before Atlas wrote them.
+    private static func infoJSON(of report: InAppEventArtworkReport) -> [String: JSONValue] {
+        InAppEventArtworkFiles.info(atPath: report.url.path(percentEncoded: false))?.json ?? [:]
     }
 
     /// What to do with the render: fix it, send it in a concept when the
