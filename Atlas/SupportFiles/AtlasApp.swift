@@ -131,6 +131,7 @@ struct AtlasApp: App {
             AccountCommands(session: session)
             SidebarCommands()
             HelpCommands()
+            QuitCommands()
         }
 
         Settings {

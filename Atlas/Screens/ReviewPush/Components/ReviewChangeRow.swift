@@ -20,6 +20,8 @@ struct ReviewChangeRow: View {
     let onPickAlternative: (_ keepAlternative: Bool) -> Void
     var onSetOption: @MainActor (Bool) -> Void = { _ in }
     var onAccept: @MainActor () -> Void = {}
+    /// Opens an event image or video large; nil leaves it a picture.
+    var onOpenArtwork: (@MainActor () -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -81,7 +83,7 @@ struct ReviewChangeRow: View {
                     .accessibilityIdentifier("review.guideline.\(change.id)")
             }
             if let artwork = change.requests.lazy.compactMap(InAppEventArtworkPush.init).first {
-                InAppEventArtworkThumbnail(path: artwork.path, isVideo: artwork.isVideo)
+                artworkThumbnail(artwork)
                     .padding(.leading, 26)
             }
             if let option = change.option {
@@ -93,6 +95,22 @@ struct ReviewChangeRow: View {
         .padding(.vertical, Spacing.small)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("review.row.\(change.id)")
+    }
+
+    @ViewBuilder
+    private func artworkThumbnail(_ artwork: InAppEventArtworkPush) -> some View {
+        let thumbnail = InAppEventArtworkThumbnail(path: artwork.path, isVideo: artwork.isVideo)
+        if let onOpenArtwork {
+            Button(action: onOpenArtwork) { thumbnail }
+                .buttonStyle(.plain)
+                .contentShape(Rectangle())
+                .pointerStyle(.zoomIn)
+                .help(artwork.isVideo ? Text("Play the video large") : Text("See the image large"))
+                .accessibilityLabel(artwork.isVideo ? Text("Play the video large") : Text("See the image large"))
+                .accessibilityIdentifier("review.artwork.\(change.id)")
+        } else {
+            thumbnail
+        }
     }
 
     @ViewBuilder

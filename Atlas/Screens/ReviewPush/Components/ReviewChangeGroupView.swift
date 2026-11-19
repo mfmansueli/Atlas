@@ -66,7 +66,8 @@ struct ReviewChangeGroupView: View {
                     onUseRemote: { viewModel.useRemote(change.id) },
                     onPickAlternative: { viewModel.resolveAlternative(change.id, keepAlternative: $0) },
                     onSetOption: { viewModel.setOption(change.id, isOn: $0) },
-                    onAccept: { viewModel.accept(change.id) }
+                    onAccept: { viewModel.accept(change.id) },
+                    onOpenArtwork: { viewModel.openArtwork(of: change.id) }
                 )
             }
         }

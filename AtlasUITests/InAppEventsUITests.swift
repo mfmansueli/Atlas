@@ -230,6 +230,36 @@ final class InAppEventsUITests: XCTestCase {
         attach("ev-art-accepted")
     }
 
+    /// In Review & Push's list, a click on an event image or video opens it
+    /// large; Esc closes only the viewer.
+    func testArtInReviewAndPushOpensLarge() {
+        app.launch(debugScene: "ev-art")
+        XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
+        app.typeKey("p", modifierFlags: [.command, .shift])
+        let thumbnails = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'review.artwork.'"))
+        let first = thumbnails.firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 10), "Each art change's thumbnail is a button")
+        first.click()
+        let viewer = element("review.viewer")
+        XCTAssertTrue(viewer.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: element("review.viewer.title")).contains("Winter"), text(of: element("review.viewer.title")))
+        attach("review-art-viewer")
+        app.typeKey(.escape, modifierFlags: [])
+        XCTAssertTrue(viewer.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(first.exists, "Esc closes the viewer, not Review & Push")
+    }
+
+    /// ⌘Q quits with a sheet open, as the menu bar's Quit does, instead of
+    /// doing nothing.
+    func testQuitWorksWithReviewAndPushOpen() {
+        app.launch(debugScene: "ev-art")
+        XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
+        app.typeKey("p", modifierFlags: [.command, .shift])
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'review.artwork.'")).firstMatch.waitForExistence(timeout: 10))
+        app.typeKey("q", modifierFlags: .command)
+        XCTAssertTrue(app.wait(for: .notRunning, timeout: 15), "Atlas quits with the sheet open")
+    }
+
     // MARK: - Helpers
 
     private func element(_ identifier: String) -> XCUIElement {

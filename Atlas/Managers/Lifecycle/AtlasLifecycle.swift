@@ -48,7 +48,7 @@ final class AtlasLifecycle {
             checkNow: { [weak work] in Task { await work?.check() } },
             setPaused: { [weak work] in work?.setPaused($0) },
             openSettings: { [weak self] in self?.showSettings() },
-            quit: { [weak self] in self?.quitFromMenuBar() }
+            quit: { [weak self] in self?.quit() }
         )
         self.menuBar = menuBar
     }
@@ -98,12 +98,11 @@ final class AtlasLifecycle {
         }
     }
 
-    /// Quit Atlas in the menu bar's menu. A sheet left open on the window
-    /// (Review & Push, say) keeps macOS from quitting, and with the window
-    /// hidden nobody would see why, so it's closed first: after asking,
-    /// when a push runs.
-    func quitFromMenuBar() {
-        if let push, isPushing(push) {
+    /// Quit Atlas, from the menu bar's menu or ⌘Q. A sheet left open on the
+    /// window (Review & Push, say) keeps macOS from quitting without a word,
+    /// so it's closed first: after asking, when a push runs.
+    func quit() {
+        if isActive, let push, isPushing(push) {
             switch QuitChoice.ask() {
             case .cancel:
                 return
@@ -132,13 +131,14 @@ final class AtlasLifecycle {
 
     private static func waitForPushes(_ push: PushController) async {
         await push.waitUntilFinished()
-        while push.screenshots.run?.isRunning == true {
+        while push.isSendingAnything {
             try? await Task.sleep(for: .seconds(1))
         }
     }
 
+    /// Changes, screenshots or extras going out.
     private func isPushing(_ push: PushController) -> Bool {
-        push.isRunning || push.screenshots.run?.isRunning == true
+        push.isSendingAnything
     }
 
     // MARK: - Opening
