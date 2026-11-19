@@ -28,7 +28,8 @@ extension StorePageViewModel {
         }
         let shownScopes = checked.displayLocales.map { SuggestionScope.storePage($0) }
         let scopes = Set(suggestions.all(for: app.id, area: .storePage).map(\.target.scope)).union(shownScopes)
-        suggestions.setBuiltIn(StorePageBuiltInSuggestions.suggestions(for: checked, appID: app.id), appID: app.id, scopes: scopes)
+        let builtIn = StorePageBuiltInSuggestions.suggestions(for: checked, appID: app.id, checksKeywords: checksRepeatedWords)
+        suggestions.setBuiltIn(builtIn, appID: app.id, scopes: scopes)
         let pending = listing.displayLocales.flatMap { locale in
             listing.fields.filter { listing.draft($0, in: locale).isPending }.map { SuggestionTarget.storePage(locale, $0) }
         }

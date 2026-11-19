@@ -25,7 +25,10 @@ struct AppInformationContentView: View {
             if viewModel.page == .appPrivacy {
                 AppPrivacyPageView(viewModel: viewModel.privacy)
             } else {
-                HStack(alignment: .top, spacing: Spacing.large) {
+                // The two scroll views touch, with their gaps inside them, so
+                // the toolbar's hard scroll edge is one band across both
+                // instead of two blocks with the background between them.
+                HStack(alignment: .top, spacing: 0) {
                     ScrollView {
                         VStack(alignment: .leading, spacing: Spacing.large) {
                             refreshBanner
@@ -34,6 +37,8 @@ struct AppInformationContentView: View {
                         .padding(.vertical, Spacing.large + 2)
                         .padding(.horizontal, 2)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
+                        .padding(.leading, Self.sideMargin)
+                        .padding(.trailing, showsPreview ? Spacing.large : Self.sideMargin)
                     }
                     .accessibilityElement(children: .contain)
                     .accessibilityIdentifier("appInformation.page")
@@ -41,13 +46,13 @@ struct AppInformationContentView: View {
                         ScrollView {
                             AppInformationPreviewPane(viewModel: viewModel)
                                 .padding(.vertical, Spacing.large + 2)
+                                .padding(.trailing, Self.sideMargin)
                         }
                         .scrollIndicators(.never)
-                        .frame(width: 236)
+                        .frame(width: 236 + Self.sideMargin)
                     }
                 }
-                .padding(.horizontal, 20)
-                .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 }
+                .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 - 2 * Self.sideMargin }
             }
         }
         .background(Palette.content)
@@ -86,6 +91,9 @@ struct AppInformationContentView: View {
             }
         }
     }
+
+    /// The space between the columns and the window's edges.
+    private static let sideMargin: CGFloat = 20
 
     /// Age Rating keeps its own preview beside the questions.
     private var showsPreview: Bool {

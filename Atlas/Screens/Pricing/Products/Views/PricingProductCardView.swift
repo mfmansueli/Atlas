@@ -61,10 +61,13 @@ struct PricingProductCardView: View {
             }
             HStack {
                 Spacer()
-                Button("Edit Prices…", action: onOpen)
+                // In-app purchase prices are shown, not changed.
+                Button(card.product.isInAppPurchase ? "See Prices…" : "Edit Prices…", action: onOpen)
                     .buttonStyle(.link)
                     .controlSize(.small)
-                    .accessibilityLabel(Text("Edit every price of \(card.product.name)"))
+                    .accessibilityLabel(
+                        card.product.isInAppPurchase ? Text("See every price of \(card.product.name)") : Text("Edit every price of \(card.product.name)")
+                    )
                     .accessibilityIdentifier("pricing.card.open")
             }
         }

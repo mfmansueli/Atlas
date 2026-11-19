@@ -52,7 +52,7 @@ struct KeyAssistantSetupTestStep: View {
                     )
                     Divider()
                     place(
-                        String(localized: "Settings → Translation"),
+                        String(localized: "Settings → AI Assistants"),
                         viewModel.usesKeyForTranslations ? String(localized: "Uses the same key for translations") : String(localized: "Still uses its own key")
                     )
                 }

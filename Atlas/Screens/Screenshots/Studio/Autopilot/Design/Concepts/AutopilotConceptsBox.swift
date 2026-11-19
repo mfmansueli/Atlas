@@ -36,11 +36,11 @@ struct AutopilotConceptsBox: View {
         .accessibilityIdentifier("autopilot.design.concepts")
     }
 
-    /// "Header concepts from Claude Design", "Header concepts, from your
+    /// "Header concepts from Claude", "Header concepts, from your
     /// templates".
     private var title: String {
         run.plan.alsoMakes.artworkStyle == .free
-            ? String(localized: "Header concepts from \(run.designKind.usesDesignAI ? run.designKind.title : DesignProjectKind.claudeDesign.title)")
+            ? String(localized: "Header concepts from \(DesignProjectKind.claude)")
             : String(localized: "Header concepts, from your templates")
     }
 
@@ -72,7 +72,7 @@ struct AutopilotConceptsBox: View {
                     if run.conceptsToAnimate.contains(where: { $0.id == concept.id }) {
                         HStack(spacing: Spacing.xSmall) {
                             if studio.assistantIsWorking { ProgressView().controlSize(.mini) }
-                            Text("\(run.designKind.title) is animating its \(AutopilotArtworkMotion.loopSeconds)-second loop…")
+                            Text("\(run.designKind.designer) is animating its \(AutopilotArtworkMotion.loopSeconds)-second loop…")
                         }
                         .font(.caption)
                         .foregroundStyle(Palette.label2)

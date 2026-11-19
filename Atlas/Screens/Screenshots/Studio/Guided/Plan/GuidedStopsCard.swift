@@ -93,7 +93,7 @@ struct GuidedStopsCard: View {
     /// What the toggle does, on or off.
     static func designDetail(_ plan: AutopilotPlan, client: String) -> String {
         plan.assistantDesignsLooks == true
-            ? String(localized: "\(client) reads its design docs and theme, and \(DesignProjectKind.claudeDesign.title) designs 3 looks")
+            ? String(localized: "\(client) reads its design docs and theme, and \(DesignProjectKind.claude) designs 3 looks")
             : String(localized: "otherwise Atlas’s starters, colored from the app icon")
     }
 

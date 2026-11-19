@@ -15,8 +15,13 @@ import SwiftUI
 ///   following a phased release; `nav-free`: the Free plan.
 /// - `nav-s`: the sidebar hidden, so the toolbar has the section menu and
 ///   the app's title; `nav-s-menu`: that menu open.
+/// - `nav-prefetch`: Overview with the other sections read ahead, the
+///   Store Page and App Information taking `prefetchDelay` to read.
 enum NavigationDebugScenes {
-    static let ids = ["nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-ph", "nav-free", "nav-s", "nav-s-menu"]
+    static let ids = ["nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-ph", "nav-free", "nav-s", "nav-s-menu", "nav-prefetch"]
+
+    /// How long each slow read of `nav-prefetch` takes.
+    static let prefetchDelay: Duration = .seconds(4)
 
     @MainActor
     static func view(for id: String) -> AnyView? {
@@ -30,6 +35,13 @@ enum NavigationDebugScenes {
             ))
         case "nav-free":
             return AnyView(DebugMainScene(section: .storePage, suggestions: SuggestionsDebugData.store(), isFree: true))
+        case "nav-prefetch":
+            var services = WorkspaceServices.debug
+            var storePage = DebugStorePageServices()
+            storePage.delay = prefetchDelay
+            services.storePage = storePage
+            services.appInformation = DebugAppInformationServices(delay: prefetchDelay)
+            return AnyView(DebugMainScene(services: services, section: .overview, prefetchesSections: true))
         case "nav-s", "nav-s-menu":
             NavigationDebugLaunch.hidesSidebar = true
             NavigationDebugLaunch.opensSectionMenu = id == "nav-s-menu"

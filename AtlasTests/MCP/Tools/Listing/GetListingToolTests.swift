@@ -47,6 +47,20 @@ struct GetListingToolTests {
         #expect(result["glossary"] == ["keepUntranslated": ["Lumen Plus"], "tone": "playful"])
     }
 
+    @Test func storeTextRulesComeWithTheListingAndBrokenOnesShowInStates() async throws {
+        var listing = StorePageContentFixtures.editable.listing()
+        listing.edit(.promotionalText, in: .german, to: "Jetzt kostenlos laden.")
+        let builder = ListingChangeBuilder(appID: "app1", ids: StorePageContentFixtures.ids, versionString: "2.0")
+        changes.upsert(contentsOf: builder.changes(for: listing))
+
+        let result = try await call(["appId": "app1"]).result
+        #expect(result["storeTextRules"] == StoreTextRules.json)
+        let german = result["locales"]?.arrayValue?.first { $0["code"] == "de-DE" }
+        let state = german?["states"]?["promotionalText"]?.stringValue ?? ""
+        #expect(state.hasPrefix("changed by the person, waiting in review; App Review would reject it: "), "\(state)")
+        #expect(state.contains("(Guideline 2.3.7): “kostenlos”."), "\(state)")
+    }
+
     @Test func queuedChangesAreLaidOnTop() async throws {
         var listing = StorePageContentFixtures.editable.listing()
         listing.edit(.promotionalText, in: .german, to: "Wöchentliche Rückblicke sind da.")

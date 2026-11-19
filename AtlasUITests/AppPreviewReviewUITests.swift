@@ -7,7 +7,7 @@ import XCTest
 
 /// Board 29, driven through the DEBUG scenes in `StudioDebugPreviewReview`:
 /// Look's App Preview music, the App Preview tab of Review & push while it's
-/// watched (play, quick asks, Ask Claude Design, a revision, Approve), and
+/// watched (play, quick asks, Ask Claude, a revision, Approve), and
 /// the full-size viewer over the new set and over Choose. The scenes make real App Previews
 /// on their first launch, so the player waits a little longer the first
 /// time. Each test attaches the window's screenshot.
@@ -107,7 +107,7 @@ final class AppPreviewReviewUITests: XCTestCase {
         element("autopilot.watch.ask").click()
         let busy = element("autopilot.watch.busy")
         XCTAssertTrue(busy.waitForExistence(timeout: 5))
-        XCTAssertTrue(text(of: busy).hasPrefix("Claude Design is revising “Slower pace, start with search”"), text(of: busy))
+        XCTAssertTrue(text(of: busy).hasPrefix("Claude is revising “Slower pace, start with search”"), text(of: busy))
         XCTAssertFalse(app.buttons["autopilot.guided.review.approve"].isEnabled, "Approve waits for the new version")
         attachScreenshot("Watch · asked")
     }

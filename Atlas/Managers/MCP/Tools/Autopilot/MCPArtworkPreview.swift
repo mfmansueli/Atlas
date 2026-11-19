@@ -6,7 +6,7 @@
 import CoreGraphics
 import Foundation
 
-/// A run's Claude Design pages rendered in one language and checked the
+/// A run's HTML pages rendered in one language and checked the
 /// way the artwork will be made: what render_artwork returns, and what
 /// propose_direction and revise_direction send back (or refuse on).
 @MainActor

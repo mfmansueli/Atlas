@@ -40,7 +40,7 @@ enum RetentionImageRule {
             fileName: url.lastPathComponent,
             pixelWidth: width,
             pixelHeight: height,
-            note: String(localized: "made by Claude Design"),
+            note: String(localized: "made by Claude"),
             localPath: url.path,
             hasAlpha: hasAlpha,
             isPNG: type == UTType.png.identifier

@@ -101,7 +101,7 @@ struct ArtworkStoreNamesTests {
         #expect(!expected.isEmpty)
         #expect(fixtures.run?.storeNames == expected)
         let fill = brief["artworkDesign"]?["fillIns"]?["appName"]?.stringValue ?? ""
-        #expect(fill.contains("as each language's App Store page has it"), "Claude Design knows the name changes by language")
+        #expect(fill.contains("as each language's App Store page has it"), "Claude knows the name changes by language")
     }
 }
 #endif

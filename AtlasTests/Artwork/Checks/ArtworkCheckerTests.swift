@@ -30,7 +30,7 @@ struct ArtworkCheckerTests {
         #expect(price.kind == .price)
         #expect(price.severity == .error)
         #expect(price.shortReason == "Price")
-        #expect(price.text == "German header: ‘4,99 €’ — prices and currency symbols aren’t allowed here.")
+        #expect(price.text == "German header: ‘4,99 €’ — prices, “free” and currency symbols aren’t allowed here.")
         #expect(!ArtworkChecker.canPush(found))
     }
 

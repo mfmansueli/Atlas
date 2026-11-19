@@ -187,7 +187,7 @@ extension RetentionModel {
         isImageSheetPresented = false
     }
 
-    /// A PNG Claude Design (or the person) made, checked against Apple's
+    /// A PNG Claude (or the person) made, checked against Apple's
     /// rules; it's uploaded to the Asset Library when the message is pushed.
     func useImageFile(at url: URL) {
         guard let image = RetentionImageRule.image(at: url, name: url.deletingPathExtension().lastPathComponent) else {

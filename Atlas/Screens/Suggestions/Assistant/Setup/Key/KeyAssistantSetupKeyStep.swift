@@ -58,7 +58,7 @@ struct KeyAssistantSetupKeyStep: View {
                 }
                 GridRow {
                     Color.clear.frame(width: 1, height: 1)
-                    Toggle("Also use this key for translations (Settings → Translation)", isOn: $viewModel.usesKeyForTranslations)
+                    Toggle("Also use this key for translations (Settings → AI Assistants)", isOn: $viewModel.usesKeyForTranslations)
                         .toggleStyle(.checkbox)
                         .accessibilityIdentifier("keySetup.translations")
                 }

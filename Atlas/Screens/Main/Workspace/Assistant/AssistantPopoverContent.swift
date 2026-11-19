@@ -15,10 +15,15 @@ import SwiftUI
 /// Atlas started keep going with it closed, so they're listed with
 /// Stop.
 struct AssistantPopoverContent: View {
+    /// The app's request from an asking button, while it runs: said first.
+    var ask: AssistantAsk?
     let status: AssistantStatus
     let activity: AssistantActivity
     /// The client the button names, once paired.
     let client: MCPPairedClient?
+    /// What's true for the app on screen, once connected: its status and
+    /// where the client works replace the last folder it worked in.
+    var connection: AssistantConnection?
     let editsDrafts: Bool
     let recentCalls: [MCPLogEntry]
     /// The API key, when it's what suggests.
@@ -40,6 +45,17 @@ struct AssistantPopoverContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             header
+            if let ask {
+                Label {
+                    Text(ask.popoverText)
+                        .fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    AssistantWorkingDot()
+                }
+                .font(.callout)
+                .foregroundStyle(Palette.machineTranslated)
+                .accessibilityIdentifier("workspace.assistantPopover.ask")
+            }
             if status.isConnected {
                 clientBox
                 AssistantLaunchedRunsList()
@@ -74,8 +90,8 @@ struct AssistantPopoverContent: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: Spacing.xxSmall) {
-                AssistantStatusDot(status: status)
-                Text(status.title)
+                AssistantStatusDot(status: status, tone: connection?.tone)
+                Text(connection?.statusTitle ?? status.title)
                     .font(.caption)
                     .foregroundStyle(Palette.label2)
             }
@@ -104,7 +120,13 @@ struct AssistantPopoverContent: View {
                         .font(.caption)
                         .foregroundStyle(Palette.label2)
                 }
-                if let directory = client.workingDirectory {
+                if let connection {
+                    Text(connection.detail())
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("assistant.client.connection")
+                } else if let directory = client.workingDirectory {
                     Text("Project \(directory)")
                         .font(.caption)
                         .foregroundStyle(Palette.label2)

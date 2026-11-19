@@ -29,6 +29,17 @@ enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
         }
     }
 
+    /// The In-App Texts field a display text becomes, for App Review's
+    /// rules; nil for what customers never see.
+    var inAppTextField: InAppTextField? {
+        switch self {
+        case .groupDisplayName: .subscriptionGroupName
+        case .displayName: .subscriptionName
+        case .description: .subscriptionDescription
+        case .groupReferenceName, .referenceName, .productID, .price, .reviewNote: nil
+        }
+    }
+
     /// The display texts use In-App Texts' limits; reference names and
     /// product IDs App Store Connect's.
     var limit: Int? {

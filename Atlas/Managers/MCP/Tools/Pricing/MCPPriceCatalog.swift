@@ -62,7 +62,7 @@ struct MCPPriceCatalog {
     /// (`MCPStartingPriceProposer`).
     func sheetIfPriced(for product: PricingProduct) async throws -> MCPPriceSheet? {
         let services = workspace.services.pricing
-        // Proceeds use the commission set in Settings → General.
+        // Proceeds use the commission set in Settings → Pricing.
         let commission = workspace.commission()
         do {
             let sheet = try await services.priceSheet(for: product, commission: commission)
@@ -70,6 +70,8 @@ struct MCPPriceCatalog {
             return MCPPriceSheet(app: app, product: product, mode: mode, sheet: sheet, calculator: calculator, workspace: workspace)
         } catch PricingSheetError.noStartingPrice {
             return nil
+        } catch let error as PricingSheetError {
+            throw MCPToolError.unavailable(error.localizedDescription)
         } catch {
             throw MCPToolError.unavailable(String(localized: "Couldn’t read the prices of \(product.name): \(error.localizedDescription)"))
         }

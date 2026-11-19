@@ -38,6 +38,14 @@ extension MCPServerController {
     /// against it, so whatever still carries it is refused from now on.
     func revokeRunToken(_ token: String) {
         runTokens[token] = nil
+        endedRunTokens.insert(token)
+    }
+
+    /// `header` carries a run's token, live or ended.
+    func isRunCredential(_ header: String?) -> Bool {
+        guard let credential = MCPAccessToken.bearer(in: header) else { return false }
+        return runTokens.keys.contains { MCPAccessToken.matches(credential, token: $0) }
+            || endedRunTokens.contains { MCPAccessToken.matches(credential, token: $0) }
     }
 
     /// Turns the server on if it's off and waits until it listens, for up

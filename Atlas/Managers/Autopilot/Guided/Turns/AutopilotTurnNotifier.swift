@@ -27,11 +27,12 @@ final class AutopilotTurnNotifier {
 
     /// The notification for `turn` in `run`, replacing the app's last one.
     func post(_ turn: AutopilotTurn, run: AutopilotRun, appName: String) {
-        guard let center else { return }
+        // Settings → Notifications → "Something needs me".
+        guard let center, NotificationPreferences.shared.needsYou else { return }
         let content = UNMutableNotificationContent()
         content.title = turn.title
         content.body = turn.body(appName: appName, startedAt: run.startedAt)
-        content.sound = .default
+        content.sound = AtlasNotifier.shared.sound
         content.threadIdentifier = "autopilot"
         let request = UNNotificationRequest(identifier: "autopilot.\(run.appID)", content: content, trigger: nil)
         center.add(request)

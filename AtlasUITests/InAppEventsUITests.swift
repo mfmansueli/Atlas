@@ -5,8 +5,9 @@
 
 import XCTest
 
-/// In-App Events (⌘4) in its DEBUG scenes (board 40; Lumen Journal's
-/// sample events, nothing reaches Apple): an event's languages with their
+/// In-App Events (⌘5) in its DEBUG scenes (board 40; Lumen Journal's
+/// sample events, nothing reaches Apple): the gallery and an event's page,
+/// the name's menu of the other events, an event's languages with their
 /// suggestions, accepting one or all, the event that goes with the
 /// version, an ended event, and a new one.
 @MainActor
@@ -22,17 +23,49 @@ final class InAppEventsUITests: XCTestCase {
         app.terminate()
     }
 
+    // MARK: - Gallery and page
+
+    func testTheGalleryOpensAnEventsPageAndEventsGoesBack() {
+        app.launch(debugScene: "ev-list")
+        let winter = element("events.tile.event-winter")
+        XCTAssertTrue(winter.waitForExistence(timeout: 15))
+        XCTAssertTrue(winter.label.contains("3 concepts to choose from"), winter.label)
+        XCTAssertTrue(element("events.tile.event-mood").label.contains("Goes with 1.4"), element("events.tile.event-mood").label)
+        XCTAssertTrue(element("events.tile.event-gratitude").exists)
+        attach("ev-list")
+        winter.click()
+        XCTAssertTrue(element("events.hero").waitForExistence(timeout: 10))
+        XCTAssertTrue(element("events.page.name").label.contains("Winter Reflection 2026"))
+        element("events.page.back").click()
+        XCTAssertTrue(element("events.gallery").waitForExistence(timeout: 10))
+        XCTAssertFalse(element("events.hero").exists)
+    }
+
+    func testTheNameIsAMenuOfTheOtherEvents() {
+        app.launch(debugScene: "ev-menu")
+        XCTAssertTrue(element("events.menu").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("events.menu.event-winter").isSelected)
+        attach("ev-menu")
+        element("events.menu.event-gratitude").click()
+        XCTAssertTrue(waitForLabel(containing: "Gratitude Week", in: element("events.page.name")))
+        XCTAssertEqual(text(of: element("events.status")), "Ended")
+        element("events.page.name").click()
+        XCTAssertTrue(element("events.menu.all").waitForExistence(timeout: 5))
+        element("events.menu.all").click()
+        XCTAssertTrue(element("events.gallery").waitForExistence(timeout: 10))
+    }
+
     func testAnEventShowsItsSuggestedLanguages() {
         app.launch(debugScene: "ev")
         XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
-        XCTAssertEqual(text(of: element("events.title")), "Winter Reflection 2026")
+        XCTAssertTrue(element("events.page.name").label.contains("Winter Reflection 2026"))
         XCTAssertEqual(text(of: element("events.status")), "Draft")
         XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
         XCTAssertTrue(element("events.suggestion").exists)
         XCTAssertEqual(text(of: element("events.field.name.suggested")), "Winter-Reflexion in 31 Tagen")
         XCTAssertEqual(element("events.language.de-DE").label, "German, suggestion to review")
         XCTAssertEqual(text(of: element("events.preview.name")), "Winter-Reflexion in 31 Tagen")
-        XCTAssertTrue(text(of: element("events.preview.note")).hasPrefix("Showing the suggestion."))
+        XCTAssertTrue(text(of: element("events.preview.note")).hasPrefix("Text: the German suggestion."), text(of: element("events.preview.note")))
         attach("ev")
     }
 
@@ -51,6 +84,23 @@ final class InAppEventsUITests: XCTestCase {
         XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
     }
 
+    /// Apple's In-App Events page: a specific price is rejected. The field
+    /// warns, and the person can still keep it.
+    func testAPriceInAnEventTextIsWarned() {
+        app.launch(debugScene: "ev")
+        let name = element("events.field.name")
+        XCTAssertTrue(name.waitForExistence(timeout: 15))
+        scrollTo(name)
+        XCTAssertFalse(element("events.field.name.guideline").exists)
+        name.click()
+        name.typeKey("a", modifierFlags: .command)
+        name.typeText("Winter for $4.99")
+        let warning = element("events.field.name.guideline")
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: warning).contains("Guideline 2.3.13"), text(of: warning))
+        XCTAssertEqual(name.value as? String, "Winter for $4.99")
+    }
+
     func testASuggestionSaysWhyItReadsThisWay() {
         app.launch(debugScene: "ev-br")
         let why = element("events.suggestion.why")
@@ -64,6 +114,7 @@ final class InAppEventsUITests: XCTestCase {
         app.launch(debugScene: "ev-ar")
         XCTAssertTrue(element("events.field.name.suggested").waitForExistence(timeout: 15))
         XCTAssertEqual(text(of: element("events.field.name.suggested")), "تحدي تأملات الشتاء")
+        XCTAssertEqual(text(of: element("events.preview.name")), "تحدي تأملات الشتاء")
         attach("ev-ar")
     }
 
@@ -77,13 +128,13 @@ final class InAppEventsUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: done, object: title)], timeout: 10), .completed, text(of: title))
         XCTAssertTrue(app.staticTexts["Accepted 9 languages for Winter Reflection Challenge. They’re in Review & Push."].exists)
         XCTAssertFalse(element("events.acceptAll").exists)
-        attach("ev-done")
+        attach("ev-accepted")
     }
 
     func testTheEventThatGoesWithTheVersionOpensTheSubmission() {
         app.launch(debugScene: "ev-mood")
         XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
-        XCTAssertEqual(text(of: element("events.title")), "1.4 Mood Calendar")
+        XCTAssertTrue(element("events.page.name").label.contains("1.4 Mood Calendar"))
         let status = element("events.status")
         let goesWith = NSPredicate(format: "value == %@ OR label == %@", "Goes with 1.4", "Goes with 1.4")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: goesWith, object: status)], timeout: 10), .completed, text(of: status))
@@ -101,11 +152,15 @@ final class InAppEventsUITests: XCTestCase {
         // The numbers arrive after the event shows.
         let views = NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", "Event page views", "Event page views")
         XCTAssertTrue(app.descendants(matching: .any).matching(views).firstMatch.waitForExistence(timeout: 10))
+        XCTAssertEqual(text(of: element("events.art.line")), "Event card and event details")
+        XCTAssertEqual(text(of: element("events.art.detail")), "As they were on the App Store.")
         XCTAssertEqual(element("events.footer.button").label, "Duplicate Event")
         XCTAssertFalse(element("events.field.name").isEnabled, "An ended event's texts can't be changed")
         attach("ev-ended")
         element("events.footer.button").click()
-        XCTAssertTrue(queued("Create “Gratitude Week copy”").waitForExistence(timeout: 5))
+        // The copy waits in the gallery.
+        element("events.page.back").click()
+        XCTAssertTrue(queued("Gratitude Week copy").waitForExistence(timeout: 5))
     }
 
     func testANewEventWaitsInReviewAndPush() {
@@ -119,7 +174,8 @@ final class InAppEventsUITests: XCTestCase {
         name.typeText("Spring Reset 2027")
         element("events.new.add").click()
         XCTAssertTrue(element("events.new.sheet").waitForNonExistence(timeout: 10))
-        XCTAssertTrue(queued("Create “Spring Reset 2027”").waitForExistence(timeout: 5))
+        XCTAssertTrue(queued("Spring Reset 2027").waitForExistence(timeout: 5))
+        attach("ev-new-queued")
     }
 
     func testANewEventTakesADeepLinkAndWhetherItNeedsAPurchase() {
@@ -144,7 +200,7 @@ final class InAppEventsUITests: XCTestCase {
         attach("ev-new-filled")
         element("events.new.add").click()
         XCTAssertTrue(element("events.new.sheet").waitForNonExistence(timeout: 10))
-        XCTAssertTrue(queued("Create “Summer Streak 2027”").waitForExistence(timeout: 5))
+        XCTAssertTrue(queued("Summer Streak 2027").waitForExistence(timeout: 5))
     }
 
     func testAnAppWithoutEventsOffersANewOne() {
@@ -157,10 +213,7 @@ final class InAppEventsUITests: XCTestCase {
         app.launch(debugScene: "ev-art")
         XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
         let card = element("events.media.proposal.card")
-        // Images and video sits below the fold.
-        for _ in 0..<8 where !card.isHittable {
-            element("events.editor").scroll(byDeltaX: 0, deltaY: -400)
-        }
+        scrollTo(card)
         XCTAssertTrue(card.waitForExistence(timeout: 5))
         XCTAssertTrue(element("events.media.preview.card").exists)
         XCTAssertTrue(element("events.media.preview.details").exists)
@@ -177,19 +230,37 @@ final class InAppEventsUITests: XCTestCase {
         attach("ev-art-accepted")
     }
 
+    // MARK: - Helpers
+
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
     }
 
-    /// An event waiting in Review & Push, under the list.
-    private func queued(_ title: String) -> XCUIElement {
-        let row = NSPredicate(format: "identifier BEGINSWITH %@ AND label BEGINSWITH %@", "events.queued.", title)
-        return app.descendants(matching: .any).matching(row).firstMatch
+    /// The page scrolls: what's below the fold comes up.
+    private func scrollTo(_ target: XCUIElement) {
+        for _ in 0..<8 where !(target.exists && target.isHittable) {
+            element("events.editor").scroll(byDeltaX: 0, deltaY: -400)
+        }
+    }
+
+    /// A new event waiting in Review & Push, as a tile in the gallery.
+    private func queued(_ name: String) -> XCUIElement {
+        let tile = NSPredicate(format: "identifier BEGINSWITH %@ AND label CONTAINS %@", "events.queued.", name)
+        return app.descendants(matching: .any).matching(tile).firstMatch
     }
 
     /// A SwiftUI text's words are its value; a button's are its label.
     private func text(of element: XCUIElement) -> String {
         [element.label, element.value as? String ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
+    }
+
+    private func waitForLabel(containing part: String, in element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if element.exists, element.label.contains(part) { return true }
+            RunLoop.current.run(until: .now.addingTimeInterval(0.1))
+        }
+        return false
     }
 
     private func attach(_ name: String) {

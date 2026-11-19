@@ -20,6 +20,13 @@ struct AppStoreConnectRateLimit: Hashable, Sendable {
         limit > 0 ? min(1, Double(used) / Double(limit)) : 0
     }
 
+    /// More than a quarter of the hour's quota is left: enough to read
+    /// sections ahead in the background without eating into what the
+    /// person's own reads and pushes need.
+    var leavesRoomToReadAhead: Bool {
+        remaining * 4 > limit
+    }
+
     init(limit: Int, remaining: Int) {
         self.limit = limit
         self.remaining = remaining

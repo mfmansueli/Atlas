@@ -48,7 +48,7 @@ struct ProposeArtworkVariantTool: MCPTool {
             ],
             required: ["appId", "run", "change"]
         ),
-        proposalKind: .screenshots
+        proposalKind: .artwork
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {

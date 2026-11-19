@@ -39,7 +39,7 @@ struct PushRecordTests {
 
     @Test func mixedSectionsUseFullNamesInShortcutOrder() {
         let changes = [PushFixtures.screenshot("German · Slot 3"), PushFixtures.price("BRA"), PushFixtures.screenshot("German · Slot 4")]
-        // In the sidebar's order: Screenshots (⌘3) comes before Pricing (⌘6).
+        // In the sidebar's order: Screenshots (⌘3) comes before Pricing (⌘7).
         let names = ["Screenshots", "Subscription Pricing"].formatted(.list(type: .and))
         #expect(PushRecord.title(for: changes) == "\(names) · 3 changes")
     }

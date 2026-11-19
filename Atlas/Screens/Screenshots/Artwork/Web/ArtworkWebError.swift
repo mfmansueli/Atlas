@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Why a Claude Design page couldn't be rendered.
+/// Why an HTML page couldn't be rendered.
 enum ArtworkWebError: LocalizedError, Equatable {
     case setupFailed
     case loadFailed(String)
@@ -13,6 +13,11 @@ enum ArtworkWebError: LocalizedError, Equatable {
     case snapshotFailed
     case tooLarge(Int)
     case timedOut
+    /// WebKit failed twice in a row on the page.
+    case rendererStopped
+
+    /// Why a load ends when the page's process does.
+    static let processEnded = String(localized: "the page’s process ended")
 
     var errorDescription: String? {
         switch self {
@@ -28,6 +33,11 @@ enum ArtworkWebError: LocalizedError, Equatable {
             String(localized: "The page is \(bytes.formatted(.byteCount(style: .file))); keep it under \(AutopilotArtworkDesign.maximumBytes.formatted(.byteCount(style: .file))).")
         case .timedOut:
             String(localized: "The page took too long to load.")
+        case .rendererStopped:
+            String(localized: """
+            The page renderer stopped twice on this page. Send it again; if it stops again, lighten the page \
+            (fewer or smaller blurs and filters).
+            """)
         }
     }
 }

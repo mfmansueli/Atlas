@@ -93,7 +93,7 @@ struct StudioSetSummaryBuilderTests {
         builder.run = StudioDebugRuns.run(.ready)
         let now = Self.finishedAt.addingTimeInterval(2 * 3600)
         let summary = StudioSetSummaryBuilder(preview: builder, templateVersion: 4, captureCount: 30, now: now).summary()
-        #expect(Self.value(summary, "Design") == "Quiet Indigo · template v4 · Claude Design")
+        #expect(Self.value(summary, "Design") == "Quiet Indigo · template v4 · Claude")
         #expect(Self.value(summary, "Captures") == "Claude Code in Simulator · 2 hours ago")
     }
 

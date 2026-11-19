@@ -104,7 +104,8 @@ struct SuggestEverythingScope: Hashable, Sendable {
     static var inAppTextsRequest: String {
         String(localized: """
         Also propose the In-App Texts that are missing, in every language: the subscription group's display name and each \
-        subscription's and in-app purchase's display name and description (get_in_app_texts, then propose_in_app_texts).
+        subscription's and in-app purchase's display name and description (get_in_app_texts, then propose_in_app_texts). \
+        \(StoreTextRules.inAppSummary)
         """)
     }
 

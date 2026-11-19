@@ -17,7 +17,7 @@ struct AutopilotWatchAskBox: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
                 if canRevise {
-                    Pill(text: "\(kind.monogram) \(kind.title)", style: .outline)
+                    Pill(text: designer, style: .outline)
                 }
                 Text("Ask for changes").font(.callout.weight(.semibold))
             }
@@ -32,9 +32,9 @@ struct AutopilotWatchAskBox: View {
                         .textFieldStyle(.roundedBorder)
                         .onSubmit { if canAsk { studio.askForPreviewChanges() } }
                         .disabled(!canRevise || isBusy)
-                        .accessibilityLabel(Text("Ask \(kind.title) for changes"))
+                        .accessibilityLabel(Text("Ask \(designer) for changes"))
                         .accessibilityIdentifier("autopilot.watch.note")
-                    Button(canRevise ? String(localized: "Ask \(kind.title)") : String(localized: "Needs a design project")) {
+                    Button(canRevise ? String(localized: "Ask \(designer)") : String(localized: "Needs a design project")) {
                         studio.askForPreviewChanges()
                     }
                     .buttonStyle(.borderedProminent)
@@ -83,6 +83,9 @@ struct AutopilotWatchAskBox: View {
     /// Who takes the asks: the design project's AI, or Claude in a guided
     /// run without one.
     private var kind: DesignProjectKind { run.reviser ?? run.designKind }
+
+    /// Who revises: Claude, whatever the design project.
+    private var designer: String { kind.designer }
     private var canRevise: Bool { run.reviser != nil }
     private var review: AutopilotPreviewReview? { run.previewReview }
     private var isBusy: Bool { review?.isBusy == true }
@@ -105,12 +108,12 @@ struct AutopilotWatchAskBox: View {
         }
     }
 
-    /// Making it again, or the design source revising: "Claude Design is
+    /// Making it again, or the design source revising: "Claude is
     /// revising “Slower pace”. Recordings stay; only captions, pacing,
     /// order and the end card change."
     private var status: String? {
         if let remake = review?.remake { return remake.title }
         guard let request = review?.request else { return nil }
-        return String(localized: "\(kind.title) is revising “\(request.note)”. Recordings stay; only captions, pacing, order and the end card change.")
+        return String(localized: "\(designer) is revising “\(request.note)”. Recordings stay; only captions, pacing, order and the end card change.")
     }
 }

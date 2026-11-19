@@ -1,0 +1,28 @@
+//
+//  ProductPagesServices.swift
+//  Atlas
+//
+
+import Foundation
+
+/// What Product Pages needs from App Store Connect. `LiveProductPagesServices`
+/// reads it; tests and DEBUG scenes use canned pages. Changes go through
+/// Review & Push like every other edit.
+@MainActor
+protocol ProductPagesServices {
+    /// The app's custom product pages with their versions and languages,
+    /// and the default page.
+    func pages(for app: StoreApp) async throws -> ProductPagesSnapshot
+    /// A page language's own screenshot sets.
+    func pageScreenshots(localizationID: String, locale: String) async throws -> [LiveScreenshotSet]
+    /// The default page's screenshot sets in a language.
+    func defaultScreenshots(localizationID: String, locale: String) async throws -> [LiveScreenshotSet]
+    /// Sends a page's version to App Review by itself, without a version
+    /// of the app.
+    func submit(versionID: String, of app: StoreApp) async throws
+}
+
+extension ProductPagesServices {
+    func pageScreenshots(localizationID _: String, locale _: String) async throws -> [LiveScreenshotSet] { [] }
+    func defaultScreenshots(localizationID _: String, locale _: String) async throws -> [LiveScreenshotSet] { [] }
+}

@@ -8,13 +8,13 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// Claude Design designs the header and search itself: the brief tells it
+/// Claude designs the header and search itself: the brief tells it
 /// everything Atlas does with its HTML pages, propose_direction and
 /// revise_direction take them (rendered and checked, refused when they
 /// can't be used), render_artwork shows one in any language, and next_step
 /// sends them back for changes and Product Page Optimization variants.
 @MainActor
-@Suite("Claude Design's header and search pages over MCP", .serialized)
+@Suite("Claude's header and search pages over MCP", .serialized)
 struct ArtworkDesignToolsTests {
     private static let pages = JSONValue.object(StudioDebugWebArtwork.quietIndigo.pages.mapValues(JSONValue.string))
 

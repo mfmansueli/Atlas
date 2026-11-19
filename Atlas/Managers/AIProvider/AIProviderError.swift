@@ -41,7 +41,7 @@ enum AIProviderError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case let .unauthorized(vendor):
-            String(localized: "\(vendor.title) rejected the API key. Check it in Settings → Translation.")
+            String(localized: "\(vendor.title) rejected the API key. Check it in Settings → AI Assistants.")
         case let .rateLimited(vendor):
             String(localized: "\(vendor.title)’s rate limit was reached. Try again in a minute.")
         case let .unavailable(vendor):

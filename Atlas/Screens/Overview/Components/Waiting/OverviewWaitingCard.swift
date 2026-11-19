@@ -113,6 +113,7 @@ struct OverviewWaitingCard: View {
         case .analytics: Palette.sectionAnalytics
         case .reviews: Palette.sectionReviews
         case .inAppEvents: Palette.sectionEvents
+        case .productPages: Palette.sectionProductPages
         }
     }
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// A direction's header and search artwork as Claude Design made it: one
+/// A direction's header and search artwork as Claude made it: one
 /// self-contained HTML page per canvas, laid out at the canvas's pixel
 /// size. Atlas renders each page in every language
 /// (`ArtworkWebRenderer`), filling in what the page marks with `data-al`

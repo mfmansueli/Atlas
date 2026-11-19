@@ -148,13 +148,16 @@ extension ReleaseViewModel {
             appID: app.id, versionID: status.version.id, platform: status.version.platform, buildID: build.id,
             attachedBuildID: status.attachedBuildID,
             usesNonExemptEncryption: answer?.usesNonExemptEncryption == build.usesNonExemptEncryption ? nil : answer?.usesNonExemptEncryption,
-            timing: options.releaseTiming, isPhased: options.isPhased, phasedReleaseID: status.phased?.id,
-            eventIDs: submittableEvents.map(\.id).filter(options.eventIDs.contains), openSubmission: status.submission
+            timing: options.releaseTiming, isPhased: options.isPhased,
+            eventIDs: submittableEvents.map(\.id).filter(options.eventIDs.contains)
         )
         do {
             try await services.release.submit(plan)
         } catch {
             submitError = error.localizedDescription
+            // Some of it may have gone: what App Store Connect has now,
+            // so the sheet and the next try start from there.
+            await refreshStatus()
             return false
         }
         if let answer { saveEncryption(answer) }

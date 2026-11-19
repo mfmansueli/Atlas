@@ -22,7 +22,7 @@ struct AnalyticsMCPContext {
             break
         case .off:
             throw MCPToolError.unavailable(String(localized: """
-            Analytics isn't turned on for \(app.name). The person turns it on in Atlas: Analytics (⌘8) → Ask Apple for \
+            Analytics isn't turned on for \(app.name). The person turns it on in Atlas: Analytics (⌘9) → Ask Apple for \
             Reports. Apple's first reports take 1 to 2 days.
             """))
         case let .waiting(asked):
@@ -32,7 +32,7 @@ struct AnalyticsMCPContext {
             """))
         case .keyCannotAsk:
             throw MCPToolError.unavailable(String(localized: """
-            \(app.name)'s reports can't be asked for: the API key isn't an Admin key. The person adds one in Settings → Account.
+            \(app.name)'s reports can't be asked for: the API key isn't an Admin key. The person adds one in Settings → Accounts.
             """))
         }
         let summary = try? await workspace.services.pricing.summary(for: app)

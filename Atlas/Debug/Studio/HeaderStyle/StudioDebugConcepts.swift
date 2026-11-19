@@ -6,7 +6,7 @@
 #if DEBUG
 import Foundation
 
-/// Lumen's header concepts, as Claude Design would send them: three from
+/// Lumen's header concepts, as Claude would send them: three from
 /// the picked templates and three of its own, each with the pages of
 /// `StudioDebugWebArtwork`.
 @MainActor
@@ -33,7 +33,7 @@ enum StudioDebugConcepts {
         ]
     }
 
-    /// Ink Sky, Lamp-lit Window and Quiet Shore: Claude Design's own.
+    /// Ink Sky, Lamp-lit Window and Quiet Shore: Claude's own.
     static var free: [AutopilotArtworkConcept] {
         [
             concept(

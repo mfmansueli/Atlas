@@ -27,7 +27,8 @@ struct ComplianceReportTests {
     @Test(arguments: [TraderDecision.trader, .nonTrader])
     func aDecisionStillHasToBeEnteredInAppStoreConnect(decision: TraderDecision) {
         let content = Support.content(sold: [Support.germany: [ComplianceContent.traderNotProvided]])
-        let report = Support.report(content, answers: ComplianceAnswers(trader: decision))
+        // China mainland's two declarations are asked of every app: declared here.
+        let report = Support.report(content, answers: ComplianceAnswers(trader: decision, declared: [.securityAssessment, .aiGeneratedContent]))
         #expect(report.state(of: .traderStatus) == .toEnter)
         #expect(report.needCount == 0)
         #expect(report.toEnterCount == 1)
@@ -103,7 +104,10 @@ struct ComplianceReportTests {
         let report = Support.report(content, stopsSellingInChina: true)
         #expect(report.state(of: .icpFilingNumber) == .notPushed)
         #expect(report.needCount == 0)
-        #expect(report.isUpToDate)
+        // App Store Connect still asks the two declarations: No, to enter there.
+        #expect(report.toEnterCount == 2)
+        let declared = Support.report(content, answers: ComplianceAnswers(declared: [.securityAssessment, .aiGeneratedContent]), stopsSellingInChina: true)
+        #expect(declared.isUpToDate)
     }
 
     @Test func notSoldInChinaOrNothingMissingPasses() {
@@ -210,8 +214,9 @@ struct ComplianceReportTests {
         let plain = Support.report(none)
         #expect(plain.trader == .noCountriesYet)
         #expect(plain.icp == .noCountriesYet)
-        #expect(plain.isUpToDate)
-        #expect(plain.status == "Up to date")
+        #expect(plain.needCount == 0)
+        // Only China mainland's two declarations, answered No.
+        #expect(plain.status == "2 to finish at Apple")
         #expect(plain.passTitle(for: .traderStatus) == "Digital Services Act · no countries yet")
 
         let medical = Support.report(none, primary: "MEDICAL")
@@ -225,15 +230,24 @@ struct ComplianceReportTests {
             Support.germany: [ComplianceContent.traderNotProvided],
             ComplianceRegion.chinaMainland: [ComplianceContent.icpMissing],
         ])
+        // Sold in China mainland: the ICP Filing Number, the Security
+        // Assessment and the AI content declaration.
         let open = Support.report(content)
-        #expect(open.status == "2 need you")
-        #expect(open.headline == "2 need your answer · 2 checked")
+        #expect(open.status == "4 need you")
+        #expect(open.headline == "4 need your answer · 2 checked")
 
-        let answers = ComplianceAnswers(trader: .trader, addsICPNumber: true, icpNumber: "京ICP备2024000000号-1A")
+        let answers = ComplianceAnswers(
+            trader: .trader,
+            addsICPNumber: true,
+            icpNumber: "京ICP备2024000000号-1A",
+            aiContent: AIContentAnswer(offersAI: false),
+            needsSecurityAssessment: false
+        )
         let answered = Support.report(content, answers: answers)
-        #expect(answered.status == "2 to finish at Apple")
-        #expect(answered.headline == "2 to enter in App Store Connect · 2 checked")
+        #expect(answered.status == "4 to finish at Apple")
+        #expect(answered.headline == "4 to enter in App Store Connect · 2 checked")
 
-        #expect(Support.report().headline == "Everything answered or checked")
+        let declared = ComplianceAnswers(declared: [.securityAssessment, .aiGeneratedContent])
+        #expect(Support.report(answers: declared).headline == "Everything answered or checked")
     }
 }

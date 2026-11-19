@@ -26,7 +26,7 @@ struct ArtworkCheckInput {
     /// layout, for whether the header shares their look.
     var screenshotTemplate: ScreenshotTemplate?
     var firstScreenshot: ScreenshotLayout?
-    /// A Claude Design page as rendered, for what's missing from it.
+    /// An HTML page as rendered, for what's missing from it.
     var page: ArtworkWebMeasure?
     /// The page's phrases are translated later, at Localize: a direction
     /// checked in the primary language before then isn't missing any.
@@ -44,7 +44,7 @@ struct ArtworkCheckInput {
         )
     }
 
-    /// Any image, from where its parts landed: a Claude Design page's is
+    /// Any image, from where its parts landed: an HTML page's is
     /// read from the page (`ArtworkCheckGeometry(web:kind:)`).
     init(
         kind: AutopilotArtworkKind, locale: StoreLocale, roles: [ArtworkTextRole]? = nil, image: CGImage?, pngData: Data? = nil,

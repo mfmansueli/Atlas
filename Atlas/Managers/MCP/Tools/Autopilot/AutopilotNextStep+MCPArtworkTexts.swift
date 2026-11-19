@@ -40,7 +40,7 @@ extension AutopilotNextStep {
             phrases the header and search pages write themselves (quotes, a slogan, a list item), given in the primary \
             language as phrase: write it for that language, its meaning and tone as a native speaker would say it, not \
             word by word, about as long as the original (shorter when the problem is too_long; headline is what doesn't \
-            fit). No prices, discounts, URLs, awards, Apple recognitions or other platforms. Send them all with \
+            fit). No prices, “free”, trial lengths, discounts, URLs, awards, Apple recognitions or other platforms. Send them all with \
             propose_captions, items {locale, placement, headline} (and phrase, exactly as given, for text), and this \
             run's ID as run; they're saved right away and the run checks them again.
             """,

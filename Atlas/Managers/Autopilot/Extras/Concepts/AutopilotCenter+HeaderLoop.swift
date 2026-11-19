@@ -23,7 +23,7 @@ extension AutopilotCenter {
                 run.handedBackAt = now()
                 let name = run.chosenConcept?.name ?? ""
                 run.appendLog(
-                    String(localized: "Sent to \(run.designKind.title): animate the \(name) header into a \(AutopilotArtworkMotion.loopSeconds)-second loop"),
+                    String(localized: "Sent to \(run.designKind.designer): animate the \(name) header into a \(AutopilotArtworkMotion.loopSeconds)-second loop"),
                     kind: .command, at: now()
                 )
             }
@@ -155,7 +155,7 @@ extension AutopilotCenter {
             review.request = AutopilotRevisionRequest(note: note, askedAt: now())
             run.loopReview = review
             run.handedBackAt = now()
-            run.appendLog(String(localized: "Asked \(reviser.title) for header loop changes: “\(note)”"), kind: .command, at: now())
+            run.appendLog(String(localized: "Asked \(reviser.designer) for header loop changes: “\(note)”"), kind: .command, at: now())
         }
     }
 

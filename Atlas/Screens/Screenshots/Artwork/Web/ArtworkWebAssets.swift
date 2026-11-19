@@ -6,7 +6,7 @@
 import Foundation
 import WebKit
 
-/// Serves a Claude Design page the only files it can load, from
+/// Serves an HTML page the only files it can load, from
 /// `al-asset:` URLs: the app's icon and captures for the language being
 /// rendered (`al-asset://app/…`) and Atlas's bundled and uploaded
 /// fonts (`al-asset://font/…`). Everything else fails; the network is

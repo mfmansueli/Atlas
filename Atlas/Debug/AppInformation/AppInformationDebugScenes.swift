@@ -15,11 +15,18 @@ import SwiftUI
 /// - `info-general`, `info-review`, `info-export`: the pages; App Review
 ///   with sign-in required and a demo account, Export Compliance with
 ///   Claude Code's evidence open.
-/// - `info-comp`: App Compliance with three that need the person (no trader
-///   status, no ICP Filing Number, the medical device declaration).
+/// - `info-comp`: App Compliance with five that need the person (no trader
+///   status, no ICP Filing Number, China mainland's Security Assessment and
+///   AI content, the medical device declaration).
 ///   `info-comp-edit`: the trader details being edited. `info-comp-icp`: an
 ///   ICP Filing Number typed and checked. `info-comp-done`: everything
-///   answered, two left to enter in App Store Connect.
+///   answered, three left to enter in App Store Connect. `info-comp-china`:
+///   China mainland answered Yes, with the AI filing of another company's
+///   model and the Security Assessment's list. `info-comp-suggested`:
+///   Claude Code's five suggestions (trader, stop selling in China
+///   mainland, no AI generation, no Security Assessment, not a medical
+///   device) waiting on the cards. `info-comp-outside-china`: Lumen not
+///   sold in China mainland, its two declarations still asked, with No.
 /// - `info-age`: Claude Code's seven answers, two confirmed. `info-age-override`:
 ///   all confirmed, rated 13+ over the calculated rating, with a reason.
 /// - `a11y-empty`, `a11y-loading`, `a11y-error`: never declared; the
@@ -37,8 +44,8 @@ import SwiftUI
 enum AppInformationDebugScenes {
     static let ids = [
         "info-general", "info-age", "info-age-override", "info-review", "info-export",
-        "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done",
-        "a11y-empty", "a11y-loading", "a11y-error", "a11y-editor", "a11y-editor-watch", "a11y-draft", "a11y-published",
+        "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested",
+        "info-comp-outside-china", "a11y-empty", "a11y-loading", "a11y-error", "a11y-editor", "a11y-editor-watch", "a11y-draft", "a11y-published",
         "a11y-pending", "a11y-nolive", "a11y-url", "a11y-review", "a11y-pushing",
     ] + privacyIDs
 
@@ -89,16 +96,18 @@ enum AppInformationDebugScenes {
                 model.page = .exportCompliance
                 model.showsExportEvidence = true
             }
-        case "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done":
+        case "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested":
             return scene { complianceOpening(id, on: $0) }
+        case "info-comp-outside-china":
+            return scene(lumenCompliance: DebugAppInformationContent.complianceOutsideChina) { complianceOpening(id, on: $0) }
         default:
             return privacyScene(id)
         }
     }
 
     /// App Compliance with the trader details prepared: the question open,
-    /// the details being edited, an ICP Filing Number typed, or everything
-    /// answered.
+    /// the details being edited, an ICP Filing Number typed, everything
+    /// answered, or Claude Code's three suggestions waiting.
     @MainActor
     private static func complianceOpening(_ id: String, on model: AppInformationViewModel) {
         model.page = .appCompliance
@@ -116,6 +125,17 @@ enum AppInformationDebugScenes {
             model.chooseICP(.addNumber)
             model.setICPNumber(DebugAppInformationContent.icpNumber)
             model.setDeclared(true, for: .medicalDevice)
+            model.chooseChina(.no, for: .securityAssessment)
+            model.chooseChina(.no, for: .aiGeneratedContent)
+            model.setDeclared(true, for: .securityAssessment)
+        case "info-comp-china":
+            model.chooseICP(.addNumber)
+            model.setICPNumber(DebugAppInformationContent.icpNumber)
+            model.chooseChina(.yes, for: .securityAssessment)
+            model.chooseChina(.yes, for: .aiGeneratedContent)
+            model.setAIFiling(DebugAppInformationContent.aiFiling)
+        case "info-comp-suggested":
+            model.notes.complianceSuggestions = DebugAppInformationContent.complianceSuggestions
         default:
             break
         }
@@ -178,9 +198,11 @@ enum AppInformationDebugScenes {
     @MainActor
     private static func scene(
         pending: [PendingChange?] = [],
+        lumenCompliance: ComplianceContent? = nil,
         opening: @escaping @MainActor (AppInformationViewModel) async -> Void
     ) -> AnyView {
         var appInformation = DebugAppInformationServices()
+        appInformation.lumenCompliance = lumenCompliance
         appInformation.opening = DebugAppInformationServices.Opening(opening)
         var services = WorkspaceServices.debug
         services.appInformation = appInformation

@@ -52,7 +52,7 @@ extension AutopilotRun {
                 ? .string("The phones and screens in \(both) are the real picked captures, never drawn interfaces.")
                 : "No app screens and no device: a scene in the brand's style, with the name and the headline.",
             "rules": """
-            No prices or currency, discounts or percentages, URLs, ©, awards or claims that can't be verified, Apple \
+            No prices or currency, “free” or trial lengths, discounts or percentages, URLs, ©, awards or claims that can't be verified, Apple \
             recognitions (Editor's Choice, App of the Day, Game of the Day, Apple Design Award) or other platforms and \
             stores; no transparency. Everything must suit a 4+ age rating. Atlas checks each render in every \
             language before Review & Push.

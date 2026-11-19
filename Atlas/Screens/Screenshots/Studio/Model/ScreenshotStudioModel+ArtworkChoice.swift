@@ -45,7 +45,7 @@ extension ScreenshotStudioModel {
             case .ui: String(localized: ", a gentle float of the screen")
             case .phone: String(localized: ", a gentle float of the phone")
             }
-            return String(localized: "Claude Design animates its artwork into a 20-second silent loop: slow light and scene")
+            return String(localized: "Claude animates its artwork into a 20-second silent loop: slow light and scene")
                 + float
                 + String(localized: "; the name and headline stay still. The first frame is the poster. Apple plays it on repeat, muted, at \(extras.artworkSize.shortTitle).")
         }
@@ -78,7 +78,7 @@ extension ScreenshotStudioModel {
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
         panel.title = String(localized: "References for the header and search artwork")
-        panel.message = String(localized: "Claude Design takes the feel from them, not the content.")
+        panel.message = String(localized: "Claude takes the feel from them, not the content.")
         panel.prompt = String(localized: "Add")
         guard panel.runModal() == .OK else { return }
         let urls = panel.urls

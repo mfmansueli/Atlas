@@ -5,10 +5,10 @@
 
 import SwiftUI
 
-/// The event's images and video: the card (16:9) and the details page's
-/// top (9:16), there or missing, and under each the art an assistant
-/// proposed, as the App Store shows it, with Accept and Dismiss. "Ask
-/// Claude Code…" has the art made.
+/// The art an assistant proposed for the event, by kind (the card, 16:9,
+/// and the details page's top, 9:16), as the App Store shows it, with
+/// Accept and Dismiss. The editor shows it under the media strip only
+/// while there are proposals. "Ask Claude Code…" has more art made.
 struct InAppEventMediaCard: View {
     let event: InAppEvent
     var app: StoreApp?
@@ -23,7 +23,7 @@ struct InAppEventMediaCard: View {
     var body: some View {
         Card {
             HStack(spacing: Spacing.small) {
-                Text("Images and video")
+                Text("Proposed images and video")
                     .font(.headline)
                     .accessibilityAddTraits(.isHeader)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -32,7 +32,7 @@ struct InAppEventMediaCard: View {
                         .controlSize(.small)
                 }
             }
-            ForEach(InAppEventMedia.Kind.allCases, id: \.self) { kind in
+            ForEach(InAppEventMedia.Kind.allCases.filter { kind in proposals.contains { $0.kind == kind } }, id: \.self) { kind in
                 VStack(alignment: .leading, spacing: Spacing.small) {
                     row(kind)
                     ForEach(proposals.filter { $0.kind == kind }) { proposal in

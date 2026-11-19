@@ -6,7 +6,7 @@
 import Foundation
 import WebKit
 
-/// The content rules every Claude Design page renders under: nothing loads
+/// The content rules every HTML page renders under: nothing loads
 /// from the network, only `al-asset:` files and data URIs, so a render
 /// never depends on what's online and a page can't reach anywhere.
 @MainActor

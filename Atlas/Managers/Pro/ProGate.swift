@@ -55,10 +55,19 @@ final class ProGate {
         paywall = PaywallModel(context: .menu, entitlements: entitlements)
     }
 
+    /// The paywall Settings shows on its own window (See Atlas Pro… in
+    /// Settings → Atlas Pro), so it isn't opened behind it on the main one.
+    var settingsPaywall: PaywallModel?
+
+    func showPlansInSettings() {
+        settingsPaywall = PaywallModel(context: .menu, entitlements: entitlements)
+    }
+
     /// The paywall's continue button: closes it, then finishes what the
     /// person started.
     func finish(_ model: PaywallModel, continues: Bool) {
         paywall = nil
+        settingsPaywall = nil
         if continues, entitlements.isPro { model.onContinue?() }
     }
 }

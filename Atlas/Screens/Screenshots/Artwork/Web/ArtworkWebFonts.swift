@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// The fonts a Claude Design page can name besides the Mac's own: the
+/// The fonts an HTML page can name besides the Mac's own: the
 /// gallery's bundled families and the ones uploaded in the template
 /// inspector, as `@font-face` rules over `al-asset://font/` files. The web
 /// view draws in another process, which doesn't see the fonts

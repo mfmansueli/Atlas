@@ -7,10 +7,10 @@ import Foundation
 
 /// What the header loop is waiting for after the person asked for changes:
 /// the design source revising it, then Atlas drawing it in every
-/// language. Bruma's run said "Claude Design is revising the loop" for the
-/// hour after Claude Design had finished, with Approve off and no time.
+/// language. Bruma's run said "Claude is revising the loop" for the
+/// hour after Claude had finished, with Approve off and no time.
 struct AutopilotLoopProgress: Hashable, Sendable {
-    /// "Claude Design is revising the loop: “slower”.", "Making the new
+    /// "Claude is revising the loop: “slower”.", "Making the new
     /// loop".
     var title: String
     var detail: String
@@ -27,7 +27,7 @@ struct AutopilotLoopProgress: Hashable, Sendable {
     /// Nil when the loop isn't waiting for anything.
     static func make(_ run: AutopilotRun, now: Date) -> AutopilotLoopProgress? {
         guard let review = run.loopReview, review.approvedAt == nil else { return nil }
-        let designer = (run.reviser ?? run.designKind).title
+        let designer = (run.reviser ?? run.designKind).designer
         // The request stays until the loops are made, so this comes first.
         if review.isRemaking { return making(run, designer: designer, now: now) }
         guard let request = review.request else { return nil }

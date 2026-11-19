@@ -70,7 +70,7 @@ struct ProposeRetentionMessageTool: MCPTool {
         App Store Connect would refuse is refused with the reasons (status "refused"). An accepted proposal waits in \
         Review & Push (status "queued"), and proposing the same message again updates it. With suggestion true and \
         one locale, the wording is offered under that language's too-long warning instead (status "suggested"). \
-        Nothing reaches App Store Connect until the person pushes.
+        Nothing reaches App Store Connect until the person pushes. \(StoreTextGuidelinePlace.retentionMessage.summary)
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId"]),
         proposalKind: .storeText
@@ -85,7 +85,7 @@ struct ProposeRetentionMessageTool: MCPTool {
         }
         let messageCount = retention.messages.count + (retention.messages.contains { $0.id == proposal.message.id } ? 0 : 1)
         let builder = retention.builder(with: proposal.message)
-        var reasons = proposal.refusals
+        var reasons = proposal.refusals + Self.guidelineReasons(proposal)
         if reasons.isEmpty { reasons = builder.problems(for: proposal.message, messageCount: messageCount).map(\.message) }
         if reasons.isEmpty, !proposal.message.hasChanges, !builder.changesOffers(proposal.message), !retention.isQueued(proposal.message) {
             reasons.append(String(localized: "That’s what App Store Connect has already."))
@@ -111,7 +111,8 @@ struct ProposeRetentionMessageTool: MCPTool {
         guard isKnown, proposal.locales.count == 1, let locale = proposal.locales.first else {
             throw MCPToolError.invalidArgument(name: "suggestion", expected: String(localized: "one locale of an existing message (messageId)"))
         }
-        guard proposal.refusals.isEmpty else { return Self.refused(proposal.refusals, messageID: proposal.message.id, target: target) }
+        let refusals = proposal.refusals + Self.guidelineReasons(proposal)
+        guard refusals.isEmpty else { return Self.refused(refusals, messageID: proposal.message.id, target: target) }
         let text = proposal.message.text(for: locale)
         let current = retention.messages.first { $0.id == proposal.message.id }?.text(for: locale)
         let suggestion = RetentionSuggestion(
@@ -129,6 +130,17 @@ struct ProposeRetentionMessageTool: MCPTool {
             "note": "The person sees it under the language's too-long warning and takes it with Use Shorter Version.",
         ]
         return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: "\(target) · \(locale)", outcome: .proposed)])
+    }
+
+    /// What App Review would reject in the proposed languages' header and
+    /// body (App Store Connect's retention message guidelines), one reason
+    /// per language.
+    static func guidelineReasons(_ proposal: RetentionMessageProposal) -> [String] {
+        proposal.locales.compactMap { locale in
+            let text = proposal.message.text(for: locale)
+            let issues = StoreTextGuidelineCheck.issues(in: "\(text.header)\n\(text.body)", for: .retentionMessage)
+            return issues.isEmpty ? nil : "\(locale): \(issues.assistantReason)"
+        }
     }
 
     private static func refused(_ reasons: [String], messageID: String, target: String) -> MCPToolOutcome {

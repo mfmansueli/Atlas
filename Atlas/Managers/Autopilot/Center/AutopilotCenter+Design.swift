@@ -37,7 +37,7 @@ extension AutopilotCenter {
         guard let run = runs[appID], run.stage == .design else { return }
         update(appID) { run in
             let what = run.designKind.usesDesignAI
-                ? String(localized: "Brief ready for \(run.designName ?? run.designKind.title): \(run.plan.screens.count) captures, \(run.plan.localeCodes.count) languages")
+                ? String(localized: "Brief ready for \(run.designName ?? DesignProjectKind.claude): \(run.plan.screens.count) captures, \(run.plan.localeCodes.count) languages")
                 : String(localized: "Making directions from Atlas’s starters")
             run.appendLog(what, kind: .command, at: now())
             for line in run.plan.briefExtrasLines { run.appendLog(line, kind: .command, at: now()) }

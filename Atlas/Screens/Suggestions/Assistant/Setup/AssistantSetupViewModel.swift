@@ -7,8 +7,9 @@ import Foundation
 import Observation
 
 /// "Set Up Your AI Assistant": first how, an assistant over MCP or an API
-/// key. With an assistant: pick the client, turn on the local server and
-/// choose what assistants may do, copy the snippet with a token made for
+/// key. With an assistant: pick the client, see the local server (turned on
+/// as the step opens) and choose what assistants may do, copy the snippet
+/// with a token made for
 /// that client, and test it with a first call. It drives the same pairing
 /// as Settings → AI Assistants (`MCPServerController+Pairing`). "Finish
 /// Without Testing" keeps the token, and the Assistant button waits for
@@ -41,6 +42,9 @@ final class AssistantSetupViewModel {
     /// The pending client was paired for the test run, so Cancel unpairs
     /// it while it never connected.
     private var pairedForTest = false
+    /// The server was on when setup opened. Step 2 turns it on; when it
+    /// wasn't, Cancel and Back to step 1 turn it off again.
+    private let serverWasOn: Bool
 
     let launcher: ClaudeCodeLauncher?
     /// The app whose project folder Claude Code starts in. Setup opened
@@ -66,6 +70,7 @@ final class AssistantSetupViewModel {
         self.appName = appName
         key = KeyAssistantSetupViewModel(controller: keyAssistant, appName: appName)
         editsDrafts = assistants.editsDrafts
+        serverWasOn = assistants.isEnabled
         self.method = method ?? .assistant
         if method == .apiKey {
             kind = .claudeCode
@@ -81,6 +86,7 @@ final class AssistantSetupViewModel {
             kind = .claudeCode
             self.step = step ?? .assistant
         }
+        if self.step == .server, !usesKey { assistants.setEnabled(true) }
     }
 
     // MARK: - Reading
@@ -246,6 +252,8 @@ final class AssistantSetupViewModel {
     func goBack() {
         guard canGoBack, let previous = step.previous else { return }
         step = previous
+        // Back to choosing how: an API key doesn't need the server.
+        if previous == .assistant, !usesKey, assistants.pendingPairing == nil { turnOffServerSetupTurnedOn() }
     }
 
     /// Continue, Done or Finish Without Testing. Returns whether the sheet
@@ -255,6 +263,8 @@ final class AssistantSetupViewModel {
         if usesKey { return advanceWithKey() }
         switch step {
         case .assistant:
+            // On already, so step 2 is just reading and Continue.
+            assistants.setEnabled(true)
             step = .server
         case .server:
             assistants.editsDrafts = editsDrafts
@@ -292,19 +302,25 @@ final class AssistantSetupViewModel {
     }
 
     /// Cancel: a client that never connected isn't paired; a key isn't
-    /// saved.
+    /// saved; a server setup turned on is off again unless a client
+    /// connected.
     func cancel() {
         guard !usesKey else { return }
         if let run = testRun, run.isActive { launcher?.stop(run.id) }
-        if pairedForTest, !isConnected, let waitingClientID {
+        let connected = isConnected
+        if pairedForTest, !connected, let waitingClientID {
             assistants.revoke(waitingClientID)
-            return
-        }
-        if assistants.pendingPairing?.isConnected == true {
+        } else if assistants.pendingPairing?.isConnected == true {
             assistants.finishPairing()
         } else {
             assistants.cancelPairing()
         }
+        if !connected { turnOffServerSetupTurnedOn() }
+    }
+
+    private func turnOffServerSetupTurnedOn() {
+        guard !serverWasOn else { return }
+        assistants.setEnabled(false)
     }
 
     /// What it sees, then the test request as step 4 opens.

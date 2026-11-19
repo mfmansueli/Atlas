@@ -44,28 +44,41 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
         ] + (permissions.tools.isEmpty ? [""] : permissions.tools)
     }
 
-    /// `{"mcpServers":{"atlas":{"type":"http","url":…,"headers":…}}}`.
+    /// `{"mcpServers":{"atlas":{"type":"http","url":…,"headers":…,"timeout":…}}}`.
     var mcpConfiguration: String {
         let server: JSONValue = [
             "type": "http",
             "url": .string(MCPEndpoint.url(port: port)),
             "headers": ["Authorization": .string("Bearer \(token)")],
+            "timeout": .int(Self.toolTimeoutMilliseconds),
         ]
         let configuration: JSONValue = ["mcpServers": .object([MCPEndpoint.serverName: server])]
         return configuration.jsonString()
     }
 
-    /// `{"permissions":{"allow":[…],"deny":[…]}}`, and for Autopilot time
-    /// for a UI test run to finish in the foreground (`longCommandEnvironment`).
+    /// `{"permissions":{"allow":[…],"deny":[…]}}`, time for Atlas's long
+    /// tools (`toolEnvironment`), and for Autopilot time for a UI test run
+    /// to finish in the foreground (`longCommandEnvironment`).
     var settings: String {
         let allow = permissions.allowRules(port: port).map(JSONValue.string)
         let deny = permissions.denyRules.map(JSONValue.string)
         var settings: [String: JSONValue] = ["permissions": ["allow": .array(allow), "deny": .array(deny)]]
-        if permissions == .autopilot {
-            settings["env"] = .object(Self.longCommandEnvironment.mapValues(JSONValue.string))
-        }
+        var environment = Self.toolEnvironment
+        if permissions == .autopilot { environment.merge(Self.longCommandEnvironment) { $1 } }
+        settings["env"] = .object(environment.mapValues(JSONValue.string))
         return JSONValue.object(settings).jsonString()
     }
+
+    /// Claude Code gives up on an MCP call after a minute by default. An
+    /// event concept with a moving version renders two 20-second loops, and
+    /// a heavy page's loop check takes longer: the first Alba run with motion
+    /// (2026-11-18) timed out on every one. Fifteen minutes covers them.
+    static let toolEnvironment = ["MCP_TOOL_TIMEOUT": String(toolTimeoutMilliseconds)]
+
+    /// How long Claude Code waits for one of Atlas's tools: the server's
+    /// `timeout`, which also lifts its 60-second wait for the HTTP
+    /// response, and `MCP_TOOL_TIMEOUT`.
+    static let toolTimeoutMilliseconds = 900_000
 
     /// Claude Code stops waiting for a command after 2 minutes by default
     /// and moves it to the background; an `xcodebuild test` that captures a

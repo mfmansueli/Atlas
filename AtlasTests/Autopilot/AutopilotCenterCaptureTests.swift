@@ -163,7 +163,7 @@ struct AutopilotCenterCaptureTests {
         #expect(run.stage == .design)
         #expect(run.picks.count == 2)
         #expect(run.directions.isEmpty)
-        #expect(run.log.last?.text == "Brief ready for Claude Design: 2 captures, 2 languages")
+        #expect(run.log.last?.text == "Brief ready for Claude: 2 captures, 2 languages")
         #expect(run.log.last?.kind == .command)
     }
 

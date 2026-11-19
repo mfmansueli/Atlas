@@ -5,10 +5,11 @@
 
 import SwiftUI
 
-/// The Analytics section of an app's workspace (⌘8): builds the view model
+/// The Analytics section of an app's workspace (⌘9): builds the view model
 /// over the shared store, downloads Apple's reports when today's check
 /// hasn't happened, and reads what the other sections know to explain the
-/// numbers.
+/// numbers (kept with the model, read again after Refresh, a push or when
+/// old).
 struct AnalyticsSectionView: View {
     let app: StoreApp
     let services: WorkspaceServices
@@ -28,7 +29,7 @@ struct AnalyticsSectionView: View {
 
     var body: some View {
         Group {
-            if let viewModel {
+            if let viewModel = shownModel {
                 AnalyticsScreen(
                     viewModel: viewModel,
                     waitingCount: waitingCount,
@@ -65,8 +66,18 @@ struct AnalyticsSectionView: View {
         .onChange(of: navigator.requestedAnalyticsTab) { takeRequestedTab() }
     }
 
+    /// The kept model before `start()` has run, so a section read ahead (or
+    /// opened before) shows its content from the first frame, not a
+    /// skeleton.
+    private var shownModel: AnalyticsViewModel? {
+        viewModel ?? sectionModels?.keptModels(for: app.id)?.analytics
+    }
+
     private func start() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.analytics)
+        guard !Task.isCancelled else { return }
         let model = kept?.analytics ?? AnalyticsViewModel(app: app, store: store, services: services.analytics)
         kept?.analytics = model
         model.keyID = session?.currentKeyID
@@ -81,18 +92,31 @@ struct AnalyticsSectionView: View {
         await summaries.load(app)
         configure()
         async let refresh: Void = model.refresh()
+        if kept?.needsLoad(.analytics, refreshCount: navigator.refreshCount) ?? true {
+            await Self.readContext(model, services: services, into: kept, refreshCount: navigator.refreshCount)
+        }
+        await refresh
+    }
+
+    /// Reads what the other sections know into `model` (the store page
+    /// first, which is quick, then prices and retention once Analytics is
+    /// set up) and stamps `kept`, under the Refresh count the read started
+    /// with, once the store page was read: a failed read is tried again
+    /// the next time Analytics opens.
+    static func readContext(_ model: AnalyticsViewModel, services: WorkspaceServices, into kept: AppSectionModels?, refreshCount: Int) async {
         if let fixed = services.analytics.fixedContext {
             model.setContext(fixed)
-            await refresh
+            kept?.didLoad(.analytics, refreshCount: refreshCount)
             return
         }
         let loader = AnalyticsContextLoader(services: services)
-        let page = await loader.storePage(for: app)
+        let page = await loader.storePage(for: model.app)
         model.setContext(page)
         if model.setup == .ready {
-            await model.setContext(loader.pricing(for: app, into: page))
+            await model.setContext(loader.pricing(for: model.app, into: page))
         }
-        await refresh
+        guard !Task.isCancelled, page != .empty else { return }
+        kept?.didLoad(.analytics, refreshCount: refreshCount)
     }
 
     private func configure() {

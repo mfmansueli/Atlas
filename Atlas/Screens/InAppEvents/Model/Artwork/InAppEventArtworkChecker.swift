@@ -85,10 +85,11 @@ enum InAppEventArtworkChecker {
             HQ are the safe choice.
             """)))
         }
-        if let seconds = file.seconds, seconds > 30 {
-            checks.append(.warning(String(localized: """
-            The video is \(Int(seconds.rounded())) seconds. It plays on repeat; Apple states no length for event videos, \
-            but App Previews stop at 30 seconds, so a shorter seamless loop is safer.
+        if let seconds = file.seconds, !InAppEventArtworkRules.videoSeconds.contains(seconds) {
+            let length = seconds < 10 ? String(format: "%.1f", seconds) : String(Int(seconds.rounded()))
+            checks.append(.refusal(String(localized: """
+            The video is \(length) seconds; Apple takes 5 to 30 seconds for event videos, played on repeat. Make it a \
+            seamless loop in that range.
             """)))
         }
         for audio in file.audio {

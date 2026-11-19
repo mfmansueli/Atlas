@@ -67,6 +67,8 @@ struct ClaudeCodeInvocationTests {
         #expect(server["type"]?.stringValue == "http")
         #expect(server["url"]?.stringValue == "http://127.0.0.1:47399/mcp")
         #expect(server["headers"]?["Authorization"]?.stringValue == "Bearer al_pair_run")
+        // Claude Code gives up on a tool after a minute without it.
+        #expect(server["timeout"] == .int(900_000))
     }
 
     @Test func settingsAllowOnlyThePermissionsRules() throws {
@@ -79,8 +81,11 @@ struct ClaudeCodeInvocationTests {
         #expect(settings.objectValue?.keys.sorted() == ["env", "permissions"])
         #expect(settings["env"]?["BASH_DEFAULT_TIMEOUT_MS"]?.stringValue == "3600000")
         #expect(settings["env"]?["BASH_MAX_TIMEOUT_MS"]?.stringValue == "3600000")
+        #expect(settings["env"]?["MCP_TOOL_TIMEOUT"]?.stringValue == "900000")
+        // Every session waits long enough for Atlas's long tools.
         let other = try json(value(after: "--settings", in: invocation(.atlasOnly).claudeArguments))
-        #expect(other.objectValue?.keys.sorted() == ["permissions"])
+        #expect(other.objectValue?.keys.sorted() == ["env", "permissions"])
+        #expect(other["env"]?.objectValue?.keys.sorted() == ["MCP_TOOL_TIMEOUT"])
         #expect(ClaudeCodePermissions.autopilot.systemPrompt.contains("Run xcodebuild in the foreground and wait for it"))
         #expect(settings["permissions"]?.objectValue?.keys.sorted() == ["allow", "deny"])
     }

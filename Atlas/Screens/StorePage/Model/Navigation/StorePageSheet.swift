@@ -17,6 +17,8 @@ enum StorePageSheet: String, Identifiable, Hashable, Sendable {
     case newLanguages
     /// "Accept Store Page suggestions in every language".
     case acceptAll
+    /// "New Version": a version to create in App Store Connect.
+    case newVersion
 
     var id: String { rawValue }
 }

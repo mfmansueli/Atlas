@@ -64,7 +64,7 @@ struct AutopilotPlan: Codable, Hashable, Sendable {
     var assistantDesignsLooks: Bool?
 
     /// Where the run's looks come from: the connected design project, else
-    /// the assistant (as Claude Design, like the header concepts) when it
+    /// the assistant (as Claude, like the header concepts) when it
     /// designs them, else Atlas's starters.
     func designKind(for project: DesignProject?) -> DesignProjectKind {
         if let project { return project.kind }

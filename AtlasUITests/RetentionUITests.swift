@@ -47,6 +47,23 @@ final class RetentionUITests: XCTestCase {
         XCTAssertTrue(element("retention.message.draft-1").exists)
     }
 
+    /// Every subscriber sees the message: App Review rejects one that names
+    /// an offer. The editor warns under the message.
+    func testAnOfferInTheMessageIsWarned() {
+        app.launch(debugScene: "ret-none")
+        XCTAssertTrue(element("retention.empty").waitForExistence(timeout: 15))
+        element("retention.empty.create").click()
+        let header = app.textFields["retention.header"]
+        XCTAssertTrue(header.waitForExistence(timeout: 5))
+        XCTAssertFalse(element("retention.guideline").exists)
+        header.click()
+        header.typeText("Stay for 50% off")
+        let warning = element("retention.guideline")
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        let words = [warning.label, warning.value as? String ?? ""].joined(separator: " ")
+        XCTAssertTrue(words.contains("retention message guidelines"), words)
+    }
+
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
     }

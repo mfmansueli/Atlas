@@ -7,7 +7,8 @@ import SwiftUI
 
 /// The kicker line where the template sets one, the headline and, on hero
 /// slots, the subhead, in the locale's reading direction. The headline's
-/// edge turns red while it overflows.
+/// edge turns red while it overflows, and what App Review would reject is
+/// warned about under them.
 struct CaptionFields: View {
     let model: CaptionsViewModel
 
@@ -44,6 +45,14 @@ struct CaptionFields: View {
                         .accessibilityLabel(Text("Subhead"))
                         .accessibilityIdentifier("screenshots.captions.editor.subhead")
                 }
+            }
+            let issues = model.guidelineIssues
+            if !issues.isEmpty {
+                // A warning, not a block: the person may know better.
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("screenshots.captions.editor.guideline")
             }
         }
     }

@@ -11,7 +11,7 @@ import Testing
 @Suite("AIProviderError")
 struct AIProviderErrorTests {
     @Test func messagesNameTheVendor() {
-        #expect(AIProviderError.unauthorized(.openAI).errorDescription == "OpenAI rejected the API key. Check it in Settings → Translation.")
+        #expect(AIProviderError.unauthorized(.openAI).errorDescription == "OpenAI rejected the API key. Check it in Settings → AI Assistants.")
         #expect(AIProviderError.rateLimited(.anthropic).errorDescription == "Anthropic’s rate limit was reached. Try again in a minute.")
         #expect(AIProviderError.declined(.anthropic).errorDescription == "Anthropic declined to translate this text.")
     }

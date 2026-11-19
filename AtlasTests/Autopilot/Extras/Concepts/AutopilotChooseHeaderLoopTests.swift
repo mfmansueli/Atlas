@@ -72,7 +72,7 @@ struct AutopilotChooseHeaderLoopTests {
     }
 
     /// The loop the person chose by is v1: Localize doesn't wait for
-    /// Claude Design to animate it.
+    /// Claude to animate it.
     @Test func choosingAMovingHeaderGoesStraightToItsLoop() async throws {
         let center = AutopilotTestFixtures.center(holdsStages: true)
         let context = AutopilotTestFixtures.context(AutopilotTestFixtures.services(center))
@@ -97,11 +97,11 @@ struct AutopilotChooseHeaderLoopTests {
         center.install(start)
 
         await center.useChoices(appID: appID, context: context)
-        #expect(center.run(for: appID)?.loopReview?.isAnimating == true, "Still pages until Claude Design animates them")
+        #expect(center.run(for: appID)?.loopReview?.isAnimating == true, "Still pages until Claude animates them")
 
         await center.finishLocalizing(appID, context: context)
         #expect(center.run(for: appID)?.loopReview?.waitsToMake == true)
-        #expect(center.run(for: appID)?.log.last?.text == "Sent to Claude Design: animate the Ink Sky header into a 20-second loop")
+        #expect(center.run(for: appID)?.log.last?.text == "Sent to Claude: animate the Ink Sky header into a 20-second loop")
         #expect(await center.nextStep(appID: appID, client: AutopilotTestFixtures.client) == .animateHeader(conceptID: "A"))
     }
 }

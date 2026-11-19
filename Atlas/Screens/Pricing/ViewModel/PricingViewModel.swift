@@ -43,6 +43,9 @@ final class PricingViewModel {
     /// The selected subscription has no price yet, so Pricing offers Set
     /// Starting Price instead of a failure.
     private(set) var needsStartingPrice = false
+    /// The selected in-app purchase has no price: not a failure, so no
+    /// error banner and no Try Again.
+    private(set) var hasNoPrice = false
     var isStartingPriceSheetPresented = false
     /// Existing subscribers per territory for the schedule's warning; nil
     /// until loaded, or when Atlas can't read them.
@@ -165,6 +168,7 @@ final class PricingViewModel {
         isLoadingSheet = true
         sheetError = nil
         needsStartingPrice = false
+        hasNoPrice = false
         if matrix?.product.id != productID { matrix = nil }
         defer { isLoadingSheet = false }
         do {
@@ -180,8 +184,9 @@ final class PricingViewModel {
         } catch {
             guard selectedProductID == productID else { return }
             sheetError = error.localizedDescription
-            needsStartingPrice = error is PricingSheetError
-            if !needsStartingPrice { reportLoadError(error) }
+            needsStartingPrice = (error as? PricingSheetError)?.offersStartingPrice == true
+            hasNoPrice = error is PricingSheetError && !needsStartingPrice
+            if !(error is PricingSheetError) { reportLoadError(error) }
         }
     }
 

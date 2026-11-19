@@ -95,8 +95,8 @@ struct AutopilotArtworkBrief: Hashable {
         rows.append(Row(
             title: String(localized: "Words"),
             text: String(localized: """
-            Text in each run language, written for that language, not translated word by word. No prices, \
-            awards, website addresses or other platforms. Readable at the smallest size.
+            Text in each run language, written for that language, not translated word by word. No prices, “free”, \
+            trial lengths, awards, website addresses or other platforms. Readable at the smallest size.
             """)
         ))
         self.rows = rows

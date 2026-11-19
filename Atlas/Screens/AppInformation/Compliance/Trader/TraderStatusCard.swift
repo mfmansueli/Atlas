@@ -17,6 +17,9 @@ struct TraderStatusCard: View {
 
     var body: some View {
         ComplianceCard(rule: .traderStatus, state: report.state(of: .traderStatus), detail: report.detail(for: .traderStatus)) {
+            if let suggestion = viewModel.complianceSuggestion(for: .traderStatus) {
+                ComplianceSuggestionBox(viewModel: viewModel, suggestion: suggestion)
+            }
             switch (report.trader, report.answers.trader) {
             case (.notProvided, nil): question
             case let (.notProvided, decision?): answered(decision)
@@ -27,10 +30,15 @@ struct TraderStatusCard: View {
 
     // MARK: - The question
 
+    /// Atlas's own "Suggested", unless an assistant suggested an answer.
+    private var showsBuiltInSuggestion: Bool {
+        report.suggestsTrader && viewModel.complianceSuggestion(for: .traderStatus) == nil
+    }
+
     private var question: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
-                if report.suggestsTrader {
+                if showsBuiltInSuggestion {
                     Pill(text: String(localized: "Suggested"), style: .machineTranslated)
                     SuggestionSourceTag(source: .builtIn)
                 }
@@ -53,9 +61,9 @@ struct TraderStatusCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 GridRow {
-                    Text(report.suggestsTrader ? "SUGGESTED" : "AS A TRADER")
+                    Text(showsBuiltInSuggestion ? "SUGGESTED" : "AS A TRADER")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(report.suggestsTrader ? Palette.machineTranslated : Palette.label2)
+                        .foregroundStyle(showsBuiltInSuggestion ? Palette.machineTranslated : Palette.label2)
                         .frame(width: 74, alignment: .leading)
                     Text("Trader, with these details")
                         .font(.callout)
@@ -92,9 +100,9 @@ struct TraderStatusCard: View {
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(report.suggestsTrader ? Palette.machineTranslatedTint : Palette.fill1, in: boxShape)
+        .background(showsBuiltInSuggestion ? Palette.machineTranslatedTint : Palette.fill1, in: boxShape)
         .overlay {
-            boxShape.strokeBorder(report.suggestsTrader ? Palette.machineTranslatedMark.opacity(0.35) : Palette.separator, lineWidth: 1)
+            boxShape.strokeBorder(showsBuiltInSuggestion ? Palette.machineTranslatedMark.opacity(0.35) : Palette.separator, lineWidth: 1)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.compliance.trader.question")

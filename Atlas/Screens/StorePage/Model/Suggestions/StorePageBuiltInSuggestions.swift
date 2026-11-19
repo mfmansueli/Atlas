@@ -14,9 +14,11 @@ import Foundation
 ///   the address most of the others use. An empty marketing URL in the
 ///   primary language gets the site the others link to.
 enum StorePageBuiltInSuggestions {
-    static func suggestions(for listing: StoreListing, appID: StoreApp.ID) -> [FieldSuggestion] {
+    /// `checksKeywords` off (Settings → Suggestions) leaves the keywords
+    /// alone.
+    static func suggestions(for listing: StoreListing, appID: StoreApp.ID, checksKeywords: Bool = true) -> [FieldSuggestion] {
         listing.displayLocales.flatMap { locale in
-            [keywords(in: locale, listing: listing, appID: appID)]
+            [checksKeywords ? keywords(in: locale, listing: listing, appID: appID) : nil]
                 + [ListingField.privacyPolicyURL, .supportURL, .marketingURL].map { emptyURL($0, in: locale, listing: listing, appID: appID) }
         }
         .compactMap(\.self)

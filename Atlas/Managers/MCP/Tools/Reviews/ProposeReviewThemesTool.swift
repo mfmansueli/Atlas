@@ -35,6 +35,7 @@ struct ProposeReviewThemesTool: MCPTool {
             ],
             required: ["appId", "themes"]
         ),
+        proposalKind: .reviewReplies,
         changesState: true
     )
 
@@ -61,7 +62,7 @@ struct ProposeReviewThemesTool: MCPTool {
         return MCPToolOutcome(
             result: [
                 "status": "set", "groups": .array(themes.map(ReviewsMCPJSON.theme)),
-                "showsIn": "Reviews (⌘7) → What people write about",
+                "showsIn": "Reviews (⌘8) → What people write about",
             ],
             isError: false,
             logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]

@@ -43,6 +43,17 @@ struct ProposeListingTextToolTests {
         #expect(outcome.logLines.first?.outcome == .refused)
     }
 
+    @Test func textAppReviewWouldRejectIsRefusedWithTheIssues() async throws {
+        let outcome = try await call(["locale": "de-DE", "field": "promotionalText", "text": "Sieben Tage kostenlos testen."])
+        #expect(outcome.result["status"] == "refused")
+        #expect(outcome.result["issues"] == [["kind": "pricing", "guideline": "2.3.7", "phrases": ["kostenlos"]]])
+        let reason = outcome.result["reason"]?.stringValue ?? ""
+        #expect(reason.hasPrefix("App Review rejects pricing in store text and screenshots (Guideline 2.3.7): “kostenlos”."), "\(reason)")
+        #expect(reason.hasSuffix("Fix it and propose again."), "\(reason)")
+        #expect(changes.changes.isEmpty)
+        #expect(outcome.logLines.first?.outcome == .refused)
+    }
+
     @Test func thePersonsOwnChangeKeepsBothVersions() async throws {
         var listing = StorePageContentFixtures.editable.listing()
         listing.edit(.subtitle, in: .german, to: "Notizen, nur für dich")

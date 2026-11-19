@@ -11,7 +11,7 @@ struct GuidedTimelineRow: Hashable, Sendable, Identifiable {
     enum Who: Hashable, Sendable {
         /// "Claude Code".
         case assistant(String)
-        /// "Claude Design", or Atlas's starters.
+        /// "Claude", or Atlas's starters.
         case designer(String)
         case atlas
         case you
@@ -24,7 +24,7 @@ struct GuidedTimelineRow: Hashable, Sendable, Identifiable {
             }
         }
 
-        /// "CC", "CD", "AL": the badge's initials.
+        /// "CC", "C", "AL": the badge's initials.
         var initials: String {
             switch self {
             case .you: ""

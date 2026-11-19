@@ -12,7 +12,7 @@ struct ConnectTrustNote: View {
             Image(systemName: "lock")
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
-            Text("The key never leaves this Mac. It’s kept in the Keychain, and every request is signed locally and sent straight to Apple.")
+            Text("The key never leaves this Mac. Every request is signed here and sent straight to Apple.")
                 .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

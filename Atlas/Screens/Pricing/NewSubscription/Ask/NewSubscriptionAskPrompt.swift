@@ -20,7 +20,8 @@ enum NewSubscriptionAskPrompt {
         unlocks. Check get_subscriptions for what App Store Connect already has, then propose each missing subscription \
         with propose_subscription: its group, reference name, the product ID exactly as the code uses it, duration, \
         display name and description, and a starting price in US dollars (the paywall's or the .storekit file's \
-        when there is one). Pass evidence as "file:line — finding". Don't propose what's already there.
+        when there is one). Pass evidence as "file:line — finding". Don't propose what's already there. \
+        \(StoreTextRules.inAppSummary)
         """)
     }
 }

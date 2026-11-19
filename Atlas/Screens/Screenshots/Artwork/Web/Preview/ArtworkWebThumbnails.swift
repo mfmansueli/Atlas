@@ -6,7 +6,7 @@
 import CoreGraphics
 import Foundation
 
-/// Claude Design pages drawn small, kept while the app runs, so going back
+/// HTML pages drawn small, kept while the app runs, so going back
 /// to a stage shows its header and search at once instead of rendering
 /// them again. The oldest go first past `limit`.
 @MainActor

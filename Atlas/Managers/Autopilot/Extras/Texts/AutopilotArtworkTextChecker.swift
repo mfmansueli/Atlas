@@ -26,7 +26,7 @@ struct AutopilotArtworkTextChecker {
         _ html: String, _ kind: AutopilotArtworkKind, _ locale: StoreLocale, _ headline: String, _ phrases: [String: String]
     ) async -> ArtworkWebMeasure?
 
-    /// With a direction's Claude Design pages: a text is too long when the
+    /// With a direction's HTML pages: a text is too long when the
     /// page can't fit it (`measure` renders it without drawing), and a
     /// phrase is missing in a language that doesn't have its words; a
     /// canvas without a page is checked with Atlas's own layout.

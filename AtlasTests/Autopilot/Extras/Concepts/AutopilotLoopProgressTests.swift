@@ -47,7 +47,7 @@ struct AutopilotLoopProgressTests {
     @Test func whileTheDesignSourceWorksItSaysWhatComesAfter() throws {
         let run = Self.asked()
         let progress = try #require(AutopilotLoopProgress.make(run, now: Self.now))
-        let designer = (run.reviser ?? run.designKind).title
+        let designer = (run.reviser ?? run.designKind).designer
         #expect(progress.title == "\(designer) is revising the loop: “Slower”.")
         #expect(progress.fraction == nil)
         #expect(progress.line.isEmpty)
@@ -57,7 +57,7 @@ struct AutopilotLoopProgressTests {
     }
 
     /// The request stays until the loops are made: Bruma's run kept saying
-    /// Claude Design was revising for the hour Atlas drew them.
+    /// Claude was revising for the hour Atlas drew them.
     @Test func onceTheNewVersionArrivedItSaysAtlasIsMakingIt() throws {
         let progress = try #require(AutopilotLoopProgress.make(Self.making(done: 7), now: Self.now))
         #expect(progress.title == "Making the new loop")

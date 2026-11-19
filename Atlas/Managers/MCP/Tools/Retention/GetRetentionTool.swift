@@ -38,6 +38,7 @@ struct GetRetentionTool: MCPTool {
             "sourceLocale": .string(retention.content.sourceLocale.code),
             "languages": .array(retention.content.languages.map { .string($0.code) }),
             "limits": RetentionMCPJSON.limits(),
+            "textRules": StoreTextGuidelinePlace.retentionMessage.rulesJSON,
             "canAddMessage": .bool(retention.messages.count < RetentionLimits.messagesPerApp),
             "subscriptions": .array(retention.content.subscriptions.map { RetentionMCPJSON.subscription($0, in: retention) }),
             "messages": .array(retention.messages.map { RetentionMCPJSON.message($0, in: retention) }),

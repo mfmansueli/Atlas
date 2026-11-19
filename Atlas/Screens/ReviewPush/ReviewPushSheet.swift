@@ -85,9 +85,9 @@ struct ReviewPushSheet: View {
                 ContentUnavailableView(
                     "Nothing to push",
                     systemImage: "checkmark.circle",
-                    description: Text("Edits in Pricing, Store Page and App Information collect here until you push them.")
+                    description: Text("Edits and accepted suggestions from every section collect here until you push them.")
                 )
-                .frame(maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .accessibilityIdentifier("review.empty")
             } else {
                 ScrollView {

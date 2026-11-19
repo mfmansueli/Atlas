@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// A Claude Design page's loop playing in the viewer, live from its own
+/// An HTML page's loop playing in the viewer, live from its own
 /// CSS, keeping the `clock`'s time: it seeks, plays and pauses with it.
 /// Its controls are under it (`ArtworkLoopControls`).
 struct ArtworkWebLoopPlayer: View {

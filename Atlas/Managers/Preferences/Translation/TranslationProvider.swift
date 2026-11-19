@@ -31,4 +31,21 @@ enum TranslationProvider: String, CaseIterable, Identifiable, Codable, Sendable 
         case .assistant: String(localized: "Uses the assistant connected in AI Assistants, on its own plan. No API key here.")
         }
     }
+
+    /// Settings → AI Assistants → "Where suggestions come from" (board 48).
+    var sourceTitle: String {
+        switch self {
+        case .assistant: String(localized: "Your AI assistant")
+        case .aiProvider: String(localized: "An API key")
+        case .appleTranslation: String(localized: "Built-in only")
+        }
+    }
+
+    var sourceDetail: String {
+        switch self {
+        case .assistant: String(localized: "Claude Code or another assistant that speaks MCP, on its own plan. No API key here.")
+        case .aiProvider: String(localized: "Atlas asks the provider directly from this Mac. You pay the provider for what you use.")
+        case .appleTranslation: String(localized: "Atlas’s own checks, and Apple’s translation on this Mac. Free and private; no keyword work.")
+        }
+    }
 }

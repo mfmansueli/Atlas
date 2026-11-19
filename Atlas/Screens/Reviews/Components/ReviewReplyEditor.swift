@@ -6,7 +6,9 @@
 import SwiftUI
 
 /// The reply being written under a review: the text, what the suggestion
-/// it started from means, Apple's limit, and Cancel and Send Reply.
+/// it started from means, what Guideline 5.6.1 asks to leave out (a
+/// warning: the person may know better), Apple's limit, and Cancel and
+/// Send Reply.
 struct ReviewReplyEditor: View {
     let review: AppReview
     @Binding var text: String
@@ -38,6 +40,13 @@ struct ReviewReplyEditor: View {
                 Text("In \(ReviewLanguage.appLanguageName): \(meaning)")
                     .font(.caption)
                     .foregroundStyle(Palette.label2)
+            }
+            let issues = StoreTextGuidelineCheck.issues(in: text, for: .reviewReply)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("reviews.editor.guideline.\(review.id)")
             }
             if let error {
                 InlineMessage.error(error)

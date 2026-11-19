@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// One in-app text: the value and its counter (red over the limit), or an
-/// outlined "Missing". Clicking opens a popover to edit it.
+/// outlined "Missing", with a warning sign when App Review would reject
+/// the text. Clicking opens a popover to edit it, which says why.
 struct InAppTextCell: View {
     let model: InAppTextsViewModel
     let column: InAppTextColumn
@@ -17,6 +18,7 @@ struct InAppTextCell: View {
     var body: some View {
         let value = model.value(column, in: locale)
         let counter = model.counter(column, in: locale)
+        let issues = model.guidelineIssues(column, in: locale)
         Button {
             isEditing = true
         } label: {
@@ -39,6 +41,13 @@ struct InAppTextCell: View {
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .environment(\.layoutDirection, locale.isRTL ? .rightToLeft : .leftToRight)
+                        if !issues.isEmpty {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.caption)
+                                .foregroundStyle(Palette.warning)
+                                .help(issues.map(\.message).joined(separator: "\n"))
+                                .accessibilityIdentifier("storePage.inAppGuideline.\(locale.code).\(column.id)")
+                        }
                         if counter.isOverLimit {
                             Pill(text: "\(counter.count)/\(counter.limit.maximum)", style: .danger)
                         } else {
@@ -53,7 +62,7 @@ struct InAppTextCell: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(Text(accessibilityLabel(value: value, counter: counter)))
+        .accessibilityLabel(Text(accessibilityLabel(value: value, counter: counter, issues: issues)))
         .accessibilityIdentifier("storePage.inAppCell.\(locale.code).\(column.id)")
         .popover(isPresented: $isEditing, arrowEdge: .bottom) {
             editor
@@ -84,6 +93,13 @@ struct InAppTextCell: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(counter.isOverLimit ? Palette.danger : Palette.label2)
             }
+            let issues = model.guidelineIssues(column, in: locale)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("storePage.inAppEditorGuideline")
+            }
             HStack {
                 Spacer()
                 Button("Done") { isEditing = false }
@@ -94,9 +110,10 @@ struct InAppTextCell: View {
         .frame(width: 340)
     }
 
-    private func accessibilityLabel(value: String, counter: ListingFieldCounter) -> String {
+    private func accessibilityLabel(value: String, counter: ListingFieldCounter, issues: [StoreTextGuidelineIssue]) -> String {
         let title = "\(locale.name), \(column.title)"
         guard !value.isEmpty else { return "\(title): " + String(localized: "missing") }
-        return "\(title): \(value), \(counter.accessibilityLabel)"
+        let label = "\(title): \(value), \(counter.accessibilityLabel)"
+        return issues.isEmpty ? label : label + ". " + issues.map(\.message).joined(separator: " ")
     }
 }

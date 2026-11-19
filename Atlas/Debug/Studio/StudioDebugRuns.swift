@@ -9,7 +9,7 @@ import Foundation
 /// Lumen Journal's Autopilot run at each of the design's stages, for the
 /// Studio scenes: five screens on iPhone and iPad in the sample's
 /// languages (or every device and the project's new languages too),
-/// captured by Claude Code, designed by Claude Design in Northpier Brand
+/// captured by Claude Code, designed by Claude in Northpier Brand
 /// (or Atlas's starters).
 @MainActor
 enum StudioDebugRuns {
@@ -43,7 +43,7 @@ enum StudioDebugRuns {
         )
     }
 
-    /// A Claude Design link nobody has read yet.
+    /// A Claude link nobody has read yet.
     static var unreadLink: DesignProject {
         DesignProject(kind: .claudeDesign, link: "https://claude.ai/artifact/KxcpHYisJkSjAC2sXf7QHN?org=495d75b4-465a-42bc-b378-4fb6c09e5b2d")
     }

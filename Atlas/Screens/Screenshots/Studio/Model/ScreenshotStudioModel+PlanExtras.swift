@@ -9,17 +9,17 @@ import Foundation
 /// search artwork and App Preview, and what each choice means. And the
 /// line the plan shows when its screens are hidden.
 extension ScreenshotStudioModel {
-    /// "Claude Design" with a Claude Design project, the assistant with
-    /// another design project, else Atlas.
+    /// "Claude" with a Claude Design project, the assistant with another
+    /// design project, else Atlas.
     func extrasDesigner(client: String) -> String {
         switch designProject?.kind {
-        case .some(.claudeDesign): DesignProjectKind.claudeDesign.title
+        case .some(.claudeDesign): DesignProjectKind.claude
         case .some(.figma), .some(.folder): client
         case .some(.none), nil: "Atlas"
         }
     }
 
-    /// "Made by Claude Design in the chosen direction and checked like the
+    /// "Made by Claude in the chosen direction and checked like the
     /// screenshots. Each waits in Review & Push."
     func extrasNote(client: String) -> String {
         let made = designProject.map { _ in

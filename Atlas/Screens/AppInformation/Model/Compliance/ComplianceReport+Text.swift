@@ -40,26 +40,32 @@ extension ComplianceReport {
     }
 
     private func passNote(for rule: ComplianceRule) -> String {
-        let notNeeded = String(localized: "not needed")
-        let declared = String(localized: "declared")
-        let noCountries = String(localized: "no countries yet")
         switch rule {
-        case .traderStatus:
-            switch trader {
-            case .noCountriesYet: return noCountries
-            case .declared: return declared
-            default: return notNeeded
-            }
-        case .icpFilingNumber:
-            switch icp {
-            case .noCountriesYet: return noCountries
-            case .noProblem: return String(localized: "nothing missing")
-            default: return notNeeded
-            }
-        case .vietnamGameLicense:
-            return gameLicense == .needed ? declared : notNeeded
-        case .medicalDevice:
-            return medicalDevice.isAsked ? declared : notNeeded
+        case .traderStatus: traderPassNote
+        case .icpFilingNumber: icpPassNote
+        case .securityAssessment, .aiGeneratedContent: Self.declaredNote
+        case .vietnamGameLicense: gameLicense == .needed ? Self.declaredNote : Self.notNeededNote
+        case .medicalDevice: medicalDevice.isAsked ? Self.declaredNote : Self.notNeededNote
+        }
+    }
+
+    private static var notNeededNote: String { String(localized: "not needed") }
+    private static var declaredNote: String { String(localized: "declared") }
+    private static var noCountriesNote: String { String(localized: "no countries yet") }
+
+    private var traderPassNote: String {
+        switch trader {
+        case .noCountriesYet: Self.noCountriesNote
+        case .declared: Self.declaredNote
+        default: Self.notNeededNote
+        }
+    }
+
+    private var icpPassNote: String {
+        switch icp {
+        case .noCountriesYet: Self.noCountriesNote
+        case .noProblem: String(localized: "nothing missing")
+        default: Self.notNeededNote
         }
     }
 
@@ -70,6 +76,7 @@ extension ComplianceReport {
         switch rule {
         case .vietnamGameLicense: return gameLicense == .needed
         case .medicalDevice: return medicalDevice.isAsked
+        case .securityAssessment, .aiGeneratedContent: return true
         case .traderStatus, .icpFilingNumber: return false
         }
     }
@@ -79,6 +86,8 @@ extension ComplianceReport {
         switch rule {
         case .traderStatus: traderDetail
         case .icpFilingNumber: icpDetail
+        case .securityAssessment: securityAssessmentDetail
+        case .aiGeneratedContent: aiContentDetail
         case .vietnamGameLicense: gameLicenseDetail
         case .medicalDevice: medicalDeviceDetail
         }
@@ -141,10 +150,21 @@ extension ComplianceReport {
             return String(localized: "\(appName) isn’t sold in the European Economic Area, the United Kingdom or the United States, where the declaration applies.")
         case let .category(id):
             if answers.declared.contains(.medicalDevice) { return String(localized: "You marked it as declared in App Store Connect.") }
+            if let answer = medicalDeviceAnswer { return answer }
             return String(localized: "\(appName) is in \(AppCategory.name(for: id)), so Apple asks whether it’s a regulated medical device. Most apps answer No. Declare it in App Store Connect.")
         case .frequentMedicalInformation:
             if answers.declared.contains(.medicalDevice) { return String(localized: "You marked it as declared in App Store Connect.") }
+            if let answer = medicalDeviceAnswer { return answer }
             return String(localized: "Age Rating says Medical or Treatment Information is frequent, so Apple asks whether \(appName) is a regulated medical device. Declare it in App Store Connect.")
+        }
+    }
+
+    /// The accepted answer, still to be declared in App Store Connect.
+    private var medicalDeviceAnswer: String? {
+        switch answers.regulatedMedicalDevice {
+        case true?: String(localized: "Your answer: \(appName) is a regulated medical device. Declare it in App Store Connect, with its registration, then mark it as declared.")
+        case false?: String(localized: "Your answer: \(appName) isn’t a regulated medical device. Answer No in App Store Connect, then mark it as declared.")
+        case nil: nil
         }
     }
 

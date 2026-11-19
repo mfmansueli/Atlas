@@ -25,6 +25,8 @@ final class ReleaseViewModel {
     private(set) var status: ReleaseStatus?
     private(set) var hasLoaded = false
     private(set) var isLoading = false
+    /// The Submit sheet is reading the version and its builds again.
+    private(set) var isRefreshingBuilds = false
     private(set) var errorMessage: String?
     /// The version's store page: its languages and What's New.
     private(set) var content: StorePageContent?
@@ -112,6 +114,39 @@ final class ReleaseViewModel {
         }
     }
 
+    /// Reads the version again for the Submit sheet: its builds, which
+    /// change while Apple processes a new upload (before, the list was
+    /// read once when the app was opened, and a build uploaded since never
+    /// showed), and after a Submit that stopped halfway, its phased
+    /// release, attached build and submission. Keeps what the person
+    /// chose: the build they picked, unless it can't be chosen any more,
+    /// and every other answer. A version that moved on (submitted or
+    /// replaced elsewhere) loads again.
+    func refreshStatus() async {
+        guard !isLoading, !isRefreshingBuilds, let current = status else { return }
+        isRefreshingBuilds = true
+        defer { isRefreshingBuilds = false }
+        guard let loaded = try? await services.release.status(for: app, platform: current.version.platform) else { return }
+        guard loaded.version.id == current.version.id, loaded.phase == current.phase else {
+            isRefreshingBuilds = false
+            await load(platform: current.version.platform)
+            return
+        }
+        let pickedByPerson = options.buildID != Self.defaultBuildID(in: current)
+        status = loaded
+        let stillChoosable = loaded.builds.contains { $0.id == options.buildID && $0.isSelectable }
+        guard !pickedByPerson || !stillChoosable else { return }
+        options.buildID = Self.defaultBuildID(in: loaded)
+        if let known = knownEncryption { options.encryption = known }
+    }
+
+    /// The build the sheet starts with: the attached one, else the newest
+    /// that's ready.
+    static func defaultBuildID(in status: ReleaseStatus) -> ReleaseBuild.ID? {
+        let selectable = status.builds.filter(\.isSelectable)
+        return selectable.first { $0.id == status.attachedBuildID }?.id ?? selectable.first?.id
+    }
+
     /// What only the card before submitting and the sheet need: the
     /// events (also while a submission carries some), and the texts.
     private func loadDetails(of status: ReleaseStatus) async {
@@ -130,8 +165,7 @@ final class ReleaseViewModel {
     func resetOptions() {
         guard let status else { return }
         var options = SubmissionOptions()
-        let selectable = status.builds.filter(\.isSelectable)
-        options.buildID = selectable.first { $0.id == status.attachedBuildID }?.id ?? selectable.first?.id
+        options.buildID = Self.defaultBuildID(in: status)
         options.timing = status.version.timing.kind
         options.releaseDate = status.version.timing.date ?? defaultReleaseDate
         options.pushesChanges = true

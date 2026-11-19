@@ -52,16 +52,24 @@ final class ClaudeCodeLaunchUITests: XCTestCase {
 
     // MARK: - Runs
 
+    /// Ask sends the request to the toolbar (board 56): the button and the
+    /// Assistant button say Claude Code is working; the Assistant button's
+    /// popover has the run, its output and Stop, which ends the request.
     func testAskStartsClaudeCodeAndShowOutputCanStopIt() {
         launch(scene: "cc-ask")
-        let popover = element("ask.popover")
-        XCTAssertTrue(popover.waitForExistence(timeout: 10))
-        let step = popover.descendants(matching: .any)["claudeCode.run.step"]
-        XCTAssertTrue(step.waitForExistence(timeout: 5))
-        XCTAssertTrue(text(of: popover.descendants(matching: .any)["claudeCode.run.status"]).hasPrefix("Working in ~/Developer/Lumen"))
-        XCTAssertTrue(waitForText("Read CHANGELOG.md", in: step))
+        let ask = app.buttons["suggestions.ask"]
+        XCTAssertTrue(ask.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForLabel("Claude Code Is Working…", of: ask))
+        XCTAssertFalse(ask.isEnabled)
+        let indicator = app.buttons["workspace.assistantIndicator"]
+        XCTAssertTrue(waitForLabel("Assistant, Claude Code is working on Store Page", of: indicator))
+        XCTAssertFalse(element("ask.popover").exists)
 
-        popover.buttons["claudeCode.run.output"].click()
+        indicator.click()
+        XCTAssertTrue(element("workspace.assistantPopover.ask").waitForExistence(timeout: 5))
+        let show = app.buttons["assistant.runs.show"].firstMatch
+        XCTAssertTrue(show.waitForExistence(timeout: 5))
+        show.click()
         let phase = element("claudeCode.output.phase")
         XCTAssertTrue(phase.waitForExistence(timeout: 5))
         XCTAssertEqual(text(of: phase), "Working")
@@ -156,6 +164,16 @@ final class ClaudeCodeLaunchUITests: XCTestCase {
         let deadline = Date.now.addingTimeInterval(timeout)
         while Date.now < deadline {
             if element.exists, text(of: element) == expected { return true }
+            RunLoop.current.run(until: .now.addingTimeInterval(0.1))
+        }
+        return false
+    }
+
+    /// Waits for `element`'s accessibility label to be `expected`.
+    private func waitForLabel(_ expected: String, of element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if element.exists, element.label == expected { return true }
             RunLoop.current.run(until: .now.addingTimeInterval(0.1))
         }
         return false

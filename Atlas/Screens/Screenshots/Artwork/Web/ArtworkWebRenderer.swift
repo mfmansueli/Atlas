@@ -5,8 +5,9 @@
 
 import CoreGraphics
 import Foundation
+import WebKit
 
-/// Renders Claude Design's header and search pages: a few offscreen web
+/// Renders Claude's header and search pages: a few offscreen web
 /// views (`ArtworkWebPage`), lent out one render or one loop at a time, so
 /// up to `width` render side by side. They close a minute after the last
 /// render.
@@ -34,7 +35,29 @@ final class ArtworkWebRenderer {
     /// `request` rendered: the image at its width, flattened to opaque RGB,
     /// and its measure; `behindText` adds what's behind the text, and
     /// `checksMotion` which text moves during the loop.
+    /// A failure inside WebKit (its page process ending, a snapshot it
+    /// couldn't take) is tried once more on the next page: on Alba
+    /// (2026-11-18) two stills failed at the same moment with "An unknown
+    /// error occurred", and the same pages rendered when sent again.
     func render(_ request: ArtworkWebRequest, behindText: Bool = false, checksMotion: Bool = false) async throws -> ArtworkWebRender {
+        do {
+            return try await renderOnce(request, behindText: behindText, checksMotion: checksMotion)
+        } catch where Self.isWebKitFailure(error) {
+            do {
+                return try await renderOnce(request, behindText: behindText, checksMotion: checksMotion)
+            } catch where Self.isWebKitFailure(error) {
+                throw ArtworkWebError.rendererStopped
+            }
+        }
+    }
+
+    /// Whether `error` came from WebKit itself rather than from the page.
+    nonisolated static func isWebKitFailure(_ error: any Error) -> Bool {
+        if (error as NSError).domain == WKError.errorDomain { return true }
+        return error as? ArtworkWebError == .loadFailed(ArtworkWebError.processEnded)
+    }
+
+    private func renderOnce(_ request: ArtworkWebRequest, behindText: Bool, checksMotion: Bool) async throws -> ArtworkWebRender {
         try await withPage { page in
             let measure = try await self.load(request, on: page)
             let drawn = try await page.snapshot(width: request.outputWidth)

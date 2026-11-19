@@ -230,14 +230,7 @@ struct GetDesignBriefTool: MCPTool {
             """,
         ]
         if let summary = project.summary {
-            var found: [String: JSONValue] = [
-                "title": .string(summary.title),
-                "colors": .array(summary.colors.map { ["name": .string($0.name), "hex": .string($0.hex)] }),
-            ]
-            if let typefaces = summary.typefaces { found["typefaces"] = .string(typefaces) }
-            if let logo = summary.logo { found["logo"] = .string(logo) }
-            if let voice = summary.voice { found["voice"] = .string(voice) }
-            brand["summary"] = .object(found)
+            brand["summary"] = summary.mcpJSON
         } else {
             brand["readFirst"] = "Open the design project, then send what you found with report_design_source so the person sees it's the right one."
         }

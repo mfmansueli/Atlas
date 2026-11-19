@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// The App Information section of an app's workspace (⌘5): one view model
+/// The App Information section of an app's workspace (⌘6): one view model
 /// per app, kept by the window while other sections show and reloaded by
 /// the toolbar's Refresh.
 struct AppInformationSectionView: View {
@@ -26,7 +26,7 @@ struct AppInformationSectionView: View {
 
     var body: some View {
         Group {
-            if let viewModel, viewModel.app.id == app.id {
+            if let viewModel = shownModel, viewModel.app.id == app.id {
                 AppInformationContentView(viewModel: viewModel)
             } else {
                 AppInformationPageSkeleton()
@@ -52,22 +52,25 @@ struct AppInformationSectionView: View {
         if viewModel.handle(intent) { navigator.consume(intent) }
     }
 
+    /// The kept model before `open()` has run, so a section read ahead (or
+    /// opened before) shows its content from the first frame, not a
+    /// skeleton.
+    private var shownModel: AppInformationViewModel? {
+        viewModel ?? sectionModels?.keptModels(for: app.id)?.appInformation.flatMap { $0.isLoaded ? $0 : nil }
+    }
+
     private func open() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.appInformation)
+        guard !Task.isCancelled else { return }
         if let model = kept?.appInformation, model.isLoaded {
             viewModel = model
             handleIntent()
             if kept?.needsLoad(.appInformation, refreshCount: navigator.refreshCount) == true { await load(model) }
             return
         }
-        let model = AppInformationViewModel(
-            app: app,
-            services: services,
-            queue: queue,
-            suggestions: suggestions,
-            summaries: summaries,
-            push: push
-        )
+        let model = AppInformationViewModel(app: app, services: services, queue: queue, suggestions: suggestions, summaries: summaries, push: push)
         model.sellerName = session?.currentKeyID.flatMap { session?.teamNames[$0] }
         kept?.appInformation = model
         viewModel = model
@@ -83,9 +86,14 @@ struct AppInformationSectionView: View {
     /// Reads the pages and notes when, so the kept model isn't read again
     /// until Refresh, a push or its age asks for it.
     private func load(_ model: AppInformationViewModel) async {
-        let refreshCount = navigator.refreshCount
+        await Self.read(model, into: sectionModels?.models(for: app.id), refreshCount: navigator.refreshCount)
+    }
+
+    /// Reads the pages and stamps `kept` when it worked, under the Refresh
+    /// count the read started with.
+    static func read(_ model: AppInformationViewModel, into kept: AppSectionModels?, refreshCount: Int) async {
         await model.load()
         guard !Task.isCancelled, model.isLoaded, model.errorMessage == nil else { return }
-        sectionModels?.models(for: app.id).didLoad(.appInformation, refreshCount: refreshCount)
+        kept?.didLoad(.appInformation, refreshCount: refreshCount)
     }
 }

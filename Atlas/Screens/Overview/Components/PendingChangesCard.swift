@@ -27,7 +27,7 @@ struct PendingChangesCard: View {
             } else {
                 Text("Nothing waiting")
                     .font(.title3.weight(.semibold))
-                Text("Edits in Pricing, Store Page and App Information collect here until you push them.")
+                Text("Edits and accepted suggestions from every section collect here until you push them.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

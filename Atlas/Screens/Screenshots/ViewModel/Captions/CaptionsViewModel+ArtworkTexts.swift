@@ -7,7 +7,7 @@ import Foundation
 
 /// Captions' Search results and Header columns: each language's own text
 /// for the header and search artwork, measured on the direction's look;
-/// then a column per phrase Claude Design wrote on those pages, written in
+/// then a column per phrase Claude wrote on those pages, written in
 /// the primary language and translated like the captions.
 extension CaptionsViewModel {
     /// The artwork's size: the one made, else the run's plan; nil when the
@@ -31,7 +31,7 @@ extension CaptionsViewModel {
         screenshots.document?.extras?.artworkTemplate ?? screenshots.studio.run?.chosenDirection?.artworkLook ?? screenshots.document?.template
     }
 
-    /// The Claude Design pages the phrases come from: the made artwork's,
+    /// The HTML pages the phrases come from: the made artwork's,
     /// else the chosen direction's once Localize read them.
     var artworkPhraseDesign: AutopilotArtworkDesign? {
         guard artworkSize != nil else { return nil }
@@ -92,14 +92,14 @@ extension CaptionsViewModel {
         }
     }
 
-    /// The Claude Design page the texts go on for `kind`: the artwork's
+    /// The HTML page the texts go on for `kind`: the artwork's
     /// own, else the chosen direction's.
     func artworkPage(for kind: AutopilotArtworkKind) -> String? {
         screenshots.document?.extras?.artworkDesign?.page(for: kind) ?? screenshots.studio.run?.madeArtworkDesign?.page(for: kind)
     }
 
     /// The headline laid out on its artwork; nil without a look. On a
-    /// Claude Design page it's WebKit's fit, nil until it's measured.
+    /// HTML page it's WebKit's fit, nil until it's measured.
     func artworkFit(role: ArtworkTextRole, locale: StoreLocale, headline: String) -> CaptionFit? {
         guard let size = artworkSize else { return nil }
         if let html = artworkPage(for: role.kind(for: size)) {

@@ -6,7 +6,7 @@
 import AppKit
 import WebKit
 
-/// One web view that renders Claude Design pages. The page's own scripts
+/// One web view that renders HTML pages. The page's own scripts
 /// never run and the network is blocked; Atlas fills it in from its
 /// own content world. Offscreen, it sits in a borderless window far off
 /// every screen, its view a canvas ÷ the screen's scale in points and
@@ -23,6 +23,9 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
     /// page `clear()` starts, cancelled by the next load) isn't this load's.
     private var loadingNavigation: WKNavigation?
     private(set) var size = PixelSize(width: 0, height: 0)
+    /// The share of `size`'s pixels the page is drawn at
+    /// (`ArtworkWebRequest.drawingScale`).
+    private var drawingScale: CGFloat = 1
     /// A page is loading and being filled in.
     var isLoading: Bool { loading != nil }
 
@@ -68,7 +71,7 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
     func load(_ request: ArtworkWebRequest, fontCSS: String) async throws -> ArtworkWebMeasure {
         let bytes = request.html.utf8.count
         guard bytes <= AutopilotArtworkDesign.maximumBytes else { throw ArtworkWebError.tooLarge(bytes) }
-        resize(to: request.pixelSize)
+        resize(to: request.pixelSize, drawingScale: CGFloat(request.drawnWidth) / CGFloat(max(1, request.pixelSize.width)))
         assets.reset(icon: request.icon, captures: request.captures)
         try await navigate(to: request.html)
         let arguments: [String: Any] = [
@@ -145,11 +148,13 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
         try await run(ArtworkWebScript.hideText, arguments: ["hidden": hidden])
     }
 
-    /// The page as drawn, `width` pixels wide (the canvas's at most).
+    /// The page as drawn, `width` pixels wide (the width it's drawn at, at
+    /// most).
     func snapshot(width: Int) async throws -> CGImage {
         let configuration = WKSnapshotConfiguration()
         configuration.rect = webView.bounds
-        configuration.snapshotWidth = NSNumber(value: Double(min(width, size.width)) / Double(scale))
+        let drawn = Int((CGFloat(size.width) * drawingScale).rounded())
+        configuration.snapshotWidth = NSNumber(value: Double(min(width, drawn)) / Double(scale))
         configuration.afterScreenUpdates = true
         let image = try await webView.takeSnapshot(configuration: configuration)
         var rect = CGRect(origin: .zero, size: image.size)
@@ -180,14 +185,18 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
 
     // MARK: - Helpers
 
-    private func resize(to canvas: PixelSize) {
-        guard canvas != size else { return }
+    /// Lays the page out at `canvas` and draws it at `drawingScale` of its
+    /// pixels: the view is that many pixels in points ÷ the screen's scale,
+    /// zoomed to fit.
+    private func resize(to canvas: PixelSize, drawingScale: CGFloat = 1) {
+        guard canvas != size || drawingScale != self.drawingScale else { return }
         size = canvas
+        self.drawingScale = drawingScale
         guard let window else { return }
-        let points = CGSize(width: CGFloat(canvas.width) / scale, height: CGFloat(canvas.height) / scale)
+        let points = CGSize(width: CGFloat(canvas.width) * drawingScale / scale, height: CGFloat(canvas.height) * drawingScale / scale)
         window.setContentSize(points)
         webView.frame = CGRect(origin: .zero, size: points)
-        webView.pageZoom = 1 / scale
+        webView.pageZoom = drawingScale / scale
     }
 
     /// Runs one of Atlas's scripts; what it returns when that's text.
@@ -234,7 +243,7 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
     }
 
     func webViewWebContentProcessDidTerminate(_: WKWebView) {
-        finishLoading(nil, ArtworkWebError.loadFailed(String(localized: "the page’s process ended")))
+        finishLoading(nil, ArtworkWebError.loadFailed(ArtworkWebError.processEnded))
     }
 
     /// Links and other navigations away from the page go nowhere.

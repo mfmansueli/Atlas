@@ -42,7 +42,7 @@ struct AutopilotArtworkDirection: Codable, Hashable, Sendable {
             parts.append(references.count == 1 ? String(localized: "1 reference") : String(localized: "\(references.count) references"))
         }
         return parts.isEmpty
-            ? String(localized: "Optional: tell Claude Design what you expect, or attach images or videos you like.")
+            ? String(localized: "Optional: tell Claude what you expect, or attach images or videos you like.")
             : parts.joined(separator: " · ")
     }
 

@@ -24,7 +24,7 @@ extension AutopilotRun {
                 }),
                 "note": """
                 Nothing to capture: Atlas renders them in each language from the chosen direction's header and \
-                search pages (designed in Claude Design) and the screenshots' picked captures. Each placement has its own \
+                search pages (designed by Claude) and the screenshots' picked captures. Each placement has its own \
                 text (not a screenshot's caption), written in Localize when next_step says write_artwork_texts.
                 """,
             ]

@@ -12,7 +12,12 @@ import Synchronization
 /// through, bought and restored in DEBUG scenes and UI tests. Nothing is
 /// charged, and nothing is kept after the app quits.
 final class DebugProStore: ProStore, @unchecked Sendable {
-    private let owned = Mutex(ProStatus.free)
+    private let owned: Mutex<ProStatus>
+
+    /// `set-pro` owns the yearly plan already.
+    init(owned: ProStatus = .free) {
+        self.owned = Mutex(owned)
+    }
 
     static let offers = [
         ProOffer(plan: .yearly, displayPrice: "$59.99", price: 59.99, monthlyDisplayPrice: "$5.00", trialDays: 7),

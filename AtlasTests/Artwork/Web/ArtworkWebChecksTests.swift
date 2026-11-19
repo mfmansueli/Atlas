@@ -9,13 +9,13 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// Every check on a Claude Design page reads the page as rendered: its text
+/// Every check on an HTML page reads the page as rendered: its text
 /// boxes and their contrast against what's really behind them, the
 /// captures as the focal point, and the page's own problems (no place for
 /// the text, a capture that didn't load, a page past its canvas, text that
 /// moves).
 @MainActor
-@Suite("Checks on Claude Design pages", .serialized)
+@Suite("Checks on HTML pages", .serialized)
 struct ArtworkWebChecksTests {
     let renderer = ArtworkWebRenderer(width: 1)
 

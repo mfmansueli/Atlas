@@ -29,7 +29,7 @@ enum ArtworkCheckKind: String, Codable, Hashable, Sendable, CaseIterable {
     /// A motion loop that isn't 20 seconds at 30 fps, has sound, or jumps
     /// where it repeats.
     case loop
-    /// A Claude Design page that's missing what Atlas fills in, or
+    /// An HTML page that's missing what Atlas fills in, or
     /// whose capture didn't load.
     case page
 
@@ -64,7 +64,7 @@ enum ArtworkCheckKind: String, Codable, Hashable, Sendable, CaseIterable {
     /// "discounts aren’t allowed here", for a content kind.
     var notAllowed: String {
         switch self {
-        case .price: String(localized: "prices and currency symbols aren’t allowed here")
+        case .price: String(localized: "prices, “free” and currency symbols aren’t allowed here")
         case .discount: String(localized: "discounts and percentages aren’t allowed here")
         case .url: String(localized: "website addresses aren’t allowed here")
         case .copyright: String(localized: "copyright symbols aren’t allowed here")

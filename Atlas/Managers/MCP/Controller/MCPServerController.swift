@@ -26,6 +26,10 @@ final class MCPServerController {
     var pairedClients: [MCPPairedClient] = []
     /// The pairing the "Pair an assistant" sheet shows, if it's open.
     var pendingPairing: MCPPendingPairing?
+    /// The latest request turned away for a token no pairing has, since an
+    /// assistant last connected with a paired one: the overview says the
+    /// assistant can't connect.
+    var refusedConnection: MCPRefusedConnection?
     /// Whether an assistant made a call in the last few seconds; the
     /// toolbar indicator spins while it does.
     private(set) var isWorking = false
@@ -82,6 +86,9 @@ final class MCPServerController {
     /// they act as; in memory only, each dropped when its run ends
     /// (`MCPServerController+Launch`).
     var runTokens: [String: MCPPairedClient.ID] = [:]
+    /// Tokens of runs that ended: what still carries one is refused, but a
+    /// run's late goodbye isn't an assistant that can't connect.
+    var endedRunTokens: Set<String> = []
     /// Clients that connected since Atlas opened, so a quiet one reads
     /// "Disconnected" rather than "not connected since".
     var seenThisLaunch: Set<MCPPairedClient.ID> = []
@@ -114,8 +121,7 @@ final class MCPServerController {
         self.bridgePath = bridgePath
         self.now = now
         isEnabled = defaults?.bool(forKey: Key.isEnabled) ?? false
-        allowedProposals = defaults?.stringArray(forKey: Key.allowedProposals)
-            .map { Set($0.compactMap(MCPProposalKind.init(rawValue:))) } ?? Set(MCPProposalKind.allCases)
+        allowedProposals = Self.allowedProposals(saved: defaults?.stringArray(forKey: Key.allowedProposals))
         editsDrafts = defaults?.bool(forKey: Key.editsDrafts) ?? false
         loadPairedClients()
     }
@@ -145,6 +151,13 @@ final class MCPServerController {
         case .listening where connectedClients.isEmpty: String(localized: "Running · no assistant connected · \(address)")
         case .listening: String(localized: "Running · \(connectedClients.count) assistant connected · \(address)")
         }
+    }
+
+    /// What was saved, with the kinds added since it was saved left on.
+    static func allowedProposals(saved: [String]?) -> Set<MCPProposalKind> {
+        guard let saved else { return Set(MCPProposalKind.allCases) }
+        let kinds = Set(saved.compactMap(MCPProposalKind.init(rawValue:)))
+        return kinds.union(Set(MCPProposalKind.allCases).subtracting(MCPProposalKind.firstKinds))
     }
 
     func allows(_ kind: MCPProposalKind) -> Bool {

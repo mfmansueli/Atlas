@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// Menu bar commands for the main window: sections (⌘1–⌘8) and Refresh (⌘R)
+/// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R)
 /// in View, a Push menu with Review & Push (⇧⌘P) and Activity, plus the
 /// section-specific commands that work through `WorkspaceIntent`.
 struct WorkspaceCommands: Commands {

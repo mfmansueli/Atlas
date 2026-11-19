@@ -94,10 +94,23 @@ struct InAppEventArtworkCheckerTests {
         #expect(texts.contains { $0.hasPrefix("The art has text in it (“GRATITUDE”, “WEEK”).") })
         #expect(texts.contains { $0.hasPrefix("The lower part is busy (30% sharp edges)") })
 
-        let video = InAppEventArtworkChecker.checks(Self.video(seconds: 45, codec: "vp09"), kind: .card, look: nil)
+        let video = InAppEventArtworkChecker.checks(Self.video(seconds: 20, codec: "vp09"), kind: .card, look: nil)
         #expect(InAppEventArtworkChecker.canQueue(video))
         #expect(video.map(\.text).contains { $0.hasPrefix("The video is encoded as “vp09”.") })
-        #expect(video.map(\.text).contains { $0.hasPrefix("The video is 45 seconds.") })
+    }
+
+    /// App Store Connect's creative asset specifications: 5 to 30 seconds.
+    @Test(arguments: [(3.0, "3.0"), (45.0, "45")])
+    func aVideoOutsideFiveToThirtySecondsIsRefused(seconds: Double, length: String) {
+        let checks = InAppEventArtworkChecker.checks(Self.video(seconds: seconds), kind: .card, look: nil)
+        #expect(!InAppEventArtworkChecker.canQueue(checks))
+        #expect(checks.contains { $0.severity == .refusal && $0.text.hasPrefix("The video is \(length) seconds; Apple takes 5 to 30") })
+    }
+
+    @Test(arguments: [5.0, 20.0, 30.0])
+    func aVideoOfFiveToThirtySecondsIsTaken(seconds: Double) {
+        let checks = InAppEventArtworkChecker.checks(Self.video(seconds: seconds), kind: .card, look: nil)
+        #expect(InAppEventArtworkChecker.canQueue(checks))
     }
 
     @Test func refusalsComeBeforeWarnings() {

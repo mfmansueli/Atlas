@@ -6,13 +6,12 @@
 import Foundation
 
 /// The look the design source recommends, marked at Choose: "Claude’s
-/// pick" with Claude Design, the starters' "Atlas’s pick".
+/// pick" with Claude, the starters' "Atlas’s pick".
 enum GuidedPick {
     /// "Claude", "Atlas": whose pick it is.
     static func title(design: DesignProjectKind) -> String {
         switch design {
-        case .claudeDesign: "Claude"
-        case _ where design.usesDesignAI: design.title
+        case _ where design.usesDesignAI: DesignProjectKind.claude
         default: "Atlas"
         }
     }

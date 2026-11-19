@@ -7,7 +7,7 @@ import CoreGraphics
 import Foundation
 
 extension ArtworkCheckGeometry {
-    /// A Claude Design page as rendered: its text where the page set it,
+    /// An HTML page as rendered: its text where the page set it,
     /// read against what's behind it (the page drawn without the text), its
     /// captures as the focal point, and its own colors.
     init(web render: ArtworkWebRender, kind: AutopilotArtworkKind) {

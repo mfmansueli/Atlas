@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// A Claude Design page's own words (`data-al="text"`): phrases written
+/// An HTML page's own words (`data-al="text"`): phrases written
 /// once in the primary language, which Atlas translates
 /// (`ArtworkTextBook.phrases`) and writes into each language's render; a
 /// language without its words yet is found, and they're checked like the

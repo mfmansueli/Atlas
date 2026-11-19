@@ -38,7 +38,7 @@ struct CaptionsColumnHeader: View {
                     .frame(width: cellWidth, alignment: .leading)
                     .accessibilityIdentifier("screenshots.captions.column.\(role.rawValue)")
             }
-            // The phrases Claude Design wrote on those pages.
+            // The phrases Claude wrote on those pages.
             ForEach(Array(model.artworkPhrases.enumerated()), id: \.offset) { index, phrase in
                 Text(ArtworkTextCell.phraseTitle(index))
                     .foregroundStyle(Palette.label3)

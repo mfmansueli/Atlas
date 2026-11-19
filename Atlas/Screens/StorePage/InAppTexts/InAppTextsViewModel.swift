@@ -104,4 +104,10 @@ final class InAppTextsViewModel {
     func isPending(_ column: InAppTextColumn, in locale: StoreLocale) -> Bool {
         matrix?.draft(column, in: locale).isPending ?? false
     }
+
+    /// What App Review would reject in the cell's text: a warning, not a
+    /// block, since the person may know better.
+    func guidelineIssues(_ column: InAppTextColumn, in locale: StoreLocale) -> [StoreTextGuidelineIssue] {
+        StoreTextGuidelineCheck.issues(in: value(column, in: locale), for: column.field)
+    }
 }

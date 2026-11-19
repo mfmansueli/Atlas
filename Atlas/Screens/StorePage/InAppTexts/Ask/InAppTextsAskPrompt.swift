@@ -18,7 +18,9 @@ enum InAppTextsAskPrompt {
         Suggest In-App Texts for \(app) in Atlas: the subscription group's display name, and each \
         subscription's and in-app purchase's display name and description, in every language of its Store Page \
         where one is missing. Read them with get_in_app_texts, write in each language and within the limits, and \
-        propose them with propose_in_app_texts. Leave texts that are already there as they are.
+        propose them with propose_in_app_texts. Leave texts that are already there as they are, unless \
+        get_in_app_texts' states say App Review would reject one: propose a version without it. \
+        \(StoreTextRules.inAppSummary)
         """)
     }
 }

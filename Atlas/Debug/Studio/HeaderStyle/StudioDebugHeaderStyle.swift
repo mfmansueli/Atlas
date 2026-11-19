@@ -14,7 +14,7 @@ import Foundation
 ///   designed and one an idea yet, or only the first idea.
 /// - `st-choose-tpl`: Choose a direction and a header, the second
 ///   direction and the first header chosen.
-/// - `st-choose-free`: Choose a header, Claude Design's own, still images.
+/// - `st-choose-free`: Choose a header, Claude's own, still images.
 /// - `st-des-header-loop`: Design in a Header 21:9 only run with Motion
 ///   loop: the first concept's loop is in, the other two are animating.
 /// - `st-choose-header-loop`: Choose a header in that run, each concept
@@ -93,7 +93,7 @@ enum StudioDebugHeaderStyle {
     }
 
     /// Only the header and search (the live screenshots stay), a 20-second
-    /// loop from the picked templates or Claude Design's own concepts.
+    /// loop from the picked templates or Claude's own concepts.
     static func headerOnly(
         _ stage: AutopilotStage, style: AutopilotArtworkStyle = .templates, motion: AutopilotArtworkMotion = .loop
     ) -> AutopilotRun {
@@ -112,7 +112,7 @@ enum StudioDebugHeaderStyle {
     }
 
     /// Choose in a run that makes only the 21:9 header, as a loop, from
-    /// Claude Design's own concepts, each animated at Design.
+    /// Claude's own concepts, each animated at Design.
     static var headerLoopOnly: AutopilotRun {
         var run = headerOnly(.choose, style: .free)
         run.plan.alsoMakes.setArtworkSize(.headerOnly)

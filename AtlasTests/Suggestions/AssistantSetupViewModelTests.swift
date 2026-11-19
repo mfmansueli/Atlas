@@ -27,10 +27,16 @@ struct AssistantSetupViewModelTests {
         #expect(!setup.canGoBack)
 
         setup.choose(.cursor)
+        #expect(!assistants.isEnabled)
         #expect(!setup.advance())
         #expect(setup.step == .server)
+        #expect(setup.isServerOn)
+        #expect(setup.canContinue)
+
+        setup.setServerOn(false)
         #expect(!setup.canContinue)
         #expect(!setup.advance())
+        #expect(setup.step == .server)
 
         setup.setServerOn(true)
         setup.editsDrafts = true
@@ -72,13 +78,58 @@ struct AssistantSetupViewModelTests {
     @Test func cancellingForgetsAClientThatNeverConnected() {
         let assistants = MCPTestFixtures.controller(clock: clock)
         let setup = setup(assistants)
-        setup.setServerOn(true)
         _ = setup.advance()
         _ = setup.advance()
         #expect(assistants.pendingPairing != nil)
         setup.cancel()
         #expect(assistants.pendingPairing == nil)
         #expect(assistants.pairedClients.isEmpty)
+        #expect(!assistants.isEnabled)
+    }
+
+    @Test func cancellingKeepsAServerThatWasAlreadyOn() {
+        let assistants = MCPTestFixtures.controller(clock: clock)
+        assistants.setEnabled(true)
+        let setup = setup(assistants)
+        _ = setup.advance()
+        #expect(setup.step == .server)
+        setup.cancel()
+        #expect(assistants.isEnabled)
+    }
+
+    @Test func cancellingAfterTheClientCalledKeepsTheServerOn() throws {
+        let assistants = MCPTestFixtures.controller(clock: clock)
+        let setup = setup(assistants)
+        _ = setup.advance()
+        _ = setup.advance()
+        let pairing = try #require(assistants.pendingPairing)
+        assistants.pendingPairing?.connectedClient = MCPPairedClient(id: pairing.clientID, kind: .claudeCode, name: "Claude Code", pairedAt: clock.now)
+        setup.cancel()
+        #expect(assistants.isEnabled)
+        #expect(assistants.pendingPairing == nil)
+    }
+
+    @Test func backToChoosingHowTurnsOffTheServerSetupTurnedOn() {
+        let assistants = MCPTestFixtures.controller(clock: clock)
+        let setup = setup(assistants)
+        _ = setup.advance()
+        #expect(assistants.isEnabled)
+        setup.goBack()
+        #expect(setup.step == .assistant)
+        #expect(!assistants.isEnabled)
+
+        setup.choose(.apiKey)
+        _ = setup.advance()
+        #expect(setup.step == .server)
+        #expect(!assistants.isEnabled)
+    }
+
+    @Test func openingOnTheServerStepTurnsItOn() {
+        let assistants = MCPTestFixtures.controller(clock: clock)
+        let keyAssistant = KeyAssistantController(service: StubKeyAssistantService(), secrets: InMemorySecretStore(), defaults: nil)
+        let setup = AssistantSetupViewModel(assistants: assistants, keyAssistant: keyAssistant, appName: "Lumen Journal", step: .server)
+        #expect(setup.isServerOn)
+        #expect(setup.canContinue)
     }
 
     @Test func choosingAKeyLeavesTheServerAlone() {

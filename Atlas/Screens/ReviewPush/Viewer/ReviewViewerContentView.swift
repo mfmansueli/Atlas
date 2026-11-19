@@ -62,8 +62,11 @@ struct ReviewViewerContentView: View {
             .task { large = await largeImage(of: shot) }
         case let .artwork(extra):
             if let loop = extra.loopFileURL {
-                ReviewLoopPlayer(model: loopPlayer, url: loop, poster: large, width: width, aspect: aspect)
-                    .task { large = await artworkImage(extra) }
+                FullSizeLoopPlayer(
+                    model: loopPlayer, url: loop, poster: large, width: width, aspect: aspect, identifier: "review.viewer.loop",
+                    zoomIdentifier: Self.zoomIdentifier, controlsHeight: Self.loopControlsHeight
+                )
+                .task { large = await artworkImage(extra) }
             } else {
                 ZoomableContainer(identifier: Self.zoomIdentifier, label: item.title) {
                     StudioShotImage(image: large, width: width, aspect: aspect, cornerFraction: 0.01)

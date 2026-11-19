@@ -65,4 +65,12 @@ struct AssistantSuggestionRequest: Hashable, Sendable {
             ? String(localized: "\(client) sent 1 suggestion. Nothing changes until you accept it.")
             : String(localized: "\(client) sent \(received) suggestions. Nothing changes until you accept them.")
     }
+
+    /// The window's toast after an ask from the toolbar's flight: where
+    /// the suggestions are.
+    var askFinishedText: String {
+        received == 1
+            ? String(localized: "\(client) finished \(area.title): 1 suggestion, marked in purple on its field. Nothing changes until you accept it.")
+            : String(localized: "\(client) finished \(area.title): \(received) suggestions, marked in purple on the fields. Nothing changes until you accept them.")
+    }
 }

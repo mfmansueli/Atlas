@@ -108,6 +108,24 @@ struct ReviewsToolsTests {
         #expect(store.archive(for: Data.app.id).suggestions.isEmpty)
     }
 
+    /// 5.6.1: no marketing in a reply. "Feel free" and a free trial in a
+    /// support answer are fine.
+    @Test func aReplyWithAPromoCodeIsSkipped() async throws {
+        let outcome = try await call(ProposeReviewRepliesTool(store: store), [
+            "appId": "Lumen Journal",
+            "replies": [
+                ["reviewId": "de1", "text": "Danke! Mit dem Rabattcode LUMEN gibt es 50 % Rabatt.", "meaning": "Thanks! Code LUMEN gives 50% off."],
+                ["reviewId": "jp1", "text": "Feel free to write to us; the free trial lasts 7 days.", "meaning": "Write to us."],
+            ],
+        ])
+        #expect(outcome.result["replies"] == .int(1))
+        let skipped = try #require(outcome.result["skipped"]?.arrayValue?.first)
+        #expect(skipped["reviewId"] == "de1")
+        #expect(skipped["reason"]?.stringValue?.hasPrefix("Replies to reviews can’t include marketing (Guideline 5.6.1)") == true)
+        #expect(store.archive(for: Data.app.id).suggestions["de1"] == nil)
+        #expect(store.archive(for: Data.app.id).suggestions["jp1"] != nil)
+    }
+
     @Test func groupsReplaceTheOnesSentBefore() async throws {
         store.add([Data.sync], for: Data.app.id)
         let outcome = try await call(ProposeReviewThemesTool(store: store), [

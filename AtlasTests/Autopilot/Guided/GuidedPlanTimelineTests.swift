@@ -43,7 +43,7 @@ struct GuidedPlanTimelineTests {
         #expect(rows[0].who.initials == "CC")
         #expect(rows[1].title == "Designs 3 screenshot looks")
         #expect(rows[1].detail == "In Northpier Brand.")
-        #expect(rows[1].who == .designer("Claude Design"))
+        #expect(rows[1].who == .designer("Claude"))
         #expect(rows[3].title == "Localizes and checks everything in 2 languages")
         for row in rows where !row.isYours {
             #expect(row.time.hasPrefix("about "), "Times are estimates: \(row.time)")

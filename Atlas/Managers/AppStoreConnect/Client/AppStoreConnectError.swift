@@ -6,7 +6,8 @@
 import Foundation
 
 /// What can go wrong talking to App Store Connect, with the message the UI
-/// shows. HTTP failures carry the first `detail` Apple sent back, if any.
+/// shows. HTTP failures carry the first `detail` Apple sent back, if any,
+/// followed by the reasons in its associated errors.
 enum AppStoreConnectError: LocalizedError, Equatable {
     /// The `.p8` contents aren't a P-256 private key.
     case invalidPrivateKey
@@ -29,7 +30,7 @@ enum AppStoreConnectError: LocalizedError, Equatable {
 
     init(statusCode: Int, body: Data) {
         let response = try? JSONDecoder().decode(AppStoreConnectErrorResponse.self, from: body)
-        let detail = response?.errors.first.flatMap { $0.detail ?? $0.title }
+        let detail = Self.detail(of: response?.errors.first)
         switch statusCode {
         case 401: self = .unauthorized
         case 403: self = .forbidden(detail: detail)
@@ -98,6 +99,24 @@ enum AppStoreConnectError: LocalizedError, Equatable {
         default:
             errorDescription ?? ""
         }
+    }
+
+    /// How many associated reasons are listed; the rest are counted.
+    static let reasonsShown = 6
+
+    /// Apple's detail, then each reason it gives in `associatedErrors`, one
+    /// per line, as Apple words it: "You must provide a value for the
+    /// attribute 'copyright' with this request".
+    static func detail(of item: AppStoreConnectErrorItem?) -> String? {
+        guard let item else { return nil }
+        var reasons: [String] = []
+        for reason in item.associatedErrors.compactMap(\.text) where !reasons.contains(reason) && reason != item.text {
+            reasons.append(reason)
+        }
+        guard !reasons.isEmpty else { return item.text }
+        var lines = reasons.prefix(reasonsShown).map { "• \($0)" }
+        if reasons.count > reasonsShown { lines.append(String(localized: "and \(reasons.count - reasonsShown) more")) }
+        return ([item.text].compactMap(\.self) + lines).joined(separator: "\n")
     }
 
     private static func message(_ summary: String, detail: String?) -> String {

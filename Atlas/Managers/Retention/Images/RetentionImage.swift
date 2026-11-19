@@ -6,7 +6,7 @@
 import Foundation
 
 /// The image a "With image" message shows: one already in the app's App
-/// Asset Library (`assetID`), or a PNG Claude Design made on this Mac
+/// Asset Library (`assetID`), or a PNG Claude made on this Mac
 /// (`localPath`), which the push uploads to the library first.
 struct RetentionImage: Identifiable, Hashable, Codable, Sendable {
     /// The `appAssetLibraryImages` ID; nil until a local file is uploaded.

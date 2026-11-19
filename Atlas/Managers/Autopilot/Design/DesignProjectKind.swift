@@ -48,4 +48,12 @@ enum DesignProjectKind: String, Codable, CaseIterable, Hashable, Sendable, Ident
 
     /// A design AI makes the directions (not Atlas's starters).
     var usesDesignAI: Bool { self != .none }
+
+    /// Who draws the directions and artwork: Claude, the Claude Code Atlas
+    /// runs, with whatever design project the app has (it can't open Claude
+    /// Design or Figma from Atlas, so it works from the brief).
+    static let claude = "Claude"
+
+    /// "Claude" with any design project, else "Atlas" (its starters).
+    var designer: String { usesDesignAI ? Self.claude : String(localized: "Atlas") }
 }

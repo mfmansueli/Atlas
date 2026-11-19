@@ -18,13 +18,11 @@ extension MCPServerController {
             return .response(.text(403, "Only clients on this Mac may connect."))
         }
         if request.path == MCPEndpoint.pairingPath { return .response(redeem(request)) }
-        guard let clientID = authorizedClientID(for: request.header("authorization")) else {
-            recordUnauthorized()
-            return .response(.text(401, "Wrong or missing access token.", headers: ["WWW-Authenticate": "Bearer"]))
-        }
+        let authorization = request.header("authorization")
+        guard let clientID = authorizedClientID(for: authorization) else { return refuse(request) }
         pruneIdleSessions()
         switch request.method {
-        case "POST": return await .response(post(request, from: clientID))
+        case "POST": return await .response(post(request, from: clientID, byRun: isRunCredential(authorization)))
         case "GET": return openStream(request, from: clientID)
         case "DELETE": return .response(delete(request, from: clientID))
         default: return .response(.text(405, headers: ["Allow": "GET, POST, DELETE"]))
@@ -48,7 +46,9 @@ extension MCPServerController {
 
     // MARK: - POST
 
-    private func post(_ request: HTTPRequest, from clientID: MCPPairedClient.ID) async -> HTTPResponse {
+    /// `byRun`: the token is a run's that Atlas started, not the
+    /// pairing's own.
+    private func post(_ request: HTTPRequest, from clientID: MCPPairedClient.ID, byRun: Bool) async -> HTTPResponse {
         guard let message = try? JSONDecoder().decode(JSONRPCMessage.self, from: request.body) else {
             let isBatch = (try? JSONDecoder().decode([JSONValue].self, from: request.body)) != nil
             let error = isBatch ? JSONRPCError.invalidRequest("Batched messages aren’t supported; send one message per request.") : .parseError
@@ -57,7 +57,11 @@ extension MCPServerController {
         guard let kind = message.kind else {
             return .json(JSONRPCResponse.error(.invalidRequest("Not a JSON-RPC 2.0 message."), id: message.id ?? .null), status: 400)
         }
-        if kind == .request, message.method == "initialize" { return initialize(message, from: clientID) }
+        if kind == .request, message.method == "initialize" {
+            // The person's own assistant got in: whatever was refused is fixed.
+            if !byRun { refusedConnection = nil }
+            return initialize(message, from: clientID)
+        }
         if let version = request.header("mcp-protocol-version"), !MCPProtocolVersion.supported.contains(version) {
             return .text(400, "Unsupported MCP-Protocol-Version \(version).")
         }
@@ -240,6 +244,16 @@ extension MCPServerController {
     }
 
     /// One line per burst of rejected requests, not one per retry.
+    /// 401, and unless it's an ended run's late request, the overview says
+    /// the assistant can't connect until it gets in with a paired token.
+    private func refuse(_ request: HTTPRequest) -> HTTPReply {
+        recordUnauthorized()
+        if !isRunCredential(request.header("authorization")) {
+            refusedConnection = MCPRefusedConnection(date: now(), clientName: MCPRefusedConnection.clientName(userAgent: request.header("user-agent")))
+        }
+        return .response(.text(401, "Wrong or missing access token.", headers: ["WWW-Authenticate": "Bearer"]))
+    }
+
     private func recordUnauthorized() {
         let reason = String(localized: "Wrong or missing access token. Pair the assistant again in Settings → AI Assistants.")
         if let last = log.first, last.reason == reason, now().timeIntervalSince(last.date) < 60 { return }

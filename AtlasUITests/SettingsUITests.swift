@@ -5,8 +5,9 @@
 
 import XCTest
 
-/// The Settings window, opened by the DEBUG scenes in `SettingsDebugScenes`
-/// with the design's two sample keys, in memory (no Keychain, no Apple).
+/// The Settings window (board 48), opened by the DEBUG scenes in
+/// `SettingsDebugScenes` with the design's two sample keys, in memory (no
+/// Keychain, no Apple). `SettingsPanesUITests` covers the newer panes.
 @MainActor
 final class SettingsUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -39,15 +40,16 @@ final class SettingsUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts.matching(identifier: "Can manage apps and read Sales and Trends").count, 2)
     }
 
+    /// Remove… asks in place, under the key, with what leaves Atlas.
     func testRemovingAKeyAsksFirst() {
         launch(scene: "set-account")
         let remove = app.buttons["settings.remove.Q7MZ3K8PLA"]
         XCTAssertTrue(remove.waitForExistence(timeout: 10))
         remove.click()
-        // Inside a window: the Touch Bar shows the same button.
-        let confirm = app.windows.descendants(matching: .button)["Remove Key"].firstMatch
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
-        confirm.click()
+        XCTAssertTrue(element("settings.remove.panel").waitForExistence(timeout: 5))
+        XCTAssertEqual(text(of: element("settings.remove.title")), "Remove Brightline Apps?")
+        attach("set-accounts-remove-clicked")
+        app.buttons["settings.remove.confirm"].click()
         XCTAssertTrue(element("settings.key.Q7MZ3K8PLA").waitForNonExistence(timeout: 5))
         XCTAssertTrue(element("settings.key.2X9R4HXF34").exists)
     }
@@ -77,7 +79,7 @@ final class SettingsUITests: XCTestCase {
     }
 
     func testGlossaryTermsCanBeAddedAndRemoved() {
-        launch(scene: "set-translation")
+        launch(scene: "set-suggestions")
         XCTAssertTrue(element("settings.term.Lumen Plus").waitForExistence(timeout: 10))
         app.buttons["Remove Face ID"].click()
         XCTAssertTrue(element("settings.term.Face ID").waitForNonExistence(timeout: 5))
@@ -89,14 +91,21 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(element("settings.term.Northpier").waitForExistence(timeout: 5))
     }
 
-    func testProviderChoiceIsARadioGroup() {
-        launch(scene: "set-translation")
-        let assistant = app.buttons["settings.provider.assistant"]
+    /// Where suggestions come from: one choice, and only its sections.
+    func testTheSourceChoiceIsARadioGroup() {
+        launch(scene: "set-assistants-none")
+        let assistant = app.buttons["settings.source.assistant"]
         XCTAssertTrue(assistant.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["settings.provider.appleTranslation"].isSelected)
+        XCTAssertTrue(app.buttons["settings.source.appleTranslation"].isSelected)
+        XCTAssertFalse(element("settings.ai.server").exists)
+        attach("set-assistants-none")
         assistant.click()
         XCTAssertTrue(assistant.isSelected)
-        XCTAssertFalse(app.buttons["settings.provider.appleTranslation"].isSelected)
+        XCTAssertFalse(app.buttons["settings.source.appleTranslation"].isSelected)
+        XCTAssertTrue(element("settings.ai.server").waitForExistence(timeout: 5))
+        app.buttons["settings.source.aiProvider"].click()
+        XCTAssertTrue(app.secureTextFields["settings.apiKey"].waitForExistence(timeout: 5))
+        XCTAssertFalse(element("settings.ai.server").exists)
     }
 
     func testASavedAPIKeySaysItIsConnected() {
@@ -121,11 +130,53 @@ final class SettingsUITests: XCTestCase {
         launch(scene: "set-general")
         let picker = element("settings.pushConfirmation")
         XCTAssertTrue(picker.waitForExistence(timeout: 10))
+        // Under the Menu Bar and Dock rows.
+        app.scrollViews.firstMatch.scroll(byDeltaX: 0, deltaY: -400)
         XCTAssertEqual(picker.radioButtons["Over 50 changes"].value as? Int, 1)
         picker.radioButtons["Always"].click()
         XCTAssertEqual(picker.radioButtons["Always"].value as? Int, 1)
         XCTAssertEqual(picker.radioButtons["Over 50 changes"].value as? Int, 0)
-        XCTAssertTrue(element("settings.commission").exists)
+        XCTAssertTrue(element("settings.confirmsPriceIncreases").exists)
+    }
+
+    /// Apple's commission moved to Pricing → Proceeds.
+    func testTheCommissionIsInPricing() {
+        launch(scene: "set-pricing")
+        let commission = element("settings.commission")
+        XCTAssertTrue(commission.waitForExistence(timeout: 10))
+        attach("set-pricing")
+    }
+
+    func testMenuBarRowsAndTheirDefaults() {
+        launch(scene: "set-general")
+        let showsIcon = app.switches["settings.showsMenuBarIcon"]
+        XCTAssertTrue(showsIcon.waitForExistence(timeout: 10))
+        XCTAssertEqual(showsIcon.value as? Int, 1)
+        XCTAssertEqual(app.switches["settings.keepsRunning"].value as? Int, 1)
+        XCTAssertEqual(app.switches["settings.animatesMenuBarIcon"].value as? Int, 1)
+        XCTAssertEqual(app.switches["settings.opensAtLogin"].value as? Int, 0)
+        XCTAssertTrue(element("settings.dockVisibility").exists)
+        XCTAssertTrue(element("settings.checkInterval").exists)
+    }
+
+    func testHidingTheMenuBarIconTurnsOffKeepRunning() {
+        launch(scene: "set-general")
+        let showsIcon = app.switches["settings.showsMenuBarIcon"]
+        XCTAssertTrue(showsIcon.waitForExistence(timeout: 10))
+        showsIcon.click()
+        let keepsRunning = app.switches["settings.keepsRunning"]
+        XCTAssertEqual(keepsRunning.value as? Int, 0)
+        XCTAssertFalse(keepsRunning.isEnabled)
+        XCTAssertFalse(app.switches["settings.animatesMenuBarIcon"].isEnabled)
+    }
+
+    func testOpenAtLoginTurnsOff() {
+        launch(scene: "set-general-login")
+        let login = app.switches["settings.opensAtLogin"]
+        XCTAssertTrue(login.waitForExistence(timeout: 10))
+        XCTAssertEqual(login.value as? Int, 1)
+        login.click()
+        XCTAssertEqual(login.value as? Int, 0)
     }
 
     // MARK: - Helpers
@@ -135,7 +186,19 @@ final class SettingsUITests: XCTestCase {
     }
 
     private func element(_ identifier: String) -> XCUIElement {
-        app.descendants(matching: .any)[identifier]
+        app.descendants(matching: .any)[identifier].firstMatch
+    }
+
+    /// A SwiftUI text's words are its value; a button's are its label.
+    private func text(of element: XCUIElement) -> String {
+        [element.label, element.value as? String ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
+    }
+
+    private func attach(_ name: String) {
+        let attachment = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     /// The line under the API key field, once it says `text`.

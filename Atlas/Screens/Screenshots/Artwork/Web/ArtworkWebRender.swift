@@ -6,7 +6,7 @@
 import CoreGraphics
 import Foundation
 
-/// A Claude Design page rendered in one language: the image (opaque, the
+/// An HTML page rendered in one language: the image (opaque, the
 /// request's width), what's behind the text (small, for contrast), and
 /// where everything landed.
 struct ArtworkWebRender: Sendable {

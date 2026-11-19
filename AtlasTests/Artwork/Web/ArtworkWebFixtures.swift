@@ -8,7 +8,7 @@ import CoreGraphics
 import Foundation
 @testable import Atlas
 
-/// Claude Design pages for the web renderer's tests: a search page on a
+/// HTML pages for the web renderer's tests: a search page on a
 /// flat background with the headline in a box, the name, the icon and one
 /// capture, and what fills them in.
 enum ArtworkWebFixtures {

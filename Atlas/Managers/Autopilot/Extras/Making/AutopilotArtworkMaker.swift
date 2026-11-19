@@ -8,7 +8,7 @@ import Foundation
 
 /// Renders the header and search artwork in every language, each
 /// placement's own text and the picked captures in it: from the
-/// direction's Claude Design pages when it has them (`ArtworkWebRenderer`),
+/// direction's HTML pages when it has them (`ArtworkWebRenderer`),
 /// else with Atlas's own layout in the direction's look. Checks each
 /// render (`ArtworkChecker`: Apple's rules are errors, the rest advice) and
 /// keeps each PNG in the app's Extras folder, named by its checksum. An
@@ -99,7 +99,7 @@ struct AutopilotArtworkMaker {
     }
 
     /// What a still's loop is drawn from: Atlas's layers, or the
-    /// Claude Design page stepped frame by frame.
+    /// HTML page stepped frame by frame.
     private static func loopSource(of made: Still, icon: CGImage?) throws -> ArtworkLoopSource {
         switch made.loop {
         case let .layout(layout, captures):
@@ -186,7 +186,7 @@ struct AutopilotArtworkMaker {
         return Still(file: file, place: Self.place(kind, locale: locale), loopKey: id, loop: .layout(layout, captures: images))
     }
 
-    /// One kind in one language from its Claude Design page, as a PNG in
+    /// One kind in one language from its HTML page, as a PNG in
     /// the Extras folder, checked against where the page put everything.
     private func pageStill(
         _ kind: AutopilotArtworkKind, html: String, locale: StoreLocale, run: AutopilotRun, texts: ArtworkTextBook, icon: Data?

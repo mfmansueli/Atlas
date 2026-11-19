@@ -7,7 +7,7 @@ import Foundation
 
 /// What a retention push fills in or sends itself, beyond the queued
 /// requests: the image's placement group, from Apple's reference data;
-/// an image Claude Design made on this Mac, uploaded to the Asset Library
+/// an image Claude made on this Mac, uploaded to the Asset Library
 /// first; an offer's prices, the U.S. price point and Apple's equalized
 /// ones; a message a push before already created; and a refused review
 /// submission, explained. `PushController` calls `resolving` before each

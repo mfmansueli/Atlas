@@ -24,9 +24,13 @@ struct AppWorkspaceView: View {
     @Environment(ChangeQueue.self) private var changes
     @Environment(PushController.self) private var push
     @Environment(MCPServerController.self) private var assistants
+    @Environment(ClaudeCodeLauncher.self) private var launcher
     @Environment(FieldSuggestionStore.self) private var suggestions
     @Environment(ProGate.self) private var pro: ProGate?
+    @Environment(\.askCenterOverride) private var askCenterOverride
     @State private var toolbarLayout = WorkspaceToolbarLayout()
+
+    private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
 
     var body: some View {
         @Bindable var navigator = navigator
@@ -69,6 +73,11 @@ struct AppWorkspaceView: View {
             guard let new, new.phase == .finished, old?.id != new.id || old?.phase != .finished else { return }
             navigator.toast = .finished(new)
         }
+        // An asking button's request ended: where its suggestions are.
+        .onChange(of: askCenter.finished) { _, finished in
+            guard let finished else { return }
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: finished.text))
+        }
         .navigationTitle(app.name)
         .navigationSubtitle(app.bundleID)
         .toolbar(removing: .title)
@@ -88,8 +97,12 @@ struct AppWorkspaceView: View {
             }
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
-            ToolbarItemGroup(placement: .primaryAction) {
+            // Its own capsule: a request's token lands on it.
+            ToolbarItem(placement: .primaryAction) {
                 assistantIndicator
+            }
+            ToolbarSpacer(.fixed, placement: .primaryAction)
+            ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     navigator.refresh()
                 } label: {
@@ -139,6 +152,7 @@ struct AppWorkspaceView: View {
             activity: assistantActivity,
             status: assistants.assistantStatus,
             client: assistants.assistantClient,
+            connection: assistants.connection(appID: app.id, appName: app.name, launcher: launcher),
             editsDrafts: assistants.editsDrafts,
             recentCalls: assistants.leadingClient.map { assistants.recentCalls(of: $0.name) } ?? [],
             center: screenshotDocuments,
@@ -148,7 +162,8 @@ struct AppWorkspaceView: View {
             canAskAboutPage: navigator.section == .storePage || navigator.section == .appInformation,
             onAsk: askForSuggestions,
             onSuggestEverything: suggestEverything,
-            onSetUp: { navigator.isAssistantSetupPresented = true }
+            onSetUp: { navigator.isAssistantSetupPresented = true },
+            ask: askCenter.ask(for: app.id)
         )
     }
 
@@ -213,6 +228,8 @@ struct AppWorkspaceView: View {
             StorePageSectionView(app: app, services: services.storePage)
         case .screenshots:
             ScreenshotsSectionView(app: app, services: services.storePage)
+        case .productPages:
+            ProductPagesSectionView(app: app, services: services.productPages)
         case .appInformation:
             AppInformationSectionView(app: app, services: services.appInformation)
         case .analytics:

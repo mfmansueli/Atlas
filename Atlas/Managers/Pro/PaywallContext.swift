@@ -17,13 +17,15 @@ enum PaywallContext: Hashable, Sendable {
     case retention
     case secondApp
     case template
+    /// Make the Artwork… on an In-App Event.
+    case eventArtwork
     case menu
 
     /// The feature highlighted in the paywall's list.
     var feature: ProFeature? {
         switch self {
         case .acceptAllLanguages, .acceptAllPages, .translateAll: .acceptAll
-        case .autopilot: .autopilot
+        case .autopilot, .eventArtwork: .autopilot
         case .recommendedPrices: .recommendedPrices
         case .retention: .retention
         case .secondApp: .multipleApps
@@ -43,6 +45,7 @@ enum PaywallContext: Hashable, Sendable {
         case .retention: String(localized: "Retention is part of Pro")
         case .secondApp: String(localized: "More than one app is part of Pro")
         case .template: String(localized: "This template is part of Pro")
+        case .eventArtwork: String(localized: "Event artwork from Claude is part of Pro")
         case .menu: nil
         }
     }
@@ -74,6 +77,8 @@ enum PaywallContext: Hashable, Sendable {
             All 14 templates on every device: Mac, iPad, iPhone Duo, Vision Pro and Apple Watch. Three templates on \
             iPhone and iPad stay free.
             """)
+        case .eventArtwork:
+            String(localized: "An event card and details image as a matching pair, three concepts to choose from. Choosing your own files stays free.")
         case .menu: nil
         }
     }
@@ -90,6 +95,7 @@ enum PaywallContext: Hashable, Sendable {
         case .retention: String(localized: "Open Retention")
         case .secondApp: String(localized: "Open the App")
         case .template: String(localized: "Use the Template")
+        case .eventArtwork: String(localized: "Make the Artwork…")
         case .menu: nil
         }
     }

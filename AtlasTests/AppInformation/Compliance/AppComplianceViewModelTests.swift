@@ -27,22 +27,32 @@ struct AppComplianceViewModelTests {
 
     // MARK: - The page
 
-    @Test func threeNeedThePersonAndOneIsCheckedOnItsOwn() async throws {
+    @Test func fiveNeedThePersonAndOneIsCheckedOnItsOwn() async throws {
         let vm = await loaded()
         let report = try #require(vm.complianceReport)
         #expect(report.state(of: .traderStatus) == .needsAnswer)
         #expect(report.state(of: .icpFilingNumber) == .needsAnswer)
+        #expect(report.state(of: .securityAssessment) == .needsAnswer)
+        #expect(report.state(of: .aiGeneratedContent) == .needsAnswer)
         #expect(report.state(of: .vietnamGameLicense) == .passes)
         #expect(report.medicalDevice == .category("HEALTH_AND_FITNESS"))
-        #expect(vm.status(for: .appCompliance) == "3 need you")
-        #expect(vm.pageColumnStatus(for: .appCompliance) == "3 need you")
+        #expect(vm.status(for: .appCompliance) == "5 need you")
+        #expect(vm.pageColumnStatus(for: .appCompliance) == "5 need you")
         #expect(!vm.isPageUpToDate(.appCompliance))
         #expect(!vm.hasPendingChanges(on: .appCompliance))
     }
 
-    @Test func anAppWithNothingMissingIsUpToDate() async {
+    /// Apple asks China mainland's two declarations of every app sold
+    /// there, even when it shows nothing missing.
+    @Test func anAppWithNothingMissingOnlyNeedsChinasDeclarations() async {
         let habitat = StoreApp(id: DebugFixtures.AppID.habitat, name: "Habitat", bundleID: "dev.example.habitat", sku: nil, primaryLocale: "en-US")
         let vm = await loaded(app: habitat)
+        #expect(vm.status(for: .appCompliance) == "2 need you")
+        #expect(vm.complianceReport?.state(of: .securityAssessment) == .needsAnswer)
+        #expect(vm.complianceReport?.state(of: .aiGeneratedContent) == .needsAnswer)
+
+        vm.setDeclared(true, for: .securityAssessment)
+        vm.setDeclared(true, for: .aiGeneratedContent)
         #expect(vm.status(for: .appCompliance) == "Up to date")
         #expect(vm.isPageUpToDate(.appCompliance))
     }
@@ -56,7 +66,7 @@ struct AppComplianceViewModelTests {
         #expect(!vm.acceptAllSelection().groups.contains { $0.id == AppInformationPage.appCompliance.rawValue })
 
         vm.acceptAllPages(withoutAsking: true)
-        #expect(vm.status(for: .appCompliance) == "3 need you")
+        #expect(vm.status(for: .appCompliance) == "5 need you")
         #expect(vm.notes.compliance == ComplianceAnswers())
     }
 
@@ -77,11 +87,11 @@ struct AppComplianceViewModelTests {
         vm.setSecondaryCategory(nil)
         let report = try #require(vm.complianceReport)
         #expect(report.medicalDevice == .notNeeded)
-        #expect(vm.status(for: .appCompliance) == "2 need you")
+        #expect(vm.status(for: .appCompliance) == "4 need you")
 
         vm.setPrimaryCategory("GAMES")
         #expect(vm.complianceReport?.gameLicense == .needed)
-        #expect(vm.status(for: .appCompliance) == "3 need you")
+        #expect(vm.status(for: .appCompliance) == "5 need you")
     }
 
     @Test func aFrequentAnswerInAgeRatingChecksAgain() async {
@@ -113,7 +123,7 @@ struct AppComplianceViewModelTests {
         #expect(!vm.isEditingTrader)
         #expect(queue.changes.isEmpty)
         #expect(vm.complianceReport?.state(of: .traderStatus) == .toEnter)
-        #expect(vm.status(for: .appCompliance) == "2 need you")
+        #expect(vm.status(for: .appCompliance) == "4 need you")
         #expect(vm.toast?.contains("App Store Connect") == true)
     }
 
@@ -197,7 +207,7 @@ struct AppComplianceViewModelTests {
         vm.setDeclared(true, for: .medicalDevice)
         #expect(vm.complianceReport?.state(of: .medicalDevice) == .passes)
         #expect(vm.complianceReport?.isMarkedDeclared(.medicalDevice) == true)
-        #expect(vm.status(for: .appCompliance) == "2 need you")
+        #expect(vm.status(for: .appCompliance) == "4 need you")
 
         vm.setDeclared(false, for: .medicalDevice)
         #expect(vm.complianceReport?.state(of: .medicalDevice) == .needsAnswer)
@@ -209,9 +219,11 @@ struct AppComplianceViewModelTests {
         vm.chooseICP(.addNumber)
         vm.setICPNumber(DebugAppInformationContent.icpNumber)
         vm.setDeclared(true, for: .medicalDevice)
-        #expect(vm.status(for: .appCompliance) == "2 to finish at Apple")
+        vm.chooseChina(.no, for: .securityAssessment)
+        vm.chooseChina(.no, for: .aiGeneratedContent)
+        #expect(vm.status(for: .appCompliance) == "4 to finish at Apple")
         #expect(!vm.isPageUpToDate(.appCompliance))
-        #expect(vm.complianceReport?.headline == "2 to enter in App Store Connect · 2 checked")
+        #expect(vm.complianceReport?.headline == "4 to enter in App Store Connect · 2 checked")
     }
 }
 #endif

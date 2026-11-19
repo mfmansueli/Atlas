@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Atlas's own JavaScript for a Claude Design page, run with
+/// Atlas's own JavaScript for an HTML page, run with
 /// `callAsyncJavaScript` in its own content world (the page's scripts never
 /// run): fill in a language, fit the text, step the motion, read where
 /// everything landed.

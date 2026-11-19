@@ -46,6 +46,29 @@ struct SectionBadgeCountsTests {
         #expect(counts.count(for: .subscriptionPricing) == 0)
     }
 
+    /// App Compliance's suggested answers count toward App Information,
+    /// and suggested product pages toward Product Pages.
+    @Test func complianceAnswersAndProductPagesCountTowardTheirSections() {
+        let extras = SectionBadgeCounts.Extras(complianceAnswers: 3, productPages: 2)
+        let counts = SectionBadgeCounts(appID: "1", suggestions: FieldSuggestionStore(), extras: extras)
+        #expect(counts.count(for: .appInformation) == 3)
+        #expect(counts.count(for: .productPages) == 2)
+    }
+
+    #if DEBUG
+    /// Before App Information is opened, its count is the suggestions kept
+    /// on this Mac.
+    @Test func complianceCountsTheKeptSuggestionsBeforeTheSectionReads() {
+        let notes = InMemoryAppInformationNotesStore()
+        var kept = notes.notes(for: "1")
+        kept.complianceSuggestions = DebugAppInformationContent.complianceSuggestions
+        notes.setNotes(kept, for: "1")
+        let count = SectionBadgeCounts.complianceCount(appID: "1", model: nil, notes: notes)
+        #expect(count == DebugAppInformationContent.complianceSuggestions.count)
+        #expect(SectionBadgeCounts.complianceCount(appID: "2", model: nil, notes: notes) == 0)
+    }
+    #endif
+
     @Test func everySectionTogetherIsTheSidebarsNumber() {
         let counts = SectionBadgeCounts([.storePage: 4, .appInformation: 2, .subscriptionPricing: 1])
         #expect(counts.total == 7)

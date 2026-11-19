@@ -113,7 +113,8 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
 - **Library and overview:** `apps`, `apps-empty`, `apps-error`, `lib-loading`, `overview`, `overview-keep`.
 - **Navigation** (`NavigationDebugScenes`): a section selected in the sidebar, `nav-ov`, `nav-sp`, `nav-ev`, `nav-rv`,
   `nav-an`; the app menu open, `nav-apps`; the footer following a phased release, `nav-ph`; Free, `nav-free`; the
-  sidebar hidden, with the toolbar's section menu and title, `nav-s`, and that menu open, `nav-s-menu`.
+  sidebar hidden, with the toolbar's section menu and title, `nav-s`, and that menu open, `nav-s-menu`; the other
+  sections read ahead while Overview shows, the Store Page and App Information four seconds slow, `nav-prefetch`.
 - **Ratings & Reviews** (`ReviewsDebugScenes`; "today" is Nov 16, 2026): `rv`, every review `rv-all`, Show Original
   `rv-orig`, editing a reply `rv-edit`, one sent `rv-sent`, Reply to All `rv-bulk`, Free `rv-free`, the sidebar hidden
   `rv-s`, no suggestions yet `rv-none`, no reviews `rv-empty`, `rv-error`, `rv-loading`, a reply Apple refuses
@@ -124,11 +125,22 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
 - **In-App Events** (`InAppEventsDebugScenes`): an event in German `ev`, Portuguese `ev-br`, Arabic `ev-ar`, English
   `ev-en`; every language accepted `ev-done`; the event that goes with the version `ev-mood`; an ended one
   `ev-ended`; `ev-new`, `ev-empty`, `ev-error`.
+- **Event artwork** (`EventArtworkDebugScenes`, board 47; Claude Code never starts): the Brief `ea-brief`, with words
+  and motion `ea-brief-opts`, without a design project `ea-brief-nods`; drawing `ea-making`, changing one `ea-redo`,
+  hidden `ea-hidden`, ready `ea-ready`; `ea-choose`; Check `ea-check`, in German `ea-check-de`, Arabic `ea-check-ar`,
+  the light concept `ea-check-b`, the busy one `ea-check-c`, asking `ea-ask`, moving `ea-motion`, the person's files
+  `ea-files`; in Review & Push `ea-used`; Free `ea-free`.
 - **Connect:** `connect`, `connect-key`, `connect-checking`, `connect-401`, `connect-403`, `connect-rejected`,
   `connect-offline`, `sync`, and more (`ConnectDebugScenes`).
-- **Settings:** `set-account`, `set-pricing`, `set-translation`, `set-general`.
+- **Settings (board 48):** `set-general` (`set-general-login`), `set-accounts` (also `set-account`),
+  `set-accounts-remove` (Remove… asked in place), `set-suggestions`, `set-pricing`, `set-shots`, `set-notif`,
+  `set-notif-blocked`, `set-pro` (yearly), `set-free`, `set-privacy`. AI Assistants: `set-assistants` (an assistant
+  connected), `set-assistants-off`, `set-assistants-key` (an API key; `set-translation`, and
+  `set-translation-rejected` with a key the vendor refuses), `set-assistants-none` (built-in only).
 - **AI Assistants settings:** `set-ai-off`, `set-ai-pair`, `set-ai-waiting`, `set-ai-on`, `set-ai-connected`,
   `set-ai-disc`, `set-ai-log`.
+- **Atlas Help (board 49):** `help-home`, `help-search`, `help-none`, `help-connect`, `help-assistant`, `help-keys`,
+  `help-shown`: the Help window's content in the main window.
 - **Assistants at work:** `ai-translate`, `ai-streaming`, `ai-review`, `ai-conflict`, `overview-ai`.
 - **Suggestions and assistant setup:** the overview before and after connecting, `ov-first` and `ov-connected`; the
   Assistant popover, `asst-pop`; the setup sheet, `setup-1` to `setup-4` and `setup-done`; the Store Page with
@@ -197,11 +209,58 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
 
 The UI tests run through these scenes.
 
+## Settings
+
+The Settings window (⌘,, board 48) is a sidebar with search and nine panes (`Screens/Settings/`, `SettingsPane`,
+`SettingsNavigation`, which Help's Show Me also sets):
+
+- **General:** Appearance (Match System, Light, Dark: `AppAppearance`, applied at launch), the menu bar and Dock
+  rows, how often Atlas checks App Store Connect, and the confirmations before pushing.
+- **Accounts:** the saved keys, Remove… asked in place under the key (`AccountRemovalPanel`), Add Another Key…, and
+  the vendor number for the key in use (disabled when its role can't read sales) with Reports by app, which opens
+  Analytics.
+- **AI Assistants:** where suggestions come from (`TranslationProvider`: your AI assistant, an API key, or built-in
+  only). Each choice shows only its sections: with an assistant, the local server, paired assistants, Claude Code
+  started by Atlas, "Assistants may suggest" (six switches, `MCPProposalKind`, replies to reviews and artwork
+  included; choices saved before those two existed leave them on), "Assistants never" as locked rows, each app's
+  Claude Design project, and Activity (Show Activity… is the log); with an API key, the provider, the key and the key
+  assistant.
+- **Suggestions:** the source language, the tone, the names never translated, the repeated-words keywords check
+  (`AppPreferences.checksRepeatedWords`, which the Store Page's built-in suggestions follow), asking before Accept All,
+  and what is never accepted for you.
+- **Pricing:** the defaults for new apps and prices by country, and Apple's commission (Proceeds).
+- **Screenshots:** the defaults an event's artwork Brief starts with (words in the art, moving versions).
+- **Notifications:** whether macOS allows them, then what Atlas tells you about and how (`NotificationPreferences`,
+  `AtlasNotifier`, `AtlasNotifications`): something needs you (Autopilot's turns, concepts ready behind a hidden
+  sheet), App Review's status changes, a push that finished (a failed one always tells), new reviews (never, 3 stars
+  or lower, every review; the first read of an app isn't news), Analytics' findings once a week, a sound, the menu bar
+  icon's dot, and the Dock icon's count of what needs you (suggestions aren't counted).
+- **Atlas Pro:** the plan and when it renews, Manage Subscription…, what Pro includes, Restore Purchases, Redeem a
+  Code…; Free shows See Atlas Pro…, whose paywall opens on the Settings window (`ProGate.settingsPaywall`).
+- **Privacy & Data:** what leaves this Mac, the activity (every push and every assistant call, Export… as JSON), the
+  rendered images and ratings that can be made again (Clear…), the "Don't ask again" choices (Reset), and Remove All
+  Keys and Data…, which deletes every key and paired assistant from the Keychain and Atlas's own files and settings,
+  then quits (`LocalDataStore`; only its `supportItems` are removed, and DEBUG scenes and the tests' host delete
+  nothing).
+
+## Atlas Help
+
+Help → Atlas Help (⌘?, board 49) opens the Help window (`Screens/Help/`): a sidebar with Search Help and every
+article by group, a home page (searches to try, the Start here cards, Contact Support…), search results, and
+articles with Back, where you are, Show Me (a Settings pane, a section of the selected app, or Review & Push, then
+"Opened … in Atlas.") and related articles. The 18 articles are Markdown files bundled with the app
+(`Managers/Help/Articles/help-*.md`): front matter (`id`, `group`, `title`, `summary`, `keywords`, `showMe`,
+`related`), then blocks (`## ` heading, `1. ` steps, `- ` list, `> ` note, `| ` table), read by `HelpArticleParser`
+and searched by `HelpLibrary` (every word must match; title, then keywords, summary, text). The Help menu also has
+Keyboard Shortcuts, Connect App Store Connect, Fix a Problem, App Store Connect System Status, Contact Support… and
+Send Feedback… (an email with Atlas's version, to the Info.plist's `ALSupportEmail` once it's set). View has Show
+Sidebar (⌃⌘S).
+
 ## Translation providers
 
-Settings → Translation picks who translates: Apple Translation on this Mac, an AI provider, or the assistant connected
-over MCP. The AI provider's key is kept in the Keychain and sent only to that provider (`Managers/AIProvider/`).
-The tab checks the saved key when it opens, after a key is saved and when the vendor changes, with a `GET` for the
+Settings → AI Assistants picks who suggests and translates: the assistant connected over MCP, an AI provider with an
+API key, or Apple Translation on this Mac. The AI provider's key is kept in the Keychain and sent only to that provider
+(`Managers/AIProvider/`). The pane checks the saved key when it opens, after a key is saved and when the vendor changes, with a `GET` for the
 model translations use (no tokens spent), and says under the field whether it's saved and connected, rejected, or
 couldn't be checked. Anthropic is called through the Messages API (`claude-opus-5-5`, low effort, with Anthropic's default fallback if a
 request is declined); OpenAI through Chat Completions (`OpenAIChatAPI.model`); Google Gemini through
@@ -322,6 +381,15 @@ room for more of them and the toolbar only holds actions.
   Review" with Fix…. A click opens the Submit sheet before submitting and Overview's version card after.
 - **With the sidebar hidden** the toolbar gets a section menu (`SectionMenuButton`) and the app's name with the
   version's status (`WorkspaceToolbarLayout`); under 720 points the title goes and Review & Push keeps its count.
+- **Sections open loaded** (`Screens/Main/Workspace/SectionModels/`): the window keeps each section's model for the
+  four apps opened last (`WorkspaceSectionModels`, `AppSectionModels`), stamped when a read finished and read again
+  after Refresh, a push or 15 minutes. Two seconds after an app opens, and again after Refresh or a push, the
+  sections the person isn't looking at are read in the background, one at a time in the sidebar's order
+  (`SectionPrefetcher`, `WorkspaceSectionWarmer`, `SectionPrefetchModifier`), each model made the way its section
+  view makes it; Screenshots reads its sets too, Analytics only its context (Apple's reports still download when it
+  opens or each morning). A section opened while its read runs waits for it instead of reading again. Reading
+  ahead stops when the app changes and while App Store Connect's hourly quota is in its last quarter
+  (`AppStoreConnectQuota`, from every read's `X-Rate-Limit` header). DEBUG scenes read ahead only when asked.
 
 ## Ratings & Reviews
 
@@ -393,8 +461,24 @@ The design is on the same page (board 40). In-App Events is its own section (⌘
   `POST /v1/appEvents` followed by its languages (which refer to it as `{createdID}`).
 - **To App Review:** an event that's complete (every language written, both images, dates) goes with the version
   from the Submit sheet, or on its own with Submit Event….
-- **Not there yet:** uploading an event's images (they're added in App Store Connect) and reading how an ended event
-  did from Apple's analytics reports: the card links to App Analytics.
+- **Images and video** (board 47): a strip under the event's title shows the card and details image, or what's
+  missing, and what a run is doing. **Choose Files…** (free) takes the person's own images or loops, by their shape.
+  **Make the Artwork…** (Pro, `PaywallContext.eventArtwork`) opens a four-step sheet, `EventArtworkSheet`:
+  - **Brief:** what the art should show (written by Atlas from the event's texts, editable), a capture from
+    Screenshots as reference, words in the art (the name drawn per language), a moving version, and the look: a new
+    look in the app's brand (with a design project), Atlas's event layouts (`EventArtworkTemplate`, by badge), or
+    extending the card the event has (only the details image is new). The footer says how long it takes.
+  - **Making:** Atlas starts Claude Code (`ClaudeCodeRunPurpose.eventArtworkConcepts`) or copies the prompt when it
+    can't. Three concepts arrive one by one, each a matching pair. **Hide · Keeps Going** closes the sheet; the strip
+    and the menu bar icon show the progress, and the icon gets its dot when the concepts are ready. Stop adds nothing.
+  - **Choose** one (Claude Design marks its pick), then **Check** it under the App Store's text in the languages
+    worth a look (the primary, the longest name, CJK, right-to-left), with four checks (`EventArtworkConceptChecks`).
+    **Ask for Changes…** redraws only that pair.
+  - **Use This Artwork** queues the pair, accepted, for every language in Review & Push (`EventArtworkFlow.use`),
+    with the moving version where there is one; the toast's Undo takes it back.
+  - Runs are kept on this Mac (`EventArtworkStudio`, `EventArtworkRuns/runs.json`); one left drawing when Atlas quit
+    moves on at the next launch with what arrived.
+- **Not there yet:** reading how an ended event did from Apple's analytics reports: the card links to App Analytics.
 
 ## AI assistants (MCP)
 
@@ -405,12 +489,55 @@ turning the server on with Suggest only or Suggest and edit drafts, adding Atlas
 call.
 
 - **Pairing:** each assistant gets its own bearer token from the "Pair an assistant" sheet, stored in the Keychain.
-  Revoking it in Settings ends its sessions.
+  Revoking it in Settings ends its sessions. Claude Code's command registers Atlas once for every project
+  (`--scope user`), removing an older entry first: one server serves every app.
+- **Connection per app:** the overview's card and the Assistant popover compare the folder each open session works
+  in (its MCP roots) with the app's project folder (the one Atlas starts Claude Code in), so they say "connected"
+  only for this app's folder, "connected to another project" (naming that app), "is ready" when Atlas starts it, or
+  ask for the app's folder with Choose Folder…. A request whose token matches no pairing (an old registration) makes
+  them say "Claude Code can't connect" with Reconnect… until an assistant gets in with a paired token; an ended
+  run's late request doesn't count. Scenes `ov-refused`, `ov-elsewhere`, `ov-unattached`, `asst-pop-refused`.
 - **Tools:**
   - Store text: `list_apps`, `get_listing`, `list_missing_translations` and `propose_listing_text`.
+  - App Review's metadata rules (`StoreTextGuidelineCheck`, `Screens/StorePage/Model/Validation/Guidelines/`):
+    store text and captions are checked for what App Review rejects from the words alone: pricing such as “free”
+    in any language, prices, discounts and trials (2.3.7; SimProps 1.0 was rejected for it), other platforms and
+    stores (2.3.10), other apps' names in the name, subtitle and keywords (2.3.7, 4.1(c)), unverifiable claims in the
+    name and subtitle (2.3.7), beta and demo (2.2), placeholders (2.1(a)), “coming soon” (2.3) and “For Kids” (2.3.8,
+    5.1.4(b)). `propose_listing_text`, `suggest_fields` (code `guideline`) and `propose_captions` refuse such text
+    with `issues` [{kind, guideline, phrases}] and how to rewrite it; App Store Connect's own text can always come
+    back. `get_listing` and `get_store_page` carry `storeTextRules` (also the ones only judgment can apply, such as
+    2.3.1, 2.3.9 and 2.3.12) and say in a locale's `states` which fields already break one. The server instructions,
+    the prompts and Generate Suggestions… carry the rules too, and Generate Suggestions… drops what breaks one. The
+    person is only warned: under the field in the Store Page and on the change in Review & Push.
+    In-App Texts (in-app purchase, subscription and group names and descriptions) follow their own set
+    (`StoreTextGuidelineKind.applies(to: InAppTextField)`): pricing, other platforms, placeholders, “coming soon”
+    and “For Kids”, without claims, other apps or betas (“Best Value” and “Early Access” are ordinary product
+    names). An in-app purchase may name a trial length: Guideline 3.1.1 asks a non-subscription app's free trial
+    to be a non-consumable at Price Tier 0 named “XX-day Trial” (SimProps's “7-day Trial”); a subscription's trial
+    is an introductory offer, so its texts may not. `propose_in_app_texts` and `propose_subscription` refuse what
+    breaks one, `get_in_app_texts` carries `textRules` and per-locale `states`, the In-App Texts cell and editor,
+    Create Subscription and Review & Push warn the person.
+    In-App Event texts, retention messages and review replies follow their own page of Apple's rules
+    (`StoreTextGuidelinePlace`): events (Apple's In-App Events page, 2.3.13) no specific prices or discounts
+    (“free” is allowed: a free weekend is an event), no claims such as “#1” or “the best app”, no all capitals or
+    repeated punctuation (`emphasis`, checked only here), no other platforms, placeholders or “For Kids”;
+    retention messages (App Store Connect's retention message guidelines) no offers, discounts or prices, also
+    “one month free” and trials, no unverifiable claims or statistics (“92% of parents”), no emphasis, while a
+    factual loss and upcoming content are fine; replies (5.6.1) no marketing (prices, discounts, promo codes) and
+    no unfilled “[name]”, while “feel free” and a free trial in a support answer are fine. `propose_event_texts`
+    and `propose_review_replies` skip what breaks one (`issues`), `propose_in_app_event` and
+    `propose_retention_message` (also its shorter suggestions) refuse it; `get_in_app_events`, `get_retention` and
+    `get_reviews` carry `textRules`. The event field, the retention editor, the reply editor and Review & Push
+    (event texts, new events, retention messages) warn the person. The caption editor warns about the caption
+    being written, and the header and search artwork checks count “free” and trial lengths as a price.
+  - Versions: `get_app_versions` lists each platform's versions, whether a new one can be created (one in
+    progress per platform) and the number Atlas suggests; `propose_app_version` queues "Create version 1.5" in
+    Review & Push (`POST /v1/appStoreVersions`), the same change as the Store Page's New Version…. A push after one
+    that created it finds the version by number and platform instead of failing.
   - Field suggestions: `get_store_page` and `get_app_information` read the fields, their limits and the suggestions
     already open; `suggest_fields` sends suggestions per item (queued, unchanged, replaced, or refused with a code:
-    `over_limit`, `unknown_field`, `unknown_locale`, `locked`, `not_permitted`, `invalid_value`). With Suggest and
+    `over_limit`, `unknown_field`, `unknown_locale`, `locked`, `not_permitted`, `invalid_value`, `guideline`). With Suggest and
     edit drafts, `"apply": true` queues the values as changes instead. Store Page items need the store text
     permission, App Information items the app information one. `total` drives the bar's progress while the
     assistant sends them. Both read tools (and `get_listing`) list `languagesNotOnAppStore`, the languages the
@@ -422,11 +549,14 @@ call.
     `already_suggested`, and the `suggest_fields` ones). `suggest_fields` calls carry the run's id, and are refused
     with `run_stopped` once the person stops receiving; `end_suggestions` ends the run.
   - Prices: `get_prices`, `get_price_points` and `propose_prices`. Proceeds use the commission from Settings →
-    General. Every price proposal is refused for apps set to Keep my prices, and a price that isn't a price point is
+    Pricing. Every price proposal is refused for apps set to Keep my prices, and a price that isn't a price point is
     refused with the two nearest ones.
   - App Information: `get_privacy_questionnaire` and `propose_privacy_answers` fill the App Privacy worksheet as
     unreviewed suggestions (App Store Connect has no API for App Privacy); `get_age_rating` and `propose_age_rating`
-    queue answers that wait until the person ticks Confirmed.
+    queue answers that wait until the person ticks Confirmed; `get_compliance` and `propose_compliance_answers`
+    suggest App Compliance answers (trader status and details, ICP Filing Number or stop selling in China mainland,
+    regulated medical device), kept on this Mac on each regulation's card until the person accepts or dismisses
+    them. Accept All never takes them, and Apple's API takes none of them except stopping sales in a country.
   - Screenshots: `get_screenshot_context`, `list_captures`, `get_capture`, `get_template`, `get_captions`,
     `measure_caption` (the same fit engine the renders use), `render_preview`, `propose_template`,
     `propose_captions` and `list_proposals`. `get_capture` and `render_preview` return PNG images. Slots are
@@ -482,13 +612,24 @@ call.
     language for Reply to All. Neither sends anything, and both need Pro (`ProAssistantGate`).
   - **In-App Events:** `get_in_app_events` reads the events, their texts per language and the languages still
     missing; `propose_event_texts` suggests all three texts for a language, refused over a limit with the count.
+    The art is designed like Autopilot's Claude Design pages: `get_in_app_events`' `design` carries the app's look,
+    what Atlas knows of it, its design project (design there when it opens, else from its summary) and how to make
+    each piece. `render_event_artwork` renders a page as a 4K still or, with `motion: true`, its CSS and SVG
+    animation as a 20-second seamless loop at 30 fps and 1920 × 1080 (or 1080 × 1920) in a .mov, through the same
+    `ArtworkWebLoop` as Autopilot's header loops; `propose_event_artwork` queues it for the person to accept. The
+    event's "Ask Claude Code…" starts a run with that prompt (`InAppEventArtworkAskPrompt`).
+  - **Make the Artwork** (board 47): `get_event_artwork_brief` reads what the person asked for in the sheet (the
+    brief, the look, words and motion, the event's texts and names per language, the design, the rules, the
+    concepts already in, and a change asked for one of them, with its images). `propose_event_artwork_concept` sends
+    one concept as HTML pages or uploaded files; Atlas renders it per language (`{{eventName}}` filled in) and as a
+    loop when asked, checks it and shows it in the sheet. Nothing is queued until the person uses it.
   - There is no tool to submit a version or release it: those are the person's.
   - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
     product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate
     comes with its counts, its 90% range and `tooFewToTell` when it shouldn't be quoted, and `notes` say what's
     missing. `add_finding` puts a finding in What to Try, marked as the assistant's; the fix itself still goes through
     the propose_ and suggest_ tools.
-- **Prompts:** `translate_missing`, `whats_new_from_git`, `fill_privacy_from_code`, `fill_age_rating`,
+- **Prompts:** `translate_missing`, `whats_new_from_git`, `fill_privacy_from_code`, `fill_age_rating`, `fill_compliance`,
   `translate_captions`, `shorten_overflowing_captions`, `revise_template`, `suggest` (with an optional `area`,
   `store` or `info`), `suggest_all`, Suggest Everything's, and `run_screenshots`, Screenshot Autopilot's. A prompt is offered only while its
   tools are.
@@ -618,6 +759,10 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
     oldest first), the push plan and its uploads, backups and restores;
   - the MCP server (HTTP parsing, JSON-RPC, pairing, sessions, tools and prompts) and the stdio bridge;
   - field suggestions: the store, the built-in checks, accepting and undoing on both pages, and the setup sheet;
+  - Settings (board 48): the panes and their search, the new preferences and Reset, notifications (what is sent,
+    when, the Dock count), Atlas Pro's plan row, what assistants may suggest, the activity and the local data
+    (never deleted in tests); Atlas Help (board 49): the parser, every bundled article, search, navigation, and the
+    scenes;
   - Suggest Everything: what it covers and its prompt, the run's plan, progress and end, Accept All and its Undo,
     and the toasts;
   - the API key: each vendor's models and requests, the project folder's commits and changelog, the plan and its

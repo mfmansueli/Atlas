@@ -6,9 +6,10 @@
 import Foundation
 import Observation
 
-/// In-App Events for one app: the list, the selected event's texts in the
-/// selected language (App Store Connect's with what's queued on top), the
-/// languages an assistant suggested, and accepting them.
+/// In-App Events for one app: the gallery of events or one event's page,
+/// the event's texts in the selected language (App Store Connect's with
+/// what's queued on top), the languages an assistant suggested, and
+/// accepting them.
 @MainActor
 @Observable
 final class InAppEventsViewModel {
@@ -19,6 +20,12 @@ final class InAppEventsViewModel {
 
     private(set) var state: LoadState<[InAppEvent]> = .idle
     var selectedEventID: InAppEvent.ID?
+    /// The selected event's page rather than the gallery.
+    var showsEvent = false
+    /// The preview's Event Card or Event Details.
+    var previewKind: InAppEventMedia.Kind = .card
+    /// The name button's menu of the other events.
+    var isSwitchMenuShown = false
     /// The language the editor shows.
     var localeCode = "en-US"
     /// The store page's languages, to localize events into.
@@ -34,6 +41,12 @@ final class InAppEventsViewModel {
     var isNewEventPresented = false
     var actionError: String?
     var isSubmitting = false
+    /// Each event's artwork runs; the section sets it.
+    var artworkStudio: EventArtworkStudio?
+    /// The event page's artwork: the Brief sheet, the concepts, the viewer.
+    var artworkFlow: EventArtworkFlow?
+    /// Make the Artwork… or Choose Files…, for the section to handle.
+    var artworkRequest: EventArtworkRequest?
     @ObservationIgnored var now: () -> Date = { .now }
 
     init(app: StoreApp, services: any InAppEventsServices, store: InAppEventsStore, queue: ChangeQueue) {
@@ -55,6 +68,7 @@ final class InAppEventsViewModel {
             let events = try await services.events(for: app)
             state = .loaded(events)
             store.prune(for: app.id, keeping: Set(events.filter(\.state.isEditable).map(\.id)))
+            for event in events where event.state.isEditable { matchNewLanguageArtwork(of: event) }
             if selectedEvent == nil { select(events.first?.id) }
         } catch {
             if state.value == nil { state = .failed(error.localizedDescription) }
@@ -194,7 +208,16 @@ final class InAppEventsViewModel {
             } else {
                 queue.discard(id: id)
             }
+            matchNewLanguageArtwork(of: event)
         }
+    }
+
+    /// The event's new languages get the art queued for it, and images
+    /// for a language no longer coming leave the queue.
+    func matchNewLanguageArtwork(of event: InAppEvent) {
+        let (add, discard) = builder.newLanguageArtwork(of: event, in: queue.changes(for: app.id, section: .inAppEvents))
+        queue.upsert(contentsOf: add)
+        queue.discard(ids: discard)
     }
 
     #if DEBUG

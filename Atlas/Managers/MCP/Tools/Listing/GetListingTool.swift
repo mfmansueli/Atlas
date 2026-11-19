@@ -6,7 +6,8 @@
 import Foundation
 
 /// `get_listing`: an app's store texts per locale as the Store Page shows
-/// them, each field's limit, and the glossary to respect.
+/// them, each field's limit, the glossary to respect and App Review's
+/// rules for store text, with the fields already breaking one.
 struct GetListingTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "get_listing",
@@ -14,7 +15,8 @@ struct GetListingTool: MCPTool {
         description: """
         Reads an app's store listing in Atlas: the newest editable version (else the live one, which is \
         read-only), its primary locale, and each locale's texts with anything waiting in review laid on top. \
-        `states` says which fields are missing, over the limit, machine-translated or already proposed. \
+        `states` says which fields are missing, over the limit, machine-translated, already proposed or would be \
+        rejected by App Review (rewrite those). `storeTextRules` lists App Review's rules to follow in every text. \
         `fields` gives each field's level and limit: name, subtitle and privacyPolicyUrl belong to the app; \
         promotionalText, description, keywords (comma-separated, counted in bytes), whatsNew, supportUrl and \
         marketingUrl belong to the version. `glossary.keepUntranslated` lists terms to leave as they are, and \
@@ -58,6 +60,7 @@ struct GetListingTool: MCPTool {
                 "keepUntranslated": .array(glossary.terms.map(JSONValue.string)),
                 "tone": .string(glossary.tone.rawValue),
             ],
+            "storeTextRules": StoreTextRules.json,
             "locales": .array(locales.map { Self.entry(for: $0, in: listing, isNew: draft.isNewLanguage($0) || draft.isUnpushed($0)) }),
             "languagesNotOnAppStore": draft.languagesNotOnAppStoreJSON,
         ]
@@ -70,7 +73,10 @@ struct GetListingTool: MCPTool {
         for field in listing.fields {
             let value = listing.value(field, in: locale)
             if !value.isEmpty { texts[field.rawValue] = .string(value) }
-            if let note = listing.coverageState(of: field, in: locale).assistantNote { states[field.rawValue] = .string(note) }
+            let issues = StoreTextGuidelineCheck.issues(in: value, for: field)
+            let notes = [listing.coverageState(of: field, in: locale).assistantNote, issues.isEmpty ? nil : issues.assistantNote]
+                .compactMap(\.self)
+            if !notes.isEmpty { states[field.rawValue] = .string(notes.joined(separator: "; ")) }
         }
         var entry: [String: JSONValue] = ["code": .string(locale.code), "name": .string(locale.name), "texts": .object(texts)]
         if isNew { entry["new"] = true }

@@ -76,6 +76,10 @@ enum Palette {
     /// The count of suggestions waiting for someone: purple means only that.
     static let suggestionBadge = dynamic(light: 0x8A3CD6, dark: 0xB98CFF, lightHC: 0x5C1E91, darkHC: 0xE6C8FF)
     static let suggestionBadgeText = dynamic(light: 0xFFFFFF, dark: 0x1B0A2E, lightHC: 0xFFFFFF, darkHC: 0x000000)
+    /// An asking button while its request runs, and the token's halo.
+    static let suggestionBusyTint = dynamic(light: 0x9646D2, dark: 0xC88CFF, lightHC: 0x9646D2, darkHC: 0xC88CFF, alpha: [0.08, 0.10, 0.14, 0.18])
+    /// The outline of an asking button while its request runs.
+    static let suggestionEdge = dynamic(light: 0x9646D2, dark: 0xC88CFF, lightHC: 0x5C1E91, darkHC: 0xE6C8FF, alpha: [0.28, 0.32, 0.70, 0.70])
 
     /// The square icons at the top of each section.
     static let sectionStorePage = dynamic(light: 0x2F7BF5, dark: 0x2F7BF5, lightHC: 0x1A5FD0, darkHC: 0x2F7BF5)
@@ -84,6 +88,7 @@ enum Palette {
     static let sectionAppInformation = dynamic(light: 0x7D7D86, dark: 0x7D7D86, lightHC: 0x55555C, darkHC: 0x7D7D86)
     static let sectionAnalytics = dynamic(light: 0x5856D6, dark: 0x5E5CE6, lightHC: 0x3634A3, darkHC: 0x7D7AFF)
     static let sectionOverview = dynamic(light: 0x636366, dark: 0x8E8E93, lightHC: 0x48484A, darkHC: 0xAEAEB2)
+    static let sectionProductPages = dynamic(light: 0x0E9AA7, dark: 0x0E9AA7, lightHC: 0x0A6E78, darkHC: 0x2CC3CF)
     static let sectionEvents = dynamic(light: 0xE5484D, dark: 0xE5484D, lightHC: 0xB3261E, darkHC: 0xFF6B6F)
     static let sectionReviews = dynamic(light: 0xF5A30A, dark: 0xF5A30A, lightHC: 0xA86A00, darkHC: 0xFFB733)
     /// The Overview's version card: submitting and releasing.

@@ -24,6 +24,9 @@ extension PushRecord {
             let territories = unique(changes.map(\.title))
             if territories.count <= 3 { return territories.joined(separator: ", ") }
             return String(localized: "\(territories.count) territories")
+        case .storePage where changes.allSatisfy { $0.id.hasPrefix(NewAppVersionChangeBuilder.idPrefix) }:
+            // "Version 1.5", "Version 1.5 · macOS".
+            return changes.map(\.title).formatted(.list(type: .and))
         case .storePage:
             // Titles read "German · Subtitle"; the locale comes first.
             let locales = unique(changes.map { $0.title.components(separatedBy: " · ").first ?? $0.title })
@@ -32,7 +35,7 @@ extension PushRecord {
             return String(localized: "\(texts) in \(inLocales)")
         case .screenshots:
             return changes.count == 1 ? changes[0].title : String(localized: "\(changes.count) screenshots")
-        case .appInformation, .overview, .analytics, .reviews, .inAppEvents:
+        case .appInformation, .overview, .analytics, .reviews, .inAppEvents, .productPages:
             return changes.count == 1 ? changes[0].title : String(localized: "\(changes.count) fields")
         }
     }

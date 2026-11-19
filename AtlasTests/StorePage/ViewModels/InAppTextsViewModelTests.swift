@@ -150,4 +150,22 @@ struct InAppTextsViewModelTests {
         model.edit(name, in: .englishUS, to: "Lumen Lifetime")
         #expect(queue.changes.isEmpty)
     }
+
+    #if DEBUG
+    /// The screen rebuilds the cells from the queue after every edit: what
+    /// was typed has to come back from the queued change.
+    @Test func anEditSurvivesTheQueuesRefresh() async {
+        let queue = ChangeQueue()
+        let services = FakeStorePageServices()
+        services.inAppTextsContent = DebugStorePageContent.inAppTexts
+        let model = InAppTextsViewModel(app: app, services: services, queue: queue)
+        await model.load(listing: StorePageContentFixtures.editable.listing())
+        for column in model.matrix?.columns ?? [] {
+            let before = model.value(column, in: .englishUS)
+            model.edit(column, in: .englishUS, to: "Edited \(column.id)")
+            model.queueDidChange()
+            #expect(model.value(column, in: .englishUS) == "Edited \(column.id)", "\(column.id) was “\(before)”")
+        }
+    }
+    #endif
 }

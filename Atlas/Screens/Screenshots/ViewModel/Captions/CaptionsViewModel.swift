@@ -34,7 +34,7 @@ final class CaptionsViewModel {
     var suggestionMessage: String?
     var isTranslateSheetPresented = false
     @ObservationIgnored private var commitTask: Task<Void, Never>?
-    /// Each artwork text measured on the direction's Claude Design page
+    /// Each artwork text measured on the direction's HTML page
     /// (`artworkPageFitKey`), filled in as WebKit measures them.
     var artworkPageFits: [String: CaptionFit] = [:]
     @ObservationIgnored var artworkPagesMeasuring: Set<String> = []

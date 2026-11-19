@@ -28,6 +28,7 @@ struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
         case .analytics: String(localized: "Where people drop off, and what to change next")
         case .reviews: String(localized: "What people write about \(appName), and your replies")
         case .inAppEvents: String(localized: "Cards for what’s happening in \(appName)")
+        case .productPages: String(localized: "A page of its own for each audience")
         }
     }
 

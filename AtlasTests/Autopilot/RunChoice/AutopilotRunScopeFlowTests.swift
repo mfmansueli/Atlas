@@ -10,7 +10,8 @@ import Testing
 
 /// Each "What this run makes" preset through the whole run, as the center
 /// drives it with Atlas's starters: Capture (or the recording),
-/// Pick, Design, Choose, then Localize to the end. The estimate and the
+/// Pick, Design, Choose, then Localize to the end, writing the captions and
+/// artwork texts the assistant is asked for. The estimate and the
 /// summary say what the rows chose, and header and search with "No app:
 /// a scene" skips Capture and Pick.
 @MainActor
@@ -83,6 +84,7 @@ struct AutopilotRunScopeFlowTests {
         // Choose → Localize → the end.
         let direction = try #require(choosing.directions.first)
         await center.useDirection(direction.id, appID: appID, context: harness.context)
+        try await Self.writeCaptions(harness)
         try await Self.writeArtworkTexts(harness)
         let finished = try #require(center.run(for: appID))
         #expect(finished.stage == .ready, "\(preset): \(finished.log.suffix(3).map(\.text))")
@@ -169,6 +171,19 @@ struct AutopilotRunScopeFlowTests {
         }
         let finished = run
         center.update(appID) { $0 = finished }
+    }
+
+    /// The captions the assistant would write, when it's asked: a new
+    /// direction's captions are missing in the other languages until it
+    /// translates them (the run waited at Localize on "1 caption to
+    /// translate" for the screenshots presets).
+    private static func writeCaptions(_ harness: Harness) async throws {
+        let center = harness.center
+        let appID = AutopilotTestFixtures.appID
+        guard let run = center.run(for: appID), run.stage == .localize, !run.overflows.isEmpty else { return }
+        let captions = run.overflows.map { AutopilotCaptionUpdate(locale: $0.locale, slot: $0.slot, headline: "Notes") }
+        try await center.applyCaptions(captions, client: AutopilotTestFixtures.client, appID: appID, context: harness.context)
+        #expect(center.run(for: appID)?.overflows.isEmpty == true, "Short captions fit")
     }
 
     /// The artwork's texts the assistant would write, when it's asked.

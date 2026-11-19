@@ -128,7 +128,7 @@ extension AutopilotRun {
         art.flatMap { id in conceptList.first { $0.id == id } }
     }
 
-    /// The concept Claude Design recommends, else the first.
+    /// The concept Claude recommends, else the first.
     var recommendedConcept: AutopilotArtworkConcept? {
         designedConcepts.first(where: \.isRecommended) ?? designedConcepts.first
     }
@@ -186,7 +186,7 @@ extension AutopilotRun {
     }
 
     /// Design's "Next, you choose: 1 of 3 screenshot directions and 1 of 3
-    /// headers. Then Atlas localizes, Claude Design animates the
+    /// headers. Then Atlas localizes, Claude animates the
     /// header you chose into a 20-second loop, and the App Preview is cut,
     /// for you to watch and approve."
     var nextChoiceLine: String? {
@@ -201,7 +201,7 @@ extension AutopilotRun {
         }
         var line = String(localized: "Next, you choose: \(choicesTitle). Then Atlas localizes")
         if makesHeaderLoop {
-            line += String(localized: ", \(designKind.title) animates the header you chose into a \(AutopilotArtworkMotion.loopSeconds)-second loop")
+            line += String(localized: ", \(designKind.designer) animates the header you chose into a \(AutopilotArtworkMotion.loopSeconds)-second loop")
         }
         if !plan.previewDisplays.isEmpty { line += String(localized: ", and the App Preview is cut") }
         line += makesHeaderLoop || !plan.previewDisplays.isEmpty ? String(localized: ", for you to watch and approve.") : "."

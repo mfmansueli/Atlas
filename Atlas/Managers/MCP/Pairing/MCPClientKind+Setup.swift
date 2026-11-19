@@ -32,7 +32,7 @@ extension MCPClientKind {
     /// The line above the snippet.
     var setupIntro: String {
         switch self {
-        case .claudeCode: String(localized: "In Terminal, go to your app’s project folder and run:")
+        case .claudeCode: String(localized: "In Terminal, run:")
         case .claudeDesktop:
             String(localized: """
             In Claude Desktop, choose Settings → Developer → Edit Config, add this under “mcpServers” in \
@@ -48,7 +48,10 @@ extension MCPClientKind {
     var setupNote: String {
         switch self {
         case .claudeCode:
-            String(localized: "Adding it from the project folder lets Claude Code read your code. To use Atlas in every project, add --scope user.")
+            String(localized: """
+            It replaces Atlas’s older entry and works in every project. Start Claude Code in each app’s folder: \
+            Atlas sees which folder it works in and matches it to the app.
+            """)
         case .claudeDesktop:
             String(localized: """
             Claude Desktop doesn’t see your code unless you give it access, so suggestions written from code \

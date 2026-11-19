@@ -51,7 +51,7 @@ struct GuidedLookRow: View {
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
-                // The look's own header and search (Claude Design's pages),
+                // The look's own header and search (Claude's pages),
                 // when they aren't concepts chosen apart.
                 if Self.showsOwnArtwork(run) {
                     AutopilotDirectionExtras(studio: studio, run: run, direction: direction, fit: AutopilotDirectionExtras.Fit(height: 56))

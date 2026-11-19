@@ -19,6 +19,9 @@ final class WorkspaceNavigator {
     /// The source Review & Push opens filtered to, e.g. one assistant's
     /// proposals; cleared when it closes.
     var reviewSourceFilter: ChangeSourceFilter?
+    /// Review & Push opened on every app's changes (the menu bar's
+    /// Review & Push…), not only the selected app's.
+    private(set) var reviewsEveryApp = false
     /// Activity history (the toolbar clock).
     var isActivityPresented = false
     /// Set by Activity's "Restore Previous Values": Review & Push opens once
@@ -109,9 +112,17 @@ final class WorkspaceNavigator {
         isReviewPresented = true
     }
 
+    /// Opens Review & Push on every app's changes.
+    func reviewEveryApp() {
+        reviewSourceFilter = nil
+        reviewsEveryApp = true
+        isReviewPresented = true
+    }
+
     /// Called when Review & Push closed.
     func reviewDidClose() {
         reviewSourceFilter = nil
+        reviewsEveryApp = false
     }
 
     /// Closes Activity and opens Review & Push after it.

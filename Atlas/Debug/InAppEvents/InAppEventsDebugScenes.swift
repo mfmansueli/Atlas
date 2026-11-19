@@ -6,14 +6,13 @@
 #if DEBUG
 import SwiftUI
 
-/// The In-App Events DEBUG scenes (`-AtlasDebugScene <id>`), one
-/// per state on the design's board 40.
+/// The In-App Events DEBUG scenes (`-AtlasDebugScene <id>`), board 40
+/// without artwork runs (those are `EventArtworkDebugScenes`).
 ///
-/// - `ev`: the Winter Reflection Challenge in German, nine languages
-///   suggested; `ev-br` (Portuguese: renamed, and why), `ev-ar` (Arabic,
-///   right to left), `ev-en` (English, as written).
-/// - `ev-done`: every language accepted; `ev-mood`: the event that goes
-///   with 1.4; `ev-ended`: Gratitude Week, with how it did.
+/// - `ev`: the Winter Reflection Challenge's page in German, nine
+///   languages suggested; `ev-br` (Portuguese: renamed, and why).
+/// - `ev-mood`: the event that goes with 1.4; `ev-ended`: Gratitude Week,
+///   with how it did.
 /// - `ev-new`: the New Event sheet; `ev-empty`: no events; `ev-error`.
 /// - `ev-art`: Claude Code's card (every language) and details page
 ///   (English) waiting in Images and video, in English.
@@ -21,18 +20,15 @@ enum InAppEventsDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugInAppEventsData
 
-    static let ids = ["ev", "ev-br", "ev-ar", "ev-en", "ev-done", "ev-mood", "ev-ended", "ev-new", "ev-empty", "ev-error", "ev-art"]
+    static let ids = ["ev", "ev-br", "ev-mood", "ev-ended", "ev-new", "ev-empty", "ev-error", "ev-art"]
 
     /// The scenes that open the sample events on one event and language.
     private static let launches: [String: InAppEventsDebugLaunch] = [
         "ev": InAppEventsDebugLaunch(),
         "ev-br": InAppEventsDebugLaunch(locale: "pt-BR"),
-        "ev-ar": InAppEventsDebugLaunch(locale: "ar-SA"),
-        "ev-en": InAppEventsDebugLaunch(locale: "en-US"),
-        "ev-done": InAppEventsDebugLaunch(acceptsAll: true),
         "ev-mood": InAppEventsDebugLaunch(eventID: Data.moodID, locale: "en-US"),
         "ev-ended": InAppEventsDebugLaunch(eventID: Data.gratitudeID, locale: "en-US"),
-        "ev-new": InAppEventsDebugLaunch(opensNewEvent: true),
+        "ev-new": InAppEventsDebugLaunch(opensEvent: false, opensNewEvent: true),
     ]
 
     @MainActor

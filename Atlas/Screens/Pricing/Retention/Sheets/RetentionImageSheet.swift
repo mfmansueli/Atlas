@@ -114,7 +114,7 @@ struct RetentionImageSheet: View {
 
     private var makeOne: some View {
         HStack(spacing: Spacing.small) {
-            Text("Need one? Claude Design draws it in the app’s design language at 3840 × 1000; it joins the Asset Library when you push.")
+            Text("Need one? Claude draws it in the app’s design language at 3840 × 1000; it joins the Asset Library when you push.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

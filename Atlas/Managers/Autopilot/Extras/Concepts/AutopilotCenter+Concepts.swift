@@ -117,7 +117,7 @@ extension AutopilotCenter {
             guard run.usesConcepts, run.art == nil, let concept = run.recommendedConcept else { return }
             run.art = concept.id
             let because = concept.recommendedBecause.map { ": \($0)" } ?? ""
-            run.appendLog(String(localized: "Took \(run.designKind.title)’s recommended header, \(concept.name)\(because)"), kind: .event, at: now())
+            run.appendLog(String(localized: "Took \(run.designKind.designer)’s recommended header, \(concept.name)\(because)"), kind: .event, at: now())
         }
     }
 

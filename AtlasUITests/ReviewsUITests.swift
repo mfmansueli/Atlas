@@ -5,7 +5,7 @@
 
 import XCTest
 
-/// Ratings & Reviews (⌘7) in its DEBUG scenes (board 38; the sample
+/// Ratings & Reviews (⌘8) in its DEBUG scenes (board 38; the sample
 /// reviews, nothing reaches Apple): reviews translated with a suggested
 /// reply, Show Original, editing and sending, Undo, Reply to All, the
 /// filters, the Free plan and the Overview's card.
@@ -137,6 +137,22 @@ final class ReviewsUITests: XCTestCase {
         let editor = element("reviews.editor.text.r-de1")
         XCTAssertTrue(editor.waitForExistence(timeout: 5))
         XCTAssertEqual(editor.value as? String ?? "", "", "Free starts from an empty reply")
+    }
+
+    /// 5.6.1: no marketing in a reply. The editor warns; Send Reply stays.
+    func testAPromoCodeInAReplyIsWarned() {
+        app.launch(debugScene: "rv-free")
+        XCTAssertTrue(element("reviews.card.r-de1").waitForExistence(timeout: 15))
+        element("reviews.card.write.r-de1").click()
+        let editor = element("reviews.editor.text.r-de1")
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        XCTAssertFalse(element("reviews.editor.guideline.r-de1").exists)
+        editor.click()
+        editor.typeText("Danke! Use code SPRING for 50% off.")
+        let warning = element("reviews.editor.guideline.r-de1")
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: warning).contains("Guideline 5.6.1"), text(of: warning))
+        XCTAssertTrue(element("reviews.editor.send.r-de1").isEnabled)
     }
 
     func testTheOverviewCardOpensReplyToAll() {

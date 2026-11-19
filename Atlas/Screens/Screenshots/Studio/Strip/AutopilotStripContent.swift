@@ -67,7 +67,7 @@ struct AutopilotStripContent: Hashable, Sendable {
             )
         }
         let design = if let designProject {
-            String(localized: "\(designProject.kind.title) designs the set in \(designProject.displayName).")
+            String(localized: "\(designProject.kind.designer) designs the set in \(designProject.displayName).")
         } else {
             String(localized: "Your design project, if you connect one, designs the set in your brand.")
         }
@@ -106,7 +106,7 @@ struct AutopilotStripContent: Hashable, Sendable {
         )
     }
 
-    /// "Claude Design is designing · 1 of 3 directions · 2 of 3 headers".
+    /// "Claude is designing · 1 of 3 directions · 2 of 3 headers".
     private static func designText(_ run: AutopilotRun) -> (String, Double) {
         var parts = [String(localized: "\(designer(run)) is designing")]
         let directions = run.expectedDirections
@@ -201,12 +201,12 @@ struct AutopilotStripContent: Hashable, Sendable {
         )
     }
 
-    /// "Claude Design" or "Atlas’s starters".
+    /// "Claude" or "Atlas’s starters".
     static func designer(_ run: AutopilotRun) -> String {
-        if run.designKind.usesDesignAI { return run.designKind.title }
+        if run.designKind.usesDesignAI { return run.designKind.designer }
         // Without a design project, Claude designs the header concepts and
         // takes the asks at Watch; the screenshot looks are the starters.
-        if let reviser = run.reviser, run.stage == .watchPreview || run.stage == .choose && run.usesConcepts { return reviser.title }
+        if let reviser = run.reviser, run.stage == .watchPreview || run.stage == .choose && run.usesConcepts { return reviser.designer }
         return String(localized: "Atlas’s starters")
     }
 }

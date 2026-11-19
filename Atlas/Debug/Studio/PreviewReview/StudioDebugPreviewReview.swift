@@ -12,8 +12,8 @@ import Foundation
 /// - `st-vid-mid`: the same at 0:08, paused.
 /// - `st-vid-de`: every language has its own, German shown at 0:13 (launch
 ///   it in Dark).
-/// - `st-vid-busy`: Claude Design revising “Slower pace, start with Search”.
-/// - `st-vid-rev`: v2 from Claude Design, slower and starting with Search,
+/// - `st-vid-busy`: Claude revising “Slower pace, start with Search”.
+/// - `st-vid-rev`: v2 from Claude, slower and starting with Search,
 ///   at 0:02.
 /// - `st-lb-shot`, `st-lb-header` (launch it in Dark), `st-lb-video`: the
 ///   new set's second screenshot, header and App Preview full size.
@@ -52,7 +52,7 @@ enum StudioDebugPreviewReview {
         case "st-vid-busy":
             run.previewReview?.request = AutopilotRevisionRequest(note: "Slower pace, start with Search", askedAt: asked)
             run.handedBackAt = asked
-            run.appendLog("Asked Claude Design for App Preview changes: “Slower pace, start with Search”", kind: .command, at: asked)
+            run.appendLog("Asked Claude for App Preview changes: “Slower pace, start with Search”", kind: .command, at: asked)
         case "st-vid-rev":
             let ids = run.plan.screens.map(\.id)
             let search = ids.first { $0.contains("search") } ?? ids[0]

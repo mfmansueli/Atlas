@@ -17,8 +17,11 @@ struct MCPClientKindTests {
         kind.setupSnippet(token: token, url: url, bridgePath: bridge)
     }
 
-    @Test func claudeCodeGetsOneCommand() {
-        let expected = #"claude mcp add --transport http atlas http://127.0.0.1:47321/mcp --header "Authorization: Bearer al_pair_C7Q2m9xV4k""#
+    /// One registration for every project, replacing the older one whose
+    /// token Atlas would refuse.
+    @Test func claudeCodeGetsOneCommandForEveryProject() {
+        let expected = #"claude mcp remove atlas --scope user >/dev/null 2>&1; "#
+            + #"claude mcp add --scope user --transport http atlas http://127.0.0.1:47321/mcp --header "Authorization: Bearer al_pair_C7Q2m9xV4k""#
         #expect(snippet(.claudeCode) == expected)
     }
 

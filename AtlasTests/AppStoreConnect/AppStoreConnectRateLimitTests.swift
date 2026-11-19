@@ -19,4 +19,9 @@ struct AppStoreConnectRateLimitTests {
     func missingOrMalformedHeadersAreNil(header: String?) {
         #expect(AppStoreConnectRateLimit(header: header) == nil)
     }
+
+    @Test(arguments: [(3600, true), (901, true), (900, false), (0, false)])
+    func readingAheadLeavesTheLastQuarterOfTheHour(remaining: Int, leavesRoom: Bool) {
+        #expect(AppStoreConnectRateLimit(limit: 3600, remaining: remaining).leavesRoomToReadAhead == leavesRoom)
+    }
 }

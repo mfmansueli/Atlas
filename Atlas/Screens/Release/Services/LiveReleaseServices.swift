@@ -31,20 +31,20 @@ struct LiveReleaseServices: ReleaseServices {
             status.isReviewInformationComplete = detail.map { AppInformationContentLoader.review($0.attributes).isComplete } ?? false
         }
         if status.phase != .live {
-            status.submission = try await submission(for: version, appID: app.id)
+            status.submission = try await submission(versionID: version.id, platform: version.platform, appID: app.id)
         }
         return status
     }
 
     /// The submission the version is in; else one made and never sent.
-    private func submission(for version: ReleaseVersion, appID: String) async throws -> VersionSubmission? {
-        let submissions = try await client.openReviewSubmissions(appID: appID, platform: version.platform).map { resource in
+    private func submission(versionID: String, platform: String?, appID: String) async throws -> VersionSubmission? {
+        let submissions = try await client.openReviewSubmissions(appID: appID, platform: platform).map { resource in
             VersionSubmission(
                 id: resource.id, state: resource.attributes.state ?? "", submitted: AppStoreConnectDate.date(resource.attributes.submittedDate),
                 versionID: resource.relationshipID("appStoreVersionForReview")
             )
         }
-        guard var found = submissions.first(where: { $0.versionID == version.id }) ?? submissions.first(where: { $0.isOpen && $0.versionID == nil }) else {
+        guard var found = submissions.first(where: { $0.versionID == versionID }) ?? submissions.first(where: { $0.isOpen && $0.versionID == nil }) else {
             return nil
         }
         found.eventIDs = await (try? client.reviewSubmissionEventIDs(submissionID: found.id)) ?? []
@@ -100,6 +100,17 @@ struct LiveReleaseServices: ReleaseServices {
 
     // MARK: - Writing
 
+    /// What it creates (the phased release, the review submission) is read
+    /// again first: an attempt that stopped halfway may have made it, and
+    /// SimProps's second Submit was refused with "A phasedRelease already
+    /// exist under this AppStoreVersion" because the plan still said none.
+    ///
+    /// A rejected version's submission (unresolved issues) still carries
+    /// the version, so it's sent again, as App Store Connect's "Resubmit to
+    /// App Review" does. Before, a new submission was made and the version
+    /// left out of it because the rejected one had it, and App Store
+    /// Connect refused the empty one: "must have an approved
+    /// appStoreVersions … or an appStoreVersions must be included".
     func submit(_ plan: SubmissionPlan) async throws {
         if plan.buildID != plan.attachedBuildID {
             try await client.attachBuild(plan.buildID, toVersion: plan.versionID)
@@ -108,20 +119,21 @@ struct LiveReleaseServices: ReleaseServices {
             try await client.setUsesNonExemptEncryption(uses, buildID: plan.buildID)
         }
         try await client.setRelease(plan.timing, versionID: plan.versionID)
-        if plan.isPhased, plan.phasedReleaseID == nil {
+        let phasedID = try await client.phasedRelease(versionID: plan.versionID)?.id
+        if plan.isPhased, phasedID == nil {
             try await client.createPhasedRelease(versionID: plan.versionID)
-        } else if !plan.isPhased, let id = plan.phasedReleaseID {
-            try await client.deletePhasedRelease(id: id)
+        } else if !plan.isPhased, let phasedID {
+            try await client.deletePhasedRelease(id: phasedID)
         }
-        let submissionID: String = if let open = plan.openSubmission, open.isOpen {
-            open.id
-        } else {
-            try await client.createReviewSubmission(appID: plan.appID, platform: plan.platform)
-        }
-        if plan.openSubmission?.versionID != plan.versionID {
+        // The submission to send: one made and never sent, or the rejected
+        // one; else a new one. What's "already in it" is about that one only.
+        let found = try await submission(versionID: plan.versionID, platform: plan.platform, appID: plan.appID)
+        let reused = found.flatMap { $0.isOpen || $0.hasUnresolvedIssues ? $0 : nil }
+        let submissionID = if let reused { reused.id } else { try await client.createReviewSubmission(appID: plan.appID, platform: plan.platform) }
+        if reused?.versionID != plan.versionID {
             try await client.addReviewSubmissionItem(submissionID: submissionID, relationship: "appStoreVersion", type: "appStoreVersions", id: plan.versionID)
         }
-        for eventID in plan.eventIDs where plan.openSubmission?.eventIDs.contains(eventID) != true {
+        for eventID in plan.eventIDs where reused?.eventIDs.contains(eventID) != true {
             try await client.addReviewSubmissionItem(submissionID: submissionID, relationship: "appEvent", type: "appEvents", id: eventID)
         }
         try await client.updateReviewSubmission(id: submissionID, attribute: "submitted")

@@ -16,8 +16,10 @@ struct ProposeCaptionsTool: MCPTool {
         description: """
         Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?}. Each item is measured \
         against the current template on iPhone and iPad and refused when it doesn't fit (the reason says by how \
-        much, e.g. "needs 3 lines at 72 u; the template allows 2"), when the font can't draw it, or when the \
-        locale is unknown. The others are queued together in Atlas's Proposals sheet; nothing changes \
+        much, e.g. "needs 3 lines at 72 u; the template allows 2"), when the font can't draw it, when the \
+        locale is unknown, or when App Review would reject it: pricing such as “free”, prices, discounts or trials \
+        (Guideline 2.3.7), other platforms (2.3.10), beta or demo (2.2), placeholders (2.1), “coming soon” (2.3) \
+        or “For Kids” (2.3.8). The others are queued together in Atlas's Proposals sheet; nothing changes \
         until the person accepts them, and accepted captions read "Proposed by" you until someone edits them. \
         Keep brand names and the glossary's terms untranslated. During a Screenshot Autopilot run, when \
         next_step asks for write_captions, pass the run's ID as run: the captions are saved right away instead \
@@ -110,6 +112,11 @@ struct ProposeCaptionsTool: MCPTool {
         var message: String
     }
 
+    /// A caption App Review would reject, and how to write it instead.
+    static func guidelineRefusal(_ issues: [StoreTextGuidelineIssue]) -> String {
+        String(localized: "\(issues.assistantReason) Write the caption again without it.")
+    }
+
     private func check(_ item: JSONValue, template: ScreenshotTemplate, draft: MCPScreenshotsDraft) -> Result<CaptionProposalItem, Refusal> {
         guard let code = item["locale"]?.stringValue, let locale = StoreLocaleCatalog.resolve(code).locale else {
             return .failure(Refusal(message: String(localized: "“\(item["locale"]?.stringValue ?? "")” isn’t an App Store locale.")))
@@ -120,6 +127,8 @@ struct ProposeCaptionsTool: MCPTool {
         let headline = item["headline"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !headline.isEmpty else { return .failure(Refusal(message: String(localized: "The headline is empty."))) }
         let subhead = item["subhead"]?.stringValue.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let issues = StoreTextGuidelineCheck.issues(inCaption: headline, subhead: subhead)
+        guard issues.isEmpty else { return .failure(Refusal(message: Self.guidelineRefusal(issues))) }
         let slot = number - 1
         let current = draft.document.captions.caption(locale: locale.code, slot: slot)
         let caption = ScreenshotCaption(headline: headline, subhead: subhead ?? current?.subhead)

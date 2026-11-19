@@ -13,11 +13,13 @@ struct InAppEventArtworkProposalPreview: View {
     let isVideo: Bool
     let kind: InAppEventMedia.Kind
     let texts: InAppEventArtworkOverlayTexts
+    /// Nil is the card 240 points wide, the details page 135.
+    var preferredWidth: CGFloat?
+    var identifier: String?
 
     @State private var phase = ImageLoadPhase.loading
 
-    /// The card 240 points wide, the details page 135.
-    var width: CGFloat { kind == .card ? 240 : 135 }
+    var width: CGFloat { preferredWidth ?? (kind == .card ? 240 : 135) }
 
     var body: some View {
         let full = InAppEventArtworkOverlay.pointSize(for: kind)
@@ -45,7 +47,7 @@ struct InAppEventArtworkProposalPreview: View {
         .clipShape(RoundedRectangle(cornerRadius: Radius.badge, style: .continuous))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(kind.title) with “\(texts.name)” over it"))
-        .accessibilityIdentifier("events.media.preview.\(kind.mcpValue)")
+        .accessibilityIdentifier(identifier ?? "events.media.preview.\(kind.mcpValue)")
         .task(id: path) {
             phase = .loading
             let still = await InAppEventArtworkInspector.thumbnail(URL(fileURLWithPath: path), isVideo: isVideo, maxPixel: 1280)

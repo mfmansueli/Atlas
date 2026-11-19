@@ -6,7 +6,7 @@
 import Foundation
 
 /// The header's line and the search results headline per language, apart
-/// from the screenshots' captions, and the phrases Claude Design wrote on
+/// from the screenshots' captions, and the phrases Claude wrote on
 /// the header and search pages, translated here like captions. Each keeps
 /// its provenance like a caption (written, machine-translated, edited,
 /// reviewed).

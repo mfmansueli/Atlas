@@ -16,22 +16,38 @@ struct ComplianceAnswers: Hashable, Codable, Sendable {
     var addsICPNumber = false
     var icpNumber = ""
     /// What the person says is declared in App Store Connect, for the
-    /// rules Apple's API can't show: the Vietnam license and the medical
-    /// device declaration.
+    /// rules Apple's API can't show: the Vietnam license, the medical
+    /// device declaration and China mainland's AI content and Security
+    /// Assessment.
     var declared: Set<ComplianceRule> = []
+    /// Whether the app is a regulated medical device, as accepted from an
+    /// assistant; nil until answered. It's declared in App Store Connect.
+    var regulatedMedicalDevice: Bool?
+    /// China mainland: AI-generated or synthetic content; nil until
+    /// answered.
+    var aiContent: AIContentAnswer?
+    /// China mainland: whether the app needs a Security Assessment; nil
+    /// until answered.
+    var needsSecurityAssessment: Bool?
 
     init(
         trader: TraderDecision? = nil,
         traderDetails: TraderDetails? = nil,
         addsICPNumber: Bool = false,
         icpNumber: String = "",
-        declared: Set<ComplianceRule> = []
+        declared: Set<ComplianceRule> = [],
+        regulatedMedicalDevice: Bool? = nil,
+        aiContent: AIContentAnswer? = nil,
+        needsSecurityAssessment: Bool? = nil
     ) {
         self.trader = trader
         self.traderDetails = traderDetails
         self.addsICPNumber = addsICPNumber
         self.icpNumber = icpNumber
         self.declared = declared
+        self.regulatedMedicalDevice = regulatedMedicalDevice
+        self.aiContent = aiContent
+        self.needsSecurityAssessment = needsSecurityAssessment
     }
 
     /// Every field is optional when decoding, so answers saved before a
@@ -43,6 +59,9 @@ struct ComplianceAnswers: Hashable, Codable, Sendable {
         addsICPNumber = try container.decodeIfPresent(Bool.self, forKey: .addsICPNumber) ?? false
         icpNumber = try container.decodeIfPresent(String.self, forKey: .icpNumber) ?? ""
         declared = try container.decodeIfPresent(Set<ComplianceRule>.self, forKey: .declared) ?? []
+        regulatedMedicalDevice = try container.decodeIfPresent(Bool.self, forKey: .regulatedMedicalDevice)
+        aiContent = try container.decodeIfPresent(AIContentAnswer.self, forKey: .aiContent)
+        needsSecurityAssessment = try container.decodeIfPresent(Bool.self, forKey: .needsSecurityAssessment)
     }
 
     /// A number is chosen and reads like one.

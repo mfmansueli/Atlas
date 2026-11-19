@@ -134,7 +134,7 @@ struct AutopilotCenterConceptsTests {
         let both = StudioDebugHeaderStyle.choosingBoth
         #expect(both.choicesTitle == "1 of 3 screenshot directions and 1 of 3 headers")
         #expect(both.nextChoiceLine == """
-        Next, you choose: 1 of 3 screenshot directions and 1 of 3 headers. Then Atlas localizes, Claude Design \
+        Next, you choose: 1 of 3 screenshot directions and 1 of 3 headers. Then Atlas localizes, Claude \
         animates the header you chose into a 20-second loop, for you to watch and approve.
         """)
         let still = StudioDebugHeaderStyle.headerOnly(.design, style: .free, motion: .still)
@@ -233,7 +233,7 @@ struct AutopilotCenterConceptsTests {
         center.install(start)
         center.takeRecommendedConcept(appID)
         #expect(run?.art == "A")
-        #expect(run?.log.last?.text == "Took Claude Design’s recommended header, Moonrise: It ties the header to the icon right next to it.")
+        #expect(run?.log.last?.text == "Took Claude’s recommended header, Moonrise: It ties the header to the icon right next to it.")
     }
 
     // MARK: - The loop
@@ -247,7 +247,7 @@ struct AutopilotCenterConceptsTests {
         await center.finishLocalizing(appID, context: context)
         #expect(run?.loopReview?.waitsToMake == true)
         #expect(run?.stage == .localize)
-        #expect(run?.log.last?.text == "Sent to Claude Design: animate the Moonrise header into a 20-second loop")
+        #expect(run?.log.last?.text == "Sent to Claude: animate the Moonrise header into a 20-second loop")
         #expect(await center.nextStep(appID: appID, client: AutopilotTestFixtures.client) == .animateHeader(conceptID: "A"))
 
         await #expect(throws: AutopilotError.self) {

@@ -52,7 +52,7 @@ import SwiftUI
 ///   `st-ready-vision` in the preview.
 /// - `st-asc-watch`: no project report, but the version's build on App
 ///   Store Connect has an Apple Watch app.
-/// - `st-plan-link`: the Plan with a Claude Design link nobody has read
+/// - `st-plan-link`: the Plan with a Claude link nobody has read
 ///   yet and a screen name too long for its column.
 enum StudioDebugScenes {
     static let ids: [String] = [

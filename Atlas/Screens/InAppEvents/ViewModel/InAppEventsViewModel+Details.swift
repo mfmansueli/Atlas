@@ -5,8 +5,8 @@
 
 import Foundation
 
-// What the editor shows around the texts: the event's settings, its
-// images, how it did, and the footer's one action.
+// What the event's page shows around the texts: the event's settings, its
+// images, how it did, the line at the bottom and the header's one action.
 extension InAppEventsViewModel {
     /// Badge, dates, where it shows, purpose and priority, as rows.
     func settings(of event: InAppEvent) -> [(title: String, value: String)] {
@@ -64,12 +64,18 @@ extension InAppEventsViewModel {
         case .ended, .archived:
             return String(localized: "Duplicate it to run it again next year.")
         case .draft, .rejected:
-            var missing = event.missing
+            // Art waiting in Review & Push counts as there.
+            let art = missingArt(of: event)
+            var missing = event.missing.filter { item in
+                if item == String(localized: "add the card image") { return art.contains(.card) }
+                if item == String(localized: "add the details image") { return art.contains(.details) }
+                return true
+            }
             if suggestedCount > 0, let index = missing.firstIndex(of: String(localized: "write every language")) {
                 missing[index] = String(localized: "accept or write every language")
             }
             if pendingCount > 0 { missing.append(String(localized: "push its changes")) }
-            guard !missing.isEmpty else { return String(localized: "Ready. Events can go to App Review on their own.") }
+            guard !missing.isEmpty else { return String(localized: "Ready. Events can go to App Review on their own, without a new version.") }
             return String(localized: "To submit: \(missing.formatted(.list(type: .and))). Events can go to App Review on their own.")
         }
     }

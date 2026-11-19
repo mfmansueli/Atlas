@@ -18,8 +18,11 @@ struct ProposeListingTextTool: MCPTool {
         privacyPolicyUrl also when only the live version exists). Send one field with locale, field and text, or \
         several with proposals: [{locale, field, text}]. Each proposal is checked like a manual edit: over the \
         limit, not an https URL, a locale the app doesn't have or a read-only field is refused with the reason \
-        (status "refused"); fix it and propose again. Accepted proposals are queued for the person to review in \
-        Atlas (status "queued"); nothing reaches App Store Connect until they push. Fields: \
+        (status "refused"); fix it and propose again. Text App Review would reject is refused too, with issues \
+        [{kind, guideline, phrases}]: pricing such as “free”, prices, discounts or trials (2.3.7), other platforms \
+        (2.3.10), other apps' names or unverifiable claims in the name, subtitle or keywords (2.3.7), beta or demo \
+        (2.2), placeholders (2.1), “coming soon” (2.3) or “For Kids” (2.3.8); get_listing's storeTextRules has them \
+        all. Accepted proposals are queued for the person to review in Atlas (status "queued"); nothing reaches App Store Connect until they push. Fields: \
         \(ListingField.mcpNames.joined(separator: ", ")).
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -118,6 +121,9 @@ struct ProposeListingTextTool: MCPTool {
                 result["count"] = .int(count)
                 result["limit"] = proposal.field.limitJSON
             }
+            if case let .guidelines(issues) = refusal {
+                result["issues"] = .array(issues.map(\.json))
+            }
         }
         return .object(result)
     }
@@ -134,7 +140,7 @@ struct ProposeListingTextTool: MCPTool {
     /// to do next.
     private static func reason(for refusal: ListingProposalRefusal) -> String {
         switch refusal {
-        case .overLimit, .invalidURL: String(localized: "\(refusal.reason) Fix it and propose again.")
+        case .overLimit, .invalidURL, .guidelines: String(localized: "\(refusal.reason) Fix it and propose again.")
         case .unknownLocale, .localeNotInListing, .notEditable: refusal.reason
         }
     }

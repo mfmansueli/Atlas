@@ -6,7 +6,9 @@
 import Foundation
 
 /// Finds what Apple doesn't allow in the header and search placements in
-/// a text: prices and currency symbols, discounts and percentages, website
+/// a text: prices and currency symbols, “free” and trial lengths (pricing,
+/// as on the Store Page: SimProps 1.0 was rejected under 2.3.7 for
+/// “free”), discounts and percentages, website
 /// addresses, ©, claims that can't be verified (#1, award-winning, star
 /// ratings), Apple's recognitions (Editors’ Choice, App of the Day, Game
 /// of the Day, Apple Design Award, in the App Store's main languages) and
@@ -34,6 +36,13 @@ enum ArtworkForbiddenText {
         }
         for link in links(in: folded) where !found.contains(where: { $0.kind == .url && $0.snippet.contains(link) }) {
             add(.url, link)
+        }
+        // The Store Page's own lexicon, on the text as written: its words
+        // carry their accents ("grátis", "miễn phí") and leave "ad-free"
+        // and "feel free" alone.
+        let pricing = StoreTextGuidelinePatterns.free + StoreTextGuidelinePatterns.trials
+        for phrase in StoreTextGuidelineCheck.phrases(in: text, matching: pricing) {
+            add(.price, phrase)
         }
         return found
     }

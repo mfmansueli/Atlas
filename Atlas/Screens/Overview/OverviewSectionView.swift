@@ -64,7 +64,7 @@ struct OverviewSectionView: View {
                     }
                     assistantCard
                     OverviewPageAndWaiting(
-                        app: app, services: services, content: content, width: width, storePage: storePage, newLanguages: newLanguages,
+                        app: app, services: services, content: shownContent, width: width, storePage: storePage, newLanguages: newLanguages,
                         release: release
                     )
                     Text("Details")
@@ -117,20 +117,27 @@ struct OverviewSectionView: View {
         var refresh: Int
     }
 
+    /// The page before `loadContent()` has run: the kept one, so the
+    /// preview draws from the first frame.
+    private var shownContent: StorePageContent? {
+        content ?? sectionModels?.keptModels(for: app.id)?.overviewContent
+    }
+
     /// The page for the preview: the one the window kept from the last
     /// time Overview showed, read again after Refresh, a push or when old.
     private func loadContent() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.overview)
+        guard !Task.isCancelled else { return }
         let refreshCount = navigator.refreshCount
         if let kept, let page = kept.overviewContent {
             content = page
             guard kept.needsLoad(.overview, refreshCount: refreshCount) else { return }
         }
-        let loaded = try? await services.content(for: app, versionID: nil)
+        let loaded = await Self.readContent(for: app, services: services, into: kept, refreshCount: refreshCount)
         guard !Task.isCancelled else { return }
         content = loaded
-        kept?.overviewContent = loaded
-        if loaded != nil { kept?.didLoad(.overview, refreshCount: refreshCount) }
     }
 
     /// Before an assistant is connected or a key set up, the card
@@ -154,13 +161,13 @@ struct OverviewSectionView: View {
             if let launched, launched.isActive || launched.failure != nil || !launched.denials.isEmpty {
                 ClaudeCodeRunStatusView(run: launched)
             }
-        } else if status.isConnected, let client = assistants.assistantClient {
+        } else if status.isConnected, let connection = assistants.connection(appID: app.id, appName: app.name, launcher: launcher) {
             AssistantConnectedCard(
-                client: client,
-                editsDrafts: assistants.editsDrafts,
+                connection: connection,
                 isPopoverPresented: $showsEverythingPopover,
                 onSuggestEverything: suggestEverything,
                 onDetails: { navigator.requestsAssistantPopover = true },
+                onAction: { $0.perform(for: app, navigator: navigator, launcher: launcher) },
                 popover: {
                     if let run, run.phase == .waiting {
                         SuggestEverythingPopover(

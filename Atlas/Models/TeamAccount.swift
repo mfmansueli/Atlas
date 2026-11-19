@@ -15,6 +15,8 @@ struct TeamAccount: Identifiable, Hashable, Sendable {
     var name: String
     /// e.g. "Admin" or "App Manager", or what the role check found.
     var role: String
+    /// Whether `name` is the team's real name, not the default.
+    var isNamed = true
 
     var keyID: String { id }
 

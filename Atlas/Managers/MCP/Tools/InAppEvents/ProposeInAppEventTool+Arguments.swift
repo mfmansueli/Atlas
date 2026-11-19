@@ -114,6 +114,9 @@ extension ProposeInAppEventTool {
             if let empty = InAppEventField.allCases.first(where: { fields[$0]?.isEmpty ?? true }) {
                 problems.append(String(localized: "\(locale) · \(empty.rawValue) is empty: send all three texts."))
             }
+            let words = InAppEventField.allCases.compactMap { fields[$0] }.joined(separator: "\n")
+            let issues = StoreTextGuidelineCheck.issues(in: words, for: .eventText)
+            if !issues.isEmpty { problems.append("\(locale) · \(issues.assistantReason)") }
             texts[locale] = fields
         }
         return (texts, problems)

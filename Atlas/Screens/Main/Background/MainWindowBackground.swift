@@ -1,0 +1,76 @@
+//
+//  MainWindowBackground.swift
+//  Atlas
+//
+
+import Foundation
+
+/// What the main window does for the menu bar (`BackgroundWork`), while
+/// it's on screen or hidden: one pass over App Store Connect, and opening
+/// a "Needs you" line's place.
+@MainActor
+struct MainWindowBackground {
+    let library: AppListViewModel
+    let navigator: WorkspaceNavigator
+    let services: WorkspaceServices
+    let releases: ReleaseStore
+    let analytics: AnalyticsStore
+    let reviews: ReviewsStore
+    let artwork: EventArtworkStudio
+    /// The first sync is still going: no check then.
+    let isSyncing: () -> Bool
+    let selectedRelease: () -> ReleaseViewModel?
+
+    /// One pass over App Store Connect, every `CheckInterval` and on Check
+    /// Now: the app list, the versions with App Review, approved or
+    /// rolling out (saying so when one moved), Apple's new analytics
+    /// reports (unless they're only read on opening Analytics) and the
+    /// reviews when what's kept is old. Returns why App Store Connect
+    /// couldn't be read, else nil.
+    func check() async -> String? {
+        guard !isSyncing() else { return nil }
+        await library.load()
+        if let problem = library.errorMessage { return problem }
+        if let selected = library.selectedAppID, releases.appsInFlight.contains(selected) { await selectedRelease()?.load() }
+        for text in await releases.checkOthers(apps: library.apps, except: library.selectedAppID, services: services.release) {
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+        }
+        if analytics.settings.refreshMode == .everyMorning {
+            for app in library.apps where analytics.isDue(app.id) {
+                await analytics.refresh(app.id, services: services.analytics)
+            }
+            for appID in analytics.consumeArrivals() {
+                navigator.toast = .reportsArrived(appID: appID, appName: library.apps.first { $0.id == appID }?.name ?? appID)
+            }
+        }
+        for app in library.apps {
+            let known = Set(reviews.archive(for: app.id).reviews.map(\.id))
+            await reviews.refreshIfStale(app, services: services.reviews)
+            // The first read of an app's reviews isn't news.
+            guard !known.isEmpty else { continue }
+            let arrived = reviews.archive(for: app.id).reviews.filter { !known.contains($0.id) }
+            AtlasNotifications.newReviews(arrived, appName: app.name, appID: app.id)
+        }
+        let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
+        AtlasNotifications.analyticsFindings(findings, now: .now)
+        return nil
+    }
+
+    /// A "Needs you" line or Review & Push… from the menu bar.
+    func open(_ destination: BackgroundDestination) {
+        switch destination {
+        case let .section(section, appID):
+            navigator.open(section, appID: appID)
+        case let .version(appID):
+            navigator.open(.overview, appID: appID)
+        case let .currentSection(section):
+            navigator.open(section)
+        case .reviewPush:
+            navigator.reviewEveryApp()
+        case let .eventArtwork(appID, eventID):
+            // The event's page, where its concepts are.
+            navigator.open(.inAppEvents, intent: .showInAppEvents(eventID: eventID), appID: appID)
+            artwork.update(EventArtworkRun.Key(appID: appID, eventID: eventID)) { $0.isHidden = false }
+        }
+    }
+}

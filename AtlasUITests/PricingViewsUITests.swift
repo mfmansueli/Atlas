@@ -21,6 +21,17 @@ final class PricingViewsUITests: XCTestCase {
         app.terminate()
     }
 
+    /// In-app purchase prices are shown, not changed: their card opens them
+    /// with See Prices…, a subscription's with Edit Prices…. The buttons are
+    /// link-styled, which macOS exposes as links.
+    func testAnInAppPurchasesCardSeesItsPrices() {
+        launch(scene: "pricing-products")
+        let lifetime = app.links["See every price of Lumen Lifetime"]
+        XCTAssertTrue(lifetime.waitForExistence(timeout: 20))
+        XCTAssertTrue(app.links["Edit every price of Lumen Plus Annual"].exists)
+        XCTAssertFalse(app.links["Edit every price of Lumen Lifetime"].exists)
+    }
+
     func testSwitchingToTheMapAndTheHistogram() {
         launch(scene: "pricing-applied")
         let picker = element("pricing.displayPicker")

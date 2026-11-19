@@ -34,7 +34,7 @@ struct GuidedSetupTextTests {
         let model = await StudioTestFixtures.screenshots(center: center)
         let studio = model.studio
         #expect(studio.plannedDesignKind == .claudeDesign)
-        #expect(studio.shotStyleDesigner == DesignProjectKind.claudeDesign.title)
+        #expect(studio.shotStyleDesigner == DesignProjectKind.claude)
         #expect(studio.guidedMakeIntro.contains("\(studio.shotStyleDesigner) designs it in the app’s own design"))
     }
 

@@ -7,7 +7,7 @@ import CoreGraphics
 import CryptoKit
 import Foundation
 
-/// Makes a Claude Design page's 20-second motion loop: the page's own CSS
+/// Makes an HTML page's 20-second motion loop: the page's own CSS
 /// (and SVG) animation, paused at each frame's moment and drawn. 600 frames
 /// at 30 fps, frame i at i ÷ 599 of the way through like
 /// `ArtworkLoopRenderer`, so the last frame is the first and the first is
@@ -28,13 +28,22 @@ enum ArtworkWebLoop {
     }
 
     /// Writes `request`'s loop to `url`; `frames` limits it (for tests).
+    /// `size` draws it smaller than the canvas, in the same shape (an
+    /// event's loop at the 1920 × 1080 Apple takes, not 4K).
     @MainActor
     static func write(
-        _ request: ArtworkWebRequest, to url: URL, frames: Int? = nil, renderer: ArtworkWebRenderer = .shared
+        _ request: ArtworkWebRequest, to url: URL, frames: Int? = nil, size: PixelSize? = nil, renderer: ArtworkWebRenderer = .shared
     ) async throws -> ArtworkLoopFacts {
         let count = frames ?? ArtworkLoopRenderer.frameCount
+        var request = request
+        // A loop smaller than the canvas is drawn at its own size, not
+        // drawn big and scaled down: a quarter of the pixels for an event's
+        // 1920 × 1080 loop of a 3840 × 2160 page.
+        if let size, size.width < request.pixelSize.width {
+            request.drawingScale = Double(size.width) / Double(request.pixelSize.width)
+        }
         return try await renderer.withLoadedPage(request) { page, _ in
-            try await encode(page: page, size: request.pixelSize, frames: count, to: url)
+            try await encode(page: page, size: size ?? request.pixelSize, frames: count, to: url)
         }
     }
 

@@ -6,7 +6,7 @@
 import XCTest
 
 /// The sidebar navigation in its DEBUG scenes (boards 41–43): the sections
-/// grouped in the sidebar with their counts, ⌘1–⌘8, the app menu, the
+/// grouped in the sidebar with their counts, ⌘1–⌘9, the app menu, the
 /// version's status in the footer, and the toolbar's section menu while
 /// the sidebar is hidden.
 @MainActor
@@ -61,10 +61,12 @@ final class NavigationUITests: XCTestCase {
         app.typeKey("2", modifierFlags: .command)
         XCTAssertTrue(element("workspace.storePage").waitForExistence(timeout: 10))
         app.typeKey("4", modifierFlags: .command)
+        XCTAssertTrue(element("workspace.productPages").waitForExistence(timeout: 10))
+        app.typeKey("5", modifierFlags: .command)
         XCTAssertTrue(element("workspace.inAppEvents").waitForExistence(timeout: 10))
-        app.typeKey("7", modifierFlags: .command)
-        XCTAssertTrue(element("workspace.reviews").waitForExistence(timeout: 10))
         app.typeKey("8", modifierFlags: .command)
+        XCTAssertTrue(element("workspace.reviews").waitForExistence(timeout: 10))
+        app.typeKey("9", modifierFlags: .command)
         XCTAssertTrue(element("workspace.analytics").waitForExistence(timeout: 10))
         app.typeKey("1", modifierFlags: .command)
         XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 10))
@@ -144,6 +146,21 @@ final class NavigationUITests: XCTestCase {
         XCTAssertTrue(element("workspace.proButton").exists)
         XCTAssertTrue(element("sidebar.section.reviews").exists)
         attach("nav-free")
+    }
+
+    /// The sections the person isn't looking at are read in the
+    /// background: the Store Page, four seconds to read in this scene,
+    /// opens already loaded.
+    func testASectionReadAheadOpensWithoutLoading() {
+        app.launch(debugScene: "nav-prefetch")
+        XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 15))
+        // A moment on Overview, then the Store Page's read, in the background.
+        _ = XCTWaiter().wait(for: [XCTestExpectation(description: "Reading ahead")], timeout: 9)
+        element("sidebar.section.storePage").click()
+        XCTAssertTrue(element("workspace.storePage").waitForExistence(timeout: 5))
+        // Read on opening, the skeleton would show for the read's four seconds.
+        XCTAssertFalse(element("storePage.skeleton").exists, "The page was there when it opened")
+        attach("nav-prefetch")
     }
 
     private func element(_ identifier: String) -> XCUIElement {

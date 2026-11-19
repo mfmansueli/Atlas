@@ -117,14 +117,17 @@ struct MCPSuggestionSession {
     }
 
     /// The field and language an item is for, and its value checked like an
-    /// edit.
+    /// edit and against App Review's metadata rules.
     private func storeTarget(of item: MCPSuggestionItem) throws(MCPSuggestionRefusal) -> (ListingField, StoreLocale) {
         let (field, locale) = try storeField(of: item)
         switch ListingFieldValidator.validate(item.value, for: field) {
         case let .overLimit(count, limit): throw .overLimit(count: count, limit: limit)
         case .invalidURL: throw .invalidValue(String(localized: "Not a full https:// URL."))
         case .empty: throw .invalidValue(String(localized: "The value is empty."))
-        case .valid: return (field, locale)
+        case .valid:
+            let issues = StoreTextGuidelineCheck.issues(in: item.value, for: field)
+            guard issues.isEmpty else { throw .guidelines(issues) }
+            return (field, locale)
         }
     }
 

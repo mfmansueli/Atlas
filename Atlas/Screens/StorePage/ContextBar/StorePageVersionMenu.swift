@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// Which version's texts the Store Page shows, in its header.
+/// Which version's texts the Store Page shows, in its header, and New
+/// Version… once no version is in progress.
 struct StorePageVersionMenu: View {
     let viewModel: StorePageViewModel
 
@@ -25,6 +26,11 @@ struct StorePageVersionMenu: View {
                         }
                         .accessibilityIdentifier("storePage.version.\(version.versionString)")
                     }
+                }
+                Section {
+                    Button("New Version…") { viewModel.openNewVersion() }
+                        .disabled(!viewModel.canCreateVersion)
+                        .accessibilityIdentifier("storePage.newVersionItem")
                 }
             } label: {
                 Text(content.version.title(among: content.versions))

@@ -59,7 +59,7 @@ struct EventArtworkToolsTests {
         #expect(MCPToolbox.standard.toolNames.isSuperset(of: names))
         #expect(names.compactMap { ProAssistantGate.refusal(forTool: $0, isPro: false) }.isEmpty)
         #expect(RenderEventArtworkTool().definition.isReadOnly)
-        #expect(ProposeEventArtworkTool().definition.proposalKind == .screenshots)
+        #expect(ProposeEventArtworkTool().definition.proposalKind == .artwork)
         #expect(MCPEndpoint.instructions.contains("render_event_artwork"))
         #expect(MCPEndpoint.instructions.contains("propose_event_artwork"))
         #expect(MCPEndpoint.instructions.contains("the tools only ever queue changes"))
@@ -132,6 +132,49 @@ struct EventArtworkToolsTests {
         #expect(InAppEventArtworkFiles.url(id: fileID, appID: Data.app.id, in: directory) != nil)
     }
 
+    /// A page WebKit can't draw at 3840 × 2160 is drawn at the smallest
+    /// size Apple takes instead.
+    @Test func aStillTooHeavyAtFullSizeIsDrawnAtTheSmallestSize() {
+        let page = ArtworkWebRequest(html: "<p></p>", kind: .eventCard, locale: "en-US", isRightToLeft: false, headline: "", appName: "Lumen")
+        let smaller = RenderEventArtworkTool.smallerStill(page, kind: .card)
+        #expect(smaller.outputWidth == 1920)
+        #expect(smaller.outputHeight == 1080)
+        #expect(smaller.drawnWidth == 1920)
+        let details = ArtworkWebRequest(html: "<p></p>", kind: .eventDetails, locale: "en-US", isRightToLeft: false, headline: "", appName: "Lumen")
+        let tall = RenderEventArtworkTool.smallerStill(details, kind: .details)
+        #expect(tall.outputWidth == 1080)
+        #expect(tall.outputHeight == 1920)
+    }
+
+    /// With motion, the page's CSS animation becomes a loop Apple takes:
+    /// a .mov at 30 fps and the smallest size, its first frame the poster.
+    @Test func anAnimatedPageBecomesALoopAtTheSmallestSizeAppleTakes() async throws {
+        let html = """
+        <!doctype html><html><head><style>
+        body { margin: 0; background: #1f2e5c; }
+        .sun { width: 400px; height: 400px; border-radius: 50%; background: #f6c15b; animation: drift 20s linear infinite; }
+        @keyframes drift { from { transform: translateX(0); } 50% { transform: translateX(800px); } to { transform: translateX(0); } }
+        </style></head><body><div class="sun"></div></body></html>
+        """
+        let tool = RenderEventArtworkTool(directory: directory, loopFrames: 4)
+        let outcome = try await call(tool, ["appId": "Lumen Journal", "eventId": "winter", "kind": "card", "html": .string(html), "motion": true])
+        #expect(outcome.result["isVideo"] == true)
+        #expect(outcome.result["pixelSize"] == "1920 × 1080")
+        #expect(outcome.result["fileName"] == "winter-reflection-2026-card-en-us.mov")
+        #expect(outcome.result["frameRate"]?.doubleValue == 30)
+        // Four frames make a test loop of a tenth of a second: only its
+        // length is outside Apple's rules.
+        let refusals = outcome.result["refusals"]?.arrayValue?.compactMap(\.stringValue) ?? []
+        #expect(refusals.count == 1)
+        #expect(refusals.first?.hasPrefix("The video is 0.1 seconds") == true)
+        #expect(!outcome.images.isEmpty)
+        let fileID = try #require(outcome.result["fileId"]?.stringValue)
+        #expect(InAppEventArtworkFiles.url(id: fileID, appID: Data.app.id, in: directory)?.pathExtension == "mov")
+        // The draft it was written to is gone.
+        let left = try FileManager.default.contentsOfDirectory(atPath: directory.path(percentEncoded: false))
+        #expect(!left.contains { $0.hasPrefix("loop-") })
+    }
+
     // MARK: - propose_event_artwork
 
     @Test func artIsQueuedForEveryLanguageAndWaitsForThePerson() async throws {
@@ -156,7 +199,8 @@ struct EventArtworkToolsTests {
     }
 
     @Test func aVideoDetailsPageGoesIntoSomeLanguagesWithItsPosterFrame() async throws {
-        let video = try await EventArtworkTestFiles.storedMovie(width: 1080, height: 1920, fps: 30, frames: 60, in: directory)
+        // Five seconds, the shortest Apple takes.
+        let video = try await EventArtworkTestFiles.storedMovie(width: 1080, height: 1920, fps: 30, frames: 150, in: directory)
         let outcome = try await propose([["kind": "details", "fileId": .string(video), "locales": ["de-DE", "ja"], "posterSeconds": .double(1.5)]])
         #expect(outcome.result["status"] == "queued")
         #expect(outcome.result["changes"]?.arrayValue?.count == 1)

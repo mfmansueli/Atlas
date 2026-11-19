@@ -44,6 +44,7 @@ struct SubmitForReviewSheet: View {
         }
         .frame(width: 840, height: 540)
         .disabled(viewModel.isSubmitting)
+        .task { await keepBuildsFresh() }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("submit.sheet")
     }
@@ -69,6 +70,26 @@ struct SubmitForReviewSheet: View {
 
     private var buildSection: some View {
         SubmitSection(title: String(localized: "Build")) {
+            if viewModel.isRefreshingBuilds {
+                HStack(spacing: Spacing.xSmall) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("Checking for new builds…")
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("submit.checkingBuilds")
+            } else {
+                Button("Check Again", systemImage: "arrow.clockwise") {
+                    Task { await viewModel.refreshStatus() }
+                }
+                .buttonStyle(.borderless)
+                .controlSize(.small)
+                .help("Look for builds uploaded since this opened")
+                .accessibilityIdentifier("submit.checkBuilds")
+            }
+        } content: {
             let builds = viewModel.status?.builds ?? []
             if builds.isEmpty {
                 Text("No build of \(viewModel.versionString) yet. Upload one from Xcode; it shows here once Apple has processed it.")
@@ -87,6 +108,21 @@ struct SubmitForReviewSheet: View {
                 )
                 .accessibilityIdentifier("submit.build.\(build.number)")
             }
+            Text("Atlas checks every minute while this is open. A new upload shows a few minutes after Xcode finishes it.")
+                .font(.caption)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    /// Reads the builds when the sheet opens and every minute while it's
+    /// open: Apple lists an upload a few minutes after Xcode sends it.
+    private func keepBuildsFresh() async {
+        await viewModel.refreshStatus()
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(60))
+            guard !Task.isCancelled else { return }
+            await viewModel.refreshStatus()
         }
     }
 

@@ -88,14 +88,14 @@ struct AutopilotCancelRunTests {
     }
 
     /// Kept, the concepts started the next Design with all three in, and
-    /// next_step told Claude Design to wait forever.
+    /// next_step told Claude to wait forever.
     @Test func theNextDesignAsksForNewConcepts() async throws {
         var start = StudioDebugHeaderStyle.headerLoopOnly
         start.art = "A"
         center.install(start)
         center.cancelRun(appID: appID)
 
-        // Started again with Claude Design, nothing left to capture.
+        // Started again with Claude, nothing left to capture.
         var again = try #require(run)
         again.stage = .design
         again.proposesConcepts = true

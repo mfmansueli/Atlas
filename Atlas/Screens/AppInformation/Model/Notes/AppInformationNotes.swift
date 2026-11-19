@@ -8,7 +8,7 @@ import Foundation
 /// What App Information keeps on this Mac for one app because App Store
 /// Connect has nowhere for it: the override's reason, the export compliance
 /// answers, the App Compliance answers, and assistants' evidence and
-/// suggestions. Never secrets: the demo password lives in the Keychain.
+/// suggestions (App Compliance's too). Never secrets: the demo password lives in the Keychain.
 struct AppInformationNotes: Hashable, Codable, Sendable {
     /// Why the app is rated higher than calculated.
     var overrideReason = ""
@@ -23,6 +23,9 @@ struct AppInformationNotes: Hashable, Codable, Sendable {
     var commonTasks: [String] = []
     /// The App Compliance answers. Apple's API takes none of them.
     var compliance = ComplianceAnswers()
+    /// Assistants' App Compliance answers, one per regulation, until the
+    /// person accepts or dismisses them.
+    var complianceSuggestions: [ComplianceSuggestion] = []
 }
 
 // Every field is optional when decoding, so notes saved before a field
@@ -37,5 +40,6 @@ extension AppInformationNotes {
         accessibilitySuggestions = try container.decodeIfPresent([String: [AccessibilitySuggestion]].self, forKey: .accessibilitySuggestions) ?? [:]
         commonTasks = try container.decodeIfPresent([String].self, forKey: .commonTasks) ?? []
         compliance = try container.decodeIfPresent(ComplianceAnswers.self, forKey: .compliance) ?? ComplianceAnswers()
+        complianceSuggestions = try container.decodeIfPresent([ComplianceSuggestion].self, forKey: .complianceSuggestions) ?? []
     }
 }

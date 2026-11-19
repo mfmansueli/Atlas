@@ -40,7 +40,7 @@ struct AnalyticsKeyCannotAskView: View {
                 ),
                 .init(
                     title: String(localized: "Add it to Atlas"),
-                    detail: String(localized: "Settings → Account. Then come back here and ask again.")
+                    detail: String(localized: "Settings → Accounts. Then come back here and ask again.")
                 ),
             ])
             HStack(spacing: Spacing.small) {

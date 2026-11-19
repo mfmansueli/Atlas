@@ -13,7 +13,8 @@ extension ProposeCaptionsTool {
         let session = try await MCPAutopilotSession.load(arguments, in: context)
         var updates: [AutopilotCaptionUpdate] = []
         var texts: [AutopilotArtworkTextUpdate] = []
-        for item in try arguments.array("items") {
+        let items = try arguments.array("items")
+        for item in items {
             // One of the pages' phrases in a language.
             if item["placement"]?.stringValue == "text" {
                 switch Self.phraseUpdate(item, run: session.run) {
@@ -50,6 +51,8 @@ extension ProposeCaptionsTool {
             ))
         }
         do {
+            // Nothing is saved when one breaks App Review's rules.
+            try Self.checkGuidelines(items)
             // Answers once the texts are saved and measured: the artwork and
             // App Preview they let Atlas make take minutes, longer
             // than an MCP call waits (next_step says wait meanwhile).
@@ -88,6 +91,21 @@ extension ProposeCaptionsTool {
             "status": "saved", "saved": .int(saved),
             "captionsNotFitting": .int(captions), "artworkTextsToWrite": .int(texts), "next": .string(next),
         ]
+    }
+
+    /// Throws the first item's reason App Review would reject it.
+    static func checkGuidelines(_ items: [JSONValue]) throws {
+        if let refusal = items.lazy.compactMap(guidelineRefusal).first { throw AutopilotError(refusal) }
+    }
+
+    /// Why App Review would reject an item's headline and subhead: a
+    /// caption, a placement's own text or a phrase. Nil when it wouldn't.
+    static func guidelineRefusal(_ item: JSONValue) -> String? {
+        let headline = item["headline"]?.stringValue ?? ""
+        let issues = StoreTextGuidelineCheck.issues(inCaption: headline, subhead: item["subhead"]?.stringValue)
+        guard !issues.isEmpty else { return nil }
+        let place = item["placement"]?.stringValue ?? item["slot"]?.intValue.map { String(localized: "slot \($0)") } ?? ""
+        return String(localized: "\(item["locale"]?.stringValue ?? "") \(place): ") + guidelineRefusal(issues)
     }
 
     /// A phrase item {locale, placement: "text", phrase, headline}: one of

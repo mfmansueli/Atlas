@@ -9,12 +9,16 @@ import SwiftUI
 /// sidebar, the selected app's workspace in the detail column, and the
 /// Review & Push and Activity sheets. Right after a key is connected it
 /// shows "Loading your apps…" until the first sync is done. It asks App
-/// Store Connect for the team's name once, for the account switcher.
+/// Store Connect for the team's name once, for the account switcher. With
+/// `prefetchesSections`, the open app's other sections are read ahead in
+/// the background (`SectionPrefetcher`), so they open already loaded.
 struct MainView: View {
     @State private var viewModel: AppListViewModel
     @State private var summaries: AppSummaryStore
     @State private var navigator: WorkspaceNavigator
     @State private var sectionModels = WorkspaceSectionModels()
+    /// What covers the whole window, e.g. an event's artwork full size.
+    @State private var cover = WindowCover()
     @State private var isSyncing: Bool
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     private let services: WorkspaceServices
@@ -23,7 +27,11 @@ struct MainView: View {
     private let onSelectAccount: (TeamAccount) -> Void
     private let onAddKey: () -> Void
     private let onFirstSyncFinished: () -> Void
+    /// Cancel on "Reading your apps…"; nil hides it.
+    private let onCancelFirstSync: (() -> Void)?
     private let onTeamNameFound: (String) -> Void
+    /// Reads the open app's other sections ahead.
+    private let prefetchesSections: Bool
 
     @Environment(ChangeQueue.self) private var changes
     @Environment(PushController.self) private var push
@@ -38,8 +46,12 @@ struct MainView: View {
     @Environment(ProGate.self) private var pro: ProGate?
     @Environment(AnalyticsStore.self) private var analytics
     @Environment(ReviewsStore.self) private var reviews
+    @Environment(EventArtworkStudio.self) private var artwork
     @Environment(InAppEventsStore.self) private var events
+    @Environment(ProductPagesStore.self) private var productPages
     @Environment(ReleaseStore.self) private var releases
+    /// The menu bar's view of what runs and what waits; nil in previews.
+    @Environment(BackgroundWork.self) private var background: BackgroundWork?
 
     init(
         credentials: AppStoreConnectCredentials,
@@ -48,6 +60,7 @@ struct MainView: View {
         onSelectAccount: @escaping (TeamAccount) -> Void = { _ in },
         onAddKey: @escaping () -> Void = {},
         onFirstSyncFinished: @escaping () -> Void = {},
+        onCancelFirstSync: (() -> Void)? = nil,
         onTeamNameFound: @escaping (String) -> Void = { _ in }
     ) {
         self.init(
@@ -58,11 +71,15 @@ struct MainView: View {
             onSelectAccount: onSelectAccount,
             onAddKey: onAddKey,
             onFirstSyncFinished: onFirstSyncFinished,
-            onTeamNameFound: onTeamNameFound
+            onCancelFirstSync: onCancelFirstSync,
+            onTeamNameFound: onTeamNameFound,
+            prefetchesSections: true
         )
     }
 
-    /// With existing services — DEBUG scenes and previews.
+    /// With existing services — DEBUG scenes and previews, which read
+    /// sections ahead only when asked (`prefetchesSections`), so their
+    /// openings run on the models the sections make.
     init(
         services: WorkspaceServices,
         accounts: [TeamAccount] = [],
@@ -74,14 +91,18 @@ struct MainView: View {
         onSelectAccount: @escaping (TeamAccount) -> Void = { _ in },
         onAddKey: @escaping () -> Void = {},
         onFirstSyncFinished: @escaping () -> Void = {},
-        onTeamNameFound: @escaping (String) -> Void = { _ in }
+        onCancelFirstSync: (() -> Void)? = nil,
+        onTeamNameFound: @escaping (String) -> Void = { _ in },
+        prefetchesSections: Bool = false
     ) {
         self.services = services
+        self.prefetchesSections = prefetchesSections
         self.accounts = accounts
         self.currentAccountID = currentAccountID
         self.onSelectAccount = onSelectAccount
         self.onAddKey = onAddKey
         self.onFirstSyncFinished = onFirstSyncFinished
+        self.onCancelFirstSync = onCancelFirstSync
         self.onTeamNameFound = onTeamNameFound
         _isSyncing = State(initialValue: isFirstSync)
         _viewModel = State(initialValue: AppListViewModel(services: services.appList, selectedAppID: selectedAppID))
@@ -145,10 +166,16 @@ struct MainView: View {
             .task { attachAssistants() }
             .onDisappear { assistants.workspace = nil }
             .task { await loadLibrary() }
-            .task { await checkAnalytics() }
-            .task { await checkReleases() }
+            // What the menu bar shows and the checks it makes on its own
+            // (reviews, versions in flight, analytics reports).
+            .task { attachBackgroundWork() }
+            .onChange(of: viewModel.apps, initial: true) { background?.library = viewModel.apps }
             // The version's status, for the sidebar's footer, whatever section shows.
             .task(id: viewModel.selectedAppID) { await loadSelectedRelease() }
+            // The open app's other sections, read ahead.
+            .modifier(SectionPrefetchModifier(app: prefetchesSections && !isSyncing ? viewModel.selectedApp : nil, services: services, keyID: currentAccountID))
+            // Refresh reads the version and its builds again too.
+            .onChange(of: navigator.refreshCount) { Task { await selectedRelease?.load() } }
             .task {
                 if let name = await viewModel.findTeamName() { onTeamNameFound(name) }
             }
@@ -169,6 +196,7 @@ struct MainView: View {
                 Task { await selectedRelease?.load() }
             }
             // Outermost, so the sheets see them too.
+            .environment(cover)
             .environment(navigator)
             .environment(summaries)
             .environment(sectionModels)
@@ -178,10 +206,15 @@ struct MainView: View {
     @ViewBuilder
     private var content: some View {
         if isSyncing {
-            FirstSyncView(progress: FirstSyncProgress(
-                appCount: viewModel.hasLoaded ? viewModel.apps.count : nil,
-                syncedCount: viewModel.apps.count { summaries.isSettled($0.id) }
-            ))
+            FirstSyncView(
+                progress: FirstSyncProgress(
+                    appCount: viewModel.hasLoaded ? viewModel.apps.count : nil,
+                    syncedCount: viewModel.apps.count { summaries.isSettled($0.id) },
+                    teamName: accounts.first { $0.id == currentAccountID && $0.isNamed }?.name,
+                    syncedNames: viewModel.apps.filter { summaries.isSettled($0.id) }.map(\.name)
+                ),
+                onCancel: onCancelFirstSync
+            )
         } else {
             library
         }
@@ -190,20 +223,15 @@ struct MainView: View {
     private var library: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             AppSidebar(
-                viewModel: viewModel,
-                summaries: summaries,
-                accounts: accounts,
-                currentAccountID: currentAccountID,
-                counts: viewModel.selectedApp.map(counts) ?? SectionBadgeCounts(),
-                version: viewModel.selectedApp.flatMap(versionSummary),
-                onSelectAccount: onSelectAccount,
-                onAddKey: onAddKey,
-                onVersion: openVersion
+                viewModel: viewModel, summaries: summaries, accounts: accounts, currentAccountID: currentAccountID,
+                counts: viewModel.selectedApp.map(counts) ?? SectionBadgeCounts(), version: viewModel.selectedApp.flatMap(versionSummary),
+                onSelectAccount: onSelectAccount, onAddKey: onAddKey, onVersion: openVersion
             )
             .navigationSplitViewColumnWidth(min: 220, ideal: Metrics.sidebarWidth, max: 360)
         } detail: {
             detail
         }
+        .modifier(WindowCoverModifier(cover: cover))
     }
 
     @ViewBuilder
@@ -233,7 +261,11 @@ struct MainView: View {
                 newFindings: navigator.section == .analytics ? 0 : analytics.newFindingCount(for: app.id),
                 // Suggested replies are Pro: in Free there are none to accept.
                 reviewReplies: pro.isFree ? 0 : reviews.suggestionCount(for: app.id),
-                eventLanguages: events.count(for: app.id)
+                eventLanguages: events.count(for: app.id),
+                complianceAnswers: SectionBadgeCounts.complianceCount(
+                    appID: app.id, model: sectionModels.models(for: app.id).appInformation, notes: services.appInformation.notes
+                ),
+                productPages: productPages.count(for: app.id)
             )
         )
     }
@@ -247,13 +279,9 @@ struct MainView: View {
         if let model = kept.release { return model }
         let model = ReleaseViewModel(app: app, services: services, store: releases, queue: changes, suggestions: suggestions, push: push)
         model.storePageModel = { [sectionModels, services, changes, suggestions, summaries, push] in
-            let kept = sectionModels.models(for: app.id)
-            let page = kept.storePage ?? StorePageViewModel(
-                app: app, services: services.storePage, queue: changes, suggestions: suggestions, summaries: summaries, push: push
-            )
-            kept.storePage = page
-            if !page.isLoaded { await page.load() }
-            return page.isLoaded ? page : nil
+            await sectionModels.models(for: app.id).loadedStorePage {
+                StorePageViewModel(app: app, services: services.storePage, queue: changes, suggestions: suggestions, summaries: summaries, push: push)
+            }
         }
         model.onMessage = { [navigator] text in navigator.toast = WorkspaceToast(message: ToastMessage(text: text)) }
         model.onChanged = { [navigator, summaries] in
@@ -285,19 +313,6 @@ struct MainView: View {
         navigator.openVersion(submitting: versionSummary(app)?.opensSubmit == true && selectedRelease?.status != nil)
     }
 
-    /// While Atlas is open, looks at the versions that are with App
-    /// Review, approved or rolling out, and says so when one moved.
-    private func checkReleases() async {
-        while !Task.isCancelled {
-            try? await Task.sleep(for: .seconds(viewModel.hasLoaded ? ReleaseStore.checkInterval : 5))
-            guard viewModel.hasLoaded else { continue }
-            if let selected = viewModel.selectedAppID, releases.appsInFlight.contains(selected) { await selectedRelease?.load() }
-            for text in await releases.checkOthers(apps: viewModel.apps, except: viewModel.selectedAppID, services: services.release) {
-                navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
-            }
-        }
-    }
-
     /// Review & Push for the selected app, or for every app's proposals
     /// from one assistant when the toolbar indicator opened it.
     private func reviewViewModel() -> ReviewPushViewModel {
@@ -305,19 +320,17 @@ struct MainView: View {
             queue: changes,
             push: push,
             selectedAppID: viewModel.selectedAppID,
-            appName: appName,
+            appName: { [viewModel] id in viewModel.apps.first { $0.id == id }?.name ?? id },
             pushConfirmation: preferences.pushConfirmation,
             confirmsPriceIncreases: preferences.confirmsPriceIncreases
         )
         if let filter = navigator.reviewSourceFilter {
             review.scope = .allApps
             review.sourceFilter = filter
+        } else if navigator.reviewsEveryApp {
+            review.scope = .allApps
         }
         return review
-    }
-
-    private func appName(_ id: StoreApp.ID) -> String {
-        viewModel.apps.first { $0.id == id }?.name ?? id
     }
 
     /// Points Review & Push at this account and reloads what a push changed.
@@ -380,22 +393,20 @@ struct MainView: View {
         }
     }
 
-    /// Every morning (and when Atlas opens): downloads Apple's new
-    /// reports for the apps that have Analytics on, and says so when an
-    /// app's first ones arrive. Off when reports are only read on opening
-    /// Analytics.
-    private func checkAnalytics() async {
-        while !Task.isCancelled {
-            if analytics.settings.refreshMode == .everyMorning, viewModel.hasLoaded {
-                for app in viewModel.apps where analytics.isDue(app.id) {
-                    await analytics.refresh(app.id, services: services.analytics)
-                }
-                for appID in analytics.consumeArrivals() {
-                    navigator.toast = .reportsArrived(appID: appID, appName: appName(appID))
-                }
-            }
-            try? await Task.sleep(for: .seconds(viewModel.hasLoaded ? 3600 : 5))
-        }
+    // MARK: - Background work
+
+    /// Lets the menu bar check this account and open its places, while
+    /// the window is on screen or hidden.
+    private func attachBackgroundWork() {
+        guard let background else { return }
+        let handlers = MainWindowBackground(
+            library: viewModel, navigator: navigator, services: services, releases: releases, analytics: analytics, reviews: reviews,
+            artwork: artwork, isSyncing: { isSyncing }, selectedRelease: { selectedRelease }
+        )
+        background.library = viewModel.apps
+        background.isFree = { [pro] in pro.isFree }
+        background.checkHandler = { await handlers.check() }
+        background.openHandler = { handlers.open($0) }
     }
 
     /// The run Show Output shows, as the sheet's item.

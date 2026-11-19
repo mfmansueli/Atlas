@@ -56,7 +56,7 @@ enum MCPEndpoint {
     and app information. Read with the list_ and get_ tools. Change things with the propose_ tools: each \
     proposal is validated like a manual edit and queued in Atlas, where the person reviews and pushes \
     it. You can't push, and nothing reaches App Store Connect until the person does. When a proposal is \
-    refused, the reason says how to fix it. Screenshot Autopilot runs are driven by you: once the person \
+    refused, the reason says how to fix it. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
     starts one, call get_capture_plan, then next_step after each step until it says done. When the app's \
     screens change outside a run, send new ones with propose_screens and new steps, sample data or setup \
     commands with update_capture_plan: they wait for the person in the next plan. To find what to improve, read \
@@ -64,11 +64,19 @@ enum MCPEndpoint {
     propose the fix, and say why with add_finding; never quote a rate marked tooFewToTell. After release, read \
     the reviews with get_reviews, suggest a reply to each in the reviewer's own language with \
     propose_review_replies and group what people write about with propose_review_themes: the person sends every \
-    reply, you never do. For In-App Events, read get_in_app_events; propose a new one with propose_in_app_event and \
+    reply, you never do. In-App Event texts, retention messages and review replies have their own rules (no prices \
+    or offers in events and retention messages, no marketing in replies), in their tools and get_ results' \
+    textRules; a text that breaks one is refused. For In-App Events, read get_in_app_events; propose a new one with propose_in_app_event and \
     write the missing languages with propose_event_texts. Make an event's card (16:9) and details page (9:16) with \
     render_event_artwork (an HTML page, or an image or video loop sent to get_in_app_events' artworkUpload link), \
     which shows it under the event's text and checks it against Apple's rules, then queue it with \
-    propose_event_artwork: the person accepts it and pushes it. Submitting a version or an event for App Review and \
+    propose_event_artwork: the person accepts it and pushes it. When the person asked for an event's artwork in Atlas \
+    (Make the Artwork), read get_event_artwork_brief and send each concept with propose_event_artwork_concept: the \
+    person chooses one there. When a release needs a new App Store version, read \
+    get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
+    App Store Connect creates it when the person pushes. App Compliance answers (trader status, ICP Filing Number, \
+    China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
+    and propose_compliance_answers; the person accepts each and enters it in App Store Connect. Submitting a version or an event for App Review and \
     releasing it are the person's: there is no tool for either, and the tools only ever queue changes. Always tell \
     the person what you couldn't see.
     """

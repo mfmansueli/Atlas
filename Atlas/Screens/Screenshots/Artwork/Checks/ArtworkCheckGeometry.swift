@@ -8,7 +8,7 @@ import Foundation
 
 /// Where a header or search image's parts landed, for `ArtworkChecker`:
 /// from Atlas's own layout (`init(layout:template:)`) or from a
-/// Claude Design page as rendered (`init(web:kind:)`). Geometry is in
+/// HTML page as rendered (`init(web:kind:)`). Geometry is in
 /// artwork pixels.
 struct ArtworkCheckGeometry: Hashable, Sendable {
     /// One text drawn on the image, with how well it reads on what's behind
@@ -38,7 +38,7 @@ struct ArtworkCheckGeometry: Hashable, Sendable {
     var headlineFont: String?
     /// What moves in a loop that should stay still: text, the icon.
     var moving: [String] = []
-    /// A Claude Design page's own words (`data-al="text"`), as shown.
+    /// An HTML page's own words (`data-al="text"`), as shown.
     var texts: [Text] = []
 
     /// Every text drawn, for the content checks.

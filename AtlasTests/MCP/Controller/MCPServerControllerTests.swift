@@ -113,7 +113,7 @@ struct MCPServerControllerTests {
     @Test func promptsAreOfferedOnlyWithTheirTools() {
         #expect(MCPTestFixtures.controller(toolbox: MCPToolbox(tools: [FakeMCPTool(name: "list_apps")])).availablePrompts.isEmpty)
         #expect(MCPTestFixtures.controller().availablePrompts == [
-            .translateMissing, .fillPrivacyFromCode, .fillAgeRating, .whatsNewFromGit,
+            .translateMissing, .fillPrivacyFromCode, .fillAgeRating, .fillCompliance, .whatsNewFromGit,
             .translateCaptions, .shortenOverflowingCaptions, .reviseTemplate, .suggest, .suggestAll, .runScreenshots,
         ])
     }

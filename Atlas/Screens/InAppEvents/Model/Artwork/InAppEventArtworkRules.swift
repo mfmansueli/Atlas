@@ -25,6 +25,9 @@ enum InAppEventArtworkRules {
     /// 500 MB, counted in the smaller (decimal) unit to be safe.
     static let maximumFileSize = 500_000_000
     static let frameRates: [Double] = [30, 60]
+    /// App Store Connect's creative asset specifications: event videos run
+    /// 5 to 30 seconds and loop.
+    static let videoSeconds: ClosedRange<Double> = 4.95...30.05
     static let audioSampleRates: [Double] = [44100, 48000]
     /// The codecs Apple's App Preview specifications name (H.264 and
     /// ProRes 422 HQ), and HEVC; anything else gets a warning.

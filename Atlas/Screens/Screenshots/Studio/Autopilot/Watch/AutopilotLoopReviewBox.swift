@@ -33,7 +33,7 @@ struct AutopilotLoopReviewBox: View {
             }
             loops
             Text(String(localized: """
-            Made from the header you chose. \(kind.title) animated it; Atlas checked that the first and last \
+            Made from the header you chose. \(kind.designer) animated it; Atlas checked that the first and last \
             frames match and that the name never moves.
             """))
             .font(.caption)
@@ -66,9 +66,9 @@ struct AutopilotLoopReviewBox: View {
                         .textFieldStyle(.roundedBorder)
                         .onSubmit(send)
                         .disabled(isBusy)
-                        .accessibilityLabel(Text("Ask \(kind.title) for changes to the loop"))
+                        .accessibilityLabel(Text("Ask \(kind.designer) for changes to the loop"))
                         .accessibilityIdentifier("autopilot.loop.note")
-                    Button("Ask \(kind.title)", action: send)
+                    Button("Ask \(kind.designer)", action: send)
                         .buttonBorderShape(.capsule)
                         .controlSize(.small)
                         .disabled(!canAsk)

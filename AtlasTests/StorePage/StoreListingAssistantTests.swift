@@ -74,6 +74,30 @@ struct StoreListingAssistantTests {
         #expect(listing.pendingChanges.isEmpty)
     }
 
+    @Test func textAppReviewWouldRejectIsRefused() {
+        var listing = Fixtures.listing()
+        let outcome = listing.propose("Jetzt kostenlos für Android", for: .promotionalText, in: .german, by: client)
+        let issues = [
+            StoreTextGuidelineIssue(kind: .pricing, phrases: ["kostenlos"]),
+            StoreTextGuidelineIssue(kind: .otherPlatform, phrases: ["Android"]),
+        ]
+        #expect(outcome == .refused(.guidelines(issues)))
+        #expect(listing.pendingChanges.isEmpty)
+        #expect(ListingProposalRefusal.guidelines(issues).reason.hasPrefix(
+            "App Review rejects pricing in store text and screenshots (Guideline 2.3.7): “kostenlos”."
+        ))
+    }
+
+    @Test func appStoreConnectsOwnTextCanAlwaysComeBack() {
+        var listing = StoreListing(appName: "Lumen Journal", version: Fixtures.editableVersion, primaryLocale: .englishUS, locales: [
+            LocaleListing(locale: .englishUS, remote: [.subtitle: "Free private notes"]),
+        ])
+        listing.edit(.subtitle, in: .englishUS, to: "Private notes")
+        let outcome = listing.propose("Free private notes", for: .subtitle, in: .englishUS, by: client)
+        #expect(outcome.status == "queued")
+        #expect(listing.propose("Free notes for everyone", for: .subtitle, in: .englishUS, by: client).status == "refused")
+    }
+
     @Test func sameValueIsUnchanged() {
         var listing = Fixtures.listing()
         let outcome = listing.propose("Lumen: Tagebuch", for: .name, in: .german, by: client)

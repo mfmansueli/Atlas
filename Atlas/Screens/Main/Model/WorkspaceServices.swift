@@ -24,6 +24,8 @@ struct WorkspaceServices {
     var release: any ReleaseServices
     /// In-App Events and their texts in every language.
     var inAppEvents: any InAppEventsServices
+    /// Custom product pages, and the default page they start from.
+    var productPages: any ProductPagesServices
     /// Where Review & Push sends writes.
     var push: any PushTransport
 
@@ -41,6 +43,7 @@ struct WorkspaceServices {
             reviews: LiveReviewsServices(client: client),
             release: LiveReleaseServices(client: client),
             inAppEvents: LiveInAppEventsServices(client: client),
+            productPages: LiveProductPagesServices(client: client),
             push: client
         )
     }

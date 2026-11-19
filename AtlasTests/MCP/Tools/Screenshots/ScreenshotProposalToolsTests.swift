@@ -95,6 +95,18 @@ struct ScreenshotProposalToolsTests {
         #expect(current == "Durchsuche jahrelange Tagebucheinträge in nur wenigen Sekunden")
     }
 
+    @Test func captionsAppReviewWouldRejectAreRefused() async throws {
+        let (outcome, services) = try await call(ProposeCaptionsTool(), [
+            "reason": "x", "items": [["locale": "de-DE", "slot": 1, "headline": "Kostenlos für Android"]],
+        ])
+        #expect(outcome.result["status"] == "refused")
+        let reason = outcome.result["items"]?.arrayValue?.first?["reason"]?.stringValue ?? ""
+        #expect(reason.hasPrefix("App Review rejects pricing in store text and screenshots (Guideline 2.3.7): “Kostenlos”."), "\(reason)")
+        #expect(reason.contains("(Guideline 2.3.10): “Android”."), "\(reason)")
+        #expect(reason.hasSuffix("Write the caption again without it."), "\(reason)")
+        #expect(services.storedDocument?.proposals.count == 2)
+    }
+
     @Test func whenNothingFitsNothingIsSaved() async throws {
         let (outcome, services) = try await call(ProposeCaptionsTool(), [
             "reason": "x", "items": [["locale": "de-DE", "slot": 1, "headline": "   "]],

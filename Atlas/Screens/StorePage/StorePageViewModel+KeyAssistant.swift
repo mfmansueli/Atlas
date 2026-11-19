@@ -7,8 +7,9 @@ import Foundation
 
 // Generate Suggestions… with an API key: the listing's text, plus the
 // project folder's commits and changelog and the app's reviews when the
-// person allowed them. What comes back is checked like an edit and goes
-// into the suggestion store, tagged with the key's API.
+// person allowed them. What comes back is checked like an edit and against
+// App Review's metadata rules, and goes into the suggestion store, tagged
+// with the key's API.
 extension StorePageViewModel: KeyAssistantGenerating {
     /// One page of App Store Connect's newest reviews.
     static let generatedReviewLimit = 200
@@ -39,7 +40,8 @@ extension StorePageViewModel: KeyAssistantGenerating {
         for item in items {
             guard let field = ListingField.matching(item.field), KeyAssistantStorePrompt.fields.contains(field),
                   let locale = StoreLocaleCatalog.locale(code: item.locale), listing.contains(locale), listing.canEdit(field),
-                  ListingFieldValidator.validate(item.value, for: field) == .valid, listing.value(field, in: locale) != item.value
+                  ListingFieldValidator.validate(item.value, for: field) == .valid, listing.value(field, in: locale) != item.value,
+                  StoreTextGuidelineCheck.issues(in: item.value, for: field).isEmpty
             else { continue }
             let outcome = suggestions.add(
                 appID: app.id,

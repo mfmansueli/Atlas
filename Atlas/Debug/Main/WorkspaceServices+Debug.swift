@@ -20,6 +20,7 @@ extension WorkspaceServices {
             reviews: DebugReviewsServices(),
             release: DebugReleaseServices(),
             inAppEvents: DebugInAppEventsServices(),
+            productPages: DebugProductPagesServices(),
             push: DebugPushTransport()
         )
     }

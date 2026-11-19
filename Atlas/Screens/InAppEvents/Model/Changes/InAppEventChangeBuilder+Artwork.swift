@@ -20,15 +20,35 @@ extension InAppEventChangeBuilder {
     func artworkChange(
         _ report: InAppEventArtworkReport, into localization: InAppEventLocalization, of event: InAppEvent, source: ChangeSource
     ) -> PendingChange {
+        artworkChange(
+            report, localizationID: localization.id, locale: localization.locale,
+            oldMedia: localization.media.first { $0.kind == report.kind }, of: event, source: source
+        )
+    }
+
+    /// The change that uploads `report`'s file into a language whose texts
+    /// are queued and that the push creates first: it names the language by
+    /// its locale (`EventLocalizationPlaceholder`).
+    func artworkChange(_ report: InAppEventArtworkReport, newLanguage locale: String, of event: InAppEvent, source: ChangeSource) -> PendingChange {
+        artworkChange(
+            report, localizationID: EventLocalizationPlaceholder(eventID: event.id, locale: locale).token, locale: locale, oldMedia: nil,
+            of: event, source: source
+        )
+    }
+
+    private func artworkChange(
+        _ report: InAppEventArtworkReport, localizationID: String, locale: String, oldMedia: InAppEventMedia?, of event: InAppEvent,
+        source: ChangeSource
+    ) -> PendingChange {
         let push = InAppEventArtworkPush(
-            localizationID: localization.id, kind: report.kind, isVideo: report.file.isVideo, fileName: report.file.fileName,
+            localizationID: localizationID, kind: report.kind, isVideo: report.file.isVideo, fileName: report.file.fileName,
             fileSize: report.file.fileSize, path: report.url.path(percentEncoded: false), previewFrameTimeCode: report.previewFrameTimeCode
         )
         var change = PendingChange(
-            id: artworkChangeID(eventID: event.id, kind: report.kind, locale: localization.locale),
+            id: artworkChangeID(eventID: event.id, kind: report.kind, locale: locale),
             appID: appID, section: .inAppEvents, group: group(event), groupID: event.id,
-            title: "\(Self.localeName(localization.locale)) · \(report.kind.title)", flagRegion: Self.region(localization.locale),
-            oldValue: Self.mediaValue(localization.media.first { $0.kind == report.kind }),
+            title: "\(Self.localeName(locale)) · \(report.kind.title)", flagRegion: Self.region(locale),
+            oldValue: Self.mediaValue(oldMedia),
             newValue: "\(report.file.title) · \(report.file.pixelSize.title) · \(report.file.fileName)",
             source: source, requests: [push.request]
         )

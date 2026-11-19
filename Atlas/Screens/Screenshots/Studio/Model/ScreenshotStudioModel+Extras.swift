@@ -101,7 +101,7 @@ extension ScreenshotStudioModel {
     }
 
     /// A place's image as it was drawn. The header shows no phone; the 16:9
-    /// image and search the search screen's. A Claude Design page shows the
+    /// image and search the search screen's. An HTML page shows the
     /// screens it names.
     func artworkItem(_ place: ExtrasArtworkPlace, template: ScreenshotTemplate, locale: String) -> StudioArtworkItem {
         let shows = place.shows ?? .phone

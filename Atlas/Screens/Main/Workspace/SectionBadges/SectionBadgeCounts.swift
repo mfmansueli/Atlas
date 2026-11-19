@@ -36,6 +36,8 @@ struct SectionBadgeCounts: Equatable {
         counts[.subscriptionPricing, default: 0] += pricing
         counts[.reviews, default: 0] += extras.reviewReplies
         counts[.inAppEvents, default: 0] += extras.eventLanguages
+        counts[.appInformation, default: 0] += extras.complianceAnswers
+        counts[.productPages, default: 0] += extras.productPages
         self.counts = counts
         newFindings = extras.newFindings
     }
@@ -48,6 +50,19 @@ struct SectionBadgeCounts: Equatable {
         var reviewReplies = 0
         /// Languages of In-App Events an assistant suggested.
         var eventLanguages = 0
+        /// App Compliance answers an assistant suggested, still open.
+        var complianceAnswers = 0
+        /// Suggested pages and promotional texts.
+        var productPages = 0
+    }
+
+    /// The App Compliance answers waiting for the person: the section's
+    /// exact count once it read what App Store Connect has, else the
+    /// suggestions kept on this Mac.
+    @MainActor
+    static func complianceCount(appID: StoreApp.ID, model: AppInformationViewModel?, notes: any AppInformationNotesStore) -> Int {
+        if let model, model.complianceReport != nil { return model.complianceSuggestions.count }
+        return notes.notes(for: appID).complianceSuggestions.count
     }
 
     /// Products with an open price suggestion: Pricing's count once it has

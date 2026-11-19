@@ -101,9 +101,10 @@ extension AppInformationViewModel {
     }
 
     /// "2 suggestions" under a page in the page column; Accessibility's
-    /// devices together.
+    /// devices together, and App Compliance's assistant answers.
     func suggestionCount(on page: AppInformationPage) -> Int {
-        visibleSuggestions(on: page, filter: .all).count
+        if page == .appCompliance { return complianceSuggestions.count }
+        return visibleSuggestions(on: page, filter: .all).count
     }
 
     // MARK: - Suggest Everything

@@ -192,7 +192,7 @@ extension ScreenshotStudioModel {
     func recordingIntro(_ run: AutopilotRun) -> String {
         let client = run.clientName(assistant: nil)
         let perLanguage = Set(run.pickRecordingTargets.map(\.locale)).count > 1
-        let designer = run.designKind == .claudeDesign ? DesignProjectKind.claudeDesign.title : String(localized: "Atlas")
+        let designer = run.designKind == .claudeDesign ? DesignProjectKind.claude : String(localized: "Atlas")
         return perLanguage
             ? String(localized: "\(client) recorded the plan’s screens in one take per device and language, then marked the moments that work in an App Preview. Choose which go in; \(designer) adds captions, music and the end card next.")
             : String(localized: "\(client) recorded the plan’s screens in one take per device, then marked the moments that work in an App Preview. Choose which go in; \(designer) adds captions, music and the end card next.")

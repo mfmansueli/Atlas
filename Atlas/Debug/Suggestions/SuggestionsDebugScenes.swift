@@ -9,6 +9,10 @@ import SwiftUI
 /// Board 17 of the design: field suggestions and the assistant setup.
 /// - `ov-first`, `ov-connected`: Overview before and after an assistant
 ///   connects; `asst-pop`: the Assistant button's popover.
+/// - `ov-refused`, `ov-elsewhere`, `ov-unattached`: the overview's card
+///   when Claude Code's old token was refused, when it works only in
+///   Tempo's folder, and when Lumen has no folder yet (`asst-pop-refused`:
+///   the popover for the first).
 /// - `setup-1` … `setup-4`, `setup-done`: the setup sheet's steps.
 /// - `sp-builtin` … `sp-ja`: Store Page with built-in suggestions only,
 ///   Claude Code's too, Ask, suggestions arriving, accepted and dismissed,
@@ -16,7 +20,7 @@ import SwiftUI
 /// - `in-general`, `in-review`: App Information's General and App Review.
 enum SuggestionsDebugScenes {
     static let ids = [
-        "ov-first", "ov-connected", "asst-pop",
+        "ov-first", "ov-connected", "asst-pop", "ov-refused", "ov-elsewhere", "ov-unattached", "asst-pop-refused",
         "setup-1", "setup-2", "setup-3", "setup-4", "setup-done",
         "sp-builtin", "sp-cc", "sp-ask", "sp-streaming", "sp-accepted", "sp-edit", "sp-de", "sp-ja",
         "in-general", "in-review",
@@ -34,11 +38,26 @@ enum SuggestionsDebugScenes {
         case "asst-pop":
             AssistantToolbarIndicator.debugShowsPopover = true
             return with(.connected, DebugMainScene(section: .overview, suggestions: SuggestionsDebugData.store()))
+        case "ov-refused", "ov-elsewhere", "ov-unattached", "asst-pop-refused":
+            return connectionScene(id)
         case "in-general", "in-review":
             return appInformationScene(page: id == "in-general" ? .general : .appReview)
         default:
             return nil
         }
+    }
+
+    /// The overview's card when Claude Code's token was refused, it works
+    /// in Tempo's folder only, or in one Lumen wasn't given.
+    @MainActor
+    private static func connectionScene(_ id: String) -> AnyView {
+        AssistantToolbarIndicator.debugShowsPopover = id == "asst-pop-refused"
+        let state: AssistantState = switch id {
+        case "ov-elsewhere": .elsewhere
+        case "ov-unattached": .unattached
+        default: .refused
+        }
+        return with(state, DebugMainScene(section: .overview, suggestions: SuggestionsDebugData.store()))
     }
 
     // MARK: - Setup
@@ -148,6 +167,12 @@ enum SuggestionsDebugScenes {
         case connected
         /// Connected, and sending suggestions now.
         case working
+        /// An old token turned away; nothing connected.
+        case refused
+        /// Connected in Tempo's folder only.
+        case elsewhere
+        /// Connected in a folder Lumen wasn't given.
+        case unattached
     }
 
     @MainActor
@@ -182,6 +207,12 @@ enum SuggestionsDebugScenes {
             case .connected, .working:
                 AssistantsDebugState.paired.apply(to: assistants)
                 if state == .working { assistants.noteWorking(client: SuggestionsDebugData.client, for: .seconds(24 * 60 * 60)) }
+            case .refused:
+                AssistantsDebugState.refused.apply(to: assistants)
+            case .elsewhere:
+                AssistantsDebugState.elsewhere.apply(to: assistants)
+            case .unattached:
+                AssistantsDebugState.unattached.apply(to: assistants)
             }
         }
     }

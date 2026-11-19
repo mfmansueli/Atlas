@@ -5,7 +5,7 @@
 
 import AppKit
 
-/// A Claude Design page playing live in the viewer: its own web view,
+/// An HTML page playing live in the viewer: its own web view,
 /// zoomed so the whole canvas fills the view, its CSS motion seeking,
 /// playing and pausing as its `playback` says.
 @MainActor

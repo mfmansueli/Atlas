@@ -20,7 +20,7 @@ struct ScreenshotsSectionView: View {
 
     var body: some View {
         Group {
-            if let model, model.app.id == app.id, let screenshots = model.screenshots {
+            if let model = shownModel, model.app.id == app.id, let screenshots = model.screenshots {
                 ScreenshotsView(viewModel: screenshots)
             } else if let message = model?.errorMessage, model?.app.id == app.id {
                 ContentUnavailableView {
@@ -53,8 +53,18 @@ struct ScreenshotsSectionView: View {
         .onChange(of: navigator.intent) { handleIntent() }
     }
 
+    /// The kept model before `open()` has run, so a section read ahead (or
+    /// opened before) shows its content from the first frame, not a
+    /// skeleton.
+    private var shownModel: ScreenshotsSectionModel? {
+        model ?? sectionModels?.keptModels(for: app.id)?.screenshots
+    }
+
     private func open() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.screenshots)
+        guard !Task.isCancelled else { return }
         // The window keeps the model while other sections show: the sets,
         // renders and captures are there when the person comes back.
         if let model = kept?.screenshots, model.screenshots != nil {
@@ -73,10 +83,18 @@ struct ScreenshotsSectionView: View {
     /// Reads the version and notes when, so the kept model isn't read
     /// again until Refresh, a push or its age asks for it.
     private func load(_ model: ScreenshotsSectionModel) async {
-        let refreshCount = navigator.refreshCount
+        await Self.read(model, into: sectionModels?.models(for: app.id), refreshCount: navigator.refreshCount)
+    }
+
+    /// Reads the version and stamps `kept` when it worked, under the
+    /// Refresh count the read started with. Read ahead (`includingSets`),
+    /// it reads the saved document and the live sets too, which the page
+    /// otherwise reads when it first shows.
+    static func read(_ model: ScreenshotsSectionModel, into kept: AppSectionModels?, refreshCount: Int, includingSets: Bool = false) async {
         await model.load()
-        guard !Task.isCancelled, model.screenshots != nil, model.errorMessage == nil else { return }
-        sectionModels?.models(for: app.id).didLoad(.screenshots, refreshCount: refreshCount)
+        guard !Task.isCancelled, let screenshots = model.screenshots, model.errorMessage == nil else { return }
+        if includingSets, !screenshots.isLoaded, !screenshots.isLoading { await screenshots.load() }
+        kept?.didLoad(.screenshots, refreshCount: refreshCount)
     }
 
     /// Show Screenshots (Review & Push's Show in Captions): the section

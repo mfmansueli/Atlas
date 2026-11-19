@@ -10,7 +10,8 @@ import Foundation
 // on top), so it's checked again whenever one of them changes. The
 // person's answers are kept on this Mac, since Apple's API takes none of
 // them; only "Stop selling in China mainland" is a change in Review &
-// Push. Nothing here is ever suggested or accepted for the person.
+// Push. Assistants may suggest answers (`+ComplianceSuggestions`), but
+// nothing is ever accepted for the person, not even by Accept All.
 extension AppInformationViewModel {
     /// The page worked out; nil until the pages and the app's countries
     /// have loaded.
@@ -104,9 +105,7 @@ extension AppInformationViewModel {
             queue.discard(id: builder.stopSellingChangeID(ComplianceRegion.chinaMainland))
             notes.compliance.addsICPNumber = true
         case .stopSelling:
-            guard let china = compliance.value?.territory(ComplianceRegion.chinaMainland) else { return }
-            notes.compliance.addsICPNumber = false
-            apply(builder.stopSellingChange(china), id: builder.stopSellingChangeID(ComplianceRegion.chinaMainland))
+            stopSellingInChina(source: .you)
         }
     }
 
@@ -118,7 +117,8 @@ extension AppInformationViewModel {
     // MARK: - Declared in App Store Connect
 
     /// "Mark as Declared" and its Change, for the rules Apple's API can't
-    /// show: the Vietnam license and the medical device declaration.
+    /// show: the Vietnam license, the medical device declaration and China
+    /// mainland's Security Assessment and AI content.
     func setDeclared(_ isDeclared: Bool, for rule: ComplianceRule) {
         if isDeclared {
             notes.compliance.declared.insert(rule)

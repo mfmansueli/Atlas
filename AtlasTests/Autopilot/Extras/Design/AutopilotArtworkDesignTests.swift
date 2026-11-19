@@ -11,7 +11,7 @@ import Testing
 /// A direction's header and search pages: one per canvas, a revision laid
 /// over what's there, kept with the run, and the screens each page shows.
 @MainActor
-@Suite("Claude Design's artwork pages")
+@Suite("Claude's artwork pages")
 struct AutopilotArtworkDesignTests {
     @Test func eachCanvasHasItsOwnPage() {
         var design = AutopilotArtworkDesign(pages: [.header: "<p>header</p>", .search: "  "])

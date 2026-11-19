@@ -73,7 +73,7 @@ enum ClaudeCodeDebugScenes {
     @MainActor
     static func configure(_ launcher: ClaudeCodeLauncher, for id: String) {
         guard ids.contains(id) || helperScenes.contains(id) else { return }
-        AssistantsSettingsTab.debugScrollsToLauncher = id == "cc-settings"
+        AssistantsSettingsPane.debugScrollsToLauncher = id == "cc-settings"
         launcher.folderChooser = { _, _ in ProjectFolderPath.expanded("~/Developer/Tempo") }
         let folder = isLive(id)
             ? ProcessInfo.processInfo.environment["CC_LIVE_FOLDER"] ?? ProjectFolderPath.home

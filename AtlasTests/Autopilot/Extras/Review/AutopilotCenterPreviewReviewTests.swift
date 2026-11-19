@@ -10,7 +10,7 @@ import Testing
 
 /// Watch the App Preview: Localize stops there when an App Preview was
 /// made, the person approves it, changes its music (mixed again without a
-/// design step) or asks Claude Design for changes, whose new version is
+/// design step) or asks Claude for changes, whose new version is
 /// made again from the same recordings.
 @MainActor
 @Suite("Autopilot · watch the App Preview", .serialized)
@@ -108,7 +108,7 @@ struct AutopilotCenterPreviewReviewTests {
         let request = try #require(review?.request)
         #expect(request.note == "Slower pace, start with Search")
         #expect(run?.handedBackAt == AutopilotTestFixtures.now)
-        #expect(run?.log.last?.text == "Asked Claude Design for App Preview changes: “Slower pace, start with Search”")
+        #expect(run?.log.last?.text == "Asked Claude for App Preview changes: “Slower pace, start with Search”")
         let step = await center.nextStep(appID: appID, client: AutopilotTestFixtures.client)
         #expect(try step == .revisePreview(note: "Slower pace, start with Search", review: #require(review)))
 
@@ -143,7 +143,7 @@ struct AutopilotCenterPreviewReviewTests {
         center.requestPreviewChanges("Slower pace", appID: appID)
         let review = try #require(review)
         #expect(review.request?.note == "Slower pace")
-        #expect(run?.log.last?.text == "Asked Claude Design for App Preview changes: “Slower pace”")
+        #expect(run?.log.last?.text == "Asked Claude for App Preview changes: “Slower pace”")
         #expect(run?.assistantHasWork == true, "Atlas starts Claude Code for it")
         #expect(await center.nextStep(appID: appID, client: AutopilotTestFixtures.client) == .revisePreview(note: "Slower pace", review: review))
 
@@ -245,7 +245,7 @@ struct AutopilotCenterPreviewReviewTests {
         watching.previewReview?.request = AutopilotRevisionRequest(note: "Faster", askedAt: AutopilotTestFixtures.now)
         center.install(watching)
         await center.setPreviewMusic(AutopilotPreviewMusic(track: .calmPiano), appID: appID, context: context)
-        #expect(run?.plan.alsoMakes.previewMusic == .standard, "Waits for Claude Design's version")
+        #expect(run?.plan.alsoMakes.previewMusic == .standard, "Waits for Claude's version")
     }
 
     @Test func aRemakeSaysWhatItsDoing() {

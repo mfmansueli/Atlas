@@ -14,6 +14,8 @@ struct AppStoreConnectClient: Sendable {
     let credentials: AppStoreConnectCredentials
     var transport: any HTTPTransport = URLSession.shared
     var now: @Sendable () -> Date = { Date() }
+    /// Where every read notes the hourly quota left.
+    var quota: AppStoreConnectQuota = .shared
 
     /// Every resource of a collection endpoint, following `links.next` until
     /// the last page.
@@ -35,6 +37,7 @@ struct AppStoreConnectClient: Sendable {
 
         let (data, response) = try await transport.send(request)
         guard let http = response as? HTTPURLResponse else { throw AppStoreConnectError.invalidResponse }
+        quota.record(header: http.value(forHTTPHeaderField: "X-Rate-Limit"), keyID: credentials.keyID, at: now())
         guard (200..<300).contains(http.statusCode) else {
             throw AppStoreConnectError(statusCode: http.statusCode, body: data)
         }

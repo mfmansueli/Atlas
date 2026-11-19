@@ -28,6 +28,11 @@ extension AppInformationViewModel {
     /// status in the page column, when its suggestions and answers say it.
     func pageColumnStatus(for page: AppInformationPage) -> String? {
         let suggested = suggestionCount(on: page)
+        if page == .appCompliance {
+            // What still needs the person comes first: suggestions don't answer.
+            guard let status = status(for: page) else { return nil }
+            return suggested > 0 ? String(localized: "\(status) · \(suggested) suggested") : status
+        }
         let unanswered = unansweredCount(on: page)
         if suggested > 0 {
             return unanswered > 0

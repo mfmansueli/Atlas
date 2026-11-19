@@ -5,10 +5,10 @@
 
 import Foundation
 
-/// What a Claude Design page marks with `data-al` for Atlas to fill
+/// What an HTML page marks with `data-al` for Atlas to fill
 /// in each language: the placement's own text, the app's name and icon,
 /// the picked captures (`data-slot`, from 1), and the page's own words
-/// (`text`), written by Claude Design in every language as children with
+/// (`text`), written by Claude in every language as children with
 /// `lang`, of which Atlas keeps the language's.
 enum ArtworkWebMarker: String, CaseIterable, Codable, Hashable, Sendable {
     case headline

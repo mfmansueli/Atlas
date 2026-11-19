@@ -9,9 +9,12 @@ import SwiftUI
 /// "Ask Claude Code…" in a section's header, or Generate Suggestions… with
 /// an API key, or Set Up Assistant…. Atlas starts Claude Code itself
 /// once its helper is saved (`ClaudeCodeLauncher`), and otherwise copies the
-/// prompt to paste. It ends the request with a toast once the suggestions
-/// stop coming or the run ends. While suggestions arrive the section's banner
-/// says so and the button steps aside.
+/// prompt to paste. A started request flies to the toolbar's Assistant
+/// button (board 56) and the button says "Claude Code Is Working…" until the
+/// suggestions stop coming or the run ends, when the window's toast says
+/// where they are. A pasted request ends with the section's toast; while
+/// its suggestions arrive the section's banner says so and the button steps
+/// aside.
 struct SuggestionAskButton: View {
     let appID: StoreApp.ID
     let area: SuggestionArea
@@ -33,15 +36,24 @@ struct SuggestionAskButton: View {
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(KeyAssistantController.self) private var keyAssistant
     @Environment(ClaudeCodeLauncher.self) private var launcher
+    @Environment(\.askCenterOverride) private var askCenterOverride
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var anchor = AskAnchor()
     @State private var showsPopover = false
     @State private var generate: GenerateSuggestionsModel?
     @State private var generation: Task<Void, Never>?
 
+    private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
+
     var body: some View {
         // A stack, so the tasks below keep running while the button is away.
         ZStack {
-            if streamingRequest == nil, run == nil {
-                button
+            if run == nil {
+                if let appAsk {
+                    busyButton(appAsk)
+                } else if streamingRequest == nil {
+                    button
+                }
             }
         }
         .onChange(of: request?.isReceiving) {
@@ -53,7 +65,12 @@ struct SuggestionAskButton: View {
         .onChange(of: assistants.isWorking) {
             if !assistants.isWorking, streamingRequest != nil { finishRequest() }
         }
-        .onChange(of: askRun?.phase) { runChanged() }
+        // A run that failed, or had steps refused with nothing sent, keeps
+        // its request for the popover to explain.
+        .onChange(of: askRun?.phase) {
+            guard let run = askRun, request?.isReceiving == false else { return }
+            if run.failure != nil || (run.phase == .finished && !run.denials.isEmpty) { showsPopover = true }
+        }
         .task(id: requestsAsk) {
             guard requestsAsk else { return }
             requestsAsk = false
@@ -70,25 +87,45 @@ struct SuggestionAskButton: View {
         }
     }
 
+    /// The app's request, from this button or another, while it runs.
+    private var appAsk: AssistantAsk? { askCenter.ask(for: appID) }
+
+    /// Can't be pressed, but says what's going on at full color.
+    private func busyButton(_ ask: AssistantAsk) -> some View {
+        Button {} label: {
+            AskButtonLabel(title: ask.busyTitle)
+        }
+        .buttonStyle(AskBusyButtonStyle())
+        .disabled(true)
+        .accessibilityIdentifier("suggestions.ask")
+    }
+
     private var button: some View {
-        Button(status.askTitle, action: startAsking)
-            .disabled(status.isReady && generator == nil)
-            .accessibilityIdentifier("suggestions.ask")
-            .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
-                if status.isReady, let generate {
-                    GenerateSuggestionsPopover(model: generate, onGenerate: startGenerating) {
-                        showsPopover = false
-                        cancelGenerating()
-                    }
-                } else if let request {
-                    AskAssistantPopover(request: request) {
-                        Self.copy(request.prompt)
-                    } onCancel: {
-                        showsPopover = false
-                        suggestions.cancelRequest()
-                    }
+        Button(action: startAsking) {
+            if status.isConnected {
+                AskButtonLabel(title: status.askTitle)
+            } else {
+                Text(status.askTitle)
+            }
+        }
+        .disabled(status.isReady && generator == nil)
+        .background(AskAnchorView(anchor: anchor))
+        .accessibilityIdentifier("suggestions.ask")
+        .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
+            if status.isReady, let generate {
+                GenerateSuggestionsPopover(model: generate, onGenerate: startGenerating) {
+                    showsPopover = false
+                    cancelGenerating()
+                }
+            } else if let request {
+                AskAssistantPopover(request: request) {
+                    Self.copy(request.prompt)
+                } onCancel: {
+                    showsPopover = false
+                    suggestions.cancelRequest()
                 }
             }
+        }
     }
 
     private var status: AssistantStatus { assistants.assistantStatus }
@@ -121,7 +158,6 @@ struct SuggestionAskButton: View {
     private func startAsking() {
         if status.isConnected {
             ask()
-            showsPopover = true
         } else if status.isReady {
             guard generator != nil else { return }
             prepareGenerate()
@@ -131,40 +167,67 @@ struct SuggestionAskButton: View {
         }
     }
 
-    /// Starts Claude Code when the helper is saved, else copies the prompt.
+    /// Starts Claude Code when the helper is saved and sends the request
+    /// to the toolbar, else copies the prompt and shows it.
     private func ask() {
         guard case let .connected(client) = assistants.assistantStatus else { return }
-        // Already asked and still going: the popover shows that run.
-        if askRun?.isActive == true { return }
+        if askRun?.isActive == true || appAsk != nil { return }
         let text = prompt()
         suggestions.beginRequest(appID: appID, area: area, client: client, prompt: text)
         guard launcher.canStart else {
             Self.copy(text)
+            showsPopover = true
+            return
+        }
+        let ask = AssistantAsk(appID: appID, client: client, subject: area.title)
+        let suggestions = suggestions
+        let appID = appID
+        let area = area
+        let sent = askCenter.send(ask, from: anchor, reduceMotion: reduceMotion) { run in
+            Self.ended(run, appID: appID, area: area, suggestions: suggestions)
+        }
+        guard sent else {
+            suggestions.cancelRequest()
             return
         }
         Task {
-            guard await launcher.start(askPurpose, appID: appID, appName: appName, prompt: text) == nil else { return }
+            if let runID = await launcher.start(askPurpose, appID: appID, appName: appName, prompt: text) {
+                askCenter.attach(runID: runID, to: ask.id)
+                return
+            }
             // No folder chosen, so nothing was asked; or the helper went
             // away, so it's the paste after all.
-            if launcher.canStart { suggestions.cancelRequest() } else { Self.copy(text) }
+            askCenter.cancel(ask.id)
+            if launcher.canStart {
+                suggestions.cancelRequest()
+            } else {
+                Self.copy(text)
+                showsPopover = true
+            }
         }
     }
 
-    /// The run ended: what it sent ends the request with the toast; a
-    /// failure, or refused steps with nothing sent, stays for the popover
-    /// to explain.
-    private func runChanged() {
-        guard let request, let run = askRun else { return }
+    /// The run of an ask ended, wherever the person is: what it sent ends
+    /// the request; the toast's text says where the suggestions are, or
+    /// that none came.
+    static func ended(_ run: ClaudeCodeRun, appID: StoreApp.ID, area: SuggestionArea, suggestions: FieldSuggestionStore) -> String? {
+        guard let request = suggestions.request, request.appID == appID, request.area == area else { return nil }
+        if request.isReceiving {
+            return suggestions.finishRequest()?.askFinishedText
+        }
         switch run.phase {
-        case .finished where request.isReceiving, .stopped where request.isReceiving:
-            finishRequest()
         case .finished where run.denials.isEmpty:
             suggestions.cancelRequest()
-            onRequestFinished(String(localized: "\(request.client) finished without sending suggestions."))
-        case .stopped:
+            return String(localized: "\(request.client) finished without sending suggestions.")
+        case .finished:
+            // Kept for the popover, which lists the refused steps.
+            return String(localized: "\(request.client) finished without sending suggestions: some of its steps weren’t allowed.")
+        case .failed:
+            // Kept for the popover, which says how to get past it.
+            return AssistantAskCenter.endingText(run, client: request.client, done: "")
+        case .stopped, .starting, .working:
             suggestions.cancelRequest()
-        case .starting, .working, .failed, .finished:
-            break
+            return nil
         }
     }
 
@@ -197,9 +260,15 @@ struct SuggestionAskButton: View {
         generation = nil
     }
 
+    /// The suggestions stopped coming: an ask ends with the window's
+    /// toast, a pasted request with the section's.
     private func finishRequest() {
         guard let finished = suggestions.finishRequest(), finished.isReceiving else { return }
-        onRequestFinished(finished.finishedText)
+        if let appAsk {
+            askCenter.finish(appAsk.id, text: finished.askFinishedText)
+        } else {
+            onRequestFinished(finished.finishedText)
+        }
     }
 
     private static func copy(_ text: String) {

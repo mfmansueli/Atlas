@@ -39,7 +39,7 @@ final class ScreenshotStudioUITests: XCTestCase {
     func testScreenshotsIsTheThirdSection() {
         launch(scene: "st-home")
         XCTAssertTrue(element("studio.root").waitForExistence(timeout: 15))
-        app.typeKey("5", modifierFlags: .command)
+        app.typeKey("6", modifierFlags: .command)
         XCTAssertTrue(element("workspace.appInformation").waitForExistence(timeout: 10))
         app.typeKey("3", modifierFlags: .command)
         XCTAssertTrue(element("workspace.screenshots").waitForExistence(timeout: 10))
@@ -315,7 +315,7 @@ final class ScreenshotStudioUITests: XCTestCase {
         launch(scene: "st-design")
         XCTAssertTrue(element("designProject.sheet").waitForExistence(timeout: 15))
         let connect = app.buttons["designProject.connect"]
-        // Claude Design needs a name or link first.
+        // Claude needs a name or link first.
         XCTAssertFalse(connect.isEnabled)
         element("designProject.kind.none").click()
         XCTAssertTrue(connect.isEnabled)

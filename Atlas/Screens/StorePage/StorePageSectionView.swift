@@ -21,13 +21,14 @@ struct StorePageSectionView: View {
     @Environment(PushController.self) private var push
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(FieldSuggestionStore.self) private var suggestions
+    @Environment(AppPreferences.self) private var preferences
     @State private var viewModel: StorePageViewModel?
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
 
     var body: some View {
         Group {
-            if let viewModel, viewModel.app.id == app.id {
+            if let viewModel = shownModel, viewModel.app.id == app.id {
                 StorePageContentView(viewModel: viewModel)
             } else {
                 StorePageSkeleton()
@@ -46,9 +47,20 @@ struct StorePageSectionView: View {
         .onChange(of: queue.changes) { viewModel?.queueDidChange() }
     }
 
+    /// The kept model before `open()` has run, so a section read ahead (or
+    /// opened before) shows its content from the first frame, not a
+    /// skeleton.
+    private var shownModel: StorePageViewModel? {
+        viewModel ?? sectionModels?.keptModels(for: app.id)?.storePage.flatMap { $0.isLoaded ? $0 : nil }
+    }
+
     private func open() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.storePage)
+        guard !Task.isCancelled else { return }
         if let model = kept?.storePage, model.isLoaded {
+            model.checksRepeatedWords = preferences.checksRepeatedWords
             viewModel = model
             // The queue may have changed while another section showed.
             model.queueDidChange()
@@ -57,6 +69,7 @@ struct StorePageSectionView: View {
             return
         }
         let model = StorePageViewModel(app: app, services: services, queue: queue, suggestions: suggestions, summaries: summaries, push: push)
+        model.checksRepeatedWords = preferences.checksRepeatedWords
         kept?.storePage = model
         viewModel = model
         handleIntent()
@@ -71,10 +84,15 @@ struct StorePageSectionView: View {
     /// Reads the page and notes when, so the kept model isn't read again
     /// until Refresh, a push or its age asks for it.
     private func load(_ model: StorePageViewModel) async {
-        let refreshCount = navigator.refreshCount
+        await Self.read(model, into: sectionModels?.models(for: app.id), refreshCount: navigator.refreshCount)
+    }
+
+    /// Reads the page and stamps `kept` when it worked, under the Refresh
+    /// count the read started with.
+    static func read(_ model: StorePageViewModel, into kept: AppSectionModels?, refreshCount: Int) async {
         await model.load()
         guard !Task.isCancelled, model.isLoaded, model.errorMessage == nil else { return }
-        sectionModels?.models(for: app.id).didLoad(.storePage, refreshCount: refreshCount)
+        kept?.didLoad(.storePage, refreshCount: refreshCount)
     }
 
     /// Takes the Store Page's intents (Translate Missing…, Find and

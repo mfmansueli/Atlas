@@ -203,6 +203,47 @@ struct AppSessionTests {
         #expect(session.currentKeyID == nil)
     }
 
+    // MARK: - Cancelling the first sync
+
+    @Test func cancellingTheFirstSyncForgetsANewKey() throws {
+        let store = FakeCredentialsStore()
+        let session = AppSession(store: store)
+        try session.connect(northpier, check: check)
+        #expect(session.firstSyncKeyID == northpier.keyID)
+        try session.cancelFirstSync()
+        // Back to Welcome, the key gone from the Keychain.
+        #expect(session.credentials == nil)
+        #expect(session.firstSyncKeyID == nil)
+        #expect(store.deletedKeyIDs == [northpier.keyID])
+    }
+
+    @Test func cancellingTheFirstSyncOfAnotherKeyGoesBackToTheOneBefore() throws {
+        let session = AppSession(store: FakeCredentialsStore(stored: [northpier]))
+        try session.connect(brightline)
+        try session.cancelFirstSync()
+        #expect(session.credentials == northpier)
+        #expect(session.keys == [northpier])
+    }
+
+    @Test func cancellingTheFirstSyncKeepsAKeyThatReplacedASavedOne() throws {
+        let store = FakeCredentialsStore(stored: [northpier])
+        let session = AppSession(store: store)
+        try session.connect(northpier)
+        try session.cancelFirstSync()
+        #expect(session.credentials == northpier)
+        #expect(session.firstSyncKeyID == nil)
+        #expect(store.deletedKeyIDs.isEmpty)
+    }
+
+    @Test func anAccountWithoutATeamNameIsNotNamed() {
+        let unnamed = TestKeys.credentials(keyID: "2X9R4HXF34", teamName: nil)
+        let session = AppSession(store: FakeCredentialsStore(stored: [unnamed]))
+        #expect(session.account?.isNamed == false)
+        session.recordTeamName("Northpier Studio", for: unnamed.keyID)
+        #expect(session.account?.isNamed == true)
+        #expect(session.account?.name == "Northpier Studio")
+    }
+
     @Test func removingKeepsTheKeyWhenDeletingFails() {
         let store = FakeCredentialsStore(stored: [northpier])
         store.deleteError = KeychainError(status: errSecAuthFailed)

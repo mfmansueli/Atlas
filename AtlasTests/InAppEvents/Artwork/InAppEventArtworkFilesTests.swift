@@ -67,7 +67,14 @@ struct InAppEventArtworkFilesTests {
         #expect(file.codec == "avc1")
         #expect(file.audio.isEmpty)
         #expect(await InAppEventArtworkInspector.still(url, isVideo: true, at: 0.2) != nil)
-        #expect(InAppEventArtworkChecker.checks(file, kind: .card, look: nil).filter(\.isRefusal).isEmpty)
+        // Apple takes 5 to 30 seconds.
+        let refusals = InAppEventArtworkChecker.checks(file, kind: .card, look: nil).filter(\.isRefusal)
+        #expect(refusals.map(\.text) == [
+            "The video is 0.5 seconds; Apple takes 5 to 30 seconds for event videos, played on repeat. Make it a seamless loop in that range.",
+        ])
+        let loop = try await EventArtworkTestFiles.movie(width: 1920, height: 1080, fps: 30, frames: 153, in: directory, name: "loop.mov")
+        let loopFile = try #require(await InAppEventArtworkInspector.inspect(loop))
+        #expect(InAppEventArtworkChecker.checks(loopFile, kind: .card, look: nil).filter(\.isRefusal).isEmpty)
 
         let slow = try await EventArtworkTestFiles.movie(width: 1920, height: 1080, fps: 24, frames: 12, in: directory, name: "slow.mov")
         let slowFile = try #require(await InAppEventArtworkInspector.inspect(slow))
@@ -84,7 +91,8 @@ struct InAppEventArtworkFilesTests {
     }
 
     @Test func aReportTurnsAFileIntoChecksAndAPosterFrame() async throws {
-        let id = try await EventArtworkTestFiles.storedMovie(width: 1080, height: 1920, fps: 60, frames: 90, in: directory)
+        // 5.1 seconds: Apple takes 5 to 30.
+        let id = try await EventArtworkTestFiles.storedMovie(width: 1080, height: 1920, fps: 30, frames: 153, in: directory)
         let report = try #require(await InAppEventArtworkReport.make(
             fileID: id, appID: InAppEventsTestData.app.id, kind: .details, language: "en-US", posterSeconds: 1, in: directory
         ))

@@ -124,7 +124,7 @@ struct PricingProductsView: View {
                 Text(message).font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            Button("Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
+            Button(product.isInAppPurchase ? "See Prices…" : "Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
                 .buttonStyle(.link)
                 .controlSize(.small)
         }

@@ -6,9 +6,10 @@
 import SwiftUI
 
 /// One field in the editor, as a card: its title and where it appears on the
-/// App Store, tags and counter, the text, the inline error, for keywords the
-/// token view, then the field's suggestion (its purple edge goes round the
-/// card) or where its pending value came from.
+/// App Store, tags and counter, the text, the inline error, what App Review
+/// would reject in it, for keywords the token view, then the field's
+/// suggestion (its purple edge goes round the card) or where its pending
+/// value came from.
 struct EditorFieldRow: View {
     let viewModel: StorePageViewModel
     let field: ListingField
@@ -31,6 +32,12 @@ struct EditorFieldRow: View {
                 InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
                     .font(.caption)
                     .accessibilityIdentifier("storePage.fieldError.\(field.rawValue)")
+            }
+            let issues = viewModel.guidelineIssues(field, in: locale)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .accessibilityIdentifier("storePage.fieldGuideline.\(field.rawValue)")
             }
             if field == .keywords, !viewModel.value(.keywords, in: locale).isEmpty {
                 KeywordTokensView(

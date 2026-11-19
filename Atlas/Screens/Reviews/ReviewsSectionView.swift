@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// The Reviews section of an app's workspace (⌘7): builds the view model
+/// The Reviews section of an app's workspace (⌘8): builds the view model
 /// over the shared store (the window keeps it while other sections show),
 /// reads the reviews when what's on this Mac is old, and follows a group's
 /// action to the section where it's done.
@@ -23,7 +23,7 @@ struct ReviewsSectionView: View {
 
     var body: some View {
         Group {
-            if let viewModel, viewModel.app.id == app.id {
+            if let viewModel = shownModel, viewModel.app.id == app.id {
                 content(viewModel)
             } else {
                 Color.clear
@@ -61,8 +61,18 @@ struct ReviewsSectionView: View {
             .animation(.default, value: viewModel.toast)
     }
 
+    /// The kept model before `start()` has run, so a section read ahead (or
+    /// opened before) shows its content from the first frame, not a
+    /// skeleton.
+    private var shownModel: ReviewsViewModel? {
+        viewModel ?? sectionModels?.keptModels(for: app.id)?.reviews
+    }
+
     private func start() async {
         let kept = sectionModels?.models(for: app.id)
+        // Read ahead in the background: show what that read found.
+        await kept?.finishWarming(.reviews)
+        guard !Task.isCancelled else { return }
         let model = kept?.reviews ?? ReviewsViewModel(app: app, store: store, services: services)
         kept?.reviews = model
         model.isPro = !pro.isFree

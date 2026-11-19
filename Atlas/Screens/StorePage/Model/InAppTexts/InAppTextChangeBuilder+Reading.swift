@@ -28,13 +28,16 @@ extension InAppTextChangeBuilder {
         }
     }
 
-    /// The owner from the id, the locale from the body (new) or the id.
+    /// The owner from the id, the locale from the body (new) or the id. The
+    /// owner is matched as a prefix: a resource ID may hold dots (the
+    /// sample data's "resource-lumen.plus.annual"), and splitting on them
+    /// lost every product edit when the queue refreshed the cells.
     private func target(of change: PendingChange, document: StorePageWriteDocument) -> (Owner, StoreLocale)? {
-        let parts = change.id.dropFirst(idPrefix.count).split(separator: ".").map(String.init)
-        guard parts.count >= 4 else { return nil }
-        let ownerComponent = "\(parts[0]).\(parts[1])"
-        guard let owner = owners.first(where: { $0.idComponent == ownerComponent }) else { return nil }
-        let code = document.attribute("locale") ?? parts[2]
+        let rest = String(change.id.dropFirst(idPrefix.count))
+        guard let owner = owners.first(where: { rest.hasPrefix($0.idComponent + ".") }) else { return nil }
+        let parts = rest.dropFirst(owner.idComponent.count + 1).split(separator: ".").map(String.init)
+        guard parts.count >= 2 else { return nil }
+        let code = document.attribute("locale") ?? parts[0]
         guard let locale = StoreLocaleCatalog.locale(code: code) else { return nil }
         return (owner, locale)
     }

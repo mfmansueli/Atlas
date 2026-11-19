@@ -62,6 +62,88 @@ final class AppPreferences {
         didSet { defaults?.set(acceptsAllWithoutAsking, forKey: Key.acceptsAllWithoutAsking) }
     }
 
+    /// General → "Show Atlas in the menu bar". Off also turns off "Keep
+    /// running when the window is closed": there would be no way back in.
+    var showsMenuBarIcon: Bool {
+        didSet {
+            defaults?.set(showsMenuBarIcon, forKey: Key.showsMenuBarIcon)
+            if !showsMenuBarIcon { keepsRunning = false }
+        }
+    }
+
+    /// General → "Keep running when the window is closed". Off: closing
+    /// the window quits Atlas once nothing is running.
+    var keepsRunning: Bool {
+        didSet { defaults?.set(keepsRunning, forKey: Key.keepsRunning) }
+    }
+
+    /// General → "Show in the Dock".
+    var dockVisibility: DockVisibility {
+        didSet { defaults?.set(dockVisibility.rawValue, forKey: Key.dockVisibility) }
+    }
+
+    /// General → "Animate the menu bar icon while working". Reduce Motion
+    /// keeps it still either way.
+    var animatesMenuBarIcon: Bool {
+        didSet { defaults?.set(animatesMenuBarIcon, forKey: Key.animatesMenuBarIcon) }
+    }
+
+    /// General → "Check App Store Connect".
+    var checkInterval: CheckInterval {
+        didSet { defaults?.set(checkInterval.rawValue, forKey: Key.checkInterval) }
+    }
+
+    /// General → Appearance.
+    var appearance: AppAppearance {
+        didSet {
+            defaults?.set(appearance.rawValue, forKey: Key.appearance)
+            appearance.apply()
+        }
+    }
+
+    /// Settings → Screenshots → "Words in event artwork": the Brief's
+    /// default for an event's artwork from Claude.
+    var eventArtworkHasWords: Bool {
+        didSet { defaults?.set(eventArtworkHasWords, forKey: Key.eventArtworkHasWords) }
+    }
+
+    /// Settings → Screenshots → "Also make moving versions": the Brief's
+    /// default.
+    var eventArtworkMakesMotion: Bool {
+        didSet { defaults?.set(eventArtworkMakesMotion, forKey: Key.eventArtworkMakesMotion) }
+    }
+
+    /// Settings → Suggestions → "Words repeated between name, subtitle and
+    /// keywords": the Store Page's built-in keywords check.
+    var checksRepeatedWords: Bool {
+        didSet { defaults?.set(checksRepeatedWords, forKey: Key.checksRepeatedWords) }
+    }
+
+    /// The confirmations turned off with "Don't ask again" or in Settings:
+    /// Accept All without asking, discarding and price increases without
+    /// asking, pushing without the last alert.
+    var turnedOffConfirmations: Int {
+        [acceptsAllWithoutAsking, !confirmsDiscarding, !confirmsPriceIncreases, pushConfirmation == .never].filter(\.self).count
+    }
+
+    /// Privacy & Data → Reset: every confirmation asks again.
+    func resetConfirmations() {
+        acceptsAllWithoutAsking = false
+        confirmsDiscarding = true
+        confirmsPriceIncreases = true
+        if pushConfirmation == .never { pushConfirmation = .overFifty }
+    }
+
+    /// Whether the note under the menu bar icon ("Atlas is still running")
+    /// was shown, the first time the window closed.
+    var hasSeenStillRunningNote: Bool {
+        didSet { defaults?.set(hasSeenStillRunningNote, forKey: Key.hasSeenStillRunningNote) }
+    }
+
+    /// Whether closing the window leaves Atlas running: only with the menu
+    /// bar icon to come back by.
+    var staysOpenWhenClosed: Bool { showsMenuBarIcon && keepsRunning }
+
     private let defaults: UserDefaults?
 
     /// nil keeps everything in memory (DEBUG scenes, tests).
@@ -78,6 +160,17 @@ final class AppPreferences {
         confirmsDiscarding = defaults?.object(forKey: Key.confirmsDiscarding) as? Bool ?? true
         showsAssistantIntro = defaults?.object(forKey: Key.showsAssistantIntro) as? Bool ?? true
         acceptsAllWithoutAsking = defaults?.object(forKey: Key.acceptsAllWithoutAsking) as? Bool ?? false
+        let showsMenuBarIcon = defaults?.object(forKey: Key.showsMenuBarIcon) as? Bool ?? true
+        self.showsMenuBarIcon = showsMenuBarIcon
+        keepsRunning = showsMenuBarIcon && (defaults?.object(forKey: Key.keepsRunning) as? Bool ?? true)
+        dockVisibility = defaults?.string(forKey: Key.dockVisibility).flatMap(DockVisibility.init(rawValue:)) ?? .whileWindowOpen
+        animatesMenuBarIcon = defaults?.object(forKey: Key.animatesMenuBarIcon) as? Bool ?? true
+        checkInterval = defaults?.string(forKey: Key.checkInterval).flatMap(CheckInterval.init(rawValue:)) ?? .everyHour
+        hasSeenStillRunningNote = defaults?.bool(forKey: Key.hasSeenStillRunningNote) ?? false
+        appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
+        eventArtworkHasWords = defaults?.bool(forKey: Key.eventArtworkHasWords) ?? false
+        eventArtworkMakesMotion = defaults?.bool(forKey: Key.eventArtworkMakesMotion) ?? false
+        checksRepeatedWords = defaults?.object(forKey: Key.checksRepeatedWords) as? Bool ?? true
         // The Guided/Classic choice is gone: the guided Autopilot is the
         // only one.
         defaults?.removeObject(forKey: Key.retiredAutopilotFront)
@@ -94,5 +187,15 @@ final class AppPreferences {
         static let showsAssistantIntro = "showsAssistantIntro"
         static let acceptsAllWithoutAsking = "acceptAllWithoutAsking"
         static let retiredAutopilotFront = "autopilotFront"
+        static let showsMenuBarIcon = "showsMenuBarIcon"
+        static let keepsRunning = "keepsRunningWhenClosed"
+        static let dockVisibility = "dockVisibility"
+        static let animatesMenuBarIcon = "animatesMenuBarIcon"
+        static let checkInterval = "checkInterval"
+        static let hasSeenStillRunningNote = "hasSeenStillRunningNote"
+        static let appearance = "appearance"
+        static let eventArtworkHasWords = "eventArtworkHasWords"
+        static let eventArtworkMakesMotion = "eventArtworkMakesMotion"
+        static let checksRepeatedWords = "checksRepeatedWords"
     }
 }

@@ -14,6 +14,14 @@ import Foundation
 struct RenderEventArtworkTool: MCPTool {
     /// Where the files are kept; tests use their own folder.
     var directory = InAppEventArtworkFiles.directory
+    /// How many frames a page's loop gets; nil is the whole 20 seconds
+    /// (tests make a few).
+    var loopFrames: Int?
+    /// Where each render's page is kept, for a concept sent by file id.
+    var pages = EventArtworkRenderedPages.shared
+    /// The person's Make the Artwork runs: while one waits for concepts,
+    /// the render points at propose_event_artwork_concept.
+    var studio = EventArtworkStudio.shared
 
     /// The longer side of the images the assistant gets back.
     static let previewPixels = 1280
@@ -27,14 +35,17 @@ struct RenderEventArtworkTool: MCPTool {
         Makes or checks one In-App Event's card (16:9, shown in search, Today and on the product page) or details page \
         (9:16, the top of the event's page) in one language: the art Apple shows behind the event's badge, name and \
         description. Give exactly one of: `html`, a full HTML page Atlas renders as a still at 3840 × 2160 (card) or \
-        2160 × 3840 (details page); `fileId`, a PNG, JPEG, MP4 or MOV sent to the upload link get_in_app_events gives \
+        2160 × 3840 (details page), or with `motion: true` as a video: its CSS and SVG animation as a 20-second seamless \
+        loop at 30 fps, 1920 × 1080 or 1080 × 1920 (page JavaScript doesn't run); `fileId`, a PNG, JPEG, MP4 or MOV \
+        sent to the upload link get_in_app_events gives \
         (`curl --data-binary @card.mp4 '<link>?name=card.mp4'`), e.g. stills or loops an app's own tools render; or \
         `imageBase64`, a PNG or JPEG under 24 MB. Returns the art, the same art as the App Store lays the badge, the name \
         and the description (short on the card, long on the details page) over it in `locale`, and its checks against \
         Apple's rules: `refusals` (size outside 1920 × 1080–3840 × 2160 or 1080 × 1920–2160 × 3840, not exactly 16:9 or \
-        9:16, wrong format, not 30 or 60 fps, audio that isn't stereo AAC/PCM at 44.1 or 48 kHz, over 500 MB) must be \
-        fixed before propose_event_artwork takes it; `warnings` (text in the art, a busy lower part where Apple puts the \
-        name, transparency, a codec Apple doesn't name, a video over 30 s) are worth fixing. Make art without words, \
+        9:16, wrong format, not 30 or 60 fps, a video shorter than 5 s or longer than 30 s, audio that isn't stereo AAC/PCM \
+        at 44.1 or 48 kHz, over 500 MB) must be fixed before propose_event_artwork takes it; `warnings` (text in the art, \
+        a busy lower part where Apple puts the name, transparency, a codec Apple doesn't name) are worth fixing. With \
+        `motionFrames`, a page's loop is shown at a few moments and checked, quickly. Make art without words, \
         logos, borders or gradients, a calm lower part, and a seamless loop for a video. Returns a `fileId` to propose. \
         Read-only: nothing is queued.
         """,
@@ -48,6 +59,21 @@ struct RenderEventArtworkTool: MCPTool {
                 "fileId": MCPToolDefinition.string("A file sent to the upload link, or one this tool returned."),
                 "imageBase64": MCPToolDefinition.string("A PNG or JPEG, base64-encoded."),
                 "fileName": MCPToolDefinition.string("The name Apple gets for an html or imageBase64 file, e.g. gratitude-card.png."),
+                "motion": [
+                    "type": "boolean",
+                    "description": """
+                    With html: render the page's CSS and SVG animation as a 20-second seamless loop (a video, its first \
+                    frame the poster) instead of a still. Takes about a minute. Default false.
+                    """,
+                ],
+                "motionFrames": [
+                    "type": "boolean",
+                    "description": """
+                    With html: also return the page's loop at four moments, and whether its animations repeat \
+                    evenly in 20 s and the end meets the start, without making the video (seconds, not a minute). Use it \
+                    to check motion before sending a concept. Default false.
+                    """,
+                ],
                 "posterSeconds": ["type": "number", "description": "A video's poster frame, in seconds from the start. Default 0."],
             ],
             required: ["appId", "eventId", "kind"]
@@ -63,6 +89,7 @@ struct RenderEventArtworkTool: MCPTool {
         let locale = try arguments.optionalString("locale") ?? event.primaryLocale ?? event.localizations.first?.locale ?? "en-US"
         let target = "\(app.name) · \(event.referenceName) · \(kind.title) · \(locale)"
         let fileID: String
+        var framesPage: EventArtworkPage?
         switch try Self.source(arguments) {
         case let .refused(reason):
             return .refused(reason, target: target, details: ["uploadLink": .string(Self.uploadLink(app: app, port: context.port))])
@@ -71,16 +98,13 @@ struct RenderEventArtworkTool: MCPTool {
         case let .base64(data, name):
             fileID = try InAppEventArtworkFiles.save(data, fileName: name, appID: app.id, in: directory)
         case let .html(html, name):
-            let request = ArtworkWebRequest(
-                html: html, kind: InAppEventArtworkRules.artworkKind(for: kind), locale: locale,
-                isRightToLeft: StoreLocaleCatalog.locale(code: locale)?.isRTL ?? false, headline: "", appName: app.name
-            )
-            let render = try await ArtworkWebRenderer.shared.render(request)
-            guard let png = ScreenshotPNG.data(render.image) else { return .failed("The page rendered, but its PNG couldn’t be written.", target: target) }
-            fileID = try InAppEventArtworkFiles.save(
-                png, fileName: name ?? InAppEventArtworkFiles.renderedName(event: event.referenceName, kind: kind, locale: locale), appID: app.id,
-                in: directory
-            )
+            let page = EventArtworkPage(html: html, fileName: name, kind: kind, locale: locale, event: event, app: app)
+            guard let rendered = try await render(page, motion: arguments.optionalBool("motion") ?? false) else {
+                return .failed("The page rendered, but its PNG couldn’t be written.", target: target)
+            }
+            pages.remember(html, for: rendered)
+            fileID = rendered
+            if try arguments.optionalBool("motionFrames") ?? false { framesPage = page }
         }
         guard let report = try await InAppEventArtworkReport.make(
             fileID: fileID, appID: app.id, kind: kind, language: locale, posterSeconds: arguments.optionalDouble("posterSeconds") ?? 0,
@@ -95,9 +119,7 @@ struct RenderEventArtworkTool: MCPTool {
         var result = report.json
         result["locale"] = .string(locale)
         result["overlay"] = .object(texts.json)
-        result["then"] = report.canQueue
-            ? "propose_event_artwork with this fileId, for every language or some"
-            : "fix the refusals, then render again"
+        result["then"] = .string(next(report, appID: app.id, eventID: event.id))
         var images: [MCPToolOutcome.ImageContent] = []
         if let still = report.still {
             if let art = InAppEventArtworkInspector.jpeg(still, maxPixel: Self.previewPixels) {
@@ -110,7 +132,25 @@ struct RenderEventArtworkTool: MCPTool {
                 result["images"] = "the art, then the art with the event's text as the App Store lays it"
             }
         }
+        if let framesPage {
+            let frames = try await motionFrames(framesPage)
+            result["motionFrames"] = frames.json
+            images += frames.images
+        }
         return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .read)], images: images)
+    }
+
+    /// What to do with the render: fix it, send it in a concept when the
+    /// person asked for concepts in Atlas, or queue it.
+    private func next(_ report: InAppEventArtworkReport, appID: StoreApp.ID, eventID: InAppEvent.ID) -> String {
+        guard report.canQueue else { return "fix the refusals, then render again" }
+        guard studio.run(appID: appID, eventID: eventID)?.step == .making else {
+            return "propose_event_artwork with this fileId, for every language or some"
+        }
+        return """
+        The person asked for concepts in Atlas: once the card and the details image pass the brief's selfCheck, send \
+        them together with propose_event_artwork_concept (this fileId or the page), not propose_event_artwork.
+        """
     }
 
     /// Where the art comes from.
@@ -144,8 +184,20 @@ struct RenderEventArtworkTool: MCPTool {
         return .base64(data, name: name)
     }
 
-    static func event(_ id: String, of app: StoreApp, in context: MCPToolContext) async throws -> InAppEvent {
-        let events = try await context.workspace.services.inAppEvents.events(for: app)
+    /// The event, read from App Store Connect. A failed read is tried once
+    /// more after `retryAfter`: on Alba (2026-11-18) one 403 in the middle of
+    /// a run cost a whole concept, and the next read worked.
+    static func event(
+        _ id: String, of app: StoreApp, in context: MCPToolContext, retryAfter: Duration = .seconds(2)
+    ) async throws -> InAppEvent {
+        let services = context.workspace.services.inAppEvents
+        let events: [InAppEvent]
+        do {
+            events = try await services.events(for: app)
+        } catch {
+            try await Task.sleep(for: retryAfter)
+            events = try await services.events(for: app)
+        }
         guard let event = events.first(where: { $0.id == id }) else {
             throw MCPToolError.notFound(String(localized: "\(app.name) has no In-App Event “\(id)”. Use the ids from get_in_app_events."))
         }

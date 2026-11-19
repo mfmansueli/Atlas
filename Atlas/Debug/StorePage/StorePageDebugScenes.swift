@@ -24,14 +24,16 @@ import SwiftUI
 /// - `store-iap`: the In-App Texts view.
 /// - `store-import`: the translator's XLIFF in the import diff.
 /// - `store-find`: Find and Replace, "Lumen Plus" → "Lumen Premium".
-/// - `store-noversion`: only the live 1.3 exists.
+/// - `store-noversion`: only the live 1.3 exists. `store-newversion`: its
+///   New Version sheet, starting at 1.4. `store-newversion-queued`: 1.4
+///   waiting in Review & Push.
 /// - `store-emptylocale`: Korean just added, open in the editor.
 /// - `store-loading`, `store-ratelimited`: the first load never finishes;
 ///   App Store Connect's rate limit.
 enum StorePageDebugScenes {
     static let ids = [
         "store-coverage", "store-editor", "store-keywords", "store-translate", "store-translating", "store-suggestions",
-        "store-iap", "store-import", "store-find", "store-noversion", "store-emptylocale",
+        "store-iap", "store-import", "store-find", "store-noversion", "store-newversion", "store-newversion-queued", "store-emptylocale",
         "store-loading", "store-ratelimited",
     ]
 
@@ -40,6 +42,9 @@ enum StorePageDebugScenes {
         switch id {
         case "store-translate", "store-translating", "store-suggestions": translationScene(id)
         case "store-noversion": scene(DebugStorePageServices(hasEditableVersion: false))
+        case "store-newversion": scene(DebugStorePageServices(hasEditableVersion: false)) { $0.openNewVersion() }
+        case "store-newversion-queued":
+            scene(DebugStorePageServices(hasEditableVersion: false)) { $0.queueNewVersion($0.newVersionStart) }
         case "store-loading": scene(DebugStorePageServices(delay: .seconds(24 * 60 * 60)))
         case "store-ratelimited": scene(DebugStorePageServices(error: .rateLimited))
         default: editingScene(id)

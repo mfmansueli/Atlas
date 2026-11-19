@@ -9,7 +9,7 @@ import Observation
 /// Where a header or search loop is as it plays in the viewer: playing or
 /// paused, its place in the 20 seconds, moved by a skip or the scrubber.
 /// Atlas's own artwork draws each frame at `position(at:)`; a
-/// Claude Design page follows `playback`, and waits for its page to load
+/// HTML page follows `playback`, and waits for its page to load
 /// (`waitForPage`, `pageReady`) so the two keep time.
 @MainActor
 @Observable

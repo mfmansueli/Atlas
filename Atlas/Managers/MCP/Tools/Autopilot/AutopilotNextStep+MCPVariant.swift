@@ -8,7 +8,7 @@ import Foundation
 extension AutopilotNextStep {
     /// `design_variant`: the second image a Product Page Optimization test
     /// needs, with one idea changed; the current page when the chosen
-    /// direction's artwork is Claude Design's own.
+    /// direction's artwork is Claude's own.
     static func designVariantJSON(_ request: ArtworkVariantRequest, run: AutopilotRun? = nil) -> JSONValue {
         let page = run?.madeArtworkDesign?.page(for: request.kind)
         var json: [String: JSONValue] = [

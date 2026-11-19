@@ -40,7 +40,7 @@ extension TranslationProvider {
         case .appleTranslation:
             nil
         case .aiProvider:
-            String(localized: "Add an AI provider and its API key in Settings → Translation first.")
+            String(localized: "Add an AI provider and its API key in Settings → AI Assistants first.")
         case .assistant:
             String(localized: "No assistant is connected yet. Turn on the local server in Settings → AI Assistants.")
         }

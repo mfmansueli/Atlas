@@ -62,6 +62,19 @@ final class ReleaseUITests: XCTestCase {
         XCTAssertEqual(text(of: element("overview.version.title")), "1.4 is waiting for App Review")
     }
 
+    /// A build uploaded after the app was opened shows: the sheet reads
+    /// the builds when it opens, every minute after, and on Check Again.
+    func testTheSheetLooksForNewBuilds() {
+        app.launch(debugScene: "rel-sheet")
+        XCTAssertTrue(element("submit.sheet").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("submit.build.212").waitForExistence(timeout: 5))
+        let checkAgain = element("submit.checkBuilds")
+        XCTAssertTrue(checkAgain.waitForExistence(timeout: 10), "Reading the builds on opening ends with Check Again")
+        checkAgain.click()
+        XCTAssertTrue(checkAgain.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("submit.build.212").exists)
+    }
+
     func testChangesNotPushedYetGoWithTheSubmission() {
         app.launch(debugScene: "rel-sheet-push")
         XCTAssertTrue(element("submit.sheet").waitForExistence(timeout: 20))

@@ -7,6 +7,9 @@ import SwiftUI
 
 @main
 struct AtlasApp: App {
+    /// Launching at login, the Dock icon, closing and quitting (boards
+    /// 45–46), answered by `AtlasLifecycle`.
+    @NSApplicationDelegateAdaptor(AtlasAppDelegate.self) private var appDelegate
     @State private var session = AppSession(store: Self.credentialsStore, defaults: Self.defaults)
     @State private var changes: ChangeQueue
     @State private var history: PushHistory
@@ -17,17 +20,27 @@ struct AtlasApp: App {
     @State private var assistants: MCPServerController
     @State private var keyAssistant: KeyAssistantController
     @State private var launcher: ClaudeCodeLauncher
-    @State private var suggestions = FieldSuggestionStore(persistence: Self.suggestionPersistence)
+    @State private var suggestions: FieldSuggestionStore
     @State private var pro = Self.makeProGate()
+    @State private var background: BackgroundWork
+    @State private var loginItem = Self.makeLoginItem()
 
     init() {
         let changes = ChangeQueue(persistence: Self.changePersistence)
         let history = PushHistory(fileURL: Self.historyURL)
         _changes = State(initialValue: changes)
         _history = State(initialValue: history)
-        _push = State(initialValue: PushController(queue: changes, history: history))
         let preferences = AppPreferences(defaults: Self.defaults)
         _preferences = State(initialValue: preferences)
+        let push = PushController(queue: changes, history: history)
+        _push = State(initialValue: push)
+        let suggestions = FieldSuggestionStore(persistence: Self.suggestionPersistence)
+        _suggestions = State(initialValue: suggestions)
+        let background = BackgroundWork(
+            push: push, changes: changes, suggestions: suggestions, preferences: preferences, defaults: Self.defaults
+        )
+        _background = State(initialValue: background)
+        AtlasLifecycle.shared.configure(work: background, preferences: preferences, push: push, isActive: Self.keepsRunning)
         let translation = TranslationPreferences(defaults: Self.defaults, secrets: Self.secretStore)
         let keyAssistant = KeyAssistantController(
             service: Self.keyAssistantService,
@@ -55,6 +68,19 @@ struct AtlasApp: App {
                 AutopilotTurnNotifier.shared.post(turn, run: run, appName: AutopilotTurnNotifier.appName(of: run))
             }
         }
+        // Claude Code ending while it draws an event's concepts: what
+        // arrived goes on to Choose.
+        // Settings → Notifications: a push that ended, concepts ready.
+        if Self.continuesAutopilot {
+            push.onFinished = { landed, failed in AtlasNotifications.pushFinished(landed: landed, failed: failed) }
+            EventArtworkStudio.shared.onConceptArrived = { run in AtlasNotifications.conceptsArrived(run) }
+        }
+        let endsAutopilotSession = launcher.onRunEnded
+        launcher.onRunEnded = { session in
+            endsAutopilotSession?(session)
+            EventArtworkStudio.shared.claudeRunEnded(session)
+            AssistantAskCenter.shared.runEnded(session)
+        }
         _translation = State(initialValue: translation)
         _keyAssistant = State(initialValue: keyAssistant)
         _assistants = State(initialValue: assistants)
@@ -81,7 +107,11 @@ struct AtlasApp: App {
                 .environment(AnalyticsStore.shared)
                 .environment(ReviewsStore.shared)
                 .environment(InAppEventsStore.shared)
+                .environment(ProductPagesStore.shared)
+                .environment(EventArtworkStudio.shared)
                 .environment(ReleaseStore.shared)
+                .environment(background)
+                .environment(loginItem)
                 .environment(\.keyChecker, Self.keyChecker)
                 // What the person owns of Pro, and every change to it.
                 .task {
@@ -99,24 +129,63 @@ struct AtlasApp: App {
         .commands {
             WorkspaceCommands()
             AccountCommands(session: session)
+            SidebarCommands()
+            HelpCommands()
         }
 
         Settings {
             SettingsView(
-                selection: Self.initialSettingsTab,
                 opensPairing: Self.debugOpensPairing,
-                scrollsToLog: Self.debugScrollsToLog
+                scrollsToLog: Self.debugScrollsToLog,
+                removingKeyID: Self.debugRemovingKeyID
             )
+            .environment(SettingsNavigation.shared)
+            .environment(NotificationPreferences.shared)
             .environment(session)
+            .environment(history)
+            .environment(pro)
+            .environment(AnalyticsStore.shared)
             .environment(pricingModes)
             .environment(preferences)
             .environment(translation)
             .environment(assistants)
             .environment(keyAssistant)
             .environment(launcher)
+            .environment(background)
+            .environment(loginItem)
             .environment(\.keyChecker, Self.keyChecker)
             .environment(\.aiProviderKeyChecker, Self.aiProviderKeyChecker)
         }
+
+        // Atlas Help (board 49), opened with ⌘? or from the Help menu.
+        Window("Atlas Help", id: HelpCommands.windowID) {
+            HelpWindow()
+                .environment(HelpNavigation.shared)
+        }
+        .defaultSize(width: 900, height: 640)
+        .commandsRemoved()
+    }
+
+    /// The menu bar icon, the window that hides instead of closing, the
+    /// checks on their own and asking before quitting mid-push: real
+    /// launches only (and `mb-live`). Other DEBUG scenes and the unit
+    /// tests' host are a plain window that quits when closed.
+    private static var keepsRunning: Bool {
+        #if DEBUG
+        if let id = DebugScene.requestedID { return MenuBarDebugScenes.isLive(id) }
+        if UnitTestHost.isRunning { return false }
+        #endif
+        return true
+    }
+
+    /// "Open Atlas at login": the real login item for real launches, a
+    /// pretend one otherwise (`SettingsDebugScenes` may turn it on).
+    private static func makeLoginItem() -> LoginItem {
+        #if DEBUG
+        if let id = DebugScene.requestedID { return .inMemory(isEnabled: SettingsDebugScenes.opensAtLogin(id)) }
+        if UnitTestHost.isRunning { return .inMemory() }
+        #endif
+        return LoginItem()
     }
 
     /// Atlas Pro: the App Store's purchases. DEBUG builds are Pro
@@ -126,6 +195,7 @@ struct AtlasApp: App {
     /// the App Store as a release build does.
     private static func makeProGate() -> ProGate {
         #if DEBUG
+        if let gate = SettingsDebugScenes.proGate(for: DebugScene.requestedID) { return gate }
         switch UserDefaults.standard.string(forKey: "AtlasPro") {
         case "free": return ProGate(entitlements: Entitlements(store: DebugProStore()))
         case "store": break
@@ -227,11 +297,13 @@ struct AtlasApp: App {
         return LiveAIProviderKeyChecker()
     }
 
-    private static var initialSettingsTab: SettingsTab {
+    /// `set-accounts-remove` opens on Remove… asked in place.
+    private static var debugRemovingKeyID: String? {
         #if DEBUG
-        if let tab = DebugScene.requestedID.flatMap(SettingsDebugScenes.tab(for:)) { return tab }
+        DebugScene.requestedID.flatMap(SettingsDebugScenes.removingKeyID(for:))
+        #else
+        nil
         #endif
-        return .account
     }
 
     /// DEBUG scenes that open AI Assistants on the pairing sheet or the log.

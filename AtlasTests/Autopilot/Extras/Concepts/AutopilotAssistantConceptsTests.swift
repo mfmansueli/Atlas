@@ -79,7 +79,7 @@ struct AutopilotAssistantConceptsTests {
         plan.runChoice.makesScreenshots = true
         let design = GuidedPlanTimeline.rows(plan: plan, client: "Claude Code", design: .none, brand: nil).first { $0.kind == .design }
         #expect(design?.title.contains("3 headers") == true)
-        #expect(design?.detail.hasPrefix("Screenshot looks from Atlas’s starters, in the app icon’s colors; headers designed by Claude Design") == true)
+        #expect(design?.detail.hasPrefix("Screenshot looks from Atlas’s starters, in the app icon’s colors; headers designed by Claude") == true)
     }
 }
 #endif

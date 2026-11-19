@@ -5,7 +5,7 @@
 
 import XCTest
 
-/// Analytics (⌘8) in its DEBUG scenes (the sample account's canned
+/// Analytics (⌘9) in its DEBUG scenes (the sample account's canned
 /// reports; nothing reaches Apple): turning it on, the funnel and its
 /// chart, Break It Down with the inspector and the jump to the fix, What
 /// to Try, After Changes, Subscriptions and the settings sheet.

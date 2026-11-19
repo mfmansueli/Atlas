@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// The selected language's header (66) and message (144), each with a
-/// live counter that turns red past Apple's limit. Arabic and Hebrew run
-/// right to left.
+/// live counter that turns red past Apple's limit, and what App Review
+/// would reject in them under the message (a warning: the person may know
+/// better). Arabic and Hebrew run right to left.
 struct RetentionTextFields: View {
     let model: RetentionModel
 
@@ -36,6 +37,13 @@ struct RetentionTextFields: View {
                 .environment(\.layoutDirection, direction)
                 .accessibilityLabel("Message")
                 .accessibilityIdentifier("retention.body")
+            let issues = StoreTextGuidelineCheck.issues(in: "\(text.header)\n\(text.body)", for: .retentionMessage)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("retention.guideline")
+            }
         }
         .disabled(model.isTranslating)
     }

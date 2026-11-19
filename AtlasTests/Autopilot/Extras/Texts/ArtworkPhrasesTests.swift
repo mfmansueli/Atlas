@@ -8,7 +8,7 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// The phrases Claude Design writes on the header and search pages
+/// The phrases Claude writes on the header and search pages
 /// (`data-al="text"`) are written once in the primary language and
 /// translated in Atlas like the captions: the book keeps each
 /// language's words, the direction knows each page's phrases, Localize
@@ -147,11 +147,11 @@ struct ArtworkPhrasesTests {
         var book = ArtworkTextBook()
         book.setPhrase(Self.caption("Jeder Schritt zählt.", .edited), source: Self.phrase, locale: "de-DE")
         AutopilotCenter.importVersions(
-            of: element, locales: ["en-US", "de-DE", "fr-FR", "ja"], primary: "en-US", provenance: .assistant(client: "Claude Design", date: .distantPast),
+            of: element, locales: ["en-US", "de-DE", "fr-FR", "ja"], primary: "en-US", provenance: .assistant(client: "Claude", date: .distantPast),
             into: &book
         )
         #expect(book.phrase(Self.phrase, locale: "de-DE")?.headline == "Jeder Schritt zählt.", "What the person wrote stays")
-        #expect(book.phrase(Self.phrase, locale: "fr-FR") == Self.caption("Les petits pas comptent.", .assistant(client: "Claude Design", date: .distantPast)))
+        #expect(book.phrase(Self.phrase, locale: "fr-FR") == Self.caption("Les petits pas comptent.", .assistant(client: "Claude", date: .distantPast)))
         #expect(book.phrase(Self.phrase, locale: "ja") == nil, "No version of its own")
         #expect(book.phrase(Self.phrase, locale: "en-US") == nil, "The primary language is the page's own words")
     }

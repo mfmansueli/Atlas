@@ -7,7 +7,7 @@
 import Foundation
 
 /// Quiet Indigo with a phrase of its own on the search page, written once
-/// in English as Claude Design writes them now, and read by Localize: what
+/// in English as Claude writes them now, and read by Localize: what
 /// `cap-artwork-phrases` shows as a Captions column.
 extension StudioDebugWebArtwork {
     static let phrase = "Small steps count."

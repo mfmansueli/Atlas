@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// The eight sections of an app's workspace, picked in the sidebar
-/// (⌘1–⌘8), in the sidebar's order: Overview, then the Store Listing's
+/// The nine sections of an app's workspace, picked in the sidebar
+/// (⌘1–⌘9), in the sidebar's order: Overview, then the Store Listing's
 /// sections, then what happens after release.
 enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable {
     /// Summary cards and quick actions.
@@ -16,6 +16,9 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
     /// The App Store preview, Autopilot, and the sets, template, captions
     /// and captures behind them.
     case screenshots
+    /// Custom product pages: a page of its own for each audience, with its
+    /// own link, texts, keywords and screenshots, beside the default page.
+    case productPages
     /// The cards on the App Store for what's happening in the app.
     case inAppEvents
     /// Categories, age rating, App Privacy, App Review and export compliance.
@@ -34,6 +37,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .overview: String(localized: "Overview")
         case .storePage: String(localized: "Store Page")
         case .screenshots: String(localized: "Screenshots")
+        case .productPages: String(localized: "Product Pages")
         case .inAppEvents: String(localized: "In-App Events")
         case .appInformation: String(localized: "App Information")
         case .subscriptionPricing: String(localized: "Pricing")
@@ -58,6 +62,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .overview: "square.grid.2x2"
         case .storePage: "doc.text"
         case .screenshots: "iphone"
+        case .productPages: "doc.on.doc"
         case .inAppEvents: "calendar"
         case .appInformation: "info.circle"
         case .subscriptionPricing: "tag"
@@ -66,17 +71,19 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         }
     }
 
-    /// The digit for ⌘1–⌘8.
+    /// The digit for ⌘1–⌘9, in the sidebar's order: Product Pages took ⌘4
+    /// and moved the four after it by one.
     var shortcutDigit: Character {
         switch self {
         case .overview: "1"
         case .storePage: "2"
         case .screenshots: "3"
-        case .inAppEvents: "4"
-        case .appInformation: "5"
-        case .subscriptionPricing: "6"
-        case .reviews: "7"
-        case .analytics: "8"
+        case .productPages: "4"
+        case .inAppEvents: "5"
+        case .appInformation: "6"
+        case .subscriptionPricing: "7"
+        case .reviews: "8"
+        case .analytics: "9"
         }
     }
 
@@ -84,7 +91,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
     var group: AppWorkspaceSectionGroup {
         switch self {
         case .overview: .overview
-        case .storePage, .screenshots, .inAppEvents, .appInformation, .subscriptionPricing: .storeListing
+        case .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing: .storeListing
         case .reviews, .analytics: .afterRelease
         }
     }

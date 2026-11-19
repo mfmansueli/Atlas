@@ -19,8 +19,10 @@ enum RetentionSampleData {
     /// When the preview says the service ends.
     static let endDate = Date(timeIntervalSince1970: 1_797_206_400) // 2026-12-14 UTC
 
-    /// Claude Code's shorter German for the offer message.
-    static let shorterGerman = "Fotos, Impulse und Suche über Jahre: drei Monate 50 % günstiger. Deine Einträge bleiben in jedem Fall deine."
+    /// Claude Code's shorter German for the offer message, without the
+    /// discount, which App Review rejects in a retention message's text
+    /// (Apple shows the offer itself).
+    static let shorterGerman = "Behalte Fotos, tägliche Impulse und die Suche über all deine Jahre. Deine Einträge bleiben in jedem Fall deine."
 
     // MARK: - Words
 
@@ -49,7 +51,9 @@ enum RetentionSampleData {
     ]
 
     /// Header and message by locale, with the half-price offer. German runs
-    /// over 144.
+    /// over 144. Naming the discount is what App Review rejects in a
+    /// retention message, so the editor warns about it: the warning's
+    /// sample, not one to copy.
     static let offer: [String: (String, String)] = [
         "en-US": ("Stay for half price", "Keep photos, daily prompts and search across years for 3 months at 50% off. Your entries stay yours either way."),
         "de-DE": ("Bleib zum halben Preis", "Behalte Fotos, tägliche Impulse und die Suche über all deine Jahre: drei Monate lang 50 % günstiger. Deine Einträge bleiben in jedem Fall ganz deine."),

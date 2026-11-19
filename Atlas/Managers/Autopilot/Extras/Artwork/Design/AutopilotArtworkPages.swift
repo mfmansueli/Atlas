@@ -6,7 +6,7 @@
 import CoreGraphics
 import Foundation
 
-/// What a run's Claude Design page is rendered with in one language: the
+/// What a run's HTML page is rendered with in one language: the
 /// captures its `data-slot`s name (that language's, else the primary
 /// one's; the pick before the captures are made), the app's icon, its
 /// name in that language's App Store page, and the placement's text.

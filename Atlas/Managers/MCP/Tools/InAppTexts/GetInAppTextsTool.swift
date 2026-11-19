@@ -16,8 +16,9 @@ struct GetInAppTextsTool: MCPTool {
         subscription's and in-app purchase's display name and description, per locale, shown on the purchase \
         sheet and in Settings → Subscriptions. `columns` lists each text's id (group.name, <productId>.name, \
         <productId>.description) and its limit. Per locale, `texts` has the current text (App Store Connect's \
-        with anything queued on top), `live` App Store Connect's where a queued change differs, and `missing` \
-        the columns still empty. App Store Connect needs at least one group name localization before a \
+        with anything queued on top), `live` App Store Connect's where a queued change differs, `missing` \
+        the columns still empty, and `states` what App Review would reject in a text, per column: propose a \
+        version without it. `textRules` lists App Review's rules for these texts. App Store Connect needs at least one group name localization before a \
         subscription can be added for review, and a name to create a locale. Pass `locales` to read only some. \
         Propose texts with propose_in_app_texts.
         """,

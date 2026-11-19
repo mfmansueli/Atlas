@@ -83,7 +83,7 @@ final class AppLibraryUITests: XCTestCase {
         XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 10))
         app.typeKey("2", modifierFlags: .command)
         XCTAssertTrue(element("workspace.storePage").waitForExistence(timeout: 5))
-        app.typeKey("5", modifierFlags: .command)
+        app.typeKey("6", modifierFlags: .command)
         XCTAssertTrue(element("workspace.appInformation").waitForExistence(timeout: 5))
         app.typeKey("1", modifierFlags: .command)
         XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 5))

@@ -47,6 +47,11 @@ struct PaywallModelTests {
         #expect(PaywallContext.recommendedPrices(countries: 104).detail?.hasPrefix("Set 104 prices") == true)
         #expect(PaywallContext.autopilot.feature == .autopilot)
         #expect(PaywallContext.retention.continueTitle == "Open Retention")
+        // Make the Artwork… on an event is Autopilot's; choosing files stays free.
+        #expect(PaywallContext.eventArtwork.feature == .autopilot)
+        #expect(PaywallContext.eventArtwork.title == "Event artwork from Claude is part of Pro")
+        #expect(PaywallContext.eventArtwork.detail?.hasSuffix("Choosing your own files stays free.") == true)
+        #expect(PaywallContext.eventArtwork.continueTitle == "Make the Artwork…")
     }
 
     /// From the toolbar: the plans, with no card and nothing to finish.

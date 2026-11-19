@@ -22,8 +22,10 @@ extension StoreListing {
 
     /// An assistant proposes text for a field. Refused when the locale
     /// isn't in the listing, the version is read-only, the value is over
-    /// the limit or the URL is invalid; otherwise queued, or kept as a
-    /// conflict when you've already changed the field.
+    /// the limit, the URL is invalid or App Review would reject it
+    /// (`StoreTextGuidelineCheck`; App Store Connect's own text can always
+    /// come back); otherwise queued, or kept as a conflict when you've
+    /// already changed the field.
     mutating func propose(
         _ value: String,
         for field: ListingField,
@@ -37,6 +39,8 @@ extension StoreListing {
         case .invalidURL: return .refused(.invalidURL)
         case .valid, .empty: break
         }
+        let issues = StoreTextGuidelineCheck.issues(in: value, for: field)
+        if !issues.isEmpty, value != draft(field, in: locale).remote { return .refused(.guidelines(issues)) }
         var outcome = ListingProposalOutcome.unchanged
         update(field, in: locale) { outcome = $0.propose(value, by: client) }
         return outcome

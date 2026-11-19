@@ -25,6 +25,8 @@ struct DebugAppInformationServices: AppInformationServices {
     var privacyURLsError: AppStoreConnectError?
     /// The app's countries can't be read, for App Compliance.
     var complianceError: AppStoreConnectError?
+    /// Lumen's countries for App Compliance, in place of the usual sample.
+    var lumenCompliance: ComplianceContent?
     /// Lumen's 1.4 still says © 2025 and has no contact phone, which 1.3's
     /// App Review details had: what the built-in suggestions find.
     var hasOutdatedDetails = false
@@ -87,7 +89,8 @@ struct DebugAppInformationServices: AppInformationServices {
     /// sample apps have nothing missing.
     func compliance(for app: StoreApp) async throws -> ComplianceContent {
         if let complianceError { throw complianceError }
-        return app.id == DebugFixtures.AppID.lumen ? DebugAppInformationContent.compliance : DebugAppInformationContent.settledCompliance
+        guard app.id == DebugFixtures.AppID.lumen else { return DebugAppInformationContent.settledCompliance }
+        return lumenCompliance ?? DebugAppInformationContent.compliance
     }
 
     func previousReview(for app: StoreApp, content: AppInformationContent) async -> AppInformationBuiltInSuggestions.PreviousReview? {

@@ -30,6 +30,22 @@ struct CaptionsViewModelTests {
         return Screen(model: model, services: services)
     }
 
+    // MARK: - App Review
+
+    /// 2.3.7 names screenshots: the editor warns about "free" in the caption
+    /// being written, and the person can still keep it.
+    @Test func theEditorWarnsAboutWhatAppReviewWouldReject() async {
+        let screen = await makeScreen()
+        screen.captions.select(LocaleSlot(locale: "en-US", slot: 0))
+        #expect(screen.captions.guidelineIssues.isEmpty)
+        screen.captions.setHeadline("Free for 7 days")
+        #expect(screen.captions.guidelineIssues.map(\.kind) == [.pricing])
+        #expect(screen.captions.headline == "Free for 7 days")
+        screen.captions.setHeadline("Write a little every day")
+        screen.captions.setSubhead("Also on Android")
+        #expect(screen.captions.guidelineIssues.map(\.kind) == [.otherPlatform])
+    }
+
     // MARK: - The table
 
     @Test func theTableIsThePrimaryThenTheLocalesByName() async {

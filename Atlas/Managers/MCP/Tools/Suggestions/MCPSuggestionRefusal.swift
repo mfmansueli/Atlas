@@ -21,6 +21,8 @@ enum MCPSuggestionRefusal: Error, Hashable, Sendable {
     case invalidAnswer(String)
     /// The person stopped receiving the run's suggestions.
     case runStopped
+    /// App Review would reject the store text: pricing, other platforms…
+    case guidelines([StoreTextGuidelineIssue])
 
     var code: String {
         switch self {
@@ -32,6 +34,7 @@ enum MCPSuggestionRefusal: Error, Hashable, Sendable {
         case .invalidValue: "invalid_value"
         case .invalidAnswer: "invalid_answer"
         case .runStopped: "run_stopped"
+        case .guidelines: "guideline"
         }
     }
 
@@ -51,16 +54,21 @@ enum MCPSuggestionRefusal: Error, Hashable, Sendable {
             message
         case .runStopped:
             String(localized: "The person stopped receiving this run’s suggestions in Atlas. Don’t send more for it.")
+        case let .guidelines(issues):
+            String(localized: "\(issues.assistantReason) Rewrite it and send it again.")
         }
     }
 
-    /// The result's fields: status, code, reason, and the count and limit
-    /// for over_limit.
+    /// The result's fields: status, code, reason, the count and limit for
+    /// over_limit, and the issues for guideline.
     var json: [String: JSONValue] {
         var result: [String: JSONValue] = ["status": "refused", "code": .string(code), "reason": .string(reason)]
         if case let .overLimit(count, limit) = self {
             result["count"] = .int(count)
             result["limit"] = ["max": .int(limit.maximum), "unit": .string(limit.unit == .bytes ? "bytes" : "characters")]
+        }
+        if case let .guidelines(issues) = self {
+            result["issues"] = .array(issues.map(\.json))
         }
         return result
     }

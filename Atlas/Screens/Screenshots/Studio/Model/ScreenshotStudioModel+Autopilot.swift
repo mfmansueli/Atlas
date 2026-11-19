@@ -307,7 +307,7 @@ extension ScreenshotStudioModel {
         return scope + " " + motion
     }
 
-    /// Ask Claude Design: the note goes back to the design AI.
+    /// Ask Claude: the note goes back to the design AI.
     func askForChanges() {
         // With header concepts, the note is for every concept and direction.
         if let run, run.usesConcepts {

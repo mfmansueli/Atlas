@@ -86,7 +86,7 @@ extension AutopilotCenter {
             review.request = AutopilotRevisionRequest(note: note, askedAt: now())
             run.previewReview = review
             run.handedBackAt = now()
-            run.appendLog(String(localized: "Asked \(reviser.title) for App Preview changes: “\(note)”"), kind: .command, at: now())
+            run.appendLog(String(localized: "Asked \(reviser.designer) for App Preview changes: “\(note)”"), kind: .command, at: now())
         }
     }
 

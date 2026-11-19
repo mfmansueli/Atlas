@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// The phrases Claude Design wrote on the chosen direction's header and
+/// The phrases Claude wrote on the chosen direction's header and
 /// search pages (`data-al="text"`), written once in the primary language
 /// and translated by Atlas like captions: Localize reads them off
 /// the pages before checking every language.
@@ -20,7 +20,7 @@ extension AutopilotCenter {
     /// designer.
     static func phraseProvenance(of run: AutopilotRun) -> CaptionProvenance {
         if run.usesConcepts, let concept = run.chosenConcept {
-            return .assistant(client: concept.client ?? concept.source.title, date: concept.receivedAt)
+            return .assistant(client: concept.client ?? DesignProjectKind.claude, date: concept.receivedAt)
         }
         let direction = run.chosenDirection
         return .assistant(client: direction?.client ?? direction?.sourceTitle ?? "", date: direction?.receivedAt ?? .now)

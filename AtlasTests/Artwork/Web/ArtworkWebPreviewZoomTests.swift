@@ -9,11 +9,11 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// A Claude Design page playing in a small view (Choose's concept cards)
+/// An HTML page playing in a small view (Choose's concept cards)
 /// is laid out at a zoom WebKit doesn't enlarge its text at, then scaled
 /// down: the text keeps the size it was drawn at.
 @MainActor
-@Suite("Claude Design pages playing small", .serialized)
+@Suite("HTML pages playing small", .serialized)
 struct ArtworkWebPreviewZoomTests {
     @Test func aSmallViewIsLaidOutAtTheLeastZoom() throws {
         let search = AutopilotArtworkKind.search.pixelSize

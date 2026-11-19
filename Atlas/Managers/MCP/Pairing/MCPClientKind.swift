@@ -50,11 +50,16 @@ enum MCPClientKind: String, CaseIterable, Identifiable, Codable, Sendable {
     }
 
     /// The command or configuration that connects this client with `token`.
+    /// Claude Code's is one registration for every project (user scope),
+    /// replacing an older one, whose token Atlas would refuse: one server
+    /// serves every app, and Atlas tells the apps apart by the folder each
+    /// session works in.
     func setupSnippet(token: String, url: String, bridgePath: String) -> String {
         let server = MCPEndpoint.serverName
         switch self {
         case .claudeCode:
-            return "claude mcp add --transport http \(server) \(url) --header \"Authorization: Bearer \(token)\""
+            return "claude mcp remove \(server) --scope user >/dev/null 2>&1; "
+                + "claude mcp add --scope user --transport http \(server) \(url) --header \"Authorization: Bearer \(token)\""
         case .claudeDesktop:
             return """
             "\(server)": {

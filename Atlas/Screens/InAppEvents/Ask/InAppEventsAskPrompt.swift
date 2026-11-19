@@ -17,7 +17,8 @@ enum InAppEventsAskPrompt {
         (30 characters), short description (50) and long description (120) in its primary language, and the languages \
         still missing. For every missing language write all three in that language, natural rather than literal (a winter \
         event isn’t one where December is summer), in the voice of that language’s store page, within the limits, and send \
-        them with propose_event_texts with one sentence on why they read this way. Leave the languages that are written.
+        them with propose_event_texts with one sentence on why they read this way. Leave the languages that are written. \
+        \(StoreTextGuidelinePlace.eventText.summary)
         """)
     }
 }

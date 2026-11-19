@@ -19,15 +19,19 @@ struct ConnectView: View {
     private let notice: String?
     /// Set in the "Add Another Key…" sheet.
     private let onCancel: (() -> Void)?
+    /// Set under the welcome header (board 45): Back returns to Welcome,
+    /// and the header above already shows the icon.
+    private let onBack: (() -> Void)?
     private let startsWithDropHover: Bool
 
     init(
         checker: any KeyChecker,
         notice: String? = nil,
         onCancel: (() -> Void)? = nil,
+        onBack: (() -> Void)? = nil,
         onConnect: @escaping (AppStoreConnectCredentials, KeyAccessCheck) throws -> Void
     ) {
-        self.init(viewModel: ConnectViewModel(checker: checker, onConnect: onConnect), notice: notice, onCancel: onCancel)
+        self.init(viewModel: ConnectViewModel(checker: checker, onConnect: onConnect), notice: notice, onCancel: onCancel, onBack: onBack)
     }
 
     /// With an existing model, for DEBUG scenes and previews, optionally
@@ -36,6 +40,7 @@ struct ConnectView: View {
         viewModel: ConnectViewModel,
         notice: String? = nil,
         onCancel: (() -> Void)? = nil,
+        onBack: (() -> Void)? = nil,
         showsHelp: Bool = false,
         showsDropHover: Bool = false
     ) {
@@ -43,14 +48,19 @@ struct ConnectView: View {
         _isShowingHelp = State(initialValue: showsHelp)
         self.notice = notice
         self.onCancel = onCancel
+        self.onBack = onBack
         startsWithDropHover = showsDropHover
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: Spacing.medium) {
-                ConnectHeader(title: isSheet ? "Add Another Key" : "Connect to App Store Connect")
-                    .padding(.bottom, Spacing.tiny)
+                if onBack != nil {
+                    welcomeTitle
+                } else {
+                    ConnectHeader(title: isSheet ? "Add Another Key" : "Connect to App Store Connect")
+                        .padding(.bottom, Spacing.tiny)
+                }
                 if let notice {
                     InlineMessage.warning(notice)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -64,7 +74,7 @@ struct ConnectView: View {
             }
             .frame(maxWidth: 500)
             .padding(.horizontal, Spacing.xxxLarge)
-            .padding(.vertical, isSheet ? Spacing.xxLarge : Spacing.xxxLarge)
+            .padding(.vertical, isSheet ? Spacing.xxLarge : (onBack == nil ? Spacing.xxxLarge : Spacing.xLarge))
             .frame(maxWidth: .infinity)
         }
         .defaultScrollAnchor(.center, for: .alignment)
@@ -84,6 +94,24 @@ struct ConnectView: View {
     }
 
     private var isSheet: Bool { onCancel != nil }
+
+    /// Under the welcome header: the title and what the key is for, no
+    /// tile (the header is the icon).
+    private var welcomeTitle: some View {
+        VStack(spacing: Spacing.xSmall) {
+            Text("Connect App Store Connect")
+                .font(.system(size: 24, weight: .bold))
+                .tracking(-0.4)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("connect.title")
+            Text("Atlas uses an App Store Connect API key to read your apps and to push what you approve.")
+                .font(.system(size: 13.5))
+                .foregroundStyle(Palette.label2)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 440)
+        }
+        .padding(.bottom, Spacing.tiny)
+    }
 
     private var form: some View {
         Card {
@@ -163,6 +191,12 @@ struct ConnectView: View {
                     .controlSize(.large)
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("connect.cancelButton")
+            }
+            if let onBack {
+                Button("Back", action: onBack)
+                    .controlSize(.large)
+                    .keyboardShortcut(.cancelAction)
+                    .accessibilityIdentifier("connect.backButton")
             }
             Button {
                 Task { await viewModel.connect() }

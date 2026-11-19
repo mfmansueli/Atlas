@@ -189,6 +189,19 @@ struct ProposeInAppEventToolTests {
         #expect(outcome.logLines.first?.outcome == .refused)
     }
 
+    @Test func aPriceOrAllCapitalsInTheTextsIsRefused() async throws {
+        let outcome = try await propose(newYear(["texts": ["en-US": [
+            "name": "NEW YEAR CHALLENGE",
+            "shortDescription": "All of Alba Pro for $4.99",
+            "longDescription": "Pick the topics that move you and build a 30-day streak.",
+        ]]]))
+        #expect(outcome.result["status"] == "refused")
+        let reason = try #require(Self.reasons(outcome).first)
+        #expect(reason.hasPrefix("en-US · App Review rejects specific prices in In-App Event texts (Guideline 2.3.13): “$4.99”."))
+        #expect(reason.contains("Apple asks In-App Event texts to avoid all capitals and repeated punctuation"))
+        #expect(changes.changes.isEmpty)
+    }
+
     @Test func anEventLongerThan31DaysIsRefused() async throws {
         let outcome = try await propose(newYear(["eventEnd": "2027-02-01T00:00:01Z"]))
         #expect(Self.reasons(outcome) == ["An event can last 31 days at most. End it sooner or start it later."])

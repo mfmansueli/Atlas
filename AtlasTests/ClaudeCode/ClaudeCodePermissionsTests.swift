@@ -57,8 +57,21 @@ struct ClaudeCodePermissionsTests {
         #expect(prompt.contains("no border or gradient overlay of your own"))
         #expect(prompt.contains("color that belongs to the scene, like a sky, is fine"))
         #expect(!prompt.contains("No words, logos, borders or gradients"))
-        #expect(prompt.contains("JavaScript doesn't run there"))
+        #expect(prompt.contains("JavaScript doesn't run"))
         #expect(prompt.contains("Never push and never submit"))
+    }
+
+    /// The art is designed like Autopilot's HTML pages: from the
+    /// app's look and design project, as a page Atlas renders still or as
+    /// a seamless loop; a file the project renders still goes to the link.
+    @Test func theArtPromptDesignsWithClaudeDesign() {
+        let prompt = InAppEventArtworkAskPrompt.text(app: "Alba", appID: "1", event: "New Year", eventID: "2")
+        #expect(prompt.contains("with Claude"))
+        #expect(prompt.contains("`design`, the app's look and design language"))
+        #expect(prompt.contains("design from what `design` gives, and never stop for it"))
+        #expect(prompt.contains("loops seamlessly over 20 seconds"))
+        #expect(prompt.contains("render_event_artwork and motion: true"))
+        #expect(prompt.contains("--data-binary @<file>"))
     }
 
     @Test func theSetupTestOnlyUsesAtlas() {

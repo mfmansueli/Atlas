@@ -7,7 +7,7 @@ import SwiftUI
 
 /// Start from templates: every gallery template as a thumbnail with the
 /// app's screens (filtered by style), the one clicked previewed large,
-/// and My picks, the up to three Claude Design makes a look from.
+/// and My picks, the up to three Claude makes a look from.
 struct GuidedTemplateBrowser: View {
     @Bindable var studio: ScreenshotStudioModel
     let plan: AutopilotPlan
@@ -69,7 +69,7 @@ struct GuidedTemplateBrowser: View {
         .accessibilityIdentifier("autopilot.guided.look.templateBrowser")
     }
 
-    /// "Claude Design makes one look from each pick, in Northpier Brand.
+    /// "Claude makes one look from each pick, in Northpier Brand.
     /// You choose one after it’s made."
     private var trayText: String {
         let designer = studio.shotStyleDesigner

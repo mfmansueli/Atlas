@@ -36,8 +36,8 @@ extension PricingViewModel {
                 guard !Task.isCancelled else { return }
                 productMatrices[product.id] = makeMatrix(product: product, sheet: sheet)
                 productErrors[product.id] = nil
-            } catch is PricingSheetError {
-                productErrors[product.id] = String(localized: "No price yet. Set its starting price in its prices.")
+            } catch let error as PricingSheetError {
+                productErrors[product.id] = error.cardText
             } catch {
                 guard !Task.isCancelled else { return }
                 productErrors[product.id] = error.localizedDescription

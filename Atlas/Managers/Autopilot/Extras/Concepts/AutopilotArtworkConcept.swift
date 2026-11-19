@@ -6,7 +6,7 @@
 import Foundation
 
 /// One header and search concept, proposed apart from the screenshot
-/// directions (`propose_artwork_concept`): the idea Claude Design wrote
+/// directions (`propose_artwork_concept`): the idea Claude wrote
 /// from the concepts prompt (its name, metaphor, why it fits, how it
 /// follows the person's request and how it loops), then its own pages, a
 /// still per canvas. With a motion loop, it gets a second set of pages,
@@ -18,9 +18,9 @@ struct AutopilotArtworkConcept: Codable, Hashable, Sendable, Identifiable {
     var id: String
     /// "Moonrise".
     var name: String
-    /// The scene template it adapts; nil for one of Claude Design's own.
+    /// The scene template it adapts; nil for one of Claude's own.
     var template: AutopilotHeaderTemplate?
-    /// Place, viewpoint or wildcard, for one of Claude Design's own.
+    /// Place, viewpoint or wildcard, for one of Claude's own.
     var kind: AutopilotConceptKind?
     /// "The crescent from Lumen’s icon rises in a clear evening sky."
     var metaphor: String
@@ -30,11 +30,11 @@ struct AutopilotArtworkConcept: Codable, Hashable, Sendable, Identifiable {
     var followsTheRequest: String?
     /// The loop's beats: "Dusk", "moonrise", "stars", "dawn".
     var beats: [String] = []
-    /// Claude Design recommends it of the three.
+    /// Claude recommends it of the three.
     var isRecommended = false
     /// Why, when it's the recommended one.
     var recommendedBecause: String?
-    /// The concept as Claude Design wrote it, JSON: what the pages and the
+    /// The concept as Claude wrote it, JSON: what the pages and the
     /// motion prompts get back, and the log keeps.
     var json: String
     /// The still pages, one per canvas, rendered and checked; nil until
@@ -61,9 +61,9 @@ struct AutopilotArtworkConcept: Codable, Hashable, Sendable, Identifiable {
     var changeNotes: String?
     var receivedAt: Date
 
-    /// "From the Day to Night template", "Claude Design’s own concept".
+    /// "From the Day to Night template", "Claude’s own concept".
     var sourceTitle: String {
-        template?.sourceTitle ?? String(localized: "\(source.usesDesignAI ? source.title : DesignProjectKind.claudeDesign.title)’s own concept")
+        template?.sourceTitle ?? String(localized: "\(DesignProjectKind.claude)’s own concept")
     }
 
     /// "Dusk → moonrise → stars → dawn"; empty without beats.

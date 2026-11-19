@@ -70,6 +70,16 @@ struct ReviewChangeRow: View {
                 }
                 .padding(.leading, 26)
             }
+            let issues = change.guidelineIssues
+            if !issues.isEmpty {
+                // A warning, not a block: the person may know better.
+                Label(issues.map(\.message).joined(separator: "\n"), systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(Palette.warning)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.leading, 26)
+                    .accessibilityIdentifier("review.guideline.\(change.id)")
+            }
             if let artwork = change.requests.lazy.compactMap(InAppEventArtworkPush.init).first {
                 InAppEventArtworkThumbnail(path: artwork.path, isVideo: artwork.isVideo)
                     .padding(.leading, 26)

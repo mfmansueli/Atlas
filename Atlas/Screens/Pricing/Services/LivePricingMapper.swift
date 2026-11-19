@@ -138,6 +138,8 @@ enum LivePricingMapper {
 
     /// Joins today's prices and the equalized ones into a sheet. Ladders start
     /// simulated from each territory's equalization ratio until Apple's arrive.
+    /// A free in-app purchase (a "7-day Trial" at Price Tier 0) is free
+    /// everywhere, so its ratio is 1.
     static func sheet(
         product: PricingProduct,
         current: [String: PricePoint],
@@ -146,13 +148,13 @@ enum LivePricingMapper {
         catalog: TerritoryCatalog,
         commission: Commission
     ) -> ProductPriceSheet? {
-        guard let base = current[baseTerritoryID], base.customerPrice > 0 else { return nil }
+        guard let base = current[baseTerritoryID], base.customerPrice > 0 || product.isInAppPurchase else { return nil }
         var prices: [String: TerritoryPrice] = [:]
         var ladders: [String: PricePointLadder] = [:]
         for (territoryID, point) in current {
             guard let territory = catalog.territory(alpha3: territoryID) else { continue }
             let equal = territoryID == baseTerritoryID ? base : equalized[territoryID]?.first ?? point
-            let multiplier = equal.customerPrice / base.customerPrice
+            let multiplier = base.customerPrice > 0 ? equal.customerPrice / base.customerPrice : 1
             prices[territoryID] = TerritoryPrice(territoryID: territoryID, current: point, equalized: equal, equalizationMultiplier: multiplier)
             ladders[territoryID] = SimulatedPriceLadder.make(territory: territory, equalizationMultiplier: multiplier, commission: commission)
         }

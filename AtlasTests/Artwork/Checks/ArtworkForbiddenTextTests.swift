@@ -26,6 +26,18 @@ struct ArtworkForbiddenTextTests {
         #expect(match == ArtworkForbiddenMatch(kind: .price, snippet: "$4.99"))
     }
 
+    /// Pricing as on the Store Page: SimProps 1.0 was rejected under 2.3.7
+    /// for "free", and the header and search images follow the same rule.
+    @Test(arguments: ["Free for everyone", "Kostenlos testen", "Grátis para sempre", "Essai gratuit", "7-day free trial", "無料で始める"])
+    func freeAndTrialsArePricing(text: String) {
+        #expect(kinds(text).contains(.price))
+    }
+
+    @Test(arguments: ["Ad-free journaling", "Feel free to explore", "Hands-free notes", "Free up your mornings"])
+    func freeThatIsntAPricePasses(text: String) {
+        #expect(kinds(text).isEmpty)
+    }
+
     @Test(arguments: ["−50% this week", "Save 30%", "Jetzt 20 % Rabatt", "50 off", "Half price", "３０％オフ", "限时折扣"])
     func discountsAndPercentages(text: String) {
         #expect(kinds(text).contains(.discount))

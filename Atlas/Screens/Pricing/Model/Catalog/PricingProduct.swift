@@ -26,15 +26,16 @@ struct PricingProduct: Identifiable, Hashable, Sendable {
         period?.title ?? inAppPurchaseType ?? String(localized: "In-app purchase")
     }
 
-    /// The base price as the browser and section bar show it (“$39.99”).
+    /// The base price as the browser and section bar show it (“$39.99”),
+    /// “Free” for an in-app purchase at Price Tier 0 (SimProps's 7-day Trial).
     var basePriceText: String? {
-        basePrice.map { CurrencyFormat.format($0, currency: baseCurrencyCode) }
+        basePrice.map { $0 == 0 ? String(localized: "Free") : CurrencyFormat.format($0, currency: baseCurrencyCode) }
     }
 
     /// The section bar's second line: “lumen.plus.annual · 1 year · Approved · base $39.99”.
     var subtitle: String {
         var parts = [productID, durationText, reviewState]
-        if let basePriceText { parts.append(String(localized: "base \(basePriceText)")) }
+        if let basePriceText { parts.append(basePrice == 0 ? basePriceText : String(localized: "base \(basePriceText)")) }
         return parts.joined(separator: " · ")
     }
 }

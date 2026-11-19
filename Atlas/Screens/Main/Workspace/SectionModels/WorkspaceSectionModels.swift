@@ -6,7 +6,7 @@
 import Foundation
 import Observation
 
-/// The window's section models, per app, so switching sections (⌘1–⌘8) or
+/// The window's section models, per app, so switching sections (⌘1–⌘9) or
 /// going back to an app opened a moment ago doesn't read everything from
 /// App Store Connect again. Only the most recently opened apps are kept.
 /// Refresh (⌘R) and a push make every kept model read again the next time
@@ -47,6 +47,12 @@ final class WorkspaceSectionModels {
             apps[order.removeFirst()] = nil
         }
         return models
+    }
+
+    /// The app's models when they're kept, without counting as opening
+    /// it: what a section shows from its first frame.
+    func keptModels(for appID: StoreApp.ID) -> AppSectionModels? {
+        apps[appID]
     }
 
     /// The apps whose models are kept, least recently opened first.

@@ -55,7 +55,7 @@ struct KeyAssistantSettingsSection: View {
         .confirmationDialog("Remove the API key?", isPresented: $isConfirmingRemove) {
             Button("Remove Key", role: .destructive, action: keyAssistant.remove)
         } message: {
-            Text("It’s deleted from the Keychain. Settings → Translation keeps its own copy.")
+            Text("It’s deleted from the Keychain. The suggestions key above keeps its own copy.")
         }
     }
 
@@ -94,7 +94,7 @@ struct KeyAssistantSettingsSection: View {
         }
         .accessibilityIdentifier("settings.ai.key.reviews")
         Toggle(isOn: Binding(get: { configuration.usesKeyForTranslations }, set: setUsesForTranslations)) {
-            SettingsRowLabel(title: "Also use this key for translations", caption: String(localized: "Settings → Translation then uses it too."))
+            SettingsRowLabel(title: "Also use this key for translations", caption: String(localized: "Translations then use it too."))
         }
         .accessibilityIdentifier("settings.ai.key.translations")
         HStack {

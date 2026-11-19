@@ -5,7 +5,7 @@
 
 import XCTest
 
-/// The header and search Claude Design designed as HTML pages: Choose shows
+/// The header and search Claude designed as HTML pages: Choose shows
 /// each direction's own (three different images, not one layout
 /// recolored), and full size a loop plays
 /// live from the page's CSS, pauses, and follows the scrubber. Each test
@@ -26,7 +26,7 @@ final class AutopilotWebArtworkUITests: XCTestCase {
     func testChooseShowsEachDirectionsOwnPages() {
         app.launch(debugScene: "st-choose-web-artwork")
         // Guided Choose: each look shows its screenshots, then the header
-        // and search pages Claude Design made for it.
+        // and search pages Claude made for it.
         XCTAssertTrue(element("autopilot.guided.choose").waitForExistence(timeout: 20))
 
         let headers = app.descendants(matching: .any).matching(identifier: "autopilot.direction.extra.0")
@@ -40,7 +40,7 @@ final class AutopilotWebArtworkUITests: XCTestCase {
         XCTAssertTrue(waitUntil(timeout: 30) {
             Set((0..<3).map { searches.element(boundBy: $0).screenshot().pngRepresentation }).count == 3
         }, "And its search image")
-        attachScreenshot("Choose · Claude Design's own header and search")
+        attachScreenshot("Choose · Claude's own header and search")
     }
 
     func testAPagesLoopPlaysLiveAndPauses() {
@@ -57,7 +57,7 @@ final class AutopilotWebArtworkUITests: XCTestCase {
         RunLoop.current.run(until: .now.addingTimeInterval(2))
         let first = image(above: play)
         XCTAssertTrue(waitUntil(timeout: 5) { self.image(above: play) != first }, "The page's CSS motion plays")
-        attachScreenshot("Viewer · Claude Design's header loop playing")
+        attachScreenshot("Viewer · Claude's header loop playing")
 
         play.click()
         XCTAssertTrue(waitUntil { play.label == "Play the loop" })
@@ -72,7 +72,7 @@ final class AutopilotWebArtworkUITests: XCTestCase {
         XCTAssertTrue(waitUntil { self.text(of: time).hasPrefix("0:10") }, text(of: time))
         XCTAssertTrue(waitUntil(timeout: 5) { self.image(above: play) != paused }, "The page seeks with the scrubber")
         XCTAssertEqual(play.label, "Play the loop")
-        attachScreenshot("Viewer · Claude Design's header loop moved to 0:10")
+        attachScreenshot("Viewer · Claude's header loop moved to 0:10")
     }
 
     /// The viewer's screenshot above `controls`: the image alone.

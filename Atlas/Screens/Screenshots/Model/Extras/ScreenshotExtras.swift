@@ -17,7 +17,7 @@ struct ScreenshotExtras: Codable, Hashable, Sendable {
     var artworkSize: AutopilotArtworkSize?
     /// The artwork's look: the direction's own for it, else its template.
     var artworkTemplate: ScreenshotTemplate?
-    /// The direction's Claude Design pages for the artwork; nil when it was
+    /// The direction's HTML pages for the artwork; nil when it was
     /// drawn from `artworkTemplate`.
     var artworkDesign: AutopilotArtworkDesign?
     /// The slot whose caption and capture the search image shows.

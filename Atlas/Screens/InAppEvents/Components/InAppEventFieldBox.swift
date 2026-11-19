@@ -6,7 +6,9 @@
 import SwiftUI
 
 /// One of an event's three texts in the language being viewed: its
-/// counter, the field, and the suggested text under it while one waits.
+/// counter, the field, what App Review would reject in it (a warning: the
+/// person may know better), and the suggested text under it while one
+/// waits.
 struct InAppEventFieldBox: View {
     let field: InAppEventField
     @Binding var text: String
@@ -48,6 +50,13 @@ struct InAppEventFieldBox: View {
             .disabled(!isEditable)
             .accessibilityLabel(Text(field.title))
             .accessibilityIdentifier("events.field.\(field.rawValue)")
+            let issues = StoreTextGuidelineCheck.issues(in: text, for: .eventText)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("events.field.\(field.rawValue).guideline")
+            }
             if let suggested {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Text("SUGGESTED")

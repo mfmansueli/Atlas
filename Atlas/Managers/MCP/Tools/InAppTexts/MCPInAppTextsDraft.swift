@@ -36,7 +36,7 @@ struct MCPInAppTextsDraft {
         /// Already the cell's text; nothing new was queued (or a proposal
         /// back to App Store Connect's text was withdrawn).
         case unchanged
-        case refused(reason: String, count: Int? = nil, limit: ListingTextLimit? = nil)
+        case refused(reason: String, count: Int? = nil, limit: ListingTextLimit? = nil, issues: [StoreTextGuidelineIssue] = [])
 
         var isQueued: Bool { if case .queued = self { true } else { false } }
         var isRefused: Bool { if case .refused = self { true } else { false } }
@@ -103,6 +103,7 @@ struct MCPInAppTextsDraft {
             "app": .string(app.name),
             "primaryLocale": .string(matrix.primaryLocale.code),
             "hasSubscriptionGroup": .bool(content.groupID != nil),
+            "textRules": StoreTextRules.inAppJSON,
             "columns": .array(columns.map(Self.json)),
             "versions": .array(versionsJSON),
             "locales": .array(locales.map(json)),
@@ -148,14 +149,20 @@ struct MCPInAppTextsDraft {
         var texts: [String: JSONValue] = [:]
         var live: [String: JSONValue] = [:]
         var missing: [JSONValue] = []
+        var states: [String: JSONValue] = [:]
         for column in columns {
             let draft = matrix.draft(column, in: locale)
             if draft.local.isEmpty { missing.append(.string(column.id)) } else { texts[column.id] = .string(draft.local) }
             if draft.isPending { live[column.id] = .string(draft.remote) }
+            let issues = StoreTextGuidelineCheck.issues(in: draft.local, for: column.field)
+            if !issues.isEmpty { states[column.id] = .string(issues.assistantNote) }
         }
         var json: [String: JSONValue] = ["code": .string(locale.code), "name": .string(locale.name), "texts": .object(texts)]
         if !live.isEmpty { json["live"] = .object(live) }
         if !missing.isEmpty { json["missing"] = .array(missing) }
+        // What App Review would reject in a text, so the assistant proposes
+        // a version without it.
+        if !states.isEmpty { json["states"] = .object(states) }
         return .object(json)
     }
 
@@ -200,6 +207,12 @@ struct MCPInAppTextsDraft {
         let draft = matrix.draft(column, in: locale)
         if draft.isPending, draft.proposedBy == nil, draft.local != text {
             return .refused(reason: String(localized: "The person already changed this text to “\(draft.local)”; it waits in Review & Push. Leave it to them."))
+        }
+        // App Review's metadata rules; App Store Connect's own text can
+        // always come back.
+        let issues = StoreTextGuidelineCheck.issues(in: text, for: column.field)
+        if !issues.isEmpty, text != draft.remote {
+            return .refused(reason: issues.assistantReason + " " + String(localized: "Fix it and propose again."), issues: issues)
         }
         guard case .queued = matrix.propose(text, for: column, in: locale, by: client) else { return .unchanged }
         touched.append(Cell(column: column, locale: locale))

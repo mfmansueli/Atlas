@@ -7,7 +7,7 @@ import Foundation
 
 /// `render_artwork`: a header or search page rendered by Atlas in
 /// one language, exactly as the artwork will be made, with its checks, so
-/// Claude Design sees its page before proposing it.
+/// Claude sees its page before proposing it.
 struct RenderArtworkTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "render_artwork",

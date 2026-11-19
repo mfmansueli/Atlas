@@ -5,37 +5,49 @@
 
 import SwiftUI
 
-/// The overview's line once an assistant has called Atlas (which
-/// one, its project, what it may do and when it last called) or an API key
-/// is ready (its model and what it reads), with Suggest Everything… (its
-/// waiting popover hangs from it) or, with a key, Generate Store Page
-/// Suggestions…, and Details (the Assistant button's popover). With a key,
-/// a line under the card says what needs an assistant that reads the code.
+/// The overview's line once an assistant is set up (which one, and what
+/// is true for this app: connected in its project folder, in another
+/// project, ready for Atlas to start, not connected, or refused for an old
+/// token, with Reconnect… or Choose Folder… when that's what it needs) or
+/// an API key is ready (its model and what it reads), with Suggest
+/// Everything… (its waiting popover hangs from it) or, with a key, Generate
+/// Store Page Suggestions…, and Details (the Assistant button's popover).
+/// With a key, a line under the card says what needs an assistant that
+/// reads the code.
 struct AssistantConnectedCard<Popover: View>: View {
     let status: AssistantStatus
     /// "Claude Code is connected", "Anthropic API is ready".
     let title: String
     let detail: String
+    var tone: AssistantConnection.Tone?
+    var actions: [AssistantConnection.Action] = []
+    /// Suggest Everything…, or Generate Store Page Suggestions… with a key.
+    var showsPrimary = true
     @Binding var isPopoverPresented: Bool
     let onPrimary: () -> Void
     let onDetails: () -> Void
+    var onAction: (AssistantConnection.Action) -> Void = { _ in }
     var onAddAssistant: () -> Void = {}
     @ViewBuilder let popover: () -> Popover
 
     init(
-        client: MCPPairedClient,
-        editsDrafts: Bool,
+        connection: AssistantConnection,
         isPopoverPresented: Binding<Bool>,
         onSuggestEverything: @escaping () -> Void,
         onDetails: @escaping () -> Void,
+        onAction: @escaping (AssistantConnection.Action) -> Void,
         @ViewBuilder popover: @escaping () -> Popover
     ) {
-        status = .connected(client: client.name)
-        title = String(localized: "\(client.name) is connected")
-        detail = Self.detail(client: client, editsDrafts: editsDrafts)
+        status = .connected(client: connection.clientName)
+        title = connection.title
+        detail = connection.detail()
+        tone = connection.tone
+        actions = connection.actions
+        showsPrimary = connection.canSuggestEverything
         _isPopoverPresented = isPopoverPresented
         onPrimary = onSuggestEverything
         self.onDetails = onDetails
+        self.onAction = onAction
         self.popover = popover
     }
 
@@ -43,24 +55,32 @@ struct AssistantConnectedCard<Popover: View>: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Card(padding: Spacing.medium + 2) {
                 HStack(spacing: Spacing.medium) {
-                    AssistantStatusDot(status: status)
+                    AssistantStatusDot(status: status, tone: tone)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(title)
                             .font(.headline)
                         Text(detail)
                             .font(.caption)
                             .foregroundStyle(Palette.label2)
-                            .lineLimit(1)
+                            .lineLimit(2)
                             .truncationMode(.middle)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text("\(title), \(detail)"))
                     .accessibilityIdentifier("overview.assistantConnected.summary")
-                    Button(status.isReady ? String(localized: "Generate Store Page Suggestions…") : String(localized: "Suggest Everything…"), action: onPrimary)
-                        .buttonStyle(.borderedProminent)
-                        .popover(isPresented: $isPopoverPresented, arrowEdge: .bottom, content: popover)
-                        .accessibilityIdentifier("overview.assistantConnected.ask")
+                    if actions.contains(.reconnect) {
+                        Button("Reconnect…") { onAction(.reconnect) }
+                            .buttonStyle(.borderedProminent)
+                            .accessibilityIdentifier("overview.assistantConnected.reconnect")
+                    }
+                    if showsPrimary {
+                        primaryButton
+                    }
+                    if actions.contains(.chooseFolder) {
+                        Button("Choose Folder…") { onAction(.chooseFolder) }
+                            .accessibilityIdentifier("overview.assistantConnected.chooseFolder")
+                    }
                     Button("Details", action: onDetails)
                         .accessibilityIdentifier("overview.assistantConnected.details")
                 }
@@ -83,15 +103,20 @@ struct AssistantConnectedCard<Popover: View>: View {
         }
     }
 
-    /// "Project ~/Developer/Lumen · suggests only · last call 2 min ago".
-    private static func detail(client: MCPPairedClient, editsDrafts: Bool) -> String {
-        var parts: [String] = []
-        if let directory = client.workingDirectory { parts.append(String(localized: "Project \(directory)")) }
-        parts.append(editsDrafts ? String(localized: "suggests and edits drafts") : String(localized: "suggests only"))
-        if let seen = client.lastSeenAt {
-            parts.append(String(localized: "last call \(seen.formatted(.relative(presentation: .named)))"))
+    /// Prominent unless Reconnect… is what the card asks for first.
+    @ViewBuilder
+    private var primaryButton: some View {
+        let title = status.isReady ? String(localized: "Generate Store Page Suggestions…") : String(localized: "Suggest Everything…")
+        let button = Button(title, action: onPrimary)
+        Group {
+            if actions.contains(.reconnect) {
+                button.buttonStyle(.bordered)
+            } else {
+                button.buttonStyle(.borderedProminent)
+            }
         }
-        return parts.joined(separator: " · ")
+        .popover(isPresented: $isPopoverPresented, arrowEdge: .bottom, content: popover)
+        .accessibilityIdentifier("overview.assistantConnected.ask")
     }
 }
 

@@ -150,7 +150,7 @@ struct ScreenshotStudioViewerTests {
         #expect(Array(viewer.items.map(\.id).prefix(2)) == ["direction.artwork.header", "direction.artwork.search"])
         #expect(viewer.index == 1)
         #expect(viewer.current.title == "Quiet Indigo · Search results · 3:2 · 3840 × 2560 · motion")
-        #expect(viewer.current.subtitle == "20-second loop · plays muted on repeat · Direction from Claude Design · English (U.S.)")
+        #expect(viewer.current.subtitle == "20-second loop · plays muted on repeat · Direction from Claude · English (U.S.)")
         guard case let .artwork(search) = viewer.current.content else {
             Issue.record("The search image opens as artwork")
             return

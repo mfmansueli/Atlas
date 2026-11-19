@@ -47,7 +47,7 @@ struct GuidedLookStepView: View {
 
     private var plan: AutopilotPlan { run.plan }
 
-    /// "Claude Design designs in Northpier Brand. You’ll choose between its
+    /// "Claude designs in Northpier Brand. You’ll choose between its
     /// proposals before anything is localized."
     private var subtitle: String {
         let designer = studio.shotStyleDesigner

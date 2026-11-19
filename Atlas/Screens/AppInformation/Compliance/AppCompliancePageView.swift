@@ -6,13 +6,15 @@
 import SwiftUI
 
 /// App Compliance: the regulations that apply in some countries or to some
-/// kinds of apps. The Digital Services Act and the ICP Filing Number take
-/// the person's answer; the Vietnam game license and regulated medical
-/// devices are checked from the app's category, age rating and countries,
-/// and only ask when Apple does.
+/// kinds of apps. The Digital Services Act, the ICP Filing Number and China
+/// mainland's Security Assessment and AI content declarations take the
+/// person's answer; the Vietnam game license and regulated medical devices
+/// are checked from the app's category, age rating and countries, and only
+/// ask when Apple does.
 ///
-/// Nothing on this page is suggested through the suggestion bar or taken
-/// by Accept All: compliance answers are the person's to give.
+/// Nothing on this page goes through the suggestion bar or Accept All:
+/// compliance answers are the person's to give. An assistant may suggest
+/// some (Ask), and each waits on its card until the person accepts it.
 struct AppCompliancePageView: View {
     @Bindable var viewModel: AppInformationViewModel
 
@@ -44,6 +46,10 @@ struct AppCompliancePageView: View {
     @ViewBuilder
     private func loaded(_ report: ComplianceReport) -> some View {
         banner(report)
+        if let assistant = viewModel.complianceSuggestionBanner {
+            AssistantAnswersBanner(client: assistant.client, text: assistant.text)
+                .accessibilityIdentifier("appInformation.compliance.suggestions")
+        }
         if let line = viewModel.complianceErrorLine {
             InlineMessage.warning(String(localized: "Couldn’t check again where \(viewModel.app.name) is sold. This is what was read before. \(line)"))
                 .accessibilityIdentifier("appInformation.compliance.stale")
@@ -65,6 +71,7 @@ struct AppCompliancePageView: View {
         switch rule {
         case .traderStatus: TraderStatusCard(viewModel: viewModel, report: report)
         case .icpFilingNumber: ICPFilingCard(viewModel: viewModel, report: report)
+        case .securityAssessment, .aiGeneratedContent: ChinaDeclarationCard(viewModel: viewModel, report: report, rule: rule)
         case .vietnamGameLicense, .medicalDevice: ComplianceDeclarationCard(viewModel: viewModel, report: report, rule: rule)
         }
     }
@@ -79,6 +86,10 @@ struct AppCompliancePageView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("appInformation.compliance.headline")
+            if !report.isUpToDate {
+                ComplianceAskButton(app: viewModel.app)
+                    .controlSize(.small)
+            }
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 2)

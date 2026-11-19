@@ -12,7 +12,7 @@ import Testing
 /// The pages drawn small stay while the app runs, the oldest going first;
 /// a page's text fit reads in Captions like the built-in layout's.
 @MainActor
-@Suite("Claude Design pages drawn small")
+@Suite("HTML pages drawn small")
 struct ArtworkWebThumbnailsTests {
     private func key(_ locale: String, width: Int = 600) -> ArtworkWebThumbnails.Key {
         ArtworkWebThumbnails.Key(html: "<p>x</p>", locale: locale, headline: "Calm", appName: "Alba", captures: [:], pixelWidth: width)

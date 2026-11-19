@@ -16,10 +16,9 @@ extension ScreenshotStudioModel {
         return AutopilotRun.proposesConcepts(plan: plan, design: plannedDesignKind)
     }
 
-    /// The design source's name: "Claude Design".
+    /// Who designs the headers: "Claude".
     var headerDesignerName: String {
-        let kind = plannedDesignKind
-        return kind.usesDesignAI ? kind.title : DesignProjectKind.claudeDesign.title
+        DesignProjectKind.claude
     }
 
     func setArtworkStyle(_ style: AutopilotArtworkStyle) {
@@ -67,7 +66,7 @@ extension ScreenshotStudioModel {
         return MCPClientSession.displayName(clientName: reportedBy, title: nil)
     }
 
-    /// "Pick up to 3 (a 4th replaces the last). Claude Design adapts each
+    /// "Pick up to 3 (a 4th replaces the last). Claude adapts each
     /// one to Lumen, and you choose 1 of the results. 3 of 3 picked."
     var headerTemplatesNote: String {
         let count = headerTemplatePicks.count
@@ -83,7 +82,7 @@ extension ScreenshotStudioModel {
         """)
     }
 
-    /// "What Claude Design gets from the scan": what the app does, its look,
+    /// "What Claude gets from the scan": what the app does, its look,
     /// the screens, the brand and the person's direction.
     var headerScanRows: [(key: String, value: String)] {
         let look = appSupport?.profile(for: app.id)?.look

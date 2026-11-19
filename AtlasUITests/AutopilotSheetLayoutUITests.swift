@@ -27,7 +27,7 @@ final class AutopilotSheetLayoutUITests: XCTestCase {
         goToThePlan()
         let design = element("autopilot.guided.plan.design")
         XCTAssertTrue(design.waitForExistence(timeout: 5))
-        XCTAssertTrue(text(of: design).contains("Claude Design · claude.ai/artifact/KxcpHYis…"), text(of: design))
+        XCTAssertTrue(text(of: design).contains("Claude · claude.ai/artifact/KxcpHYis…"), text(of: design))
         XCTAssertFalse(text(of: design).contains("org="), text(of: design))
     }
 

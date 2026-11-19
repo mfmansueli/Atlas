@@ -17,7 +17,8 @@ struct ProposeReviewRepliesTool: MCPTool {
         sentences is right), `meaning` what it says in English, for the person. Be specific to what the review says, read \
         the project to say what is fixed or planned, and never promise what isn't there; no personal data, no asking for a \
         better rating. Reviews that already have a reply are skipped. Nothing is sent to the App Store: the person sends \
-        each reply. A new suggestion for the same review replaces the earlier one.
+        each reply. A new suggestion for the same review replaces the earlier one. \
+        \(StoreTextGuidelinePlace.reviewReply.summary)
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -29,6 +30,7 @@ struct ProposeReviewRepliesTool: MCPTool {
             ],
             required: ["appId", "replies"]
         ),
+        proposalKind: .reviewReplies,
         changesState: true
     )
 
@@ -48,6 +50,14 @@ struct ProposeReviewRepliesTool: MCPTool {
                 skipped.append(["reviewId": .string(reviewID), "reason": .string(reason)])
                 continue
             }
+            let issues = StoreTextGuidelineCheck.issues(in: text, for: .reviewReply)
+            guard issues.isEmpty else {
+                skipped.append([
+                    "reviewId": .string(reviewID), "reason": .string(issues.assistantReason + " Fix it and send that reply again."),
+                    "issues": .array(issues.map(\.json)),
+                ])
+                continue
+            }
             let meaning = (value["meaning"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             kept.append(ReviewReplySuggestion(reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now()))
         }
@@ -58,7 +68,7 @@ struct ProposeReviewRepliesTool: MCPTool {
         return MCPToolOutcome(
             result: [
                 "status": "suggested", "replies": .int(kept.count), "skipped": .array(skipped),
-                "showsIn": "Reviews (⌘7), under each review. The person sends each reply.",
+                "showsIn": "Reviews (⌘8), under each review. The person sends each reply.",
             ],
             isError: false,
             logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]

@@ -69,7 +69,8 @@ struct ProposeInAppEventTool: MCPTool {
         primary language; write the others with propose_event_texts once the event is created. Anything App Store \
         Connect would refuse is refused with the reasons (status "refused"); proposing your own queued reference name \
         again replaces it. Nothing reaches App Store Connect until the person pushes, and the person adds the card and \
-        details page images and submits the event for review: no tool does either.
+        details page images and submits the event for review: no tool does either. \
+        \(StoreTextGuidelinePlace.eventText.summary)
         """,
         inputSchema: MCPToolDefinition.schema(
             Self.properties,

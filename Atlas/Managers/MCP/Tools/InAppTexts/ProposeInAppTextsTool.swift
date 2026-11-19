@@ -18,6 +18,9 @@ struct ProposeInAppTextsTool: MCPTool {
         <productId>.description), from get_in_app_texts. Send one with locale, column and text, or several with \
         proposals: [{locale, column, text}]. Each is checked like a manual edit: over the limit, empty, an unknown \
         column or locale, or a text the person already changed is refused with the reason (status "refused"). \
+        So is a text App Review would reject (get_in_app_texts' textRules): a price, “free” or a discount, a \
+        subscription's trial length, another platform, placeholder text, “coming soon” or “For Kids”, with the \
+        rule and the phrases in `issues`; an in-app purchase may still be named “XX-day Trial” (Guideline 3.1.1). \
         Accepted proposals are queued for the person to review in Atlas (status "queued"); a locale App \
         Store Connect doesn't have yet is created when they push, and needs a name (blockedReason says so). \
         Nothing reaches App Store Connect until they push.
@@ -97,9 +100,10 @@ struct ProposeInAppTextsTool: MCPTool {
                 if let blocked = change?.blockedReason { result["blockedReason"] = .string(blocked) }
                 queued += 1
                 logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .proposed))
-            case let .refused(reason, count, limit):
+            case let .refused(reason, count, limit, issues):
                 result["status"] = "refused"
                 result["reason"] = .string(reason)
+                if !issues.isEmpty { result["issues"] = .array(issues.map(\.json)) }
                 if let count { result["count"] = .int(count) }
                 if let limit { result["limit"] = ["max": .int(limit.maximum), "unit": "characters"] }
                 refused += 1

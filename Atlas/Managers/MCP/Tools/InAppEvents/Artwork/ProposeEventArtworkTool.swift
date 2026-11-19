@@ -40,7 +40,7 @@ struct ProposeEventArtworkTool: MCPTool {
             ],
             required: ["appId", "eventId", "artwork"]
         ),
-        proposalKind: .screenshots
+        proposalKind: .artwork
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
@@ -86,13 +86,19 @@ struct ProposeEventArtworkTool: MCPTool {
             return .refused("Nothing could be queued.", target: target, details: ["refused": .array(refused), "warnings": .array(warnings)])
         }
         context.workspace.changes.upsert(contentsOf: changes)
+        // Languages its queued texts create get the same art.
+        let queue = context.workspace.changes
+        let (add, discard) = builder.newLanguageArtwork(of: event, in: queue.changes(for: app.id, section: .inAppEvents))
+        queue.upsert(contentsOf: add)
+        queue.discard(ids: discard)
+        changes += add
         return MCPToolOutcome(
             result: [
                 "status": "queued",
                 "changes": .array(changes.map { ["changeId": .string($0.id), "title": .string($0.title)] }),
                 "refused": .array(refused),
                 "warnings": .array(warnings),
-                "showsIn": .string("In-App Events (⌘4) → \(event.referenceName) → Images and video, and Review & Push"),
+                "showsIn": .string("In-App Events (⌘5) → \(event.referenceName) → Images and video, and Review & Push"),
                 "next": "The person looks at it and accepts it; pushing uploads it. Never push or submit it yourself.",
             ],
             isError: false,

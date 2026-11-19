@@ -93,6 +93,21 @@ struct SuggestFieldsToolTests {
         #expect(store.suggestions.isEmpty)
     }
 
+    @Test func storeTextAppReviewWouldRejectIsRefused() async throws {
+        let outcome = try await call(["appId": "app1", "items": [
+            storeItem("promotionalText", "Try Lumen free for 7 days."),
+            storeItem("subtitle", "The best journal app"),
+            storeItem("whatsNew", "Thanks to our beta testers!"),
+        ]])
+        let items = results(outcome)
+        #expect(items.map { $0["code"] } == ["guideline", "guideline", nil])
+        #expect(items[0]["issues"] == [["kind": "pricing", "guideline": "2.3.7", "phrases": ["free"]]])
+        #expect(items[1]["issues"]?.arrayValue?.first?["kind"] == "unverifiableClaim")
+        #expect(items[0]["reason"]?.stringValue?.hasSuffix("Rewrite it and send it again.") == true)
+        #expect(items[2]["status"] == "queued")
+        #expect(store.suggestions.count == 1)
+    }
+
     @Test func permissionsAreCheckedPerArea() async throws {
         let outcome = try await call(["appId": "app1", "items": [storeItem("whatsNew", "New")]], allowed: [.appInformation])
         #expect(results(outcome).first?["code"] == "not_permitted")

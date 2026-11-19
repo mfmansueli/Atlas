@@ -60,6 +60,15 @@ final class TranslationPreferences {
         hasAPIKey = !key.isEmpty
     }
 
+    /// Settings → Privacy & Data → Remove All Keys and Data…: every
+    /// vendor's key.
+    func removeAllAPIKeys() throws {
+        for vendor in AIProviderVendor.allCases {
+            try secrets.setSecret(nil, named: vendor.secretName)
+        }
+        hasAPIKey = false
+    }
+
     /// The selected vendor's key, for the code that calls the provider.
     func apiKey() throws -> String? {
         try secrets.secret(named: vendor.secretName)

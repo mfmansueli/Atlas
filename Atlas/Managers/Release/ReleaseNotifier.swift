@@ -33,11 +33,13 @@ final class ReleaseNotifier {
     }
 
     func post(_ text: String, appName: String, appID: StoreApp.ID) {
-        guard let center else { return }
+        // Settings → Notifications → "App Review changes a version's or an
+        // event's status".
+        guard let center, NotificationPreferences.shared.reviewStatus else { return }
         let content = UNMutableNotificationContent()
         content.title = appName
         content.body = text
-        content.sound = .default
+        content.sound = AtlasNotifier.shared.sound
         content.threadIdentifier = "release"
         center.add(UNNotificationRequest(identifier: "release.\(appID)", content: content, trigger: nil))
     }

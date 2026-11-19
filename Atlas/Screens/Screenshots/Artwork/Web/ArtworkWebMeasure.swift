@@ -6,7 +6,7 @@
 import CoreGraphics
 import Foundation
 
-/// What a rendered Claude Design page holds, read from the page itself:
+/// What a rendered HTML page holds, read from the page itself:
 /// where each `data-al` element landed and how its text fits, its
 /// animations, and how big the page grew. Geometry is in canvas pixels
 /// (one CSS pixel each).

@@ -34,6 +34,9 @@ final class PushController {
 
     private(set) var phase: Phase = .idle
     private(set) var items: [PushItem] = []
+    /// When the push running now started, for the menu bar's "about 1 min
+    /// left".
+    private(set) var startedAt: Date?
     /// What the workspace banner shows; nil when there's nothing to report.
     private(set) var notice: PushNotice?
     /// Set by the session: the API client, or a simulation.
@@ -42,6 +45,9 @@ final class PushController {
     var appName: (StoreApp.ID) -> String = { $0 }
     /// Called with the apps whose values changed, so their numbers reload.
     var onPushed: (Set<StoreApp.ID>) -> Void = { _ in }
+    /// Every push that ends: how many changes landed and how many didn't
+    /// (Settings → Notifications).
+    var onFinished: (_ landed: Int, _ failed: Int) -> Void = { _, _ in }
 
     private let queue: ChangeQueue
     private let history: PushHistory
@@ -56,6 +62,9 @@ final class PushController {
     /// Owners App Store Connect wouldn't make a draft for in this push, so
     /// their other locales fail with the same reason without asking again.
     private var inAppDraftRefusals: [String: InAppDraftRefusal] = [:]
+    /// Each custom product page's version that takes edits, found or made
+    /// earlier in this push.
+    private var productPageVersions: [String: String] = [:]
     /// Subscription groups found or made during this push, by
     /// `SubscriptionGroupPlaceholder.token`, so new subscriptions in the
     /// same new group share one.
@@ -63,6 +72,9 @@ final class PushController {
     /// Every territory App Store Connect has, read once per push for new
     /// subscriptions' availability (`SubscriptionAvailabilityEverywhere`).
     private var territoryIDs: [String]?
+    /// Each event's languages in App Store Connect by locale, read when an
+    /// upload names a language the push created (`EventLocalizationPlaceholder`).
+    private var eventLocalizations: [String: [String: String]] = [:]
     /// How far changes that didn't finish got, by change.
     var unfinished: [PendingChange.ID: PushItem] = [:]
     /// Requests this hour, shared with screenshot pushes.
@@ -137,12 +149,14 @@ final class PushController {
     func push(_ changes: [PendingChange]) {
         guard phase != .running else { return }
         rememberUnfinished()
-        items = RetentionPushOrder.sorted(changes.filter { !$0.isBlocked }).map(resumed)
+        items = InAppEventPushOrder.sorted(RetentionPushOrder.sorted(changes.filter { !$0.isBlocked })).map(resumed)
         notice = nil
         inAppDrafts = [:]
         inAppDraftRefusals = [:]
+        productPageVersions = [:]
         subscriptionGroups = [:]
         territoryIDs = nil
+        eventLocalizations = [:]
         guard !items.isEmpty else { return }
         run()
     }
@@ -198,6 +212,7 @@ final class PushController {
 
     private func run() {
         phase = .running
+        startedAt = now()
         isCancelling = false
         task = Task { [weak self] in
             await self?.sendQueuedItems()
@@ -246,6 +261,7 @@ final class PushController {
             notice = .partialFailure(failed: failedCount, total: totalCount)
         }
         if !pushedApps.isEmpty { onPushed(pushedApps) }
+        onFinished(totalCount - failedCount, failedCount)
     }
 
     /// Sends one item and sets its status.
@@ -492,7 +508,8 @@ extension PushController {
     }
 
     /// The request with its `{subscriptionGroup:…}` (found or created now,
-    /// once per push), a new In-App Event's `{everyTerritory}`, a retention
+    /// once per push), a new In-App Event's `{everyTerritory}`, an event
+    /// language created earlier in the push (`{eventLocalization:…}`), a retention
     /// image and placement group, and `{createdID:<type>}` filled in.
     private func resolvingSetupPlaceholders(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws -> PushRequest {
         var request = request
@@ -511,13 +528,16 @@ extension PushController {
             }
             request = request.replacing(group.token, with: id)
         }
+        while let language = EventLocalizationPlaceholder(in: request) {
+            request = try await request.replacing(language.token, with: eventLocalizationID(language, transport: transport))
+        }
         let retention = try await RetentionPushSteps.resolving(request, known: items[index].createdIDs, via: transport) { noteRequest($0) }
         items[index].createdIDs.merge(retention.created) { _, new in new }
         return try retention.request.resolvingCreatedIDs(items[index].createdIDs)
     }
 
-    /// Sends a request that's more than one write: a new subscription
-    /// (found when a push before created it), an In-App Texts write into a
+    /// Sends a request that's more than one write: a new subscription or
+    /// App Store version (found when a push before created it), an In-App Texts write into a
     /// version, an event's card or details page upload, availability
     /// everywhere, or a subscription's starting prices, or a retention
     /// step. False for any other request.
@@ -533,8 +553,22 @@ extension PushController {
             items[index].createdIDs["subscriptions"] = id
             return true
         }
+        if let create = NewAppStoreVersionCreate(request) {
+            let id = try await create.send(via: transport) { noteRequest($0) }
+            items[index].createdID = id
+            items[index].createdIDs["appStoreVersions"] = id
+            return true
+        }
         if let write = InAppDraftWrite(request) {
             items[index].createdID = try await send(write, transport: transport)
+            return true
+        }
+        if let write = ProductPageLocaleWrite(request) {
+            let sent = try await write.send(via: transport, knownVersionID: productPageVersions[write.pageID])
+            productPageVersions[write.pageID] = sent.versionID
+            noteRequest(sent.rateLimit)
+            items[index].createdIDs[ProductPageLocaleWrite.versionType] = sent.versionID
+            if let localizationID = sent.localizationID { items[index].createdIDs[ProductPageLocaleWrite.localizationType] = localizationID }
             return true
         }
         if let artwork = InAppEventArtworkPush(request) {
@@ -560,6 +594,16 @@ extension PushController {
             noteRequest(rateLimit)
         }
         return true
+    }
+
+    /// The ID of an event's language, read again when it isn't known yet:
+    /// an earlier change of this push may have just created it.
+    private func eventLocalizationID(_ language: EventLocalizationPlaceholder, transport: any PushTransport) async throws -> String {
+        if let id = eventLocalizations[language.eventID]?[language.locale] { return id }
+        let ids = try await EventLocalizationPlaceholder.localizationIDs(eventID: language.eventID, via: transport) { noteRequest($0) }
+        eventLocalizations[language.eventID] = ids
+        guard let id = ids[language.locale] else { throw EventLocalizationPlaceholder.Missing(locale: language.locale) }
+        return id
     }
 
     /// Every territory App Store Connect has, read on first use in a push.

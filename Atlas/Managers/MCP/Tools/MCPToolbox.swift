@@ -17,6 +17,8 @@ struct MCPToolbox {
             GetListingTool(),
             ListMissingTranslationsTool(),
             ProposeListingTextTool(),
+            GetAppVersionsTool(),
+            ProposeAppVersionTool(),
             GetInAppTextsTool(),
             ProposeInAppTextsTool(),
             GetPricesTool(),
@@ -31,6 +33,8 @@ struct MCPToolbox {
             ProposePrivacyAnswersTool(),
             GetAgeRatingTool(),
             ProposeAgeRatingTool(),
+            GetComplianceTool(),
+            ProposeComplianceAnswersTool(),
             GetScreenshotContextTool(),
             ListCapturesTool(),
             GetCaptureTool(),
@@ -81,6 +85,8 @@ struct MCPToolbox {
             ProposeEventTextsTool(),
             RenderEventArtworkTool(),
             ProposeEventArtworkTool(),
+            GetEventArtworkBriefTool(),
+            ProposeEventArtworkConceptTool(),
         ])
     }
 

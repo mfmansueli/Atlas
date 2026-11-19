@@ -51,7 +51,7 @@ struct ProposeSubscriptionTool: MCPTool {
         States in US dollars, and every other territory gets Apple's equalized price. Anything App Store Connect \
         would refuse is refused with the reasons (status "refused"). An accepted proposal is queued for the \
         person to review (status "queued"); proposing the same productId again replaces it. Nothing reaches App \
-        Store Connect until they push.
+        Store Connect until they push. \(StoreTextRules.inAppSummary)
         """,
         inputSchema: MCPToolDefinition.schema(
             Self.properties,
@@ -77,6 +77,7 @@ struct ProposeSubscriptionTool: MCPTool {
         let taken = NewSubscriptionChangeBuilder.takenProductIDs(appID: app.id, catalog: catalog.catalog, queue: queue, except: id)
         let groupNames = catalog.catalog.groups.filter { !$0.isInAppPurchases }.map(\.name)
         reasons += subscription.problems(takenProductIDs: taken, groupNames: groupNames).map(\.message)
+        reasons += Self.guidelineReasons(subscription)
         guard reasons.isEmpty else {
             let result: JSONValue = ["status": "refused", "productId": .string(productID), "reasons": .array(reasons.map { .string($0) })]
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
@@ -95,6 +96,20 @@ struct ProposeSubscriptionTool: MCPTool {
             """,
         ]
         return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .proposed)])
+    }
+
+    /// What App Review would reject in the subscription's display name,
+    /// description or new group's display name, one reason per text.
+    static func guidelineReasons(_ subscription: NewSubscription) -> [String] {
+        var texts: [(argument: String, field: InAppTextField, text: String)] = [
+            ("displayName", .subscriptionName, subscription.displayName),
+            ("description", .subscriptionDescription, subscription.description),
+        ]
+        if case let .new(_, displayName) = subscription.group { texts.append(("groupDisplayName", .subscriptionGroupName, displayName)) }
+        return texts.compactMap { argument, field, text in
+            let issues = StoreTextGuidelineCheck.issues(in: text, for: field)
+            return issues.isEmpty ? nil : "\(argument): \(issues.assistantReason)"
+        }
     }
 
     /// The arguments as a new subscription; throws for one that isn't

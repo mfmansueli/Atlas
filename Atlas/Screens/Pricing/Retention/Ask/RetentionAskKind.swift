@@ -13,7 +13,7 @@ enum RetentionAskKind: Hashable {
     case draftOne
     /// A shorter wording for one language.
     case shorten(message: String, language: String, locale: String, header: String, body: String)
-    /// The image sheet's "Make One with Claude Design…".
+    /// The image sheet's "Make One with Claude…".
     case image(message: String)
 
     var identifier: String {
@@ -30,7 +30,7 @@ enum RetentionAskKind: Hashable {
         case .draft: String(localized: "Ask \(client)…")
         case .draftOne: String(localized: "Ask \(client) to Draft One…")
         case .shorten: String(localized: "Ask \(client) to Shorten It…")
-        case .image: String(localized: "Make One with Claude Design…")
+        case .image: String(localized: "Make One with Claude…")
         }
     }
 
@@ -49,7 +49,7 @@ enum RetentionAskKind: Hashable {
         switch self {
         case .draft, .draftOne: String(localized: "Ask \(client) to draft a retention message from \(app)’s features, in your voice")
         case .shorten: String(localized: "Ask \(client) for a shorter version that fits Apple’s limits")
-        case .image: String(localized: "Ask \(client) to make an image for the message with Claude Design")
+        case .image: String(localized: "Ask \(client) to make an image for the message with Claude")
         }
     }
 
@@ -64,7 +64,7 @@ enum RetentionAskKind: Hashable {
             String(localized: "\(client) proposes a shorter version; it waits in Review & Push with the message.")
         case .image:
             String(localized: """
-            \(client) makes a 3840 × 1000 image with Claude Design and hands it to Atlas. It’s added to the \
+            \(client) makes a 3840 × 1000 image with Claude and hands it to Atlas. It’s added to the \
             Asset Library when you push the message.
             """)
         }

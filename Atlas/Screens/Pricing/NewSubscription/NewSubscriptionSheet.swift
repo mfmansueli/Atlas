@@ -268,8 +268,24 @@ struct NewSubscriptionSheet: View {
                 }
             }
             problemText(for: field)
+            guidelineWarning(for: field, text: text.wrappedValue)
         }
         .id(field)
+    }
+
+    /// What App Review would reject in a display text: a warning, Add
+    /// still works.
+    @ViewBuilder
+    private func guidelineWarning(for field: NewSubscriptionField, text: String) -> some View {
+        if let inAppField = field.inAppTextField {
+            let issues = StoreTextGuidelineCheck.issues(in: text, for: inAppField)
+            if !issues.isEmpty {
+                InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("pricing.newSubscription.\(field.rawValue).guideline")
+            }
+        }
     }
 
     @ViewBuilder

@@ -6,7 +6,7 @@
 import Foundation
 
 /// The six scene templates the header and search concepts can start
-/// from (the plan's Header style). Claude Design keeps a template's scene
+/// from (the plan's Header style). Claude keeps a template's scene
 /// type, layer recipe and loop, and chooses the subject, colors and
 /// details for the app. The raw values are the prompts' template ids.
 enum AutopilotHeaderTemplate: String, Codable, CaseIterable, Hashable, Sendable, Identifiable {

@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// An image on this Mac (one Claude Design made) that a retention
+/// An image on this Mac (one Claude made) that a retention
 /// message's placement shows: `{retentionImageUpload:<appID>:<path>}`. The
 /// push reserves it in the app's Asset Library, uploads its parts, commits
 /// it and waits for Apple to process it, then places its ID.

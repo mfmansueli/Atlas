@@ -5,17 +5,38 @@
 
 import SwiftUI
 
-/// An event's card image, a spinner on the event's own gradient while it
-/// downloads; before one is uploaded (or if it can't be downloaded), the
-/// gradient alone, so events are told apart at a glance.
+/// One of an event's images filling its frame: a file on this Mac (a
+/// concept's, or art waiting in Review & Push), the App Store's (a spinner
+/// on the event's gradient while it downloads), or before there's one the
+/// gradient alone with soft shapes, so events are told apart at a glance.
 struct InAppEventArtwork: View {
     let event: InAppEvent
+    /// Nil: the event's card on the App Store.
+    var source: InAppEventArtSource?
     var cornerRadius: CGFloat = 9
+    /// The longest side a file is read at.
+    var maxPixel = 1280
+
+    @State private var phase = ImageLoadPhase.loading
+
+    private var shown: InAppEventArtSource {
+        source ?? event.media(.card)?.imageURL.map(InAppEventArtSource.remote) ?? .none
+    }
 
     var body: some View {
         ZStack {
             LinearGradient(colors: Self.colors(for: event), startPoint: .topLeading, endPoint: .bottomTrailing)
-            if let url = event.media(.card)?.imageURL {
+            switch shown {
+            case .file:
+                if let image = phase.image {
+                    Image(decorative: image, scale: 1)
+                        .resizable()
+                        .scaledToFill()
+                        .transition(.opacity)
+                } else if phase.isLoading {
+                    ImageLoadingTile(systemImage: nil, fill: .clear)
+                }
+            case let .remote(url):
                 AsyncImage(url: url) { phase in
                     if let image = phase.image {
                         image.resizable().scaledToFill()
@@ -23,7 +44,7 @@ struct InAppEventArtwork: View {
                         ImageLoadingTile(systemImage: nil, fill: .clear)
                     }
                 }
-            } else {
+            case .none, .withoutLink:
                 // Soft shapes, so the card reads as artwork still to come.
                 GeometryReader { proxy in
                     Circle()
@@ -34,11 +55,23 @@ struct InAppEventArtwork: View {
                         .fill(.white.opacity(0.13))
                         .frame(width: proxy.size.height * 0.6, height: proxy.size.height * 0.6)
                         .offset(x: proxy.size.width * 0.1, y: proxy.size.height * 0.65)
+                    Circle()
+                        .fill(.white.opacity(0.1))
+                        .frame(width: proxy.size.height * 0.35, height: proxy.size.height * 0.35)
+                        .offset(x: proxy.size.width * 0.55, y: proxy.size.height * 0.2)
                 }
             }
         }
+        .clipped()
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .accessibilityHidden(true)
+        .task(id: shown) {
+            guard case let .file(path, isVideo) = shown else { return }
+            phase = .loading
+            let still = await InAppEventArtworkInspector.thumbnail(URL(fileURLWithPath: path), isVideo: isVideo, maxPixel: maxPixel)
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.2)) { phase = ImageLoadPhase(finished: still) }
+        }
     }
 
     /// Two colors picked by the event's badge, shifted by its id.

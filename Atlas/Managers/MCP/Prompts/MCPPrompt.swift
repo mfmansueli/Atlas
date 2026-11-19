@@ -13,6 +13,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
     case translateMissing = "translate_missing"
     case fillPrivacyFromCode = "fill_privacy_from_code"
     case fillAgeRating = "fill_age_rating"
+    case fillCompliance = "fill_compliance"
     case whatsNewFromGit = "whats_new_from_git"
     /// `CaptionAssistantPrompt.promptName`, which the Translate sheet copies.
     case translateCaptions = "translate_captions"
@@ -38,6 +39,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .translateMissing: "Translate missing store text"
         case .fillPrivacyFromCode: "Draft App Privacy from the code"
         case .fillAgeRating: "Answer the age rating questionnaire"
+        case .fillCompliance: "Suggest App Compliance answers"
         case .whatsNewFromGit: "Write What’s New from git"
         case .translateCaptions: "Translate screenshot captions"
         case .shortenOverflowingCaptions: "Shorten overflowing captions"
@@ -54,6 +56,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .translateMissing: String(localized: "Translate every missing store-page field")
         case .fillPrivacyFromCode: String(localized: "Draft App Privacy from the project")
         case .fillAgeRating: String(localized: "Answer the age rating questionnaire")
+        case .fillCompliance: String(localized: "Suggest the App Compliance answers the project can show")
         case .whatsNewFromGit: String(localized: "Write What’s New from git history since the last release")
         case .translateCaptions: String(localized: "Translate missing screenshot captions as proposals")
         case .shortenOverflowingCaptions: String(localized: "Propose shorter versions of captions that overflow")
@@ -69,6 +72,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .translateMissing: ["list_apps", "list_missing_translations", "get_listing", "propose_listing_text"]
         case .fillPrivacyFromCode: ["list_apps", "get_privacy_questionnaire", "propose_privacy_answers"]
         case .fillAgeRating: ["list_apps", "get_age_rating", "propose_age_rating"]
+        case .fillCompliance: ["list_apps", "get_compliance", "propose_compliance_answers"]
         case .whatsNewFromGit: ["list_apps", "get_listing", "propose_listing_text"]
         case .translateCaptions: ["list_apps", "get_screenshot_context", "get_captions", "get_capture", "measure_caption", "propose_captions"]
         case .shortenOverflowingCaptions: ["list_apps", "get_captions", "measure_caption", "propose_captions"]
@@ -144,9 +148,10 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         config user.name and user.email), with that as evidence; leave out what you can't find, and never make \
         up a phone number. Send them with suggest_fields, one item per field with the value, a one-sentence \
         reason and evidence (git range, file and line, or review), and pass total with how many you'll send in \
-        all. If an \
-        item is refused, read the reason (over_limit gives the count), fix it and send it again. Nothing changes \
-        until the person accepts each suggestion in Atlas.
+        all. \(StoreTextRules.summary) Where a field's current text breaks one (get_store_page's states say so), \
+        suggest a version that doesn't. If an \
+        item is refused, read the reason (over_limit gives the count, guideline the phrases), fix it and send it \
+        again. Nothing changes until the person accepts each suggestion in Atlas.
         """
     }
 
@@ -158,7 +163,8 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             appId, then list_missing_translations for the editable version. For each missing field, read the source \
             text and the character limit, write a natural translation for that locale that fits the limit, and call \
             propose_listing_text. Keep brand and product names untranslated, as well as any terms in the glossary \
-            get_listing returns. If a proposal is refused, read the reason, fix the text and propose again. When \
+            get_listing returns. \(StoreTextRules.summary) Leave out what breaks a rule rather than translating \
+            it. If a proposal is refused, read the reason, fix the text and propose again. When \
             you're done, summarize what you proposed and anything you skipped. The person reviews everything in \
             Atlas before it's pushed.
             """
@@ -183,11 +189,26 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             line) for each question, and say in could_not_see what you couldn't check. The person confirms every \
             answer in Atlas before it's pushed.
             """
+        case .fillCompliance:
+            """
+            Suggest the App Compliance answers of \(appPhrase) from this project, with Atlas. Call list_apps for \
+            its appId, then get_compliance for each regulation, whether it takes a proposal and the trader details \
+            Atlas prepared. Look for whether the app makes money (price, subscriptions, in-app purchases, ads), the \
+            company's name, address, phone and email in legal pages, an imprint, terms or support docs, an ICP \
+            Filing Number in the app or its website files, for China mainland whether it generates content with AI \
+            (and whose model, with any CAC filing number and name) and whether it shares AI-generated content or has \
+            end-to-end encrypted messaging (Security Assessment), and whether the app diagnoses, treats or monitors a \
+            medical condition. Call propose_compliance_answers with an answer, why and evidence (file and line) for \
+            each regulation you can back up, and say in could_not_see what the project can't show. Never make up an \
+            address, a phone number, an ICP Filing Number or a filing number. The person accepts every answer in \
+            Atlas and enters it in App Store Connect.
+            """
         case .whatsNewFromGit:
             """
             Write the What’s New text of \(appPhrase)'s next version from git history, with Atlas. Find the \
             last release tag and read git log since then. Summarize the changes people will notice in a few short, \
-            friendly lines, leaving out internal work. Call get_listing to see the editable version and the primary \
+            friendly lines, leaving out internal work, prices and anything not shipped yet (App Review Guidelines \
+            2.3.7 and 2.3.12: describe the new features and changes). Call get_listing to see the editable version and the primary \
             locale, then propose_listing_text with field whatsNew in the primary locale. Mention which commits you \
             left out and why.
             """
@@ -196,36 +217,43 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .suggest:
             Self.suggestInstructions(appPhrase: appPhrase, area: nil)
         case .suggestAll:
-            """
-            Suggest everything for \(appPhrase) in Atlas: every Store Page field in every language, \
-            including languages the app supports that aren’t on the App Store yet, and App Information's General, \
-            Age Rating, Accessibility for each device, and App Review. Call list_apps to get its appId. Read the \
-            project's targets, devices and string catalogs and send them with report_app_support first, so \
-            Atlas knows the languages the App Store page lacks. Then call get_store_page and \
-            get_app_information: they say which fields are locked, which the person changed (a `live` value that \
-            differs), the suggestions already open, and `languagesNotOnAppStore`, the languages to suggest every \
-            field for as new pages (they stay suggestions until the person adds the page). Read the \
-            project: git log since the last release tag, CHANGELOG.md, the README and the app's strings for \
-            the Store Page, and the code for categories, App Review notes (sign-in, demo data, hidden features), \
-            Age Rating's questions (user-generated content, web access, messaging, purchases) and each device's \
-            Accessibility features (VoiceOver labels, Dynamic Type, Dark Mode, Reduce Motion, captions), \
-            answering only what the code shows. If App Review's contact (first name, last name, phone, email) is \
-            empty, suggest it from what the project shows, such as a support or contact email in the app or its \
-            docs, or the git author (git config user.name and user.email), with that as evidence; leave out what \
-            you can't find, and never make up a phone number. Then call begin_suggestions with your plan, one \
-            entry {area, locale | page, device, field} per field you'll suggest, leaving out locked fields and the ones the \
-            person changed; it returns a run and the entries it skipped. Send the suggestions with suggest_fields \
-            and that run, in as many calls as you like, each with the value, a one-sentence reason and evidence \
-            (git range, file and line, or review). If an item is refused, read the reason, fix it and send it \
-            again; run_stopped means the person stopped receiving, so stop. Call end_suggestions when you're \
-            done. Then call get_in_app_texts and, for each missing subscription group display name and each missing \
-            subscription or in-app purchase display name and description, write it in that language within the \
-            limit and send them with propose_in_app_texts (they're queued for review, not part of the plan). \
-            Nothing changes until the person accepts each suggestion in Atlas.
-            """
+            Self.suggestAllInstructions(appPhrase: appPhrase)
         case .runScreenshots:
             Self.runScreenshotsInstructions(appPhrase: appPhrase)
         }
+    }
+
+    /// `suggest_all`: every field of every area, in one plan.
+    private static func suggestAllInstructions(appPhrase: String) -> String {
+        """
+        Suggest everything for \(appPhrase) in Atlas: every Store Page field in every language, \
+        including languages the app supports that aren’t on the App Store yet, and App Information's General, \
+        Age Rating, Accessibility for each device, and App Review. Call list_apps to get its appId. Read the \
+        project's targets, devices and string catalogs and send them with report_app_support first, so \
+        Atlas knows the languages the App Store page lacks. Then call get_store_page and \
+        get_app_information: they say which fields are locked, which the person changed (a `live` value that \
+        differs), the suggestions already open, and `languagesNotOnAppStore`, the languages to suggest every \
+        field for as new pages (they stay suggestions until the person adds the page). Read the \
+        project: git log since the last release tag, CHANGELOG.md, the README and the app's strings for \
+        the Store Page, and the code for categories, App Review notes (sign-in, demo data, hidden features), \
+        Age Rating's questions (user-generated content, web access, messaging, purchases) and each device's \
+        Accessibility features (VoiceOver labels, Dynamic Type, Dark Mode, Reduce Motion, captions), \
+        answering only what the code shows. If App Review's contact (first name, last name, phone, email) is \
+        empty, suggest it from what the project shows, such as a support or contact email in the app or its \
+        docs, or the git author (git config user.name and user.email), with that as evidence; leave out what \
+        you can't find, and never make up a phone number. Then call begin_suggestions with your plan, one \
+        entry {area, locale | page, device, field} per field you'll suggest, leaving out locked fields and the ones the \
+        person changed; it returns a run and the entries it skipped. Send the suggestions with suggest_fields \
+        and that run, in as many calls as you like, each with the value, a one-sentence reason and evidence \
+        (git range, file and line, or review). \(StoreTextRules.summary) Where a field's current text breaks one \
+        (get_store_page's states say so), suggest a version that doesn't. If an item is refused, read the reason, \
+        fix it and send it again; run_stopped means the person stopped receiving, so stop. Call end_suggestions when you're \
+        done. Then call get_in_app_texts and, for each missing subscription group display name and each missing \
+        subscription or in-app purchase display name and description, write it in that language within the \
+        limit and send them with propose_in_app_texts (they're queued for review, not part of the plan); \
+        \(StoreTextRules.inAppSummary) \
+        Nothing changes until the person accepts each suggestion in Atlas.
+        """
     }
 
     /// `run_screenshots`: drive the Autopilot run the person started.
@@ -273,7 +301,9 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         When next_step says answer_app_questions, answer from the project: Atlas keeps the answers for every \
         later run. The track you pick there is the App Preview's music unless the person chose one; after that, \
         change it with set_app_preview_music only when they ask. \
-        Never draw the interface; use the real captures. \
+        Never draw the interface; use the real captures, with fictional sample data (Guideline 2.3.9). Captions, \
+        header and search texts follow App Review's metadata rules: no prices, “free”, discounts, trials, other \
+        platforms, beta or “coming soon” (Guidelines 2.3.7, 2.3.10, 2.2, 2.3). \
         Nothing is uploaded to App Store Connect until the person pushes in Atlas.
         """
     }
@@ -286,7 +316,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             its appId, then get_captions and find every caption whose fit says it overflows or shrinks to the \
             smallest size. Write a shorter caption in the same language that keeps the meaning, check it with \
             measure_caption until it fits at full size, and send them together with propose_captions, saying \
-            why. If a caption is refused, read how much it’s over and try again. Nothing changes until the \
+            why. \(StoreTextRules.summary) If a caption is refused, read how much it’s over and try again. Nothing changes until the \
             person accepts the proposal in Atlas.
             """
         case .reviseTemplate:
@@ -306,7 +336,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             and get_captions to find the slots without a caption. Use get_capture to see the screen a caption \
             describes. Write natural, short marketing captions in each language, keep brand names untranslated, \
             check each with measure_caption until it fits, and send them with propose_captions, one call per \
-            locale, saying why. If an item is refused, read how much it’s over, shorten it and propose again. \
+            locale, saying why. \(StoreTextRules.summary) If an item is refused, read how much it’s over, shorten it and propose again. \
             The person accepts or rejects them in Atlas; nothing is pushed.
             """
         }

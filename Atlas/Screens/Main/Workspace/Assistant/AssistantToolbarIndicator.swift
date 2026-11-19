@@ -12,12 +12,17 @@ import SwiftUI
 /// Proposals… opening Review & Push filtered to that assistant (or, for
 /// screenshot proposals, their Proposals sheet), and Suggest Everything…
 /// (Show Progress while it runs) with Ask About This Page…, or Set Up
-/// Assistant….
+/// Assistant…. While a request sent from an asking button runs (board 56)
+/// it says Working… in suggestion purple, with a pulsing dot; the token
+/// from that button lands on it (`AssistantAskCenter.toolbarAnchor`).
 struct AssistantToolbarIndicator: View {
     let activity: AssistantActivity
     let status: AssistantStatus
     /// The client the button names, once paired.
     var client: MCPPairedClient?
+    /// What's true for the app on screen: connected here, in another
+    /// project, or refused.
+    var connection: AssistantConnection?
     var editsDrafts = false
     var recentCalls: [MCPLogEntry] = []
     /// Holds the Proposals sheet; nil when these services keep no screenshot
@@ -33,25 +38,38 @@ struct AssistantToolbarIndicator: View {
     var onAsk: () -> Void = {}
     var onSuggestEverything: () -> Void = {}
     var onSetUp: () -> Void = {}
+    /// The app's request from an asking button, while it runs.
+    var ask: AssistantAsk?
+    @Environment(\.askCenterOverride) private var askCenterOverride
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(KeyAssistantController.self) private var keyAssistant
     @Environment(ClaudeCodeLauncher.self) private var launcher
     @State private var isShowingPopover = false
+
+    private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
 
     var body: some View {
         Button {
             isShowingPopover.toggle()
         } label: {
             HStack(spacing: Spacing.xSmall) {
-                if activity.isWorking || isSuggestingEverything || !launcher.activeRuns.isEmpty {
-                    ProgressView()
-                        .controlSize(.mini)
+                if ask?.phase == .working {
+                    AssistantWorkingDot()
+                    Text("Working…")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Palette.machineTranslated)
+                        .lineLimit(1)
                 } else {
-                    AssistantStatusDot(status: status)
+                    if activity.isWorking || isSuggestingEverything || !launcher.activeRuns.isEmpty {
+                        ProgressView()
+                            .controlSize(.mini)
+                    } else {
+                        AssistantStatusDot(status: status, tone: status.isConnected ? connection?.tone : nil)
+                    }
+                    Text("Assistant")
+                        .font(.caption)
+                        .lineLimit(1)
                 }
-                Text("Assistant")
-                    .font(.caption)
-                    .lineLimit(1)
                 if activity.proposalCount > 0 {
                     Text(activity.proposalCount, format: .number)
                         .font(.caption2.weight(.semibold).monospacedDigit())
@@ -60,14 +78,17 @@ struct AssistantToolbarIndicator: View {
                 }
             }
         }
+        .background(AskAnchorView(anchor: askCenter.toolbarAnchor))
         .help(accessibilityLabel)
         .accessibilityLabel(Text(accessibilityLabel))
         .accessibilityIdentifier("workspace.assistantIndicator")
         .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) {
             AssistantPopoverContent(
+                ask: ask,
                 status: status,
                 activity: activity,
                 client: client,
+                connection: status.isConnected ? connection : nil,
                 editsDrafts: editsDrafts,
                 recentCalls: recentCalls,
                 key: keyAssistant.configuration,
@@ -116,8 +137,10 @@ struct AssistantToolbarIndicator: View {
     /// "Claude Code is proposing changes", "2 proposals waiting for
     /// review", or "Assistant, Connected".
     private var accessibilityLabel: String {
+        if let ask { return ask.toolbarLabel }
         if activity.isWorking || activity.proposalCount > 0 { return activity.accessibilityLabel }
         if isSuggestingEverything { return String(localized: "Assistant, suggesting everything") }
+        if status.isConnected, let connection { return String(localized: "Assistant, \(connection.statusTitle)") }
         return String(localized: "Assistant, \(status.title)")
     }
 

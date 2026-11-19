@@ -40,7 +40,7 @@ struct AutopilotStripContentTests {
 
     @Test func aDesignProjectIsNamed() {
         let strip = Self.strip(nil, project: StudioDebugRuns.northpier)
-        #expect(strip.text.contains(" Claude Design designs the set in Northpier Brand. "))
+        #expect(strip.text.contains(" Claude designs the set in Northpier Brand. "))
     }
 
     @Test func anEarlierRunDropsTheNewPill() {
@@ -105,7 +105,7 @@ struct AutopilotStripContentTests {
         #expect(Self.strip(run).pill == "1 problem")
     }
 
-    @Test(arguments: [(true, "Claude Design"), (false, "Atlas’s starters")])
+    @Test(arguments: [(true, "Claude"), (false, "Atlas’s starters")])
     func designingCountsTheDirections(design: Bool, designer: String) {
         let run = StudioDebugRuns.run(.design, design: design)
         let strip = Self.strip(run)
@@ -139,7 +139,7 @@ struct AutopilotStripContentTests {
         #expect(strip.progress == nil)
     }
 
-    @Test(arguments: [(true, "Claude Design"), (false, "Atlas’s starters")])
+    @Test(arguments: [(true, "Claude"), (false, "Atlas’s starters")])
     func choosingNamesWhoMadeTheDirections(design: Bool, designer: String) {
         let strip = Self.strip(StudioDebugRuns.run(.choose, design: design))
         #expect(strip.kind == .yourTurn)

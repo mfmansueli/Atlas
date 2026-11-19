@@ -6,13 +6,16 @@
 import SwiftUI
 
 /// "No version to edit": only the live version exists, so version texts
-/// can't change until a new version is created in App Store Connect. The
-/// app-level fields stay editable, through "View Version 1.3".
+/// can't change until a new version is created: Create Version 1.4… queues
+/// it in Review & Push, or it's made in App Store Connect. The app-level
+/// fields stay editable, through "View Version 1.3".
 struct NoVersionView: View {
     let viewModel: StorePageViewModel
 
     var body: some View {
         let live = viewModel.content?.version.versionString ?? ""
+        let queued = viewModel.queuedNewVersions.first
+        let next = viewModel.newVersionStart.versionString
         VStack(spacing: Spacing.small) {
             Image(systemName: "doc")
                 .font(.system(size: 26))
@@ -20,19 +23,36 @@ struct NoVersionView: View {
                 .accessibilityHidden(true)
             Text("No version to edit")
                 .font(.title3.weight(.semibold))
-            Text("Version \(live) is live and read-only. To change What’s New, the description, keywords and other version texts, create version \(Self.nextVersion(after: live)) in App Store Connect, then refresh.")
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 460)
+            Group {
+                if let queued {
+                    Text("Version \(queued.versionString) waits in Review & Push. Once it’s pushed, its What’s New, description, keywords and other version texts open here.")
+                } else {
+                    Text("Version \(live) is live and read-only. To change What’s New, the description, keywords and other version texts, create version \(next).")
+                }
+            }
+            .font(.callout)
+            .foregroundStyle(Palette.label2)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: 460)
+            .accessibilityIdentifier("storePage.noVersion.message")
             Text("Name, Subtitle and Privacy Policy URL are app-level and stay editable.")
                 .font(.caption)
                 .foregroundStyle(Palette.label2)
             HStack(spacing: Spacing.small) {
-                Link(destination: Self.appStoreConnectURL(appID: viewModel.app.id)) {
-                    Text("Open App Store Connect")
+                if queued == nil, viewModel.canCreateVersion {
+                    Button("Create Version \(next)…") { viewModel.openNewVersion() }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("storePage.createVersion")
+                    Link(destination: Self.appStoreConnectURL(appID: viewModel.app.id)) {
+                        Text("Open App Store Connect")
+                    }
+                    .buttonStyle(.bordered)
+                } else {
+                    Link(destination: Self.appStoreConnectURL(appID: viewModel.app.id)) {
+                        Text("Open App Store Connect")
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
                 Button("View Version \(live)") {
                     viewModel.showsReadOnlyVersion = true
                 }
@@ -48,10 +68,7 @@ struct NoVersionView: View {
 
     /// "1.4" after "1.3", "2.0.1" after "2.0.0": the last number plus one.
     static func nextVersion(after version: String) -> String {
-        var parts = version.split(separator: ".").map(String.init)
-        guard let last = parts.last, let number = Int(last) else { return version }
-        parts[parts.count - 1] = String(number + 1)
-        return parts.joined(separator: ".")
+        NewAppVersion.next(after: version)
     }
 
     static func appStoreConnectURL(appID: StoreApp.ID) -> URL {

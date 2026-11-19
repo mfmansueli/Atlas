@@ -6,7 +6,7 @@
 import Foundation
 
 extension ArtworkChecker {
-    /// A Claude Design page's own problems: no place for the placement's
+    /// An HTML page's own problems: no place for the placement's
     /// text, a capture that didn't load (an error: the image would show an
     /// empty frame), a page bigger than its canvas, its own words, and
     /// text that moves in a loop.

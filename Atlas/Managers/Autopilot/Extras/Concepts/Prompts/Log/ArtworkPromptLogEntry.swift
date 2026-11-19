@@ -25,7 +25,7 @@ struct ArtworkPromptLogEntry: Codable, Hashable, Sendable {
     var run: String
     /// The assistant that asked or answered ("Claude Code").
     var provider: String
-    /// The design source it designs with ("Claude Design").
+    /// The design source it designs with ("Claude").
     var designSource: String?
     /// "artwork-concepts-free".
     var promptID: String?

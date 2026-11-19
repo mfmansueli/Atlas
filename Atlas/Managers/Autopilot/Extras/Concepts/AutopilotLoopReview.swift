@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// The header loop of a run with a motion loop: Claude Design animates the
+/// The header loop of a run with a motion loop: Claude animates the
 /// chosen concept's pages once the person chose it (the motion prompt),
 /// Atlas makes the loops in every language, and the person watches
 /// them in "Watch the header loop" (v1, then v2, v3… for each change they
@@ -31,7 +31,7 @@ struct AutopilotLoopReview: Codable, Hashable, Sendable {
     /// The motion checks the loop is taken without, one line each.
     var motionWarnings: [String]?
 
-    /// Claude Design hasn't sent the animated pages yet.
+    /// Claude hasn't sent the animated pages yet.
     var isAnimating: Bool { version == 0 }
 
     /// Approve and Ask wait.

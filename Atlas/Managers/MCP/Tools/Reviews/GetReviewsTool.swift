@@ -42,7 +42,7 @@ struct GetReviewsTool: MCPTool {
         let target = "\(app.name) · Reviews"
         guard archive.fetchedAt != nil else {
             throw MCPToolError.unavailable(String(localized: """
-            Atlas couldn’t read \(app.name)’s reviews from App Store Connect. The person can open Reviews (⌘7) to see why.
+            Atlas couldn’t read \(app.name)’s reviews from App Store Connect. The person can open Reviews (⌘8) to see why.
             """))
         }
         let matching = archive.reviews.filter { show.includes($0) }.sorted { $0.date > $1.date }
@@ -59,6 +59,7 @@ struct GetReviewsTool: MCPTool {
                 "repliesSuggested": .int(archive.openSuggestionCount),
             ],
             "replyLimit": .int(ReviewText.replyLimit),
+            "textRules": StoreTextGuidelinePlace.reviewReply.rulesJSON,
             "reviews": .array(matching.prefix(limit).map { ReviewsMCPJSON.review($0, in: archive) }),
             "groups": .array(archive.themes.map(ReviewsMCPJSON.theme)),
             "notes": .array(notes),

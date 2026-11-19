@@ -46,6 +46,7 @@ struct StorePageContentView: View {
             case .importPreview: ImportPreviewSheet(viewModel: viewModel)
             case .newLanguages: NewLanguagesSheet(viewModel: viewModel)
             case .acceptAll: acceptAllSheet
+            case .newVersion: NewVersionSheet(viewModel: viewModel)
             }
         }
         .fileImporter(isPresented: $viewModel.isImporterPresented, allowedContentTypes: ListingTransferFormat.importableContentTypes) { result in

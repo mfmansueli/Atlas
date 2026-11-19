@@ -6,11 +6,14 @@
 #if DEBUG
 import SwiftUI
 
-/// Connect DEBUG scenes (`-AtlasDebugScene <id>`), as the design's
-/// "Connect" board shows them:
+/// Welcome and Connect DEBUG scenes (`-AtlasDebugScene <id>`), as the
+/// design's board 45 shows them:
 ///
-/// - `connect`: the empty form; any well-formed key connects, then the first
-///   sync runs and the library opens.
+/// - `welcome`: Welcome, the header moving; Get Started opens Connect.
+/// - `welcome-still`: Welcome as Reduce Motion shows it.
+/// - `connect`: the empty form under the compact header; any well-formed
+///   key connects, then the first sync runs and the library opens. Back
+///   returns to Welcome.
 /// - `connect-key`: the same with a `.p8` already imported (a UI test can't
 ///   drive the file panel).
 /// - `connect-hover`: a file hovering over the drop zone.
@@ -19,11 +22,14 @@ import SwiftUI
 /// - `connect-checking`: the check never answers.
 /// - `connect-401` (also `connect-rejected`), `connect-403`, `connect-offline`:
 ///   the check fails that way after Connect.
-/// - `sync`: "Loading your apps…" halfway through.
+/// - `sync`: "Reading your apps…" halfway through; Cancel goes back to
+///   Welcome.
+/// - `sync-still`: the same as Reduce Motion shows it.
 enum ConnectDebugScenes {
     static let ids = [
+        "welcome", "welcome-still",
         "connect", "connect-key", "connect-hover", "connect-hints", "connect-help", "connect-checking",
-        "connect-401", "connect-rejected", "connect-403", "connect-offline", "sync",
+        "connect-401", "connect-rejected", "connect-403", "connect-offline", "sync", "sync-still",
     ]
 
     /// The key check every scene uses, in the main window and Settings.
@@ -40,8 +46,8 @@ enum ConnectDebugScenes {
     @MainActor
     static func view(for id: String) -> AnyView? {
         guard ids.contains(id) else { return nil }
-        if id == "sync" {
-            return AnyView(FirstSyncView(progress: FirstSyncProgress(appCount: DebugFixtures.apps.count, syncedCount: 2)))
+        if id.hasPrefix("sync") {
+            return AnyView(SyncScene(isStill: id == "sync-still"))
         }
         return AnyView(Scene(id: id))
     }
@@ -64,16 +70,55 @@ enum ConnectDebugScenes {
             if connection.isConnected {
                 DebugMainScene(isFirstSync: true)
             } else {
-                ConnectView(viewModel: model, showsHelp: id == "connect-help", showsDropHover: id == "connect-hover")
-                    .navigationTitle("Atlas")
-                    .navigationSubtitle("Not connected")
+                content
                     .task {
                         if Self.connectsOnLaunch.contains(id) { await model.connect() }
                     }
             }
         }
 
+        @ViewBuilder
+        private var content: some View {
+            // Help open or a file hovering are the form alone, as the old
+            // board drew them.
+            if id == "connect-help" || id == "connect-hover" {
+                ConnectView(viewModel: model, showsHelp: id == "connect-help", showsDropHover: id == "connect-hover")
+                    .navigationTitle("Atlas")
+            } else {
+                WelcomeFlowView(
+                    checker: ConnectDebugScenes.keyChecker(for: id),
+                    stage: id.hasPrefix("welcome") ? .welcome : .connect,
+                    viewModel: model,
+                    forcesStill: id == "welcome-still"
+                ) { _, _ in connection.isConnected = true }
+            }
+        }
+
         private static let connectsOnLaunch: Set = ["connect-checking", "connect-401", "connect-403", "connect-offline"]
+    }
+
+    /// "Reading your apps…" with three of the sample apps read; Cancel
+    /// goes back to Welcome, as forgetting the only key does.
+    private struct SyncScene: View {
+        let isStill: Bool
+        @State private var isCancelled = false
+
+        var body: some View {
+            if isCancelled {
+                WelcomeFlowView(checker: DebugKeyChecker(), forcesStill: isStill) { _, _ in }
+            } else {
+                FirstSyncView(
+                    progress: FirstSyncProgress(
+                        appCount: DebugFixtures.apps.count,
+                        syncedCount: 3,
+                        teamName: DebugFixtures.northpier.name,
+                        syncedNames: DebugFixtures.apps.prefix(3).map(\.name)
+                    ),
+                    forcesStill: isStill,
+                    onCancel: { isCancelled = true }
+                )
+            }
+        }
     }
 
     /// Whether a scene's key connected; a class, so the model's `onConnect`
@@ -91,7 +136,7 @@ enum ConnectDebugScenes {
     ) -> ConnectViewModel {
         let model = ConnectViewModel(checker: keyChecker(for: id), onConnect: onConnect)
         switch id {
-        case "connect":
+        case "connect", "welcome", "welcome-still":
             break
         case "connect-key":
             model.importKey(DebugFixtures.privateKey)

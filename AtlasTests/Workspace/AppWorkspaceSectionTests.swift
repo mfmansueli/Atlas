@@ -12,15 +12,17 @@ import Testing
 struct AppWorkspaceSectionTests {
     @Test func theSectionsAreInTheSidebarsOrder() {
         #expect(AppWorkspaceSection.allCases == [
-            .overview, .storePage, .screenshots, .inAppEvents, .appInformation, .subscriptionPricing, .reviews, .analytics,
+            .overview, .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing, .reviews, .analytics,
         ])
-        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "6", "7", "8"])
+        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "6", "7", "8", "9"])
     }
 
     @Test func theSidebarGroupsThemByWhatYouAreDoing() {
         #expect(AppWorkspaceSectionGroup.allCases.map(\.title) == [nil, "Store Listing", "After Release"])
         #expect(AppWorkspaceSectionGroup.overview.sections == [.overview])
-        #expect(AppWorkspaceSectionGroup.storeListing.sections == [.storePage, .screenshots, .inAppEvents, .appInformation, .subscriptionPricing])
+        #expect(AppWorkspaceSectionGroup.storeListing.sections == [
+            .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing,
+        ])
         #expect(AppWorkspaceSectionGroup.afterRelease.sections == [.reviews, .analytics])
         // Every section is in exactly one group.
         #expect(AppWorkspaceSectionGroup.allCases.flatMap(\.sections) == AppWorkspaceSection.allCases)
@@ -37,6 +39,7 @@ struct AppWorkspaceSectionTests {
         (AppWorkspaceSection.overview, "Overview"),
         (.storePage, "Store Page"),
         (.screenshots, "Screenshots"),
+        (.productPages, "Product Pages"),
         (.inAppEvents, "In-App Events"),
         (.appInformation, "App Information"),
         (.analytics, "Analytics"),

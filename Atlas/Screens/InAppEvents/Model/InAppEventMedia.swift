@@ -8,7 +8,7 @@ import Foundation
 /// An image or video of an event in one language: the card (16:9, shown in
 /// search, Today and on the product page) or the details page's top (9:16).
 struct InAppEventMedia: Hashable, Sendable {
-    enum Kind: String, CaseIterable, Hashable, Sendable {
+    enum Kind: String, CaseIterable, Hashable, Sendable, Codable {
         case card = "EVENT_CARD"
         case details = "EVENT_DETAILS_PAGE"
 

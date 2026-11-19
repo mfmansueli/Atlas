@@ -23,6 +23,8 @@ struct DebugMainScene: View {
     @State private var analytics: AnalyticsStore
     @State private var reviews: ReviewsStore
     @State private var events: InAppEventsStore
+    @State private var productPages: ProductPagesStore
+    @State private var artwork: EventArtworkStudio
     @State private var release: ReleaseStore
     /// A gate that's on Free, for the scenes that show what Free has.
     @State private var freeGate: ProGate?
@@ -30,6 +32,8 @@ struct DebugMainScene: View {
     private let presentedSheet: WorkspaceSheet?
     private let notice: PushNotice?
     private let isFirstSync: Bool
+    /// Reads the open app's other sections ahead, as the live window does.
+    private let prefetchesSections: Bool
     /// The unnamed key's own session; nil shows the sample accounts.
     @State private var keySession: AppSession?
     @Environment(AppSession.self) private var session
@@ -45,13 +49,16 @@ struct DebugMainScene: View {
         analytics: AnalyticsStore = AnalyticsStore(),
         reviews: ReviewsStore = DebugReviewsData.store(),
         events: InAppEventsStore = DebugInAppEventsData.store(),
+        productPages: ProductPagesStore = DebugProductPagesData.store(),
+        artwork: EventArtworkStudio = EventArtworkStudio(),
         release: ReleaseStore = DebugReleaseData.store(.prepare),
         isFree: Bool = false,
         presentedSheet: WorkspaceSheet? = nil,
         autoPush: Bool = false,
         notice: PushNotice? = nil,
         isFirstSync: Bool = false,
-        unnamedKey: Bool = false
+        unnamedKey: Bool = false,
+        prefetchesSections: Bool = false
     ) {
         self.services = services
         self.selectedAppID = selectedAppID
@@ -60,6 +67,7 @@ struct DebugMainScene: View {
         self.presentedSheet = presentedSheet
         self.notice = notice
         self.isFirstSync = isFirstSync
+        self.prefetchesSections = prefetchesSections
         let changes = ChangeQueue(changes: pendingChanges)
         let history = PushHistory(records: pushRecords)
         _changes = State(initialValue: changes)
@@ -72,6 +80,8 @@ struct DebugMainScene: View {
         _analytics = State(initialValue: analytics)
         _reviews = State(initialValue: reviews)
         _events = State(initialValue: events)
+        _productPages = State(initialValue: productPages)
+        _artwork = State(initialValue: artwork)
         _release = State(initialValue: release)
         _freeGate = State(initialValue: isFree ? ProGate(entitlements: Entitlements(store: DebugProStore())) : nil)
         let key = AppStoreConnectCredentials(issuerID: DebugFixtures.issuerID, keyID: DebugFixtures.keyID, privateKeyPEM: DebugFixtures.privateKey.pem)
@@ -88,7 +98,8 @@ struct DebugMainScene: View {
             presentedSheet: presentedSheet,
             isFirstSync: isFirstSync,
             onAddKey: { session.isAddingKey = true },
-            onTeamNameFound: { keySession?.recordTeamName($0, for: DebugFixtures.keyID) }
+            onTeamNameFound: { keySession?.recordTeamName($0, for: DebugFixtures.keyID) },
+            prefetchesSections: prefetchesSections
         )
         .environment(changes)
         .environment(history)
@@ -98,6 +109,8 @@ struct DebugMainScene: View {
         .environment(analytics)
         .environment(reviews)
         .environment(events)
+        .environment(productPages)
+        .environment(artwork)
         .environment(release)
         .modifier(DebugFreeGate(gate: freeGate))
         .task {

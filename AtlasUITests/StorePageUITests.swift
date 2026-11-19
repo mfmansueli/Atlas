@@ -56,6 +56,26 @@ final class StorePageUITests: XCTestCase {
         XCTAssertTrue(waitForReviewCount(before + 1))
     }
 
+    /// SimProps 1.0 was rejected for “free” in its store text: typing it
+    /// warns under the field, and the change still waits in Review & Push.
+    func testTextAppReviewWouldRejectWarnsUnderTheField() {
+        launch(scene: "store-coverage")
+        let cell = element("storePage.cell.fr-FR.name")
+        XCTAssertTrue(cell.waitForExistence(timeout: 15))
+        let before = reviewCount()
+        cell.click()
+        let name = element("storePage.input.name")
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        XCTAssertFalse(element("storePage.fieldGuideline.name").exists)
+        name.click()
+        name.typeKey("a", modifierFlags: .command)
+        name.typeText("Lumen Free")
+        let warning = element("storePage.fieldGuideline.name")
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: warning).contains("Guideline 2.3.7"), text(of: warning))
+        XCTAssertTrue(waitForReviewCount(before + 1))
+    }
+
     func testFindAndReplaceChangesEveryMatch() {
         launch(scene: "store-find")
         XCTAssertTrue(element("storePage.findSheet").waitForExistence(timeout: 15))
@@ -103,6 +123,37 @@ final class StorePageUITests: XCTestCase {
         XCTAssertTrue(element("storePage.readOnly").waitForExistence(timeout: 5))
     }
 
+    func testANewVersionIsQueuedFromTheNoVersionPage() {
+        launch(scene: "store-noversion")
+        let create = app.buttons["storePage.createVersion"]
+        XCTAssertTrue(create.waitForExistence(timeout: 15))
+        let before = reviewCount()
+        create.click()
+
+        let number = app.textFields["storePage.newVersion.number"]
+        XCTAssertTrue(number.waitForExistence(timeout: 5))
+        XCTAssertEqual(number.value as? String, "1.4")
+        let add = app.buttons["storePage.newVersion.add"]
+        XCTAssertTrue(add.isEnabled)
+
+        // A number not higher than the live 1.3 can't be added.
+        number.doubleClick()
+        number.typeKey("a", modifierFlags: .command)
+        number.typeText("1.3")
+        XCTAssertTrue(element("storePage.newVersion.problem").waitForExistence(timeout: 5))
+        XCTAssertFalse(add.isEnabled)
+
+        number.typeKey("a", modifierFlags: .command)
+        number.typeText("1.4")
+        waitUntilEnabled(add)
+        add.click()
+
+        XCTAssertTrue(element("storePage.newVersion").waitForNonExistence(timeout: 5))
+        XCTAssertTrue(waitForReviewCount(before + 1))
+        XCTAssertFalse(app.buttons["storePage.createVersion"].exists)
+        XCTAssertTrue(text(of: element("storePage.noVersion.message")).hasPrefix("Version 1.4 waits in Review & Push"))
+    }
+
     func testARateLimitOffersToTryAgain() {
         launch(scene: "store-ratelimited")
         XCTAssertTrue(element("storePage.loadError").waitForExistence(timeout: 15))
@@ -113,6 +164,25 @@ final class StorePageUITests: XCTestCase {
         launch(scene: "store-iap")
         XCTAssertTrue(element("storePage.inAppTexts").waitForExistence(timeout: 15))
         XCTAssertTrue(element("storePage.inAppRow.en-US").waitForExistence(timeout: 5))
+    }
+
+    /// The sample's annual description says "save 33%": its cell says App
+    /// Review would reject it, its editor says why, and the warning goes
+    /// once the text is fixed.
+    func testInAppTextAppReviewWouldRejectIsWarned() {
+        launch(scene: "store-iap")
+        let cell = element("storePage.inAppCell.en-US.lumen.plus.annual.description")
+        XCTAssertTrue(cell.waitForExistence(timeout: 15))
+        XCTAssertTrue(cell.label.contains("Guideline 2.3.7"), cell.label)
+        cell.click()
+        let warning = element("storePage.inAppEditorGuideline")
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        let editor = element("storePage.inAppEditor")
+        editor.click()
+        editor.typeKey("a", modifierFlags: .command)
+        editor.typeText("A year of Lumen Plus")
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: warning)
+        XCTAssertEqual(XCTWaiter().wait(for: [gone], timeout: 5), .completed)
     }
 
     // MARK: - Helpers

@@ -63,7 +63,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         goToTheLook(showing: "autopilot.guided.look.headerFree")
         let free = element("autopilot.guided.look.headerFree")
         XCTAssertTrue(element("autopilot.guided.look.headerStyle.free").isSelected)
-        XCTAssertTrue(text(of: free).hasPrefix("Claude Design studies Lumen Journal and proposes 3 concepts of its own"), text(of: free))
+        XCTAssertTrue(text(of: free).hasPrefix("Claude studies Lumen Journal and proposes 3 concepts of its own"), text(of: free))
         XCTAssertFalse(element("autopilot.guided.look.scene.night").exists, "No scenes to pick")
         XCTAssertEqual(text(of: element("autopilot.guided.look.note")), "Calm, like writing before bed", "The person's words go to the designer")
         attachScreenshot("Look · go freely")
@@ -300,7 +300,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         XCTAssertTrue(waitUntil { self.text(of: note) == "Slower movement" }, text(of: note))
         element("autopilot.loop.ask").click()
         XCTAssertTrue(element("autopilot.loop.busy").waitForExistence(timeout: 5))
-        XCTAssertTrue(text(of: element("autopilot.loop.busy")).hasPrefix("Claude Design is revising the loop: “Slower movement”."))
+        XCTAssertTrue(text(of: element("autopilot.loop.busy")).hasPrefix("Claude is revising the loop: “Slower movement”."))
         XCTAssertFalse(approve.isEnabled, "Approve waits for the new version")
     }
 

@@ -21,7 +21,7 @@ struct AutopilotDirection: Codable, Hashable, Sendable, Identifiable {
     /// The header and search artwork's look, when the design AI sent one of
     /// its own (`extrasTemplates.artwork`); nil uses `template`'s.
     var artworkTemplate: ScreenshotTemplate?
-    /// The header and search artwork as Claude Design made them, one page
+    /// The header and search artwork as Claude made them, one page
     /// per canvas; nil draws them with Atlas's own layout in
     /// `artworkLook`.
     var artworkDesign: AutopilotArtworkDesign?
@@ -42,8 +42,8 @@ struct AutopilotDirection: Codable, Hashable, Sendable, Identifiable {
     /// The App Preview's look: its own, else the screenshots'.
     var previewLook: ScreenshotTemplate { previewTemplate ?? template }
 
-    /// The badge's label: "Claude Design" or "Starter".
+    /// The badge's label: "Claude" or "Starter".
     var sourceTitle: String {
-        source == .none ? String(localized: "Starter") : source.title
+        source == .none ? String(localized: "Starter") : DesignProjectKind.claude
     }
 }

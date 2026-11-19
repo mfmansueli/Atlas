@@ -21,6 +21,8 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     case privacyScan
     /// Ask Claude Code… on an In-App Event's images and video.
     case eventArtwork(eventID: String)
+    /// Make the Artwork…: Claude's three concepts for an event.
+    case eventArtworkConcepts(eventID: String)
 
     /// "Suggest Everything", "Ask · Store Page".
     var title: String {
@@ -33,6 +35,17 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .captions: String(localized: "Translate captions")
         case .privacyScan: String(localized: "App Privacy scan")
         case .eventArtwork: String(localized: "Ask · In-App Event art")
+        case .eventArtworkConcepts: String(localized: "In-App Event artwork")
+        }
+    }
+
+    /// What an asking button's request is about, as the toolbar and the
+    /// toast say it: "Store Page", "In-App Event art".
+    var askSubject: String {
+        switch self {
+        case let .ask(area): area
+        case .eventArtwork: String(localized: "In-App Event art")
+        case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts: title
         }
     }
 
@@ -40,7 +53,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         switch self {
         case .test: .atlasOnly
         case .autopilot: .autopilot
-        case .eventArtwork: .eventArtwork
+        case .eventArtwork, .eventArtworkConcepts: .eventArtwork
         case .ask, .suggestEverything, .translation, .captions, .privacyScan: .readProject
         }
     }

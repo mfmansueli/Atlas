@@ -7,7 +7,7 @@
 import Testing
 @testable import Atlas
 
-/// A look on Choose shows the header and search Claude Design made for it,
+/// A look on Choose shows the header and search Claude made for it,
 /// under its screenshots, unless they're concepts chosen apart or the look
 /// has no screenshots (then they're its picture already).
 @MainActor

@@ -15,6 +15,8 @@ enum ListingProposalRefusal: Hashable, Sendable {
     case notEditable(version: String)
     case overLimit(count: Int, limit: ListingTextLimit)
     case invalidURL
+    /// It breaks App Review's metadata rules: pricing, other platforms…
+    case guidelines([StoreTextGuidelineIssue])
 
     var reason: String {
         switch self {
@@ -28,6 +30,8 @@ enum ListingProposalRefusal: Hashable, Sendable {
             String(localized: "Over the limit: \(count) of \(limit.maximum) \(limit.unit.name).")
         case .invalidURL:
             String(localized: "Not a full https:// URL.")
+        case let .guidelines(issues):
+            issues.assistantReason
         }
     }
 }

@@ -160,6 +160,25 @@ struct ReleaseViewModelTests {
         #expect(services.appInformation.notes.notes(for: app.id).exportAnswers == nil)
     }
 
+    /// SimProps: the first Submit made the phased release and stopped; the
+    /// second was refused because the sheet still said there was none.
+    /// Now the sheet reads the version again and keeps the person's answers.
+    @Test func aSubmissionThatStoppedHalfwayReadsTheVersionAgain() async {
+        let (model, _) = await makeModel(isWhatsNewComplete: true)
+        model.options.encryption = .noEncryption
+        model.options.timing = .afterApproval
+        release.refuses = true
+        var halfway = Data.status(.prepare)
+        halfway.phased = PhasedRelease(id: "ph-made", state: .inactive, day: 0, startDate: nil)
+        release.status = halfway
+
+        #expect(await !model.submit())
+        #expect(model.submitError != nil)
+        #expect(model.status?.phased?.id == "ph-made")
+        #expect(model.options.timing == .afterApproval)
+        #expect(model.options.encryption == .noEncryption)
+    }
+
     // MARK: - After submitting
 
     @Test func cancelingAsksFirstThenTakesTheSubmissionBack() async {

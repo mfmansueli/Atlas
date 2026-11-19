@@ -150,6 +150,12 @@ final class StorePageViewModel {
 
     var isLoaded: Bool { content != nil }
 
+    /// Settings → Suggestions → "Words repeated between name, subtitle and
+    /// keywords": the built-in keywords check.
+    var checksRepeatedWords = true {
+        didSet { if checksRepeatedWords != oldValue { refreshSuggestions() } }
+    }
+
     private func modeDidChange() {
         if mode == .editor, editorLocale == nil { editorLocale = defaultEditorLocale }
     }
@@ -319,6 +325,13 @@ final class StorePageViewModel {
     /// Over the limit, an invalid URL, empty or fine.
     func validation(of field: ListingField, in locale: StoreLocale) -> ListingFieldValidation {
         listing?.validation(of: field, in: locale) ?? .empty
+    }
+
+    /// What App Review would reject in the field's text: a warning, not a
+    /// block, since the person may know better (an approved Android
+    /// companion, an app in the Kids Category).
+    func guidelineIssues(_ field: ListingField, in locale: StoreLocale) -> [StoreTextGuidelineIssue] {
+        StoreTextGuidelineCheck.issues(in: value(field, in: locale), for: field)
     }
 
     // MARK: - Locales

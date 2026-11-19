@@ -71,7 +71,7 @@ struct TranslateMissingViewModelTests {
         let model = await makeModel()
         model.presentTranslate()
         model.translation.provider = .aiProvider
-        #expect(model.translation.setupMessage == "Add an AI provider and its API key in Settings → Translation first.")
+        #expect(model.translation.setupMessage == "Add an AI provider and its API key in Settings → AI Assistants first.")
         model.translation.aiProvider = AIProviderSetup(vendor: .anthropic, hasKey: true) { _ in FakeListingTranslator() }
         #expect(model.translation.setupMessage == nil)
         #expect(model.translation.canStart)

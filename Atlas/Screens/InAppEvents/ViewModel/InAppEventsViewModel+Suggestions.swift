@@ -63,6 +63,12 @@ extension InAppEventsViewModel {
             }
         }
         store.add(undo.suggestions, for: app.id)
+        if let key = undo.artwork {
+            artworkStudio?.update(key) { run in
+                run.usedConceptID = undo.previousConceptID
+                run.queuedChangeIDs = undo.previousChangeIDs
+            }
+        }
     }
 
     /// "Not localized yet: people in German see the event in English."

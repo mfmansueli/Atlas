@@ -23,7 +23,9 @@ struct GetStorePageTool: MCPTool {
         languages the app's project supports and its App Store page doesn't have yet (reported with \
         report_app_support): suggested ones are in `locales` with `new: true` and no texts, so suggest every \
         field for them in that language; added ones (`new: true`, created when the person pushes) too. Their \
-        pages are created only when the person adds them. Send suggestions with suggest_fields.
+        pages are created only when the person adds them. `storeTextRules` lists App Review's rules to follow in \
+        every text, and a locale's `states` the fields whose text already breaks one: suggest a version that doesn't. \
+        Send suggestions with suggest_fields.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -54,6 +56,7 @@ struct GetStorePageTool: MCPTool {
             "version": draft.versionJSON,
             "primaryLocale": .string(listing.primaryLocale.code),
             "fields": .object(Dictionary(uniqueKeysWithValues: fields)),
+            "storeTextRules": StoreTextRules.json,
             "locales": .array(locales.map { locale in
                 Self.entry(
                     for: locale,
@@ -87,14 +90,18 @@ struct GetStorePageTool: MCPTool {
     private static func entry(for locale: StoreLocale, in listing: StoreListing, isNew: Bool, suggestions: [FieldSuggestion]) -> JSONValue {
         var texts: [String: JSONValue] = [:]
         var live: [String: JSONValue] = [:]
+        var states: [String: JSONValue] = [:]
         for field in listing.fields {
             let draft = listing.draft(field, in: locale)
             if !draft.local.isEmpty { texts[field.rawValue] = .string(draft.local) }
             if draft.isPending { live[field.rawValue] = .string(draft.remote) }
+            let issues = StoreTextGuidelineCheck.issues(in: draft.local, for: field)
+            if !issues.isEmpty { states[field.rawValue] = .string(issues.assistantNote) }
         }
         var entry: [String: JSONValue] = ["code": .string(locale.code), "name": .string(locale.name), "texts": .object(texts)]
         if isNew { entry["new"] = true }
         if !live.isEmpty { entry["live"] = .object(live) }
+        if !states.isEmpty { entry["states"] = .object(states) }
         if !suggestions.isEmpty { entry["suggestions"] = .array(suggestions.map(\.mcpJSON)) }
         return .object(entry)
     }

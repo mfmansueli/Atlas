@@ -10,7 +10,7 @@ import SwiftUI
 /// meanwhile. In
 /// the viewer a loop plays instead (`plays`), at the studio's
 /// `artworkLoop` clock, whose controls the viewer shows under it. With a
-/// Claude Design `page` it's that page, rendered by WebKit, and its loop
+/// Claude `page` it's that page, rendered by WebKit, and its loop
 /// plays live.
 struct ArtworkThumbnail: View {
     @Bindable var studio: ScreenshotStudioModel
@@ -27,7 +27,7 @@ struct ArtworkThumbnail: View {
     var isMotion = false
     /// A loop plays (the viewer) instead of showing its poster.
     var plays = false
-    /// The direction's own page for this canvas, from Claude Design.
+    /// The direction's own page for this canvas, from Claude.
     var page: String?
     @State private var rendered: CGImage?
     /// The last render gave no image, so the tile stops saying it's on

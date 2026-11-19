@@ -18,7 +18,7 @@ enum AutopilotShotStyle: String, Codable, CaseIterable, Hashable, Sendable {
     /// The most templates a plan picks; a fourth replaces the last.
     static let maximumTemplates = 3
 
-    /// "Claude Design proposes 3", "From templates", "Keep template v4".
+    /// "Claude proposes 3", "From templates", "Keep template v4".
     func title(design: String, version: Int?) -> String {
         switch self {
         case .free: String(localized: "\(design) proposes 3")

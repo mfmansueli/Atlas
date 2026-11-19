@@ -28,8 +28,11 @@ struct SuggestFieldsTool: MCPTool {
         status is queued, unchanged (the field already has that value or you suggested it already), replaced \
         (your older open suggestion for the field was replaced) or refused with a code: over_limit (with count), \
         unknown_field, unknown_locale, locked (the version is in review), not_permitted, invalid_value or \
-        invalid_answer (not one of the question's or feature's answers) or run_stopped (the person stopped \
-        receiving the run: stop sending). Pass total, how many you'll send in all, so Atlas shows \
+        invalid_answer (not one of the question's or feature's answers), guideline (store text App Review would \
+        reject, with issues [{kind, guideline, phrases}]: pricing such as “free”, prices, discounts or trials, other \
+        platforms, other apps' names, unverifiable claims, beta or demo, placeholders, “coming soon” or “For Kids”; \
+        rewrite it as the reason says) or run_stopped (the person stopped receiving the run: stop sending). Follow \
+        get_store_page's storeTextRules. Pass total, how many you'll send in all, so Atlas shows \
         progress; when suggesting everything, call begin_suggestions with your plan first and pass its run \
         instead. apply: true queues the values as changes instead, only when the person allowed editing \
         drafts. A store locale may also be a language the app supports and the App Store doesn't have yet \

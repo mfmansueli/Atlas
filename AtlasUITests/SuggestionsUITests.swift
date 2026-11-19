@@ -66,17 +66,52 @@ final class SuggestionsUITests: XCTestCase {
         XCTAssertEqual(text(of: element("overview.suggestionsCard.count")), "8 to review")
     }
 
+    /// An old token turned away: the card says so and offers Reconnect…,
+    /// which opens setup for a new command, instead of "connected".
+    func testARefusedTokenSaysClaudeCodeCantConnect() {
+        app.launch(debugScene: "ov-refused")
+        let summary = element("overview.assistantConnected.summary")
+        XCTAssertTrue(summary.waitForExistence(timeout: 10))
+        XCTAssertTrue(summary.label.hasPrefix("Claude Code can’t connect"), summary.label)
+        XCTAssertTrue(summary.label.contains("older pairing"))
+        // Nothing to paste a prompt into.
+        XCTAssertFalse(app.buttons["overview.assistantConnected.ask"].exists)
+
+        app.buttons["overview.assistantConnected.reconnect"].click()
+        XCTAssertTrue(element("assistantSetup.sheet").waitForExistence(timeout: 5))
+    }
+
+    func testAnotherAppsProjectIsntThisAppsConnection() {
+        app.launch(debugScene: "ov-elsewhere")
+        let summary = element("overview.assistantConnected.summary")
+        XCTAssertTrue(summary.waitForExistence(timeout: 10))
+        XCTAssertTrue(summary.label.hasPrefix("Claude Code is connected to another project"), summary.label)
+        XCTAssertTrue(summary.label.contains("~/Developer/Tempo, Tempo Metronome’s project"))
+        XCTAssertTrue(summary.label.contains("~/Developer/Lumen"))
+    }
+
+    func testAFolderLumenWasntGivenAsksForItsFolder() {
+        app.launch(debugScene: "ov-unattached")
+        let summary = element("overview.assistantConnected.summary")
+        XCTAssertTrue(summary.waitForExistence(timeout: 10))
+        XCTAssertTrue(summary.label.contains("If that’s Lumen Journal’s project"), summary.label)
+        XCTAssertTrue(app.buttons["overview.assistantConnected.chooseFolder"].exists)
+    }
+
     // MARK: - Setup
 
-    func testSetupNeedsTheServerOnBeforeTheCommand() {
+    func testSetupTurnsTheServerOnAndNeedsItBeforeTheCommand() {
         app.launch(debugScene: "setup-1")
         XCTAssertTrue(element("assistantSetup.sheet").waitForExistence(timeout: 10))
         element("assistantSetup.client.cursor").click()
         let next = app.buttons["assistantSetup.continue"]
         next.click()
         XCTAssertEqual(text(of: element("assistantSetup.stepCount")), "Step 2 of 4")
-        XCTAssertFalse(next.isEnabled)
+        // Step 2 opens with the server already on.
+        XCTAssertTrue(next.isEnabled)
 
+        element("assistantSetup.server").click()
+        XCTAssertFalse(next.isEnabled)
         element("assistantSetup.server").click()
         XCTAssertTrue(next.isEnabled)
         next.click()

@@ -13,6 +13,7 @@ extension AppWorkspaceSection {
         case .overview: Palette.sectionOverview
         case .storePage: Palette.sectionStorePage
         case .screenshots: Palette.sectionScreenshots
+        case .productPages: Palette.sectionProductPages
         case .inAppEvents: Palette.sectionEvents
         case .appInformation: Palette.sectionAppInformation
         case .subscriptionPricing: Palette.sectionPricing

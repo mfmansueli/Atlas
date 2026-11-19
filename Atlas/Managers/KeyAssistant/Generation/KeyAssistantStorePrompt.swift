@@ -105,7 +105,8 @@ enum KeyAssistantStorePrompt {
     What's New from the commits and changelog when they're given, and promotional text, subtitles and keywords that fit \
     the app and each language. Write each value in its field's language, as a native speaker would. Stay within each \
     field's limit. Keywords are comma-separated without spaces and don't repeat words already in the name or subtitle. \
-    Never suggest a field's current value. Give each suggestion a one-sentence reason. Use only the field names given. \
+    Never suggest a field's current value. \(StoreTextRules.summary) Where a field's current text breaks one of these \
+    rules, suggest a version that doesn't. Give each suggestion a one-sentence reason. Use only the field names given. \
     At most one suggestion per field and language. Answer with JSON only: \
     {"suggestions": [{"locale": "en-US", "field": "whatsNew", "value": "…", "reason": "…"}]}. \
     If nothing would improve, answer {"suggestions": []}.

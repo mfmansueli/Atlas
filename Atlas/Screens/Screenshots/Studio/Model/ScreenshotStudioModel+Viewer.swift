@@ -195,7 +195,7 @@ extension ScreenshotStudioModel {
         return [language, preview.displayType.title, shot.pixelSize.title, preview.note].filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
-    /// "Direction from Claude Design · English (U.S.) · iPhone 6.9″ ·
+    /// "Direction from Claude · English (U.S.) · iPhone 6.9″ ·
     /// 1320 × 2868", or "English (U.S.) · iPhone 6.9″ · not pushed".
     private func directionSubtitle(
         _ direction: AutopilotDirection, size: PixelSize, display: ScreenshotDisplayType, language: String, asNewSet: Bool

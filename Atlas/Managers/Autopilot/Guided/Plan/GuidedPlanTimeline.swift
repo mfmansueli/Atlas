@@ -161,7 +161,7 @@ enum GuidedPlanTimeline {
             parts.append(extras.makesMotion ? String(localized: "\(headers) with their loops") : headers)
         }
         if !plan.previewDisplays.isEmpty { parts.append(String(localized: "the App Preview’s captions")) }
-        let designer = design.usesDesignAI ? design.title : String(localized: "Atlas")
+        let designer = design.designer
         let title = parts.isEmpty
             ? String(localized: "Keeps your current look, with the new captures and captions")
             : String(localized: "Designs \(parts.formatted(.list(type: .and)))")
@@ -185,7 +185,7 @@ enum GuidedPlanTimeline {
             return String(localized: "From Atlas’s starters, in the app icon’s colors\(following).")
         }
         // The starters are Atlas's, the headers the assistant's.
-        let designer = DesignProjectKind.claudeDesign.title
+        let designer = DesignProjectKind.claude
         if plan.makesScreenshots, plan.screenshotStyle != .keep {
             return String(localized: "Screenshot looks from Atlas’s starters, in the app icon’s colors; headers designed by \(designer)\(following).")
         }

@@ -7,13 +7,14 @@
 import CoreGraphics
 import Foundation
 import Testing
+import WebKit
 @testable import Atlas
 
-/// Claude Design's pages rendered by Atlas: at the canvas's exact
+/// Claude's pages rendered by Atlas: at the canvas's exact
 /// size, filled in for the language, the text fitted, the page's own
 /// scripts and the network kept out, the motion stepped.
 @MainActor
-@Suite("Claude Design pages rendered", .serialized)
+@Suite("HTML pages rendered", .serialized)
 struct ArtworkWebRendererTests {
     let renderer = ArtworkWebRenderer(width: 1)
 
@@ -24,6 +25,25 @@ struct ArtworkWebRendererTests {
         #expect(!ArtworkPixels.hasAlphaChannel(render.image))
         let corner = ArtworkWebFixtures.color(in: render.image, x: 20, y: 20)
         #expect(ArtworkWebFixtures.isClose(corner, ArtworkWebFixtures.background))
+    }
+
+    /// Drawn at half its pixels, a page keeps its layout (the text lands
+    /// where it does at full size, in the canvas's pixels) and comes back at
+    /// the smaller width, without being drawn big first.
+    @Test func drawnAtHalfThePageKeepsItsLayout() async throws {
+        var request = ArtworkWebFixtures.request(headline: "Calm", pixelWidth: 1920)
+        request.drawingScale = 0.5
+        #expect(request.drawnWidth == 1920)
+        let render = try await renderer.render(request)
+        #expect(render.image.width == 1920)
+        #expect(render.image.height == 1280)
+        let headline = try #require(render.measure.headline)
+        #expect(abs(headline.x - 200) < 4)
+        let corner = ArtworkWebFixtures.color(in: render.image, x: 20, y: 20)
+        #expect(ArtworkWebFixtures.isClose(corner, ArtworkWebFixtures.background))
+        // The next render on the same page is at full size again.
+        let full = try await renderer.render(ArtworkWebFixtures.request(pixelWidth: nil))
+        #expect(full.image.width == 3840)
     }
 
     @Test func aSmallerWidthKeepsTheRatio() async throws {
@@ -185,6 +205,17 @@ struct ArtworkWebRendererTests {
         let first = ArtworkWebLoop.posterKey(poster: "abc", html: "<p>one</p>")
         #expect(first == ArtworkWebLoop.posterKey(poster: "abc", html: "<p>one</p>"))
         #expect(first != ArtworkWebLoop.posterKey(poster: "abc", html: "<p>two</p>"))
+    }
+
+    /// WebKit's own failures are tried once more; a page's own problems
+    /// aren't, since the same page would fail the same way.
+    @Test func onlyWebKitsOwnFailuresAreTriedAgain() {
+        #expect(ArtworkWebRenderer.isWebKitFailure(NSError(domain: WKError.errorDomain, code: WKError.Code.unknown.rawValue)))
+        #expect(ArtworkWebRenderer.isWebKitFailure(ArtworkWebError.loadFailed(ArtworkWebError.processEnded)))
+        #expect(!ArtworkWebRenderer.isWebKitFailure(ArtworkWebError.loadFailed("a broken page")))
+        #expect(!ArtworkWebRenderer.isWebKitFailure(ArtworkWebError.tooLarge(10)))
+        #expect(!ArtworkWebRenderer.isWebKitFailure(ArtworkWebError.timedOut))
+        #expect(ArtworkWebError.rendererStopped.errorDescription?.contains("Send it again") == true)
     }
 }
 #endif

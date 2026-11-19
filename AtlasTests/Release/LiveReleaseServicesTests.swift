@@ -15,6 +15,30 @@ struct LiveReleaseServicesTests {
     private static let done = CannedHTTPResponse(statusCode: 200, body: #"{"data":{"type":"x","id":"x"}}"#)
     private static let noContent = CannedHTTPResponse(statusCode: 204, body: "")
     private static let createdSubmission = CannedHTTPResponse(statusCode: 201, body: #"{"data":{"type":"reviewSubmissions","id":"sub1"}}"#)
+    private static let none = CannedHTTPResponse(statusCode: 200, body: #"{"data":null}"#)
+    private static let noneOpen = CannedHTTPResponse(statusCode: 200, body: #"{"data":[]}"#)
+    private static let phased = CannedHTTPResponse(
+        statusCode: 200, body: #"{"data":{"type":"appStoreVersionPhasedReleases","id":"ph1","attributes":{"phasedReleaseState":"INACTIVE"}}}"#
+    )
+    private static let openWithTheVersion = CannedHTTPResponse(statusCode: 200, body: #"""
+    {"data":[{"type":"reviewSubmissions","id":"sub7","attributes":{"state":"READY_FOR_REVIEW"},
+    "relationships":{"appStoreVersionForReview":{"data":{"type":"appStoreVersions","id":"v14"}}}}]}
+    """#)
+    private static let openEmpty = CannedHTTPResponse(
+        statusCode: 200, body: #"{"data":[{"type":"reviewSubmissions","id":"sub7","attributes":{"state":"READY_FOR_REVIEW"}}]}"#
+    )
+    private static let moodItem = CannedHTTPResponse(statusCode: 200, body: #"""
+    {"data":[{"type":"reviewSubmissionItems","id":"i1","attributes":{"state":"READY_FOR_REVIEW"},
+    "relationships":{"appEvent":{"data":{"type":"appEvents","id":"event-mood"}}}}]}
+    """#)
+
+    /// What App Store Connect has while submitting: the version's phased
+    /// release and its open submission, read before either is made.
+    private static func reads(
+        phased: CannedHTTPResponse = none, open: CannedHTTPResponse = noneOpen, items: CannedHTTPResponse = noneOpen
+    ) -> [(text: String, response: CannedHTTPResponse)] {
+        [("v14/appStoreVersionPhasedRelease", phased), ("/apps/42/reviewSubmissions", open), ("/reviewSubmissions/sub7/items", items)]
+    }
 
     private func services(_ transport: FakeHTTPTransport) -> LiveReleaseServices {
         LiveReleaseServices(client: AppStoreConnectClient(credentials: TestKeys.credentials(), transport: transport))
@@ -25,8 +49,13 @@ struct LiveReleaseServicesTests {
         return object?["data"] as? [String: Any] ?? [:]
     }
 
+    /// The writes, in order; the reads are routed.
     private func calls(_ transport: FakeHTTPTransport) -> [String] {
-        transport.requests.map { "\($0.httpMethod ?? "") \($0.url?.path() ?? "")" }
+        transport.requests.filter { $0.httpMethod != "GET" }.map { "\($0.httpMethod ?? "") \($0.url?.path() ?? "")" }
+    }
+
+    private func writes(_ transport: FakeHTTPTransport) -> [URLRequest] {
+        transport.requests.filter { $0.httpMethod != "GET" }
     }
 
     private typealias Version = AppStoreConnectResource<AppStoreVersionReleaseAttributes>
@@ -40,11 +69,11 @@ struct LiveReleaseServicesTests {
 
     private func plan(
         build: String = "b212", attached: String? = "b212", uses: Bool? = nil, timing: ReleaseTiming = .manual, isPhased: Bool = true,
-        phasedID: String? = nil, events: [String] = [], open: VersionSubmission? = nil
+        events: [String] = []
     ) -> SubmissionPlan {
         SubmissionPlan(
             appID: "42", versionID: "v14", platform: "IOS", buildID: build, attachedBuildID: attached, usesNonExemptEncryption: uses,
-            timing: timing, isPhased: isPhased, phasedReleaseID: phasedID, eventIDs: events, openSubmission: open
+            timing: timing, isPhased: isPhased, eventIDs: events
         )
     }
 
@@ -82,7 +111,7 @@ struct LiveReleaseServicesTests {
     // MARK: - Submitting
 
     @Test func submittingSetsTheReleaseThenSendsOneSubmission() async throws {
-        let transport = FakeHTTPTransport([Self.done, Self.done, Self.createdSubmission, Self.done, Self.done])
+        let transport = FakeHTTPTransport([Self.done, Self.done, Self.createdSubmission, Self.done, Self.done], routes: Self.reads())
         try await services(transport).submit(plan())
         #expect(calls(transport) == [
             "PATCH /v1/appStoreVersions/v14",
@@ -91,17 +120,20 @@ struct LiveReleaseServicesTests {
             "POST /v1/reviewSubmissionItems",
             "PATCH /v1/reviewSubmissions/sub1",
         ])
-        let release = body(transport.requests[0])["attributes"] as? [String: Any]
+        let sent = writes(transport)
+        let release = body(sent[0])["attributes"] as? [String: Any]
         #expect(release?["releaseType"] as? String == "MANUAL")
         #expect(release?["earliestReleaseDate"] is NSNull)
-        let item = body(transport.requests[3])["relationships"] as? [String: Any]
+        let item = body(sent[3])["relationships"] as? [String: Any]
         #expect(((item?["appStoreVersion"] as? [String: Any])?["data"] as? [String: Any])?["id"] as? String == "v14")
         #expect(((item?["reviewSubmission"] as? [String: Any])?["data"] as? [String: Any])?["id"] as? String == "sub1")
-        #expect((body(transport.requests[4])["attributes"] as? [String: Any])?["submitted"] as? Bool == true)
+        #expect((body(sent[4])["attributes"] as? [String: Any])?["submitted"] as? Bool == true)
     }
 
     @Test func anotherBuildTheEncryptionAnswerAndEventsGoFirst() async throws {
-        let transport = FakeHTTPTransport(Array(repeating: Self.done, count: 3) + [Self.createdSubmission] + Array(repeating: Self.done, count: 3))
+        let transport = FakeHTTPTransport(
+            Array(repeating: Self.done, count: 3) + [Self.createdSubmission] + Array(repeating: Self.done, count: 3), routes: Self.reads()
+        )
         let date = Date(timeIntervalSince1970: 1_794_830_400)
         try await services(transport).submit(plan(
             build: "b213", uses: false, timing: .scheduled(date), isPhased: false, events: ["event-mood"]
@@ -115,23 +147,68 @@ struct LiveReleaseServicesTests {
             "POST /v1/reviewSubmissionItems",
             "PATCH /v1/reviewSubmissions/sub1",
         ])
-        #expect((body(transport.requests[1])["attributes"] as? [String: Any])?["usesNonExemptEncryption"] as? Bool == false)
-        let release = body(transport.requests[2])["attributes"] as? [String: Any]
+        let sent = writes(transport)
+        #expect((body(sent[1])["attributes"] as? [String: Any])?["usesNonExemptEncryption"] as? Bool == false)
+        let release = body(sent[2])["attributes"] as? [String: Any]
         #expect(release?["releaseType"] as? String == "SCHEDULED")
         #expect(release?["earliestReleaseDate"] as? String == "2026-11-16T12:00:00Z")
-        let event = body(transport.requests[5])["relationships"] as? [String: Any]
+        let event = body(sent[5])["relationships"] as? [String: Any]
         #expect(((event?["appEvent"] as? [String: Any])?["data"] as? [String: Any])?["id"] as? String == "event-mood")
     }
 
     @Test func anOpenSubmissionIsReusedAndAPhasedReleaseNotWantedIsRemoved() async throws {
-        let open = VersionSubmission(id: "sub7", state: "READY_FOR_REVIEW", versionID: "v14", eventIDs: ["event-mood"])
-        let transport = FakeHTTPTransport([Self.done, Self.noContent, Self.done])
-        try await services(transport).submit(plan(isPhased: false, phasedID: "ph1", events: ["event-mood"], open: open))
+        let transport = FakeHTTPTransport(
+            [Self.done, Self.noContent, Self.done], routes: Self.reads(phased: Self.phased, open: Self.openWithTheVersion, items: Self.moodItem)
+        )
+        try await services(transport).submit(plan(isPhased: false, events: ["event-mood"]))
         // The version and the event are in it already: only submit it.
         #expect(calls(transport) == [
             "PATCH /v1/appStoreVersions/v14",
             "DELETE /v1/appStoreVersionPhasedReleases/ph1",
             "PATCH /v1/reviewSubmissions/sub7",
+        ])
+    }
+
+    /// SimProps's second Submit: the first had made the phased release and
+    /// an empty submission before it stopped. Neither is made again.
+    @Test func whatAnEarlierAttemptMadeIsUsedNotMadeAgain() async throws {
+        let transport = FakeHTTPTransport([Self.done, Self.done, Self.done], routes: Self.reads(phased: Self.phased, open: Self.openEmpty))
+        try await services(transport).submit(plan())
+        #expect(calls(transport) == [
+            "PATCH /v1/appStoreVersions/v14",
+            "POST /v1/reviewSubmissionItems",
+            "PATCH /v1/reviewSubmissions/sub7",
+        ])
+    }
+
+    /// SimProps 1.0.0 after its rejection: the submission with unresolved
+    /// issues still carries the version and is sent again, not a new empty
+    /// one App Store Connect refuses.
+    @Test func aRejectedVersionsSubmissionIsSentAgain() async throws {
+        let rejected = CannedHTTPResponse(statusCode: 200, body: #"""
+        {"data":[{"type":"reviewSubmissions","id":"sub7","attributes":{"state":"UNRESOLVED_ISSUES"},
+        "relationships":{"appStoreVersionForReview":{"data":{"type":"appStoreVersions","id":"v14"}}}}]}
+        """#)
+        let transport = FakeHTTPTransport([Self.done, Self.done], routes: Self.reads(phased: Self.phased, open: rejected))
+        try await services(transport).submit(plan())
+        #expect(calls(transport) == ["PATCH /v1/appStoreVersions/v14", "PATCH /v1/reviewSubmissions/sub7"])
+    }
+
+    /// A submission that carries the version but can't take more (sent
+    /// already) doesn't stand in for the new one: the new one gets the
+    /// version.
+    @Test func aNewSubmissionAlwaysGetsTheVersion() async throws {
+        let sent = CannedHTTPResponse(statusCode: 200, body: #"""
+        {"data":[{"type":"reviewSubmissions","id":"sub7","attributes":{"state":"WAITING_FOR_REVIEW"},
+        "relationships":{"appStoreVersionForReview":{"data":{"type":"appStoreVersions","id":"v14"}}}}]}
+        """#)
+        let transport = FakeHTTPTransport([Self.done, Self.createdSubmission, Self.done, Self.done], routes: Self.reads(phased: Self.phased, open: sent))
+        try await services(transport).submit(plan())
+        #expect(calls(transport) == [
+            "PATCH /v1/appStoreVersions/v14",
+            "POST /v1/reviewSubmissions",
+            "POST /v1/reviewSubmissionItems",
+            "PATCH /v1/reviewSubmissions/sub1",
         ])
     }
 

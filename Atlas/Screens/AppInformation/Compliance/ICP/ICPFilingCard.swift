@@ -16,6 +16,9 @@ struct ICPFilingCard: View {
 
     var body: some View {
         ComplianceCard(rule: .icpFilingNumber, state: report.state(of: .icpFilingNumber), detail: report.detail(for: .icpFilingNumber)) {
+            if let suggestion = viewModel.complianceSuggestion(for: .icpFilingNumber) {
+                ComplianceSuggestionBox(viewModel: viewModel, suggestion: suggestion)
+            }
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(ICPChoice.allCases) { choice in
                     RadioRow(

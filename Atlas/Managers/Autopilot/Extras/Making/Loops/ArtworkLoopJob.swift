@@ -7,7 +7,7 @@ import CoreGraphics
 import Foundation
 
 /// One loop to draw: which file it belongs to, what it's drawn from (its
-/// still layers ready to draw, or a Claude Design page), and where its
+/// still layers ready to draw, or an HTML page), and where its
 /// draft goes. Everything it holds can cross to the task that draws it.
 struct ArtworkLoopJob: Sendable {
     /// The file's place in the maker's list, and its language's.

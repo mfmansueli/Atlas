@@ -5,9 +5,10 @@
 
 import XCTest
 
-/// Settings → AI Assistants, opened by the `set-ai-*` DEBUG scenes: the
-/// server switch, pairing an assistant, revoking one, and what assistants
-/// may propose. The scenes' server never opens a port.
+/// Settings → AI Assistants, opened by the `set-ai-*` and `set-assistants`
+/// DEBUG scenes: the server switch, pairing an assistant, revoking one,
+/// what assistants may suggest, and the activity. The scenes' server never
+/// opens a port.
 @MainActor
 final class AssistantsUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -45,7 +46,8 @@ final class AssistantsUITests: XCTestCase {
         launch(scene: "set-ai-pair")
         let snippet = element("settings.ai.pairSnippet")
         XCTAssertTrue(snippet.waitForExistence(timeout: 10))
-        XCTAssertTrue(text(of: snippet).hasPrefix("claude mcp add --transport http atlas"))
+        XCTAssertTrue(text(of: snippet).hasPrefix("claude mcp remove atlas --scope user"))
+        XCTAssertTrue(text(of: snippet).contains("claude mcp add --scope user --transport http atlas"))
         XCTAssertTrue(text(of: snippet).contains("al_pair_"))
         XCTAssertTrue(element("settings.ai.pairCode").exists)
         // The scene starts after Copy (never clicked here: it would write to
@@ -84,12 +86,27 @@ final class AssistantsUITests: XCTestCase {
 
     func testProposalsCanBeTurnedOffOneByOne() {
         launch(scene: "set-ai-on")
-        let prices = app.checkBoxes["settings.ai.allow.prices"]
+        let prices = app.switches["settings.ai.allow.prices"]
         XCTAssertTrue(prices.waitForExistence(timeout: 10))
         XCTAssertEqual(prices.value as? Int, 1)
         prices.click()
         XCTAssertEqual(prices.value as? Int, 0)
-        XCTAssertEqual(app.checkBoxes["settings.ai.allow.storeText"].value as? Int, 1)
+        XCTAssertEqual(app.switches["settings.ai.allow.storeText"].value as? Int, 1)
+        // Board 48's two newer switches.
+        XCTAssertEqual(app.switches["settings.ai.allow.reviewReplies"].value as? Int, 1)
+        XCTAssertEqual(app.switches["settings.ai.allow.artwork"].value as? Int, 1)
+    }
+
+    /// Show Activity… opens the log; the row says how many were refused.
+    func testShowActivityOpensTheLog() {
+        launch(scene: "set-assistants")
+        let show = app.buttons["settings.ai.showActivity"]
+        XCTAssertTrue(show.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("settings.ai.cannot").exists)
+        show.click()
+        XCTAssertTrue(app.buttons["settings.ai.activity.done"].waitForExistence(timeout: 5))
+        app.buttons["settings.ai.activity.done"].click()
+        XCTAssertTrue(app.buttons["settings.ai.activity.done"].waitForNonExistence(timeout: 5))
     }
 
     func testTheLogSaysWhyCallsWereRefused() {

@@ -43,12 +43,15 @@ struct StorePageVersion: Identifiable, Hashable, Sendable {
         return candidates.first(where: \.isEditable) ?? candidates.first(where: \.state.isLive) ?? candidates.first
     }
 
-    private static let iOSPlatform = "IOS"
+    static let iOSPlatform = "IOS"
 
     /// "macOS"; nil for a platform without a name here.
-    var platformTitle: String? {
+    var platformTitle: String? { Self.title(ofPlatform: platform) }
+
+    /// "macOS" for `MAC_OS`; nil for a platform without a name here.
+    static func title(ofPlatform platform: String?) -> String? {
         switch platform {
-        case Self.iOSPlatform: "iOS"
+        case iOSPlatform: "iOS"
         case "MAC_OS": "macOS"
         case "VISION_OS": "visionOS"
         case "TV_OS": "tvOS"

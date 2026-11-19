@@ -11,7 +11,7 @@ import Testing
 struct AnalyticsSectionBadgeTests {
     @Test func analyticsIsTheLastSectionAfterRelease() {
         #expect(AppWorkspaceSection.allCases.last == .analytics)
-        #expect(AppWorkspaceSection.analytics.shortcutDigit == "8")
+        #expect(AppWorkspaceSection.analytics.shortcutDigit == "9")
         #expect(AppWorkspaceSection.analytics.title == "Analytics")
         #expect(AppWorkspaceSection.analytics.group == .afterRelease)
     }

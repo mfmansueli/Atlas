@@ -31,10 +31,11 @@ struct ReviewChangeGroup: Identifiable, Hashable, Sendable {
 
     /// The heading's count: "3 changes", or for a new language "New page ·
     /// 8 fields". What other sections create (a subscription, an In-App
-    /// Event) counts as changes: it isn't a page.
+    /// Event) and a new version count as changes: they aren't pages.
     var countText: String {
         let creations = creations
-        guard section == .storePage, !creations.isEmpty, plainChanges.isEmpty else {
+        let createsPages = !creations.contains { $0.id.hasPrefix(NewAppVersionChangeBuilder.idPrefix) }
+        guard section == .storePage, !creations.isEmpty, plainChanges.isEmpty, createsPages else {
             return changes.count == 1 ? String(localized: "1 change") : String(localized: "\(changes.count) changes")
         }
         let fields = creations.reduce(0) { $0 + $1.fields.count }

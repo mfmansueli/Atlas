@@ -100,9 +100,37 @@ struct RetentionToolsTests {
             "body": .string(#require(RetentionSampleData.offer["de-DE"]).1),
         ])
         #expect(outcome.result["status"] == "refused")
-        #expect(reasons(outcome) == ["de-DE: the body is 149 characters; Apple allows 144."])
+        // The sample offer's “50 % günstiger” is refused too.
+        #expect(reasons(outcome).first == "de-DE: the body is 149 characters; Apple allows 144.")
+        #expect(reasons(outcome).dropFirst().first?.hasPrefix("de-DE: App Review rejects offers, discounts and prices") == true)
         #expect(changes.changes.isEmpty)
         #expect(outcome.logLines.first?.outcome == MCPCallOutcome.refused)
+    }
+
+    /// Every subscriber sees the message, also those an offer isn't for:
+    /// its text may not name one (App Store Connect's guidelines).
+    @Test func aMessageThatNamesAnOfferIsRefused() async throws {
+        let outcome = try await message([
+            "referenceName": "Stay", "subscriptions": ["Monthly"], "locale": "en-US",
+            "header": "Wait! Stay for half price", "body": "Keep prompts, photos and search for three months at 50% off.",
+        ])
+        #expect(outcome.result["status"] == "refused")
+        let reason = try #require(reasons(outcome).first)
+        #expect(reason.hasPrefix("en-US: App Review rejects offers, discounts and prices in retention messages"))
+        #expect(reason.contains("“half price” and “50% off”"))
+        #expect(changes.changes.isEmpty)
+
+        let shorter = try await message([
+            "messageId": .string(RetentionSampleData.messageID), "locale": "de-DE",
+            "body": "Drei Monate 50 % günstiger.", "suggestion": .bool(true),
+        ])
+        #expect(shorter.result["status"] == "refused")
+        #expect(store.suggestion(appID: lumen, messageID: RetentionSampleData.messageID, locale: "de-DE") == nil)
+    }
+
+    @Test func getRetentionCarriesTheTextRules() async throws {
+        let outcome = try await call(GetRetentionTool(store: store), ["appId": "Lumen Journal"])
+        #expect(outcome.result["textRules"]?.arrayValue?.first?.stringValue?.contains("“50% off”") == true)
     }
 
     @Test func aPushedMessageCantBeRenamed() async throws {
@@ -128,10 +156,12 @@ struct RetentionToolsTests {
         #expect(reasons(outcome) == [RetentionMessageProblem.tooManyMessages.message])
     }
 
+    /// The offer shows itself to the subscribers it's for: the text may
+    /// not name it, even on an offer message (Apple's retention guidelines).
     @Test func anOfferMessageNeedsAnOffer() async throws {
         let outcome = try await message([
             "referenceName": "Stay for less", "subscriptions": ["lumen.plus.monthly"], "kind": "offer",
-            "locale": "en-US", "header": "Stay for half price", "body": "Three months at 50% off.",
+            "locale": "en-US", "header": "Your journal stays with you", "body": "Keep prompts, photos and search across your years.",
         ])
         #expect(outcome.result["status"] == "queued")
         let outcome2 = try await message([

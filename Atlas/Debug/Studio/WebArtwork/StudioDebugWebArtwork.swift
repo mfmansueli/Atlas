@@ -6,7 +6,7 @@
 #if DEBUG
 import Foundation
 
-/// The header and search designed by Claude Design as HTML pages:
+/// The header and search designed by Claude as HTML pages:
 /// - `st-choose-web-artwork`: Choose, each direction with its own header
 ///   and search pages (three different ideas, not one layout recolored).
 /// - `st-ready-web-artwork`: the new set's App Store preview with Quiet

@@ -63,6 +63,28 @@ struct InAppEventsToolsTests {
         #expect(outcome.logLines.first?.outcome == MCPCallOutcome.read)
     }
 
+    /// The art is designed like Autopilot's HTML pages: `design`
+    /// carries the design project and how to make each piece, and asks for
+    /// the look while Atlas doesn't have it.
+    @Test func theArtIsDesignedFromTheAppsDesignProject() async throws {
+        var project = DesignProject(kind: .claudeDesign, link: "Lumen Brand · Claude Design")
+        project.summary = DesignSourceSummary(title: "Lumen Brand", colors: [DesignSwatch(name: "Dusk", hex: "#1F2E5C")], voice: "Calm")
+        let autopilot = AutopilotCenter(designProjects: [Data.app.id: project])
+        let outcome = try await call(GetInAppEventsTool(store: store, autopilot: autopilot), ["appId": "Lumen Journal"])
+        let design = try #require(outcome.result["design"])
+        #expect(design["how"]?.stringValue?.contains("HTML pages") == true)
+        #expect(design["how"]?.stringValue?.contains("motion: true") == true)
+        #expect(design["how"]?.stringValue?.contains("selfCheck") == true)
+        #expect(design["artDirection"] == EventArtworkDirection.json)
+        #expect(design["designProject"]?["source"] == "Lumen Brand · Claude Design")
+        #expect(design["designProject"]?["summary"]?["colors"]?.arrayValue?.first?["hex"] == "#1F2E5C")
+        #expect(design["designProject"]?["ifYouCantOpenIt"]?.stringValue?.hasPrefix("Don't stop") == true)
+        #expect(design["lookMissing"]?.stringValue?.contains("report_app_support") == true)
+
+        let without = try await call(GetInAppEventsTool(store: store, autopilot: AutopilotCenter()), ["appId": "Lumen Journal"])
+        #expect(without.result["design"]?["designProject"] == nil)
+    }
+
     @Test func textsBecomeSuggestionsForThePersonToAccept() async throws {
         let outcome = try await call(ProposeEventTextsTool(store: store), [
             "appId": "Lumen Journal", "eventId": "winter",
@@ -78,6 +100,27 @@ struct InAppEventsToolsTests {
         #expect(kept[0].name == "Desafio de Fim de Ano")
         #expect(kept[0].source == "Claude Code")
         #expect(outcome.logLines.first?.outcome == MCPCallOutcome.proposed)
+    }
+
+    /// A free weekend is an event; a price isn't (Apple's In-App Events
+    /// page, 2.3.13).
+    @Test func aLanguageWithAPriceIsSkippedWithAppReviewsReason() async throws {
+        let outcome = try await call(ProposeEventTextsTool(store: store), [
+            "appId": "Lumen Journal", "eventId": "winter",
+            "texts": [text("pt-BR", name: "Fim de Semana Grátis"), text("de-DE", short: "Alles für 4,99 €")],
+        ])
+        #expect(outcome.result["languages"]?.arrayValue == ["pt-BR"])
+        let skipped = try #require(outcome.result["skipped"]?.arrayValue?.first)
+        #expect(skipped["locale"] == "de-DE")
+        #expect(skipped["reason"]?.stringValue?.hasPrefix("App Review rejects specific prices in In-App Event texts (Guideline 2.3.13): “4,99 €”.") == true)
+        #expect(skipped["issues"]?.arrayValue?.first?["kind"] == "pricing")
+        #expect(store.open(for: Data.app.id, eventID: "winter").map(\.locale) == ["pt-BR"])
+    }
+
+    @Test func getInAppEventsCarriesTheTextRules() async throws {
+        let outcome = try await call(GetInAppEventsTool(store: store), ["appId": "Lumen Journal"])
+        let rules = try #require(outcome.result["textRules"]?.arrayValue)
+        #expect(rules.contains { $0.stringValue?.contains("Including specific pricing will lead to rejection by App Review.") == true })
     }
 
     @Test func aLanguageAlreadyWrittenOrAnEventThatCantChangeIsRefused() async throws {

@@ -10,7 +10,13 @@ extension AppStoreConnectClient {
     /// templates render, with their screenshots in App Store order
     /// (`GET /v1/appStoreVersionLocalizations/{id}/appScreenshotSets`).
     func liveScreenshotSets(localizationID: String, locale: String) async throws -> [LiveScreenshotSet] {
-        var next: URL? = url("/v1/appStoreVersionLocalizations/\(localizationID)/appScreenshotSets", query: [
+        try await liveScreenshotSets(path: "/v1/appStoreVersionLocalizations/\(localizationID)/appScreenshotSets", locale: locale)
+    }
+
+    /// The screenshot sets at `path`: a version localization's, or a custom
+    /// product page localization's.
+    func liveScreenshotSets(path: String, locale: String) async throws -> [LiveScreenshotSet] {
+        var next: URL? = url(path, query: [
             URLQueryItem(name: "include", value: "appScreenshots"),
             URLQueryItem(name: "fields[appScreenshotSets]", value: "screenshotDisplayType,appScreenshots"),
             URLQueryItem(name: "fields[appScreenshots]", value: "fileName,fileSize,sourceFileChecksum,imageAsset,assetDeliveryState"),

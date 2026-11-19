@@ -27,6 +27,9 @@ final class AppSession {
     /// A key that was just connected: the main window shows "Loading your
     /// apps…" until its library and summaries have loaded once.
     private(set) var firstSyncKeyID: String?
+    /// Whether that key replaced one already saved (same key ID), so
+    /// cancelling its sync keeps it.
+    private(set) var firstSyncReplacedKey = false
     /// "Add Another Key…" from the app menu or the account switcher shows
     /// the connect form in a sheet over the main window.
     var isAddingKey = false
@@ -72,10 +75,12 @@ final class AppSession {
     /// A key named the way the person named it, else the way App Store
     /// Connect names its team, else "App Store Connect team".
     func account(for credentials: AppStoreConnectCredentials) -> TeamAccount {
-        TeamAccount(
+        let name = credentials.teamName ?? teamNames[credentials.keyID]
+        return TeamAccount(
             id: credentials.keyID,
-            name: credentials.teamName ?? teamNames[credentials.keyID] ?? String(localized: "App Store Connect team"),
-            role: String(localized: "Team key")
+            name: name ?? String(localized: "App Store Connect team"),
+            role: String(localized: "Team key"),
+            isNamed: name != nil
         )
     }
 
@@ -89,11 +94,13 @@ final class AppSession {
             credentials.teamName = keys.first { $0.keyID == credentials.keyID }?.teamName
         }
         try store.save(credentials)
-        if let index = keys.firstIndex(where: { $0.keyID == credentials.keyID }) {
-            keys[index] = credentials
+        let replaced = keys.firstIndex(where: { $0.keyID == credentials.keyID })
+        if let replaced {
+            keys[replaced] = credentials
         } else {
             keys.append(credentials)
         }
+        firstSyncReplacedKey = replaced != nil
         loadErrorMessage = nil
         isAddingKey = false
         if let check { record(check, for: credentials.keyID) }
@@ -115,7 +122,10 @@ final class AppSession {
         checks[keyID] = nil
         saveChecks()
         if teamNames.removeValue(forKey: keyID) != nil { saveTeamNames() }
-        if firstSyncKeyID == keyID { firstSyncKeyID = nil }
+        if firstSyncKeyID == keyID {
+            firstSyncKeyID = nil
+            firstSyncReplacedKey = false
+        }
         if currentKeyID == keyID { setCurrentKeyID(keys.first?.keyID) }
     }
 
@@ -146,6 +156,19 @@ final class AppSession {
     /// The main window calls this once the new key's library has loaded.
     func finishFirstSync() {
         firstSyncKeyID = nil
+        firstSyncReplacedKey = false
+    }
+
+    /// Cancel on "Reading your apps…": a key that was new is forgotten
+    /// again (the last one goes back to Welcome); one that replaced a
+    /// saved key stays, its library shown as it loads.
+    func cancelFirstSync() throws {
+        guard let keyID = firstSyncKeyID else { return }
+        if firstSyncReplacedKey {
+            finishFirstSync()
+        } else {
+            try remove(keyID: keyID)
+        }
     }
 
     private func setCurrentKeyID(_ keyID: String?) {

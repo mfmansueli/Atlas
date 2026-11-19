@@ -255,7 +255,7 @@ struct InAppEventsViewModelTests {
         let services = FakeInAppEventsServices([ready])
         let model = await makeModel(services)
         model.pageLocales = ["en-US"]
-        #expect(model.footerText == "Ready. Events can go to App Review on their own.")
+        #expect(model.footerText == "Ready. Events can go to App Review on their own, without a new version.")
         #expect(model.footerButton?.isEnabled == true)
         let release = FakeReleaseServices()
         await model.submitSelectedEvent(using: release, platform: "IOS")

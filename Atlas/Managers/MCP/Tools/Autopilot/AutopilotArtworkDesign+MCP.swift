@@ -6,7 +6,7 @@
 import Foundation
 
 /// The header and search pages over MCP: what get_design_brief tells
-/// Claude Design about making them, and the `artworkDesign` argument of
+/// Claude about making them, and the `artworkDesign` argument of
 /// propose_direction and revise_direction.
 extension AutopilotArtworkDesign {
     /// The `artworkDesign` argument's schema.
@@ -44,7 +44,7 @@ extension AutopilotArtworkDesign {
     }
 
     /// get_design_brief's `artworkDesign`: what the person asked for first,
-    /// then everything Atlas does with the pages, so Claude Design
+    /// then everything Atlas does with the pages, so Claude
     /// makes every decision with it in mind.
     static func mcpContract(for run: AutopilotRun, referenceURL: ((AutopilotArtworkReference) -> URL)? = nil) -> JSONValue {
         let plan = run.plan

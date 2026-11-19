@@ -10,6 +10,8 @@ import Foundation
 /// (`queued`), so an assistant proposes neither twice.
 struct GetInAppEventsTool: MCPTool {
     var store = InAppEventsStore.shared
+    /// Where the app's design project is kept (Connect a Design Project).
+    var autopilot = AutopilotCenter.shared
 
     let definition = MCPToolDefinition(
         name: "get_in_app_events",
@@ -18,13 +20,19 @@ struct GetInAppEventsTool: MCPTool {
         Reads an app's In-App Events from App Store Connect: each with its id, reference name, badge, state, dates, primary \
         language, deep link, purchase requirement, and its texts per language (name ≤30 characters, shortDescription ≤50, \
         longDescription ≤120). `missingLanguages` are the store page's languages the event isn't written in yet (people \
-        there see the primary language); `suggestedLanguages` already have a suggestion waiting. Only events with \
+        there see the primary language), less those with a suggestion waiting (`suggestedLanguages`) or texts waiting in \
+        Review & Push (`queuedTexts`: per language, its changeId(s), newLanguage when the push creates it, \
+        waitingForAcceptance, by, and the queued name, shortDescription and longDescription). Only events with \
         `editable: true` take new texts. `media` says, per language, whether it has its own card (16:9) and details page \
         (9:16), as an image or a video, or shows the primary language's; `stillMissing` lists what no language shows yet \
         (both are needed to submit the event) and the languages without their own; `queuedArtwork` is art waiting in Review \
-        & Push. `queued` are the new events waiting in Review & Push, not created yet: their reference names are taken \
+        & Push, each with the file Atlas will send: `path` on this Mac (open it to see exactly what goes), `fileSize`, \
+        `width`/`height`, a video's `seconds` and `previewFrameTimeCode`, `fileExists`, and `languageCreatedByPush` when \
+        its language is created by the same push. `queued` are the new events waiting in Review & Push, not created yet: their reference names are taken \
         too. `artworkUpload` is this launch's link for sending a card or details page file made elsewhere (POST the bytes, \
-        `?name=` the file name). Read-only. Follow with propose_event_texts for the missing languages, \
+        `?name=` the file name). `design` is what the art is designed from: the app's look and design language, what Atlas \
+        knows of the app, its design project if one is connected, and `how` to make each piece as an HTML page \
+        Atlas renders, still or as a seamless loop. Read-only. Follow with propose_event_texts for the missing languages, \
         render_event_artwork and propose_event_artwork for the art, or propose_in_app_event for a new event.
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -41,6 +49,7 @@ struct GetInAppEventsTool: MCPTool {
         let builder = InAppEventChangeBuilder(appID: app.id)
         let changes = context.workspace.changes.changes(for: app.id, section: .inAppEvents)
         let queued = builder.queuedNewEvents(in: changes)
+        let files = await Self.files(of: events.flatMap { builder.queuedArtwork(for: $0.id, in: changes) })
         let result: JSONValue = [
             "appId": .string(app.id),
             "app": .string(app.name),
@@ -49,18 +58,27 @@ struct GetInAppEventsTool: MCPTool {
                 "longestEventDays": 31, "cardShowsDaysBeforeStart": 14,
             ],
             "storePageLanguages": .array(pageLocales.map(JSONValue.string)),
+            "textRules": StoreTextGuidelinePlace.eventText.rulesJSON,
             "events": .array(events.map { event in
-                var object = Self.json(event, pageLocales: pageLocales, suggested: store.open(for: app.id, eventID: event.id))
-                object.merge(Self.media(event, queued: builder.queuedArtwork(for: event.id, in: changes))) { $1 }
+                let texts = builder.queuedTexts(for: event.id, in: changes)
+                var object = Self.json(event, pageLocales: pageLocales, suggested: store.open(for: app.id, eventID: event.id), queued: texts)
+                object.merge(Self.media(event, queued: builder.queuedArtwork(for: event.id, in: changes), files: files)) { $1 }
                 return .object(object)
             }),
             "queued": .array(queued.map(Self.queued)),
             "artworkUpload": .string(RenderEventArtworkTool.uploadLink(app: app, port: context.port)),
+            "design": InAppEventDesignFacts.json(
+                look: services.storePage.appSupport?.profile(for: app.id)?.look,
+                knowledge: services.storePage.appSupport?.knowledge(for: app.id),
+                project: autopilot.designProject(for: app.id)
+            ),
         ]
         return .read(result, target: "\(app.name) · In-App Events")
     }
 
-    private static func json(_ event: InAppEvent, pageLocales: [String], suggested: [InAppEventTextSuggestion]) -> [String: JSONValue] {
+    static func json(
+        _ event: InAppEvent, pageLocales: [String], suggested: [InAppEventTextSuggestion], queued: [InAppEventQueuedTexts] = []
+    ) -> [String: JSONValue] {
         var texts: [String: JSONValue] = [:]
         for localization in event.localizations {
             texts[localization.locale] = [
@@ -71,7 +89,11 @@ struct GetInAppEventsTool: MCPTool {
         }
         let written = Set(event.localizations.filter(\.isComplete).map(\.locale))
         let suggestedLocales = Set(suggested.map(\.locale))
-        let missing = event.state.isEditable ? pageLocales.filter { !written.contains($0) && !suggestedLocales.contains($0) } : []
+        // Texts waiting in Review & Push that complete a language count as written.
+        let queuedLocales = Set(queued.filter { $0.completes(event.localization($0.locale)) }.map(\.locale))
+        let missing = event.state.isEditable
+            ? pageLocales.filter { !written.contains($0) && !suggestedLocales.contains($0) && !queuedLocales.contains($0) }
+            : []
         var object: [String: JSONValue] = [
             "id": .string(event.id),
             "referenceName": .string(event.referenceName),
@@ -81,6 +103,7 @@ struct GetInAppEventsTool: MCPTool {
             "missingLanguages": .array(missing.map(JSONValue.string)),
             "suggestedLanguages": .array(suggestedLocales.sorted().map(JSONValue.string)),
         ]
+        if !queued.isEmpty { object["queuedTexts"] = Self.queuedTextsJSON(queued) }
         if let badge = event.badge { object["badge"] = .string(badge.rawValue) }
         if let primary = event.primaryLocale { object["primaryLanguage"] = .string(primary) }
         if let deepLink = event.deepLink, !deepLink.isEmpty { object["deepLink"] = .string(deepLink) }
@@ -94,7 +117,9 @@ struct GetInAppEventsTool: MCPTool {
     /// Each language's card and details page, what's still missing, and
     /// the art waiting in Review & Push. Past events' media are read for
     /// the primary language only, archived ones' not at all.
-    static func media(_ event: InAppEvent, queued: [InAppEventQueuedArtwork]) -> [String: JSONValue] {
+    static func media(
+        _ event: InAppEvent, queued: [InAppEventQueuedArtwork], files: [String: InAppEventArtworkFile] = [:]
+    ) -> [String: JSONValue] {
         guard event.state != .archived else { return ["media": "not read for archived events"] }
         let state = InAppEventMediaState(event: event)
         var object: [String: JSONValue] = [
@@ -107,12 +132,9 @@ struct GetInAppEventsTool: MCPTool {
         ]
         if event.state.isOver { object["mediaNote"] = "Only the primary language's media are read for an event that's over." }
         if !queued.isEmpty {
-            object["queuedArtwork"] = .array(queued.map { item in
-                [
-                    "changeId": .string(item.changeID), "kind": .string(item.kind.mcpValue), "locale": .string(item.locale),
-                    "file": .string(item.push.fileName), "isVideo": .bool(item.push.isVideo),
-                    "waitingForAcceptance": .bool(item.isAwaitingAcceptance), "by": .string(item.source.title),
-                ]
+            let locales = Set(event.localizations.map(\.locale))
+            object["queuedArtwork"] = .array(queued.map {
+                queuedArtworkJSON($0, file: files[$0.push.path], languageExists: locales.contains($0.locale))
             })
         }
         return object
