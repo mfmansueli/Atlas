@@ -23,6 +23,7 @@ struct InAppEventsSectionView: View {
     @Environment(EventArtworkStudio.self) private var artwork
     @Environment(ClaudeCodeLauncher.self) private var launcher
     @Environment(ProGate.self) private var pro: ProGate?
+    @Environment(PushHistory.self) private var history: PushHistory?
     @Environment(AppPreferences.self) private var preferences
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
@@ -71,6 +72,8 @@ struct InAppEventsSectionView: View {
                     let added = viewModel.add(event)
                     if added { viewModel.isNewEventPresented = false }
                     return added
+                } warnings: { event in
+                    viewModel.warnings(for: event)
                 }
             }
             .sheet(isPresented: artworkSheetBinding(viewModel)) {
@@ -136,13 +139,18 @@ struct InAppEventsSectionView: View {
         let model = kept?.events ?? InAppEventsViewModel(app: app, services: services.inAppEvents, store: store, queue: queue)
         kept?.events = model
         model.artworkStudio = artwork
+        model.pushHistory = history
         viewModel = model
         configure()
         #if DEBUG
         let launch = InAppEventsDebugLaunch.pending
         InAppEventsDebugLaunch.pending = nil
         #endif
-        await model.load()
+        // A kept model reads again once a push or Refresh happened since
+        // its read (or it's old): its "Before App Review" list and dates
+        // then show what the push wrote.
+        let force = model.state.value != nil && kept?.needsLoad(.inAppEvents, refreshCount: navigator.refreshCount) == true
+        await Self.read(model, into: kept, refreshCount: navigator.refreshCount, force: force)
         #if DEBUG
         launch?.apply(to: model)
         #endif
@@ -157,8 +165,16 @@ struct InAppEventsSectionView: View {
 
     private func reload() async {
         guard let viewModel else { return }
-        await viewModel.load(force: true)
+        await Self.read(viewModel, into: sectionModels?.models(for: app.id), refreshCount: navigator.refreshCount, force: true)
         await Self.loadResults(viewModel, services: services.inAppEvents)
+    }
+
+    /// Reads the events (the first time, or again with `force`) and stamps
+    /// the kept models when the read worked; the read ahead reads the same
+    /// way.
+    static func read(_ model: InAppEventsViewModel, into kept: AppSectionModels?, refreshCount: Int, force: Bool = false) async {
+        guard await model.load(force: force) else { return }
+        kept?.didLoad(.inAppEvents, refreshCount: refreshCount)
     }
 
     /// Apple's numbers for the events that are over.
@@ -178,12 +194,26 @@ struct InAppEventsSectionView: View {
         viewModel.versionEventIDs = Set(release?.eventsGoingWithVersion.map(\.id) ?? releases.eventIDs(for: app.id))
     }
 
-    /// The Overview's version card opens the event that goes with it.
+    /// The Overview's version card opens the event that goes with it; the
+    /// Submit sheet's Fix… on a date opens it on its dates.
     private func handleIntent() {
-        guard let viewModel, case let .showInAppEvents(eventID) = navigator.intent, viewModel.state.value != nil,
-              navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
-        navigator.consume(.showInAppEvents(eventID: eventID))
-        if let eventID, viewModel.events.contains(where: { $0.id == eventID }) { viewModel.open(eventID) }
+        guard let viewModel, viewModel.state.value != nil, navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
+        switch navigator.intent {
+        case let .showInAppEvents(eventID):
+            navigator.consume(.showInAppEvents(eventID: eventID))
+            if let eventID, viewModel.events.contains(where: { $0.id == eventID }) { viewModel.open(eventID) }
+        case let .showInAppEventDates(eventID, field):
+            navigator.consume(.showInAppEventDates(eventID: eventID, field: field))
+            guard viewModel.events.contains(where: { $0.id == eventID }) else { return }
+            viewModel.open(eventID)
+            // Once the page is there, so it scrolls to the dates.
+            Task {
+                try? await Task.sleep(for: .milliseconds(300))
+                viewModel.focusedDateField = field
+            }
+        default:
+            return
+        }
     }
 
     /// The footer's button: the submission on Overview, a copy of an ended

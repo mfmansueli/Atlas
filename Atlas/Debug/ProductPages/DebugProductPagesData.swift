@@ -19,6 +19,8 @@ enum DebugProductPagesData {
         static let year = "e19d4c70-6b2f-4a85-9d31-70c5e8f2a164"
         static let therapists = "2f6a81d3-c4e9-47b0-a1d5-9b03e7c256f8"
         static let privateDiary = "draft-private-diary"
+        /// Private diary once pushed.
+        static let privateDiaryPushed = "5b7e0c2a-93d4-4f1e-8a6b-d20c4e9f7a31"
     }
 
     /// The scenes' day, and the last day with numbers (Nov 9).
@@ -157,7 +159,29 @@ enum DebugProductPagesData {
 
     /// Its creation change in Review & Push.
     static var pendingChanges: [PendingChange] {
-        [ProductPageChangeBuilder(appID: appID).newPageChange(privateDiary, defaultPage: defaultPage)].compactMap(\.self)
+        pendingChanges(privateDiary)
+    }
+
+    static func pendingChanges(_ draft: ProductPageDraft) -> [PendingChange] {
+        [ProductPageChangeBuilder(appID: appID).newPageChange(draft, defaultPage: defaultPage)].compactMap(\.self)
+    }
+
+    /// Private diary once pushed: in App Store Connect, its first version
+    /// in `state`.
+    static func pushedPrivateDiary(_ state: ProductPageState) -> ProductPage {
+        let draft = privateDiary
+        let localizations = draft.locales.map { locale in
+            ProductPageLocalization(
+                id: "private-\(locale)", locale: locale, promotionalText: draft.promotionalTexts[locale] ?? "",
+                keywords: draft.keywords[locale] ?? []
+            )
+        }
+        return ProductPage(
+            id: PageID.privateDiaryPushed, name: draft.name, url: link(PageID.privateDiaryPushed), isVisible: false,
+            versions: [ProductPageVersion(
+                id: "private-v1", number: 1, state: state, deepLink: draft.deepLink, localizations: localizations
+            )]
+        )
     }
 
     // MARK: - Suggestions
@@ -187,7 +211,10 @@ enum DebugProductPagesData {
                     "en-US": "Three good things, every evening. Lumen’s gratitude prompts take a minute and stay private on your devices.",
                 ]) { _, new in new },
                 screens: "Prompts first, with the Gratitude prompt showing",
-                deepLink: "https://lumen.app/gratitude", source: "Claude Code", createdAt: Self.now
+                deepLink: "https://lumen.app/gratitude", source: "Claude Code", createdAt: Self.now,
+                notOfferedTexts: [
+                    refused("Drei gute Dinge, jeden Abend. Kostenlos, ohne Konto und nur auf deinen Geräten.", locale: "de-DE", pageID: "grat"),
+                ]
             ),
         ]
     }
@@ -201,7 +228,7 @@ enum DebugProductPagesData {
                 synchronisiert, ganz ohne Konto und ohne Werbung.
                 """,
                 reason: "From your English text. German reviews say “gesperrt” for the lock, so the text uses it.",
-                source: "Claude Code", createdAt: now
+                source: "Claude Code", createdAt: now, evidence: [SuggestionEvidence(kind: "reviews", ref: "German reviews")]
             ),
             ProductPageTextSuggestion(
                 pageID: PageID.privateDiary, locale: "ja",
@@ -214,10 +241,14 @@ enum DebugProductPagesData {
 
     /// The English text Atlas stopped: "free", a discount and Android.
     static var refusedSuggestion: ProductPageTextSuggestion {
-        let text = "Try Lumen Plus free for 7 days, now 50% off. Better than any diary app on Android."
+        refused("Try Lumen Plus free for 7 days, now 50% off. Better than any diary app on Android.", locale: "en-US", pageID: PageID.privateDiary)
+    }
+
+    /// A text Atlas stopped, with why and the phrases marked.
+    static func refused(_ text: String, locale: String, pageID: String) -> ProductPageTextSuggestion {
         let issues = StoreTextGuidelineCheck.issues(in: text, for: ListingField.promotionalText)
         return ProductPageTextSuggestion(
-            pageID: PageID.privateDiary, locale: "en-US", text: text, reason: "", source: "Claude Code",
+            pageID: pageID, locale: locale, text: text, reason: "", source: "Claude Code",
             refusal: ProductPageTextRefusal.reason(for: issues), refusedPhrases: issues.flatMap(\.phrases), createdAt: Self.now
         )
     }
@@ -242,12 +273,14 @@ enum DebugProductPagesData {
     /// The 28 days through Nov 9, one fact per page.
     static var analyticsArchive: EngagementArchive {
         let day = AnalyticsDay(numbersThrough)
-        let numbers: [(String, Int, Int, Int)] = [
-            (ProductPageNumbers.defaultPageName, 151_000, 8050, 2550), ("Prompts", 18400, 1020, 330),
-            ("Mood tracking", 9200, 470, 120), ("Sleep & wind-down", 1240, 96, 34),
+        // Impressions, page views, downloads.
+        let numbers: [(page: String, counts: [Int])] = [
+            (ProductPageNumbers.defaultPageName, [151_000, 8050, 2550]), ("Prompts", [18400, 1020, 330]),
+            ("Mood tracking", [9200, 470, 120]), ("Sleep & wind-down", [1240, 96, 34]),
         ]
         var archive = EngagementArchive()
-        archive.pageFacts = numbers.map { page, impressions, views, downloads in
+        archive.pageFacts = numbers.map { page, counts in
+            let (impressions, views, downloads) = (counts[0], counts[1], counts[2])
             var fact = EngagementFact(day: day, territory: "", source: "", device: "", page: page)
             fact.impressions = impressions
             fact.pageViews = views

@@ -95,7 +95,9 @@ final class ChangeQueue {
             newValue: assistant.newValue,
             source: assistant.source,
             requests: assistant.requests,
-            restoreRequests: assistant.restoreRequests
+            restoreRequests: assistant.restoreRequests,
+            note: assistant.groupNote,
+            blockedReason: assistant.blockedReason
         )
         return person
     }
@@ -168,7 +170,8 @@ final class ChangeQueue {
         discard(id: id)
     }
 
-    /// Picks the person's version or the assistant's of a field both edited.
+    /// Picks the person's version or the assistant's of a field both
+    /// edited. The assistant's takes its reason and its block along.
     func resolveAlternative(id: PendingChange.ID, keepAlternative: Bool) {
         update(id) { change in
             guard let alternative = change.alternative else { return }
@@ -177,9 +180,18 @@ final class ChangeQueue {
                 change.source = alternative.source
                 change.requests = alternative.requests
                 change.restoreRequests = alternative.restoreRequests
+                change.blockedReason = alternative.blockedReason
+                if let note = alternative.note { change.groupNote = note }
             }
             change.alternative = nil
         }
+    }
+
+    /// An assistant's version of a change the person queued, kept beside
+    /// it as the alternative (replacing an older one); the person's stays
+    /// what's pushed until they pick. Nil `alternative` takes it back.
+    func setAlternative(_ alternative: ChangeAlternative?, id: PendingChange.ID) {
+        update(id) { $0.alternative = alternative }
     }
 
     // MARK: - Options

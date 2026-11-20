@@ -15,7 +15,7 @@ struct HelpLibrary: Sendable {
     /// The design's order: Start here first, then each group.
     static let order = [
         "what", "connect", "suggest", "push",
-        "store", "shots", "events", "info", "pricing",
+        "store", "shots", "pages", "events", "info", "pricing",
         "submit", "reviews", "analytics",
         "assistant", "menubar", "pro", "privacy", "keys", "fix",
     ]

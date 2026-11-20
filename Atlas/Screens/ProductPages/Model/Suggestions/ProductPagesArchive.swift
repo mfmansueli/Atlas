@@ -20,6 +20,14 @@ struct ProductPagesArchive: Codable, Hashable, Sendable {
     /// The API key couldn't change pages (403): the editor is read-only
     /// until a read or push works again.
     var keyCannotChange = false
+    /// Accepted suggestions' briefs, by `ProductPageBrief.key` of the
+    /// page's name: kept while a draft or a page has that name. Nil in
+    /// archives written before briefs.
+    var briefs: [String: ProductPageBrief]?
+
+    func brief(named pageName: String) -> ProductPageBrief? {
+        briefs?[ProductPageBrief.key(pageName)]
+    }
 
     var openPageSuggestions: [ProductPageSuggestion] {
         pageSuggestions.filter { !dismissed.contains($0.id) }

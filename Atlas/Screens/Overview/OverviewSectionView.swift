@@ -246,6 +246,9 @@ struct OverviewSectionView: View {
                     navigator.open(.appInformation, intent: .openAppInformationPage(.appPrivacy, privacyTab: tab))
                 }
             }
+            ProductPagesOverviewCard(summary: productPagesSummary) {
+                navigator.open(.productPages, intent: .showProductPage(name: nil))
+            }
             analyticsCard
             ReviewsOverviewCard(archive: reviewsStore.archive(for: app.id), isPro: !pro.isFree) {
                 navigator.open(.reviews)
@@ -267,15 +270,6 @@ struct OverviewSectionView: View {
             navigator.open(.analytics)
         }
     }
-
-    /// The version on its way to the App Store, read by the main window.
-    private var release: ReleaseViewModel? {
-        sectionModels?.models(for: app.id).release
-    }
-
-    private var pricing: PricingSummary? { summaries.pricing[app.id]?.value }
-    private var storePage: StorePageSummary? { summaries.storePage[app.id]?.value }
-    private var mode: PricingMode { pricingModes.mode(for: app.id) }
 
     /// The open suggestions the Suggestions card counts: drafts of languages
     /// not added yet show as New languages instead.
@@ -433,4 +427,23 @@ struct OverviewSectionView: View {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
     }
+}
+
+// MARK: - What the sections read
+
+private extension OverviewSectionView {
+    /// What the Custom Product Pages section read, kept by the window (or
+    /// read ahead in the background).
+    var productPagesSummary: ProductPagesOverviewSummary? {
+        sectionModels?.keptModels(for: app.id)?.productPages.flatMap(ProductPagesOverviewSummary.make)
+    }
+
+    /// The version on its way to the App Store, read by the main window.
+    var release: ReleaseViewModel? {
+        sectionModels?.models(for: app.id).release
+    }
+
+    var pricing: PricingSummary? { summaries.pricing[app.id]?.value }
+    var storePage: StorePageSummary? { summaries.storePage[app.id]?.value }
+    var mode: PricingMode { pricingModes.mode(for: app.id) }
 }

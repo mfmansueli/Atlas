@@ -67,7 +67,10 @@ struct NewInAppEventTests {
 
     @Test func theEventStartsInTheFuture() {
         var event = makeEvent()
-        #expect(event.problems(now: event.eventStart.addingTimeInterval(-1)).isEmpty)
+        #expect(event.problems(now: event.publishStart.addingTimeInterval(-1)).isEmpty)
+        // Its card's date has passed: App Store Connect refuses that too
+        // ("Supplied date must be in the future", Alba 1.2.0).
+        #expect(event.problems(now: event.eventStart.addingTimeInterval(-1)) == ["The card has to start showing in the future. Show it from later."])
         #expect(event.problems(now: event.eventStart) == ["The event has to start in the future. Move its dates later."])
         // Without a clock, only what the event says itself.
         event.eventStart = Data.day(-3)

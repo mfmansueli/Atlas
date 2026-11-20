@@ -57,13 +57,25 @@ extension AppStoreConnectClient {
     /// The In-App Events in a submission
     /// (`GET /v1/reviewSubmissions/{id}/items?include=appEvent`).
     func reviewSubmissionEventIDs(submissionID: String) async throws -> [String] {
+        try await reviewSubmissionEventItems(submissionID: submissionID).map(\.eventID)
+    }
+
+    /// The In-App Event items of a submission, with each item's id, to take
+    /// one out.
+    func reviewSubmissionEventItems(submissionID: String) async throws -> [(itemID: String, eventID: String)] {
         let page: AppStoreConnectLinkedPage<ReviewSubmissionItemAttributes> = try await get(url("/v1/reviewSubmissions/\(submissionID)/items", query: [
             URLQueryItem(name: "include", value: "appEvent"),
             URLQueryItem(name: "fields[reviewSubmissionItems]", value: "state,appEvent"),
             URLQueryItem(name: "fields[appEvents]", value: "referenceName"),
             URLQueryItem(name: "limit", value: "50"),
         ]))
-        return page.data.compactMap { $0.relationshipID("appEvent") }
+        return page.data.compactMap { item in item.relationshipID("appEvent").map { (itemID: item.id, eventID: $0) } }
+    }
+
+    /// Takes an item out of a submission that isn't sent yet
+    /// (`DELETE /v1/reviewSubmissionItems/{id}`).
+    func deleteReviewSubmissionItem(id: String) async throws {
+        _ = try await send(PushRequest(method: .delete, path: "/v1/reviewSubmissionItems/\(id)", body: nil))
     }
 
     // MARK: - Writing

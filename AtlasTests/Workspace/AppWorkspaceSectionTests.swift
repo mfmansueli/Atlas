@@ -39,7 +39,7 @@ struct AppWorkspaceSectionTests {
         (AppWorkspaceSection.overview, "Overview"),
         (.storePage, "Store Page"),
         (.screenshots, "Screenshots"),
-        (.productPages, "Product Pages"),
+        (.productPages, "Custom Product Pages"),
         (.inAppEvents, "In-App Events"),
         (.appInformation, "App Information"),
         (.analytics, "Analytics"),

@@ -5,6 +5,11 @@
 
 import Foundation
 
+/// `propose_event_texts`: an assistant's texts for an editable event's
+/// languages that aren't written yet, or with `revise` its revision of
+/// texts a language already has, kept as suggestions in In-App Events
+/// until the person accepts, edits or dismisses them. Each is checked
+/// like an edit: Apple's limits and In-App Events guidance (2.3.13).
 struct ProposeEventTextsTool: MCPTool {
     var store = InAppEventsStore.shared
 
@@ -23,7 +28,12 @@ struct ProposeEventTextsTool: MCPTool {
         leave it. Only \
         events that get_in_app_events marks editable take texts. Sending a language again replaces its waiting \
         suggestion. get_in_app_events' `openSuggestions` shows what waits and who sent it, `stale` once App Store \
-        Connect has that language written; take your own back with withdraw_event_texts. Accepted texts wait in Review \
+        Connect has that language written; take your own back with withdraw_event_texts. To change a language that's \
+        already written (an editable event's: draft, ready for review or rejected), e.g. a description that names a \
+        day the event no longer ends on, send revise: true (for the call, or on a text object) with only the texts to \
+        change and why, required: the others stay as they are, the same rules and limits apply, and `revised` gives \
+        each change against the current text (`marked`: [-removed-]{+added+}). The person sees Now and Suggested with \
+        the changed words marked, and accepts, edits or dismisses it. Accepted texts wait in Review \
         & Push; nothing reaches App Store Connect until the person pushes. \(StoreTextGuidelinePlace.eventText.summary)
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -31,8 +41,16 @@ struct ProposeEventTextsTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "eventId": MCPToolDefinition.string("The event's id, from get_in_app_events."),
                 "texts": [
-                    "type": "array", "description": "{locale, name, shortDescription, longDescription, why} objects, one per language.",
+                    "type": "array",
+                    "description": """
+                    {locale, name, shortDescription, longDescription, why} objects, one per language; with revise, only the \
+                    texts to change, and why.
+                    """,
                     "items": ["type": "object"],
+                ],
+                "revise": [
+                    "type": "boolean",
+                    "description": "Revise languages that are already written (or set revise on each text object).",
                 ],
             ],
             required: ["appId", "eventId", "texts"]
@@ -58,8 +76,21 @@ struct ProposeEventTextsTool: MCPTool {
         let queuedLocales = Set(queued.map(\.locale))
         var kept: [InAppEventTextSuggestion] = []
         var skipped: [JSONValue] = []
+        var revised: [JSONValue] = []
+        let revisesAll = try arguments.optionalBool("revise") ?? false
+        let drafts = builder.drafts(for: event.id, in: queuedChanges)
         for value in try arguments.array("texts") {
             let locale = value["locale"]?.stringValue ?? ""
+            if revisesAll || value["revise"]?.boolValue == true {
+                let revision = Self.revision(value, locale: locale, of: event, queued: drafts[locale] ?? [:], source: context.clientName)
+                if let suggestion = revision.suggestion {
+                    kept.append(suggestion)
+                    revised.append(revision.json)
+                } else {
+                    skipped.append(revision.json)
+                }
+                continue
+            }
             let suggestion = InAppEventTextSuggestion(
                 eventID: event.id, locale: locale, name: Self.trimmed(value["name"]), shortDescription: Self.trimmed(value["shortDescription"]),
                 longDescription: Self.trimmed(value["longDescription"]), why: String(Self.trimmed(value["why"]).prefix(Self.whyLimit)),
@@ -81,30 +112,44 @@ struct ProposeEventTextsTool: MCPTool {
             return .refused("No language could be kept.", target: target, details: ["skipped": .array(skipped)])
         }
         store.add(kept, for: app.id)
+        var result: [String: JSONValue] = [
+            "status": "suggested", "languages": .array(kept.map { .string($0.locale) }), "skipped": .array(skipped),
+            "showsIn": .string("In-App Events (⌘5) → \(event.referenceName)"),
+        ]
+        if !revised.isEmpty {
+            result["revised"] = .array(revised)
+            result["revisedNote"] = """
+            Each revision shows on the event's page as Now and Suggested with the changed words marked ([-removed-] \
+            {+added+} here), until the person accepts or dismisses it; the texts you left out stay as they are. \
+            Withdraw your own with withdraw_event_texts.
+            """
+        }
         return MCPToolOutcome(
-            result: [
-                "status": "suggested", "languages": .array(kept.map { .string($0.locale) }), "skipped": .array(skipped),
-                "showsIn": .string("In-App Events (⌘5) → \(event.referenceName)"),
-            ],
+            result: .object(result),
             isError: false,
             logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]
         )
     }
 
-    private static func trimmed(_ value: JSONValue?) -> String {
+    static func trimmed(_ value: JSONValue?) -> String {
         (value?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     /// What App Review would reject in a language's three texts (Apple's
     /// In-App Events guidance, 2.3.13).
     static func guidelineIssues(_ suggestion: InAppEventTextSuggestion) -> [StoreTextGuidelineIssue] {
-        StoreTextGuidelineCheck.issues(in: InAppEventField.allCases.map(suggestion.text).joined(separator: "\n"), for: .eventText)
+        StoreTextGuidelineCheck.issues(in: suggestion.fields.map(suggestion.text).joined(separator: "\n"), for: .eventText)
     }
 
     /// Why a language can't be kept, in words the assistant can act on.
     private static func refusal(_ suggestion: InAppEventTextSuggestion, event: InAppEvent, queuedLocales: Set<String>) -> String? {
         guard StoreLocaleCatalog.locale(code: suggestion.locale) != nil else { return "“\(suggestion.locale)” isn’t an App Store locale code." }
-        if event.localization(suggestion.locale)?.isComplete == true { return "This language is already written; leave it." }
+        if event.localization(suggestion.locale)?.isComplete == true {
+            return """
+            This language is already written. To change some of its texts, send them with revise: true and why (only \
+            the texts you send change).
+            """
+        }
         if queuedLocales.contains(suggestion.locale) {
             return "This language's texts are already waiting in Review & Push (queuedTexts in get_in_app_events); leave it."
         }

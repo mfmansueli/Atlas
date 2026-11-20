@@ -149,12 +149,41 @@ struct ClaudeCodePermissionsTests {
     @Test func noRunMayEditFilesOrUseTheWeb() {
         for permissions in ClaudeCodePermissions.allCases {
             let everything = permissions.tools + permissions.allowRules(port: port)
-            for tool in ["Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"] {
+            // Make It Work… is the one run that changes the project.
+            let tools = permissions == .deepLinkWork ? ["NotebookEdit", "WebFetch", "WebSearch"] : ["Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"]
+            for tool in tools {
                 #expect(!everything.contains(tool), "\(permissions.title) allows \(tool)")
             }
             // Bash is available to some, but only for the commands allowed.
             #expect(!permissions.allowRules(port: port).contains("Bash"), "\(permissions.title) allows every command")
         }
+    }
+
+    /// Check in the Code only reads and tries the link in a simulator;
+    /// Make It Work… may also edit the project. Neither may upload a build.
+    @Test func deepLinkRunsTryTheLinkButNeverUpload() {
+        let eventID = "6740000000"
+        #expect(InAppEventDeepLinkAskPrompt.purpose(.check, eventID: eventID).permissions == .deepLinkCheck)
+        #expect(InAppEventDeepLinkAskPrompt.purpose(.makeItWork, eventID: eventID).permissions == .deepLinkWork)
+        let check = ClaudeCodePermissions.deepLinkCheck
+        let work = ClaudeCodePermissions.deepLinkWork
+        #expect(!check.tools.contains("Edit"))
+        #expect(!check.allowRules(port: port).contains("Write"))
+        #expect(work.tools.contains("Edit"))
+        #expect(work.allowRules(port: port).contains("Write"))
+        for permissions in [check, work] {
+            let rules = permissions.allowRules(port: port)
+            #expect(rules.contains("Bash(xcrun simctl:*)"))
+            #expect(rules.contains("Bash(xcodebuild:*)"))
+            #expect(permissions.denyRules.contains("Bash(xcrun altool:*)"))
+            #expect(permissions.denyRules.contains("Bash(xcodebuild * -exportArchive*)"))
+            #expect(permissions.systemPrompt.contains("xcrun simctl openurl booted"))
+            #expect(permissions.systemPrompt.contains("Never archive, export or upload a build"))
+        }
+        #expect(work.systemPrompt.contains("Never commit or push."))
+        #expect(check.systemPrompt.contains("Don't change the project"))
+        // Other runs never build.
+        #expect(!ClaudeCodePermissions.readProject.allowRules(port: port).contains("Bash(xcodebuild:*)"))
     }
 
     @Test func theSystemPromptSaysNobodyIsWatching() {

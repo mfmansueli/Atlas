@@ -42,20 +42,44 @@ struct InAppEvent: Identifiable, Hashable, Sendable {
         return own ?? localizations.lazy.compactMap { $0.media.first { $0.kind == kind } }.first
     }
 
-    /// What App Review needs that's missing, in the footer's words; empty
-    /// when the event can be submitted.
-    var missing: [String] {
-        var missing: [String] = []
-        if localizations.isEmpty || localizations.contains(where: { !$0.isComplete }) { missing.append(String(localized: "write every language")) }
-        if media(.card) == nil { missing.append(String(localized: "add the card image")) }
-        if media(.details) == nil { missing.append(String(localized: "add the details image")) }
-        if schedule?.eventStart == nil || schedule?.eventEnd == nil { missing.append(String(localized: "set its dates")) }
-        return missing
+    /// What App Store Connect needs before it takes the event to App
+    /// Review at `now` (a date that has passed is a need); empty when it
+    /// has everything.
+    func reviewNeeds(now: Date) -> [InAppEventReviewNeed] { InAppEventReviewNeed.needs(of: self, now: now) }
+
+    /// What App Review needs that's missing at `now`, in the footer's
+    /// words; empty when the event can be submitted.
+    func missing(now: Date) -> [String] { reviewNeeds(now: now).map(\.footerText) }
+
+    /// A draft with everything App Review needs at `now`.
+    func canSubmit(now: Date) -> Bool {
+        state.isEditable && reviewNeeds(now: now).isEmpty
     }
 
-    /// A draft with everything App Review needs.
-    var canSubmit: Bool {
-        (state == .draft || state == .readyForReview || state == .rejected) && missing.isEmpty
+    /// Its dates as App Store Connect has them; nil without all three.
+    var dates: InAppEventDates? { InAppEventDates(schedule) }
+
+    /// Every schedule's dates, in App Store Connect's order; nil when one
+    /// of them lacks any of the three (or there's none).
+    var everySchedulesDates: [InAppEventDates]? {
+        let dates = schedules.compactMap(InAppEventDates.init)
+        return dates.isEmpty || dates.count != schedules.count ? nil : dates
+    }
+
+    /// The rules its dates break at `now` (`InAppEventDates.broken`), in
+    /// any of its schedules, in the rules' order: App Store Connect checks
+    /// each, so a date that has passed in one is enough to refuse the
+    /// event. Nil when a schedule has no dates.
+    func brokenDateRules(now: Date?) -> [InAppEventDateRule]? {
+        guard let all = everySchedulesDates else { return nil }
+        let broken = Set(all.flatMap { $0.broken(now: now) })
+        return InAppEventDateRule.allCases.filter(broken.contains)
+    }
+
+    /// The dates of the first schedule that breaks `rule` at `now`, to
+    /// name them.
+    func dates(breaking rule: InAppEventDateRule, now: Date?) -> InAppEventDates? {
+        everySchedulesDates?.first { $0.broken(now: now).contains(rule) }
     }
 
     /// "Dec 1 – Dec 31".

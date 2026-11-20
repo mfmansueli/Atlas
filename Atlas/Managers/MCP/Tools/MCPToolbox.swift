@@ -48,6 +48,7 @@ struct MCPToolbox {
             GetStorePageTool(),
             GetAppInformationTool(),
             SuggestFieldsTool(),
+            WithdrawSuggestionTool(),
             BeginSuggestionsTool(),
             EndSuggestionsTool(),
             GetCapturePlanTool(),
@@ -82,12 +83,19 @@ struct MCPToolbox {
             ProposeReviewThemesTool(),
             GetInAppEventsTool(),
             ProposeInAppEventTool(),
+            ProposeEventDetailsTool(),
+            ReportDeepLinkCheckTool(),
             ProposeEventTextsTool(),
             WithdrawEventTextsTool(),
             RenderEventArtworkTool(),
             ProposeEventArtworkTool(),
             GetEventArtworkBriefTool(),
             ProposeEventArtworkConceptTool(),
+            GetProductPagesTool(),
+            ProposeProductPageTool(),
+            ProposeProductPageTextsTool(),
+            GetPageScreenshotsTool(),
+            ProposePageScreenshotsTool(),
         ])
     }
 

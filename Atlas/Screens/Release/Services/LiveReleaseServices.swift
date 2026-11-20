@@ -55,7 +55,9 @@ struct LiveReleaseServices: ReleaseServices {
         guard var found = submissions.first(where: { $0.versionID == versionID }) ?? submissions.first(where: { $0.isOpen && $0.versionID == nil }) else {
             return nil
         }
-        found.eventIDs = await (try? client.reviewSubmissionEventIDs(submissionID: found.id)) ?? []
+        let items = await (try? client.reviewSubmissionEventItems(submissionID: found.id)) ?? []
+        found.eventIDs = items.map(\.eventID)
+        found.eventItemIDs = Dictionary(items.map { ($0.eventID, $0.itemID) }) { first, _ in first }
         return found
     }
 
@@ -119,32 +121,67 @@ struct LiveReleaseServices: ReleaseServices {
     /// left out of it because the rejected one had it, and App Store
     /// Connect refused the empty one: "must have an approved
     /// appStoreVersions … or an appStoreVersions must be included".
+    ///
+    /// Each step that App Store Connect refuses throws a `SubmissionFailure`
+    /// naming it and the draft left behind. A draft reused from an earlier
+    /// try loses the events no longer ticked, so the person's untick
+    /// really takes an event out (Alba 1.2.0: three events without a deep
+    /// link made App Store Connect refuse the whole submission).
     func submit(_ plan: SubmissionPlan) async throws {
+        typealias Failure = SubmissionFailure
         if plan.buildID != plan.attachedBuildID {
-            try await client.attachBuild(plan.buildID, toVersion: plan.versionID)
+            try await Failure.at(.attachBuild) { try await client.attachBuild(plan.buildID, toVersion: plan.versionID) }
         }
         if let uses = plan.usesNonExemptEncryption {
-            try await client.setUsesNonExemptEncryption(uses, buildID: plan.buildID)
+            try await Failure.at(.encryption) { try await client.setUsesNonExemptEncryption(uses, buildID: plan.buildID) }
         }
-        try await client.setRelease(plan.timing, versionID: plan.versionID)
-        let phasedID = try await client.phasedRelease(versionID: plan.versionID)?.id
-        if plan.isPhased, phasedID == nil {
-            try await client.createPhasedRelease(versionID: plan.versionID)
-        } else if !plan.isPhased, let phasedID {
-            try await client.deletePhasedRelease(id: phasedID)
+        try await Failure.at(.release) { try await client.setRelease(plan.timing, versionID: plan.versionID) }
+        try await Failure.at(.phasedRelease) {
+            let phasedID = try await client.phasedRelease(versionID: plan.versionID)?.id
+            if plan.isPhased, phasedID == nil {
+                try await client.createPhasedRelease(versionID: plan.versionID)
+            } else if !plan.isPhased, let phasedID {
+                try await client.deletePhasedRelease(id: phasedID)
+            }
         }
         // The submission to send: one made and never sent, or the rejected
         // one; else a new one. What's "already in it" is about that one only.
-        let found = try await submission(versionID: plan.versionID, platform: plan.platform, appID: plan.appID)
+        let found = try await Failure.at(.createSubmission) {
+            try await submission(versionID: plan.versionID, platform: plan.platform, appID: plan.appID)
+        }
         let reused = found.flatMap { $0.isOpen || $0.hasUnresolvedIssues ? $0 : nil }
-        let submissionID = if let reused { reused.id } else { try await client.createReviewSubmission(appID: plan.appID, platform: plan.platform) }
-        if reused?.versionID != plan.versionID {
-            try await client.addReviewSubmissionItem(submissionID: submissionID, relationship: "appStoreVersion", type: "appStoreVersions", id: plan.versionID)
+        let submissionID = try await Failure.at(.createSubmission) {
+            if let reused { return reused.id }
+            return try await client.createReviewSubmission(appID: plan.appID, platform: plan.platform)
         }
-        for eventID in plan.eventIDs where reused?.eventIDs.contains(eventID) != true {
-            try await client.addReviewSubmissionItem(submissionID: submissionID, relationship: "appEvent", type: "appEvents", id: eventID)
+        var hasVersion = reused?.versionID == plan.versionID
+        var eventIDs = reused?.eventIDs ?? []
+        if !hasVersion {
+            try await Failure.at(.addVersion, submissionID: submissionID, eventIDs: eventIDs) {
+                try await client.addReviewSubmissionItem(
+                    submissionID: submissionID, relationship: "appStoreVersion", type: "appStoreVersions", id: plan.versionID
+                )
+            }
+            hasVersion = true
         }
-        try await client.updateReviewSubmission(id: submissionID, attribute: "submitted")
+        if let reused, reused.isOpen {
+            for eventID in reused.eventIDs where !plan.eventIDs.contains(eventID) {
+                guard let itemID = reused.eventItemIDs[eventID] else { continue }
+                try await Failure.at(.removeEvent(eventID), submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs) {
+                    try await client.deleteReviewSubmissionItem(id: itemID)
+                }
+                eventIDs.removeAll { $0 == eventID }
+            }
+        }
+        for eventID in plan.eventIDs where !eventIDs.contains(eventID) {
+            try await Failure.at(.addEvent(eventID), submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs) {
+                try await client.addReviewSubmissionItem(submissionID: submissionID, relationship: "appEvent", type: "appEvents", id: eventID)
+            }
+            eventIDs.append(eventID)
+        }
+        try await Failure.at(.send, submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs) {
+            try await client.updateReviewSubmission(id: submissionID, attribute: "submitted")
+        }
     }
 
     func submitEvents(_ eventIDs: [String], for app: StoreApp, platform: String?) async throws {

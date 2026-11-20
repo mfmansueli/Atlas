@@ -1,0 +1,217 @@
+//
+//  ProductPageScreenshotsPush.swift
+//  Atlas
+//
+
+import Foundation
+
+/// One language's screenshots on one device for a custom product page
+/// (board 52), made by Make Screenshots for This Page. The push finds the
+/// page's version that takes edits (or makes one, once per page in a
+/// push), the language (made when the version hasn't it) and its set of
+/// that device (made when it has none), uploads each screenshot, waits for
+/// Apple to process them, deletes the ones the set had and puts the new
+/// ones in order. The default page's screenshots don't change.
+///
+/// It travels in Review & Push as a `POST /v1/appScreenshotSets` whose body
+/// is this push (`ProductPageScreenshotsPush.Body`), never sent as is.
+struct ProductPageScreenshotsPush: Hashable, Sendable {
+    struct Body: Codable, Hashable, Sendable {
+        var productPageScreenshots: Content
+    }
+
+    struct File: Codable, Hashable, Sendable {
+        /// On this Mac, in `PageShotsStudio`'s folder.
+        var path: String
+        var fileName: String
+        var fileSize: Int
+        /// MD5.
+        var checksum: String
+    }
+
+    struct Content: Codable, Hashable, Sendable {
+        var appID: String
+        /// A draft's ID until it's pushed: the push finds the page by name.
+        var pageID: String
+        var pageName: String
+        /// The deep link a version this push makes keeps.
+        var currentDeepLink: String?
+        var locale: String
+        var displayType: ScreenshotDisplayType
+        var files: [File]
+    }
+
+    static let path = "/v1/appScreenshotSets"
+    static let maxScreenshots = 10
+    static let pollInterval: Duration = .seconds(2)
+    static let timeout: Duration = .seconds(180)
+
+    var content: Content
+
+    init(_ content: Content) {
+        self.content = content
+    }
+
+    init?(_ request: PushRequest) {
+        guard request.method == .post, request.path == Self.path, let body = request.body,
+              let decoded = try? JSONDecoder().decode(Body.self, from: body)
+        else { return nil }
+        content = decoded.productPageScreenshots
+    }
+
+    var request: PushRequest {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        let body = (try? encoder.encode(Body(productPageScreenshots: content))) ?? Data()
+        return PushRequest(method: .post, path: Self.path, body: body)
+    }
+
+    /// The page is a draft made in Atlas: its ID is found by name.
+    var needsPageID: Bool { ProductPageDraft.isDraftID(content.pageID) }
+
+    /// Changes of one page's language wait for each other: they share its
+    /// localization.
+    var resourceKey: String { "pageScreenshots:\(content.appID):\(ProductPageBrief.key(content.pageName)):\(content.locale)" }
+
+    // MARK: - Requests
+
+    static func pagesPath(appID: String) -> String {
+        "/v1/apps/\(appID)/appCustomProductPages?fields%5BappCustomProductPages%5D=name&limit=200"
+    }
+
+    /// The page named `name` in a pages response, case and spaces at the
+    /// ends ignored.
+    static func pageID(named name: String, in data: Data) -> String? {
+        let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let pages = object?["data"] as? [[String: Any]] ?? []
+        return pages.first { page in
+            let attributes = page["attributes"] as? [String: Any]
+            return (attributes?["name"] as? String).map(ProductPageBrief.key) == ProductPageBrief.key(name)
+        }?["id"] as? String
+    }
+
+    func setsPath(localizationID: String) -> String {
+        "/v1/appCustomProductPageLocalizations/\(localizationID)/appScreenshotSets"
+            + "?filter%5BscreenshotDisplayType%5D=\(content.displayType.apiValue)&include=appScreenshots"
+            + "&fields%5BappScreenshotSets%5D=screenshotDisplayType,appScreenshots&limit=50&limit%5BappScreenshots%5D=10"
+    }
+
+    func createSet(localizationID: String) -> PushRequest {
+        let body: [String: Any] = [
+            "data": [
+                "type": "appScreenshotSets",
+                "attributes": ["screenshotDisplayType": content.displayType.apiValue],
+                "relationships": [
+                    "appCustomProductPageLocalization": ["data": ["type": "appCustomProductPageLocalizations", "id": localizationID]],
+                ],
+            ],
+        ]
+        let data = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys, .withoutEscapingSlashes])
+        return PushRequest(method: .post, path: "/v1/appScreenshotSets", body: data)
+    }
+
+    /// The set of this device in a sets response, and its screenshots.
+    func existingSet(in data: Data) throws -> (id: String, screenshotIDs: [String])? {
+        let page = try JSONDecoder().decode(ScreenshotAPIDocument<AppScreenshotSetAttributes, AppScreenshotAttributes>.self, from: data)
+        return page.data.first { $0.attributes?.screenshotDisplayType == content.displayType.apiValue }
+            .map { ($0.id, $0.related("appScreenshots").map(\.id)) }
+    }
+
+    // MARK: - Sending
+
+    /// Uploads the screenshots into `localizationID` and replaces what its
+    /// set of this device had. Returns the set's ID.
+    @MainActor
+    @discardableResult
+    func send(
+        into localizationID: String,
+        via transport: any PushTransport,
+        readFile: (String) throws -> Data = { try Data(contentsOf: URL(fileURLWithPath: $0)) },
+        sleep: (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
+        note: (AppStoreConnectRateLimit?) -> Void = { _ in },
+        progress: (String) -> Void = { _ in },
+        processing: () -> Void = {},
+        pollInterval: () -> Duration = { Self.pollInterval }
+    ) async throws -> String {
+        guard let uploads = transport as? any ScreenshotUploadTransport else { throw ProductPageScreenshotsPushError.cannotUpload }
+        var files: [(file: File, data: Data)] = []
+        for file in content.files {
+            do {
+                try files.append((file, readFile(file.path)))
+            } catch {
+                throw ProductPageScreenshotsPushError.fileMissing(fileName: file.fileName)
+            }
+        }
+        let sets = try await transport.fetch(setsPath(localizationID: localizationID))
+        note(sets.rateLimit)
+        let setID: String
+        var old: [String] = []
+        if let existing = try existingSet(in: sets.data) {
+            setID = existing.id
+            old = existing.screenshotIDs
+        } else {
+            let created = try await transport.send(createSet(localizationID: localizationID))
+            note(created.rateLimit)
+            setID = try ScreenshotUploadRequests.createdID(in: created.data)
+        }
+        // A set takes 10: make room first when the new ones wouldn't fit.
+        if old.count + files.count > Self.maxScreenshots {
+            try await delete(old, via: transport, note: note)
+            old = []
+        }
+        var uploaded: [String] = []
+        for (index, item) in files.enumerated() {
+            progress(String(localized: "Uploading screenshot \(index + 1) of \(files.count)"))
+            let reserve = try await transport.send(ScreenshotUploadRequests.reserve(fileName: item.file.fileName, fileSize: item.data.count, setID: setID))
+            note(reserve.rateLimit)
+            let reservation = try ScreenshotUploadRequests.reservation(in: reserve.data)
+            for operation in reservation.operations {
+                try await uploads.upload(operation, data: item.data) { _ in }
+            }
+            let checksum = ScreenshotPNG.checksum(item.data)
+            try await note(transport.send(ScreenshotUploadRequests.commit(screenshotID: reservation.id, checksum: checksum)).rateLimit)
+            uploaded.append(reservation.id)
+        }
+        progress(String(localized: "Apple is processing the screenshots"))
+        processing()
+        for (id, item) in zip(uploaded, files) {
+            try await waitUntilProcessed(id, fileName: item.file.fileName, via: transport, sleep: sleep, note: note, interval: pollInterval)
+        }
+        try await delete(old, via: transport, note: note)
+        try await note(transport.send(ScreenshotUploadRequests.reorder(setID: setID, screenshotIDs: uploaded)).rateLimit)
+        return setID
+    }
+
+    @MainActor
+    private func delete(_ ids: [String], via transport: any PushTransport, note: (AppStoreConnectRateLimit?) -> Void) async throws {
+        for id in ids {
+            do {
+                try await note(transport.send(ScreenshotUploadRequests.delete(screenshotID: id)).rateLimit)
+            } catch AppStoreConnectError.notFound {
+                // Already gone.
+            }
+        }
+    }
+
+    @MainActor
+    private func waitUntilProcessed(
+        _ id: String, fileName: String, via transport: any PushTransport, sleep: (Duration) async throws -> Void,
+        note: (AppStoreConnectRateLimit?) -> Void, interval: () -> Duration
+    ) async throws {
+        var waited: Duration = .zero
+        while true {
+            let response = try await transport.fetch(ScreenshotUploadRequests.statusPath(screenshotID: id))
+            note(response.rateLimit)
+            let state = ScreenshotUploadRequests.deliveryState(in: response.data)
+            if state?.isComplete == true { return }
+            if state?.isFailed == true {
+                let details = state?.errors?.compactMap { $0.description ?? $0.code }.joined(separator: " ")
+                throw ProductPageScreenshotsPushError.refused(fileName: fileName, details: details?.isEmpty == false ? details : nil)
+            }
+            guard waited < Self.timeout else { throw ProductPageScreenshotsPushError.timedOut(fileName: fileName) }
+            let pause = interval()
+            try await sleep(pause)
+            waited += pause
+        }
+    }
+}

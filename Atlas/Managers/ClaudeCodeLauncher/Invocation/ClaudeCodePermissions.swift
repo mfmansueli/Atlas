@@ -22,12 +22,21 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// An In-App Event's card and details page: read the project, and
     /// upload a file it already has to Atlas's event art link.
     case eventArtwork
+    /// Check in the Code: read the project, build the app and try an
+    /// event's deep link in a simulator, without changing anything.
+    case deepLinkCheck
+    /// Make It Work…: also change the project so the app opens an
+    /// event's deep link (the one run that may edit files, inside the
+    /// project folder only), and bump its build number. Never archives or
+    /// uploads.
+    case deepLinkWork
 
     /// `--tools`: the built-in tools available at all.
     var tools: [String] {
         switch self {
         case .atlasOnly: []
-        case .readProject, .autopilot, .eventArtwork: ["Read", "Grep", "Glob", "Bash"]
+        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck: ["Read", "Grep", "Glob", "Bash"]
+        case .deepLinkWork: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
 
@@ -61,8 +70,33 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                 "Bash(curl * http://127.0.0.1:\(port)/autopilot/*)",
             ]
             return atlas + reading + building
+        case .deepLinkCheck:
+            return atlas + reading + Self.linkCommands
+        case .deepLinkWork:
+            return atlas + reading + ["Edit", "Write"] + Self.linkCommands
         }
     }
+
+    /// What checking a deep link may run: build the app, run it in a
+    /// simulator and open the link there.
+    static let linkCommands = [
+        "Bash(xcodebuild:*)",
+        "Bash(xcrun simctl:*)",
+        "Bash(open -a Simulator:*)",
+        "Bash(mkdir:*)",
+        "Bash(ls:*)",
+        "Bash(sleep:*)",
+        "Bash(echo:*)",
+    ]
+
+    /// What a deep link run may never do: send a build to App Store
+    /// Connect.
+    static let uploadCommands = [
+        "Bash(xcodebuild -exportArchive*)",
+        "Bash(xcodebuild * -exportArchive*)",
+        "Bash(xcrun altool:*)",
+        "Bash(xcrun notarytool:*)",
+    ]
 
     /// The `permissions.deny` rules, which win over the allow rules.
     ///
@@ -75,6 +109,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         switch self {
         case .atlasOnly, .readProject, .eventArtwork: []
         case .autopilot: ["Bash(xcrun simctl io * screenConfig*)"]
+        case .deepLinkCheck, .deepLinkWork: Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
         }
     }
 
@@ -97,7 +132,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             "Never push or change App Store Connect directly; everything goes through Atlas's tools, and the person reviews it there.",
             "If something you need is refused or missing, say so in one sentence in your last message and finish.",
         ]
-        if self == .readProject || self == .eventArtwork {
+        if self == .readProject || self == .eventArtwork || self == .deepLinkCheck || self == .deepLinkWork {
             lines.append(
                 "Find files with Glob and Grep and read them with Read. Run each allowed command on its own: "
                     + "a pipe, ;, && or cd in front of it is refused."
@@ -112,6 +147,23 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                     + "render_event_artwork: JavaScript doesn't run in its renderer. If the project's own renderer would make "
                     + "better art, such as a video loop, give its command in one sentence in your last message, for the "
                     + "person to continue this session in Terminal."
+            )
+        }
+        if self == .deepLinkCheck || self == .deepLinkWork {
+            lines.append(
+                "To try a deep link you may also run xcodebuild, xcrun simctl, open -a Simulator, mkdir, ls, sleep and echo, "
+                    + "each on its own: build for a simulator, install and launch the app with xcrun simctl, and open the link "
+                    + "with xcrun simctl openurl booted '<link>'. Never archive, export or upload a build: the person uploads it."
+            )
+        }
+        if self == .deepLinkCheck {
+            lines.append("Don't change the project: you can't edit files here. Say what to change in report_deep_link_check's problems.")
+        }
+        if self == .deepLinkWork {
+            lines.append(
+                "You may edit and write files in this project only, to make the app open the deep link. Keep the change "
+                    + "small and in the project's own style, add a test when the project has tests, and say in your last "
+                    + "message which files you changed. Never commit or push."
             )
         }
         if self == .autopilot {
@@ -154,6 +206,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .readProject: String(localized: "Suggestions, translations, privacy")
         case .autopilot: String(localized: "Screenshot Autopilot")
         case .eventArtwork: String(localized: "In-App Event art")
+        case .deepLinkCheck: String(localized: "In-App Event deep link check")
+        case .deepLinkWork: String(localized: "In-App Event deep link fix")
         }
     }
 
@@ -164,6 +218,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .readProject: String(localized: "Atlas’s tools, reading the project, read-only git")
         case .autopilot: String(localized: "Also xcodebuild, xcrun simctl and uploads to Atlas")
         case .eventArtwork: String(localized: "Reading the project, and uploads of its art to Atlas")
+        case .deepLinkCheck: String(localized: "Reading the project, xcodebuild and xcrun simctl; never uploads")
+        case .deepLinkWork: String(localized: "Also edits files in the project folder; never uploads")
         }
     }
 }

@@ -22,6 +22,8 @@ struct InAppEventsViewModelTests {
         let model = InAppEventsViewModel(app: Data.app, services: services, store: store, queue: queue)
         model.now = { Data.now }
         model.pageLocales = ["en-US", "de-DE", "ja", "pt-BR"]
+        // What another test's project claims stays out of these.
+        model.linkClaims = ProjectLinkClaimsCenter()
         await model.load()
         return model
     }

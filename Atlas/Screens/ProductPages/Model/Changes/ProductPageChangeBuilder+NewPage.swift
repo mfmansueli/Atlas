@@ -27,7 +27,7 @@ extension ProductPageChangeBuilder {
         let document = Self.createDocument(draft, appID: appID, templateVersionID: defaultPage.versionID)
         guard let body = try? JSONSerialization.data(withJSONObject: document, options: [.sortedKeys, .withoutEscapingSlashes]) else { return nil }
         var requests = [PushRequest(method: .post, path: "/v1/\(Self.pageType)", body: body)]
-        let inline = Self.inlineLocales(draft)
+        let inline = Self.inlineLocales(draft, templateVersionID: defaultPage.versionID)
         for locale in draft.locales {
             let text = draft.promotionalTexts[locale] ?? ""
             let keywords = draft.keywords[locale] ?? []
@@ -65,7 +65,7 @@ extension ProductPageChangeBuilder {
     /// languages, made in one request.
     static func createDocument(_ draft: ProductPageDraft, appID: StoreApp.ID, templateVersionID: String?) -> [String: Any] {
         let versionID = "${v1}"
-        let inline = inlineLocales(draft)
+        let inline = inlineLocales(draft, templateVersionID: templateVersionID)
         let localizationIDs = inline.indices.map { "${l\($0 + 1)}" }
         var relationships: [String: Any] = [
             "app": ["data": ["type": "apps", "id": appID]],
@@ -81,12 +81,14 @@ extension ProductPageChangeBuilder {
         case .empty:
             break
         }
-        var version: [String: Any] = [
-            "type": ProductPageLocaleWrite.versionType, "id": versionID,
-            "relationships": ["appCustomProductPageLocalizations": ["data": localizationIDs.map {
+        var version: [String: Any] = ["type": ProductPageLocaleWrite.versionType, "id": versionID]
+        // A page from a template gets its languages from it: an empty
+        // to-many here would ask for a version without any.
+        if !localizationIDs.isEmpty {
+            version["relationships"] = ["appCustomProductPageLocalizations": ["data": localizationIDs.map {
                 ["type": ProductPageLocaleWrite.localizationType, "id": $0]
-            }]],
-        ]
+            }]]
+        }
         let link = draft.deepLink.trimmingCharacters(in: .whitespaces)
         if !link.isEmpty { version["attributes"] = ["deepLink": link] }
         var included: [[String: Any]] = [version]
@@ -106,15 +108,24 @@ extension ProductPageChangeBuilder {
 
     /// The languages made inside the create request: a page from a
     /// template gets its languages from the template, so only an empty one
+    /// (or one from the default page of an app with no version to copy)
     /// lists them.
-    static func inlineLocales(_ draft: ProductPageDraft) -> [String] {
-        draft.start == .empty ? draft.locales : []
+    static func inlineLocales(_ draft: ProductPageDraft, templateVersionID: String?) -> [String] {
+        switch draft.start {
+        case .empty: draft.locales
+        case .defaultPage: templateVersionID == nil ? draft.locales : []
+        case .copy: []
+        }
     }
 
-    /// What stops a draft from being pushed: no name, or a text over the
-    /// limit.
+    /// What stops a draft from being pushed: no name, a copy of a page that
+    /// isn't in App Store Connect yet, a text over the limit, or a deep
+    /// link that isn't complete.
     static func problem(of draft: ProductPageDraft) -> String? {
         if draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return String(localized: "A page needs a name.") }
+        if case let .copy(pageID, name) = draft.start, ProductPageDraft.isDraftID(pageID) {
+            return String(localized: "“\(name)” isn’t in App Store Connect yet, so it can’t be copied. Push it first.")
+        }
         for locale in draft.locales {
             if let problem = textProblem(draft.promotionalTexts[locale] ?? "") { return "\(localeName(locale)): \(problem)" }
         }

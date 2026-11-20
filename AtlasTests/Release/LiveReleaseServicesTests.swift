@@ -217,10 +217,50 @@ struct LiveReleaseServicesTests {
         {"errors":[{"status":"409","code":"STATE_ERROR","title":"Not allowed","detail":"The build is invalid."}]}
         """#)
         let transport = FakeHTTPTransport([refused])
-        await #expect(throws: AppStoreConnectError.self) {
+        let error = await #expect(throws: SubmissionFailure.self) {
             try await services(transport).submit(plan())
         }
+        #expect(error?.step == .release)
+        #expect(error?.submissionID == nil)
+        #expect(error?.underlying == .rejected(statusCode: 409, code: "STATE_ERROR", detail: "The build is invalid."))
         #expect(transport.requests.count == 1)
+    }
+
+    /// Alba 1.2.0: App Store Connect took the version into the new
+    /// submission, then refused an event without a deep link. The failure
+    /// says which step, which event, and what the draft holds.
+    @Test func aRefusedEventNamesItAndTheDraftLeft() async {
+        let refused = CannedHTTPResponse(statusCode: 409, body: #"""
+        {"errors":[{"status":"409","code":"ENTITY_ERROR.ATTRIBUTE.REQUIRED","title":"An attribute value is required.",
+        "detail":"You must provide a value for the attribute 'deepLink' with this request"}]}
+        """#)
+        let transport = FakeHTTPTransport(
+            [Self.done, Self.createdSubmission, Self.done, Self.done, refused], routes: Self.reads(phased: Self.phased)
+        )
+        let error = await #expect(throws: SubmissionFailure.self) {
+            try await services(transport).submit(plan(events: ["event-gratitude", "event-mood"]))
+        }
+        #expect(error?.step == .addEvent("event-mood"))
+        #expect(error?.submissionID == "sub1")
+        #expect(error?.hasVersion == true)
+        #expect(error?.eventIDs == ["event-gratitude"])
+        #expect(error?.message.contains("'deepLink'") == true)
+        // Nothing was sent to App Review.
+        #expect(!calls(transport).contains("PATCH /v1/reviewSubmissions/sub1"))
+    }
+
+    /// An event unticked after a refused try leaves the draft it was added
+    /// to, so Submit sends the version without it.
+    @Test func anUntickedEventLeavesTheReusedDraft() async throws {
+        let transport = FakeHTTPTransport(
+            [Self.done, Self.noContent, Self.done], routes: Self.reads(phased: Self.phased, open: Self.openWithTheVersion, items: Self.moodItem)
+        )
+        try await services(transport).submit(plan(events: []))
+        #expect(calls(transport) == [
+            "PATCH /v1/appStoreVersions/v14",
+            "DELETE /v1/reviewSubmissionItems/i1",
+            "PATCH /v1/reviewSubmissions/sub7",
+        ])
     }
 
     // MARK: - After submitting

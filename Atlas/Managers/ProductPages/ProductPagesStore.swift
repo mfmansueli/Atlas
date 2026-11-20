@@ -123,13 +123,40 @@ final class ProductPagesStore {
 
     // MARK: - Drafts
 
+    /// Keeps a draft. A new one made from a suggestion takes the texts Atlas
+    /// stopped there, so its languages show them as "Not offered".
     func save(_ draft: ProductPageDraft, for appID: StoreApp.ID) {
         update(appID) { archive in
             if let index = archive.drafts.firstIndex(where: { $0.id == draft.id }) {
                 archive.drafts[index] = draft
-            } else {
-                archive.drafts.append(draft)
+                return
             }
+            archive.drafts.append(draft)
+            guard let suggestionID = draft.suggestionID,
+                  let refused = archive.pageSuggestions.first(where: { $0.id == suggestionID })?.notOfferedTexts
+            else { return }
+            for var text in refused {
+                text.pageID = draft.id
+                archive.textSuggestions.removeAll { $0.id == text.id }
+                archive.textSuggestions.append(text)
+            }
+        }
+    }
+
+    /// Keeps an accepted suggestion's brief under the page's name.
+    func saveBrief(_ brief: ProductPageBrief, pageName: String, for appID: StoreApp.ID) {
+        update(appID) { archive in
+            var briefs = archive.briefs ?? [:]
+            briefs[ProductPageBrief.key(pageName)] = brief
+            archive.briefs = briefs
+        }
+    }
+
+    /// Drops a page's brief: the person deleted the draft it was made for.
+    /// A pushed draft keeps it, under the same name.
+    func removeBrief(pageName: String, for appID: StoreApp.ID) {
+        update(appID) { archive in
+            archive.briefs?[ProductPageBrief.key(pageName)] = nil
         }
     }
 

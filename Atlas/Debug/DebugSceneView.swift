@@ -25,7 +25,7 @@ import SwiftUI
 /// `ScreenshotsProposalsDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
-/// `MenuBarDebugScenes`).
+/// `ProductPagesDebugScenes`, `MenuBarDebugScenes`).
 struct DebugSceneView: View {
     let id: String
 
@@ -81,8 +81,13 @@ struct DebugSceneView: View {
             AnalyticsDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
             ReleaseDebugScenes.view(for:),
+            ReleaseEventsDebugScenes.view(for:),
             InAppEventsDebugScenes.view(for:),
+            InAppEventsDeepLinkDebugScenes.view(for:),
+            InAppEventsDatesDebugScenes.view(for:),
+            InAppEventsSuggestionDebugScenes.view(for:),
             EventArtworkDebugScenes.view(for:),
+            ProductPagesDebugScenes.view(for:),
             NavigationDebugScenes.view(for:),
             MenuBarDebugScenes.view(for:),
         ]

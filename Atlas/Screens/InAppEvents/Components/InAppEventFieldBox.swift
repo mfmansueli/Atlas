@@ -8,7 +8,7 @@ import SwiftUI
 /// One of an event's three texts in the language being viewed: its
 /// counter, the field, what App Review would reject in it (a warning: the
 /// person may know better), and the suggested text under it while one
-/// waits.
+/// waits. It takes focus for a revision's Use and Edit.
 struct InAppEventFieldBox: View {
     let field: InAppEventField
     @Binding var text: String
@@ -19,6 +19,11 @@ struct InAppEventFieldBox: View {
     let isEditable: Bool
     let isPending: Bool
     let isRightToLeft: Bool
+    /// Set to take focus: a revision's Use and Edit. `onFocusTaken` clears it.
+    var takesFocus = false
+    var onFocusTaken: () -> Void = {}
+
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
@@ -48,6 +53,12 @@ struct InAppEventFieldBox: View {
             .overlay(shape.strokeBorder(isOver ? Palette.danger : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
             .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
             .disabled(!isEditable)
+            .focused($isFocused)
+            .onChange(of: takesFocus, initial: true) {
+                guard takesFocus else { return }
+                isFocused = true
+                onFocusTaken()
+            }
             .accessibilityLabel(Text(field.title))
             .accessibilityIdentifier("events.field.\(field.rawValue)")
             let issues = StoreTextGuidelineCheck.issues(in: text, for: .eventText)

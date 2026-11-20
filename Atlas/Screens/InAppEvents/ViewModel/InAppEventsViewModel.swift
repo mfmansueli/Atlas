@@ -47,7 +47,22 @@ final class InAppEventsViewModel {
     var artworkFlow: EventArtworkFlow?
     /// Make the Artwork… or Choose Files…, for the section to handle.
     var artworkRequest: EventArtworkRequest?
+    /// The event page's details card, scrolled to and focused on a detail
+    /// by the "Before App Review" list's buttons.
+    var focusedDetail: InAppEventDetail?
+    /// The same for a date: Fix… on a date that has passed, or on one that
+    /// breaks Apple's rules.
+    var focusedDateField: InAppEventDateField?
+    /// A text to edit: a revision's Use and Edit.
+    var focusedTextField: InAppEventField?
+    /// What the app's project claims, for the deep link's check.
+    @ObservationIgnored var linkClaims: ProjectLinkClaimsCenter = .shared
     @ObservationIgnored var now: () -> Date = { .now }
+    /// What was pushed lately: dates just pushed stand over a read that
+    /// doesn't show them yet (`InAppEventPushedDates`). Set by the window.
+    @ObservationIgnored var pushHistory: PushHistory?
+    /// The one more read once dates just pushed are no longer trusted.
+    @ObservationIgnored let readAgain = InAppEventReadAgain()
 
     init(app: StoreApp, services: any InAppEventsServices, store: InAppEventsStore, queue: ChangeQueue) {
         self.app = app
@@ -61,17 +76,25 @@ final class InAppEventsViewModel {
 
     // MARK: - Loading
 
-    func load(force: Bool = false) async {
-        guard force || state.value == nil, !state.isLoading else { return }
+    /// Reads the events, the first time or with `force`; returns whether a
+    /// read finished. The suggestions kept for them are settled against
+    /// what it found (`InAppEventsStore.noteRead`).
+    @discardableResult
+    func load(force: Bool = false) async -> Bool {
+        guard force || state.value == nil, !state.isLoading else { return false }
         if state.value == nil { state = .loading }
         do {
-            let events = try await services.events(for: app)
+            let settled = try await InAppEventPushedDates(appID: app.id, history: pushHistory, now: now()).settle(services.events(for: app))
+            let events = settled.events
             state = .loaded(events)
-            store.prune(for: app.id, keeping: Set(events.filter(\.state.isEditable).map(\.id)))
+            store.noteRead(events, for: app.id)
             for event in events where event.state.isEditable { dropArtworkOfGoneLanguages(of: event) }
             if selectedEvent == nil { select(events.first?.id) }
+            readAgain.schedule(at: settled.readAgainAt, now: now()) { [weak self] in _ = await self?.load(force: true) }
+            return true
         } catch {
             if state.value == nil { state = .failed(error.localizedDescription) }
+            return false
         }
     }
 
@@ -97,11 +120,13 @@ final class InAppEventsViewModel {
     // MARK: - Languages
 
     /// The event's languages: its own, the store page's and the suggested
-    /// ones, the primary first, then by name.
+    /// ones, the primary first, then by name. A written language with a
+    /// revision waiting that would change something shows it.
     func languages(of event: InAppEvent) -> [InAppEventLanguage] {
         let drafts = builder.drafts(for: event.id, in: queue.changes(for: app.id, section: .inAppEvents))
-        let suggested = Set(store.open(for: app.id, eventID: event.id).map(\.locale))
-        var codes = Set(event.localizations.map(\.locale)).union(drafts.keys).union(suggested)
+        let open = store.open(for: app.id, eventID: event.id)
+        let shown = InAppEventShownSuggestions(event: event, open: open, drafts: drafts)
+        var codes = Set(event.localizations.map(\.locale)).union(drafts.keys).union(open.filter { !$0.isRevision }.map(\.locale))
         if event.state.isEditable { codes.formUnion(pageLocales) }
         let primary = event.primaryLocale
         return codes.sorted { lhs, rhs in
@@ -109,11 +134,13 @@ final class InAppEventsViewModel {
             return InAppEventChangeBuilder.localeName(lhs) < InAppEventChangeBuilder.localeName(rhs)
         }
         .map { code in
-            let state: InAppEventLanguage.State = if drafts[code]?.isEmpty == false {
+            let state: InAppEventLanguage.State = if shown.revised.contains(code) {
+                .revision
+            } else if drafts[code]?.isEmpty == false {
                 .notPushed
             } else if event.localization(code)?.isComplete == true {
                 .written
-            } else if suggested.contains(code), event.state.isEditable {
+            } else if shown.suggested.contains(code) {
                 .suggested
             } else {
                 event.localization(code) == nil ? .missing : .written
@@ -126,9 +153,10 @@ final class InAppEventsViewModel {
         selectedEvent.flatMap { languages(of: $0).first { $0.code == localeCode } }
     }
 
-    /// Languages of the selected event with a suggestion waiting.
+    /// Languages of the selected event with a suggestion or a revision
+    /// waiting.
     var suggestedCount: Int {
-        selectedEvent.map { languages(of: $0).count { $0.state == .suggested } } ?? 0
+        selectedEvent.map { languages(of: $0).count { $0.state == .suggested || $0.state == .revision } } ?? 0
     }
 
     /// "9 languages suggested by Claude Code".
@@ -151,7 +179,14 @@ final class InAppEventsViewModel {
     /// while nothing is written there.
     var suggestion: InAppEventTextSuggestion? {
         guard let event = selectedEvent, selectedLanguage?.state == .suggested else { return nil }
-        return store.suggestion(for: app.id, eventID: event.id, locale: localeCode)
+        return store.suggestion(for: app.id, eventID: event.id, locale: localeCode).flatMap { $0.isRevision ? nil : $0 }
+    }
+
+    /// The revision showing for the selected event and language: some of
+    /// its written texts, changed.
+    var revision: InAppEventTextSuggestion? {
+        guard let event = selectedEvent, selectedLanguage?.state == .revision else { return nil }
+        return store.suggestion(for: app.id, eventID: event.id, locale: localeCode).flatMap { $0.isRevision ? $0 : nil }
     }
 
     /// The text in the selected language: what's queued, else what App

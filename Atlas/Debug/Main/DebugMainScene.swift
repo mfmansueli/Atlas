@@ -25,6 +25,7 @@ struct DebugMainScene: View {
     @State private var events: InAppEventsStore
     @State private var productPages: ProductPagesStore
     @State private var artwork: EventArtworkStudio
+    @State private var pageShots: PageShotsStudio
     @State private var release: ReleaseStore
     /// A gate that's on Free, for the scenes that show what Free has.
     @State private var freeGate: ProGate?
@@ -51,6 +52,7 @@ struct DebugMainScene: View {
         events: InAppEventsStore = DebugInAppEventsData.store(),
         productPages: ProductPagesStore = DebugProductPagesData.store(),
         artwork: EventArtworkStudio = EventArtworkStudio(),
+        pageShots: PageShotsStudio = .shared,
         release: ReleaseStore = DebugReleaseData.store(.prepare),
         isFree: Bool = false,
         presentedSheet: WorkspaceSheet? = nil,
@@ -82,6 +84,7 @@ struct DebugMainScene: View {
         _events = State(initialValue: events)
         _productPages = State(initialValue: productPages)
         _artwork = State(initialValue: artwork)
+        _pageShots = State(initialValue: pageShots)
         _release = State(initialValue: release)
         _freeGate = State(initialValue: isFree ? ProGate(entitlements: Entitlements(store: DebugProStore())) : nil)
         let key = AppStoreConnectCredentials(issuerID: DebugFixtures.issuerID, keyID: DebugFixtures.keyID, privateKeyPEM: DebugFixtures.privateKey.pem)
@@ -111,6 +114,7 @@ struct DebugMainScene: View {
         .environment(events)
         .environment(productPages)
         .environment(artwork)
+        .environment(pageShots)
         .environment(release)
         .modifier(DebugFreeGate(gate: freeGate))
         .task {

@@ -230,7 +230,7 @@ struct AppWorkspaceView: View {
         case .screenshots:
             ScreenshotsSectionView(app: app, services: services.storePage)
         case .productPages:
-            ProductPagesSectionView(app: app, services: services.productPages)
+            ProductPagesSectionView(app: app, services: services.productPages, screenshots: services.screenshots)
         case .appInformation:
             AppInformationSectionView(app: app, services: services.appInformation)
         case .analytics:

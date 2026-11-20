@@ -299,7 +299,7 @@ struct EventArtworkToolsTests {
 
     @Test func eachLanguagesMediaWhatIsMissingAndTheQueuedArtAreRead() async throws {
         _ = try await propose([["kind": "card", "fileId": .string(stored(1920, 1080)), "locales": ["de-DE"]]])
-        let outcome = try await call(GetInAppEventsTool(store: InAppEventsStore()), ["appId": "Lumen Journal"])
+        let outcome = try await call(GetInAppEventsTool(store: InAppEventsStore(), now: { Data.now }), ["appId": "Lumen Journal"])
         let link = "http://127.0.0.1:47321/event-artwork/\(InAppEventArtworkFiles.uploadToken)/\(Data.app.id)"
         #expect(outcome.result["artworkUpload"] == .string(link))
         let winter = try #require(outcome.result["events"]?.arrayValue?.first)

@@ -16,11 +16,17 @@ enum DebugInAppEventsData {
     static let winterID = "event-winter"
     static let moodID = "event-mood"
     static let gratitudeID = "event-gratitude"
+    /// Where Open on the Mood Calendar's card goes.
+    static let moodDeepLink = "lumen://mood-calendar"
     static let client = DebugReviewsData.client
 
-    static func date(month: Int, day: Int) -> Date {
-        Calendar.gmtGregorian.date(from: DateComponents(year: 2026, month: month, day: day, hour: 9)) ?? .now
+    static func date(month: Int, day: Int, hour: Int = 9) -> Date {
+        Calendar.gmtGregorian.date(from: DateComponents(year: 2026, month: month, day: day, hour: hour)) ?? .now
     }
+
+    /// Every country and region, as App Store Connect lists an event's
+    /// schedule: Atlas changes a draft's dates only when it knows them.
+    static let territories = TerritoryCatalog.standard.territories.map(\.id)
 
     /// The languages the events are written in or suggested for.
     static let locales = ["en-US", "en-GB", "de-DE", "ja", "fr-FR", "es-ES", "es-MX", "it", "pt-BR", "ko", "zh-Hans", "ar-SA", "nl-NL", "sv"]
@@ -120,14 +126,19 @@ enum DebugInAppEventsData {
     static let winter = InAppEvent(
         id: winterID, referenceName: "Winter Reflection 2026", badge: .challenge, state: .draft, primaryLocale: "en-US", priority: .normal,
         purpose: .appropriateForAllUsers,
-        schedules: [InAppEventSchedule(publishStart: date(month: 11, day: 24), eventStart: date(month: 12, day: 1), eventEnd: date(month: 12, day: 31))],
+        schedules: [InAppEventSchedule(
+            territories: territories, publishStart: date(month: 11, day: 24), eventStart: date(month: 12, day: 1), eventEnd: date(month: 12, day: 31)
+        )],
         localizations: localizations(winterID, written, media: [card])
     )
 
     static let mood = InAppEvent(
-        id: moodID, referenceName: "1.4 Mood Calendar", badge: .majorUpdate, state: .draft, primaryLocale: "en-US", priority: .high,
+        id: moodID, referenceName: "1.4 Mood Calendar", badge: .majorUpdate, state: .draft, deepLink: moodDeepLink, primaryLocale: "en-US",
+        priority: .high,
         purpose: .bringBackLapsedUsers,
-        schedules: [InAppEventSchedule(publishStart: date(month: 11, day: 24), eventStart: date(month: 11, day: 24), eventEnd: date(month: 12, day: 8))],
+        schedules: [InAppEventSchedule(
+            territories: territories, publishStart: date(month: 11, day: 24), eventStart: date(month: 11, day: 24), eventEnd: date(month: 12, day: 8)
+        )],
         localizations: localizations(moodID, everywhere([
             "Mood Calendar", "See your month in color", "Lumen 1.4 turns your entries into a calendar of moods, so you can see how your month really felt.",
         ]), media: [card, details])

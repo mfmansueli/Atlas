@@ -30,9 +30,11 @@ struct GetInAppEventsQueueTests {
         return try await tool.call(MCPToolArguments(arguments), in: context)
     }
 
+    /// Every part (`include: ["all"]`), mediaDetails too.
     private func read(events: [InAppEvent] = InAppEventsTestData.events, push: MCPPushSnapshot? = nil) async throws -> JSONValue {
         try await call(
-            GetInAppEventsTool(store: InAppEventsStore(), directory: directory), ["appId": "Lumen Journal"], events: events, push: push
+            GetInAppEventsTool(store: InAppEventsStore(), directory: directory, now: { Data.now }), ["appId": "Lumen Journal", "include": ["all"]],
+            events: events, push: push
         ).result
     }
 

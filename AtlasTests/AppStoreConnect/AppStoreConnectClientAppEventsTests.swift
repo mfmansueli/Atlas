@@ -116,7 +116,14 @@ struct AppStoreConnectClientAppEventsTests {
         // A video's poster frame comes from previewFrameImage, not the
         // deprecated previewImage.
         #expect(winter.media(.details)?.imageURL?.absoluteString == "https://example.com/details/640x1137.jpg")
-        #expect(winter.missing == ["write every language"])
+        // Alba 1.2.0's drafts read like this one: no deep link, no purpose,
+        // and App Store Connect refuses to send them to App Review.
+        #expect(winter.deepLink == nil)
+        #expect(winter.purpose == nil)
+        // Before its card shows (Nov 24): its dates are fine.
+        #expect(try winter.missing(now: #require(AppStoreConnectDate.date("2026-11-19T12:00:00Z"))) == [
+            "add a deep link", "choose its purpose", "write every language",
+        ])
         // The files as they were uploaded, and Apple's processing.
         let card = try #require(winter.media(.card))
         #expect(card.fileName == "winter-card-en-us.png")

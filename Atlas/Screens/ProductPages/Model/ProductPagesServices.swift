@@ -3,6 +3,7 @@
 //  Atlas
 //
 
+import CoreGraphics
 import Foundation
 
 /// What Product Pages needs from App Store Connect. `LiveProductPagesServices`
@@ -20,9 +21,28 @@ protocol ProductPagesServices {
     /// Sends a page's version to App Review by itself, without a version
     /// of the app.
     func submit(versionID: String, of app: StoreApp) async throws
+    /// Whether a page waiting for review can be taken back from here.
+    var canCancelSubmission: Bool { get }
+    /// Takes a page's version back from App Review while it waits: cancels
+    /// the submission it went in, when it went alone.
+    func cancelSubmission(versionID: String, of app: StoreApp) async throws
+    /// A live screenshot, downloaded at `pixelWidth`.
+    func screenshotImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage?
 }
 
 extension ProductPagesServices {
     func pageScreenshots(localizationID _: String, locale _: String) async throws -> [LiveScreenshotSet] { [] }
     func defaultScreenshots(localizationID _: String, locale _: String) async throws -> [LiveScreenshotSet] { [] }
+
+    var canCancelSubmission: Bool { false }
+
+    func cancelSubmission(versionID _: String, of _: StoreApp) async throws {
+        throw AppStoreConnectError.unexpectedPayload
+    }
+
+    func screenshotImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
+        guard let url = screenshot.imageURL(width: pixelWidth),
+              let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
+        return ScreenshotPNG.image(data)
+    }
 }

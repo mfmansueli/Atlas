@@ -64,7 +64,7 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
         let deny = permissions.denyRules.map(JSONValue.string)
         var settings: [String: JSONValue] = ["permissions": ["allow": .array(allow), "deny": .array(deny)]]
         var environment = Self.toolEnvironment
-        if permissions == .autopilot { environment.merge(Self.longCommandEnvironment) { $1 } }
+        if [.autopilot, .deepLinkCheck, .deepLinkWork].contains(permissions) { environment.merge(Self.longCommandEnvironment) { $1 } }
         settings["env"] = .object(environment.mapValues(JSONValue.string))
         return JSONValue.object(settings).jsonString()
     }

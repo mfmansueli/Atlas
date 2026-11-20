@@ -12,8 +12,11 @@ import Foundation
 ///   go into the page's version that takes edits (`ProductPageLocaleWrite`):
 ///   for an approved page, that's a new version the push makes.
 /// - The name and Visible are the page's own (`PATCH /v1/appCustomProductPages`).
+/// - A language's own screenshots on one device are uploaded into its set
+///   (`ProductPageScreenshotsPush`).
 /// - Ids are `productPages.<appID>.<pageID>.<field>`, or
-///   `….<pageID>.<locale>.<field>` per language.
+///   `….<pageID>.<locale>.<field>` per language, or
+///   `….<pageID>.<locale>.<displayType>.screenshots`.
 struct ProductPageChangeBuilder: Hashable, Sendable {
     let appID: StoreApp.ID
 
@@ -36,7 +39,7 @@ struct ProductPageChangeBuilder: Hashable, Sendable {
 
     /// "Product Pages · Private diary".
     func group(_ name: String) -> String {
-        String(localized: "Product Pages · \(name)")
+        String(localized: "Custom Product Pages · \(name)")
     }
 
     // MARK: - Changes
@@ -133,17 +136,27 @@ struct ProductPageChangeBuilder: Hashable, Sendable {
             let rest = change.id.dropFirst(prefix.count).split(separator: ".").map(String.init)
             guard let last = rest.last, let field = ProductPageField(rawValue: last) else { continue }
             edits.count += 1
-            let locale = rest.count > 1 ? rest.dropLast().joined(separator: ".") : nil
-            switch field {
-            case .promotionalText: if let locale { edits.texts[locale] = change.newValue }
-            case .keywords: if let locale { edits.keywords[locale] = Self.keywords(in: change.newValue) }
-            case .deepLink: edits.deepLink = change.newValue
-            case .name: edits.name = change.newValue
-            case .visible: edits.isVisible = change.newValue == Self.visibleText(true)
-            case .delete: edits.isDeleted = true
+            if field == .screenshots {
+                addScreenshots(of: change, to: &edits)
+                continue
             }
+            let locale = rest.count > 1 ? rest.dropLast().joined(separator: ".") : nil
+            Self.apply(field, value: change.newValue, locale: locale, to: &edits)
         }
         return edits
+    }
+
+    /// One change's field into `edits` (screenshots are read apart).
+    private static func apply(_ field: ProductPageField, value: String, locale: String?, to edits: inout ProductPageEdits) {
+        switch field {
+        case .promotionalText: if let locale { edits.texts[locale] = value }
+        case .keywords: if let locale { edits.keywords[locale] = keywords(in: value) }
+        case .deepLink: edits.deepLink = value
+        case .name: edits.name = value
+        case .visible: edits.isVisible = value == visibleText(true)
+        case .delete: edits.isDeleted = true
+        case .screenshots: break
+        }
     }
 
     /// Every queued change of a page.

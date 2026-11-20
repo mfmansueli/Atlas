@@ -43,6 +43,7 @@ struct HelpLibraryTests {
         #expect(library.search("key refused").first?.id == "fix")
         #expect(library.search("Pair Claude Code").first?.id == "assistant")
         #expect(library.search("menu bar dot").first?.id == "menubar")
+        #expect(library.search("make screenshots for this page").first?.id == "pages")
     }
 
     @Test func everyTryFindsSomething() {

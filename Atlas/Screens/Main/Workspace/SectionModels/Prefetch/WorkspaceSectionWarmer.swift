@@ -37,7 +37,9 @@ struct WorkspaceSectionWarmer: SectionWarming {
         switch section {
         // Read when they open, from what's kept on this Mac.
         case .reviews: kept.reviews == nil || reviews.isStale(app.id)
-        case .inAppEvents: kept.events?.state.value == nil
+        // A push or Refresh since the last read reads the events again, so
+        // their dates and "Before App Review" lists show what it wrote.
+        case .inAppEvents: kept.events?.state.value == nil || kept.needsLoad(section, refreshCount: refreshCount)
         default: kept.needsLoad(section, refreshCount: refreshCount)
         }
     }
@@ -60,7 +62,9 @@ struct WorkspaceSectionWarmer: SectionWarming {
             let model = kept.events ?? InAppEventsViewModel(app: app, services: services.inAppEvents, store: events, queue: queue)
             kept.events = model
             model.artworkStudio = artwork
-            await model.load()
+            model.pushHistory = history
+            let force = model.state.value != nil
+            await InAppEventsSectionView.read(model, into: kept, refreshCount: refreshCount, force: force)
             await InAppEventsSectionView.loadResults(model, services: services.inAppEvents)
         case .appInformation:
             await warmAppInformation(app, kept: kept, refreshCount: refreshCount)

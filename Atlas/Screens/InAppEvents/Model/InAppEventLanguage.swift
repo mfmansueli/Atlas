@@ -14,6 +14,9 @@ struct InAppEventLanguage: Identifiable, Hashable, Sendable {
         case notPushed
         /// An assistant suggested it; nothing is written.
         case suggested
+        /// It's written, and an assistant suggests changing some of its
+        /// texts.
+        case revision
         /// Nothing yet: people there see the primary language.
         case missing
     }
@@ -33,12 +36,13 @@ struct InAppEventLanguage: Identifiable, Hashable, Sendable {
 
     var isRightToLeft: Bool { locale?.isRTL ?? false }
 
-    /// "German, suggestion to review".
+    /// "German, suggestion to review"; "German, revision to review".
     var accessibilityText: String {
         switch state {
         case .written: name
         case .notPushed: String(localized: "\(name), not pushed")
         case .suggested: String(localized: "\(name), suggestion to review")
+        case .revision: String(localized: "\(name), revision to review")
         case .missing: String(localized: "\(name), not written")
         }
     }

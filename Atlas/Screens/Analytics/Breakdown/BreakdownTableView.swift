@@ -12,6 +12,9 @@ struct BreakdownTableView: View {
     let table: BreakdownTable
     let layout: BreakdownColumnLayout
 
+    /// Nil in previews without the main window.
+    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -22,7 +25,8 @@ struct BreakdownTableView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.sortedRows) { row in
                         BreakdownRowView(
-                            row: row, layout: layout, table: table, isSelected: viewModel.selectedRowID == row.id
+                            row: row, layout: layout, table: table, isSelected: viewModel.selectedRowID == row.id,
+                            onOpenPage: openPage(row)
                         ) {
                             viewModel.selectedRowID = viewModel.selectedRowID == row.id ? nil : row.id
                         }
@@ -46,6 +50,13 @@ struct BreakdownTableView: View {
         .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("analytics.breakdown.table")
+    }
+
+    /// A custom product page's row opens the page in Custom Product Pages.
+    private func openPage(_ row: BreakdownRow) -> (() -> Void)? {
+        guard table.dimension == .productPage, row.name != ProductPageNumbers.defaultPageName, let navigator else { return nil }
+        let appID = viewModel.app.id
+        return { navigator.open(.productPages, intent: .showProductPage(name: row.name), appID: appID) }
     }
 
     private var header: some View {

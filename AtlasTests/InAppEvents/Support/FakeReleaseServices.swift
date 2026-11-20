@@ -57,7 +57,11 @@ final class FakeReleaseServices: ReleaseServices {
         return versionBuilds[versionID] ?? ReleaseVersionBuilds()
     }
 
+    /// What every write throws instead, when set: a refusal at a step.
+    var failure: SubmissionFailure?
+
     private func check() throws {
+        if let failure { throw failure }
         if refuses { throw AppStoreConnectError.forbidden(detail: nil) }
     }
 }

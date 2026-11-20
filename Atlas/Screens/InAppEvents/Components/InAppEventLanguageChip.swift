@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// One language of an event in the language bar: its flag and name, a
-/// purple dot while a suggestion waits, a blue one for text not pushed.
+/// purple dot while a suggestion or a revision waits, a blue one for text
+/// not pushed.
 struct InAppEventLanguageChip: View {
     let language: InAppEventLanguage
     let isSelected: Bool
@@ -21,7 +22,7 @@ struct InAppEventLanguageChip: View {
                     .font(.caption)
                     .lineLimit(1)
                 switch language.state {
-                case .suggested:
+                case .suggested, .revision:
                     Circle()
                         .fill(isSelected ? Color.white : Palette.suggestionBadge)
                         .frame(width: 7, height: 7)

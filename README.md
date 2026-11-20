@@ -629,11 +629,49 @@ call.
     animation as a 20-second seamless loop at 30 fps and 1920 × 1080 (or 1080 × 1920) in a .mov, through the same
     `ArtworkWebLoop` as Autopilot's header loops; `propose_event_artwork` queues it for the person to accept. The
     event's "Ask Claude Code…" starts a run with that prompt (`InAppEventArtworkAskPrompt`).
+  - **Event details and deep links:** `get_in_app_events` always gives each event's `deepLink`, `purpose`,
+    `priority` and `primaryLocale` (null when App Store Connect has none; App Store Connect refuses to take an
+    event to App Review without a deep link), `missingForReview` (what's left before App Review, each `missing`,
+    `queued` or `suggested`) and `readyForReview`, `deepLinkClaim` (whether the app's project folder declares the
+    link's URL scheme in its Info.plist or its domain under `applinks:`, read by Atlas itself) and `deepLinkCheck`.
+    `propose_event_details` queues a draft's deep link, purpose, priority or primary language, each a
+    `PATCH /v1/appEvents/{id}` with that attribute alone that waits for the person's Accept; values App Store
+    Connect would refuse are refused with the fix. `report_deep_link_check` keeps what the assistant found in the
+    code (opens, what it shows and shows before the event starts, Premium, file:line, the build, Simulator,
+    problems) for that event and deep link; the event's page and the Submit sheet show it, and its Check in the
+    Code and Make It Work… start Claude Code with `InAppEventDeepLinkAskPrompt`.
   - **Make the Artwork** (board 47): `get_event_artwork_brief` reads what the person asked for in the sheet (the
     brief, the look, words and motion, the event's texts and names per language, the design, the rules, the
     concepts already in, and a change asked for one of them, with its images). `propose_event_artwork_concept` sends
     one concept as HTML pages or uploaded files; Atlas renders it per language (`{{eventName}}` filled in) and as a
     loop when asked, checks it and shows it in the sheet. Nothing is queued until the person uses it.
+  - **Product Pages** (board 53, `Tools/ProductPages/`): `get_product_pages` reads the default page (the version
+    pages start from, the last approved one, its promotional text and numbers) and every custom page as the section
+    shows it, drafts made in Atlas included: link, visible, state and a newer version in review, each language's own
+    promotional text, keywords and screenshots (`showsDefaultIn` the others), the deep link, the last 28 days'
+    numbers from Analytics with the download rate against the default page (`tooFewToCompare` under 200 page
+    views, no rate then), what's `queued` in Review & Push, and `takesTexts`. `keywords` has the approved version's
+    keywords per language, `free` or `usedBy` a page (a keyword leads to one page); `pageLimit` counts pages of 70
+    and the suggested pages waiting; `suggestions` lists the pages and texts sent over MCP as open, notOffered or
+    dismissed with who sent them; `textRules` and `next` say what to do; past 20 pages the texts are left out
+    (`pageId` reads one). `propose_product_page` keeps a whole page suggestion (`ProductPageSuggestion`: name,
+    audience, reason, evidence, keywords and promotional text per language, `startFrom`, the screens' order and
+    captions, deep link) for Dismiss and Accept in the section; it's refused, with every problem and its fix at
+    once, without evidence Atlas can show (Analytics with numbers on this Mac, reviews it read, or the approved
+    keywords the page chooses), for a keyword that isn't approved or that another page uses (naming it), a text
+    over 170, a language the app doesn't have, a name another page or assistant has, a dismissed suggestion sent
+    again, a caption App Review would reject, an incomplete deep link, or no room under 70 with the suggestions
+    waiting. The same name from the same assistant replaces its suggestion. `propose_product_page_texts` keeps
+    promotional texts for a page's or draft's languages (`ProductPageTextSuggestion`), skipping with why a language
+    the app doesn't have, an empty or over-limit text, the page's own text, or a language with a text queued; a
+    page with App Review or a key that can't change pages takes none, and an approved page's shows once the person
+    presses Edit…. A promotional text App Review would reject (`StoreTextGuidelineCheck` for promotional text:
+    prices, “free”, discounts, other platforms…) is never dropped: it's kept as Not offered with its phrases and
+    `ProductPageTextRefusal`'s reason, returned in `notOffered`, and can't be accepted; a suggested page keeps
+    them in `notOfferedTexts`, and the draft accepting it makes takes them into its languages
+    (`ProductPagesStore.save`). Tools read the pages the section read while that's fresh
+    (`KeptProductPagesServices`, `WorkspaceSectionModels.freshProductPages`), else App Store Connect. The section's
+    count is the store's. Nothing is pushed, submitted or made visible by an assistant.
   - There is no tool to submit a version or release it: those are the person's.
   - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
     product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate

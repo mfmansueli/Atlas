@@ -4,6 +4,7 @@
 //
 
 #if DEBUG
+import CoreGraphics
 import Foundation
 
 /// Lumen Journal's product pages for DEBUG scenes; other apps have none.
@@ -17,6 +18,8 @@ struct DebugProductPagesServices: ProductPagesServices {
     var hasNoApprovedVersion = false
     /// Never answers, for the loading scene.
     var neverLoads = false
+    /// Submitting fails with this.
+    var submitError: AppStoreConnectError?
 
     func pages(for app: StoreApp) async throws -> ProductPagesSnapshot {
         if neverLoads { try await Task.sleep(for: .seconds(3600)) }
@@ -44,6 +47,47 @@ struct DebugProductPagesServices: ProductPagesServices {
         return snapshot
     }
 
-    func submit(versionID _: String, of _: StoreApp) async throws {}
+    func submit(versionID _: String, of _: StoreApp) async throws {
+        if let submitError { throw submitError }
+    }
+
+    var canCancelSubmission: Bool { true }
+
+    func cancelSubmission(versionID _: String, of _: StoreApp) async throws {}
+
+    // MARK: - Screenshots
+
+    /// The default page's sets: the ones Screenshots pushed on Oct 12, in
+    /// the language (English where none was drawn).
+    func defaultScreenshots(localizationID _: String, locale: String) async throws -> [LiveScreenshotSet] {
+        Self.sets(locale: locale)
+    }
+
+    /// A page's own sets: the same screens, the third one first.
+    func pageScreenshots(localizationID _: String, locale: String) async throws -> [LiveScreenshotSet] {
+        Self.sets(locale: locale).map { set in
+            var own = set
+            let order = [2, 0, 4, 1, 3].filter(set.screenshots.indices.contains)
+            own.id = "own|\(set.id)"
+            own.screenshots = order.map { set.screenshots[$0] }
+            return own
+        }
+    }
+
+    func screenshotImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
+        await Self.screenshots.liveImage(screenshot, pixelWidth: pixelWidth)
+    }
+
+    private static func sets(locale: String) -> [LiveScreenshotSet] {
+        let live = ScreenshotsDebugDocuments.live.screenshotSets.filter { $0.id.hasPrefix("set|") }
+        let shown = live.contains { $0.locale == locale } ? locale : "en-US"
+        return live.filter { $0.locale == shown }
+    }
+
+    private static let screenshots: DebugScreenshotsServices = {
+        let services = DebugScreenshotsServices()
+        services.drawsPushedLiveSets = true
+        return services
+    }()
 }
 #endif

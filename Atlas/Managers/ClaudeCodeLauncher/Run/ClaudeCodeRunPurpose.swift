@@ -23,6 +23,12 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     case eventArtwork(eventID: String)
     /// Make the Artwork…: Claude's three concepts for an event.
     case eventArtworkConcepts(eventID: String)
+    /// Check in the Code: whether the app opens an event's deep link.
+    case deepLinkCheck(eventID: String)
+    /// Make It Work…: the app opens an event's deep link.
+    case deepLinkWork(eventID: String)
+    /// Make Screenshots for This Page…: a custom product page's own set.
+    case pageScreenshots(pageName: String)
 
     /// "Suggest Everything", "Ask · Store Page".
     var title: String {
@@ -36,6 +42,9 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .privacyScan: String(localized: "App Privacy scan")
         case .eventArtwork: String(localized: "Ask · In-App Event art")
         case .eventArtworkConcepts: String(localized: "In-App Event artwork")
+        case .deepLinkCheck: String(localized: "Check an event’s deep link")
+        case .deepLinkWork: String(localized: "Make an event’s deep link work")
+        case let .pageScreenshots(pageName): String(localized: "Screenshots for “\(pageName)”")
         }
     }
 
@@ -45,6 +54,8 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         switch self {
         case let .ask(area): area
         case .eventArtwork: String(localized: "In-App Event art")
+        case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
+        case .pageScreenshots: String(localized: "Product page screenshots")
         case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts: title
         }
     }
@@ -54,7 +65,9 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .test: .atlasOnly
         case .autopilot: .autopilot
         case .eventArtwork, .eventArtworkConcepts: .eventArtwork
-        case .ask, .suggestEverything, .translation, .captions, .privacyScan: .readProject
+        case .deepLinkCheck: .deepLinkCheck
+        case .deepLinkWork: .deepLinkWork
+        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots: .readProject
         }
     }
 }

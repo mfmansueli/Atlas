@@ -134,8 +134,9 @@ final class FieldSuggestionStore {
 
     /// An assistant's or the AI provider's suggestion. Replaces the open one
     /// from the same source for the same field; the same value again
-    /// changes nothing. `runID` is the Suggest Everything run it was sent
-    /// with.
+    /// changes nothing, unless it comes with another reason or evidence,
+    /// which the open one takes (its id stays). `runID` is the Suggest
+    /// Everything run it was sent with.
     @discardableResult
     func add(
         appID: StoreApp.ID,
@@ -147,9 +148,19 @@ final class FieldSuggestionStore {
         runID: SuggestionRun.ID? = nil
     ) -> (suggestion: FieldSuggestion, outcome: SuggestionAddOutcome) {
         let sameField = suggestions.filter { $0.appID == appID && $0.target == target && $0.source == source && isOpen($0) }
-        if let existing = sameField.first(where: { $0.value == value }) {
+        if var existing = sameField.first(where: { $0.value == value }) {
             noteRunArrival(of: target, appID: appID, source: source, runID: runID, suggestionID: existing.id)
-            return (existing, .unchanged)
+            let newReason = reason.trimmingCharacters(in: .whitespacesAndNewlines)
+            let reasonChanged = !newReason.isEmpty && newReason != existing.reason
+            let evidenceChanged = !evidence.isEmpty && evidence != existing.evidence
+            guard reasonChanged || evidenceChanged, let index = suggestions.firstIndex(where: { $0.id == existing.id }) else {
+                return (existing, .unchanged)
+            }
+            if reasonChanged { existing.reason = newReason }
+            if evidenceChanged { existing.evidence = evidence }
+            suggestions[index] = existing
+            save()
+            return (existing, .updated)
         }
         let suggestion = FieldSuggestion(
             id: "sg_\(nextNumber)",
@@ -170,6 +181,22 @@ final class FieldSuggestionStore {
         }
         save()
         return (suggestion, replacedIDs.isEmpty ? .queued : .replaced)
+    }
+
+    // MARK: - Withdrawing
+
+    /// An assistant takes back its own open suggestions: they're gone, as
+    /// if never sent. Returns the ones removed.
+    @discardableResult
+    func withdraw(_ ids: some Sequence<FieldSuggestion.ID>) -> [FieldSuggestion] {
+        let ids = Set(ids)
+        let removed = suggestions.filter { ids.contains($0.id) }
+        guard !removed.isEmpty else { return [] }
+        suggestions.removeAll { ids.contains($0.id) }
+        hiddenIDs.subtract(ids)
+        review.dismissedIDs.subtract(ids)
+        save()
+        return removed
     }
 
     // MARK: - Deciding

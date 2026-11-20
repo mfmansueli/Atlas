@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// Under a review row that the person and an assistant both edited: the two
-/// versions side by side; clicking one keeps it.
+/// versions side by side, the assistant's with why; clicking one keeps it.
 struct AlternativeConflictView: View {
     let yours: String
     let alternative: ChangeAlternative
@@ -18,7 +18,9 @@ struct AlternativeConflictView: View {
                 .font(.callout)
             HStack(alignment: .top, spacing: Spacing.small) {
                 version(title: String(localized: "Yours"), text: yours, identifier: "review.pickYours") { onPick(false) }
-                version(title: alternative.source.title, text: alternative.newValue, identifier: "review.pickAssistant") { onPick(true) }
+                version(title: alternative.source.title, text: alternative.newValue, note: alternative.note, identifier: "review.pickAssistant") {
+                    onPick(true)
+                }
             }
         }
         .padding(Spacing.medium)
@@ -27,7 +29,7 @@ struct AlternativeConflictView: View {
         .accessibilityElement(children: .contain)
     }
 
-    private func version(title: String, text: String, identifier: String, action: @escaping () -> Void) -> some View {
+    private func version(title: String, text: String, note: String? = nil, identifier: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text(title.uppercased())
@@ -37,6 +39,13 @@ struct AlternativeConflictView: View {
                     .font(.callout)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
+                if let note, !note.isEmpty {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

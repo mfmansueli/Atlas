@@ -25,6 +25,7 @@ struct BackgroundWorkTests {
         autopilot: AutopilotCenter = AutopilotCenter(),
         preferences: AppPreferences = AppPreferences(defaults: nil),
         artwork: EventArtworkStudio = EventArtworkStudio(),
+        pageShots: PageShotsStudio = PageShotsStudio(),
         defaults: UserDefaults? = nil,
         clock: @escaping () -> Date
     ) -> BackgroundWork {
@@ -38,9 +39,36 @@ struct BackgroundWorkTests {
             releases: ReleaseStore(),
             analytics: AnalyticsStore(),
             artwork: artwork,
+            pageShots: pageShots,
             defaults: defaults,
             now: clock
         )
+    }
+
+    // MARK: - A page's screenshots (board 52)
+
+    /// Autopilot laying out a page's set behind a hidden sheet is a job
+    /// with its bar; while Claude Code plans it, the line says so without
+    /// one. Atlas asks before quitting either.
+    @Test func aPagesScreenshotsAreAJobWhileUnderWay() throws {
+        let pageShots = PageShotsStudio()
+        let work = work(pageShots: pageShots) { [now] in now }
+        work.library = [lumen, tempo]
+        #expect(!work.isBusy)
+        var run = PageShotsTestFixtures.run(stage: .making, plan: PageShotsTestFixtures.plan(count: 4))
+        run.images = [PageShotsImage(locale: "en-US", displayType: .iPhone, position: 0, fileName: "1.png", fileSize: 1, checksum: "x", fits: true)]
+        pageShots.begin(run)
+        let job = try #require(work.snapshot.jobs.first { $0.kind == .pageScreenshots })
+        #expect(job.title == "Autopilot · “Private diary” screenshots")
+        #expect(job.fraction == 0.25)
+        #expect(job.detail == "Lumen Journal · 1 of 4 screenshots ready")
+        #expect(work.isBusy)
+
+        pageShots.update(run.key) { $0.stage = .planning }
+        #expect(work.snapshot.jobs.first { $0.kind == .pageScreenshots }?.fraction == nil)
+        pageShots.update(run.key) { $0.stage = .result }
+        #expect(!work.snapshot.jobs.contains { $0.kind == .pageScreenshots })
+        #expect(!work.isBusy)
     }
 
     // MARK: - Event artwork (board 47)

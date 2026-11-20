@@ -14,4 +14,7 @@ enum SuggestionAddOutcome: String, Hashable, Sendable {
     case replaced
     /// The same source already suggested that value and it's still open.
     case unchanged
+    /// The same source suggested that value again with another reason or
+    /// evidence: the open suggestion keeps its id and takes them.
+    case updated
 }

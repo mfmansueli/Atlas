@@ -16,6 +16,8 @@ struct ReleaseDebugLaunch {
     /// The encryption question, answered in Export Compliance.
     var encryption: EncryptionAnswer?
     var timing: ReleaseTiming.Kind?
+    /// The build chosen instead of the attached one.
+    var buildID: ReleaseBuild.ID?
 
     /// Once the selected app's version is read: the scene's choices, and
     /// its Submit sheet.
@@ -31,6 +33,7 @@ struct ReleaseDebugLaunch {
     func apply(to model: ReleaseViewModel) {
         model.now = { DebugReleaseData.today }
         if let timing { model.options.timing = timing }
+        if let buildID { model.options.buildID = buildID }
     }
 }
 #endif

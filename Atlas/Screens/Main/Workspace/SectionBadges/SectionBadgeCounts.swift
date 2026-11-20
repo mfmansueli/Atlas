@@ -48,7 +48,8 @@ struct SectionBadgeCounts: Equatable {
         var newFindings = 0
         /// Replies an assistant suggested, waiting for Send Reply.
         var reviewReplies = 0
-        /// Languages of In-App Events an assistant suggested.
+        /// Languages of In-App Events with a suggestion or a revision the
+        /// section shows (`InAppEventsStore.count(for:changes:)`).
         var eventLanguages = 0
         /// App Compliance answers an assistant suggested, still open.
         var complianceAnswers = 0

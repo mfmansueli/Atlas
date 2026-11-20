@@ -40,4 +40,13 @@ enum InAppEventState: String, Hashable, Sendable {
     }
 
     var isOver: Bool { self == .past || self == .archived }
+
+    /// Not approved yet: its dates still have to be ahead when App Review
+    /// takes it.
+    var isBeforeApproval: Bool {
+        switch self {
+        case .draft, .readyForReview, .waitingForReview, .inReview, .rejected: true
+        case .accepted, .approved, .published, .past, .archived: false
+        }
+    }
 }

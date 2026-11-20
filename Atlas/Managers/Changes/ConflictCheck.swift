@@ -41,8 +41,11 @@ struct ConflictCheck: Hashable, Codable, Sendable {
     }
 
     /// Whether `actual` differs from what was fetched. Numbers compare by
-    /// value, so "199.9" and "199.90" match.
+    /// value, so "199.9" and "199.90" match; dates by the moment they name.
     func differs(from actual: String?) -> Bool {
+        if format == .date, let lhs = AppStoreConnectDate.date(expected), let rhs = AppStoreConnectDate.date(actual) {
+            return lhs != rhs
+        }
         if let lhs = expected.flatMap(Self.number), let rhs = actual.flatMap(Self.number) {
             return lhs != rhs
         }

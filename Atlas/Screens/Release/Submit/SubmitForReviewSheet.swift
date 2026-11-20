@@ -14,6 +14,7 @@ struct SubmitForReviewSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(WorkspaceNavigator.self) private var navigator
+    @Environment(ClaudeCodeLauncher.self) private var launcher
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -31,7 +32,9 @@ struct SubmitForReviewSheet: View {
                 Divider()
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.large) {
-                        goesWithSection
+                        // Read again every minute: an event's date that
+                        // passes while the sheet is open blocks it.
+                        TimelineView(.everyMinute) { _ in goesWithSection }
                         encryptionSection
                         releaseSection
                     }
@@ -40,11 +43,16 @@ struct SubmitForReviewSheet: View {
                 .frame(width: 380)
             }
             Divider()
-            footer
+            TimelineView(.everyMinute) { _ in footer }
         }
         .frame(width: 840, height: 540)
         .disabled(viewModel.isSubmitting)
         .task { await keepBuildsFresh() }
+        .task {
+            // A deep link or art added on the event's page since shows here.
+            await viewModel.refreshEvents()
+            await viewModel.linkClaims.refresh(viewModel.app, launcher: launcher)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("submit.sheet")
     }
@@ -178,12 +186,15 @@ struct SubmitForReviewSheet: View {
                 .toggleStyle(.checkbox)
                 .accessibilityIdentifier("submit.pushChanges")
             }
-            ForEach(viewModel.submittableEvents) { event in
-                Toggle(isOn: Binding { viewModel.options.eventIDs.contains(event.id) } set: { viewModel.setEvent(event.id, goesWithVersion: $0) }) {
-                    caption(String(localized: "In-App Event “\(ReleaseViewModel.displayName(of: event))”"), eventDetail(event))
+            ForEach(viewModel.offeredEvents) { event in
+                SubmitEventRow(viewModel: viewModel, event: event) { need in
+                    dismiss()
+                    if let field = need?.dateField {
+                        navigator.open(.inAppEvents, intent: .showInAppEventDates(eventID: event.id, field: field))
+                    } else {
+                        navigator.open(.inAppEvents, intent: .showInAppEvents(eventID: event.id))
+                    }
                 }
-                .toggleStyle(.checkbox)
-                .accessibilityIdentifier("submit.event.\(event.id)")
             }
             HStack(alignment: .top, spacing: Spacing.small) {
                 StatusMark(isOK: viewModel.status?.isReviewInformationComplete ?? true, size: 18)
@@ -202,11 +213,6 @@ struct SubmitForReviewSheet: View {
                 .accessibilityIdentifier("submit.openReviewInformation")
             }
         }
-    }
-
-    /// "Major Update · Nov 24 – Dec 8 · 12 languages".
-    private func eventDetail(_ event: InAppEvent) -> String {
-        [event.badge?.title, event.datesText, ReviewText.languages(event.localizations.count)].compactMap(\.self).joined(separator: " · ")
     }
 
     private func caption(_ title: String, _ detail: String) -> some View {
@@ -299,7 +305,7 @@ struct SubmitForReviewSheet: View {
                 Text(viewModel.footerText)
                     .font(.callout)
                     .foregroundStyle(viewModel.blockers.isEmpty ? Palette.label2 : Palette.warning)
-                    .lineLimit(2)
+                    .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("submit.footer")
                 Button("Cancel") { dismiss() }

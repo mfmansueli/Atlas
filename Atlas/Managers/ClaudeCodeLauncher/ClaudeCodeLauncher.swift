@@ -30,6 +30,9 @@ final class ClaudeCodeLauncher {
     /// The names of apps a run started for or a folder was chosen for, so
     /// Settings can list them without the library.
     private(set) var appNames: [StoreApp.ID: String]
+    /// Goes up when a project folder is chosen or changed, so what was
+    /// read in it is read again.
+    private(set) var projectFolderRevision = 0
     /// Why Install Helper… couldn't save it.
     var installError: String?
     /// The run Show Output shows.
@@ -178,6 +181,18 @@ final class ClaudeCodeLauncher {
     func setProjectFolder(_ path: String?, for appID: StoreApp.ID) {
         projectFolders[appID] = path
         defaults?.set(projectFolders, forKey: Key.projectFolders)
+        ProjectFolderBookmarks(defaults: defaults).remember(path, for: appID)
+        projectFolderRevision += 1
+    }
+
+    /// Runs `read` on the app's project folder, off the main actor, with
+    /// the sandbox's permission to read it; nil when it has none.
+    func readProjectFolder<T: Sendable>(for appID: StoreApp.ID, _ read: @escaping @Sendable (URL) -> T) async -> T? {
+        guard let path = projectFolders[appID] else { return nil }
+        let url = ProjectFolderBookmarks(defaults: defaults).url(for: appID, path: path)
+        let isScoped = url.startAccessingSecurityScopedResource()
+        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
+        return await Task.detached { read(url) }.value
     }
 
     /// Keeps `name` for Settings' list of folders.

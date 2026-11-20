@@ -119,7 +119,10 @@ struct ProposeInAppEventToolTests {
         let note = try #require(outcome.result["note"]?.stringValue)
         #expect(note.contains("event card and details page artwork still have to be added"))
         #expect(note.contains("the person pushes the event and submits it for review"))
-        #expect(outcome.result["stillNeeded"]?.arrayValue?.count == 2)
+        // Without a deep link it's created, but App Review won't take it.
+        let stillNeeded = outcome.result["stillNeeded"]?.arrayValue?.compactMap(\.stringValue) ?? []
+        #expect(stillNeeded.count == 3)
+        #expect(stillNeeded.first?.hasPrefix("A deep link: App Store Connect won't take the event to App Review without one.") == true)
         #expect(outcome.result["showsIn"]?.stringValue?.contains("Create “New Year Challenge 2027”") == true)
     }
 
@@ -151,7 +154,7 @@ struct ProposeInAppEventToolTests {
 
     @Test func theQueuedEventShowsInGetInAppEvents() async throws {
         _ = try await propose(newYear(["deepLink": "https://alba.app/new-year"]), events: [])
-        let read = try await call(GetInAppEventsTool(store: store), ["appId": "Alba: Daily Motivation"], events: [])
+        let read = try await call(GetInAppEventsTool(store: store, now: { Data.now }), ["appId": "Alba: Daily Motivation"], events: [])
         #expect(read.result["events"] == [])
         let id = try #require(changes.changes.first).id
         let queued = try #require(read.result["queued"]?.arrayValue?.first)
@@ -169,6 +172,22 @@ struct ProposeInAppEventToolTests {
         #expect(queued["texts"]?["en-US"]?["name"] == "New Year, New Mindset")
         #expect(queued["by"] == "Claude Code")
         #expect(read.result["limits"]?["referenceName"] == .int(64))
+    }
+
+    /// App Review usually takes up to 2 days and the event shows only once
+    /// it's approved: a card set to show sooner comes back with a
+    /// `warning`, not a refusal.
+    @Test func aCardShowingWithinTwoDaysComesBackWithAWarning() async throws {
+        let soon = try await propose(newYear([
+            "publishStart": "2026-11-17T00:00:00Z", "eventStart": "2026-11-24T00:00:00Z", "eventEnd": "2026-11-30T00:00:00Z",
+        ]), events: [])
+        #expect(soon.result["status"] == "queued")
+        #expect(soon.result["warning"]?.stringValue?.hasPrefix("The card is set to show in 12 hours. App Review usually takes up to 2 days") == true)
+        #expect(changes.changes.first?.blockedReason == nil)
+
+        let calm = try await propose(newYear(["referenceName": "New Year Challenge 2028"]), events: [])
+        #expect(calm.result["status"] == "queued")
+        #expect(calm.result["warning"] == nil)
     }
 
     // MARK: - Refused
@@ -310,8 +329,6 @@ struct ProposeInAppEventToolTests {
         #expect(badges == ["LIVE_EVENT", "PREMIERE", "CHALLENGE", "COMPETITION", "NEW_SEASON", "MAJOR_UPDATE", "SPECIAL_EVENT"])
         let purchases = definition.inputSchema["properties"]?["purchaseRequirement"]?["enum"]?.arrayValue?.compactMap(\.stringValue)
         #expect(purchases == ["NO_COST_ASSOCIATED", "IN_APP_PURCHASE"])
-        #expect(MCPEndpoint.instructions.contains(
-            "For In-App Events, read get_in_app_events; propose a new one with propose_in_app_event and write the missing languages with propose_event_texts."
-        ))
+        #expect(MCPEndpoint.instructions.contains("propose a new one with propose_in_app_event, write the missing languages with propose_event_texts"))
     }
 }

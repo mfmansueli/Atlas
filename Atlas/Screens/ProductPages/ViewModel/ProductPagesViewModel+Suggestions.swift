@@ -79,13 +79,23 @@ extension ProductPagesViewModel {
         let note = [suggestion.audience, suggestion.screens.isEmpty ? "" : String(localized: "Screenshots: \(suggestion.screens)")]
             .filter { !$0.isEmpty }.joined(separator: "\n")
         let draft = ProductPageDraft(
-            id: ProductPageDraft.newID(), name: suggestion.name, start: .defaultPage, note: note,
+            id: ProductPageDraft.newID(), name: suggestion.name, start: suggestion.start ?? .defaultPage, note: note,
             locales: ordered.isEmpty ? [primaryLocale] : ordered,
             promotionalTexts: suggestion.promotionalTexts.filter { !$0.value.isEmpty }, keywords: keywords.filter { !$0.value.isEmpty },
             deepLink: suggestion.deepLink, suggestionID: suggestion.id, source: .assistant(client: suggestion.source), createdAt: now()
         )
         save(draft)
+        if !suggestion.screens.isEmpty {
+            let brief = ProductPageBrief(audience: suggestion.audience, screens: suggestion.screens, source: suggestion.source)
+            store.saveBrief(brief, pageName: suggestion.name, for: app.id)
+        }
         return left
+    }
+
+    /// The brief an accepted suggestion left for the page: who it's for and
+    /// the screenshots to add. It stays once the draft is pushed.
+    func brief(of page: ProductPage) -> ProductPageBrief? {
+        store.archive(for: app.id).brief(named: page.name)
     }
 
     /// "“habit” is on “Mood tracking”, so it was left out."
@@ -159,24 +169,54 @@ extension ProductPagesViewModel {
 
     // MARK: - Asking
 
-    /// Suggest Pages / Ask Claude Code for Ideas.
+    /// Suggest Pages / Ask Claude Code for Ideas: where to find who a page
+    /// is for, and what makes one worth making. A page reaches people
+    /// through search (its keywords; search shows its first screenshots,
+    /// not its text) or through a link, so the numbers to read are the
+    /// split by source and by market, not only the pages' own.
     var suggestPagesPrompt: String {
-        let version = defaultPage.approvedVersionString.map { String(localized: "version \($0)’s keywords") } ?? String(localized: "the store page")
+        let keywords = defaultPage.approvedVersionString.map { String(localized: "from version \($0)’s keywords") }
+            ?? String(localized: "once a version is approved (none is yet, so leave keywords out)")
         return String(localized: """
-        Suggest custom product pages for \(app.name) in Atlas. Read get_product_pages first (the pages it has, their numbers and \
-        \(version)), then get_reviews and get_analytics_breakdown (dimension productPage) for evidence. Send each page with \
-        propose_product_page: who it's for, why (with evidence Atlas can show), keywords from \(version) that no other page has, \
-        promotional text in each language and what the screenshots should show first. Don't push or submit anything.
+        Suggest custom product pages for \(app.name) in Atlas. Don't push or submit anything.
+
+        1. Read get_product_pages: the pages and their numbers against the default page, pageLimit, keywords (only \
+        keywords.<locale>.free can be chosen) and suggestions. Don't suggest a dismissed page again. To improve a page you \
+        suggested that's still open, send it again under the same name.
+        2. Find who a page is for, from evidence: get_analytics_funnel; get_analytics_breakdown by source (a page reaches \
+        people through search, with the keywords it chooses, or through a link: ads, social posts, the links the app \
+        shares), by language and by territory (a large market whose view or download rate is worse than average deserves a \
+        page written for it), and by productPage once pages have numbers; get_reviews; get_in_app_events for the seasons \
+        ahead. Read this project for what the app really does, its screens, the links it shares and the deep links it opens.
+        3. Suggest the 2 to 4 pages most likely to win downloads, best first, each for a different audience. Choose its \
+        keywords \(keywords) by what its audience searches in each language: a keyword leads to one page, so leave the broad \
+        ones to the default page. Write its promotional text for that audience in every language the app has, in that \
+        language's own words. List the screens it should lead with, real ones from the project: search results show its \
+        first three screenshots, not its text. Set a deep link only when the project opens it. Give each page its own \
+        evidence, with the numbers that point to it.
+
+        Send each with propose_product_page.
         """)
     }
 
-    /// Ask for Another, after a text Atlas stopped.
+    /// Ask for Another, after a text Atlas stopped in a page's language.
     func askForAnotherPrompt(_ suggestion: ProductPageTextSuggestion) -> String {
         let pageName = page(suggestion.pageID)?.name ?? ""
         return String(localized: """
         Atlas stopped your promotional text for “\(pageName)” in \(ProductPageChangeBuilder.localeName(suggestion.locale)): \
-        \(suggestion.refusal) Write another with propose_product_page_texts that follows App Review's rules: no price, “free”, \
-        discount, trial or other platform.
+        \(suggestion.refusal) Read get_product_pages (the page's takesTexts and why), then write another with \
+        propose_product_page_texts that follows App Review's rules: no price, “free”, discount, trial or other platform.
+        """)
+    }
+
+    /// Ask for Another, after a text Atlas stopped in a suggested page: the
+    /// page is sent again under its name, which replaces the suggestion.
+    func askForAnotherPrompt(_ text: ProductPageTextSuggestion, in suggestion: ProductPageSuggestion) -> String {
+        String(localized: """
+        Atlas stopped the \(ProductPageChangeBuilder.localeName(text.locale)) promotional text of the page you suggested, \
+        “\(suggestion.name)”: \(text.refusal) Send “\(suggestion.name)” again with propose_product_page, under the same name, with \
+        everything else as it was and a \(ProductPageChangeBuilder.localeName(text.locale)) text that follows App Review's rules: no \
+        price, “free”, discount, trial or other platform.
         """)
     }
 }

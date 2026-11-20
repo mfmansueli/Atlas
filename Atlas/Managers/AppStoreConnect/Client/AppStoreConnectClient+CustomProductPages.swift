@@ -74,4 +74,30 @@ extension AppStoreConnectClient {
         )
         try await updateReviewSubmission(id: submissionID, attribute: "submitted")
     }
+
+    /// Takes a page's version back from App Review while it waits: finds
+    /// the waiting submission it went in and cancels it, when the version
+    /// is all that submission holds (`PATCH /v1/reviewSubmissions/{id}`,
+    /// `canceled`). A submission with more in it stays, so nothing else is
+    /// taken back with the page.
+    func cancelCustomProductPageSubmission(versionID: String, appID: String, platform: String?) async throws {
+        let waiting = try await openReviewSubmissions(appID: appID, platform: platform)
+            .filter { $0.attributes.state == "WAITING_FOR_REVIEW" }
+        for submission in waiting {
+            let items: AppStoreConnectLinkedPage<ReviewSubmissionItemAttributes> = try await get(url(
+                "/v1/reviewSubmissions/\(submission.id)/items", query: [
+                    URLQueryItem(name: "fields[reviewSubmissionItems]", value: "state,appCustomProductPageVersion"),
+                    URLQueryItem(name: "limit", value: "50"),
+                ]
+            ))
+            let pageVersions = items.data.map { $0.relationshipID("appCustomProductPageVersion") }
+            guard pageVersions.contains(versionID) else { continue }
+            guard pageVersions.allSatisfy({ $0 == versionID }) else {
+                throw ProductPageSubmissionError.sharedSubmission
+            }
+            try await updateReviewSubmission(id: submission.id, attribute: "canceled")
+            return
+        }
+        throw ProductPageSubmissionError.notWaiting
+    }
 }

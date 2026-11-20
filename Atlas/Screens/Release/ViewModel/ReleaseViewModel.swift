@@ -40,6 +40,10 @@ final class ReleaseViewModel {
     /// "Pushing 5 changes…", "Submitting…".
     var submitProgress: String?
     var submitError: String?
+    /// The last Submit that didn't go, behind `submitError`: reading the
+    /// events again takes it away once what it named is fixed, or marks it
+    /// as the last attempt's.
+    var submitFailure: SubmitFailureNote?
 
     // MARK: - Card actions
 
@@ -58,9 +62,18 @@ final class ReleaseViewModel {
     /// depends on it.
     @ObservationIgnored var onChanged: @MainActor () -> Void = {}
     @ObservationIgnored var now: () -> Date = { .now }
+    /// The checks of events' deep links, for the Submit sheet.
+    @ObservationIgnored var eventsStore: InAppEventsStore = .shared
+    /// What the app's project claims, for the events' deep links.
+    @ObservationIgnored var linkClaims: ProjectLinkClaimsCenter = .shared
+    /// The one more read once dates just pushed are no longer trusted.
+    @ObservationIgnored let readAgain = InAppEventReadAgain()
 
+    /// `events` keeps the checks of the events' deep links, as In-App
+    /// Events does.
     init(
-        app: StoreApp, services: WorkspaceServices, store: ReleaseStore, queue: ChangeQueue, suggestions: FieldSuggestionStore, push: PushController
+        app: StoreApp, services: WorkspaceServices, store: ReleaseStore, queue: ChangeQueue, suggestions: FieldSuggestionStore, push: PushController,
+        events: InAppEventsStore = .shared
     ) {
         self.app = app
         self.services = services
@@ -68,6 +81,7 @@ final class ReleaseViewModel {
         self.queue = queue
         self.suggestions = suggestions
         self.push = push
+        eventsStore = events
     }
 
     // MARK: - Reading
@@ -148,15 +162,17 @@ final class ReleaseViewModel {
     }
 
     /// What only the card before submitting and the sheet need: the
-    /// events (also while a submission carries some), and the texts.
+    /// events (also while a submission carries some), and the texts. The
+    /// sheet's choices start over from App Store Connect's, except while a
+    /// Submit runs (a push it makes reads the version again midway).
     private func loadDetails(of status: ReleaseStatus) async {
         let isBeforeSubmitting = status.phase == .prepare || status.phase == .rejected
-        if isBeforeSubmitting || status.submission?.eventIDs.isEmpty == false {
-            events = await (try? services.inAppEvents.events(for: app)) ?? events
+        if isBeforeSubmitting || status.submission?.eventIDs.isEmpty == false, await readEvents() {
+            reviewLastFailure()
         }
         guard isBeforeSubmitting else { return }
         content = await (try? services.storePage.content(for: app, versionID: status.version.id)) ?? content
-        resetOptions()
+        if !isSubmitting { resetOptions() }
     }
 
     /// The sheet's choices as App Store Connect has them: the attached
@@ -171,7 +187,7 @@ final class ReleaseViewModel {
         options.pushesChanges = true
         let kept = Set(store.eventIDs(for: app.id))
         let inSubmission = Set(status.submission?.eventIDs ?? [])
-        options.eventIDs = Set(submittableEvents.map(\.id)).intersection(kept.union(inSubmission))
+        options.eventIDs = Set(offeredEvents.map(\.id)).intersection(kept.union(inSubmission))
         self.options = options
         self.options.encryption = knownEncryption
     }
@@ -198,9 +214,43 @@ final class ReleaseViewModel {
         status?.builds.first { $0.id == options.buildID }
     }
 
-    /// Events that could go to App Review with the version.
-    var submittableEvents: [InAppEvent] {
-        events.filter(\.canSubmit)
+    /// Reads the events again when the sheet opens: a deep link, art or
+    /// dates added on the event's page and pushed since show there, and the
+    /// last Submit's failure goes once that fixed it.
+    func refreshEvents() async {
+        guard await readEvents() else { return }
+        reviewLastFailure()
+    }
+
+    /// Reads the app's events; keeps the ones read before when it fails.
+    /// Dates pushed in the last two minutes stand over a read that doesn't
+    /// show them yet, and the events are read once more after
+    /// (`InAppEventPushedDates`). The suggestions kept for them are settled
+    /// the way In-App Events does (`InAppEventsStore.noteRead`).
+    @discardableResult
+    func readEvents() async -> Bool {
+        guard let read = try? await services.inAppEvents.events(for: app) else { return false }
+        let settled = InAppEventPushedDates(appID: app.id, history: push.history, now: now()).settle(read)
+        events = settled.events
+        eventsStore.noteRead(settled.events, for: app.id)
+        readAgain.schedule(at: settled.readAgainAt, now: now()) { [weak self] in await self?.refreshEvents() }
+        return true
+    }
+
+    /// After the events are read again, outside a Submit: the last
+    /// Submit's failure goes when what it named is fixed (dates that had
+    /// passed, moved ahead), else it shows as the last attempt's.
+    func reviewLastFailure() {
+        guard !isSubmitting, var note = submitFailure else { return }
+        if note.isCleared(by: events, now: now()) {
+            submitFailure = nil
+            submitError = nil
+            return
+        }
+        guard !note.isFromLastAttempt else { return }
+        note.isFromLastAttempt = true
+        submitFailure = note
+        submitError = note.shownText(now: now())
     }
 
     /// The events ticked to go with the version, for the card and for
@@ -208,7 +258,7 @@ final class ReleaseViewModel {
     var eventsGoingWithVersion: [InAppEvent] {
         let inSubmission = Set(status?.submission?.eventIDs ?? [])
         let ticked = phase == .prepare || phase == .rejected ? Set(store.eventIDs(for: app.id)) : []
-        return events.filter { inSubmission.contains($0.id) || (ticked.contains($0.id) && $0.canSubmit) }
+        return events.filter { inSubmission.contains($0.id) || (ticked.contains($0.id) && $0.canSubmit(now: now())) }
     }
 
     // MARK: - Telling

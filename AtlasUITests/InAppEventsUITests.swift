@@ -131,6 +131,28 @@ final class InAppEventsUITests: XCTestCase {
         attach("ev-accepted")
     }
 
+    /// Dismiss All beside Accept All Languages: every suggestion goes, the
+    /// languages read as not written, and the toast's Undo brings them back.
+    func testDismissAllTakesEverySuggestionAndUndoBringsThemBack() {
+        app.launch(debugScene: "ev")
+        let dismissAll = element("events.dismissAll")
+        XCTAssertTrue(dismissAll.waitForExistence(timeout: 15))
+        XCTAssertEqual(dismissAll.label, "Dismiss All, 9 suggested")
+        dismissAll.click()
+        let title = element("events.languages.title")
+        let dismissed = NSPredicate(format: "value ENDSWITH %@ OR label ENDSWITH %@", "not written yet", "not written yet")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: dismissed, object: title)], timeout: 10), .completed, text(of: title))
+        XCTAssertTrue(app.staticTexts["Dismissed 9 languages for Winter Reflection Challenge."].exists)
+        XCTAssertFalse(element("events.dismissAll").exists)
+        XCTAssertFalse(element("events.acceptAll").exists)
+        XCTAssertFalse(element("events.suggestion").exists)
+        attach("ev-dismissed")
+        app.buttons["Undo"].firstMatch.click()
+        XCTAssertTrue(element("events.suggestion").waitForExistence(timeout: 10))
+        XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
+        XCTAssertTrue(element("events.dismissAll").exists)
+    }
+
     func testTheEventThatGoesWithTheVersionOpensTheSubmission() {
         app.launch(debugScene: "ev-mood")
         XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))

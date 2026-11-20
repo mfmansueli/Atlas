@@ -16,19 +16,33 @@ struct InAppEventModelTests {
     typealias Data = InAppEventsTestData
 
     @Test func anEventSaysWhatItStillNeeds() {
-        #expect(Data.winter.missing == ["write every language"])
-        #expect(!Data.winter.canSubmit)
+        #expect(Data.winter.missing(now: Data.now) == ["write every language"])
+        #expect(!Data.winter.canSubmit(now: Data.now))
         var bare = Data.winter
         bare.localizations = []
         bare.schedules = []
-        #expect(bare.missing == ["write every language", "add the card image", "add the details image", "set its dates"])
+        bare.deepLink = nil
+        bare.primaryLocale = nil
+        bare.purpose = nil
+        // Alba 1.2.0: App Store Connect refused events without a deep link.
+        #expect(bare.missing(now: Data.now) == [
+            "add a deep link", "choose its primary language", "choose its purpose", "set its dates", "write its primary language",
+            "add the card image", "add the details image",
+        ])
+        #expect(bare.reviewNeeds(now: Data.now).first == .deepLink)
+        #expect(!bare.canSubmit(now: Data.now))
         #expect(bare.datesText == "No dates yet")
+        var noLink = Data.winter
+        noLink.localizations.removeLast()
+        noLink.deepLink = "  "
+        #expect(noLink.missing(now: Data.now) == ["add a deep link"])
+        #expect(!noLink.canSubmit(now: Data.now))
         var ready = Data.winter
         ready.localizations.removeLast()
-        #expect(ready.missing.isEmpty)
-        #expect(ready.canSubmit)
+        #expect(ready.missing(now: Data.now).isEmpty)
+        #expect(ready.canSubmit(now: Data.now))
         // Complete, but already live: nothing to submit.
-        #expect(!Data.update.canSubmit)
+        #expect(!Data.update.canSubmit(now: Data.now))
     }
 
     @Test func theImagesOfThePrimaryLanguageAreTheEvents() {

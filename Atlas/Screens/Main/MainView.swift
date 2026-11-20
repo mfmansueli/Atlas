@@ -261,7 +261,7 @@ struct MainView: View {
                 newFindings: navigator.section == .analytics ? 0 : analytics.newFindingCount(for: app.id),
                 // Suggested replies are Pro: in Free there are none to accept.
                 reviewReplies: pro.isFree ? 0 : reviews.suggestionCount(for: app.id),
-                eventLanguages: events.count(for: app.id),
+                eventLanguages: events.count(for: app.id, changes: changes.changes(for: app.id, section: .inAppEvents)),
                 complianceAnswers: SectionBadgeCounts.complianceCount(
                     appID: app.id, model: sectionModels.models(for: app.id).appInformation, notes: services.appInformation.notes
                 ),
@@ -277,7 +277,7 @@ struct MainView: View {
         guard let app = viewModel.selectedApp else { return nil }
         let kept = sectionModels.models(for: app.id)
         if let model = kept.release { return model }
-        let model = ReleaseViewModel(app: app, services: services, store: releases, queue: changes, suggestions: suggestions, push: push)
+        let model = ReleaseViewModel(app: app, services: services, store: releases, queue: changes, suggestions: suggestions, push: push, events: events)
         model.storePageModel = { [sectionModels, services, changes, suggestions, summaries, push] in
             await sectionModels.models(for: app.id).loadedStorePage {
                 StorePageViewModel(app: app, services: services.storePage, queue: changes, suggestions: suggestions, summaries: summaries, push: push)
@@ -370,7 +370,8 @@ struct MainView: View {
         }
         assistants.workspace = MCPWorkspace(
             teamName: teamName,
-            services: services,
+            // Product pages as the section read them, while that's fresh.
+            services: services.keepingProductPages { [sectionModels, navigator] in sectionModels.freshProductPages($0, refreshCount: navigator.refreshCount) },
             changes: changes,
             pricingModes: pricingModes,
             apps: loadedApps,

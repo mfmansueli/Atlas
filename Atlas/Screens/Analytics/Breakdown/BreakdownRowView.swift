@@ -5,13 +5,19 @@
 
 import SwiftUI
 
-/// One row of the breakdown table. Selecting it opens the inspector.
+/// One row of the breakdown table. Selecting it opens the inspector. A
+/// custom product page's row has Open Page, which opens it in Custom
+/// Product Pages.
 struct BreakdownRowView: View {
     let row: BreakdownRow
     let layout: BreakdownColumnLayout
     let table: BreakdownTable
     let isSelected: Bool
+    var onOpenPage: (() -> Void)?
     let onSelect: () -> Void
+
+    /// The room Open Page takes at the end of the name column.
+    private static let openPageWidth: CGFloat = 92
 
     var body: some View {
         Button(action: onSelect) {
@@ -25,6 +31,7 @@ struct BreakdownRowView: View {
                         }
                     }
                 }
+                .padding(.trailing, onOpenPage == nil ? 0 : Self.openPageWidth)
                 .frame(minWidth: BreakdownColumnLayout.nameMinimum, maxWidth: .infinity, alignment: .leading)
                 ForEach(layout.columns) { column in
                     cell(column).frame(width: layout.width(of: column), alignment: .trailing)
@@ -40,6 +47,17 @@ struct BreakdownRowView: View {
         .accessibilityValue(Text(accessibilityValue))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityIdentifier("analytics.breakdown.row.\(row.id)")
+        // Beside the row's button, not in it: a button can't hold another.
+        .overlay(alignment: .trailing) {
+            if let onOpenPage {
+                Button("Open Page", action: onOpenPage)
+                    .controlSize(.small)
+                    .help(Text("Open in Custom Product Pages"))
+                    .accessibilityLabel(Text("Open this product page"))
+                    .accessibilityIdentifier("analytics.breakdown.openPage.\(row.id)")
+                    .padding(.trailing, Spacing.medium + Spacing.small + layout.columns.reduce(0) { $0 + layout.width(of: $1) })
+            }
+        }
     }
 
     @ViewBuilder

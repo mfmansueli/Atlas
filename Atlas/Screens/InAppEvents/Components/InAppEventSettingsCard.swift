@@ -5,10 +5,14 @@
 
 import SwiftUI
 
-/// The event's settings as App Store Connect has them: badge, dates,
-/// where it shows, purpose and priority. They're changed there.
+/// The event's settings as App Store Connect has them: badge, dates and
+/// where it shows. Its deep link, purpose, priority and primary language,
+/// and a draft's dates, are edited in `InAppEventDetailsCard`. A date that
+/// has passed before approval shows as a problem, with Fix… on the dates.
 struct InAppEventSettingsCard: View {
-    let rows: [(title: String, value: String)]
+    let rows: [InAppEventSettingsRow]
+    /// Fix…: the Details card, on that date.
+    var onFix: (InAppEventDateField) -> Void = { _ in }
 
     var body: some View {
         Card {
@@ -16,15 +20,31 @@ struct InAppEventSettingsCard: View {
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.xSmall) {
-                ForEach(rows, id: \.title) { row in
+                ForEach(rows) { row in
                     GridRow {
                         Text(row.title)
                             .foregroundStyle(Palette.label2)
                             .frame(width: 150, alignment: .leading)
-                        Text(row.value)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+                            if row.isProblem {
+                                Label(row.value, systemImage: "exclamationmark.circle.fill")
+                                    .foregroundStyle(Palette.danger)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityIdentifier("events.settings.\(row.key).problem")
+                            } else {
+                                Text(row.value)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityIdentifier("events.settings.\(row.key)")
+                            }
+                            if let field = row.fixField {
+                                Button("Fix…") { onFix(field) }
+                                    .controlSize(.small)
+                                    .accessibilityIdentifier("events.settings.\(row.key).fix")
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .accessibilityElement(children: .combine)
+                    .accessibilityElement(children: .contain)
                 }
             }
             .font(.callout)

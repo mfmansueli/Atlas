@@ -13,10 +13,12 @@ struct DebugInAppEventsServices: InAppEventsServices {
     var error: AppStoreConnectError?
     /// No events at all, for the empty scene.
     var isEmpty = false
+    /// Lumen's events instead of the sample ones.
+    var events: [InAppEvent]?
 
     func events(for app: StoreApp) async throws -> [InAppEvent] {
         if let error { throw error }
-        return app.id == DebugFixtures.AppID.lumen && !isEmpty ? DebugInAppEventsData.events : []
+        return app.id == DebugFixtures.AppID.lumen && !isEmpty ? events ?? DebugInAppEventsData.events : []
     }
 
     func results(for event: InAppEvent, of _: StoreApp) async -> InAppEventResults? {

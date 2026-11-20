@@ -54,6 +54,13 @@ enum WorkspaceIntent: Hashable, Sendable {
     /// Store Page: In-App Events, on one event when given, from the
     /// Overview's version card.
     case showInAppEvents(eventID: String?)
+    /// In-App Events: one event's page, on its dates in the Details card,
+    /// from the Submit sheet's Fix… on a date that has passed.
+    case showInAppEventDates(eventID: String, field: InAppEventDateField)
+    /// Custom Product Pages: one page in the editor, by the name Apple's
+    /// reports give it, from Analytics' Product Page breakdown; the list
+    /// when nil, from the Overview's card.
+    case showProductPage(name: String?)
     /// Any section: focus its search field.
     case search
 }

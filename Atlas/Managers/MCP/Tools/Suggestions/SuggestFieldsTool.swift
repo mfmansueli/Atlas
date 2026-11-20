@@ -25,8 +25,10 @@ struct SuggestFieldsTool: MCPTool {
         question, value one of its answers) or page accessibility with a device (iphone, ipad, watch, vision, \
         mac, tv; field is a feature, value yes or no). Give a one-sentence reason and \
         evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. Per item, \
-        status is queued, unchanged (the field already has that value or you suggested it already), replaced \
-        (your older open suggestion for the field was replaced) or refused with a code: over_limit (with count), \
+        status is queued, unchanged (the field already has that value or you suggested it already), updated (you \
+        suggested that value already and it took your new reason or evidence, same id), replaced (your older open \
+        suggestion for the field was replaced: send a field again to change your value or its reason) or refused \
+        with a code: over_limit (with count), \
         unknown_field, unknown_locale, locked (the version is in review), not_permitted, invalid_value or \
         invalid_answer (not one of the question's or feature's answers), guideline (store text App Review would \
         reject, with issues [{kind, guideline, phrases}]: pricing such as “free”, prices, discounts or trials, other \
@@ -37,7 +39,9 @@ struct SuggestFieldsTool: MCPTool {
         instead. apply: true queues the values as changes instead, only when the person allowed editing \
         drafts. A store locale may also be a language the app supports and the App Store doesn't have yet \
         (get_store_page's languagesNotOnAppStore): it stays a suggestion, even with apply, in its own tab \
-        until the person adds the page. Read get_store_page and get_app_information first.
+        until the person adds the page. Read get_store_page and get_app_information first. Take back your own open \
+        suggestions that went stale (a reason that cites a date that moved, a value no longer right) with \
+        withdraw_suggestion and their ids.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -113,7 +117,7 @@ struct SuggestFieldsTool: MCPTool {
         session.commit()
         let summary: JSONValue = [
             "results": .array(results),
-            "queued": .int(results.count { ["queued", "replaced", "applied"].contains($0["status"]?.stringValue) }),
+            "queued": .int(results.count { ["queued", "replaced", "updated", "applied"].contains($0["status"]?.stringValue) }),
             "refused": .int(results.count { $0["status"]?.stringValue == "refused" }),
         ]
         return MCPToolOutcome(result: summary, isError: false, logLines: logLines)

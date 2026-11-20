@@ -123,6 +123,26 @@ struct WorkspaceSectionWarmerTests {
         #expect(kept.events?.artworkStudio != nil)
     }
 
+    /// After a push (or Refresh) the kept events are read again, into the
+    /// same model: dates pushed off screen show when In-App Events opens.
+    @Test func keptEventsAreReadAgainAfterAPush() async throws {
+        let asc = FakeInAppEventsServices([DebugInAppEventsData.mood])
+        var services = WorkspaceServices.debug
+        services.inAppEvents = asc
+        let warmer = warmer(services)
+        let kept = kept()
+        _ = await warm(.inAppEvents, with: warmer, kept: kept)
+        let first = try #require(kept.events)
+        #expect(!warmer.needsWarming(.inAppEvents, of: app, kept: kept, refreshCount: 0))
+
+        var moved = DebugInAppEventsData.mood
+        moved.schedules[0].publishStart = moved.schedules[0].publishStart?.addingTimeInterval(86400)
+        asc.events = [moved]
+        #expect(await !warm(.inAppEvents, with: warmer, kept: kept, refreshCount: 1))
+        #expect(kept.events === first)
+        #expect(first.events.first?.dates == moved.dates)
+    }
+
     @Test func reviewsAreReadIntoTheStore() async {
         let kept = kept()
         #expect(await !warm(.reviews, with: warmer(), kept: kept))

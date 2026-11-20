@@ -26,4 +26,12 @@ enum ProductPageDevice: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .iPad: displayType.hasPrefix("APP_IPAD")
         }
     }
+
+    /// Whether an App Preview set's `previewType` is for this device.
+    func matchesPreview(_ previewType: String) -> Bool {
+        switch self {
+        case .iPhone: previewType.hasPrefix("IPHONE")
+        case .iPad: previewType.hasPrefix("IPAD")
+        }
+    }
 }

@@ -6,7 +6,7 @@
 import Foundation
 
 /// `withdraw_event_texts`: takes back an assistant's own In-App Event text
-/// suggestions that still wait for the person, e.g. the stale ones
+/// suggestions and revisions that still wait for the person, e.g. the stale ones
 /// get_in_app_events marks (App Store Connect has that language written
 /// since). Another assistant's suggestions, and texts the person accepted
 /// (those wait in Review & Push), are left alone.
@@ -18,8 +18,9 @@ struct WithdrawEventTextsTool: MCPTool {
         title: "Withdraw In-App Event text suggestions",
         description: """
         Withdraws your own text suggestions for an In-App Event that still wait for the person (get_in_app_events' \
-        openSuggestions with your client as `by`), e.g. the ones in `staleSuggestions`, whose language App Store \
-        Connect has written since. `locales` lists the languages, or "all" for every one of yours on the event. Only \
+        openSuggestions with your client as `by`), new texts and revisions alike (`revision: true`), e.g. the ones in \
+        `staleSuggestions`, whose language App Store Connect has written since. `locales` lists the languages, or \
+        "all" for every one of yours on the event. Only \
         suggestions sent by this client are removed; `withdrawn` lists them and `left` the languages that weren't, \
         with why (another assistant's, or none waiting). Texts already accepted wait in Review & Push and aren't \
         touched. Nothing reaches App Store Connect.
@@ -64,6 +65,7 @@ struct WithdrawEventTextsTool: MCPTool {
             result: [
                 "status": withdrawn.isEmpty ? "unchanged" : "withdrawn",
                 "withdrawn": .array(withdrawn.map { .string($0.locale) }),
+                "withdrawnRevisions": .array(withdrawn.filter(\.isRevision).map { .string($0.locale) }),
                 "left": .array(left),
             ],
             isError: false,

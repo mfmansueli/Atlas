@@ -17,10 +17,21 @@ struct AppStoreConnectErrorItem: Decodable, Sendable {
     /// cannot be reviewed, please check associated errors to see why." with
     /// the real reasons only here: SimProps's Submit showed just that line.
     var associatedErrors: [AppStoreConnectErrorItem] = []
+    /// For an associated error, the resource it's about, as Apple keys it:
+    /// `/v1/appEvents/6740000000`.
+    var resource: String?
 
     /// Its words: the detail, or the title without one.
     var text: String? {
         detail ?? title
+    }
+
+    /// The In-App Event an associated error is about, when its resource
+    /// is one: `6740000000` of `/v1/appEvents/6740000000`.
+    var eventID: String? {
+        guard let resource, resource.hasPrefix("/v1/appEvents/") else { return nil }
+        let id = resource.dropFirst("/v1/appEvents/".count).split(separator: "/").first.map(String.init)
+        return id?.isEmpty == false ? id : nil
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -41,6 +52,12 @@ struct AppStoreConnectErrorItem: Decodable, Sendable {
         detail = try? container.decodeIfPresent(String.self, forKey: .detail)
         let meta = try? container.nestedContainer(keyedBy: MetaKeys.self, forKey: .meta)
         let byResource = (try? meta?.decodeIfPresent([String: [AppStoreConnectErrorItem]].self, forKey: .associatedErrors)) ?? [:]
-        associatedErrors = byResource.sorted { $0.key < $1.key }.flatMap(\.value)
+        associatedErrors = byResource.sorted { $0.key < $1.key }.flatMap { resource, items in
+            items.map { item in
+                var item = item
+                item.resource = resource
+                return item
+            }
+        }
     }
 }

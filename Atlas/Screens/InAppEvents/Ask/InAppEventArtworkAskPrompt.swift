@@ -20,8 +20,8 @@ enum InAppEventArtworkAskPrompt {
     static func text(app: String, appID: String, event: String, eventID: String) -> String {
         String(localized: """
         Design the art for \(app)’s In-App Event “\(event)” (app \(appID), event \(eventID)) in Atlas with Claude \
-        Design: its card (16:9) and its details page (9:16). Read the event with get_in_app_events: its badge, texts, \
-        dates, which languages lack their own card or details page, and `design`, the app's look and design language, \
+        Design: its card (16:9) and its details page (9:16). Read the event with get_in_app_events (eventId \(eventID), include \
+        ["all"]): its badge, texts, dates, which languages lack their own card or details page, and `design`, the app's look and design language, \
         what Atlas knows of the app, its design project and the art direction (the idea, where the App Store lays its \
         text, the craft and the check of each render). If `design` says the look is missing, read it in the project and \
         send it with report_app_support first. When the design project opens from here, design in it; when it doesn't, \

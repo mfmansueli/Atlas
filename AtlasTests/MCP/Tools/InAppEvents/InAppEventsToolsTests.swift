@@ -48,10 +48,12 @@ struct InAppEventsToolsTests {
     }
 
     /// A suggestion waiting for a language App Store Connect has since
-    /// written (in App Store Connect, or by a push) is stale.
-    @Test func aSuggestionForALanguageWrittenSinceIsStale() async throws {
+    /// written (in App Store Connect, or by a push) is settled by the read,
+    /// as In-App Events settles it: written otherwise, it's a revision of
+    /// the texts that differ; written as suggested, it's done and gone.
+    @Test func aSuggestionForALanguageWrittenSinceIsSettledByTheRead() async throws {
         store.add([Data.suggestion("de-DE"), Data.suggestion("ja")], for: Data.app.id)
-        let tool = GetInAppEventsTool(store: store, directory: EventArtworkTestFiles.directory())
+        let tool = GetInAppEventsTool(store: store, directory: EventArtworkTestFiles.directory(), now: { Data.now })
         let before = try #require(try await call(tool, ["appId": "Lumen Journal"]).result["events"]?.arrayValue?.first)
         let open = try #require(before["openSuggestions"]?.arrayValue)
         #expect(open.compactMap { $0["locale"]?.stringValue } == ["de-DE", "ja"])
@@ -67,11 +69,28 @@ struct InAppEventsToolsTests {
         winter.localizations[1].longDescription = "Drei Zeilen am Tag."
         let events = [winter] + Data.events.dropFirst()
         let after = try #require(try await call(tool, ["appId": "Lumen Journal"], events: events).result["events"]?.arrayValue?.first)
-        #expect(after["staleSuggestions"]?.arrayValue == ["de-DE"])
-        #expect(after["openSuggestions"]?.arrayValue?.first?["stale"] == true)
+        #expect(after["staleSuggestions"]?.arrayValue?.isEmpty == true)
+        let german = try #require(after["openSuggestions"]?.arrayValue?.first)
+        #expect(german["locale"] == "de-DE")
+        #expect(german["stale"] == false)
+        #expect(german["revision"] == true)
+        #expect(german["revises"]?.arrayValue == ["name", "shortDescription", "longDescription"])
+        #expect(german["why"] == "Suggested before this language was written: Reads naturally.")
         #expect(after["openSuggestions"]?.arrayValue?.last?["stale"] == false)
         // `suggestedLanguages` stays as it was.
         #expect(after["suggestedLanguages"]?.arrayValue?.contains("de-DE") == true)
+        // The store is settled too: the section shows and counts the same.
+        #expect(store.open(for: Data.app.id, eventID: "winter").first { $0.locale == "de-DE" }?.isRevision == true)
+
+        // Written as suggested: done, gone from the answer and the store.
+        winter.localizations[1].name = "Name"
+        winter.localizations[1].shortDescription = "Short de-DE"
+        winter.localizations[1].longDescription = "Long de-DE"
+        store.add([Data.suggestion("de-DE")], for: Data.app.id)
+        let done = try #require(try await call(tool, ["appId": "Lumen Journal"], events: [winter] + Data.events.dropFirst())
+            .result["events"]?.arrayValue?.first)
+        #expect(done["openSuggestions"]?.arrayValue?.compactMap { $0["locale"]?.stringValue } == ["ja"])
+        #expect(store.open(for: Data.app.id, eventID: "winter").map(\.locale) == ["ja"])
     }
 
     /// An assistant takes back only its own suggestions; another's stay for
@@ -111,7 +130,7 @@ struct InAppEventsToolsTests {
 
     @Test func eventsAreReadWithTheirTextsAndWhatIsMissing() async throws {
         store.add([Data.suggestion("ja")], for: Data.app.id)
-        let outcome = try await call(GetInAppEventsTool(store: store), ["appId": "Lumen Journal"])
+        let outcome = try await call(GetInAppEventsTool(store: store, now: { Data.now }), ["appId": "Lumen Journal"])
         let result = outcome.result
         #expect(result["limits"]?["name"] == .int(30))
         #expect(result["limits"]?["longDescription"] == .int(120))
@@ -140,7 +159,9 @@ struct InAppEventsToolsTests {
         var project = DesignProject(kind: .claudeDesign, link: "Lumen Brand · Claude Design")
         project.summary = DesignSourceSummary(title: "Lumen Brand", colors: [DesignSwatch(name: "Dusk", hex: "#1F2E5C")], voice: "Calm")
         let autopilot = AutopilotCenter(designProjects: [Data.app.id: project])
-        let outcome = try await call(GetInAppEventsTool(store: store, autopilot: autopilot), ["appId": "Lumen Journal"])
+        let outcome = try await call(
+            GetInAppEventsTool(store: store, autopilot: autopilot, now: { Data.now }), ["appId": "Lumen Journal", "include": ["design"]]
+        )
         let design = try #require(outcome.result["design"])
         #expect(design["how"]?.stringValue?.contains("HTML pages") == true)
         #expect(design["how"]?.stringValue?.contains("motion: true") == true)
@@ -151,7 +172,10 @@ struct InAppEventsToolsTests {
         #expect(design["designProject"]?["ifYouCantOpenIt"]?.stringValue?.hasPrefix("Don't stop") == true)
         #expect(design["lookMissing"]?.stringValue?.contains("report_app_support") == true)
 
-        let without = try await call(GetInAppEventsTool(store: store, autopilot: AutopilotCenter()), ["appId": "Lumen Journal"])
+        let without = try await call(
+            GetInAppEventsTool(store: store, autopilot: AutopilotCenter(), now: { Data.now }), ["appId": "Lumen Journal", "include": ["design"]]
+        )
+        #expect(without.result["design"] != nil)
         #expect(without.result["design"]?["designProject"] == nil)
     }
 
@@ -188,7 +212,7 @@ struct InAppEventsToolsTests {
     }
 
     @Test func getInAppEventsCarriesTheTextRules() async throws {
-        let outcome = try await call(GetInAppEventsTool(store: store), ["appId": "Lumen Journal"])
+        let outcome = try await call(GetInAppEventsTool(store: store, now: { Data.now }), ["appId": "Lumen Journal"])
         let rules = try #require(outcome.result["textRules"]?.arrayValue)
         #expect(rules.contains { $0.stringValue?.contains("Including specific pricing will lead to rejection by App Review.") == true })
     }

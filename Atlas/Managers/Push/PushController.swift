@@ -51,7 +51,7 @@ final class PushController {
     var onFinished: (_ landed: Int, _ failed: Int) -> Void = { _, _ in }
 
     private let queue: ChangeQueue
-    private let history: PushHistory
+    let history: PushHistory
     /// Where `{secret:…}` placeholders are read from (the Keychain).
     private let secrets: any SecretStore
     private let now: () -> Date
@@ -63,9 +63,9 @@ final class PushController {
     /// Owners App Store Connect wouldn't make a draft for in this push, so
     /// their other locales fail with the same reason without asking again.
     private var inAppDraftRefusals: [String: InAppDraftRefusal] = [:]
-    /// Each custom product page's version that takes edits, found or made
+    /// Custom product pages' versions and new pages' IDs, found or made
     /// earlier in this push.
-    private var productPageVersions: [String: String] = [:]
+    private let productPages = ProductPagePushState()
     /// Subscription groups found or made during this push, by
     /// `SubscriptionGroupPlaceholder.token`, so new subscriptions in the
     /// same new group share one.
@@ -117,11 +117,12 @@ final class PushController {
     func push(_ changes: [PendingChange]) {
         guard phase != .running else { return }
         rememberUnfinished()
-        items = InAppEventPushOrder.sorted(RetentionPushOrder.sorted(changes.filter { !$0.isBlocked })).map(resumed)
+        let ordered = InAppEventPushOrder.sorted(RetentionPushOrder.sorted(changes.filter { !$0.isBlocked }))
+        items = ProductPageScreenshotsPushOrder.sorted(ordered).map(resumed)
         notice = nil
         inAppDrafts = [:]
         inAppDraftRefusals = [:]
-        productPageVersions = [:]
+        productPages.reset()
         subscriptionGroups = [:]
         territoryIDs = nil
         eventLocalizations = [:]
@@ -543,11 +544,15 @@ extension PushController {
             return true
         }
         if let write = ProductPageLocaleWrite(request) {
-            let sent = try await write.send(via: transport, knownVersionID: productPageVersions[write.pageID])
-            productPageVersions[write.pageID] = sent.versionID
+            let sent = try await write.send(via: transport, knownVersionID: productPages.versions[write.pageID])
+            productPages.versions[write.pageID] = sent.versionID
             noteRequest(sent.rateLimit)
             items[index].createdIDs[ProductPageLocaleWrite.versionType] = sent.versionID
             if let localizationID = sent.localizationID { items[index].createdIDs[ProductPageLocaleWrite.localizationType] = localizationID }
+            return true
+        }
+        if let screenshots = ProductPageScreenshotsPush(request) {
+            try await send(screenshots, at: index, transport: transport)
             return true
         }
         if let artwork = InAppEventArtworkPush(request) {
@@ -575,6 +580,22 @@ extension PushController {
             noteRequest(rateLimit)
         }
         return true
+    }
+
+    /// A custom product page's own screenshots of one language and device,
+    /// into the page's language (`ProductPagePushState`).
+    private func send(_ screenshots: ProductPageScreenshotsPush, at index: Int, transport: any PushTransport) async throws {
+        defer { items[index].progressNote = nil }
+        let content = screenshots.content
+        let made = items.first { $0.change.groupID == content.pageID && $0.change.appID == content.appID }?.createdIDs["appCustomProductPages"]
+        let localizationID = try await productPages.localization(for: screenshots, made: made, transport: transport) { [weak self] in
+            self?.noteRequest($0)
+        }
+        items[index].createdID = try await screenshots.send(
+            into: localizationID, via: transport, note: { noteRequest($0) }, progress: { items[index].progressNote = $0 },
+            processing: { wakeLoop?.yield(.waitingOnApple(index)) },
+            pollInterval: { PushSchedule.pollInterval(waitingOnApple: waitingOnApple.count) }
+        )
     }
 
     /// The ID of an event's language, read again when it isn't known yet:

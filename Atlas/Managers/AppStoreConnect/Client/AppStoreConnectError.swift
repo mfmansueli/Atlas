@@ -110,7 +110,7 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     static func detail(of item: AppStoreConnectErrorItem?) -> String? {
         guard let item else { return nil }
         var reasons: [String] = []
-        for reason in item.associatedErrors.compactMap(\.text) where !reasons.contains(reason) && reason != item.text {
+        for reason in item.associatedErrors.compactMap(Self.reason) where !reasons.contains(reason) && reason != item.text {
             reasons.append(reason)
         }
         guard !reasons.isEmpty else { return item.text }
@@ -118,6 +118,18 @@ enum AppStoreConnectError: LocalizedError, Equatable {
         if reasons.count > reasonsShown { lines.append(String(localized: "and \(reasons.count - reasonsShown) more")) }
         return ([item.text].compactMap(\.self) + lines).joined(separator: "\n")
     }
+
+    /// An associated error's words, naming the In-App Event it's about
+    /// ("… (In-App Event 6740000000)"): a review submission's events are
+    /// refused one by one, and the person needs to know which.
+    static func reason(_ item: AppStoreConnectErrorItem) -> String? {
+        guard let text = item.text else { return nil }
+        guard let eventID = item.eventID else { return text }
+        return "\(text) (\(eventMarker)\(eventID))"
+    }
+
+    /// What precedes an event's id in a reason: "In-App Event ".
+    static let eventMarker = "In-App Event "
 
     private static func message(_ summary: String, detail: String?) -> String {
         guard let detail, !detail.isEmpty else { return summary }

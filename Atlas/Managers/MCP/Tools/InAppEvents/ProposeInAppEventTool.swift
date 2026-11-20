@@ -26,7 +26,11 @@ struct ProposeInAppEventTool: MCPTool {
             InAppEventPurchaseRequirement.allCases.map(\.rawValue),
             "IN_APP_PURCHASE only when taking part costs extra (in a subscription app, beyond the subscription); NO_COST_ASSOCIATED when left out."
         ),
-        "deepLink": MCPToolDefinition.string("Optional: the universal link or app URL (myapp://event) that Open on the card goes to."),
+        "deepLink": MCPToolDefinition.string("""
+        The universal link (https://…) or app URL (myapp://event) that Open on the card goes to. The draft can be created \
+        without one, but App Store Connect won't take it to App Review until it has one (propose_event_details sets it \
+        later). Check in the project that the app opens it, and report it with report_deep_link_check.
+        """),
         "primaryLocale": MCPToolDefinition.string("The event's primary language, e.g. en-US; the app's when left out."),
         "publishStart": MCPToolDefinition.string("When the card starts showing, ISO 8601 with a time zone: at most 14 days before eventStart."),
         "eventStart": MCPToolDefinition.string("When the event starts, ISO 8601 with a time zone, e.g. 2027-01-01T00:00:00Z: in the future."),
@@ -64,11 +68,15 @@ struct ProposeInAppEventTool: MCPTool {
         SPECIAL_EVENT; purpose APPROPRIATE_FOR_ALL_USERS (default), ATTRACT_NEW_USERS, KEEP_ACTIVE_USERS_INFORMED or \
         BRING_BACK_LAPSED_USERS; priority NORMAL (default) or HIGH; purchaseRequirement NO_COST_ASSOCIATED (default) or \
         IN_APP_PURCHASE. publishStart, eventStart and eventEnd are ISO 8601 dates and times with a time zone: the event \
-        starts in the future and lasts 15 minutes to 31 days, and its card shows at most 14 days before it starts. texts \
+        starts in the future and lasts 15 minutes to 31 days, and its card shows in the future, at most 14 days before it \
+        starts. App Review usually takes up to 2 days and the event shows only once it's approved, so a card or start \
+        within 2 days comes back with a `warning` (not a refusal): leave App Review time. texts \
         are by locale, name ≤30, shortDescription ≤50 and longDescription ≤120, all three per language: usually the \
         primary language; write the others with propose_event_texts once the event is created. Anything App Store \
         Connect would refuse is refused with the reasons (status "refused"); proposing your own queued reference name \
-        again replaces it. Nothing reaches App Store Connect until the person pushes, and the person adds the card and \
+        again replaces it. Give deepLink (where Open on the card goes) when you know it: the event is created without \
+        one, but App Store Connect won't take it to App Review until it has one (set it later with \
+        propose_event_details). Nothing reaches App Store Connect until the person pushes, and the person adds the card and \
         details page images and submits the event for review: no tool does either. \
         \(StoreTextGuidelinePlace.eventText.summary)
         """,
@@ -107,22 +115,31 @@ struct ProposeInAppEventTool: MCPTool {
             return .failed(String(localized: "Atlas couldn’t write this event’s request. Check its texts and send it again."), target: target)
         }
         queue.upsert(change)
-        return MCPToolOutcome(result: Self.queuedResult(change, event: event, replaced: replaced != nil), isError: false, logLines: [
+        let result = Self.queuedResult(change, event: event, replaced: replaced != nil, warnings: event.warnings(now: now()))
+        return MCPToolOutcome(result: result, isError: false, logLines: [
             .init(target: target, outcome: .proposed),
         ])
     }
 
-    private static func queuedResult(_ change: PendingChange, event: NewInAppEvent, replaced: Bool) -> JSONValue {
-        [
+    private static func queuedResult(_ change: PendingChange, event: NewInAppEvent, replaced: Bool, warnings: [String]) -> JSONValue {
+        var stillNeeded: [JSONValue] = [
+            "The event card image or video (16:9, 1920×1080 to 3840×2160), added in App Store Connect.",
+            "The details page image or video (9:16, 1080×1920 to 2160×3840), added in App Store Connect.",
+        ]
+        if event.trimmedDeepLink.isEmpty {
+            let deepLink: JSONValue = """
+            A deep link: App Store Connect won't take the event to App Review without one. Set it with \
+            propose_event_details once the event is created.
+            """
+            stillNeeded.insert(deepLink, at: 0)
+        }
+        var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(change.id),
             "referenceName": .string(event.trimmedReferenceName),
             "replacedYourEarlierProposal": .bool(replaced),
             "showsIn": .string("Review & Push → In-App Events · New, as \(change.title)"),
-            "stillNeeded": [
-                "The event card image or video (16:9, 1920×1080 to 3840×2160), added in App Store Connect.",
-                "The details page image or video (9:16, 1080×1920 to 2160×3840), added in App Store Connect.",
-            ],
+            "stillNeeded": .array(stillNeeded),
             "note": """
             Nothing is created until the person pushes; then App Store Connect gets the event as a draft with these texts. \
             Its event card and details page artwork still have to be added in App Store Connect, and the person pushes the \
@@ -130,5 +147,8 @@ struct ProposeInAppEventTool: MCPTool {
             lists it, and propose_event_texts writes its other languages.
             """,
         ]
+        // App Review's time: it never blocks.
+        if !warnings.isEmpty { result["warning"] = .string(warnings.joined(separator: " ")) }
+        return .object(result)
     }
 }

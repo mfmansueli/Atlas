@@ -5,9 +5,10 @@
 
 import AppKit
 
-/// Choose…: an app's project folder, where Claude Code starts. Only the
-/// path is kept: the helper runs outside the sandbox, so Atlas
-/// itself never reads the folder.
+/// Choose…: an app's project folder, where Claude Code starts. The
+/// helper runs outside the sandbox and needs only the path; Atlas keeps a
+/// bookmark too (`ProjectFolderBookmarks`), to read which links the app
+/// claims for In-App Events' deep links.
 @MainActor
 enum ClaudeCodeFolderPicker {
     static func choose(appName: String, suggestion: String?) -> String? {

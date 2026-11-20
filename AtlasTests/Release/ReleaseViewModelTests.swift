@@ -25,9 +25,10 @@ struct ReleaseViewModelTests {
     /// `isWhatsNewComplete`.
     private func makeModel(
         _ phase: DebugReleasePhase = .prepare, isWhatsNewComplete: Bool = false, encryption: EncryptionAnswer? = nil,
-        suggestions: FieldSuggestionStore = FieldSuggestionStore()
+        suggestions: FieldSuggestionStore = FieldSuggestionStore(), inAppEvents: [InAppEvent]? = nil
     ) async -> (model: ReleaseViewModel, services: WorkspaceServices) {
         var services = ReleaseDebugScenes.services(phase, encryption: encryption)
+        services.inAppEvents = DebugInAppEventsServices(events: inAppEvents)
         if isWhatsNewComplete {
             var storePage = DebugStorePageServices()
             storePage.whatsNew = Data.whatsNew.merging([Data.missingLocale: Data.suggestedWhatsNew]) { _, new in new }
@@ -38,9 +39,14 @@ struct ReleaseViewModelTests {
         let push = PushController(queue: queue, history: PushHistory(), transport: FakePushTransport())
         let model = ReleaseViewModel(app: app, services: services, store: store, queue: queue, suggestions: suggestions, push: push)
         model.now = { Data.today }
+        model.eventsStore = events
+        model.linkClaims = claims
         await model.load()
         return (model, services)
     }
+
+    private let events = InAppEventsStore()
+    private let claims = ProjectLinkClaimsCenter()
 
     // MARK: - Before submitting
 
@@ -148,6 +154,60 @@ struct ReleaseViewModelTests {
         #expect(plan.timing == .afterApproval)
         // The answer comes from Export Compliance; the build doesn't carry it yet, so it's written on it.
         #expect(plan.usesNonExemptEncryption == false)
+    }
+
+    /// Alba 1.2.0: a ticked event without a deep link made App Store
+    /// Connect refuse the submission. Now Submit waits until it's fixed or
+    /// unticked, and every draft that could go is offered.
+    @Test func aTickedEventAppReviewWouldRefuseBlocksSubmit() async {
+        var mood = DebugInAppEventsData.mood
+        mood.deepLink = nil
+        let (model, _) = await makeModel(
+            isWhatsNewComplete: true, encryption: .exempt, inAppEvents: [DebugInAppEventsData.winter, mood, DebugInAppEventsData.gratitude]
+        )
+        // The Winter draft isn't ready, but it's offered: ticking it says what it needs.
+        #expect(model.offeredEvents.map(\.id) == [DebugInAppEventsData.winterID, DebugInAppEventsData.moodID])
+        #expect(model.tickedEvents.map(\.id) == [DebugInAppEventsData.moodID])
+        #expect(model.preflight(of: mood).missing.map(\.id) == ["deepLink"])
+        #expect(model.blockers == ["fix or untick “Mood Calendar”"])
+        #expect(model.footerText == "To submit, fix or untick “Mood Calendar”.")
+        #expect(!model.canSubmit)
+
+        model.setEvent(DebugInAppEventsData.winterID, goesWithVersion: true)
+        #expect(model.blockers == ["fix or untick 2 In-App Events"])
+        model.setEvent(DebugInAppEventsData.winterID, goesWithVersion: false)
+        model.setEvent(DebugInAppEventsData.moodID, goesWithVersion: false)
+        #expect(model.blockers.isEmpty)
+        #expect(await model.submit())
+        #expect(release.plans.first?.eventIDs.isEmpty == true)
+    }
+
+    /// Lumen's project doesn't declare lumen://: blocked. Once it does and
+    /// the link was checked in build 212, picking 211 warns, and Use Build
+    /// 212 picks it.
+    @Test func theDeepLinkCheckWarnsAboutAnOlderBuild() async throws {
+        let (model, _) = await makeModel(isWhatsNewComplete: true, encryption: .exempt)
+        let mood = try #require(model.events.first { $0.id == DebugInAppEventsData.moodID })
+        claims.pin(.read(folder: "/Lumen", claims: ProjectLinkClaims(targets: ["Lumen"])), for: app.id)
+        #expect(model.preflight(of: mood).missing.map(\.text) == ["Lumen Journal doesn’t open lumen:// links yet"])
+        #expect(!model.canSubmit)
+
+        claims.pin(.read(folder: "/Lumen", claims: ProjectLinkClaims(schemes: ["lumen"], targets: ["Lumen"])), for: app.id)
+        #expect(model.preflight(of: mood).note?.hasPrefix("Not checked:") == true)
+        #expect(model.canSubmit)
+        events.setDeepLinkReport(InAppEventDeepLinkReport(
+            eventID: mood.id, deepLink: DebugInAppEventsData.moodDeepLink, opens: true, shows: "The Mood Calendar", beforeStart: "Starts Nov 24",
+            needsPremium: false, location: "Lumen/LumenApp.swift:48", build: "1.4 (212)", testedInSimulator: true, problems: [],
+            client: "Claude Code", date: Data.today
+        ), for: app.id)
+        model.options.buildID = "build-211"
+        let preflight = model.preflight(of: mood)
+        #expect(preflight.warnings == ["Build 211 is older than the build where Lumen Journal opens these links (212)."])
+        let newer = try #require(preflight.newerBuild)
+        model.useBuild(newer)
+        #expect(model.options.buildID == "build-212")
+        #expect(model.preflight(of: mood).warnings.isEmpty)
+        #expect(model.canSubmit)
     }
 
     @Test func aRefusedSubmissionSaysWhyAndChangesNothing() async {

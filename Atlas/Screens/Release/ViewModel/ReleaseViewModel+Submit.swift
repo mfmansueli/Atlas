@@ -56,6 +56,7 @@ extension ReleaseViewModel {
     /// it, so it waits in Review & Push with the other changes.
     func accept(_ suggestion: FieldSuggestion) async {
         guard let model = await storePageModel?() else {
+            submitFailure = nil
             submitError = String(localized: "The Store Page couldn’t be read, so the suggestion wasn’t accepted. Accept it in Store Page.")
             return
         }
@@ -93,6 +94,7 @@ extension ReleaseViewModel {
             blockers.append(String(localized: "push the changes (What’s New is among them)"))
         }
         if !status.isReviewInformationComplete { blockers.append(String(localized: "complete the App Review information")) }
+        blockers += eventBlockers
         return blockers
     }
 
@@ -133,14 +135,22 @@ extension ReleaseViewModel {
         guard canSubmit, let status, let build = selectedBuild else { return false }
         isSubmitting = true
         submitError = nil
+        submitFailure = nil
         defer {
             isSubmitting = false
             submitProgress = nil
         }
         var pushed = 0
         if options.pushesChanges, pendingCount > 0 {
-            guard let count = await pushChanges() else { return false }
+            guard let count = await pushChanges() else {
+                submitFailure = SubmitFailureNote(text: submitError ?? "", date: now())
+                return false
+            }
             pushed = count
+            // What the push wrote (an event's new dates, a deep link): the
+            // queue no longer has it, so the checks and a refusal's words
+            // need App Store Connect's events as they are now.
+            await readEvents()
         }
         submitProgress = String(localized: "Submitting \(versionString)…")
         let answer = options.encryption
@@ -149,12 +159,20 @@ extension ReleaseViewModel {
             attachedBuildID: status.attachedBuildID,
             usesNonExemptEncryption: answer?.usesNonExemptEncryption == build.usesNonExemptEncryption ? nil : answer?.usesNonExemptEncryption,
             timing: options.releaseTiming, isPhased: options.isPhased,
-            eventIDs: submittableEvents.map(\.id).filter(options.eventIDs.contains)
+            eventIDs: tickedEvents.map(\.id)
         )
         do {
             try await services.release.submit(plan)
         } catch {
-            submitError = error.localizedDescription
+            // The events as they are now, to name a date that has passed.
+            if error is SubmissionFailure { await readEvents() }
+            let failure = error as? SubmissionFailure
+            let text = failure.map { Self.failureText($0, events: events, plan: plan, versionString: versionString, now: now()) }
+                ?? error.localizedDescription
+            submitError = text
+            submitFailure = SubmitFailureNote(
+                text: text, date: now(), pastDateEventIDs: failure.flatMap { Self.onlyPastDateEventIDs($0, plan: plan) }, events: events
+            )
             // Some of it may have gone: what App Store Connect has now,
             // so the sheet and the next try start from there.
             await refreshStatus()
@@ -227,6 +245,6 @@ extension ReleaseViewModel {
         } else {
             options.eventIDs.remove(id)
         }
-        store.setEventIDs(submittableEvents.map(\.id).filter(options.eventIDs.contains), for: app.id)
+        store.setEventIDs(offeredEvents.map(\.id).filter(options.eventIDs.contains), for: app.id)
     }
 }

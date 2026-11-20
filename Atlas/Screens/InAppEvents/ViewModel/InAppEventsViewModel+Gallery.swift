@@ -31,6 +31,12 @@ extension InAppEventsViewModel {
         return languages(of: event).count { $0.state == .suggested }
     }
 
+    /// Written languages of `event` with a revision waiting.
+    func revisionCount(of event: InAppEvent) -> Int {
+        guard event.state.isEditable else { return 0 }
+        return languages(of: event).count { $0.state == .revision }
+    }
+
     /// "3 concepts ready" on the card: concepts in, none used.
     func readyConcepts(of event: InAppEvent) -> Int? {
         guard event.state.isEditable, let run = artworkRun(of: event), run.isReady, run.revisingID == nil else { return nil }
@@ -40,7 +46,7 @@ extension InAppEventsViewModel {
 
     /// "Dec 1 – Dec 31 · Shows on the App Store from Nov 24".
     func tileDates(of event: InAppEvent) -> String {
-        "\(event.datesText) · \(Self.publishText(event))"
+        "\(event.datesText) · \(Self.publishText(event, now: now()))"
     }
 
     /// The tile's note: what a draft still needs, else how it went.
@@ -80,8 +86,13 @@ extension InAppEventsViewModel {
                 parts.append(.init(text: text, isWarning: true))
             }
         }
+        if reviewItems(of: event).contains(where: { $0.need?.dateField != nil && $0.state == .missing }) {
+            parts.append(.init(text: String(localized: "Its dates need a fix"), isWarning: true))
+        }
         let suggested = suggestedCount(of: event)
         if suggested > 0 { parts.append(.init(text: String(localized: "\(ReviewText.languages(suggested)) suggested"))) }
+        let revised = revisionCount(of: event)
+        if revised > 0 { parts.append(.init(text: String(localized: "Revision suggested for \(ReviewText.languages(revised))"))) }
         return parts
     }
 

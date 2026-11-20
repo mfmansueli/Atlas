@@ -20,8 +20,8 @@ enum InAppEventsTestData {
     static let media = [InAppEventMedia(kind: .card, width: 1920, height: 1080), InAppEventMedia(kind: .details, width: 1080, height: 1920)]
 
     static let winter = InAppEvent(
-        id: "winter", referenceName: "Winter Reflection 2026", badge: .challenge, state: .draft, primaryLocale: "en-US",
-        purpose: .appropriateForAllUsers,
+        id: "winter", referenceName: "Winter Reflection 2026", badge: .challenge, state: .draft, deepLink: "lumen://challenge/winter",
+        primaryLocale: "en-US", purpose: .appropriateForAllUsers,
         schedules: [InAppEventSchedule(territories: [], publishStart: day(8), eventStart: day(15), eventEnd: day(45))],
         localizations: [
             InAppEventLocalization(

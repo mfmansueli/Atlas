@@ -5,8 +5,8 @@
 
 import SwiftUI
 
-/// Above an event's texts: how many languages were suggested, Accept All
-/// Languages, and a chip per language.
+/// Above an event's texts: how many languages were suggested, Dismiss All
+/// and Accept All Languages, and a chip per language.
 struct InAppEventLanguageBar: View {
     @Bindable var viewModel: InAppEventsViewModel
     let languages: [InAppEventLanguage]
@@ -21,6 +21,15 @@ struct InAppEventLanguageBar: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("events.languages.title")
                 if viewModel.suggestedCount > 0 {
+                    Button("Dismiss All") {
+                        viewModel.dismissAllLanguages()
+                    }
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.small)
+                    .help("Dismiss every suggested language and revision of this event. You can undo it.")
+                    .accessibilityLabel(Text("Dismiss All, \(viewModel.suggestedCount) suggested"))
+                    .accessibilityIdentifier("events.dismissAll")
                     Button {
                         viewModel.acceptAllLanguages()
                     } label: {

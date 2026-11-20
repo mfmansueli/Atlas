@@ -17,6 +17,9 @@ struct VersionSubmission: Identifiable, Hashable, Sendable {
     var versionID: String?
     /// The In-App Events in it.
     var eventIDs: [String] = []
+    /// Each event's item in it, by event id: what a draft loses when the
+    /// event is unticked.
+    var eventItemIDs: [String: String] = [:]
 
     /// Made but not sent: items can still be added.
     var isOpen: Bool { state == "READY_FOR_REVIEW" }

@@ -14,6 +14,8 @@ struct NewInAppEventSheet: View {
     let appName: String
     /// Why the event can't be queued as it is (`InAppEventsViewModel.problem(for:)`).
     let problem: (NewInAppEvent) -> String?
+    /// What App Review's time may do to its dates (`InAppEventsViewModel.warnings(for:)`): never a block.
+    let warnings: (NewInAppEvent) -> [String]
     let onCancel: () -> Void
     /// Returns whether the event was queued.
     let onAdd: (NewInAppEvent) -> Bool
@@ -26,10 +28,12 @@ struct NewInAppEventSheet: View {
         primaryLocale: String,
         problem: @escaping (NewInAppEvent) -> String?,
         onCancel: @escaping () -> Void,
-        onAdd: @escaping (NewInAppEvent) -> Bool
+        onAdd: @escaping (NewInAppEvent) -> Bool,
+        warnings: @escaping (NewInAppEvent) -> [String]
     ) {
         self.appName = appName
         self.problem = problem
+        self.warnings = warnings
         self.onCancel = onCancel
         self.onAdd = onAdd
         var event = NewInAppEvent()
@@ -67,12 +71,13 @@ struct NewInAppEventSheet: View {
                         ForEach(InAppEventPurchaseRequirement.allCases) { Text($0.title).tag($0) }
                     }
                     .accessibilityIdentifier("events.new.purchase")
-                    TextField("Deep link", text: $event.deepLink, prompt: Text(verbatim: "https://example.com/event"))
+                    TextField("Deep link", text: $event.deepLink, prompt: Text(verbatim: "\(InAppEventDeepLink.slug(appName))://event"))
                         .accessibilityIdentifier("events.new.deepLink")
                 } footer: {
                     Text("""
                     People never see the reference name. The badge shows on the event’s card, and the deep link opens the event \
-                    in the app. Say it needs a purchase only when the event costs extra.
+                    in the app: it’s needed before you submit the event, and can be added later on the event’s page. Say it \
+                    needs a purchase only when the event costs extra.
                     """)
                     .font(.caption)
                     .foregroundStyle(Palette.label2)
@@ -82,19 +87,31 @@ struct NewInAppEventSheet: View {
                     DatePicker("Ends", selection: $event.eventEnd)
                     DatePicker("Shows on the App Store from", selection: $event.publishStart)
                 } footer: {
-                    Text("""
-                    In every country and region, each in its own time zone. An event lasts up to 31 days, and its card can show \
-                    up to 14 days before it starts.
-                    """)
-                    .font(.caption)
-                    .foregroundStyle(Palette.label2)
+                    VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                        Text("""
+                        In every country and region, each in its own time zone. An event lasts up to 31 days, and its card can show \
+                        up to 14 days before it starts.
+                        """)
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                        // Read again every minute: a date can come within App Review's time while the sheet is open.
+                        TimelineView(.everyMinute) { _ in
+                            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                                ForEach(warnings(event), id: \.self) { warning in
+                                    InlineMessage.warning(warning)
+                                        .font(.caption)
+                                        .accessibilityIdentifier("events.new.warning")
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)
             .scrollContentBackground(.hidden)
             Divider()
             HStack(spacing: Spacing.small) {
-                Text(showsProblem ? currentProblem ?? "" : String(localized: "Add its card and details images in App Store Connect before you submit it."))
+                Text(showsProblem ? currentProblem ?? "" : footerNote)
                     .font(.caption)
                     .foregroundStyle(showsProblem && currentProblem != nil ? Palette.danger : Palette.label2)
                     .lineLimit(3)
@@ -121,5 +138,13 @@ struct NewInAppEventSheet: View {
 
     private var currentProblem: String? {
         problem(event)
+    }
+
+    /// What's still needed before App Review, once it's created: the deep
+    /// link when there's none (a draft goes without one), and the art.
+    private var footerNote: String {
+        event.trimmedDeepLink.isEmpty
+            ? String(localized: "It’s created without a deep link. Add one, and its card and details images, before you submit it.")
+            : String(localized: "Add its card and details images before you submit it.")
     }
 }

@@ -15,17 +15,29 @@ struct GetInAppEventsTool: MCPTool {
     /// Where the art files are kept, to know App Store Connect's media by
     /// the file Atlas uploaded; tests use their own folder.
     var directory = InAppEventArtworkFiles.directory
+    /// What the app's project claims, as Atlas last read its folder.
+    var linkClaims = ProjectLinkClaimsCenter.shared
+    /// The clock an event's dates are checked against; tests pin it.
+    var now: () -> Date = { .now }
 
     let definition = MCPToolDefinition(
         name: "get_in_app_events",
         title: "Get In-App Events",
         description: """
-        Reads an app's In-App Events from App Store Connect: each with its id, reference name, badge, state, dates, primary \
-        language, deep link, purchase requirement, and its texts per language (name ≤30 characters, shortDescription ≤50, \
+        Reads an app's In-App Events from App Store Connect, all of them or one (`eventId`), with the parts you ask \
+        for (`include`: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, or all). Without \
+        include, every part but the two heaviest, mediaDetails and design: `leftOut` names them, ask for them when you \
+        need them (with eventId to keep the answer small). Each event comes with its id, reference name, badge, state, dates, \
+        primaryLocale, deepLink, purpose and priority (null when App Store Connect has none), purchase requirement, and its \
+        texts per language (name ≤30 characters, shortDescription ≤50, \
         longDescription ≤120). `missingLanguages` are the store page's languages the event isn't written in yet (people \
         there see the primary language), less those with a suggestion waiting (`suggestedLanguages`; `openSuggestions` \
-        has each with its texts, who sent it (`by`) and `stale` when App Store Connect has that language written since, \
-        `staleSuggestions` their languages: withdraw your own with withdraw_event_texts) or texts waiting in \
+        has each with its texts, who sent it (`by`; a revision of a written language has `revision: true` and \
+        `revises`, only the texts it changes). Reading settles the suggestions as In-App Events does: one whose \
+        texts App Store Connect has already is done and leaves, and a new language's texts sent before that language \
+        was written become a revision of the texts that differ, its why starting "Suggested before this language was \
+        written:"; `stale` and `staleSuggestions` name any left that would add nothing (withdraw your own with \
+        withdraw_event_texts) or texts waiting in \
         Review & Push (`queuedTexts`: per language, its changeId(s), newLanguage when the push creates it, \
         waitingForAcceptance, by, and the queued name, shortDescription and longDescription). Only events with \
         `editable: true` take new texts. `media` says, per language, whether it has its own card (16:9) and details page \
@@ -49,24 +61,57 @@ struct GetInAppEventsTool: MCPTool {
         too. `artworkUpload` is this launch's link for sending a card or details page file made elsewhere (POST the bytes, \
         `?name=` the file name). `design` is what the art is designed from: the app's look and design language, what Atlas \
         knows of the app, its design project if one is connected, and `how` to make each piece as an HTML page \
-        Atlas renders, still or as a seamless loop. Read-only. Follow with propose_event_texts for the missing languages, \
-        render_event_artwork and propose_event_artwork for the art, or propose_in_app_event for a new event.
+        Atlas renders, still or as a seamless loop. `missingForReview` lists what App Store Connect still needs before it \
+        takes the event to App Review (deepLink, primaryLocale, purpose, dates, primaryTexts, languageTexts, card, details, \
+        linkNotClaimed), each `missing`, `queued` in Review & Push or `suggested` (waiting for the person to accept it), \
+        with `readyForReview`; `queuedDetails` are the deep link, purpose, priority and primary language changes waiting; \
+        `deepLinkClaim` says whether the app's project (its folder in Atlas) declares the deep link's URL scheme or \
+        applinks domain; `deepLinkCheck` is the last report_deep_link_check for the deep link the event will have (null \
+        when not checked), `stale: true` with `staleReason` once the event's start or end moved since it was made \
+        (`checkedDates`): check it again. Dates (showsFrom, starts, ends) are as App Store Connect has them, checked at the time you read: \
+        missingForReview also lists a date App Store Connect would refuse (publishStartPassed and eventStartPassed: it \
+        only takes dates in the future; eventEndBeforeStart, eventTooShort, eventTooLong, publishStartAfterEventStart, \
+        publishStartTooEarly), each with `fix` and, for the card's date, `suggested` (a publishStart that works, ISO 8601); \
+        `reviewWarnings` say when App Review (up to 2 days; the event shows only once it's approved) may not approve it \
+        before its card shows (cardShowsSoon) or it starts (eventStartsSoon): they never block. `queuedDates` are dates \
+        waiting in Review & Push (`by` who queued them; `suggestion` an assistant's dates waiting beside the person's, \
+        to accept or dismiss); `datesEditable` says whether propose_event_details can change them (else \
+        `datesNotEditable` says why). Read-only. Follow with propose_event_texts for the missing languages, \
+        render_event_artwork and propose_event_artwork for the art, propose_event_details for a missing deep link, purpose \
+        or primary language or dates to fix, or propose_in_app_event for a new event.
         """,
         inputSchema: MCPToolDefinition.schema(
-            ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
+            [
+                "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "eventId": MCPToolDefinition.string("One event's id, to read only that one."),
+                "include": [
+                    "type": "array",
+                    "items": ["type": "string", "enum": .array(GetInAppEventsPart.names.map(JSONValue.string))],
+                    "description": """
+                    The parts to read: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, or all. Left out, \
+                    every part but mediaDetails and design.
+                    """,
+                ],
+            ],
             required: ["appId"]
         )
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
+        let parts = try GetInAppEventsPart.parts(arguments.optionalStrings("include"))
         let services = context.workspace.services
-        let events = try await services.inAppEvents.events(for: app)
+        let only = try arguments.optionalString("eventId")
+        let read = try await services.inAppEvents.events(for: app)
+        // Settled as when In-App Events reads them, so `openSuggestions`
+        // is what the section shows and counts.
+        store.noteRead(read, for: app.id)
+        let events = try Self.events(read, only: only, of: app)
         let pageLocales = await (try? services.storePage.summary(for: app))?.localeCodes ?? []
         let builder = InAppEventChangeBuilder(appID: app.id)
         let changes = context.workspace.changes.changes(for: app.id, section: .inAppEvents)
         let queued = builder.queuedNewEvents(in: changes)
-        let allArt = events.flatMap { builder.queuedArtwork(for: $0.id, in: changes) }
+        let allArt = parts.contains(.media) ? events.flatMap { builder.queuedArtwork(for: $0.id, in: changes) } : []
         let files = await Self.files(of: allArt)
         let reading = MediaReading(
             files: files, infos: InAppEventArtworkFiles.infos(atPaths: allArt.map(\.push.path)),
@@ -74,12 +119,13 @@ struct GetInAppEventsTool: MCPTool {
         )
         let push = context.workspace.push()
         let pushItems = push?.items(appID: app.id, section: .inAppEvents) ?? []
-        let result: JSONValue = [
+        let claims = linkClaims.state(for: app.id)
+        var result: [String: JSONValue] = [
             "appId": .string(app.id),
             "app": .string(app.name),
             "limits": [
                 "name": 30, "shortDescription": 50, "longDescription": 120, "referenceName": .int(NewInAppEvent.referenceNameLimit),
-                "longestEventDays": 31, "cardShowsDaysBeforeStart": 14,
+                "longestEventDays": 31, "shortestEventMinutes": 15, "cardShowsDaysBeforeStart": 14, "appReviewUsuallyTakesHours": 48,
             ],
             "storePageLanguages": .array(pageLocales.map(JSONValue.string)),
             "textRules": StoreTextGuidelinePlace.eventText.rulesJSON,
@@ -89,19 +135,40 @@ struct GetInAppEventsTool: MCPTool {
                 var object = Self.json(event, pageLocales: pageLocales, suggested: suggestions, queued: texts, push: pushItems)
                 object.merge(Self.suggestionsJSON(suggestions, of: event)) { $1 }
                 object.merge(Self.media(event, queued: builder.queuedArtwork(for: event.id, in: changes), reading: reading, push: pushItems)) { $1 }
-                return .object(object)
+                let deepLink = Self.deepLink(of: event, builder: builder, changes: changes)
+                object.merge(Self.reviewJSON(
+                    event, appName: app.name, builder: builder, changes: changes, claims: claims,
+                    report: store.deepLinkReport(for: app.id, eventID: event.id, deepLink: deepLink), now: now()
+                )) { $1 }
+                return .object(GetInAppEventsPart.keeping(parts, of: object, keys: \.eventKeys))
             }),
             "pushInProgress": .bool(push?.isRunning ?? false),
             "pushChanges": .array(pushItems.map(\.json)),
             "queued": .array(queued.map(Self.queued)),
             "artworkUpload": .string(RenderEventArtworkTool.uploadLink(app: app, port: context.port)),
-            "design": InAppEventDesignFacts.json(
+        ]
+        if parts.contains(.design) {
+            result["design"] = InAppEventDesignFacts.json(
                 look: services.storePage.appSupport?.profile(for: app.id)?.look,
                 knowledge: services.storePage.appSupport?.knowledge(for: app.id),
                 project: autopilot.designProject(for: app.id)
-            ),
-        ]
-        return .read(result, target: "\(app.name) · In-App Events")
+            )
+        }
+        result = GetInAppEventsPart.keeping(parts, of: result, keys: \.resultKeys)
+        if let leftOut = GetInAppEventsPart.leftOutJSON(parts) { result.merge(leftOut) { $1 } }
+        let target = only != nil && events.count == 1 ? "\(app.name) · \(events[0].referenceName)" : "\(app.name) · In-App Events"
+        return .read(.object(result), target: target)
+    }
+
+    /// The app's events, or only the one `eventID` names; an unknown id
+    /// throws with the ones there are.
+    static func events(_ events: [InAppEvent], only eventID: String?, of app: StoreApp) throws -> [InAppEvent] {
+        guard let eventID = eventID?.trimmingCharacters(in: .whitespaces), !eventID.isEmpty else { return events }
+        guard let event = events.first(where: { $0.id == eventID }) else {
+            let known = events.map { "\($0.id) (\($0.referenceName))" }.joined(separator: ", ")
+            throw MCPToolError.notFound(String(localized: "\(app.name) has no In-App Event “\(eventID)”. Its events: \(known.isEmpty ? "none" : known)."))
+        }
+        return [event]
     }
 
     static func json(
@@ -134,8 +201,12 @@ struct GetInAppEventsTool: MCPTool {
         ]
         if !queued.isEmpty { object["queuedTexts"] = Self.queuedTextsJSON(queued, push: push) }
         if let badge = event.badge { object["badge"] = .string(badge.rawValue) }
+        // Always there, null when App Store Connect has none: an event
+        // without a deep link can't go to App Review.
+        for detail in InAppEventDetail.allCases {
+            object[detail.rawValue] = detail.value(in: event).map(JSONValue.string) ?? .null
+        }
         if let primary = event.primaryLocale { object["primaryLanguage"] = .string(primary) }
-        if let deepLink = event.deepLink, !deepLink.isEmpty { object["deepLink"] = .string(deepLink) }
         if let purchase = event.purchaseRequirement { object["purchaseRequirement"] = .string(purchase.rawValue) }
         if let publish = event.schedule?.publishStart { object["showsFrom"] = .string(publish.formatted(.iso8601)) }
         if let start = event.schedule?.eventStart { object["starts"] = .string(start.formatted(.iso8601)) }

@@ -79,6 +79,7 @@ struct AtlasApp: App {
         launcher.onRunEnded = { session in
             endsAutopilotSession?(session)
             EventArtworkStudio.shared.claudeRunEnded(session)
+            PageShotsStudio.shared.claudeRunEnded(session)
             AssistantAskCenter.shared.runEnded(session)
         }
         _translation = State(initialValue: translation)
@@ -109,6 +110,7 @@ struct AtlasApp: App {
                 .environment(InAppEventsStore.shared)
                 .environment(ProductPagesStore.shared)
                 .environment(EventArtworkStudio.shared)
+                .environment(PageShotsStudio.shared)
                 .environment(ReleaseStore.shared)
                 .environment(background)
                 .environment(loginItem)

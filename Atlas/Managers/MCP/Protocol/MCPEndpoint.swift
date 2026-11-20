@@ -56,7 +56,9 @@ enum MCPEndpoint {
     and app information. Read with the list_ and get_ tools. Change things with the propose_ tools: each \
     proposal is validated like a manual edit and queued in Atlas, where the person reviews and pushes \
     it. You can't push, and nothing reaches App Store Connect until the person does. When a proposal is \
-    refused, the reason says how to fix it. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
+    refused, the reason says how to fix it. Read only what you need: whole answers can outgrow what you take in at \
+    once, so get_listing takes locales and fields (e.g. fields: ["whatsNew"]) and get_in_app_events takes eventId \
+    and include. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
     starts one, call get_capture_plan, then next_step after each step until it says done. When the app's \
     screens change outside a run, send new ones with propose_screens and new steps, sample data or setup \
     commands with update_capture_plan: they wait for the person in the next plan. To find what to improve, read \
@@ -66,15 +68,33 @@ enum MCPEndpoint {
     propose_review_replies and group what people write about with propose_review_themes: the person sends every \
     reply, you never do. In-App Event texts, retention messages and review replies have their own rules (no prices \
     or offers in events and retention messages, no marketing in replies), in their tools and get_ results' \
-    textRules; a text that breaks one is refused. For In-App Events, read get_in_app_events; propose a new one with propose_in_app_event and \
-    write the missing languages with propose_event_texts. Withdraw your own suggestions that went stale with \
-    withdraw_event_texts. Make an event's card (16:9) and details page (9:16) with \
+    textRules; a text that breaks one is refused. For In-App Events, read get_in_app_events (it leaves out \
+    mediaDetails and design unless you ask with include; eventId reads one event); propose a new one with \
+    propose_in_app_event, write the missing languages with propose_event_texts, and change texts a language \
+    already has with its revise: true and why (only the texts you send change; the person sees what changed). An \
+    event goes to App Review only with a deep link: set a \
+    draft's deep link, purpose, priority or primary language with propose_event_details (its missingForReview says \
+    what's left), and move dates that have passed, which App Store Connect refuses, with its publishStart, eventStart \
+    and eventEnd (leave App Review up to 2 days before the card shows: reviewWarnings); dates the person queued \
+    themselves stay, and yours wait beside them as a suggestion. Whenever you propose a \
+    deep link (there or in propose_in_app_event), check in the project that \
+    the app opens it on that event and report it with report_deep_link_check; a check made before the event's \
+    dates moved is marked stale in get_in_app_events (deepLinkCheck.stale): check it again. Withdraw your own \
+    suggestions that went stale: event texts and revisions with withdraw_event_texts, suggest_fields' ones with \
+    withdraw_suggestion (or send the field again with suggest_fields to replace yours, or to give it a new reason). \
+    Make an event's card (16:9) and details page (9:16) with \
     render_event_artwork (an HTML page, or an image or video loop sent to get_in_app_events' artworkUpload link), \
     which shows it under the event's text and checks it against Apple's rules, then queue it with \
     propose_event_artwork, for the primary language unless a language needs art of its own (the others show the \
     primary's): the person accepts it and pushes it. When the person asked for an event's artwork in Atlas \
     (Make the Artwork), read get_event_artwork_brief and send each concept with propose_event_artwork_concept: the \
-    person chooses one there. When a release needs a new App Store version, read \
+    person chooses one there. For custom product pages, read get_product_pages; suggest a whole page with \
+    propose_product_page (who it's for, its evidence from Analytics, the reviews or the approved version's keywords, \
+    keywords no other page uses, promotional text in each language, the screens' order) and texts for a page's \
+    languages with propose_product_page_texts: the person accepts each, and pushing, submitting and making a page \
+    visible are theirs. When the person asked for a page's own screenshots (Make Screenshots for This Page), read \
+    get_page_screenshots and send the plan with propose_page_screenshots: the default set's screens in the page's \
+    order and a caption for each in every language; Atlas lays them out. When a release needs a new App Store version, read \
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
     App Store Connect creates it when the person pushes. App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \

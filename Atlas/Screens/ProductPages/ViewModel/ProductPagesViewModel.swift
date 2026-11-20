@@ -29,6 +29,8 @@ final class ProductPagesViewModel {
     /// At the limit: only hidden and rejected pages, to pick one to delete.
     var showsOnlyHiddenAndRejected = false
     var isNewPagePresented = false
+    /// What New Page… starts with; nil starts with the primary language.
+    var newPageTemplate: NewProductPage?
     var isPushPresented = false
     var isSubmitPresented = false
     var confirmation: ProductPageConfirmation?
@@ -46,8 +48,21 @@ final class ProductPagesViewModel {
     var screenshotSets: [String: LoadState<[LiveScreenshotSet]>] = [:]
     var isSubmitting = false
     var submitError: String?
+    /// Push and Submit… pressed: once that page's changes are pushed,
+    /// Submit for Review opens on it. By name, since a draft's ID changes
+    /// when it's made.
+    var submitsAfterPushPageName: String?
+    /// Cancel Submission is under way.
+    var isCancellingSubmission = false
     /// For DEBUG scenes and tests: Suggest Pages and Ask for Another.
     var onAskAssistant: ((String) -> Void)?
+    /// Make Screenshots for This Page… of the page last asked (board 52).
+    var pageShots: PageShotsFlow?
+    /// Where pages' screenshot runs are kept.
+    @ObservationIgnored var pageShotsStudio = PageShotsStudio.shared
+    /// Makes a page's flow with the launcher and the app's Screenshots;
+    /// the section view gives it.
+    @ObservationIgnored var makePageShotsFlow: ((ProductPage) -> PageShotsFlow)?
     @ObservationIgnored var now: () -> Date = { .now }
 
     init(app: StoreApp, services: any ProductPagesServices, store: ProductPagesStore, queue: ChangeQueue) {
@@ -69,11 +84,16 @@ final class ProductPagesViewModel {
         if state.value == nil { state = .loading }
         do {
             let snapshot = try await services.pages(for: app)
+            // A draft that was pushed comes back under its new ID.
+            let shownDraft = selectedPage.flatMap { $0.isDraft ? $0.name : nil }
             state = .loaded(snapshot)
             readFailure = nil
             pruneDrafts()
             store.prune(for: app.id, keeping: Set(snapshot.pages.map(\.id)).union(store.drafts(for: app.id).map(\.id)))
-            if let id = selectedPageID, page(id) == nil { selectedPageID = nil }
+            if let id = selectedPageID, page(id) == nil {
+                selectedPageID = shownDraft.flatMap { name in pages.first { !$0.isDraft && $0.name == name }?.id }
+            }
+            queueVisibleWhenApproved()
         } catch {
             if state.value == nil { state = .failed(error.localizedDescription) } else { readFailure = error.localizedDescription }
         }
@@ -99,6 +119,12 @@ final class ProductPagesViewModel {
     }
 
     var snapshot: ProductPagesSnapshot? { state.value }
+
+    /// What App Store Connect has now, changed here without reading it
+    /// again (a page just submitted, or taken back).
+    func replaceSnapshot(_ snapshot: ProductPagesSnapshot) {
+        state = .loaded(snapshot)
+    }
 
     var defaultPage: ProductPageDefault { snapshot?.defaultPage ?? ProductPageDefault() }
 
@@ -188,7 +214,7 @@ final class ProductPagesViewModel {
     func visibilityText(of page: ProductPage) -> String? {
         switch page.state {
         case .approved, .accepted, .replacedWithNewVersion:
-            isVisible(page) ? String(localized: "Visible") : String(localized: "Hidden")
+            if isVisible(page) { String(localized: "Visible") } else { String(localized: "Hidden") }
         case .prepareForSubmission, .readyForReview: String(localized: "Not on the App Store yet")
         case .rejected: String(localized: "Not on the App Store")
         case .waitingForReview, .inReview: nil
@@ -208,6 +234,15 @@ final class ProductPagesViewModel {
         guard let page = page(id) else { return }
         let codes = languages(of: page).map(\.code)
         if !codes.contains(localeCode) { localeCode = codes.first ?? primaryLocale }
+    }
+
+    /// Analytics' Open Page: the page Apple's reports call `name`. Returns
+    /// whether there is one.
+    @discardableResult
+    func openPage(named name: String) -> Bool {
+        guard let page = pages.first(where: { !$0.isDraft && $0.name == name }) else { return false }
+        open(page.id)
+        return true
     }
 
     func back() {

@@ -58,7 +58,7 @@ struct ProjectFolderCheck: Hashable, Sendable {
 
     /// The `.xcodeproj` packages in `folder` and up to `depth` folders
     /// below it, skipping hidden folders and build products.
-    private static func projects(in folder: URL, depth: Int, fileManager: FileManager) -> [URL] {
+    static func projects(in folder: URL, depth: Int, fileManager: FileManager = .default) -> [URL] {
         let skipped: Set = ["build", "DerivedData", "Pods", "node_modules", "Carthage"]
         guard let items = try? fileManager.contentsOfDirectory(
             at: folder, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles]

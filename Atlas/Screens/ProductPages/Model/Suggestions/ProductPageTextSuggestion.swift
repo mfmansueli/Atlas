@@ -23,6 +23,10 @@ struct ProductPageTextSuggestion: Identifiable, Codable, Hashable, Sendable {
     /// The phrases that break them, to mark in the text.
     var refusedPhrases: [String] = []
     var createdAt: Date = .now
+    /// What it's based on, when the assistant said (`analytics`, `reviews`,
+    /// `keywords`, with a ref). Optional, so suggestions kept before it
+    /// still read.
+    var evidence: [SuggestionEvidence]?
 
     var id: String { "\(pageID).\(locale)" }
 

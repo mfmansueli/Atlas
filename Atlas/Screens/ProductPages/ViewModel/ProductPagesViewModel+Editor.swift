@@ -214,6 +214,7 @@ extension ProductPagesViewModel {
         if page.isDraft {
             queue.discard(id: builder.newPageChangeID(draftID: page.id))
             store.removeDrafts([page.id], for: app.id)
+            store.removeBrief(pageName: page.name, for: app.id)
             show(String(localized: "“\(page.name)” deleted. It was only in Atlas."), undo: undo)
         } else {
             let builder = builder

@@ -53,6 +53,7 @@ final class BackgroundWork {
     private let releases: ReleaseStore
     private let analytics: AnalyticsStore
     private let artwork: EventArtworkStudio
+    private let pageShots: PageShotsStudio
     private let defaults: UserDefaults?
     private let now: () -> Date
     private var loop: Task<Void, Never>?
@@ -73,6 +74,7 @@ final class BackgroundWork {
         releases: ReleaseStore = .shared,
         analytics: AnalyticsStore = .shared,
         artwork: EventArtworkStudio = .shared,
+        pageShots: PageShotsStudio = .shared,
         defaults: UserDefaults? = .standard,
         now: @escaping () -> Date = { .now }
     ) {
@@ -85,6 +87,7 @@ final class BackgroundWork {
         self.releases = releases
         self.analytics = analytics
         self.artwork = artwork
+        self.pageShots = pageShots
         self.defaults = defaults
         self.now = now
         isPaused = defaults?.bool(forKey: Key.isPaused) ?? false
@@ -97,7 +100,7 @@ final class BackgroundWork {
     /// push, an Autopilot run, Suggest Everything.
     var isBusy: Bool {
         push.isRunning || push.screenshots.run?.isRunning == true || !activeAutopilotRuns(now: now()).isEmpty
-            || suggestions.run?.isRunning == true || !artwork.makingRuns.isEmpty
+            || suggestions.run?.isRunning == true || !artwork.makingRuns.isEmpty || !pageShots.workingRuns.isEmpty
     }
 
     var snapshot: MenuBarSnapshot { snapshot(at: now()) }
@@ -189,6 +192,7 @@ final class BackgroundWork {
                 detail: [library.count > 1 ? appName(run.appID) : nil, detail].compactMap(\.self).joined(separator: " · ")
             ))
         }
+        jobs += pageShots.workingRuns.map(pageShotsJob)
         if isChecking {
             jobs.append(BackgroundJob(
                 id: "check", kind: .check, title: String(localized: "Checking App Store Connect"),
@@ -196,6 +200,23 @@ final class BackgroundWork {
             ))
         }
         return jobs
+    }
+
+    /// A page's screenshots under way: how many are laid out, or what the
+    /// assistant is doing.
+    private func pageShotsJob(_ run: PageShotsRun) -> BackgroundJob {
+        let assistant = run.plan?.source ?? "Claude Code"
+        let detail = switch run.stage {
+        case .making: String(localized: "\(run.images.count) of \(run.expectedCount) screenshots ready")
+        case .revising: String(localized: "\(assistant) is changing the set")
+        default: String(localized: "\(assistant) is planning the set")
+        }
+        return BackgroundJob(
+            id: "page-screenshots-\(run.appID)-\(run.key.page)", kind: .pageScreenshots,
+            title: String(localized: "Autopilot · “\(run.pageName)” screenshots"),
+            fraction: run.stage == .making ? min(1, Double(run.images.count) / Double(max(1, run.expectedCount))) : nil,
+            detail: [library.count > 1 ? appName(run.appID) : nil, detail].compactMap(\.self).joined(separator: " · ")
+        )
     }
 
     /// Runs whose assistant is at work: a running stage, not finished, and

@@ -16,6 +16,9 @@ struct BackgroundJob: Identifiable, Hashable, Sendable {
         case suggestEverything
         /// Claude drawing an In-App Event's artwork.
         case eventArtwork
+        /// A custom product page's own screenshots: planned, laid out or
+        /// changed (board 52).
+        case pageScreenshots
         case check
     }
 

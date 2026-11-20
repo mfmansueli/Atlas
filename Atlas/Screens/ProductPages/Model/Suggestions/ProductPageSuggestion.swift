@@ -27,9 +27,21 @@ struct ProductPageSuggestion: Identifiable, Codable, Hashable, Sendable {
     /// Who suggested it: "Claude Code".
     var source: String
     var createdAt: Date = .now
+    /// What the page starts from (`propose_product_page`'s `startFrom`);
+    /// nil is the default page. Optional, so suggestions kept before it
+    /// still read.
+    var start: ProductPageStart?
+    /// The promotional texts Atlas stopped because App Review would reject
+    /// them, kept to show why ("Not offered") and left out of
+    /// `promotionalTexts`, so accepting never puts them in the draft. Each
+    /// has this suggestion's ID as its page; the draft made from it takes
+    /// them as its own (`ProductPagesStore.save`). Optional, like `start`.
+    var notOfferedTexts: [ProductPageTextSuggestion]?
 
-    /// "Analytics · Product Page test": the evidence pill.
-    var evidenceTitle: String {
+    /// "Analytics · Brazil: 4% open the page": one pill for each piece of
+    /// evidence, so several wrap instead of making one pill wider than the
+    /// row.
+    var evidenceTitles: [String] {
         evidence.map { item in
             let kind = switch item.kind {
             case "analytics": String(localized: "Analytics")
@@ -39,7 +51,17 @@ struct ProductPageSuggestion: Identifiable, Codable, Hashable, Sendable {
             }
             return item.ref.isEmpty ? kind : "\(kind) · \(item.ref)"
         }
-        .joined(separator: " · ")
+    }
+
+    /// Every piece of evidence in one line.
+    var evidenceTitle: String {
+        evidenceTitles.joined(separator: " · ")
+    }
+
+    /// The languages it chooses keywords in, the primary one first.
+    func keywordLocales(primary: String) -> [String] {
+        let chosen = keywords.filter { !$0.value.isEmpty }.keys
+        return chosen.sorted { ($0 == primary ? 0 : 1, $0) < ($1 == primary ? 0 : 1, $1) }
     }
 
     /// The promotional text in the primary language, else any.

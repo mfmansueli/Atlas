@@ -11,7 +11,7 @@ related: menubar
 | Overview | ⌘1 |
 | Store Page | ⌘2 |
 | Screenshots | ⌘3 |
-| Product Pages | ⌘4 |
+| Custom Product Pages | ⌘4 |
 | In-App Events | ⌘5 |
 | App Information | ⌘6 |
 | Pricing | ⌘7 |

@@ -262,7 +262,8 @@ final class StorePageViewModel {
         case .translateMissing, .findAndReplace, .importTranslations, .search, .showLanguage: true
         case let .reviewFieldSuggestions(area), let .askForSuggestions(area): area == .storePage
         case .reviewSuggestions, .applyRecommendedPrices, .showResults, .editPriceSchedule, .showPrices, .openAppInformationPage,
-             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents: false
+             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents,
+             .showInAppEventDates, .showProductPage: false
         }
     }
 
@@ -286,7 +287,8 @@ final class StorePageViewModel {
         case let .showLanguage(code):
             if let locale = listing?.locales.first(where: { $0.code == code }) { openEditor(locale) }
         case .reviewSuggestions, .applyRecommendedPrices, .showResults, .editPriceSchedule, .showPrices, .openAppInformationPage,
-             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents: break
+             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents,
+             .showInAppEventDates, .showProductPage: break
         }
     }
 

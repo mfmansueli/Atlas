@@ -42,6 +42,12 @@ struct LiveProductPagesServices: ProductPagesServices {
         try await client.submitCustomProductPageVersion(versionID, appID: app.id, platform: "IOS")
     }
 
+    var canCancelSubmission: Bool { true }
+
+    func cancelSubmission(versionID: String, of app: StoreApp) async throws {
+        try await client.cancelCustomProductPageSubmission(versionID: versionID, appID: app.id, platform: "IOS")
+    }
+
     // MARK: - Reading
 
     private static func localizations(versionIDs: [String], client: AppStoreConnectClient) async throws -> [String: [ProductPageLocalization]] {
@@ -75,7 +81,9 @@ struct LiveProductPagesServices: ProductPagesServices {
         guard let template = preparing ?? live else { return ProductPageDefault() }
         let templateTexts = try await client.appStoreVersionLocalizations(versionID: template.id)
         let liveTexts = if let live, live.id != template.id { try await client.appStoreVersionLocalizations(versionID: live.id) } else { templateTexts }
-        let keywords = Dictionary(liveTexts.map { ($0.attributes.locale, ProductPageChangeBuilder.keywords(in: $0.attributes.keywords ?? "")) }) { first, _ in first }
+        let keywords = Dictionary(
+            liveTexts.map { ($0.attributes.locale, ProductPageChangeBuilder.keywords(in: $0.attributes.keywords ?? "")) }
+        ) { first, _ in first }
         let languages = templateTexts.map { localization in
             ProductPageDefaultLanguage(
                 id: localization.id, locale: localization.attributes.locale,
