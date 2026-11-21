@@ -34,6 +34,8 @@ final class ProductPagesViewModel {
     var isPushPresented = false
     var isSubmitPresented = false
     var confirmation: ProductPageConfirmation?
+    /// Why Choose Files… didn't add the screenshots, while it's said.
+    var filesProblem: ProductPageFilesProblem?
     var toast: ToastMessage?
     var undo: ProductPagesUndo?
     /// Approved pages the person pressed Edit… on: their fields open, and
@@ -93,6 +95,8 @@ final class ProductPagesViewModel {
             if let id = selectedPageID, page(id) == nil {
                 selectedPageID = shownDraft.flatMap { name in pages.first { !$0.isDraft && $0.name == name }?.id }
             }
+            tellReviewMoves(in: snapshot)
+            pruneChosenFiles()
             queueVisibleWhenApproved()
         } catch {
             if state.value == nil { state = .failed(error.localizedDescription) } else { readFailure = error.localizedDescription }

@@ -24,6 +24,9 @@ struct ProductPagesArchive: Codable, Hashable, Sendable {
     /// page's name: kept while a draft or a page has that name. Nil in
     /// archives written before briefs.
     var briefs: [String: ProductPageBrief]?
+    /// Versions with App Review, by version ID, with the state seen last
+    /// (`ProductPageReviewWatch`). Nil in archives written before it.
+    var reviewStates: [String: ProductPageState]?
 
     func brief(named pageName: String) -> ProductPageBrief? {
         briefs?[ProductPageBrief.key(pageName)]

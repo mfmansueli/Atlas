@@ -15,6 +15,8 @@ extension ReviewPushViewModel {
         switch scope {
         case .thisApp: extras.plans(for: selectedAppID.map { [$0] } ?? [])
         case .allApps: extras.orderedPlans
+        // A page's own screenshots are its changes, not Autopilot's extras.
+        case .productPage: []
         }
     }
 

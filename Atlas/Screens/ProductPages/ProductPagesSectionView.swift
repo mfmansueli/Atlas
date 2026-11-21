@@ -53,57 +53,74 @@ struct ProductPagesSectionView: View {
     }
 
     private func content(_ viewModel: ProductPagesViewModel) -> some View {
-        ProductPagesScreen(viewModel: viewModel) { navigator.isReviewPresented = true }
-            .sheet(
-                isPresented: Binding { viewModel.isNewPagePresented } set: { viewModel.isNewPagePresented = $0 },
-                onDismiss: { viewModel.newPageTemplate = nil },
-                content: {
-                    NewProductPageSheet(
-                        viewModel: viewModel, page: viewModel.newPageTemplate ?? NewProductPage(locales: [viewModel.primaryLocale])
-                    )
-                }
-            )
-            .sheet(isPresented: Binding { viewModel.isSubmitPresented } set: { viewModel.isSubmitPresented = $0 }) {
-                if let page = viewModel.selectedPage {
-                    ProductPageSubmitSheet(viewModel: viewModel, page: page)
-                }
+        ProductPagesScreen(viewModel: viewModel) { page in
+            navigator.review(page: ReviewPageFocus(appID: app.id, pageID: page.id, name: page.name))
+        }
+        .sheet(
+            isPresented: Binding { viewModel.isNewPagePresented } set: { viewModel.isNewPagePresented = $0 },
+            onDismiss: { viewModel.newPageTemplate = nil },
+            content: {
+                NewProductPageSheet(
+                    viewModel: viewModel, page: viewModel.newPageTemplate ?? NewProductPage(locales: [viewModel.primaryLocale])
+                )
             }
-            .sheet(isPresented: pageShotsPresented(viewModel)) {
-                if let flow = viewModel.pageShots {
-                    PageShotsSheet(flow: flow, defaultSet: { locale, device in
-                        viewModel.screenshots(viewModel.defaultScreenshotsKey(locale), device: device)
-                    }, viewModel: viewModel)
-                        .task { await viewModel.loadScreenshots(of: nil, locale: flow.run?.primaryLocale ?? viewModel.primaryLocale) }
-                }
+        )
+        .sheet(isPresented: Binding { viewModel.isSubmitPresented } set: { viewModel.isSubmitPresented = $0 }) {
+            if let page = viewModel.selectedPage {
+                ProductPageSubmitSheet(viewModel: viewModel, page: page)
             }
-            .alert(
-                viewModel.confirmation.map(viewModel.confirmationTitle) ?? "",
-                isPresented: Binding { viewModel.confirmation != nil } set: { if !$0 { viewModel.confirmation = nil } },
-                presenting: viewModel.confirmation
-            ) { confirmation in
-                Button(viewModel.confirmationButton(confirmation), role: viewModel.isDestructive(confirmation) ? .destructive : nil) {
-                    viewModel.confirm(confirmation)
-                }
-                .accessibilityIdentifier("pages.confirm")
-                Button("Cancel", role: .cancel) { viewModel.confirmation = nil }
-            } message: { confirmation in
-                Text(viewModel.confirmationMessage(confirmation))
+        }
+        .sheet(isPresented: pageShotsPresented(viewModel)) {
+            if let flow = viewModel.pageShots {
+                PageShotsSheet(flow: flow, defaultSet: { locale, device in
+                    viewModel.screenshots(viewModel.defaultScreenshotsKey(locale), device: device)
+                }, viewModel: viewModel)
+                    .task { await viewModel.loadScreenshots(of: nil, locale: flow.run?.primaryLocale ?? viewModel.primaryLocale) }
             }
-            .overlay(alignment: .bottom) {
-                if let toast = viewModel.toast {
-                    ActionToast(message: toast) {
-                        viewModel.undoLast()
-                    } onAction: {
-                        viewModel.toast = nil
+        }
+        .alert(
+            viewModel.confirmation.map(viewModel.confirmationTitle) ?? "",
+            isPresented: Binding { viewModel.confirmation != nil } set: { if !$0 { viewModel.confirmation = nil } },
+            presenting: viewModel.confirmation
+        ) { confirmation in
+            Button(viewModel.confirmationButton(confirmation), role: viewModel.isDestructive(confirmation) ? .destructive : nil) {
+                viewModel.confirm(confirmation)
+            }
+            .accessibilityIdentifier("pages.confirm")
+            Button("Cancel", role: .cancel) { viewModel.confirmation = nil }
+        } message: { confirmation in
+            Text(viewModel.confirmationMessage(confirmation))
+        }
+        .alert(
+            viewModel.filesProblem?.title ?? "",
+            isPresented: Binding { viewModel.filesProblem != nil } set: { if !$0 { viewModel.filesProblem = nil } },
+            presenting: viewModel.filesProblem
+        ) { _ in
+            Button("OK", role: .cancel) { viewModel.filesProblem = nil }
+                .accessibilityIdentifier("pages.filesProblem.ok")
+        } message: { problem in
+            Text(problem.message)
+        }
+        .overlay(alignment: .bottom) {
+            if let toast = viewModel.toast {
+                ActionToast(message: toast) {
+                    viewModel.undoLast()
+                } onAction: {
+                    viewModel.toast = nil
+                    // In a page's editor, its own changes first.
+                    if let page = viewModel.selectedPage {
+                        navigator.review(page: ReviewPageFocus(appID: app.id, pageID: page.id, name: page.name))
+                    } else {
                         navigator.isReviewPresented = true
-                    } onDismiss: {
-                        if viewModel.toast == toast { viewModel.toast = nil }
                     }
-                    .padding(.bottom, Spacing.large)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                } onDismiss: {
+                    if viewModel.toast == toast { viewModel.toast = nil }
                 }
+                .padding(.bottom, Spacing.large)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .animation(.default, value: viewModel.toast)
+        }
+        .animation(.default, value: viewModel.toast)
     }
 
     /// The page's screenshot sheet is open: closing it while Autopilot

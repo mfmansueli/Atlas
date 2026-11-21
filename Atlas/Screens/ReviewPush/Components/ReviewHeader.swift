@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// "Review changes", the count, the This app | All apps switch, the source
+/// "Review changes", the count, the This app | All apps switch (with the
+/// page Push and Submit… opened it on, first), the source
 /// filter and "Reject All from Claude Code". The switch and the filter only
 /// show when there's a choice to make.
 struct ReviewHeader: View {
@@ -24,8 +25,13 @@ struct ReviewHeader: View {
                 Spacer()
                 if let appName = viewModel.selectedAppName, viewModel.showsScopeSwitch {
                     Picker("Scope", selection: $viewModel.scope) {
+                        if let page = viewModel.pageFocus {
+                            Text("\(page.name) · \(viewModel.pageCount)").tag(ReviewScope.productPage(page.pageID))
+                        }
                         Text("\(appName) · \(viewModel.thisAppCount)").tag(ReviewScope.thisApp)
-                        Text("All apps · \(viewModel.allAppsCount)").tag(ReviewScope.allApps)
+                        if viewModel.thisAppCount != viewModel.allAppsCount {
+                            Text("All apps · \(viewModel.allAppsCount)").tag(ReviewScope.allApps)
+                        }
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()

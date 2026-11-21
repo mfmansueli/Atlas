@@ -672,6 +672,17 @@ call.
     (`ProductPagesStore.save`). Tools read the pages the section read while that's fresh
     (`KeptProductPagesServices`, `WorkspaceSectionModels.freshProductPages`), else App Store Connect. The section's
     count is the store's. Nothing is pushed, submitted or made visible by an assistant.
+  - **A page's way through Review & Push and App Review** (board 54): Push and Submit… opens Review & Push on that
+    page's changes (`ReviewScope.productPage`, `ReviewPageFocus`, set by `WorkspaceNavigator.review(page:)`), with
+    the app and every app beside it. A page's version waiting for or in App Review is followed
+    (`ProductPagesArchive.reviewStates`, `ProductPageReviewWatch`): each read of the section and each background
+    check (`MainWindowBackground.checkProductPages`) tells In Review, Approved and Rejected once, as a toast and a
+    notification under Settings → Notifications' review-status switch (`AtlasNotifications.productPagesMoved`).
+  - **Choose Files…** (board 52's "not drawn"): PNG or JPEG screenshots the person has become a page's own set in one
+    language on the device shown, checked first (`ProductPageFileCheck`: 1 to 10, iPhone 1320 × 2868, 1290 × 2796
+    or 1260 × 2736, iPad 2064 × 2752 or 2048 × 2732, either way round), copied to
+    `Application Support/Atlas/ProductPages/Files/<appID>/` (`ProductPageFilesFolder`, pruned once no queued change
+    reads them) and queued as the same screenshots change Make Screenshots for This Page makes.
   - There is no tool to submit a version or release it: those are the person's.
   - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
     product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate

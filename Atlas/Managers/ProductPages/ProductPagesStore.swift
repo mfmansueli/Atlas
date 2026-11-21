@@ -180,6 +180,31 @@ final class ProductPagesStore {
         }
     }
 
+    // MARK: - Following App Review
+
+    /// Whether a page of the app is waiting for App Review or in review.
+    func followsReview(for appID: StoreApp.ID) -> Bool {
+        !(archive(for: appID).reviewStates ?? [:]).isEmpty
+    }
+
+    /// A version just submitted from Atlas: followed from now, so its
+    /// result is told even when it's back before the next read.
+    func followReview(versionID: String, state: ProductPageState, for appID: StoreApp.ID) {
+        update(appID) { archive in
+            var states = archive.reviewStates ?? [:]
+            if state.isLocked { states[versionID] = state } else { states[versionID] = nil }
+            archive.reviewStates = states.isEmpty ? nil : states
+        }
+    }
+
+    /// The pages as just read: what App Review moved since the last read,
+    /// and the versions to follow from now.
+    func followReview(of pages: [ProductPage], for appID: StoreApp.ID) -> [ProductPageReviewMove] {
+        let result = ProductPageReviewWatch.follow(pages, after: archive(for: appID).reviewStates ?? [:])
+        update(appID) { $0.reviewStates = result.followed.isEmpty ? nil : result.followed }
+        return result.moves
+    }
+
     func setKeyCannotChange(_ value: Bool, for appID: StoreApp.ID) {
         update(appID) { $0.keyCannotChange = value }
     }

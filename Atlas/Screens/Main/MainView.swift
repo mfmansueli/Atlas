@@ -324,12 +324,7 @@ struct MainView: View {
             pushConfirmation: preferences.pushConfirmation,
             confirmsPriceIncreases: preferences.confirmsPriceIncreases
         )
-        if let filter = navigator.reviewSourceFilter {
-            review.scope = .allApps
-            review.sourceFilter = filter
-        } else if navigator.reviewsEveryApp {
-            review.scope = .allApps
-        }
+        navigator.configure(review)
         return review
     }
 
@@ -403,7 +398,7 @@ struct MainView: View {
         guard let background else { return }
         let handlers = MainWindowBackground(
             library: viewModel, navigator: navigator, services: services, releases: releases, analytics: analytics, reviews: reviews,
-            artwork: artwork, isSyncing: { isSyncing }, selectedRelease: { selectedRelease }
+            artwork: artwork, productPages: productPages, isSyncing: { isSyncing }, selectedRelease: { selectedRelease }
         )
         background.library = viewModel.apps
         background.isFree = { [pro] in pro.isFree }

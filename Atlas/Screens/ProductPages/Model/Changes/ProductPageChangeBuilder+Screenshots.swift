@@ -29,7 +29,7 @@ extension ProductPageChangeBuilder {
             title: "\(Self.localeName(locale)) · \(ProductPageField.screenshots.title) · \(displayType.shortTitle)",
             flagRegion: Self.region(locale),
             oldValue: hadOwn ? String(localized: "The page’s own screenshots") : String(localized: "The default page’s screenshots"),
-            newValue: files.count == 1 ? String(localized: "1 screenshot made for this page") : String(localized: "\(files.count) screenshots made for this page"),
+            newValue: files.count == 1 ? String(localized: "1 screenshot for this page") : String(localized: "\(files.count) screenshots for this page"),
             source: source,
             blockedReason: files.isEmpty || files.count > ProductPageScreenshotsPush.maxScreenshots
                 ? String(localized: "A set has 1 to 10 screenshots.") : nil,

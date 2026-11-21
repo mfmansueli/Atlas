@@ -22,6 +22,9 @@ final class WorkspaceNavigator {
     /// Review & Push opened on every app's changes (the menu bar's
     /// Review & Push…), not only the selected app's.
     private(set) var reviewsEveryApp = false
+    /// Review & Push opened by a custom product page's Push and Submit…:
+    /// on that page's changes first (board 54).
+    private(set) var reviewPage: ReviewPageFocus?
     /// Activity history (the toolbar clock).
     var isActivityPresented = false
     /// Set by Activity's "Restore Previous Values": Review & Push opens once
@@ -119,10 +122,32 @@ final class WorkspaceNavigator {
         isReviewPresented = true
     }
 
+    /// Opens Review & Push on one custom product page's changes.
+    func review(page: ReviewPageFocus) {
+        reviewSourceFilter = nil
+        reviewsEveryApp = false
+        reviewPage = page
+        isReviewPresented = true
+    }
+
+    /// What Review & Push opens on: one assistant's proposals or every
+    /// app's changes, or the custom product page that opened it.
+    func configure(_ review: ReviewPushViewModel) {
+        if let filter = reviewSourceFilter {
+            review.scope = .allApps
+            review.sourceFilter = filter
+        } else if reviewsEveryApp {
+            review.scope = .allApps
+        } else if let reviewPage {
+            review.focus(on: reviewPage)
+        }
+    }
+
     /// Called when Review & Push closed.
     func reviewDidClose() {
         reviewSourceFilter = nil
         reviewsEveryApp = false
+        reviewPage = nil
     }
 
     /// Closes Activity and opens Review & Push after it.

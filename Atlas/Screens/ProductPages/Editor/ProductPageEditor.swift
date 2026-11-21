@@ -14,7 +14,7 @@ struct ProductPageEditor: View {
     @Bindable var viewModel: ProductPagesViewModel
     let page: ProductPage
     let isCompact: Bool
-    let onReviewPush: () -> Void
+    let onReviewPush: (ProductPage) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {

@@ -4,6 +4,7 @@
 //
 
 #if DEBUG
+import CoreGraphics
 import Foundation
 
 /// What a Custom Product Pages DEBUG scene opens with, applied once the
@@ -32,6 +33,9 @@ struct ProductPagesDebugLaunch {
     /// Make Screenshots for This Page (board 52): the page's flow at this
     /// stage, its sheet open unless it's in Review & Push already.
     var pageShots: PageShotsStage?
+    /// Choose Files… with these sizes for the open page's language (board
+    /// 52's "not drawn"): blank PNGs, checked and queued as if chosen.
+    var chosenSizes: [PixelSize] = []
 
     @MainActor
     func apply(to model: ProductPagesViewModel) {
@@ -56,6 +60,13 @@ struct ProductPagesDebugLaunch {
         model.isNewPagePresented = opensNewPage
         model.confirmation = confirmation
         model.isSubmitPresented = opensSubmit
+        if !chosenSizes.isEmpty, let pageID, let page = model.page(pageID) {
+            let files = chosenSizes.enumerated().map { index, size in
+                let data = Self.blankPNG(size) ?? Foundation.Data()
+                return ProductPageChosenFile(fileName: "Screen \(index + 1).png", data: data, pixelSize: ProductPagesViewModel.pixelSize(of: data))
+            }
+            model.addChosenFiles(files, for: page, locale: locale)
+        }
         if let stage = pageShots, let pageID, let page = model.page(pageID) {
             PageShotsDebugSetup.pending = PageShotsDebugSetup(stage: stage)
             if stage == .used {
@@ -64,6 +75,17 @@ struct ProductPagesDebugLaunch {
                 Task { await model.openPageShots(page) }
             }
         }
+    }
+
+    /// A light grey PNG of `size`, for Choose Files… scenes.
+    static func blankPNG(_ size: PixelSize) -> Foundation.Data? {
+        guard let context = CGContext(
+            data: nil, width: size.width, height: size.height, bitsPerComponent: 8, bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+        ) else { return nil }
+        context.setFillColor(CGColor(gray: 0.86, alpha: 1))
+        context.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        return context.makeImage().flatMap(ScreenshotPNG.data)
     }
 }
 #endif

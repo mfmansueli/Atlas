@@ -17,13 +17,16 @@ struct MainWindowBackground {
     let analytics: AnalyticsStore
     let reviews: ReviewsStore
     let artwork: EventArtworkStudio
+    /// Custom product pages followed while App Review has them.
+    let productPages: ProductPagesStore
     /// The first sync is still going: no check then.
     let isSyncing: () -> Bool
     let selectedRelease: () -> ReleaseViewModel?
 
     /// One pass over App Store Connect, every `CheckInterval` and on Check
     /// Now: the app list, the versions with App Review, approved or
-    /// rolling out (saying so when one moved), Apple's new analytics
+    /// rolling out (saying so when one moved), the custom product pages
+    /// with App Review (the same), Apple's new analytics
     /// reports (unless they're only read on opening Analytics) and the
     /// reviews when what's kept is old. Returns why App Store Connect
     /// couldn't be read, else nil.
@@ -33,6 +36,9 @@ struct MainWindowBackground {
         if let problem = library.errorMessage { return problem }
         if let selected = library.selectedAppID, releases.appsInFlight.contains(selected) { await selectedRelease()?.load() }
         for text in await releases.checkOthers(apps: library.apps, except: library.selectedAppID, services: services.release) {
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+        }
+        for text in await checkProductPages() {
             navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
         }
         if analytics.settings.refreshMode == .everyMorning {
@@ -54,6 +60,18 @@ struct MainWindowBackground {
         let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
         AtlasNotifications.analyticsFindings(findings, now: .now)
         return nil
+    }
+
+    /// Reads the custom product pages of every app with one waiting for
+    /// App Review or in review, and tells what moved.
+    func checkProductPages() async -> [String] {
+        var told: [String] = []
+        for app in library.apps where productPages.followsReview(for: app.id) {
+            guard let snapshot = try? await services.productPages.pages(for: app) else { continue }
+            let moves = productPages.followReview(of: snapshot.pages, for: app.id)
+            told += AtlasNotifications.productPagesMoved(moves, appName: app.name, appID: app.id)
+        }
+        return told
     }
 
     /// A "Needs you" line or Review & Push… from the menu bar.

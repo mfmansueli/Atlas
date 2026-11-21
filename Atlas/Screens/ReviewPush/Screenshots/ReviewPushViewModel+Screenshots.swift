@@ -16,6 +16,9 @@ extension ReviewPushViewModel {
         switch scope {
         case .thisApp: screenshots.plans(for: selectedAppID.map { [$0] } ?? [])
         case .allApps: screenshots.orderedPlans
+        // The default page's screenshots aren't the page's: they're left
+        // for This app.
+        case .productPage: []
         }
     }
 

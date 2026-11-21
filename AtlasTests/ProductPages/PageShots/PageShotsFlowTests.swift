@@ -116,7 +116,7 @@ struct PageShotsFlowTests {
         let file = ProductPageScreenshotsPush.File(path: "/tmp/1.png", fileName: "1.png", fileSize: 10, checksum: "x")
         let change = builder.screenshotsChange([file], locale: "en-US", displayType: .iPhone, of: page, hadOwn: true)
         #expect(change.title == "\(ProductPageChangeBuilder.localeName("en-US")) · Screenshots · iPhone")
-        #expect(change.newValue == "1 screenshot made for this page")
+        #expect(change.newValue == "1 screenshot for this page")
         #expect(change.oldValue == "The page’s own screenshots")
         #expect(change.restoreRequests.isEmpty)
         #expect(builder.isScreenshotsChange(change))

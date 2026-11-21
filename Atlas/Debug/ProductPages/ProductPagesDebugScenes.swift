@@ -33,6 +33,9 @@ import SwiftUI
 ///   set in Review & Push, in the editor); `cp-shots-plan-s` at 860 × 560;
 ///   `cp-shots-none`: Lumen without a screenshot template, so the sheet
 ///   says so and opens Screenshots.
+/// - Choose Files…: `cp-files` (two iPhone screenshots queued for Private
+///   diary), `cp-files-wrong` (one of them 1170 × 2532, so nothing is
+///   queued and the alert says why).
 enum ProductPagesDebugScenes {
     typealias Data = DebugProductPagesData
     typealias PageID = DebugProductPagesData.PageID
@@ -44,7 +47,7 @@ enum ProductPagesDebugScenes {
         "cp-edit-noversion", "cp-kwmove", "cp-submit", "cp-waiting", "cp-inreview", "cp-approved", "cp-hidden", "cp-rejected",
         "cp-liveedit", "cp-hide", "cp-delete", "cp-discard", "cp-s", "cp-edit-s", "cp-edit-ar-s", "cp-overview", "cp-analytics",
         "cp-edit-brief", "cp-submit-brief", "cp-shots-planning", "cp-shots-plan", "cp-shots-run", "cp-shots-result",
-        "cp-shots-queued", "cp-shots-plan-s", "cp-shots-none",
+        "cp-shots-queued", "cp-shots-plan-s", "cp-shots-none", "cp-files", "cp-files-wrong",
     ]
 
     @MainActor
@@ -99,6 +102,8 @@ enum ProductPagesDebugScenes {
             "cp-shots-result": Launch(pageID: diary, pageShots: .result),
             "cp-shots-queued": Launch(pageID: diary, pageShots: .used),
             "cp-shots-plan-s": Launch(pageID: diary, pageShots: .plan),
+            "cp-files": Launch(pageID: diary, chosenSizes: [PixelSize(width: 1320, height: 2868), PixelSize(width: 1320, height: 2868)]),
+            "cp-files-wrong": Launch(pageID: diary, chosenSizes: [PixelSize(width: 1320, height: 2868), PixelSize(width: 1170, height: 2532)]),
         ]
     }
 

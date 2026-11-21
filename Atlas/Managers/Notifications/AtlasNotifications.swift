@@ -37,6 +37,20 @@ enum AtlasNotifications {
         )
     }
 
+    /// App Review moved custom product pages: one notification per page,
+    /// under Settings → Notifications' "App Review changes a version's or
+    /// an event's status". Returns what was said, for the toast.
+    @discardableResult
+    static func productPagesMoved(
+        _ moves: [ProductPageReviewMove], appName: String, appID: StoreApp.ID, notifier: AtlasNotifier = .shared
+    ) -> [String] {
+        moves.compactMap { move in
+            guard let text = move.announcement(appName: appName) else { return nil }
+            notifier.post(.reviewStatus, title: appName, body: text, identifier: "pages.\(appID).\(move.pageID)")
+            return text
+        }
+    }
+
     /// Reviews that weren't there at the last check, the ones the level
     /// asks for.
     static func newReviews(

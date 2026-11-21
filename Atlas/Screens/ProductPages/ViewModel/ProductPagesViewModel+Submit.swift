@@ -84,6 +84,7 @@ extension ProductPagesViewModel {
         do {
             try await services.submit(versionID: version.id, of: app)
             store.setVisibleWhenApproved(makeVisible && !page.isVisible, pageID: page.id, for: app.id)
+            store.followReview(versionID: version.id, state: .waitingForReview, for: app.id)
             setState(.waitingForReview, ofVersion: version.id, pageID: page.id)
             isSubmitPresented = false
             show(String(localized: "“\(page.name)” was submitted to App Review."), undo: nil)
@@ -107,6 +108,7 @@ extension ProductPagesViewModel {
         do {
             try await services.cancelSubmission(versionID: version.id, of: app)
             store.setVisibleWhenApproved(false, pageID: page.id, for: app.id)
+            store.followReview(versionID: version.id, state: .prepareForSubmission, for: app.id)
             setState(.prepareForSubmission, ofVersion: version.id, pageID: page.id)
             show(String(localized: "Submission cancelled. The page is back to Prepare for Submission."), undo: nil)
         } catch {
@@ -121,6 +123,20 @@ extension ProductPagesViewModel {
               let versionIndex = snapshot.pages[pageIndex].versions.firstIndex(where: { $0.id == versionID }) else { return }
         snapshot.pages[pageIndex].versions[versionIndex].state = newState
         replaceSnapshot(snapshot)
+    }
+
+    // MARK: - App Review's answer
+
+    /// What App Review did with the pages since the last read: a toast
+    /// here and a notification (`AtlasNotifications.productPagesMoved`).
+    /// A read in the background (`MainWindowBackground`) tells it first,
+    /// and then there's nothing left to tell here.
+    func tellReviewMoves(in snapshot: ProductPagesSnapshot) {
+        let moves = store.followReview(of: snapshot.pages, for: app.id)
+        let told = AtlasNotifications.productPagesMoved(moves, appName: app.name, appID: app.id)
+        guard let first = told.first else { return }
+        let text = told.count == 1 ? first : String(localized: "App Review moved \(told.count) custom product pages.")
+        toast = ToastMessage(text: text)
     }
 
     // MARK: - Visible when approved

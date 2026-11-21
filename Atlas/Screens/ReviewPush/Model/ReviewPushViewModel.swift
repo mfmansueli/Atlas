@@ -13,6 +13,9 @@ import Observation
 @Observable
 final class ReviewPushViewModel {
     var scope: ReviewScope
+    /// The custom product page Push and Submit… opened the sheet on; it
+    /// adds that page to the scope switch (board 54).
+    var pageFocus: ReviewPageFocus?
     /// nil shows every source.
     var sourceFilter: ChangeSourceFilter?
     var selection: Set<PendingChange.ID> = []
@@ -54,9 +57,25 @@ final class ReviewPushViewModel {
     var thisAppCount: Int { (selectedAppID.map { queue.count(for: $0) } ?? 0) + imageCount(thisAppOnly: true) }
     var allAppsCount: Int { queue.totalCount + imageCount(thisAppOnly: false) }
 
-    /// This app | All apps, only when other apps have changes too.
+    /// The page's own changes, for its segment.
+    var pageCount: Int {
+        guard let pageFocus else { return 0 }
+        return queue.changes(for: pageFocus.appID).count(where: pageFocus.owns)
+    }
+
+    /// This app | All apps, only when other apps have changes too; with a
+    /// page in focus, whenever the app has more than that page's changes.
     var showsScopeSwitch: Bool {
-        selectedAppName != nil && thisAppCount != allAppsCount
+        guard selectedAppName != nil else { return false }
+        if pageFocus != nil { return thisAppCount != pageCount || thisAppCount != allAppsCount }
+        return thisAppCount != allAppsCount
+    }
+
+    /// Opens on one page's changes, when it has any.
+    func focus(on page: ReviewPageFocus) {
+        guard page.appID == selectedAppID else { return }
+        pageFocus = page
+        if pageCount > 0 { scope = .productPage(page.pageID) }
     }
 
     /// The source filter, only when text changes come from more than one
@@ -69,8 +88,11 @@ final class ReviewPushViewModel {
     /// Changes in the current scope, before the source filter.
     var scopedChanges: [PendingChange] {
         switch scope {
-        case .thisApp: selectedAppID.map { queue.changes(for: $0) } ?? []
-        case .allApps: queue.changes
+        case .thisApp: return selectedAppID.map { queue.changes(for: $0) } ?? []
+        case .allApps: return queue.changes
+        case let .productPage(pageID):
+            guard let pageFocus, pageFocus.pageID == pageID else { return [] }
+            return queue.changes(for: pageFocus.appID).filter(pageFocus.owns)
         }
     }
 

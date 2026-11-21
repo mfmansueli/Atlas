@@ -91,7 +91,7 @@ final class PageShotsUITests: XCTestCase {
     func testTheQueuedSetShowsAsThePagesOwn() {
         app.launch(debugScene: "cp-shots-queued")
         XCTAssertTrue(element("pages.screenshots.queued").waitForExistence(timeout: 60))
-        XCTAssertTrue(text(of: element("pages.screenshots.note")).contains("made for this page"))
+        XCTAssertTrue(text(of: element("pages.screenshots.note")).contains("for this page, in"))
         XCTAssertFalse(element("pages.shots.sheet").exists)
         attach("cp-shots-queued")
     }

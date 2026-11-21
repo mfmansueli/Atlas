@@ -10,8 +10,8 @@ import SwiftUI
 /// list's rows take two lines and the editor leaves out its preview.
 struct ProductPagesScreen: View {
     @Bindable var viewModel: ProductPagesViewModel
-    /// Opens Review & Push: Push and Submit…, and the toast's button.
-    let onReviewPush: () -> Void
+    /// Push and Submit…: opens Review & Push on that page's changes.
+    let onReviewPush: (ProductPage) -> Void
 
     @State private var width: CGFloat = 1000
 

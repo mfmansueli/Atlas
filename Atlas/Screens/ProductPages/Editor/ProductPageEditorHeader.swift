@@ -13,7 +13,7 @@ struct ProductPageEditorHeader: View {
     @Bindable var viewModel: ProductPagesViewModel
     let page: ProductPage
     let isCompact: Bool
-    let onReviewPush: () -> Void
+    let onReviewPush: (ProductPage) -> Void
 
     var body: some View {
         HStack(spacing: Spacing.medium) {
@@ -62,7 +62,7 @@ struct ProductPageEditorHeader: View {
                 }
                 if let title = viewModel.primaryActionTitle(of: page) {
                     Button(title) {
-                        if viewModel.pushAndSubmit(page) { onReviewPush() }
+                        if viewModel.pushAndSubmit(page) { onReviewPush(page) }
                     }
                     .buttonStyle(.borderedProminent)
                     .disabled(viewModel.isOffline && !page.isDraft && viewModel.pendingCount(of: page) == 0)

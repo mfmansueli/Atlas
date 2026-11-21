@@ -8,7 +8,8 @@ import SwiftUI
 /// The screenshots and App Previews the page shows in one language, on
 /// iPhone or iPad: its own, the set made for it waiting in Review & Push,
 /// or the default page's. Make Screenshots for This Page… makes it a set of
-/// its own (board 52); App Previews are changed in App Store Connect.
+/// its own (board 52), and Choose Files… takes screenshots the person
+/// already has; App Previews are changed in App Store Connect.
 struct ProductPageScreenshotsBox: View {
     @Bindable var viewModel: ProductPagesViewModel
     let page: ProductPage
@@ -51,6 +52,7 @@ struct ProductPageScreenshotsBox: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("pages.screenshots.note")
+                ProductPageChooseFilesButton(viewModel: viewModel, page: page, locale: locale)
                 PageShotsMakeButton(viewModel: viewModel, page: page)
             }
             PageShotsRunRow(viewModel: viewModel, page: page)
@@ -70,8 +72,8 @@ struct ProductPageScreenshotsBox: View {
         guard let queued else { return viewModel.screenshotsNote(of: page, locale: locale, device: viewModel.device) }
         let name = ProductPageChangeBuilder.localeName(locale)
         return queued.count == 1
-            ? String(localized: "1 screenshot made for this page, in \(name), waiting in Review & Push.")
-            : String(localized: "\(queued.count) screenshots made for this page, in \(name), waiting in Review & Push.")
+            ? String(localized: "1 screenshot for this page, in \(name), waiting in Review & Push.")
+            : String(localized: "\(queued.count) screenshots for this page, in \(name), waiting in Review & Push.")
     }
 
     /// Same as Default · Own: which the language shows, not a control.
