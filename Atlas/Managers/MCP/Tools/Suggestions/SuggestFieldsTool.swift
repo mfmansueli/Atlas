@@ -41,12 +41,19 @@ struct SuggestFieldsTool: MCPTool {
         (get_store_page's languagesNotOnAppStore): it stays a suggestion, even with apply, in its own tab \
         until the person adds the page. Read get_store_page and get_app_information first. Take back your own open \
         suggestions that went stale (a reason that cites a date that moved, a value no longer right) with \
-        withdraw_suggestion and their ids.
+        withdraw_suggestion and their ids. version may also be a new version queued with propose_app_version: its \
+        fields (whatsNew, description, keywords, promotionalText, URLs, copyright, release, page review, and \
+        name, subtitle, privacy URLs, categories and age rating, which go into the app info App Store Connect \
+        makes with it) are then queued with it in Review & Push (status applied, with a note) instead of shown as \
+        suggestions, since it has no page in Atlas yet; they go into it right after Atlas creates it, and are \
+        discarded with it.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-                "version": MCPToolDefinition.string("The version string, e.g. 1.4, to check it's the one being prepared."),
+                "version": MCPToolDefinition.string(
+                    "The version string, e.g. 1.4: the one being prepared, or a new version queued with propose_app_version."
+                ),
                 "items": ["type": "array", "description": "The suggestions, one per field.", "items": Self.itemSchema],
                 "total": ["type": "integer", "description": "How many suggestions you'll send in all, across calls."],
                 "run": MCPToolDefinition.string("The run begin_suggestions returned, when suggesting everything."),
@@ -97,7 +104,8 @@ struct SuggestFieldsTool: MCPTool {
             store: store,
             context: context,
             applies: wantsApply && context.editsDrafts,
-            runID: runID
+            runID: runID,
+            version: arguments.optionalString("version")
         )
         try session.check(version: arguments.optionalString("version"))
         if let total = try arguments.optionalInt("total") {

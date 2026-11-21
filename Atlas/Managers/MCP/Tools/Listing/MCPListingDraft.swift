@@ -33,15 +33,33 @@ struct MCPListingDraft {
     var languageSource: String?
     /// Fields a proposal changed since loading.
     private var touched: [ListingFieldKey] = []
+    /// A new version waiting in Review & Push whose texts these are: what's
+    /// written is queued tied to it.
+    var queuedVersion: QueuedAppVersion?
 
-    static func load(app identifier: String, in workspace: MCPWorkspace) async throws -> MCPListingDraft {
+    /// The version being prepared, or with `version` a new one waiting in
+    /// Review & Push (`MCPVersionTarget`).
+    static func load(app identifier: String, version: String? = nil, in workspace: MCPWorkspace) async throws -> MCPListingDraft {
         let app = try await workspace.app(matching: identifier)
         let services = workspace.services.storePage
-        let content: StorePageContent
+        var content: StorePageContent
         do {
             content = try await services.content(for: app, versionID: nil)
         } catch {
             throw MCPToolError.unavailable(String(localized: "Couldn’t read \(app.name)’s store listing: \(error.localizedDescription)"))
+        }
+        let queued = try MCPVersionTarget.queued(
+            version, app: app, shown: content.version.versionString, versions: content.versions, in: workspace
+        )
+        if let queued {
+            if let base = queued.baseVersionID(among: content.versions), base != content.version.id {
+                do {
+                    content = try await services.content(for: app, versionID: base)
+                } catch {
+                    throw MCPToolError.unavailable(String(localized: "Couldn’t read \(app.name)’s store listing: \(error.localizedDescription)"))
+                }
+            }
+            content = queued.storePageContent(from: content)
         }
         let support = services.appSupport
         let storeCodes = content.locales.map(\.code)
@@ -56,6 +74,7 @@ struct MCPListingDraft {
         // what's there; the texts laid on the listing stay the same.
         builder.replaceStaleCreations(in: workspace.changes, listing: listing)
         var draft = MCPListingDraft(app: app, content: content, builder: builder, listing: listing)
+        draft.queuedVersion = queued
         draft.missingLanguages = missing
         if let support, listing.version.isEditable {
             draft.newLanguages = support.pendingLanguages(for: app.id, storeLocales: storeCodes).filter { language in
@@ -74,10 +93,25 @@ struct MCPListingDraft {
     /// The version these texts belong to, for tool results.
     var versionJSON: JSONValue {
         let version = listing.version
+        guard queuedVersion == nil else { return Self.queuedVersionJSON(version.versionString) }
         return [
             "versionString": .string(version.versionString),
             "state": .string(version.state.title),
             "editable": .bool(version.isEditable),
+        ]
+    }
+
+    /// A new version that waits in Review & Push.
+    static func queuedVersionJSON(_ versionString: String) -> JSONValue {
+        [
+            "versionString": .string(versionString),
+            "state": "Queued in Review & Push",
+            "editable": true,
+            "queued": true,
+            "note": """
+            Not in App Store Connect yet: its texts start from the version before it. What you write for it waits with \
+            it in Review & Push; when the person pushes, Atlas creates the version, then writes the texts into it.
+            """,
         ]
     }
 
@@ -201,7 +235,7 @@ struct MCPListingDraft {
                 queue.discard(id: builder.changeID(for: key))
             }
         }
-        queue.upsert(contentsOf: upserts)
+        queue.upsert(contentsOf: upserts.map { queuedVersion?.tie($0) ?? $0 })
         return ids
     }
 }

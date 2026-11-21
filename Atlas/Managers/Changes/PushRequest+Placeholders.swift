@@ -108,7 +108,7 @@ extension PushRequest {
         return resolved
     }
 
-    private var bodyText: String? {
+    var bodyText: String? {
         body.flatMap { String(data: $0, encoding: .utf8) }
     }
 

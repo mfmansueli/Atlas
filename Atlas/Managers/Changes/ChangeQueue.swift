@@ -66,13 +66,19 @@ final class ChangeQueue {
 
     func upsert(contentsOf newChanges: [PendingChange]) {
         guard !newChanges.isEmpty else { return }
+        var orphaned: Set<PendingChange.ID> = []
         for change in newChanges {
             if let index = changes.firstIndex(where: { $0.id == change.id }) {
+                // Another version for the same platform: what was written
+                // for the old number goes with it.
+                if changes[index].requests != change.requests { orphaned.formUnion(dependents(of: [change.id])) }
                 changes[index] = Self.merge(changes[index], with: change)
             } else {
                 changes.append(change)
             }
         }
+        orphaned.subtract(newChanges.map(\.id))
+        changes.removeAll { orphaned.contains($0.id) }
         save()
     }
 
@@ -106,26 +112,51 @@ final class ChangeQueue {
         discard(ids: [id])
     }
 
+    /// Removes the changes, and every change that depends on them: a new
+    /// version's texts go with it.
     func discard(ids: some Sequence<PendingChange.ID>) {
         let ids = Set(ids)
         guard changes.contains(where: { ids.contains($0.id) }) else { return }
-        changes.removeAll { ids.contains($0.id) }
+        let gone = ids.union(dependents(of: ids))
+        changes.removeAll { gone.contains($0.id) }
+        save()
+    }
+
+    /// Removes a change App Store Connect took. What depends on it stays:
+    /// a new version's texts that failed go out again on the next push.
+    func remove(pushed id: PendingChange.ID) {
+        guard changes.contains(where: { $0.id == id }) else { return }
+        changes.removeAll { $0.id == id }
         save()
     }
 
     /// Discards every change matching `predicate`, e.g. all of one app's, or
-    /// "Reject All" from one assistant.
+    /// "Reject All" from one assistant, with what depends on them.
     func discardAll(where predicate: (PendingChange) -> Bool) {
-        let before = changes.count
-        changes.removeAll(where: predicate)
-        if changes.count != before { save() }
+        discard(ids: changes.filter(predicate).map(\.id))
+    }
+
+    /// The changes that depend on `ids`, directly or through another one.
+    func dependents(of ids: some Sequence<PendingChange.ID>) -> Set<PendingChange.ID> {
+        var found: Set<PendingChange.ID> = []
+        var next = Set(ids)
+        while !next.isEmpty {
+            let more = changes.filter { change in
+                change.dependsOn.map(next.contains) == true && !found.contains(change.id)
+            }.map(\.id)
+            found.formUnion(more)
+            next = Set(more)
+        }
+        return found
     }
 
     /// Every proposal from one assistant ("Reject All from Claude Code"):
     /// its changes go, and its versions of fields the person also edited.
     func rejectAll(fromAssistant client: String) {
         let source = ChangeSource.assistant(client: client)
-        changes.removeAll { $0.source == source }
+        let rejected = changes.filter { $0.source == source }.map(\.id)
+        let gone = Set(rejected).union(dependents(of: rejected))
+        changes.removeAll { gone.contains($0.id) }
         for index in changes.indices where changes[index].alternative?.source == source {
             changes[index].alternative = nil
         }

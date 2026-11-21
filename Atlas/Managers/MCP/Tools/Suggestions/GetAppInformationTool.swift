@@ -25,16 +25,26 @@ struct GetAppInformationTool: MCPTool {
         the ones already open with their source. App Store Connect won't create review details without a \
         contact email: when the review contact is empty, suggest it from what the project shows (a support or \
         contact email in the app or its docs, or the git author's name and email), and never make up a phone \
-        number. Send suggestions with suggest_fields.
+        number. Send suggestions with suggest_fields. Pass `version` with a new version queued with \
+        propose_app_version to read it before it's in App Store Connect: its copyright, release and App Review \
+        fields start from the version before it and aren't locked, and what suggest_fields sends for them with the \
+        same `version` waits with it in Review & Push.
         """,
         inputSchema: MCPToolDefinition.schema(
-            ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
+            [
+                "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "version": MCPToolDefinition.string(
+                    "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
+                ),
+            ],
             required: ["appId"]
         )
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
-        let draft = try await MCPAppInformationDraft.load(app: arguments.string("appId"), in: context.workspace)
+        let draft = try await MCPAppInformationDraft.load(
+            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+        )
         let open = context.workspace.suggestions?.open(for: draft.app.id, area: .appInformation) ?? []
         let pages = AppInformationSuggestionField.pages.map { page -> JSONValue in
             let fields = AppInformationSuggestionField.fields(on: page).map { field in (field.rawValue, Self.entry(for: field, in: draft)) }

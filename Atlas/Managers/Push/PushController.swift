@@ -66,6 +66,9 @@ final class PushController {
     /// Custom product pages' versions and new pages' IDs, found or made
     /// earlier in this push.
     private let productPages = ProductPagePushState()
+    /// New versions' IDs, localizations and App Review details, for the
+    /// texts that wait with them.
+    let queuedVersions = QueuedVersionPushState()
     /// Subscription groups found or made during this push, by
     /// `SubscriptionGroupPlaceholder.token`, so new subscriptions in the
     /// same new group share one.
@@ -118,11 +121,12 @@ final class PushController {
         guard phase != .running else { return }
         rememberUnfinished()
         let ordered = InAppEventPushOrder.sorted(RetentionPushOrder.sorted(changes.filter { !$0.isBlocked }))
-        items = ProductPageScreenshotsPushOrder.sorted(ordered).map(resumed)
+        items = QueuedVersionPushOrder.sorted(ProductPageScreenshotsPushOrder.sorted(ordered)).map(resumed)
         notice = nil
         inAppDrafts = [:]
         inAppDraftRefusals = [:]
         productPages.reset()
+        queuedVersions.reset()
         subscriptionGroups = [:]
         territoryIDs = nil
         eventLocalizations = [:]
@@ -260,7 +264,7 @@ final class PushController {
         do {
             try await send(index)
             items[index].status = .done
-            queue.discard(id: change.id)
+            queue.remove(pushed: change.id)
             return .pushed(change.appID)
         } catch let conflict as ConflictFound {
             items[index].status = .conflict
@@ -360,13 +364,8 @@ final class PushController {
         for index in indices {
             items[index].sentRequestCount = 1
             items[index].status = .done
-            queue.discard(id: items[index].id)
+            queue.remove(pushed: items[index].id)
         }
-    }
-
-    private static func outcome(_ status: PushItemStatus, stop: String?) -> PushItemOutcome {
-        if case let .failed(text) = status { return .failed(text, stop: stop) }
-        return stop.map(PushItemOutcome.stopped) ?? .skipped
     }
 
     /// Checks for a conflict, then sends the item's remaining requests.
@@ -393,12 +392,13 @@ final class PushController {
         }
     }
 
-    private func noteRequest(_ rateLimit: AppStoreConnectRateLimit?) {
+    func noteRequest(_ rateLimit: AppStoreConnectRateLimit?) {
         rateTracker.note(rateLimit)
     }
 
     /// The row status for an error, and why the rest stop, if they do.
     private func handle(_ error: any Error) -> (PushItemStatus, stop: String?) {
+        if let status = Self.waitingStatus(error) { return (status, nil) }
         if let error = error as? AppStoreConnectError {
             switch error {
             case .rateLimited:
@@ -463,7 +463,9 @@ extension PushController {
 
     /// One of a change's requests, its placeholders filled in.
     private func send(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws {
-        let request = try await resolvingSetupPlaceholders(request, at: index, transport: transport)
+        let queued = try await resolvingQueuedVersion(request, at: index, transport: transport)
+        let request = try await resolvingSetupPlaceholders(queued.request, at: index, transport: transport)
+        defer { noteReviewDetail(madeBy: queued, at: index) }
         if try await sendSetupStep(request, at: index, transport: transport) { return }
         let resolved = try request.resolved(createdID: items[index].createdID) { try secrets.secret(named: $0) }
         do {

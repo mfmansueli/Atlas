@@ -23,11 +23,17 @@ struct ProposeListingTextTool: MCPTool {
         (2.3.10), other apps' names or unverifiable claims in the name, subtitle or keywords (2.3.7), beta or demo \
         (2.2), placeholders (2.1), “coming soon” (2.3) or “For Kids” (2.3.8); get_listing's storeTextRules has them \
         all. Accepted proposals are queued for the person to review in Atlas (status "queued"); nothing reaches App Store Connect until they push. Fields: \
-        \(ListingField.mcpNames.joined(separator: ", ")).
+        \(ListingField.mcpNames.joined(separator: ", ")). Pass `version` with a new version queued with \
+        propose_app_version to write its texts (whatsNew, description, keywords…, and name, subtitle and privacy \
+        URLs, which only change with a new version) before it's in App Store Connect: they wait with it in \
+        Review & Push, go into it right after Atlas creates it, and are discarded with it.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "version": MCPToolDefinition.string(
+                    "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
+                ),
                 "locale": MCPToolDefinition.string("An App Store Connect locale code, e.g. de-DE."),
                 "field": MCPToolDefinition.string("The field, e.g. subtitle or whatsNew."),
                 "text": MCPToolDefinition.string("The proposed text, within the field's limit."),
@@ -77,7 +83,9 @@ struct ProposeListingTextTool: MCPTool {
             }
         } ?? [Proposal(arguments)]
 
-        var draft = try await MCPListingDraft.load(app: arguments.string("appId"), in: context.workspace)
+        var draft = try await MCPListingDraft.load(
+            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+        )
         let outcomes = proposals.map { draft.propose($0.text, for: $0.field, locale: $0.locale, by: context.clientName) }
         let changeIDs = draft.commit(to: context.workspace.changes)
 

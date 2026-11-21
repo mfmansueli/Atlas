@@ -20,7 +20,9 @@ struct GetAppVersionsTool: MCPTool {
         newest first (id, buildNumber, processingState PROCESSING/VALID/FAILED/INVALID, uploaded, expired, attached, \
         usesNonExemptEncryption), and `attachedBuild`, the one App Store Connect has attached to it (null when none); \
         `buildsError` when they couldn't be read. Propose a version with propose_app_version; attaching a build and \
-        submitting are the person's.
+        submitting are the person's. A version in `queued` counts as the one being prepared: pass its number as \
+        `version` to get_listing, get_app_information, propose_listing_text and suggest_fields to write its texts \
+        before the person pushes it.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],

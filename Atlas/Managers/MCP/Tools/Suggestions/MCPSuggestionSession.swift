@@ -38,17 +38,21 @@ struct MCPSuggestionSession {
         store: FieldSuggestionStore,
         context: MCPToolContext,
         applies: Bool,
-        runID: SuggestionRun.ID? = nil
+        runID: SuggestionRun.ID? = nil,
+        version: String? = nil
     ) async throws {
         self.app = app
         self.store = store
         self.context = context
         self.applies = applies
         self.runID = runID
-        listing = items.contains { $0.area == .storePage } ? try await MCPListingDraft.load(app: app.id, in: context.workspace) : nil
+        listing = items.contains { $0.area == .storePage }
+            ? try await MCPListingDraft.load(app: app.id, version: version, in: context.workspace)
+            : nil
         information = items.contains { $0.area == .appInformation }
             ? try await MCPAppInformationDraft.load(
                 app: app.id,
+                version: version,
                 in: context.workspace,
                 includesAccessibility: items.contains { $0.page.flatMap(SuggestFieldsTool.page(named:)) == .accessibility }
             )
@@ -90,6 +94,22 @@ struct MCPSuggestionSession {
         _ = listing.commit(to: context.workspace.changes)
     }
 
+    // MARK: - A new version in Review & Push
+
+    /// A change for a new version that waits in Review & Push (its version
+    /// fields, or its app info's: categories, age rating): there's no page
+    /// to show a suggestion on, so it's queued with the version.
+    private static func waits(_ change: PendingChange?, in draft: MCPAppInformationDraft) -> Bool {
+        guard let queued = draft.queuedVersion, let change else { return false }
+        return queued.mentions(change)
+    }
+
+    static func waitsNote(_ version: QueuedAppVersion) -> String {
+        String(localized: """
+        Version \(version.versionString) is queued in Review & Push, so this waits there with it, as the assistant’s: when the person pushes, Atlas creates the version, then writes this into it. Discarding the version discards it.
+        """)
+    }
+
     // MARK: - Store Page
 
     private mutating func suggestStoreText(_ item: MCPSuggestionItem) throws(MCPSuggestionRefusal) -> [String: JSONValue] {
@@ -98,11 +118,12 @@ struct MCPSuggestionSession {
         if listing?.listing.value(field, in: locale) == item.value {
             result["status"] = "unchanged"
             noteSettled(.storePage(locale, field))
-        } else if applies, var draft = listing, draft.listing.contains(locale) {
+        } else if applies || listing?.queuedVersion != nil, var draft = listing, draft.listing.contains(locale) {
             _ = draft.propose(item.value, for: field, locale: locale.code, by: context.clientName)
             listing = draft
             hasAppliedStoreText = true
             result["status"] = "applied"
+            if let queued = draft.queuedVersion { result["note"] = .string(Self.waitsNote(queued)) }
             noteSettled(.storePage(locale, field))
         } else {
             result.merge(add(item.value, for: .storePage(locale, field), item: item)) { _, new in new }
@@ -154,13 +175,16 @@ struct MCPSuggestionSession {
         if draft.slots.value(slot) == value {
             result["status"] = "unchanged"
             noteSettled(slot.target)
-        } else if applies, let written = draft.slots.change(slot, to: value, source: source, confirmed: false) {
+        } else if let written = draft.slots.change(slot, to: value, source: source, confirmed: false),
+                  applies || Self.waits(written.change, in: draft)
+        {
             let changes = context.workspace.changes
-            if let change = written.change { changes.upsert(change) } else { changes.discard(id: written.id) }
+            if let change = written.change { changes.upsert(draft.queueable(change)) } else { changes.discard(id: written.id) }
             // A device's next feature builds on this one.
-            information = draft.with(changes: changes.changes(for: app.id, section: .appInformation))
+            information = draft.with(changes: draft.queuedChanges(in: changes))
             result["status"] = "applied"
             result["changeId"] = .string(written.id)
+            if let queued = draft.queuedVersion, Self.waits(written.change, in: draft) { result["note"] = .string(Self.waitsNote(queued)) }
             noteSettled(slot.target)
         } else {
             result.merge(add(value, for: slot.target, item: item)) { _, new in new }

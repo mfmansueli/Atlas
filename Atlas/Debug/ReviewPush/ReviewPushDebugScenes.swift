@@ -10,7 +10,7 @@ import SwiftUI
 /// as the design's "Review & Push" board shows them.
 enum ReviewPushDebugScenes {
     static let ids = [
-        "review", "review-empty", "review-assistant", "push-progress", "push-partial", "push-conflict",
+        "review", "review-empty", "review-assistant", "review-newversion", "push-progress", "push-partial", "push-conflict",
         "activity", "banner-offline", "banner-rate", "banner-api",
     ]
 
@@ -28,6 +28,8 @@ enum ReviewPushDebugScenes {
             scene([], sheet: .review)
         case "review-assistant":
             scene(DebugReviewData.assistantChanges, sheet: .review)
+        case "review-newversion":
+            scene(DebugReviewData.newVersionChanges, sheet: .review)
         case "push-progress":
             scene(DebugReviewData.annualPriceChanges, sheet: .review, transport: DebugPushTransport(delay: .milliseconds(900)), autoPush: true)
         case "push-partial":

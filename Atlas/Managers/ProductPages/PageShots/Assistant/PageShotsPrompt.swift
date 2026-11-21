@@ -78,10 +78,16 @@ enum PageShotsPrompt {
         are attached) and `recapture`, with its upload link and the devices and languages it needs.
         2. Choose at most \(PageShotsRecapture.maxScreens) screens whose capture should show something else for this \
         audience (the lock turned on, the kind of entries this page is about). Leave the others as they are.
-        3. Build the app from this project and run it in the Simulator: \(ScreenshotDisplayType.iPhone.deviceName) for \
-        iPhone (1320 × 2868), \(ScreenshotDisplayType.iPad.deviceName) for iPad (2064 × 2752), in each language the set \
-        is made in (-AppleLanguages and -AppleLocale). Set the screen up with sample data that reads well, then save it \
-        with xcrun simctl io booted screenshot.
+        3. Look for the project’s screenshot UI tests first (Grep for XCUIScreen or screenshot in its UI test files): \
+        they reach the screens that need taps and set up sample data. Run the ones for your screens with xcodebuild test \
+        -only-testing:… -resultBundlePath <path>, with the values they read (a topic, an entry) given after xcodebuild as \
+        build settings, NAME=value (their comments or the test scheme’s environment say which; nothing goes in front of \
+        xcodebuild), and export the captures with xcrun xcresulttool export attachments. Without such \
+        tests, build the app and run it in the Simulator with the app’s launch arguments, then save the screen with \
+        xcrun simctl io booted screenshot. Use \(ScreenshotDisplayType.iPhone.deviceName) for iPhone, \
+        \(ScreenshotDisplayType.iPad.deviceName) for iPad, turned the way `recapture` says (its devices’ orientation \
+        and pixel size), in each language the set is made in (-testLanguage and -testRegion, or -AppleLanguages and \
+        -AppleLocale).
         4. Send each PNG with curl -s --data-binary @file.png -H 'Content-Type: image/png' <uploadURL>, the link as is \
         (not in quotes), and name it with report_page_capture: \
         the screen’s number, the language, the device, the upload ID and what it shows now.

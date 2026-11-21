@@ -59,6 +59,10 @@ struct PendingChange: Identifiable, Hashable, Codable, Sendable {
     /// e.g. "Accept it in In-App Events or here." A push skips it until
     /// then; it isn't an error.
     var awaitingAcceptance: String?
+    /// The change this one can't go without: a text of a new version that
+    /// waits in Review & Push goes into it once it's created. Discarding
+    /// that change discards this one too (`ChangeQueue.discard`).
+    var dependsOn: PendingChange.ID?
     var createdAt: Date
 
     init(

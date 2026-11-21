@@ -539,6 +539,18 @@ call.
     upload date) with the one attached, read as the Submit sheet reads them; `propose_app_version` queues "Create version 1.5" in
     Review & Push (`POST /v1/appStoreVersions`), the same change as the Store Page's New Version…. A push after one
     that created it finds the version by number and platform instead of failing.
+  - A queued version counts as the one being prepared: `get_listing`, `get_store_page`, `get_app_information`,
+    `propose_listing_text` and `suggest_fields` take its number as `version` and read it from the version before it,
+    editable. What's written for it (version fields, copyright, release, App Review details, and name, subtitle,
+    privacy URLs, categories and age rating, which App Store Connect only takes in the app info it makes with a new
+    version) waits tied to it
+    (`PendingChange.dependsOn`, `QueuedAppVersion.tie`) as fields of its "Create version 1.5" row, with placeholders
+    for its ID, localizations and App Review details (`QueuedVersionPlaceholder`). The push sends them after it and
+    fills the placeholders once it's created (`QueuedVersionPushState`: localizations copied from the version before,
+    App Review details made by the first field when it has none; the app info in an editable state, else the live one,
+    with its localizations and age rating declaration); when it isn't created they're not sent and stay
+    queued. Discarding the version, or queuing another number for its platform, discards them. A number that's
+    neither in App Store Connect nor queued is refused with "propose it with propose_app_version first".
   - Field suggestions: `get_store_page` and `get_app_information` read the fields, their limits and the suggestions
     already open; `suggest_fields` sends suggestions per item (queued, unchanged, replaced, or refused with a code:
     `over_limit`, `unknown_field`, `unknown_locale`, `locked`, `not_permitted`, `invalid_value`, `guideline`). With Suggest and

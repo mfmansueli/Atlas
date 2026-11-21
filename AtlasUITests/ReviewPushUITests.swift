@@ -48,6 +48,25 @@ final class ReviewPushUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Push 27 Changes"].exists)
     }
 
+    /// A new version queued with its texts: one row, "Create version 1.5",
+    /// with each text below it; discarding the version discards them all.
+    func testANewVersionShowsWithItsTexts() {
+        launch(scene: "review-newversion")
+        let id = "review.creation.appStoreVersion.6450000001.IOS"
+        XCTAssertTrue(element("\(id).title").waitForExistence(timeout: 10))
+        XCTAssertEqual(element("\(id).title").value as? String ?? element("\(id).title").label, "Create version 1.5")
+        let fields = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH %@", "\(id).storePage."))
+        XCTAssertEqual(fields.count, 3)
+        for text in ["What’s New · English (U.S.)", "What’s New · German", "App Review · Notes"] {
+            let row = fields.matching(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", text, text))
+            XCTAssertEqual(row.count, 1, "No row for \(text): \(fields.allElementsBoundByIndex.map { "\($0.label) | \(String(describing: $0.value))" })")
+        }
+        XCTAssertTrue(app.buttons["Push 4 Changes"].exists)
+
+        app.buttons["\(id).discard"].click()
+        XCTAssertTrue(element("review.empty").waitForExistence(timeout: 5))
+    }
+
     func testPushingShowsProgressAndEmptiesTheQueue() {
         launch(scene: "review")
         let pushAll = app.buttons["review.pushAll"]

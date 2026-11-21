@@ -25,9 +25,16 @@ struct ReviewCreation: Identifiable, Hashable, Sendable {
     /// Every field it's created with, in the editor's order.
     var fields: [PendingChangePart] {
         let order = ListingField.allCases.map(\.rawValue)
-        return changes.flatMap { $0.creation?.fields ?? [] }.sorted { lhs, rhs in
-            (order.firstIndex(of: lhs.id) ?? .max) < (order.firstIndex(of: rhs.id) ?? .max)
+        // By the field an ID ends in (a new version's texts are whole change
+        // IDs), and as written among equals.
+        func rank(_ part: PendingChangePart) -> Int {
+            let field = part.id.split(separator: ".").last.map(String.init) ?? part.id
+            return order.firstIndex(of: field) ?? order.count
         }
+        return changes.flatMap { $0.creation?.fields ?? [] }
+            .enumerated()
+            .sorted { (rank($0.element), $0.offset) < (rank($1.element), $1.offset) }
+            .map(\.element)
     }
 
     /// A push would skip it: a field over the limit or an invalid URL.

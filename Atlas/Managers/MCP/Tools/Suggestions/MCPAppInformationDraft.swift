@@ -17,32 +17,76 @@ struct MCPAppInformationDraft {
     var content: AppInformationContent { slots.content }
     var builder: AppInformationChangeBuilder { slots.builder }
     var general: GeneralValues { slots.general }
+    /// A new version waiting in Review & Push whose App Review details and
+    /// version fields these are: what's written is queued tied to it.
+    var queuedVersion: QueuedAppVersion?
 
     /// Accessibility is read only when `includesAccessibility`; when it
     /// can't be read, its features can't take suggestions.
-    static func load(app identifier: String, in workspace: MCPWorkspace, includesAccessibility: Bool = true) async throws -> MCPAppInformationDraft {
+    /// The version being prepared, or with `version` a new one waiting in
+    /// Review & Push (`MCPVersionTarget`).
+    static func load(
+        app identifier: String,
+        version: String? = nil,
+        in workspace: MCPWorkspace,
+        includesAccessibility: Bool = true
+    ) async throws -> MCPAppInformationDraft {
         let app = try await workspace.app(matching: identifier)
-        let content: AppInformationContent
+        let services = workspace.services.appInformation
+        var content: AppInformationContent
+        var queued: QueuedAppVersion?
         do {
-            content = try await workspace.services.appInformation.content(for: app, versionID: nil)
+            content = try await services.content(for: app, versionID: nil)
+            queued = try MCPVersionTarget.queued(
+                version, app: app, shown: content.version?.versionString, versions: content.versions, in: workspace
+            )
+            if let queued {
+                if let base = queued.baseVersionID(among: content.versions), base != content.version?.id {
+                    content = try await services.content(for: app, versionID: base)
+                }
+                content = queued.appInformationContent(from: content)
+            }
+        } catch let error as MCPToolError {
+            throw error
         } catch {
             throw MCPToolError.unavailable(String(localized: "Couldn’t read \(app.name)’s app information: \(error.localizedDescription)"))
         }
-        let accessibility = includesAccessibility ? try? await workspace.services.appInformation.accessibility(for: app) : nil
+        let accessibility = includesAccessibility ? try? await services.accessibility(for: app) : nil
         let builder = AppInformationChangeBuilder(appID: app.id, ids: content.ids, versionString: content.version?.versionString)
-        let changes = workspace.changes.changes(for: app.id, section: .appInformation)
-        return MCPAppInformationDraft(
+        var draft = MCPAppInformationDraft(
             app: app,
-            slots: AppInformationSlotValues(content: content, accessibility: accessibility, builder: builder, changes: changes)
+            slots: AppInformationSlotValues(content: content, accessibility: accessibility, builder: builder, changes: [])
         )
+        draft.queuedVersion = queued
+        return draft.with(changes: draft.queuedChanges(in: workspace.changes))
     }
 
     /// The same values with `changes` queued instead.
     func with(changes: [PendingChange]) -> MCPAppInformationDraft {
-        MCPAppInformationDraft(
+        var draft = MCPAppInformationDraft(
             app: app,
             slots: AppInformationSlotValues(content: content, accessibility: slots.accessibility, builder: builder, changes: changes)
         )
+        draft.queuedVersion = queuedVersion
+        return draft
+    }
+
+    /// What's queued for these values: App Information's changes, and a
+    /// new version's own, which wait with it under its row in Review &
+    /// Push (read here as App Information's again).
+    func queuedChanges(in queue: ChangeQueue) -> [PendingChange] {
+        let information = queue.changes(for: app.id, section: .appInformation)
+        guard let queuedVersion else { return information }
+        return information + queue.changes(for: app.id).filter(queuedVersion.isTied).map { change in
+            var change = change
+            change.section = .appInformation
+            return change
+        }
+    }
+
+    /// `change` as it's queued: tied to the new version it writes into.
+    func queueable(_ change: PendingChange) -> PendingChange {
+        queuedVersion?.tie(change) ?? change
     }
 
     /// The field's value as shown, as stored (categories by id).
@@ -62,6 +106,7 @@ struct MCPAppInformationDraft {
 
     var versionJSON: JSONValue {
         guard let version = content.version else { return .null }
+        guard queuedVersion == nil else { return MCPListingDraft.queuedVersionJSON(version.versionString) }
         return [
             "versionString": .string(version.versionString),
             "state": .string(version.state.title),

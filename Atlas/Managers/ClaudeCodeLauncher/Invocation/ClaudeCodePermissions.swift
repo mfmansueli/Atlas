@@ -77,8 +77,11 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .deepLinkCheck:
             return atlas + reading + Self.linkCommands
         case .pageCaptures:
-            // Captures go to the page's upload link, and nowhere else.
-            return atlas + reading + Self.linkCommands + Self.uploadRules(port: port, path: MCPEndpoint.pageShotsPath)
+            // Captures go to the page's upload link, and nowhere else. The
+            // project's own screenshot UI tests leave theirs in a result
+            // bundle, which xcresulttool exports.
+            return atlas + reading + Self.linkCommands + ["Bash(xcrun xcresulttool:*)"]
+                + Self.uploadRules(port: port, path: MCPEndpoint.pageShotsPath)
         case .deepLinkWork:
             return atlas + reading + ["Edit", "Write"] + Self.linkCommands
         }
@@ -173,10 +176,15 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         }
         if self == .pageCaptures {
             lines.append(
-                "To capture a product page's screens you may also run xcodebuild, xcrun simctl, open -a Simulator, mkdir, ls, "
-                    + "sleep and echo, each on its own: build for a simulator, install and launch the app with xcrun simctl "
-                    + "(launch arguments such as -AppleLanguages go after the bundle ID), and save each screen with xcrun simctl "
-                    + "io booted screenshot <file>. Upload each with exactly: curl -s --data-binary @<file> -H 'Content-Type: image/png' "
+                "To capture a product page's screens you may also run xcodebuild, xcrun simctl, xcrun xcresulttool, "
+                    + "open -a Simulator, mkdir, ls, sleep and echo, each on its own. When the project has screenshot UI tests "
+                    + "(they tap to the screens that need it), run the ones you need with xcodebuild test -only-testing:… "
+                    + "-resultBundlePath <path>, giving the values they read as build settings after it (NAME=value: the tests' "
+                    + "comments or the test scheme's environment say which), "
+                    + "and export the captures with xcrun xcresulttool export attachments. Otherwise build for a simulator, "
+                    + "install and launch the app with xcrun simctl (launch arguments such as -AppleLanguages go after the "
+                    + "bundle ID), and save each screen with xcrun simctl io booted screenshot <file>. "
+                    + "Upload each with exactly: curl -s --data-binary @<file> -H 'Content-Type: image/png' "
                     + "<uploadURL from get_page_screenshots' recapture>, then name it with report_page_capture. "
                     + "Run xcodebuild in the foreground and wait for it. You can't edit the "
                     + "project: set screens up with the app's own launch arguments and sample data, and if a screen can't be "

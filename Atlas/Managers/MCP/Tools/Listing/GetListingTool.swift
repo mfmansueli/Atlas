@@ -31,11 +31,17 @@ struct GetListingTool: MCPTool {
         `fieldsNotInThisVersion` names the ones asked for that this version doesn't have (a first version has no \
         whatsNew). `languagesNotOnAppStore` lists \
         the languages the app's project supports and its App Store page doesn't have yet: suggest their texts \
-        with suggest_fields; only the person adds their pages.
+        with suggest_fields; only the person adds their pages. Pass `version` with a new version queued with \
+        propose_app_version (get_app_versions' `queued`) to read it before it's in App Store Connect: its fields \
+        start from the version before it and are editable, `version.queued` is true, and texts proposed for it with \
+        propose_listing_text or suggest_fields (with the same `version`) wait with it in Review & Push.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "version": MCPToolDefinition.string(
+                    "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
+                ),
                 "locales": [
                     "type": "array",
                     "items": ["type": "string"],
@@ -55,7 +61,9 @@ struct GetListingTool: MCPTool {
     static let urlsName = "urls"
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
-        let draft = try await MCPListingDraft.load(app: arguments.string("appId"), in: context.workspace)
+        let draft = try await MCPListingDraft.load(
+            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+        )
         let listing = draft.listing
         let locales = try draft.locales(arguments.optionalStrings("locales"))
         let requested = try Self.fields(arguments.optionalStrings("fields"))

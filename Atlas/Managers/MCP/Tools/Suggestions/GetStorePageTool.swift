@@ -30,7 +30,9 @@ struct GetStorePageTool: MCPTool {
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-                "version": MCPToolDefinition.string("The version string, e.g. 1.4. Leave it out for the editable version."),
+                "version": MCPToolDefinition.string(
+                    "The version string, e.g. 1.4, or a new version queued with propose_app_version. Leave it out for the editable version."
+                ),
                 "locales": [
                     "type": "array",
                     "items": ["type": "string"],
@@ -42,7 +44,9 @@ struct GetStorePageTool: MCPTool {
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
-        let draft = try await MCPListingDraft.load(app: arguments.string("appId"), in: context.workspace)
+        let draft = try await MCPListingDraft.load(
+            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+        )
         try SuggestFieldsTool.check(version: arguments.optionalString("version"), against: draft.listing.version.versionString, app: draft.app.name)
         let listing = draft.listing
         let locales = try draft.locales(arguments.optionalStrings("locales"), includingNew: true)

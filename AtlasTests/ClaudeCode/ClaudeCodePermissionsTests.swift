@@ -222,4 +222,24 @@ struct ClaudeCodePermissionsTests {
         #expect(ClaudeCodePermissions.pageCaptures.denyRules.contains("Bash(xcrun altool:*)"))
         #expect(ClaudeCodePermissions.pageCaptures.systemPrompt.contains("xcrun simctl io booted screenshot"))
     }
+
+    /// Alba's Topics and My Phrases screens need taps, which only its
+    /// screenshot UI tests make: the captures session may run them and
+    /// export what they attach.
+    @Test func pageCapturesMayRunTheProjectsScreenshotTests() {
+        let rules = ClaudeCodePermissions.pageCaptures.allowRules(port: port)
+        #expect(rules.contains("Bash(xcrun xcresulttool:*)"))
+        let system = ClaudeCodePermissions.pageCaptures.systemPrompt
+        #expect(system.contains("-only-testing"))
+        #expect(system.contains("build settings after it"))
+        #expect(system.contains("xcrun xcresulttool export attachments"))
+        let prompt = PageShotsPrompt.captures(app: "Alba", appID: "6825428345", page: "Gratitude")
+        #expect(prompt.contains("screenshot UI tests"))
+        #expect(prompt.contains("NAME=value"))
+        // A TEST_RUNNER_ variable only works in front of xcodebuild, which
+        // the session can't run.
+        #expect(!prompt.contains("TEST_RUNNER_") && !system.contains("TEST_RUNNER_"))
+        // Reading the project alone still can't export results.
+        #expect(!ClaudeCodePermissions.readProject.allowRules(port: port).contains("Bash(xcrun xcresulttool:*)"))
+    }
 }

@@ -18,8 +18,11 @@ struct ProposeAppVersionTool: MCPTool {
         Proposes a new App Store version: versionString (one to three whole numbers, higher than the latest, e.g. \
         the project's MARKETING_VERSION), platform (IOS, MAC_OS, VISION_OS or TV_OS; IOS when left out and the app \
         has it), and a reason with evidence. It's queued in Review & Push (status "queued") and App Store Connect \
-        creates it, in Prepare for Submission, when the person pushes; its texts can be proposed once it exists. \
-        "unchanged" means it's already queued; "refused" says why, e.g. a version still in progress on that platform.
+        creates it, in Prepare for Submission, when the person pushes. Its texts can be written in the same task, \
+        before it exists: pass its versionString as `version` to get_listing, get_app_information, \
+        propose_listing_text and suggest_fields (What's New, description, keywords, App Review notes…). They wait \
+        with it, go into it right after it's created, and are discarded with it. "unchanged" means it's already \
+        queued; "refused" says why, e.g. a version still in progress on that platform.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -80,10 +83,12 @@ struct ProposeAppVersionTool: MCPTool {
             "changeId": .string(change.id),
             "versionString": .string(version.versionString),
             "platform": .string(platform),
-            "note": """
+            "note": .string("""
             It waits in Review & Push until the person pushes; App Store Connect then creates it in Prepare for \
-            Submission. Propose its What's New with propose_listing_text once it exists.
-            """,
+            Submission. Write its texts now: pass version "\(version.versionString)" to get_listing, \
+            propose_listing_text, get_app_information and suggest_fields, and they go into it right after it's \
+            created.
+            """),
         ]
         return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .proposed)])
     }
