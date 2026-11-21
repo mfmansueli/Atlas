@@ -79,6 +79,9 @@ struct ProductPageDefaultRow: View {
                     .foregroundStyle(Palette.label2)
             }
             .lineLimit(1)
+        } else {
+            // Keeps the column under its header (an empty view takes no room).
+            Color.clear.frame(height: 1)
         }
     }
 }

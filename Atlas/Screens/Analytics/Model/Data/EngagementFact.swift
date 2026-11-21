@@ -19,6 +19,12 @@ struct EngagementFact: Hashable, Sendable, Codable {
     /// The product page's name, from the Detailed reports only; "" in the
     /// Standard ones.
     var page: String = ""
+    /// The app or website that sent people (Apple's Source Info), from the
+    /// Detailed reports only; nil when Apple didn't say.
+    var referrer: String?
+    /// The campaign token (`ct`) of an App Analytics campaign link, from
+    /// the Detailed reports only; nil without one.
+    var campaign: String?
     /// Times the app showed in search, browse or a link preview.
     var impressions = 0
     var pageViews = 0
@@ -27,13 +33,13 @@ struct EngagementFact: Hashable, Sendable, Codable {
     var redownloads = 0
 
     private enum CodingKeys: String, CodingKey {
-        case day = "d", territory = "t", source = "s", device = "v", page = "p"
+        case day = "d", territory = "t", source = "s", device = "v", page = "p", referrer = "f", campaign = "c"
         case impressions = "i", pageViews = "w", downloads = "n", redownloads = "r"
     }
 
     /// Everything but the counts: facts with the same key add up.
     var key: EngagementFact {
-        EngagementFact(day: day, territory: territory, source: source, device: device, page: page)
+        EngagementFact(day: day, territory: territory, source: source, device: device, page: page, referrer: referrer, campaign: campaign)
     }
 
     mutating func add(_ other: EngagementFact) {
@@ -50,7 +56,10 @@ struct EngagementFact: Hashable, Sendable, Codable {
             byKey[fact.key, default: fact.key].add(fact)
         }
         return byKey.values.sorted {
-            ($0.day, $0.territory, $0.source, $0.device, $0.page) < ($1.day, $1.territory, $1.source, $1.device, $1.page)
+            if ($0.day, $0.territory, $0.source, $0.device, $0.page) != ($1.day, $1.territory, $1.source, $1.device, $1.page) {
+                return ($0.day, $0.territory, $0.source, $0.device, $0.page) < ($1.day, $1.territory, $1.source, $1.device, $1.page)
+            }
+            return ($0.referrer ?? "", $0.campaign ?? "") < ($1.referrer ?? "", $1.campaign ?? "")
         }
     }
 }

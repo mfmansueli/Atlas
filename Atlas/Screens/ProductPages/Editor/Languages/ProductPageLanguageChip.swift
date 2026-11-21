@@ -42,7 +42,7 @@ struct ProductPageLanguageChip: View {
             .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
+        // The button stays the element, so VoiceOver can press it.
         .accessibilityLabel(Text(language.spokenLabel))
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }

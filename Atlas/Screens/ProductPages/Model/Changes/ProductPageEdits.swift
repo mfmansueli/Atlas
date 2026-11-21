@@ -16,6 +16,8 @@ struct ProductPageEdits: Hashable, Sendable {
     var isDeleted = false
     /// The page's own screenshots queued, by locale and device.
     var screenshots: [String: [ScreenshotDisplayType: [ProductPageScreenshotsPush.File]]] = [:]
+    /// The page's own App Previews queued, by locale and device.
+    var appPreviews: [String: [ScreenshotDisplayType: [ProductPageScreenshotsPush.File]]] = [:]
     /// How many changes: "4 not pushed".
     var count = 0
 

@@ -31,7 +31,10 @@ struct GetPageScreenshotsTool: MCPTool {
         set is laid out with, the page's languages (primary first) and devices, and the run: its stage, the plan so far \
         and `changeRequest`, what the person asked to change. Plan the page's own set from it and send it with \
         propose_page_screenshots: the screens in the order that tells this page's story and a caption for each in every \
-        language. The default page's screenshots never change.
+        language. `look` says how the set looks: when its choice is claudeDesign, send three looks with \
+        propose_page_look. `recapture`, when the person turned on Capture Screens Again, has the upload link for \
+        screens captured again in the Simulator, named with report_page_capture. The default page's screenshots never \
+        change.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -61,9 +64,11 @@ struct GetPageScreenshotsTool: MCPTool {
             "primaryLanguage": .string(run.primaryLocale),
             "devices": .array(run.displays.map { .string($0.title) }),
             "run": runJSON(run),
+            "look": lookJSON(run),
             "rules": .array(Self.rules.map(JSONValue.string)),
             "next": .string(next(run)),
         ]
+        if let recapture = run.recapture { result["recapture"] = recaptureJSON(recapture, run: run, source: source, port: context.port) }
         if !attachesCaptures { result["capturesAttached"] = false }
         var images: [MCPToolOutcome.ImageContent] = []
         if attachesCaptures {
@@ -135,7 +140,7 @@ struct GetPageScreenshotsTool: MCPTool {
     }
 
     private func templateJSON(_ source: PageShotsSource) -> JSONValue {
-        guard let template = source.template else { return .null }
+        guard let template = source.document.template else { return .null }
         return [
             "name": .string(template.name),
             "designs": .int(template.slots.count),
@@ -154,6 +159,70 @@ struct GetPageScreenshotsTool: MCPTool {
         if let change = run.changeRequest { json["changeRequest"] = .string(change) }
         if let plan = run.plan { json["plan"] = Self.planJSON(plan) }
         return .object(json)
+    }
+
+    private func lookJSON(_ run: PageShotsRun) -> JSONValue {
+        var json: [String: JSONValue] = [:]
+        switch run.look {
+        case .same:
+            json["choice"] = "same"
+        case let .starter(starter):
+            json["choice"] = "template"
+            json["template"] = .string(starter.rawValue)
+        case .claudeDesign:
+            json["choice"] = "claudeDesign"
+            json["starters"] = .array(TemplateStarter.allCases.map { .string($0.rawValue) })
+            json["max"] = .int(PageShotsDesign.candidateCount)
+            json["note"] = .string(String(localized: """
+            Send three looks with propose_page_look, laid on base default (the default page's template) or a starter. \
+            The person chooses one.
+            """))
+        }
+        if let design = run.design, !design.candidates.isEmpty {
+            json["looks"] = .array(design.candidates.map { candidate in
+                [
+                    "name": .string(candidate.name),
+                    "rationale": .string(candidate.rationale),
+                    "chosen": .bool(design.chosenID == candidate.id),
+                ]
+            })
+        }
+        return .object(json)
+    }
+
+    private func recaptureJSON(_ recapture: PageShotsRecapture, run: PageShotsRun, source: PageShotsSource, port: UInt16) -> JSONValue {
+        [
+            "uploadURL": .string(MCPEndpoint.pageShotsUploadURL(port: port, token: recapture.uploadToken)),
+            "devices": .array(run.displays.map { display in
+                let size = source.captureSize(for: display)
+                return [
+                    "displayType": .string(display.mcpValue),
+                    "simulator": .string(display.deviceName),
+                    "pixelSize": .string(size.title),
+                    // The set's orientation there: turn the simulator to it.
+                    "orientation": .string(size.isLandscape ? "landscape" : "portrait"),
+                ]
+            }),
+            "languages": .array(run.locales.map(JSONValue.string)),
+            "maxScreens": .int(PageShotsRecapture.maxScreens),
+            "captured": Self.capturesJSON(recapture.captures),
+            "note": .string(String(localized: """
+            Capture only the screens that should show something else for this page, at each device's pixelSize and \
+            orientation (rotate the simulator for landscape). Send each PNG with curl --data-binary @file.png to \
+            uploadURL, then name it with report_page_capture.
+            """)),
+        ]
+    }
+
+    static func capturesJSON(_ captures: [PageShotsNewCapture]) -> JSONValue {
+        .array(captures.sorted { ($0.slot, $0.locale, $0.displayType.rawValue) < ($1.slot, $1.locale, $1.displayType.rawValue) }.map { capture in
+            [
+                "screen": .int(capture.slot + 1),
+                "locale": .string(capture.locale),
+                "displayType": .string(capture.displayType.mcpValue),
+                "notes": .string(capture.notes),
+            ]
+        })
     }
 
     static func planJSON(_ plan: PageShotsPlan) -> JSONValue {

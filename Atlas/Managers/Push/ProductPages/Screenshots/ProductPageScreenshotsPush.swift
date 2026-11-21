@@ -5,8 +5,9 @@
 
 import Foundation
 
-/// One language's screenshots on one device for a custom product page
-/// (board 52), made by Make Screenshots for This Page. The push finds the
+/// One language's screenshots (or App Previews) on one device for a custom
+/// product page (board 52), made by Make Screenshots for This Page or
+/// chosen with Choose Files…. The push finds the
 /// page's version that takes edits (or makes one, once per page in a
 /// push), the language (made when the version hasn't it) and its set of
 /// that device (made when it has none), uploads each screenshot, waits for
@@ -27,6 +28,9 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
         var fileSize: Int
         /// MD5.
         var checksum: String
+        /// An App Preview's type, e.g. "video/quicktime"; nil for a
+        /// screenshot.
+        var mimeType: String?
     }
 
     struct Content: Codable, Hashable, Sendable {
@@ -39,6 +43,8 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
         var locale: String
         var displayType: ScreenshotDisplayType
         var files: [File]
+        /// Nil (from before App Previews) is screenshots.
+        var media: ProductPageMedia?
     }
 
     static let path = "/v1/appScreenshotSets"
@@ -47,6 +53,8 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
     static let timeout: Duration = .seconds(180)
 
     var content: Content
+
+    var media: ProductPageMedia { content.media ?? .screenshots }
 
     init(_ content: Content) {
         self.content = content
@@ -91,30 +99,16 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
     }
 
     func setsPath(localizationID: String) -> String {
-        "/v1/appCustomProductPageLocalizations/\(localizationID)/appScreenshotSets"
-            + "?filter%5BscreenshotDisplayType%5D=\(content.displayType.apiValue)&include=appScreenshots"
-            + "&fields%5BappScreenshotSets%5D=screenshotDisplayType,appScreenshots&limit=50&limit%5BappScreenshots%5D=10"
+        media.setsPath(localizationID: localizationID, displayType: content.displayType)
     }
 
     func createSet(localizationID: String) -> PushRequest {
-        let body: [String: Any] = [
-            "data": [
-                "type": "appScreenshotSets",
-                "attributes": ["screenshotDisplayType": content.displayType.apiValue],
-                "relationships": [
-                    "appCustomProductPageLocalization": ["data": ["type": "appCustomProductPageLocalizations", "id": localizationID]],
-                ],
-            ],
-        ]
-        let data = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys, .withoutEscapingSlashes])
-        return PushRequest(method: .post, path: "/v1/appScreenshotSets", body: data)
+        media.createSet(localizationID: localizationID, displayType: content.displayType)
     }
 
-    /// The set of this device in a sets response, and its screenshots.
+    /// The set of this device in a sets response, and what it holds.
     func existingSet(in data: Data) throws -> (id: String, screenshotIDs: [String])? {
-        let page = try JSONDecoder().decode(ScreenshotAPIDocument<AppScreenshotSetAttributes, AppScreenshotAttributes>.self, from: data)
-        return page.data.first { $0.attributes?.screenshotDisplayType == content.displayType.apiValue }
-            .map { ($0.id, $0.related("appScreenshots").map(\.id)) }
+        try media.existingSet(in: data, displayType: content.displayType).map { ($0.id, $0.itemIDs) }
     }
 
     // MARK: - Sending
@@ -155,30 +149,33 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
             setID = try ScreenshotUploadRequests.createdID(in: created.data)
         }
         // A set takes 10: make room first when the new ones wouldn't fit.
-        if old.count + files.count > Self.maxScreenshots {
+        if old.count + files.count > media.limit {
             try await delete(old, via: transport, note: note)
             old = []
         }
         var uploaded: [String] = []
         for (index, item) in files.enumerated() {
-            progress(String(localized: "Uploading screenshot \(index + 1) of \(files.count)"))
-            let reserve = try await transport.send(ScreenshotUploadRequests.reserve(fileName: item.file.fileName, fileSize: item.data.count, setID: setID))
+            progress(media == .appPreviews
+                ? String(localized: "Uploading App Preview \(index + 1) of \(files.count)")
+                : String(localized: "Uploading screenshot \(index + 1) of \(files.count)"))
+            let reserve = try await transport.send(media.reserve(item.file, fileSize: item.data.count, setID: setID))
             note(reserve.rateLimit)
             let reservation = try ScreenshotUploadRequests.reservation(in: reserve.data)
             for operation in reservation.operations {
                 try await uploads.upload(operation, data: item.data) { _ in }
             }
             let checksum = ScreenshotPNG.checksum(item.data)
-            try await note(transport.send(ScreenshotUploadRequests.commit(screenshotID: reservation.id, checksum: checksum)).rateLimit)
+            try await note(transport.send(media.commit(id: reservation.id, checksum: checksum)).rateLimit)
             uploaded.append(reservation.id)
         }
-        progress(String(localized: "Apple is processing the screenshots"))
+        progress(media == .appPreviews
+            ? String(localized: "Apple is processing the App Previews") : String(localized: "Apple is processing the screenshots"))
         processing()
         for (id, item) in zip(uploaded, files) {
             try await waitUntilProcessed(id, fileName: item.file.fileName, via: transport, sleep: sleep, note: note, interval: pollInterval)
         }
         try await delete(old, via: transport, note: note)
-        try await note(transport.send(ScreenshotUploadRequests.reorder(setID: setID, screenshotIDs: uploaded)).rateLimit)
+        try await note(transport.send(media.reorder(setID: setID, ids: uploaded)).rateLimit)
         return setID
     }
 
@@ -186,7 +183,7 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
     private func delete(_ ids: [String], via transport: any PushTransport, note: (AppStoreConnectRateLimit?) -> Void) async throws {
         for id in ids {
             do {
-                try await note(transport.send(ScreenshotUploadRequests.delete(screenshotID: id)).rateLimit)
+                try await note(transport.send(media.delete(id: id)).rateLimit)
             } catch AppStoreConnectError.notFound {
                 // Already gone.
             }
@@ -200,7 +197,7 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
     ) async throws {
         var waited: Duration = .zero
         while true {
-            let response = try await transport.fetch(ScreenshotUploadRequests.statusPath(screenshotID: id))
+            let response = try await transport.fetch(media.statusPath(id: id))
             note(response.rateLimit)
             let state = ScreenshotUploadRequests.deliveryState(in: response.data)
             if state?.isComplete == true { return }

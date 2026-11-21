@@ -76,9 +76,19 @@ extension ProductPagesViewModel {
         case .idle, .loading: return .loading
         case let .failed(message): return .failed(message)
         case let .loaded(sets):
-            let set = sets.first { device.matches($0.displayType.rawValue) && !$0.screenshots.isEmpty }
-            return .loaded(set?.screenshots ?? [])
+            return .loaded(Self.shownSet(of: sets, on: device)?.screenshots ?? [])
         }
+    }
+
+    /// The set shown for a device: its largest display's (the one a page's
+    /// own screenshots go into), else the first other with screenshots.
+    /// Alba's default page showed its iPhone Duo set, turned on its side,
+    /// for iPhone: it came first among the APP_IPHONE sets.
+    static func shownSet(of sets: [LiveScreenshotSet], on device: ProductPageDevice) -> LiveScreenshotSet? {
+        let filled = sets.filter { device.matches($0.displayType.rawValue) && !$0.screenshots.isEmpty }
+        return filled.first { $0.displayType == device.displayType }
+            ?? filled.first { $0.displayType != .iPhoneDuo }
+            ?? filled.first
     }
 
     /// What the page shows in a language on a device: its own, else the

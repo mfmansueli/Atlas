@@ -3,7 +3,7 @@ id: pages
 group: listing
 title: Custom Product Pages
 summary: Other versions of your App Store page, each with its own link, for an audience, a campaign or a search.
-keywords: custom product pages, product page, product pages, page, pages, link, campaign, audience, deep link, visible, hidden, 70, promotional text, keywords, not offered, rules, screenshots, make screenshots for this page, autopilot, choose files, sizes, app review, approved, rejected, notification
+keywords: custom product pages, product page, product pages, page, pages, link, campaign, audience, deep link, visible, hidden, 70, promotional text, keywords, not offered, rules, screenshots, make screenshots for this page, autopilot, look, template, claude design, capture again, simulator, choose files, sizes, app review, approved, rejected, notification, app previews, video, choose app previews, campaign, referrer
 showMe: section:productPages
 related: store, submit, analytics
 ---
@@ -24,13 +24,25 @@ While App Review has a page, Atlas looks at it each time it checks App Store Con
 A page shows the default page’s screenshots until it has its own. To make them, click **Make Screenshots for This Page…** under the page’s screenshots (Atlas Pro).
 
 1. Your assistant plans the set for the page’s audience: which of the default page’s screens come first, and a caption for each in every language. Change the angle if you like, and choose the languages and devices that get the page’s own images.
-2. Click **Start Autopilot**. Atlas lays the set out with the default page’s template and captures; nothing is captured again. Close the window whenever you like: Autopilot keeps going, and the page shows how far it got.
+   - **Look:** keep the default page’s template, pick **Another template…** from Atlas’s templates, or choose **A new look from Claude Design**: your assistant draws three looks, each shown on the page’s first screenshot, and you click the one to use.
+   - **Capture screens again:** turn it on and your assistant runs the app in the Simulator and captures again the screens that should show something else for this page (at most 3), such as the lock turned on. Each is marked “captured again”; **Use the Default** puts a screen back. The default page’s captures don’t change.
+2. Click **Start Autopilot**. Atlas lays the set out with the look you chose, from the default page’s captures and the ones captured again. Close the window whenever you like: Autopilot keeps going, and the page shows how far it got.
 3. Look at the new set beside the default page’s. **Ask for Changes…** tells your assistant what to change, and only this page’s set is redone.
 4. Click **Use These Screenshots**. They wait in Review & Push, one change per language and device, until you push and submit the page.
+
+Have App Preview videos for the page? Click **Choose App Previews…** and pick up to 3 MOV, MP4 or M4V videos for the language and device shown: 886 × 1920 on iPhone or 1200 × 1600 on iPad (either way round), 15 to 30 seconds, up to 500 MB. They wait in Review & Push like the screenshots, and the default page’s App Previews don’t change.
 
 Already have the screenshots? Click **Choose Files…** under the page’s screenshots and pick up to 10 PNG or JPEG images for the language and device shown. Atlas checks each one’s size first: iPhone takes 1320 × 2868, 1290 × 2796 or 1260 × 2736, and iPad 2064 × 2752 or 2048 × 2732, upright or turned. A file that doesn’t fit is named with the sizes that work, and nothing is added. The ones that fit wait in Review & Push, in place of any set chosen before for that language and device.
 
 The default page’s screenshots, captions and template don’t change.
+
+## Where a page’s link is used
+
+Under a page’s numbers, the list says where its visitors came from over the last 28 days: a campaign link (its `ct` token) or the app or website that links to it, the one with the most page views first. Hold the pointer over it for the rest. It comes from Apple’s detailed reports, like **Analytics → Break It Down → Referrer** and **Campaign**.
+
+## If a push didn’t finish
+
+When Apple takes too long to answer, a page may still have been made in App Store Connect. Atlas never retries that on its own: after **Refresh**, a draft App Store Connect already has becomes that page, and what it still needs (keywords, texts, the deep link) waits in Review & Push.
 
 ## What promotional text can’t say
 

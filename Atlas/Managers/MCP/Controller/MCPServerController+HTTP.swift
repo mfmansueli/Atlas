@@ -11,8 +11,7 @@ import Foundation
 /// `POST /mcp/pair` trades a pairing code for that token.
 extension MCPServerController {
     func handle(_ request: HTTPRequest) async -> HTTPReply {
-        if request.path.hasPrefix(MCPEndpoint.autopilotPath) { return await .response(receiveAutopilotUpload(request)) }
-        if request.path.hasPrefix(MCPEndpoint.eventArtworkPath) { return await .response(receiveEventArtworkUpload(request)) }
+        if let upload = await receiveUpload(request) { return .response(upload) }
         guard request.path == MCPEndpoint.path || request.path == MCPEndpoint.pairingPath else { return .response(.text(404)) }
         guard Self.isLocal(origin: request.header("origin")), Self.isLocal(host: request.header("host")) else {
             return .response(.text(403, "Only clients on this Mac may connect."))
@@ -27,6 +26,15 @@ extension MCPServerController {
         case "DELETE": return .response(delete(request, from: clientID))
         default: return .response(.text(405, headers: ["Allow": "GET, POST, DELETE"]))
         }
+    }
+
+    /// The upload links (Autopilot's captures, event art, a page's screens
+    /// captured again); nil for any other path.
+    private func receiveUpload(_ request: HTTPRequest) async -> HTTPResponse? {
+        if request.path.hasPrefix(MCPEndpoint.autopilotPath) { return await receiveAutopilotUpload(request) }
+        if request.path.hasPrefix(MCPEndpoint.eventArtworkPath) { return await receiveEventArtworkUpload(request) }
+        if request.path.hasPrefix(MCPEndpoint.pageShotsPath) { return await receivePageShotsUpload(request) }
+        return nil
     }
 
     // MARK: - Pairing code

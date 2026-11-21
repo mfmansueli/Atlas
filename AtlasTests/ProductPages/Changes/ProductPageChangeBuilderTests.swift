@@ -30,9 +30,9 @@ struct ProductPageChangeBuilderTests {
 
     // MARK: - New pages
 
-    /// From the default page of 1.4: that version is the template, and its
-    /// languages come with it, so the version lists none (an empty to-many
-    /// would ask for a version without any).
+    /// From the default page of 1.4: that version is the template, and the
+    /// version still lists the draft's languages, each with its text (App
+    /// Store Connect requires `appCustomProductPageLocalizations`).
     @Test func aPageFromTheDefaultPageNamesTheVersionAsItsTemplate() throws {
         let document = ProductPageChangeBuilder.createDocument(Sample.privateDiary, appID: Sample.appID, templateVersionID: "6450200014")
         let data = try Self.object(document["data"])
@@ -43,9 +43,13 @@ struct ProductPageChangeBuilderTests {
         #expect(try Self.object(Self.object(relationships["appStoreVersionTemplate"])["data"])["id"] as? String == "6450200014")
         #expect(relationships["customProductPageTemplate"] == nil)
         let included = try #require(document["included"] as? [[String: Any]])
-        #expect(included.count == 1)
+        #expect(included.count == 1 + Sample.privateDiary.locales.count)
         #expect(included[0]["type"] as? String == "appCustomProductPageVersions")
-        #expect(included[0]["relationships"] == nil)
+        let listed = try #require(
+            (Self.object(Self.object(included[0]["relationships"])["appCustomProductPageLocalizations"])["data"]) as? [[String: String]]
+        )
+        #expect(listed.count == Sample.privateDiary.locales.count)
+        #expect(try Self.object(included[1]["attributes"])["promotionalText"] as? String == Sample.privateDiary.promotionalTexts["en-US"])
         #expect(try Self.object(included[0]["attributes"])["deepLink"] as? String == "https://lumen.app/lock")
     }
 
@@ -66,17 +70,17 @@ struct ProductPageChangeBuilderTests {
         #expect(english["locale"] as? String == "en-US")
         #expect(english["promotionalText"] as? String == Sample.privateDiary.promotionalTexts["en-US"])
         #expect(try Self.object(included[2]["attributes"])["promotionalText"] == nil)
-        let back = try Self.object(Self.object(included[1]["relationships"])["appCustomProductPageVersion"])
-        #expect(try Self.object(back["data"])["id"] as? String == "${v1}")
+        // App Store Connect refuses an inline ID in the link back.
+        #expect(included[1]["relationships"] == nil)
     }
 
+    /// Every start makes the draft's languages inline.
     @Test func whichLanguagesAreMadeInline() {
         var draft = Sample.privateDiary
-        #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: "v").isEmpty)
-        // No version to copy: the default page's languages are made here.
+        #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: "v") == draft.locales)
         #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: nil) == draft.locales)
         draft.start = .copy(pageID: Sample.PageID.prompts, name: "Prompts")
-        #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: nil).isEmpty)
+        #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: nil) == draft.locales)
         draft.start = .empty
         #expect(ProductPageChangeBuilder.inlineLocales(draft, templateVersionID: "v") == draft.locales)
     }
@@ -97,13 +101,13 @@ struct ProductPageChangeBuilderTests {
         #expect(change.id == builder.newPageChangeID(draftID: Sample.PageID.privateDiary))
         #expect(change.requests.first?.method == .post)
         #expect(change.requests.first?.path == "/v1/appCustomProductPages")
+        // Texts are made inline; only keywords are written after.
         let writes = change.requests.dropFirst().compactMap(ProductPageLocaleWrite.init)
-        #expect(writes.count == 4)
+        let withKeywords = Sample.privateDiary.locales.filter { !(Sample.privateDiary.keywords[$0] ?? []).isEmpty }
+        #expect(writes.map(\.content.locale) == withKeywords)
         #expect(writes.allSatisfy { $0.pageID == ProductPageChangeBuilder.createdPage })
-        #expect(writes.map(\.content.locale) == ["en-US", "de-DE", "ja", "ar-SA"])
-        #expect(writes[0].content.promotionalText == Sample.privateDiary.promotionalTexts["en-US"])
-        #expect(writes[1].content.promotionalText == nil)
-        #expect(writes[1].content.addKeywords == ["privat", "tagebuch", "sperre"])
+        #expect(writes.allSatisfy { $0.content.promotionalText == nil })
+        #expect(writes.first { $0.content.locale == "de-DE" }?.content.addKeywords == ["privat", "tagebuch", "sperre"])
         #expect(change.blockedReason == nil)
 
         var empty = Sample.privateDiary

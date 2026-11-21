@@ -67,8 +67,8 @@ struct PageShotsSheet: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let source = flow.source {
             switch stage.step {
-            case .plan: PageShotsPlanStep(flow: flow, source: source)
-            case .making: PageShotsMakingStep(flow: flow, source: source)
+            case .plan: PageShotsPlanStep(flow: flow, source: flow.shownSource ?? source, defaultSource: source)
+            case .making: PageShotsMakingStep(flow: flow, source: flow.shownSource ?? source)
             case .result: PageShotsResultStep(flow: flow, defaultSet: defaultSet, viewModel: viewModel)
             }
         }

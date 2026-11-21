@@ -30,6 +30,16 @@ enum ProductPageNumbersText {
         (rate / 100).formatted(.percent.precision(.fractionLength(1)).locale(locale))
     }
 
+    /// "Most from Campaign “spring_ig” · 2 more", the row's line on where
+    /// its link is used; nil before Apple names any.
+    static func arrivals(_ arrivals: [ProductPageArrival]) -> String? {
+        guard let first = arrivals.first else { return nil }
+        let others = arrivals.count - 1
+        return others == 0
+            ? String(localized: "From \(first.title)")
+            : String(localized: "Most from \(first.title) · \(others) more")
+    }
+
     /// The line instead of numbers, for a page nobody sees yet.
     static func noNumbers(for page: ProductPage) -> String {
         if page.state.isApproved {

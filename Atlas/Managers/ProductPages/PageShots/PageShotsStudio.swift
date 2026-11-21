@@ -41,6 +41,9 @@ final class PageShotsStudio {
     @ObservationIgnored private var sources: [PageShotsRun.Key: PageShotsSource] = [:]
     /// DEBUG scenes: lays out only this many, to show Making under way.
     @ObservationIgnored var holdAfter: Int?
+    /// PNGs at the runs' upload links, by upload ID, until a
+    /// report_page_capture names them.
+    @ObservationIgnored var uploads: [String: PageShotsUpload] = [:]
 
     init(directory: URL? = nil, runs: [PageShotsRun] = []) {
         self.directory = directory
@@ -49,6 +52,15 @@ final class PageShotsStudio {
         for run in saved + runs { self.runs[run.key] = run }
         // What was under way when Atlas quit: the assistant's session ended
         // with it, and the layout starts over when the sheet opens.
+        // Every session ended with Atlas, at any stage: Ask Again shows
+        // where it had nothing to show.
+        for run in saved where !run.claudeRunIDs.isEmpty {
+            update(run.key) { run in
+                run.claudeRunID = nil
+                run.design?.claudeRunID = nil
+                run.recapture?.claudeRunID = nil
+            }
+        }
         for run in saved where run.stage.isWorking {
             update(run.key) { run in
                 run.claudeRunID = nil
@@ -217,7 +229,7 @@ final class PageShotsStudio {
 
     private func layOut(_ key: PageShotsRun.Key, source: PageShotsSource) async {
         guard let run = runs[key], let plan = run.plan else { return }
-        let source = await source.lookingUpStore(for: run.locales)
+        let source = await source.applying(run).lookingUpStore(for: run.locales)
         let folder = folder(of: run)
         try? FileManager.default.removeItem(at: folder)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -293,8 +305,9 @@ final class PageShotsStudio {
     /// laid out, and one that didn't come says so calmly; what was there
     /// stays.
     func claudeRunEnded(_ session: ClaudeCodeRun) {
-        guard case .pageScreenshots = session.purpose,
-              let run = runs.values.first(where: { $0.appID == session.appID && $0.claudeRunID == session.id })
+        guard session.purpose.isPageScreenshots else { return }
+        if lookSessionEnded(session) || captureSessionEnded(session) { return }
+        guard let run = runs.values.first(where: { $0.appID == session.appID && $0.claudeRunID == session.id })
         else { return }
         let key = run.key
         let changed = run.plan.map { plan in run.askedAt.map { plan.madeAt >= $0 } ?? true } ?? false

@@ -11,7 +11,10 @@ import SwiftUI
 /// Autopilot lays the set out.
 struct PageShotsPlanStep: View {
     @Bindable var flow: PageShotsFlow
+    /// The set as it'll be made: the run's Look and captures.
     let source: PageShotsSource
+    /// The default page's, for the Look's choices.
+    let defaultSource: PageShotsSource
 
     @State private var angle = ""
     @FocusState private var isEditingAngle: Bool
@@ -23,16 +26,18 @@ struct PageShotsPlanStep: View {
                     VStack(alignment: .leading, spacing: Spacing.xLarge) {
                         angleSection
                         orderSection
-                        lookSection
+                        PageShotsLookSection(flow: flow, source: defaultSource)
                     }
                     .padding(.horizontal, Spacing.xLarge)
                     .padding(.vertical, Spacing.large)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .accessibilityIdentifier("pages.shots.planScroll")
                 Divider()
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.xLarge) {
                         PageShotsLanguagesSection(flow: flow, source: source)
+                        PageShotsCapturesSection(flow: flow, source: source)
                         planSection
                     }
                     .padding(.horizontal, Spacing.xLarge)
@@ -146,6 +151,11 @@ struct PageShotsPlanStep: View {
                                         .font(.caption2)
                                         .foregroundStyle(Palette.label2)
                                 }
+                                if recapturedSlots.contains(screen.slot) {
+                                    Text("captured again")
+                                        .font(.caption2.weight(.medium))
+                                        .foregroundStyle(Palette.accent)
+                                }
                             }
                             .frame(width: 186 * PageShotsTile.aspect(.iPhone))
                             .accessibilityElement(children: .combine)
@@ -168,41 +178,21 @@ struct PageShotsPlanStep: View {
         let count = plan.screens.count
         let total = source.slotCount
         let moved = plan.screens.enumerated().contains { $0.offset != $0.element.slot }
-        if count == total {
-            return moved
-                ? String(localized: "The same \(count) screens as the default page, in another order and with other captions.")
-                : String(localized: "The same \(count) screens as the default page, with other captions.")
+        let note = if count != total {
+            String(localized: "\(count) of the default page’s \(total) screens, in this page’s order and with other captions.")
+        } else if moved {
+            String(localized: "The same \(count) screens as the default page, in another order and with other captions.")
+        } else {
+            String(localized: "The same \(count) screens as the default page, with other captions.")
         }
-        return String(localized: "\(count) of the default page’s \(total) screens, in this page’s order and with other captions.")
+        let again = plan.screens.filter { recapturedSlots.contains($0.slot) }.count
+        guard again > 0 else { return note }
+        return again == 1
+            ? note + " " + String(localized: "1 is captured again.")
+            : note + " " + String(localized: "\(again) are captured again.")
     }
 
-    private var lookSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Look").font(.headline)
-            HStack(alignment: .top, spacing: Spacing.small) {
-                Image(systemName: "largecircle.fill.circle")
-                    .foregroundStyle(Palette.accent)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("The same template as the default page").font(.callout)
-                    Text(lookNote)
-                        .font(.caption)
-                        .foregroundStyle(Palette.label2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("pages.shots.look")
-        }
-    }
-
-    private var lookNote: String {
-        let name = run?.templateName ?? ""
-        let app = flow.app.name
-        return name.isEmpty
-            ? String(localized: "The page looks like \(app), with a different story.")
-            : String(localized: "\(name). The page looks like \(app), with a different story.")
-    }
+    private var recapturedSlots: Set<Int> { Set(run?.recapture?.slots ?? []) }
 
     // MARK: - Right
 
@@ -216,9 +206,25 @@ struct PageShotsPlanStep: View {
                     : String(localized: "Ready in \(flow.readyLocales.count) of \(flow.languages.count) languages."),
                 who: assistant
             )
+            if run?.look.isClaudeDesign == true {
+                planRow(
+                    title: String(localized: "Draw three looks"),
+                    detail: String(localized: "\(run?.design?.candidates.count ?? 0) of \(PageShotsDesign.candidateCount) ready. You choose one."),
+                    who: assistant
+                )
+            }
+            if let recapture = run?.recapture {
+                planRow(
+                    title: String(localized: "Capture screens again"),
+                    detail: String(localized: "In the Simulator, at most \(PageShotsRecapture.maxScreens) screens. \(recapture.slots.count) so far."),
+                    who: assistant
+                )
+            }
             planRow(
                 title: String(localized: "Lay out \(run?.expectedCount ?? 0) screenshots"),
-                detail: String(localized: "From the default page’s captures. Nothing is captured again."),
+                detail: recapturedSlots.isEmpty
+                    ? String(localized: "From the default page’s captures. Nothing is captured again.")
+                    : String(localized: "From the default page’s captures, with \(recapturedSlots.count) captured again."),
                 who: "Atlas"
             )
         }
@@ -264,6 +270,7 @@ struct PageShotsPlanStep: View {
 
     private var summary: String {
         let count = run?.expectedCount ?? 0
+        if run?.design?.isReady == false { return String(localized: "Choose one of the three looks to start.") }
         guard count > 0 else { return String(localized: "The default page’s screenshots don’t change.") }
         let minutes = max(1, Int((Double(count) * 1.5 / 60).rounded(.up)))
         return String(localized: "\(count) screenshots for this page · about \(minutes) min · the default page’s screenshots don’t change")

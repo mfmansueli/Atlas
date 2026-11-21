@@ -24,7 +24,10 @@ struct GetAnalyticsBreakdownTool: MCPTool {
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-                "by": MCPToolDefinition.string("territory, language, source, device or productPage. Leave it out for territory."),
+                "by": MCPToolDefinition.string(
+                    "territory, language, source, device, productPage, referrer (the app or website people came from) "
+                        + "or campaign (a campaign link's ct token). Leave it out for territory."
+                ),
                 "days": ["type": "integer", "description": "7, 28 or 90. Leave it out for 28."],
                 "limit": ["type": "integer", "description": "The most rows to return. Leave it out for 40."],
             ],
@@ -37,7 +40,7 @@ struct GetAnalyticsBreakdownTool: MCPTool {
         let report = try analytics.funnel(days: AnalyticsMCPContext.days(arguments))
         let name = try arguments.optionalString("by") ?? BreakdownDimension.territory.rawValue
         guard let dimension = BreakdownDimension(rawValue: name) else {
-            throw MCPToolError.invalidArgument(name: "by", expected: "territory, language, source, device or productPage")
+            throw MCPToolError.invalidArgument(name: "by", expected: "territory, language, source, device, productPage, referrer or campaign")
         }
         let limit = try max(1, arguments.optionalInt("limit") ?? 40)
         let table = BreakdownTable.make(analytics.dataset, dimension: dimension, period: report.period, context: analytics.context)

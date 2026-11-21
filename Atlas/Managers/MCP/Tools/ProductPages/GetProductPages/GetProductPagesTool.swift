@@ -32,7 +32,8 @@ struct GetProductPagesTool: MCPTool {
         prepared or reviewed, deepLink, `languages` with their own promotional text, keywords and screenshots \
         (`textFromDefault` when only the text is the default page's), `showsDefaultIn` the languages with nothing of \
         their own, `numbers` for the last 28 days (impressions, pageViews, downloads, downloadRate, and `vsDefault`: \
-        above or below by points, aboutTheSame, or tooFewToCompare under 200 page views: never quote a rate then), \
+        above or below by points, aboutTheSame, or tooFewToCompare under 200 page views: never quote a rate then; \
+        `arrivals`, where the page's link is used: campaign tokens and referring apps or sites, most page views first), \
         `queued` (changes waiting in Review & Push, not pushed), `takesTexts` (false with `why`; `newVersionNote` \
         for an approved page), and `brief`: who an accepted suggestion's page is for and the screenshots it asked for \
         (`screenshotsAdded` stays false until the page has its own in App Store Connect: the person makes them with Make \

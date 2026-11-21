@@ -96,6 +96,8 @@ struct MCPToolbox {
             ProposeProductPageTextsTool(),
             GetPageScreenshotsTool(),
             ProposePageScreenshotsTool(),
+            ProposePageLookTool(),
+            ReportPageCaptureTool(),
         ])
     }
 

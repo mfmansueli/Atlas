@@ -106,6 +106,11 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertFalse(element("analytics.breakdown.row.US").exists)
         element("analytics.breakdown.sort.viewRate").click()
         XCTAssertTrue(element("analytics.breakdown.footer").exists)
+        // Referrer and Campaign, from the Detailed reports.
+        element("analytics.breakdown.dimension.5").click()
+        XCTAssertTrue(element("analytics.breakdown.row.instagram.com").waitForExistence(timeout: 5))
+        element("analytics.breakdown.dimension.6").click()
+        XCTAssertTrue(element("analytics.breakdown.row.spring_ig").waitForExistence(timeout: 5))
     }
 
     // MARK: - What to Try

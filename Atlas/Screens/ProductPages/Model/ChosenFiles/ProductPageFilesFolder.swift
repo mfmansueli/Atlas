@@ -5,7 +5,8 @@
 
 import Foundation
 
-/// Where Choose Files… keeps copies of the chosen screenshots until they're
+/// Where Choose Files… keeps copies of the chosen screenshots (and Choose
+/// App Previews… of the videos) until they're
 /// pushed: `Application Support/Atlas/ProductPages/Files/<appID>/<set>/`,
 /// so the push reads them even if the originals move. DEBUG scenes and
 /// unit tests write to a temporary folder.
@@ -39,13 +40,22 @@ struct ProductPageFilesFolder: Sendable {
     /// the push takes them, in the order chosen. Names are numbered so two
     /// files of the same name don't overwrite each other.
     func save(_ files: [ProductPageChosenFile], appID: StoreApp.ID) throws -> [ProductPageScreenshotsPush.File] {
+        try save(files.map { ($0.fileName, $0.data, nil) }, appID: appID)
+    }
+
+    /// The same for App Previews, each with its video type.
+    func save(_ videos: [ProductPageChosenVideo], appID: StoreApp.ID) throws -> [ProductPageScreenshotsPush.File] {
+        try save(videos.map { ($0.fileName, $0.data, ProductPageMedia.mimeType(of: $0.fileName)) }, appID: appID)
+    }
+
+    private func save(_ files: [(name: String, data: Data, mimeType: String?)], appID: StoreApp.ID) throws -> [ProductPageScreenshotsPush.File] {
         let folder = root.appending(path: appID).appending(path: UUID().uuidString)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         return try files.enumerated().map { index, file in
-            let url = folder.appending(path: String(format: "%02d-", index + 1) + file.fileName)
+            let url = folder.appending(path: String(format: "%02d-", index + 1) + file.name)
             try file.data.write(to: url, options: .atomic)
             return ProductPageScreenshotsPush.File(
-                path: url.path, fileName: file.fileName, fileSize: file.data.count, checksum: ScreenshotPNG.checksum(file.data)
+                path: url.path, fileName: file.name, fileSize: file.data.count, checksum: ScreenshotPNG.checksum(file.data), mimeType: file.mimeType
             )
         }
     }

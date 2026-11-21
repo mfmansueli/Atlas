@@ -22,6 +22,15 @@ struct BreakdownTableView: View {
             totals
             Divider()
             ScrollView {
+                if viewModel.sortedRows.isEmpty {
+                    Text(table.dimension.emptyText)
+                        .font(.callout)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(Spacing.medium)
+                        .accessibilityIdentifier("analytics.breakdown.empty")
+                }
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.sortedRows) { row in
                         BreakdownRowView(

@@ -8,8 +8,8 @@ import SwiftUI
 /// The screenshots and App Previews the page shows in one language, on
 /// iPhone or iPad: its own, the set made for it waiting in Review & Push,
 /// or the default page's. Make Screenshots for This Page… makes it a set of
-/// its own (board 52), and Choose Files… takes screenshots the person
-/// already has; App Previews are changed in App Store Connect.
+/// its own (board 52), Choose Files… takes screenshots the person already
+/// has and Choose App Previews… videos.
 struct ProductPageScreenshotsBox: View {
     @Bindable var viewModel: ProductPagesViewModel
     let page: ProductPage
@@ -53,7 +53,14 @@ struct ProductPageScreenshotsBox: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("pages.screenshots.note")
                 ProductPageChooseFilesButton(viewModel: viewModel, page: page, locale: locale)
+                ProductPageChooseVideosButton(viewModel: viewModel, page: page, locale: locale)
                 PageShotsMakeButton(viewModel: viewModel, page: page)
+            }
+            if let previews = viewModel.queuedAppPreviews(of: page, locale: locale, device: viewModel.device) {
+                Label(previewsNote(previews), systemImage: "play.rectangle")
+                    .font(.caption)
+                    .foregroundStyle(Palette.label2)
+                    .accessibilityIdentifier("pages.screenshots.previewsNote")
             }
             PageShotsRunRow(viewModel: viewModel, page: page)
             if !isOwn, viewModel.pageShotsRun(of: page) == nil, let brief = viewModel.brief(of: page) {
@@ -74,6 +81,13 @@ struct ProductPageScreenshotsBox: View {
         return queued.count == 1
             ? String(localized: "1 screenshot for this page, in \(name), waiting in Review & Push.")
             : String(localized: "\(queued.count) screenshots for this page, in \(name), waiting in Review & Push.")
+    }
+
+    private func previewsNote(_ queued: [ProductPageScreenshotsPush.File]) -> String {
+        let name = ProductPageChangeBuilder.localeName(locale)
+        return queued.count == 1
+            ? String(localized: "1 App Preview for this page, in \(name), waiting in Review & Push.")
+            : String(localized: "\(queued.count) App Previews for this page, in \(name), waiting in Review & Push.")
     }
 
     /// Same as Default · Own: which the language shows, not a control.

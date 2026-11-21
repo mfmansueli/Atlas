@@ -90,7 +90,9 @@ final class ProductPagesViewModel {
             let shownDraft = selectedPage.flatMap { $0.isDraft ? $0.name : nil }
             state = .loaded(snapshot)
             readFailure = nil
+            adoptCreatedDrafts(in: snapshot.pages)
             pruneDrafts()
+            refreshDraftChanges()
             store.prune(for: app.id, keeping: Set(snapshot.pages.map(\.id)).union(store.drafts(for: app.id).map(\.id)))
             if let id = selectedPageID, page(id) == nil {
                 selectedPageID = shownDraft.flatMap { name in pages.first { !$0.isDraft && $0.name == name }?.id }
@@ -109,6 +111,17 @@ final class ProductPagesViewModel {
         let queued = Set(queue.changes(for: app.id, section: .productPages).map(\.id))
         let gone = store.drafts(for: app.id).filter { !queued.contains(builder.newPageChangeID(draftID: $0.id)) }
         if !gone.isEmpty { store.removeDrafts(Set(gone.map(\.id)), for: app.id) }
+    }
+
+    /// A draft's queued change is made again from the draft, so one queued
+    /// by an older Atlas sends what App Store Connect takes now.
+    private func refreshDraftChanges() {
+        for draft in store.drafts(for: app.id) {
+            let id = builder.newPageChangeID(draftID: draft.id)
+            guard let queued = queue.change(id: id), let made = builder.newPageChange(draft, defaultPage: defaultPage),
+                  made.requests != queued.requests else { continue }
+            queue.upsert(made)
+        }
     }
 
     /// The numbers Analytics has for the last 28 days.

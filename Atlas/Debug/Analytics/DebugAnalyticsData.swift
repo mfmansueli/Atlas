@@ -84,6 +84,16 @@ enum DebugAnalyticsData {
                 fact.downloads = random.count(111 * share * (page == "Mood tracking" ? 0.8 : 1))
                 pages.append(fact)
             }
+            // Where the Prompts page's link is used: a campaign and two sites.
+            for (referrer, campaign, views) in [("instagram.com", "spring_ig", 14.0), ("reddit.com", nil, 6.0), ("Notion", "notion_tpl", 4.0)] {
+                var fact = EngagementFact(
+                    day: through.adding(-back), territory: "", source: referrer == "Notion" ? "App Referrer" : "Web Referrer", device: "",
+                    page: "Prompts", referrer: referrer, campaign: campaign
+                )
+                fact.pageViews = random.count(views)
+                fact.downloads = random.count(views * 0.3)
+                pages.append(fact)
+            }
         }
         return EngagementArchive(facts: EngagementFact.merged(facts), pageFacts: pages)
     }

@@ -51,28 +51,30 @@ final class FakePageScreenshotsTransport: PushTransport, ScreenshotUploadTranspo
         let relationships = data?["relationships"] as? [String: Any]
         let parts = request.path.split(separator: "/").map(String.init)
         switch (request.method, parts.count > 1 ? parts[1] : "") {
-        case (.post, "appScreenshotSets"):
+        case (.post, "appScreenshotSets"), (.post, "appPreviewSets"):
             let localization = (relationships?["appCustomProductPageLocalization"] as? [String: Any])?["data"] as? [String: Any]
-            append("create set \(localization?["id"] as? String ?? "") \(attributes?["screenshotDisplayType"] as? String ?? "")")
-            return try response(["data": ["type": "appScreenshotSets", "id": "set-new"]])
-        case (.post, "appScreenshots"):
-            let set = (relationships?["appScreenshotSet"] as? [String: Any])?["data"] as? [String: Any]
+            let kind = attributes?["screenshotDisplayType"] as? String ?? attributes?["previewType"] as? String ?? ""
+            append("create \(parts[1]) \(localization?["id"] as? String ?? "") \(kind)".replacingOccurrences(of: "create appScreenshotSets", with: "create set"))
+            return try response(["data": ["type": parts[1], "id": "set-new"]])
+        case (.post, "appScreenshots"), (.post, "appPreviews"):
+            let set = (relationships?["appScreenshotSet"] as? [String: Any] ?? relationships?["appPreviewSet"] as? [String: Any])?["data"] as? [String: Any]
+            let mime = (attributes?["mimeType"] as? String).map { " " + $0 } ?? ""
             let id = state.withLock { state -> String in
                 defer { state.nextID += 1 }
-                state.log.append("reserve \(attributes?["fileName"] as? String ?? "") \(set?["id"] as? String ?? "")")
+                state.log.append("reserve \(attributes?["fileName"] as? String ?? "") \(set?["id"] as? String ?? "")\(mime)")
                 return "shot-\(state.nextID)"
             }
             let size = attributes?["fileSize"] as? Int ?? 0
             let operation: [String: Any] = ["method": "PUT", "url": "https://upload.example/\(id)/0", "offset": 0, "length": size, "requestHeaders": []]
             return try response(["data": ["type": "appScreenshots", "id": id, "attributes": ["uploadOperations": [operation]]]])
-        case (.patch, "appScreenshots"):
+        case (.patch, "appScreenshots"), (.patch, "appPreviews"):
             let id = parts.last ?? ""
             state.withLock { state in
                 state.log.append("commit \(id)")
                 state.commits[id] = attributes?["sourceFileChecksum"] as? String
             }
             return try response(["data": ["type": "appScreenshots", "id": id]])
-        case (.patch, "appScreenshotSets"):
+        case (.patch, "appScreenshotSets"), (.patch, "appPreviewSets"):
             let ids = (body?["data"] as? [[String: Any]] ?? []).compactMap { $0["id"] as? String }
             append((["reorder", parts[2]] + ids).joined(separator: " "))
             return AppStoreConnectResponse(data: Data(), rateLimit: nil)
@@ -89,14 +91,17 @@ final class FakePageScreenshotsTransport: PushTransport, ScreenshotUploadTranspo
         let parts = path.split(separator: "?")[0].split(separator: "/").map(String.init)
         if parts.count == 4, parts[1] == "appCustomProductPageLocalizations" {
             let query = URLComponents(string: "https://x\(path)")?.queryItems ?? []
-            let display = query.first { $0.name == "filter[screenshotDisplayType]" }?.value ?? ""
-            append("sets \(parts[2]) \(display)")
+            let isPreviews = parts[3] == "appPreviewSets"
+            let kindField = isPreviews ? "previewType" : "screenshotDisplayType"
+            let items = isPreviews ? "appPreviews" : "appScreenshots"
+            let display = query.first { $0.name == "filter[\(kindField)]" }?.value ?? ""
+            append("\(isPreviews ? "preview sets" : "sets") \(parts[2]) \(display)")
             guard let existing = script.existing else { return try response(["data": []]) }
-            let screenshots = existing.screenshotIDs.map { ["type": "appScreenshots", "id": $0] }
+            let screenshots = existing.screenshotIDs.map { ["type": items, "id": $0] }
             return try response(["data": [[
-                "type": "appScreenshotSets", "id": existing.setID,
-                "attributes": ["screenshotDisplayType": display],
-                "relationships": ["appScreenshots": ["data": screenshots]],
+                "type": parts[3], "id": existing.setID,
+                "attributes": [kindField: display],
+                "relationships": [items: ["data": screenshots]],
             ]]])
         }
         let id = parts.last ?? ""

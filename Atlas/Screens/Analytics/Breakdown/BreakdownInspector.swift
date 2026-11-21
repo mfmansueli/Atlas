@@ -128,7 +128,7 @@ struct BreakdownInspector: View {
             if table.totals.starts != nil { actions.append(.pricing(territory: row.id)) }
             return actions
         case .language: return [.storePage(locale: localeCode), .screenshots(locale: localeCode)]
-        case .source, .device, .productPage: return [.screenshots(locale: nil), .storePage(locale: nil)]
+        case .source, .device, .productPage, .referrer, .campaign: return [.screenshots(locale: nil), .storePage(locale: nil)]
         }
     }
 

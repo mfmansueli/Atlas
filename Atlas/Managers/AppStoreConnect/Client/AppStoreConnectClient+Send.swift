@@ -6,6 +6,11 @@
 import Foundation
 
 extension AppStoreConnectClient {
+    /// How long a write waits for Apple's answer. Making a custom product
+    /// page from a version in 14 languages took over a minute on Alba, and
+    /// URLSession's 60 seconds gave up while Apple went on making it.
+    static let writeTimeout: TimeInterval = 300
+
     /// Sends one write a pending change carries (`POST`, `PATCH` or `DELETE`).
     func send(_ request: PushRequest) async throws -> AppStoreConnectResponse {
         try await perform(method: request.method.rawValue, path: request.path, body: request.body)
@@ -23,6 +28,7 @@ extension AppStoreConnectClient {
         }
         var request = URLRequest(url: url)
         request.httpMethod = method
+        if method != "GET" { request.timeoutInterval = Self.writeTimeout }
         try request.setValue("Bearer \(AppStoreConnectJWT.token(for: credentials, issuedAt: now()))", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let body {

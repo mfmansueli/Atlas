@@ -49,20 +49,50 @@ extension BreakdownTable {
             for device in Set(facts.map(\.device)) where !device.isEmpty {
                 rows.append(row(id: device, name: device, totals: dataset.totals(in: period, filter: FactFilter(device: device))))
             }
-        case .productPage:
-            let pages = Dictionary(grouping: dataset.pages.filter { period.contains($0.day) }, by: \.page)
-            for (page, facts) in pages where !page.isEmpty && page != "No page" {
-                let totals = FunnelTotals(
-                    impressions: facts.reduce(0) { $0 + $1.impressions },
-                    pageViews: facts.reduce(0) { $0 + $1.pageViews },
-                    downloads: facts.reduce(0) { $0 + $1.downloads }
-                )
-                let detail = page == "Default product page" ? nil : String(localized: "Custom product page")
-                rows.append(row(id: page, name: page, detail: detail, totals: totals))
+        case .productPage, .referrer, .campaign:
+            for split in detailedSplits(dataset, dimension: dimension, period: period) {
+                rows.append(row(id: split.name, name: split.name, detail: split.detail, totals: pageTotals(split.facts)))
             }
         }
         rows.sort { ($0.totals.impressions ?? 0, $1.name) > ($1.totals.impressions ?? 0, $0.name) }
         return BreakdownTable(dimension: dimension, period: period, totals: totals, rows: rows, footer: footer(dimension, hasSales: dataset.hasSales))
+    }
+
+    /// The Detailed facts by product page, referrer or campaign, each with
+    /// what's under its name: whether a page is custom, the kind of source
+    /// a referrer is, the page a campaign opens.
+    private static func detailedSplits(
+        _ dataset: AnalyticsDataset, dimension: BreakdownDimension, period: AnalyticsPeriod
+    ) -> [(name: String, detail: String?, facts: [EngagementFact])] {
+        let key: (EngagementFact) -> String? = switch dimension {
+        case .campaign: { $0.campaign }
+        case .referrer: { $0.referrer }
+        default: { $0.page.isEmpty || $0.page == "No page" ? nil : $0.page }
+        }
+        let detailed = dataset.pages.filter { period.contains($0.day) && key($0) != nil }
+        return Dictionary(grouping: detailed) { key($0) ?? "" }.map { name, facts in
+            let detail: String?
+            if dimension == .productPage {
+                detail = name == "Default product page" ? nil : String(localized: "Custom product page")
+            } else if dimension == .campaign {
+                let pages = Set(facts.map(\.page)).filter { !$0.isEmpty && $0 != "No page" }
+                detail = pages.count == 1 ? pages.first : nil
+            } else {
+                let kinds = Set(facts.map(\.source))
+                detail = kinds.count == 1 ? sourceDetail(kinds.first ?? "") : nil
+            }
+            return (name, detail, facts)
+        }
+    }
+
+    /// A Detailed split's funnel: Apple doesn't tie sales or
+    /// subscriptions to it.
+    private static func pageTotals(_ facts: [EngagementFact]) -> FunnelTotals {
+        FunnelTotals(
+            impressions: facts.reduce(0) { $0 + $1.impressions },
+            pageViews: facts.reduce(0) { $0 + $1.pageViews },
+            downloads: facts.reduce(0) { $0 + $1.downloads }
+        )
     }
 
     private static func sourceDetail(_ source: String) -> String? {
@@ -93,6 +123,17 @@ extension BreakdownTable {
                 localized: """
                 From Apple’s detailed reports. Subscriptions aren’t linked to a page, and Apple’s result for a product page test \
                 isn’t in its reports: see it in App Store Connect.
+                """
+            ) + " " + privacy
+        case .referrer:
+            return String(
+                localized: "From Apple’s detailed reports: the app or website people came from, when Apple knows it. Subscriptions aren’t linked to it."
+            ) + " " + privacy
+        case .campaign:
+            return String(
+                localized: """
+                From Apple’s detailed reports: people who came through a campaign link (its ct token), on whichever page it opens. \
+                Make links in App Store Connect → App Analytics → Campaigns.
                 """
             ) + " " + privacy
         }

@@ -19,7 +19,8 @@ struct HTTPRequestParser {
 
     /// The largest body a request to `target` may carry.
     static func maximumBodySize(for target: String) -> Int {
-        target.hasPrefix(MCPEndpoint.autopilotPath) || target.hasPrefix(MCPEndpoint.eventArtworkPath) ? maximumUploadBodySize : maximumBodySize
+        target.hasPrefix(MCPEndpoint.autopilotPath) || target.hasPrefix(MCPEndpoint.eventArtworkPath)
+            || target.hasPrefix(MCPEndpoint.pageShotsPath) ? maximumUploadBodySize : maximumBodySize
     }
 
     private(set) var buffer = Data()

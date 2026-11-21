@@ -57,7 +57,7 @@ extension ProductPagesViewModel {
     /// of the pages, and before a new choice).
     func pruneChosenFiles(folder: ProductPageFilesFolder = .shared) {
         let paths = queue.changes(for: app.id, section: .productPages)
-            .filter(builder.isScreenshotsChange)
+            .filter { builder.isScreenshotsChange($0) || builder.isAppPreviewsChange($0) }
             .flatMap { $0.requests.compactMap(ProductPageScreenshotsPush.init) }
             .flatMap(\.content.files)
             .map(\.path)

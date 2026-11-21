@@ -62,12 +62,34 @@ struct PageShotsRun: Codable, Hashable, Sendable, Identifiable {
     var changeRequest: String?
     /// What went wrong or what the assistant left to do, said calmly.
     var problem: String?
+    /// The Look: nil is the default page's template.
+    var design: PageShotsDesign?
+    /// Capture screens again: nil when the person didn't ask.
+    var recapture: PageShotsRecapture?
     /// The sheet was hidden while it worked.
     var isHidden = false
     var startedAt: Date
     var updatedAt: Date
 
     var key: Key { Key(appID: appID, pageName: pageName) }
+
+    var look: PageShotsLook { design?.look ?? .same }
+
+    /// The Claude Code sessions working on the run: the plan's, the looks'
+    /// and the captures'.
+    var claudeRunIDs: [UUID] {
+        [claudeRunID, design?.claudeRunID, recapture?.claudeRunID].compactMap(\.self)
+    }
+
+    /// The template the set is laid out with when it isn't the default
+    /// page's: a starter sized for the set, or the look chosen of three.
+    func lookTemplate(appID: StoreApp.ID, appName: String, slotCount: Int) -> ScreenshotTemplate? {
+        switch look {
+        case .same: nil
+        case let .starter(starter): ScreenshotTemplate.starter(starter, id: appID, title: appName, slotCount: max(slotCount, 1))
+        case .claudeDesign: design?.chosen?.template
+        }
+    }
 
     var primaryLocale: String { languages.first ?? locales.first ?? "en-US" }
 

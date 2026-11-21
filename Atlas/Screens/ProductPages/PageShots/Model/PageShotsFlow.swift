@@ -149,20 +149,24 @@ final class PageShotsFlow {
     }
 
     var canStart: Bool {
-        guard let run, run.plan != nil, source != nil, problem == nil else { return false }
+        guard let run, run.plan != nil, source != nil, problem == nil, run.design?.isReady ?? true else { return false }
         return !run.locales.isEmpty && !run.displays.isEmpty && run.stage != .making
     }
 
-    /// Start Autopilot: lays the set out.
+    /// Start Autopilot: lays the set out, with what the looks' and
+    /// captures' sessions sent so far.
     func startAutopilot() {
         guard canStart, let source, let run else { return }
         if let id = run.claudeRunID, run.stage == .planning { stopClaude(id) }
+        for id in [run.design?.claudeRunID, run.recapture?.claudeRunID].compactMap(\.self) {
+            stopClaude(id)
+        }
         studio.make(key, source: source)
     }
 
     /// Cancel at Plan: the run is gone.
     func cancel() {
-        if let id = run?.claudeRunID { stopClaude(id) }
+        stopSessions()
         studio.remove(key)
     }
 

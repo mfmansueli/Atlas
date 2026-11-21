@@ -411,6 +411,10 @@ final class PushController {
                 return (.failed(error.pushFailureText), nil)
             }
         }
+        // A write that timed out was sent: Apple may have made it after
+        // Atlas stopped waiting, so it's never "Not sent" (a retry could
+        // make it twice).
+        if let status = Self.timedOutStatus(error) { return (status, nil) }
         if let error = error as? URLError, Self.offlineCodes.contains(error.code) {
             notice = .offline
             return (.notSent(String(localized: "Offline")), String(localized: "Offline"))
@@ -443,7 +447,7 @@ final class PushController {
     }
 
     private static let offlineCodes: Set<URLError.Code> = [
-        .notConnectedToInternet, .networkConnectionLost, .cannotFindHost, .cannotConnectToHost, .timedOut, .dnsLookupFailed,
+        .notConnectedToInternet, .networkConnectionLost, .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed,
     ]
 
     /// Thrown by `send` when the conflict check found a different value.

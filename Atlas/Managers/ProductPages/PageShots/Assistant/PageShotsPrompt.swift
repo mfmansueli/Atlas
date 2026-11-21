@@ -14,6 +14,14 @@ enum PageShotsPrompt {
         .pageScreenshots(pageName: pageName)
     }
 
+    static func looksPurpose(pageName: String) -> ClaudeCodeRunPurpose {
+        .pageLooks(pageName: pageName)
+    }
+
+    static func capturesPurpose(pageName: String) -> ClaudeCodeRunPurpose {
+        .pageCaptures(pageName: pageName)
+    }
+
     static func plan(app: String, appID: String, page: String, languages: Int) -> String {
         String(localized: """
         The person asked Atlas for the custom product page “\(page)” of \(app) (app \(appID)) to have its own \
@@ -39,6 +47,45 @@ enum PageShotsPrompt {
         new order, with every language’s captions for the ones whose words change (the others keep theirs). Atlas lays \
         the set out again. Never push and never \
         submit the page.
+        """)
+    }
+
+    /// A new look from Claude Design: three to choose from.
+    static func looks(app: String, appID: String, page: String) -> String {
+        String(localized: """
+        The person wants a new look for the screenshots of the custom product page “\(page)” of \(app) (app \(appID)): \
+        three looks to choose from, made for this page’s audience. Work in this order.
+        1. Read get_page_screenshots with page “\(page)”: who the page is for, the plan and its captions, and `look`. \
+        Read get_template for the default page’s template: its fields, fonts and per-slot designs.
+        2. Design three looks that are clearly different from the default page’s and from each other (background, \
+        colors, caption type, device frame), that read well in every language of the page, and that still feel like \
+        \(app). Design them as Atlas templates from get_template’s fields: Claude Design and Figma can’t be opened from \
+        here.
+        3. Send each with propose_page_look: a name, a one-sentence rationale, base (default for the default page’s \
+        template, or a starter) and the template fields or ops that change. Look at the preview it returns; send a \
+        look again with the same name to fix it.
+        Never push and never submit the page: the person chooses one of the three in Atlas.
+        """)
+    }
+
+    /// Capture screens again: the screens that should show something else
+    /// for this page.
+    static func captures(app: String, appID: String, page: String) -> String {
+        String(localized: """
+        The person asked for some screens of the custom product page “\(page)” of \(app) (app \(appID)) to be captured \
+        again, so they show what this page’s audience came for. Work in this order.
+        1. Read get_page_screenshots with page “\(page)”: the page, the plan, the default set’s screens (their captures \
+        are attached) and `recapture`, with its upload link and the devices and languages it needs.
+        2. Choose at most \(PageShotsRecapture.maxScreens) screens whose capture should show something else for this \
+        audience (the lock turned on, the kind of entries this page is about). Leave the others as they are.
+        3. Build the app from this project and run it in the Simulator: \(ScreenshotDisplayType.iPhone.deviceName) for \
+        iPhone (1320 × 2868), \(ScreenshotDisplayType.iPad.deviceName) for iPad (2064 × 2752), in each language the set \
+        is made in (-AppleLanguages and -AppleLocale). Set the screen up with sample data that reads well, then save it \
+        with xcrun simctl io booted screenshot.
+        4. Send each PNG with curl -s --data-binary @file.png -H 'Content-Type: image/png' <uploadURL>, the link as is \
+        (not in quotes), and name it with report_page_capture: \
+        the screen’s number, the language, the device, the upload ID and what it shows now.
+        Never push and never submit the page, and don’t change the app’s code: the person makes the set in Atlas.
         """)
     }
 }

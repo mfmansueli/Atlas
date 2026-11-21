@@ -19,6 +19,9 @@ struct ProductPageNumbers: Hashable, Sendable {
     var impressions = 0
     var pageViews = 0
     var downloads = 0
+    /// Where its visitors came from, the most first: campaign links and
+    /// the apps and websites that link to it.
+    var arrivals: [ProductPageArrival] = []
 
     /// Downloads out of page views, 0–100; nil without views.
     var downloadRate: Double? {
@@ -31,10 +34,14 @@ struct ProductPageNumbers: Hashable, Sendable {
         guard let last = facts.map(\.day).max() else { return nil }
         let period = AnalyticsPeriod(ending: last, length: days)
         var byPage: [String: ProductPageNumbers] = [:]
-        for fact in facts where period.contains(fact.day) && !fact.page.isEmpty {
+        let inPeriod = facts.filter { period.contains($0.day) && !$0.page.isEmpty }
+        for fact in inPeriod {
             byPage[fact.page, default: ProductPageNumbers()].impressions += fact.impressions
             byPage[fact.page, default: ProductPageNumbers()].pageViews += fact.pageViews
             byPage[fact.page, default: ProductPageNumbers()].downloads += fact.downloads
+        }
+        for (page, pageFacts) in Dictionary(grouping: inPeriod, by: \.page) {
+            byPage[page]?.arrivals = ProductPageArrival.make(from: pageFacts)
         }
         return (byPage, last)
     }

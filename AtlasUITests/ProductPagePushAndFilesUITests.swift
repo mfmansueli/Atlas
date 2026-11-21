@@ -47,6 +47,7 @@ final class ProductPagePushAndFilesUITests: XCTestCase {
         XCTAssertTrue(queued.waitForExistence(timeout: 15))
         XCTAssertTrue(text(of: element("pages.screenshots.note")).contains("2 screenshots"), text(of: element("pages.screenshots.note")))
         XCTAssertTrue(element("pages.screenshots.chooseFiles").exists)
+        XCTAssertTrue(element("pages.screenshots.chooseVideos").exists)
         attach("cp-files")
     }
 

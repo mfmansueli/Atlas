@@ -38,7 +38,8 @@ struct PageShotsChip: View {
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
-        .accessibilityElement(children: .ignore)
+        // The button stays the element, so VoiceOver can press it: an
+        // element of its own (children: .ignore) has no press action.
         .accessibilityLabel(Text(title))
         .accessibilityValue(Text(isOn ? String(localized: "on") : String(localized: "off")))
         .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)

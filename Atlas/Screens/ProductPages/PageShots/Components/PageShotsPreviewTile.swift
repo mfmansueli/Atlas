@@ -47,7 +47,7 @@ struct PageShotsPreviewTile: View {
 
     private var renderKey: String {
         let slot = screens.indices.contains(position) ? screens[position].slot : -1
-        return "\(position)|\(slot)|\(locale)|\(displayType.rawValue)|\(caption?.headline ?? "")|\(caption?.subhead ?? "")|\(Int(height))"
+        return "\(source.drawingKey)|\(position)|\(slot)|\(locale)|\(displayType.rawValue)|\(caption?.headline ?? "")|\(caption?.subhead ?? "")|\(Int(height))"
     }
 
     private var label: String {

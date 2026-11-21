@@ -136,7 +136,7 @@ struct ProductPageChangeBuilder: Hashable, Sendable {
             let rest = change.id.dropFirst(prefix.count).split(separator: ".").map(String.init)
             guard let last = rest.last, let field = ProductPageField(rawValue: last) else { continue }
             edits.count += 1
-            if field == .screenshots {
+            if field == .screenshots || field == .appPreviews {
                 addScreenshots(of: change, to: &edits)
                 continue
             }
@@ -155,7 +155,7 @@ struct ProductPageChangeBuilder: Hashable, Sendable {
         case .name: edits.name = value
         case .visible: edits.isVisible = value == visibleText(true)
         case .delete: edits.isDeleted = true
-        case .screenshots: break
+        case .screenshots, .appPreviews: break
         }
     }
 

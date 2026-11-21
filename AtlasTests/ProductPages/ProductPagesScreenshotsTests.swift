@@ -58,4 +58,19 @@ struct ProductPagesScreenshotsTests {
         #expect(model.hasOwnScreenshots(copyPage, locale: "en-US", device: .iPhone))
         #expect(model.selectedPageID == copy.id)
     }
+
+    /// Alba's default page has an iPhone Duo set before its 6.9" one: the
+    /// iPhone row shows the 6.9" set, never the Duo's wide inner display.
+    @Test func iPhoneShowsTheLargestDisplayNotDuo() {
+        func set(_ type: ScreenshotDisplayType, count: Int = 2) -> LiveScreenshotSet {
+            let shots = (0..<count).map { LiveScreenshot(id: "\(type.rawValue)-\($0)", fileName: "\($0).png") }
+            return LiveScreenshotSet(id: type.rawValue, locale: "en-US", displayType: type, screenshots: shots)
+        }
+        let sets = [set(.iPhoneDuo), set(.iPhone), set(.iPad)]
+        #expect(ProductPagesViewModel.shownSet(of: sets, on: .iPhone)?.displayType == .iPhone)
+        #expect(ProductPagesViewModel.shownSet(of: sets, on: .iPad)?.displayType == .iPad)
+        // Only Duo has screenshots: it's still better than nothing.
+        let duoOnly = [set(.iPhoneDuo), set(.iPhone, count: 0)]
+        #expect(ProductPagesViewModel.shownSet(of: duoOnly, on: .iPhone)?.displayType == .iPhoneDuo)
+    }
 }

@@ -26,7 +26,8 @@ struct PageShotsMCPRun {
             screenshots in Product Pages; until then, describe the screenshots in propose_product_page's screens.
             """)))
         }
-        let source = try await PageShotsSource.load(app: app, services: context.workspace.services.screenshots)
+        // As the run makes its set: its Look and the screens captured again.
+        let source = try await PageShotsSource.load(app: app, services: context.workspace.services.screenshots).applying(run)
         return .success(PageShotsMCPRun(app: app, run: run, source: source))
     }
 

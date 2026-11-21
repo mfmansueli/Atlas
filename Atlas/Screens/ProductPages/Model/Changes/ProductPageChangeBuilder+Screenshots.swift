@@ -14,6 +14,39 @@ extension ProductPageChangeBuilder {
         "\(idPrefix)\(pageID).\(locale).\(displayType.rawValue).\(ProductPageField.screenshots.rawValue)"
     }
 
+    func appPreviewsChangeID(pageID: ProductPage.ID, locale: String, displayType: ScreenshotDisplayType) -> String {
+        "\(idPrefix)\(pageID).\(locale).\(displayType.rawValue).\(ProductPageField.appPreviews.rawValue)"
+    }
+
+    /// One language's App Previews on one device, in their order: the same
+    /// push as screenshots, into the page's App Preview set.
+    func appPreviewsChange(
+        _ files: [ProductPageScreenshotsPush.File], locale: String, displayType: ScreenshotDisplayType, of page: ProductPage,
+        hadOwn: Bool, source: ChangeSource = .you
+    ) -> PendingChange {
+        let push = ProductPageScreenshotsPush(.init(
+            appID: appID, pageID: page.id, pageName: page.name, currentDeepLink: page.deepLink, locale: locale, displayType: displayType,
+            files: files, media: .appPreviews
+        ))
+        return PendingChange(
+            id: appPreviewsChangeID(pageID: page.id, locale: locale, displayType: displayType),
+            appID: appID, section: .productPages, group: group(page.name), groupID: page.id,
+            title: "\(Self.localeName(locale)) · \(ProductPageField.appPreviews.title) · \(displayType.shortTitle)",
+            flagRegion: Self.region(locale),
+            oldValue: hadOwn ? String(localized: "The page’s own App Previews") : String(localized: "The default page’s App Previews"),
+            newValue: files.count == 1 ? String(localized: "1 App Preview for this page") : String(localized: "\(files.count) App Previews for this page"),
+            source: source,
+            blockedReason: files.isEmpty || files.count > ProductPageMedia.appPreviews.limit
+                ? String(localized: "A set has 1 to 3 App Previews.") : nil,
+            requests: [push.request], restoreRequests: []
+        )
+    }
+
+    /// Whether a queued change is a page's own App Previews.
+    func isAppPreviewsChange(_ change: PendingChange) -> Bool {
+        owns(change) && change.id.hasSuffix(".\(ProductPageField.appPreviews.rawValue)")
+    }
+
     /// One language's screenshots on one device, in their order.
     func screenshotsChange(
         _ files: [ProductPageScreenshotsPush.File], locale: String, displayType: ScreenshotDisplayType, of page: ProductPage,
@@ -53,9 +86,14 @@ extension ProductPageChangeBuilder {
         }
     }
 
-    /// A screenshots change's language, device and files into `edits`.
+    /// A screenshots or App Previews change's language, device and files
+    /// into `edits`.
     func addScreenshots(of change: PendingChange, to edits: inout ProductPageEdits) {
-        guard let content = change.requests.lazy.compactMap(ProductPageScreenshotsPush.init).first?.content else { return }
-        edits.screenshots[content.locale, default: [:]][content.displayType] = content.files
+        guard let push = change.requests.lazy.compactMap(ProductPageScreenshotsPush.init).first else { return }
+        let content = push.content
+        switch push.media {
+        case .screenshots: edits.screenshots[content.locale, default: [:]][content.displayType] = content.files
+        case .appPreviews: edits.appPreviews[content.locale, default: [:]][content.displayType] = content.files
+        }
     }
 }

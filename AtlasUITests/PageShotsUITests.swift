@@ -46,7 +46,7 @@ final class PageShotsUITests: XCTestCase {
         XCTAssertTrue(element("pages.shots.angle").waitForExistence(timeout: 10))
         XCTAssertTrue(element("pages.shots.order.1").exists)
         XCTAssertTrue(text(of: element("pages.shots.order.1")).contains("Privacy"), text(of: element("pages.shots.order.1")))
-        XCTAssertTrue(element("pages.shots.look").exists)
+        XCTAssertTrue(element("pages.shots.look.same").exists)
         XCTAssertTrue(element("pages.shots.language.ar-SA").exists)
         XCTAssertTrue(text(of: element("pages.shots.summary")).contains("default page’s screenshots don’t change"))
         attach("cp-shots-plan")

@@ -33,7 +33,9 @@ struct ClaudeCodePermissionsTests {
         #expect(rules.contains("Read"))
         #expect(rules.contains("Bash(git ls-files:*)"))
         let commands = rules.filter { $0.hasPrefix("Bash(") && !$0.hasPrefix("Bash(git ") }
-        #expect(commands == ["Bash(curl * http://127.0.0.1:47321/event-artwork/*)"])
+        // The prompt puts the link in quotes (it has ?name=), so the quoted
+        // form has its own rule: rules match the command's text.
+        #expect(commands == ["Bash(curl * http://127.0.0.1:47321/event-artwork/*)", "Bash(curl * 'http://127.0.0.1:47321/event-artwork/*)"])
         #expect(ClaudeCodePermissions.eventArtwork.denyRules.isEmpty)
         let prompt = ClaudeCodePermissions.eventArtwork.systemPrompt
         #expect(prompt.contains("curl -s --data-binary @<file> '<artworkUpload link from get_in_app_events>?name=<file name>'"))
@@ -193,5 +195,31 @@ struct ClaudeCodePermissionsTests {
             #expect(prompt.contains("Never push"))
         }
         #expect(!ClaudeCodePermissions.readProject.systemPrompt.contains("xcodebuild"))
+    }
+
+    /// Make Screenshots for This Page: the plan and the looks only read the
+    /// project; capturing screens again also builds and runs the app, and
+    /// uploads only to the page's link. Each has a purpose of its own, so
+    /// the launcher never hands one the other's session.
+    @Test func pageCapturesBuildAndUploadOnlyToThePagesLink() {
+        let plan = PageShotsPrompt.purpose(pageName: "Gratitude")
+        let looks = PageShotsPrompt.looksPurpose(pageName: "Gratitude")
+        let captures = PageShotsPrompt.capturesPurpose(pageName: "Gratitude")
+        #expect(Set([plan, looks, captures]).count == 3)
+        #expect(plan.isPageScreenshots && looks.isPageScreenshots && captures.isPageScreenshots)
+        #expect(plan.permissions == .readProject)
+        #expect(looks.permissions == .readProject)
+        #expect(captures.permissions == .pageCaptures)
+
+        let rules = ClaudeCodePermissions.pageCaptures.allowRules(port: port)
+        #expect(rules.contains("Bash(xcodebuild:*)"))
+        #expect(rules.contains("Bash(xcrun simctl:*)"))
+        #expect(rules.contains("Bash(curl * http://127.0.0.1:\(port)/page-shots/*)"))
+        // Rules match the text: a link in quotes needs its own rule.
+        #expect(rules.contains("Bash(curl * 'http://127.0.0.1:\(port)/page-shots/*)"))
+        let otherLinks = rules.filter { $0.contains("/autopilot/") || $0.contains("/event-artwork/") }
+        #expect(otherLinks.isEmpty)
+        #expect(ClaudeCodePermissions.pageCaptures.denyRules.contains("Bash(xcrun altool:*)"))
+        #expect(ClaudeCodePermissions.pageCaptures.systemPrompt.contains("xcrun simctl io booted screenshot"))
     }
 }

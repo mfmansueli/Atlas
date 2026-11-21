@@ -14,7 +14,8 @@ struct EngagementArchive: Hashable, Sendable, Codable {
 
     /// By territory, source and device (the Standard reports).
     var facts: [EngagementFact] = []
-    /// By product page only (the Detailed reports).
+    /// By product page, source, referrer and campaign (the Detailed
+    /// reports).
     var pageFacts: [EngagementFact] = []
     /// "kind|detailed|day" → the processing day its numbers came from.
     var processed: [String: Int] = [:]
@@ -51,11 +52,11 @@ struct EngagementArchive: Hashable, Sendable, Codable {
         guard !replaced.isEmpty else { return }
         let fresh = replaced.flatMap { incoming[$0] ?? [] }
         if batch.isDetailed {
-            // Only the page matters here; the Standard report has the rest.
+            // The page, and where people came from; the Standard report
+            // has territories and devices.
             let byPage = fresh.map { fact in
                 var fact = fact
                 fact.territory = ""
-                fact.source = ""
                 fact.device = ""
                 return fact
             }

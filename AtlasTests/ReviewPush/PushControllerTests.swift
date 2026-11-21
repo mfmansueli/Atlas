@@ -144,6 +144,23 @@ struct PushControllerTests {
         #expect(queue.totalCount == 2)
     }
 
+    /// A write that timed out may have been made after Atlas stopped
+    /// waiting: it fails with that reason (never "Not sent", which invites
+    /// a retry that could make it twice), and the rest go on.
+    @Test func aTimedOutWriteIsFailedNotUnsent() async {
+        let transport = FakePushTransport(failures: ["BRA": URLError(.timedOut)])
+        let push = controller(transport)
+        queue.upsert(contentsOf: ["BRA", "MEX"].map { PushFixtures.price($0) })
+
+        push.push(queue.changes)
+        await push.waitUntilFinished()
+
+        #expect(transport.sent.count == 2)
+        #expect(push.notice != .offline)
+        #expect(push.items.first { $0.change.id.contains("BRA") }?.status == .failed(PushController.timedOutText))
+        #expect(queue.totalCount == 1)
+    }
+
     @Test func blockedChangesAreLeftInReview() async {
         let transport = FakePushTransport()
         let push = controller(transport)

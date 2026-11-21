@@ -33,6 +33,9 @@ struct ProductPagesDebugLaunch {
     /// Make Screenshots for This Page (board 52): the page's flow at this
     /// stage, its sheet open unless it's in Review & Push already.
     var pageShots: PageShotsStage?
+    /// Plan with a new look from Claude Design: drawing, or three drawn
+    /// and screens captured again.
+    var pageShotsLooks: PageShotsDebugSetup.Looks?
     /// Choose Files… with these sizes for the open page's language (board
     /// 52's "not drawn"): blank PNGs, checked and queued as if chosen.
     var chosenSizes: [PixelSize] = []
@@ -68,7 +71,7 @@ struct ProductPagesDebugLaunch {
             model.addChosenFiles(files, for: page, locale: locale)
         }
         if let stage = pageShots, let pageID, let page = model.page(pageID) {
-            PageShotsDebugSetup.pending = PageShotsDebugSetup(stage: stage)
+            PageShotsDebugSetup.pending = PageShotsDebugSetup(stage: stage, looks: pageShotsLooks)
             if stage == .used {
                 _ = model.pageShotsFlow(for: page)
             } else {

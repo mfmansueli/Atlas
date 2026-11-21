@@ -60,8 +60,20 @@ enum EngagementReportParser {
             territory: ReportTerritory.alpha2(table.value("Territory", in: row)),
             source: sourceName(table.value("Source Type", in: row)),
             device: table.value("Device", in: row),
-            page: pageName(table.value("Page Title", in: row))
+            page: pageName(table.value("Page Title", in: row)),
+            referrer: named(table.value("Source Info", in: row)),
+            campaign: named(table.value("Campaign", in: row))
         )
+    }
+
+    /// A Detailed column's value; nil when it's empty, absent (the Standard
+    /// reports) or Apple's "null".
+    static func named(_ value: String) -> String? {
+        let trimmed = value.trimmingCharacters(in: .whitespaces)
+        switch trimmed.lowercased() {
+        case "", "null", "none", "unavailable": return nil
+        default: return trimmed
+        }
     }
 
     /// Apple's casing differs between reports ("App Store search", "App

@@ -26,6 +26,15 @@ enum MCPEndpoint {
         "http://\(host):\(port)\(autopilotPath)\(token)"
     }
 
+    /// Where a product page's screens captured again are uploaded (Make
+    /// Screenshots for This Page): `POST /page-shots/<run token>` with the
+    /// PNG as the body.
+    static let pageShotsPath = "/page-shots/"
+
+    static func pageShotsUploadURL(port: UInt16, token: String) -> String {
+        "http://\(host):\(port)\(pageShotsPath)\(token)"
+    }
+
     /// Where an In-App Event's card or details page file is uploaded:
     /// `POST /event-artwork/<token>/<app ID>?name=<file name>` with the
     /// image or video as the body.
@@ -94,7 +103,9 @@ enum MCPEndpoint {
     languages with propose_product_page_texts: the person accepts each, and pushing, submitting and making a page \
     visible are theirs. When the person asked for a page's own screenshots (Make Screenshots for This Page), read \
     get_page_screenshots and send the plan with propose_page_screenshots: the default set's screens in the page's \
-    order and a caption for each in every language; Atlas lays them out. When a release needs a new App Store version, read \
+    order and a caption for each in every language; Atlas lays them out. When its look is claudeDesign, send three \
+    looks with propose_page_look; when it has recapture, capture the screens that should show something else in the \
+    Simulator and name each with report_page_capture. When a release needs a new App Store version, read \
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
     App Store Connect creates it when the person pushes. App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \

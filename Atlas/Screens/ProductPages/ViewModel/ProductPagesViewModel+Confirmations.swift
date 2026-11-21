@@ -100,6 +100,7 @@ extension ProductPagesViewModel {
         case .visible: String(localized: "Visible")
         case .delete: String(localized: "deleting it")
         case .screenshots: String(localized: "its own screenshots")
+        case .appPreviews: String(localized: "its own App Previews")
         case .promotionalText, .keywords: nil
         }
     }

@@ -29,6 +29,20 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     case deepLinkWork(eventID: String)
     /// Make Screenshots for This Page…: a custom product page's own set.
     case pageScreenshots(pageName: String)
+    /// Its three looks (A new look from Claude Design), in a session of
+    /// their own so the plan's isn't taken for it.
+    case pageLooks(pageName: String)
+    /// Its screens captured again in the Simulator.
+    case pageCaptures(pageName: String)
+
+    /// Make Screenshots for This Page's sessions: the plan's, the looks'
+    /// and the captures'.
+    var isPageScreenshots: Bool {
+        switch self {
+        case .pageScreenshots, .pageLooks, .pageCaptures: true
+        default: false
+        }
+    }
 
     /// "Suggest Everything", "Ask · Store Page".
     var title: String {
@@ -45,6 +59,8 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .deepLinkCheck: String(localized: "Check an event’s deep link")
         case .deepLinkWork: String(localized: "Make an event’s deep link work")
         case let .pageScreenshots(pageName): String(localized: "Screenshots for “\(pageName)”")
+        case let .pageLooks(pageName): String(localized: "Looks for “\(pageName)”")
+        case let .pageCaptures(pageName): String(localized: "Captures for “\(pageName)”")
         }
     }
 
@@ -55,7 +71,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case let .ask(area): area
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
-        case .pageScreenshots: String(localized: "Product page screenshots")
+        case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Product page screenshots")
         case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts: title
         }
     }
@@ -67,7 +83,8 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .eventArtwork, .eventArtworkConcepts: .eventArtwork
         case .deepLinkCheck: .deepLinkCheck
         case .deepLinkWork: .deepLinkWork
-        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots: .readProject
+        case .pageCaptures: .pageCaptures
+        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks: .readProject
         }
     }
 }

@@ -130,6 +130,10 @@ struct ProductPageRow: View {
                         .accessibilityLabel(Text(comparison.spoken))
                 }
             }
+        } else {
+            // Keeps the column: an empty view takes no room, and the row's
+            // status and numbers slid one column right of their headers.
+            Color.clear.frame(height: 1)
         }
     }
 
@@ -156,6 +160,12 @@ struct ProductPageRow: View {
             .help(Text("Copy the page’s App Store link"))
             .accessibilityLabel(Text("Copy the link to “\(page.name)”"))
             .accessibilityIdentifier("pages.copy.\(page.id)")
+        } else {
+            // Keeps the column, so a draft's status and numbers line up
+            // with the other rows'.
+            Color.clear
+                .frame(height: 1)
+                .accessibilityHidden(true)
         }
     }
 

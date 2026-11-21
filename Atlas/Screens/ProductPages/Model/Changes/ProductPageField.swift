@@ -18,6 +18,8 @@ enum ProductPageField: String, Codable, Hashable, Sendable, CaseIterable {
     case delete
     /// One language's own screenshots on one device (board 52).
     case screenshots
+    /// One language's own App Previews on one device.
+    case appPreviews
 
     /// Promotional text's limit, the same as the default page's.
     static let promotionalTextLimit = 170
@@ -34,6 +36,7 @@ enum ProductPageField: String, Codable, Hashable, Sendable, CaseIterable {
         case .visible: String(localized: "Visible on the App Store")
         case .delete: String(localized: "Delete Page")
         case .screenshots: String(localized: "Screenshots")
+        case .appPreviews: String(localized: "App Previews")
         }
     }
 }

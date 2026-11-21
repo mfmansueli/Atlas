@@ -88,6 +88,15 @@ extension GetProductPagesTool {
         } else if reference == nil, numbers.pageViews < ProductPageNumbers.fewestViewsToCompare {
             object["vsDefault"] = comparisonJSON(.tooFewViews(numbers.pageViews))
         }
+        // Where the page's link is used: campaign links and referrers.
+        if !numbers.arrivals.isEmpty {
+            object["arrivals"] = .array(numbers.arrivals.prefix(10).map { arrival in
+                .object([
+                    "kind": .string(arrival.kind.rawValue), "name": .string(arrival.name),
+                    "pageViews": .int(arrival.pageViews), "downloads": .int(arrival.downloads),
+                ])
+            })
+        }
         return .object(object)
     }
 

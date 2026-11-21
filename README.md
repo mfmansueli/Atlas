@@ -683,6 +683,27 @@ call.
     or 1260 × 2736, iPad 2064 × 2752 or 2048 × 2732, either way round), copied to
     `Application Support/Atlas/ProductPages/Files/<appID>/` (`ProductPageFilesFolder`, pruned once no queued change
     reads them) and queued as the same screenshots change Make Screenshots for This Page makes.
+  - **Choose App Previews…**: 1 to 3 MOV/MP4/M4V videos per language and device, checked against `AppPreviewSpec`
+    (`ProductPageVideoCheck`, sizes read with AVFoundation), queued as `.appPreviews` changes. The same
+    `ProductPageScreenshotsPush` sends them, with `Content.media = .appPreviews` (`ProductPageMedia`: `appPreviewSets`
+    with `previewType`, `appPreviews` with `mimeType`).
+  - **Where the link is used**: Analytics keeps the Detailed reports' Source Info and Campaign
+    (`EngagementFact.referrer/campaign`), Break It Down splits by `referrer` and `campaign`, and each page's numbers
+    carry `ProductPageArrival`s (the row's "Most from …" line, `get_product_pages` → `numbers.arrivals`).
+  - **Pushing a new page against Apple (2026-11-21, Alba)**: the create request lists the draft's languages inline
+    (Apple requires `appCustomProductPageLocalizations` even with a template, and refuses an inline ID in the
+    localization's link back to the version). Writes wait 300 s (`AppStoreConnectClient.writeTimeout`); a timed-out
+    write is Failed, never Not sent. A draft Apple made anyway is taken as that page on the next read
+    (`adoptCreatedDrafts`), and a queued create change from an older Atlas is rebuilt (`refreshDraftChanges`).
+  - **Look and Capture Screens Again** (board 52's Plan): `PageShotsRun.design` (`PageShotsLook`: the default
+    template, a starter, or `.claudeDesign` with three `PageShotsLookCandidate`s from `propose_page_look`, laid on
+    `base` default or a starter and checked by `MCPDirectionTemplate`; Start waits for one to be chosen) and
+    `PageShotsRun.recapture` (`PageShotsNewCapture`s at most 3 screens, PNGs posted to
+    `/page-shots/<token>` and named with `report_page_capture`, full device size only; a language without its own
+    uses the primary's). `PageShotsSource.applying(run)` lays the set out with both; each asks Claude Code in a
+    session of its own (`PageShotsPrompt.looks` / `.captures`). DEBUG scenes `cp-shots-looks`,
+    `cp-shots-looks-drawing`.
+  - No other devices: custom product pages are iPhone and iPad only, and smaller sizes are scaled from 6.9″ and 13″.
   - There is no tool to submit a version or release it: those are the person's.
   - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
     product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate

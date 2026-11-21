@@ -21,6 +21,10 @@ struct PageShotsSource {
     /// a page never shows the template's sample rating.
     var ratings: StoreRatings = .unchecked
     var reviews: StoreReviews = .none
+    /// The page's Look when it isn't the default page's template.
+    var lookTemplate: ScreenshotTemplate?
+    /// Screens the assistant captured again for the page.
+    var recapture: PageShotsRecapture?
 
     static func load(app: StoreApp, services: any ScreenshotsServices) async throws -> PageShotsSource {
         let primary = app.primaryLocale.flatMap(StoreLocaleCatalog.locale(code:)) ?? .englishUS
@@ -47,7 +51,24 @@ struct PageShotsSource {
 
     var primary: String { document.scope.primary }
 
-    var template: ScreenshotTemplate? { document.template }
+    var template: ScreenshotTemplate? { lookTemplate ?? document.template }
+
+    /// The source as `run` makes its set: its Look and the screens captured
+    /// again.
+    func applying(_ run: PageShotsRun?) -> PageShotsSource {
+        var source = self
+        source.lookTemplate = run?.lookTemplate(appID: app.id, appName: app.name, slotCount: slotCount)
+        source.recapture = run?.recapture
+        return source
+    }
+
+    /// Changes whenever what a screenshot is drawn from does: previews
+    /// render again.
+    var drawingKey: String {
+        let look = lookTemplate.map { "\($0.name)|\($0.hashValue)" } ?? "default"
+        let captures = recapture?.captures.map(\.captureID).joined(separator: ",") ?? ""
+        return "\(look)|\(captures)"
+    }
 
     /// The default set's screens.
     var slotCount: Int { document.slotCount }
@@ -101,9 +122,18 @@ struct PageShotsSource {
         )
     }
 
+    /// The size a capture for `display` must have: the template's
+    /// orientation there. A portrait capture in a landscape set (Alba's
+    /// iPad) is cropped into the landscape device.
+    func captureSize(for display: ScreenshotDisplayType) -> PixelSize {
+        let size = display.portraitPixelSize
+        return template?.canvas.orientation(for: display) == .landscape ? size.rotated : size
+    }
+
     /// The screen's capture in `locale`, else the primary language's.
     func capture(of screen: PageShotsScreen, locale: String, displayType: ScreenshotDisplayType) -> ResolvedCapture? {
-        document.captures.capture(locale: locale, displayType: displayType, slot: screen.slot, primary: primary)
+        if let new = recapture?.capture(slot: screen.slot, locale: locale, displayType: displayType, primary: primary) { return new }
+        return document.captures.capture(locale: locale, displayType: displayType, slot: screen.slot, primary: primary)
     }
 
     /// Whether `caption` fits at `position` on `displayType` in `locale`.

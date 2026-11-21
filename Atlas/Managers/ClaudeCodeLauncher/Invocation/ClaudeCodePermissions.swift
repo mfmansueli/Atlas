@@ -22,6 +22,10 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// An In-App Event's card and details page: read the project, and
     /// upload a file it already has to Atlas's event art link.
     case eventArtwork
+    /// Capture Screens Again for a product page: read the project, build
+    /// the app, run it in a simulator and upload captures to the page's
+    /// link. Never changes the project.
+    case pageCaptures
     /// Check in the Code: read the project, build the app and try an
     /// event's deep link in a simulator, without changing anything.
     case deepLinkCheck
@@ -35,7 +39,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     var tools: [String] {
         switch self {
         case .atlasOnly: []
-        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck: ["Read", "Grep", "Glob", "Bash"]
+        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures: ["Read", "Grep", "Glob", "Bash"]
         case .deepLinkWork: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
@@ -51,7 +55,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             return atlas + reading
         case .eventArtwork:
             // Art goes to the event art upload link, and nowhere else.
-            return atlas + reading + ["Bash(curl * http://127.0.0.1:\(port)/event-artwork/*)"]
+            return atlas + reading + Self.uploadRules(port: port, path: "/event-artwork/")
         case .autopilot:
             let building = [
                 "Bash(xcodebuild:*)",
@@ -72,9 +76,20 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             return atlas + reading + building
         case .deepLinkCheck:
             return atlas + reading + Self.linkCommands
+        case .pageCaptures:
+            // Captures go to the page's upload link, and nowhere else.
+            return atlas + reading + Self.linkCommands + Self.uploadRules(port: port, path: MCPEndpoint.pageShotsPath)
         case .deepLinkWork:
             return atlas + reading + ["Edit", "Write"] + Self.linkCommands
         }
+    }
+
+    /// Uploads to one of Atlas's links, with the link as is or in single
+    /// quotes: rules match the command's text, so `'http://…'` doesn't
+    /// match `http://…`, and Gratitude's captures were refused that way.
+    static func uploadRules(port: UInt16, path: String) -> [String] {
+        let link = "http://127.0.0.1:\(port)\(path)"
+        return ["Bash(curl * \(link)*)", "Bash(curl * '\(link)*)"]
     }
 
     /// What checking a deep link may run: build the app, run it in a
@@ -109,7 +124,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         switch self {
         case .atlasOnly, .readProject, .eventArtwork: []
         case .autopilot: ["Bash(xcrun simctl io * screenConfig*)"]
-        case .deepLinkCheck, .deepLinkWork: Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
+        case .deepLinkCheck, .deepLinkWork, .pageCaptures: Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
         }
     }
 
@@ -132,7 +147,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             "Never push or change App Store Connect directly; everything goes through Atlas's tools, and the person reviews it there.",
             "If something you need is refused or missing, say so in one sentence in your last message and finish.",
         ]
-        if self == .readProject || self == .eventArtwork || self == .deepLinkCheck || self == .deepLinkWork {
+        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .pageCaptures].contains(self) {
             lines.append(
                 "Find files with Glob and Grep and read them with Read. Run each allowed command on its own: "
                     + "a pipe, ;, && or cd in front of it is refused."
@@ -154,6 +169,18 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                 "To try a deep link you may also run xcodebuild, xcrun simctl, open -a Simulator, mkdir, ls, sleep and echo, "
                     + "each on its own: build for a simulator, install and launch the app with xcrun simctl, and open the link "
                     + "with xcrun simctl openurl booted '<link>'. Never archive, export or upload a build: the person uploads it."
+            )
+        }
+        if self == .pageCaptures {
+            lines.append(
+                "To capture a product page's screens you may also run xcodebuild, xcrun simctl, open -a Simulator, mkdir, ls, "
+                    + "sleep and echo, each on its own: build for a simulator, install and launch the app with xcrun simctl "
+                    + "(launch arguments such as -AppleLanguages go after the bundle ID), and save each screen with xcrun simctl "
+                    + "io booted screenshot <file>. Upload each with exactly: curl -s --data-binary @<file> -H 'Content-Type: image/png' "
+                    + "<uploadURL from get_page_screenshots' recapture>, then name it with report_page_capture. "
+                    + "Run xcodebuild in the foreground and wait for it. You can't edit the "
+                    + "project: set screens up with the app's own launch arguments and sample data, and if a screen can't be "
+                    + "shown that way, say so in your last message. Never archive, export or upload a build."
             )
         }
         if self == .deepLinkCheck {
@@ -208,6 +235,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck: String(localized: "In-App Event deep link check")
         case .deepLinkWork: String(localized: "In-App Event deep link fix")
+        case .pageCaptures: String(localized: "Product page captures")
         }
     }
 
@@ -220,6 +248,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .eventArtwork: String(localized: "Reading the project, and uploads of its art to Atlas")
         case .deepLinkCheck: String(localized: "Reading the project, xcodebuild and xcrun simctl; never uploads")
         case .deepLinkWork: String(localized: "Also edits files in the project folder; never uploads")
+        case .pageCaptures: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of captures to Atlas")
         }
     }
 }

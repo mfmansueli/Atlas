@@ -6,8 +6,9 @@
 import Foundation
 
 // A page made in Atlas: one change that creates it (`POST
-// /v1/appCustomProductPages`, with its first version inline and, from the
-// default page or another page, that page as its template), then writes
+// /v1/appCustomProductPages`, with its first version and its languages
+// inline and, from the default page or another page, that page as its
+// template), then writes
 // each language's text and keywords into it (`ProductPageLocaleWrite`, on
 // `{createdID:appCustomProductPages}`). Review & Push shows it as
 // "Create “Private diary”" with what it's created with under it.
@@ -82,8 +83,9 @@ extension ProductPageChangeBuilder {
             break
         }
         var version: [String: Any] = ["type": ProductPageLocaleWrite.versionType, "id": versionID]
-        // A page from a template gets its languages from it: an empty
-        // to-many here would ask for a version without any.
+        // App Store Connect refuses a first version without its languages
+        // (ENTITY_ERROR.RELATIONSHIP.REQUIRED for
+        // `appCustomProductPageLocalizations`), even with a template.
         if !localizationIDs.isEmpty {
             version["relationships"] = ["appCustomProductPageLocalizations": ["data": localizationIDs.map {
                 ["type": ProductPageLocaleWrite.localizationType, "id": $0]
@@ -95,10 +97,10 @@ extension ProductPageChangeBuilder {
         for (index, locale) in inline.enumerated() {
             var attributes: [String: Any] = ["locale": locale]
             if let text = draft.promotionalTexts[locale], !text.isEmpty { attributes["promotionalText"] = text }
-            included.append([
-                "type": ProductPageLocaleWrite.localizationType, "id": localizationIDs[index], "attributes": attributes,
-                "relationships": ["appCustomProductPageVersion": ["data": ["type": ProductPageLocaleWrite.versionType, "id": versionID]]],
-            ])
+            // No link back to the version: App Store Connect refuses an
+            // inline ID there (ENTITY_ERROR.RELATIONSHIP.INVALID); the
+            // version's list is what ties them.
+            included.append(["type": ProductPageLocaleWrite.localizationType, "id": localizationIDs[index], "attributes": attributes])
         }
         return [
             "data": ["type": pageType, "attributes": ["name": draft.name], "relationships": relationships],
@@ -106,16 +108,12 @@ extension ProductPageChangeBuilder {
         ]
     }
 
-    /// The languages made inside the create request: a page from a
-    /// template gets its languages from the template, so only an empty one
-    /// (or one from the default page of an app with no version to copy)
-    /// lists them.
-    static func inlineLocales(_ draft: ProductPageDraft, templateVersionID: String?) -> [String] {
-        switch draft.start {
-        case .empty: draft.locales
-        case .defaultPage: templateVersionID == nil ? draft.locales : []
-        case .copy: []
-        }
+    /// The languages made inside the create request, each with its text:
+    /// every language the draft has its own content in, whatever it starts
+    /// from. App Store Connect requires them (tried on Alba, 2026-11-21);
+    /// a template then fills in what each language doesn't say.
+    static func inlineLocales(_ draft: ProductPageDraft, templateVersionID _: String?) -> [String] {
+        draft.locales
     }
 
     /// What stops a draft from being pushed: no name, a copy of a page that
