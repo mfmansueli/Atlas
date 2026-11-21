@@ -67,6 +67,28 @@ final class ReviewPushUITests: XCTestCase {
         XCTAssertTrue(element("review.empty").waitForExistence(timeout: 5))
     }
 
+    /// Claude Code's new Review Notes for an in-app purchase: its row under
+    /// "Review Notes · Lifetime" with the reason, App Store Connect's notes
+    /// before and the suggested ones after.
+    func testASuggestedReviewNoteShowsBeforeAndAfter() {
+        launch(scene: "review-inapp-note")
+        let row = element("review.row.storePage.6450000001.inAppReviewNote.lumen.plus.lifetime")
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        let texts = row.descendants(matching: .any)
+        let before = texts.matching(NSPredicate(format: "label == %@ OR value == %@", Self.oldNote, Self.oldNote))
+        XCTAssertGreaterThanOrEqual(before.count, 1, "No “before”: \(texts.allElementsBoundByIndex.map(\.label))")
+        let added = "since 1.5, weekly reflections"
+        let after = texts.matching(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", added, added))
+        XCTAssertGreaterThanOrEqual(after.count, 1, "No “after”: \(texts.allElementsBoundByIndex.map(\.label))")
+        XCTAssertTrue(app.staticTexts["Review Notes · Lifetime"].exists)
+        let why = "1.5 adds weekly reflections"
+        let reason = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", why, why))
+        XCTAssertGreaterThanOrEqual(reason.count, 1, "The reason isn’t under the heading.")
+        XCTAssertTrue(app.buttons["Push 1 Change"].exists)
+    }
+
+    private static let oldNote = "Buy it in Settings → Lumen Plus with a sandbox account. It unlocks unlimited photos."
+
     func testPushingShowsProgressAndEmptiesTheQueue() {
         launch(scene: "review")
         let pushAll = app.buttons["review.pushAll"]

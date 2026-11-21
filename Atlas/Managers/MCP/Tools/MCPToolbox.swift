@@ -21,6 +21,8 @@ struct MCPToolbox {
             ProposeAppVersionTool(),
             GetInAppTextsTool(),
             ProposeInAppTextsTool(),
+            GetInAppReviewNotesTool(),
+            ProposeInAppReviewNoteTool(),
             GetPricesTool(),
             GetPricePointsTool(),
             ProposePricesTool(),

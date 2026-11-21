@@ -70,7 +70,11 @@ enum DebugStorePageContent {
             productResourceIDs: Dictionary(uniqueKeysWithValues: StorePageSampleData.products.map { ($0.id, "resource-\($0.id)") }),
             productLocalizations: productLocalizations,
             editableVersions: Dictionary(uniqueKeysWithValues: [(InAppTextsContent.groupKey, "lumen-plus-group-v1")]
-                + StorePageSampleData.products.map { ($0.id, "\($0.id)-v1") })
+                + StorePageSampleData.products.map { ($0.id, "\($0.id)-v1") }),
+            reviewNotes: Dictionary(uniqueKeysWithValues: StorePageSampleData.products.map {
+                ($0.id, "Buy it in Settings → Lumen Plus with a sandbox account. It unlocks unlimited photos and weekly reflections.")
+            }),
+            productStates: Dictionary(uniqueKeysWithValues: StorePageSampleData.products.map { ($0.id, "APPROVED") })
         )
     }
 

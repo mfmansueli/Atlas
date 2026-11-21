@@ -32,6 +32,11 @@ struct InAppTextsContent: Hashable, Sendable {
     /// `get_in_app_texts` can say where texts go (e.g. one in a review
     /// submission).
     var latestVersions: [String: InAppTextVersionAttributes] = [:]
+    /// Product ID → its Review Notes for App Review (one per product, not
+    /// localized); a product without notes isn't here.
+    var reviewNotes: [String: String] = [:]
+    /// Product ID → its state, e.g. `APPROVED` or `WAITING_FOR_REVIEW`.
+    var productStates: [String: String] = [:]
 
     /// The owner key of the subscription group.
     static let groupKey = "group"

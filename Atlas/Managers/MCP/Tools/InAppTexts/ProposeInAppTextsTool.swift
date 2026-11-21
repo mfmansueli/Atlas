@@ -23,7 +23,8 @@ struct ProposeInAppTextsTool: MCPTool {
         rule and the phrases in `issues`; an in-app purchase may still be named “XX-day Trial” (Guideline 3.1.1). \
         Accepted proposals are queued for the person to review in Atlas (status "queued"); a locale App \
         Store Connect doesn't have yet is created when they push, and needs a name (blockedReason says so). \
-        Nothing reaches App Store Connect until they push.
+        Nothing reaches App Store Connect until they push. For a product's Review Notes for App Review (e.g. when \
+        a release changes what it unlocks), use propose_in_app_review_note.
         """,
         inputSchema: MCPToolDefinition.schema(
             [

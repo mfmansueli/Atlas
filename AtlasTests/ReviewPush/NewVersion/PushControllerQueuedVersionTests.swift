@@ -125,8 +125,10 @@ struct PushControllerQueuedVersionTests {
         let category = text("primaryCategory", path: "/v1/appInfos/\(queued.appInfoToken)", type: "appInfos", value: "x")
         let controller = await push([version, subtitle, category], via: transport)
         #expect(controller.doneCount == 3)
-        #expect(transport.sent.map(\.path) == ["/v1/appStoreVersions", "/v1/appInfoLocalizations/ail-en", "/v1/appInfos/info-next"])
-        #expect(transport.fetched == [appInfos, infoLocalizations])
+        // The two go side by side after the version, and read its app info once.
+        #expect(transport.sent.first?.path == "/v1/appStoreVersions")
+        #expect(Set(transport.sent.dropFirst().map(\.path)) == ["/v1/appInfoLocalizations/ail-en", "/v1/appInfos/info-next"])
+        #expect(transport.fetched.sorted() == [appInfos, infoLocalizations].sorted())
     }
 
     @Test func withoutOneBeingPreparedItsTheLiveOne() async {

@@ -161,6 +161,24 @@ struct PushControllerTests {
         #expect(queue.totalCount == 1)
     }
 
+    /// Apple's server failing on a write (a 5xx such as UNEXPECTED_ERROR)
+    /// may still have made it: Apple's message, then to refresh first.
+    @Test func aServerFailureSaysItMayHaveGoneThrough() async {
+        let failure = AppStoreConnectError.server(statusCode: 500, code: "UNEXPECTED_ERROR", detail: "An unexpected error occurred.")
+        let transport = FakePushTransport(failures: ["BRA": failure])
+        let push = controller(transport)
+        queue.upsert(contentsOf: ["BRA", "MEX"].map { PushFixtures.price($0) })
+
+        push.push(queue.changes)
+        await push.waitUntilFinished()
+
+        let status = push.items.first { $0.change.id.contains("BRA") }?.status
+        guard case let .failed(text) = status else { Issue.record("Expected failed, got \(String(describing: status))"); return }
+        #expect(text.hasSuffix(PushController.serverFailureText))
+        #expect(text.contains("UNEXPECTED_ERROR") || text.contains("unexpected error"))
+        #expect(queue.totalCount == 1)
+    }
+
     @Test func blockedChangesAreLeftInReview() async {
         let transport = FakePushTransport()
         let push = controller(transport)

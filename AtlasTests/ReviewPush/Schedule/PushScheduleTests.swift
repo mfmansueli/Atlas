@@ -43,6 +43,32 @@ struct PushScheduleTests {
         #expect(waits == [[], [], [], []])
     }
 
+    /// A new version doesn't wait for the app's custom product pages, and
+    /// its texts wait only for it: its languages go side by side, and its
+    /// App Review fields one after the other (the first makes them).
+    @Test func aNewVersionAndItsTextsSkipTheAppsOrder() {
+        let page = change("page.new", section: .productPages, method: .post, path: "/v1/appCustomProductPages")
+        let version = PendingChange(
+            id: "appStoreVersion.lumen.IOS", appID: "lumen", section: .storePage, group: "G", title: "v", oldValue: "", newValue: "1.2",
+            requests: [PushRequest(method: .post, path: "/v1/appStoreVersions", body: nil)]
+        )
+        func tied(_ id: String, path: String) -> PendingChange {
+            var text = change(id, path: path)
+            text.dependsOn = version.id
+            return text
+        }
+        let waits = PushSchedule.waits(for: [
+            page,
+            change("page2.new", section: .productPages, method: .post, path: "/v1/appCustomProductPages/x"),
+            version,
+            tied("en", path: "/v1/appStoreVersionLocalizations/{queuedVersion:IOS:1.2:localization:en-US}"),
+            tied("de", path: "/v1/appStoreVersionLocalizations/{queuedVersion:IOS:1.2:localization:de-DE}"),
+            tied("notes", path: "/v1/appStoreReviewDetails/{queuedVersion:IOS:1.2:reviewDetail}"),
+            tied("email", path: "/v1/appStoreReviewDetails/{queuedVersion:IOS:1.2:reviewDetail}"),
+        ])
+        #expect(waits == [[], [0], [], [2], [2], [2], [2, 5]])
+    }
+
     @Test func twoEditsOfOneResourceGoOneAfterTheOther() {
         let waits = PushSchedule.waits(for: [
             change("en.whatsNew", path: "/v1/appStoreVersionLocalizations/en"),

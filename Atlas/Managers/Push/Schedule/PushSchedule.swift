@@ -17,7 +17,11 @@ import Foundation
 /// - A custom product page's own screenshots wait for the app's ordered
 ///   changes (the page and its texts among them) and for earlier ones of
 ///   the same page and language; its other languages go side by side.
-/// - Everything else (new languages, versions, subscriptions, retention,
+/// - A new App Store version waits only for earlier new versions; the
+///   texts written for it (`PendingChange.dependsOn`) wait only for it and
+///   for earlier writes to the same resource (one language's localization,
+///   its App Review details), so its languages go side by side.
+/// - Everything else (new languages, subscriptions, retention,
 ///   prices, In-App Texts, merged age rating answers…) keeps the queue's
 ///   order within its app, as when changes went one at a time.
 enum PushSchedule {
@@ -50,7 +54,8 @@ enum PushSchedule {
         return changes.indices.map { index in
             changes.indices.prefix(index).filter { earlier in
                 if !keys[index].isDisjoint(with: keys[earlier]) { return true }
-                guard changes[earlier].appID == changes[index].appID, kinds[earlier] == .ordered else { return false }
+                if let version = changes[index].dependsOn { return changes[earlier].id == version }
+                guard kinds[index] != .newVersion, changes[earlier].appID == changes[index].appID, kinds[earlier] == .ordered else { return false }
                 return kinds[index] == .ordered || kinds[index] == .artForANewLanguage || kinds[index] == .pageScreenshots
             }
         }
@@ -61,11 +66,15 @@ enum PushSchedule {
         case art
         case artForANewLanguage
         case pageScreenshots
+        /// "Create version 1.2": `POST /v1/appStoreVersions`.
+        case newVersion
         case ordered
 
         init(_ change: PendingChange) {
             let requests = change.pushRequests
-            if let first = requests.first, ProductPageScreenshotsPush(first) != nil {
+            if change.id.hasPrefix(NewAppVersionChangeBuilder.idPrefix) {
+                self = .newVersion
+            } else if let first = requests.first, ProductPageScreenshotsPush(first) != nil {
                 self = .pageScreenshots
             } else if let first = requests.first, InAppEventArtworkPush(first) != nil {
                 self = InAppEventPushOrder.waitsForANewLanguage(change) ? .artForANewLanguage : .art

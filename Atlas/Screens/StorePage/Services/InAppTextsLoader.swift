@@ -46,6 +46,7 @@ struct InAppTextsLoader: Sendable {
                 content.add(product, resourceID: subscription.id, localizations: localizations.map {
                     .init(id: $0.id, locale: $0.attributes.locale, name: $0.attributes.name, description: $0.attributes.description)
                 })
+                content.note(product, reviewNote: subscription.attributes.reviewNote, state: subscription.attributes.state)
             }
         }
         for purchase in try await client.inAppPurchases(appID: app.id) {
@@ -60,6 +61,7 @@ struct InAppTextsLoader: Sendable {
             content.add(product, resourceID: purchase.id, localizations: localizations.map {
                 .init(id: $0.id, locale: $0.attributes.locale, name: $0.attributes.name, description: $0.attributes.description)
             })
+            content.note(product, reviewNote: purchase.attributes.reviewNote, state: purchase.attributes.state)
         }
         return content
     }

@@ -521,6 +521,13 @@ call.
     is an introductory offer, so its texts may not. `propose_in_app_texts` and `propose_subscription` refuse what
     breaks one, `get_in_app_texts` carries `textRules` and per-locale `states`, the In-App Texts cell and editor,
     Create Subscription and Review & Push warn the person.
+  - Review Notes: `get_in_app_review_notes` reads each subscription's and in-app purchase's Review Information ›
+    Review Notes (`reviewNote` on `inAppPurchases` v2 / `subscriptions`, one per product, 4,000 characters), its
+    state and `writesTo` (current, next review submission when approved, locked while with App Review);
+    `propose_in_app_review_note` queues a `PATCH /v2/inAppPurchases/{id}` or `/v1/subscriptions/{id}` of
+    `reviewNote` (`InAppReviewNoteChangeBuilder`, ids `storePage.<appID>.inAppReviewNote.<productID>`) under
+    "Review Notes · <name>" with the reason, or refuses it (over_limit, empty, unknown_product,
+    changed_by_person, locked). The store text rules don't apply to them.
     In-App Event texts, retention messages and review replies follow their own page of Apple's rules
     (`StoreTextGuidelinePlace`): events (Apple's In-App Events page, 2.3.13) no specific prices or discounts
     (“free” is allowed: a free weekend is an event), no claims such as “#1” or “the best app”, no all capitals or

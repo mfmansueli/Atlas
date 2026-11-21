@@ -11,4 +11,7 @@ struct InAppPurchaseAttributes: Decodable, Sendable {
     var productId: String
     var inAppPurchaseType: String?
     var state: String?
+    /// Review Information › Review Notes: for App Review only, one per
+    /// product (not localized).
+    var reviewNote: String?
 }

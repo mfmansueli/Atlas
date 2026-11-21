@@ -18,6 +18,9 @@ extension PendingChange {
         if section == .productPages { return productPageTextIssues }
         if id.hasPrefix(RetentionChangeBuilder.messagePrefix) { return retentionMessageIssues }
         guard section == .storePage else { return [] }
+        // Review Notes are for App Review: they may name a trial or a
+        // guideline.
+        if id.contains(".inAppReviewNote.") { return [] }
         if id.contains(".inApp.") {
             return inAppTextField.map { StoreTextGuidelineCheck.issues(in: newValue, for: $0) } ?? []
         }

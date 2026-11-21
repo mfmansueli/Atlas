@@ -28,6 +28,12 @@ extension InAppTextsContent {
         }
     }
 
+    /// Records a product's Review Notes and state.
+    mutating func note(_ product: InAppTextProduct, reviewNote: String?, state: String?) {
+        if let reviewNote, !reviewNote.isEmpty { reviewNotes[product.id] = reviewNote }
+        if let state { productStates[product.id] = state }
+    }
+
     /// Records a text; empty ones are left out, so they read as missing.
     mutating func set(_ text: String?, column: String, in locale: StoreLocale) {
         guard let text, !text.isEmpty else { return }

@@ -399,10 +399,14 @@ final class PushController {
     /// The row status for an error, and why the rest stop, if they do.
     private func handle(_ error: any Error) -> (PushItemStatus, stop: String?) {
         if let status = Self.waitingStatus(error) { return (status, nil) }
+        // A write that timed out or that Apple's server failed on may have
+        // been made anyway: never "Not sent", and it says to refresh before
+        // a retry makes it twice.
+        if let status = Self.timedOutStatus(error) { return (status, nil) }
         if let error = error as? AppStoreConnectError {
             switch error {
             case .rateLimited:
-                notice = .rateLimited(resumeAt: nextHour())
+                notice = .rateLimited(resumeAt: rateTracker.nextHour())
                 return (.notSent(String(localized: "Rate limited")), String(localized: "Rate limited"))
             case .unauthorized, .invalidPrivateKey:
                 notice = .apiError(error.errorDescription ?? "")
@@ -411,19 +415,11 @@ final class PushController {
                 return (.failed(error.pushFailureText), nil)
             }
         }
-        // A write that timed out was sent: Apple may have made it after
-        // Atlas stopped waiting, so it's never "Not sent" (a retry could
-        // make it twice).
-        if let status = Self.timedOutStatus(error) { return (status, nil) }
         if let error = error as? URLError, Self.offlineCodes.contains(error.code) {
             notice = .offline
             return (.notSent(String(localized: "Offline")), String(localized: "Offline"))
         }
         return (.failed(error.localizedDescription), nil)
-    }
-
-    private func nextHour() -> Date {
-        rateTracker.nextHour()
     }
 
     /// One Activity record per app that had something sent or refused.
@@ -467,6 +463,7 @@ extension PushController {
         let request = try await resolvingSetupPlaceholders(queued.request, at: index, transport: transport)
         defer { noteReviewDetail(madeBy: queued, at: index) }
         if try await sendSetupStep(request, at: index, transport: transport) { return }
+        try await ProductPageAlreadyMade.check(request, appID: items[index].change.appID, transport: transport) { noteRequest($0) }
         let resolved = try request.resolved(createdID: items[index].createdID) { try secrets.secret(named: $0) }
         do {
             let response = try await transport.send(resolved)

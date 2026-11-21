@@ -43,7 +43,12 @@ final class QueuedVersionPushState {
     /// in: the one made with a version that isn't live yet.
     static let editableAppInfoStates: Set = ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "WAITING_FOR_REVIEW"]
 
+    /// Reads in flight or made this push, by path: texts going side by
+    /// side share one read of their version's localizations.
+    private var fetches: [String: Task<AppStoreConnectResponse, any Error>] = [:]
+
     func reset() {
+        fetches = [:]
         versionIDs = [:]
         localizations = [:]
         reviewDetails = [:]
@@ -86,6 +91,19 @@ final class QueuedVersionPushState {
         return (request, nil)
     }
 
+    /// `path`, read once per push however many texts ask at the same time.
+    private func fetch(_ path: String, transport: any PushTransport) async throws -> AppStoreConnectResponse {
+        if let task = fetches[path] { return try await task.value }
+        let task = Task { try await transport.fetch(path) }
+        fetches[path] = task
+        do {
+            return try await task.value
+        } catch {
+            fetches[path] = nil
+            throw error
+        }
+    }
+
     /// The App Review details a `POST` from `resolving` made.
     func noteReviewDetail(_ id: String, versionID: String) {
         reviewDetails[versionID] = id
@@ -113,7 +131,7 @@ final class QueuedVersionPushState {
             guard let create = NewAppStoreVersionCreate(NewAppVersionChangeBuilder.request(for: version, appID: appID)) else {
                 throw QueuedVersionPlaceholder.NotCreated(versionString: placeholder.versionString)
             }
-            let response = try await transport.fetch(create.lookupPath)
+            let response = try await fetch(create.lookupPath, transport: transport)
             note(response.rateLimit)
             guard let found = create.versionID(in: response.data) else {
                 throw QueuedVersionPlaceholder.NotCreated(versionString: placeholder.versionString)
@@ -134,7 +152,7 @@ final class QueuedVersionPushState {
         note: (AppStoreConnectRateLimit?) -> Void
     ) async throws -> String {
         if localizations[versionID]?[locale] == nil {
-            localizations[versionID] = try await Self.localizationIDs(versionID: versionID, transport: transport, note: note)
+            localizations[versionID] = try await localizationIDs(versionID: versionID, transport: transport, note: note)
         }
         guard let id = localizations[versionID]?[locale] else {
             throw QueuedVersionPlaceholder.MissingLocalization(locale: locale, versionString: placeholder.versionString)
@@ -142,7 +160,7 @@ final class QueuedVersionPushState {
         return id
     }
 
-    private static func localizationIDs(
+    private func localizationIDs(
         versionID: String,
         transport: any PushTransport,
         note: (AppStoreConnectRateLimit?) -> Void
@@ -152,7 +170,7 @@ final class QueuedVersionPushState {
     }
 
     /// Every resource's ID by its `locale`, following pages from `path`.
-    private static func localeIDs(
+    private func localeIDs(
         from path: String,
         transport: any PushTransport,
         note: (AppStoreConnectRateLimit?) -> Void
@@ -160,7 +178,7 @@ final class QueuedVersionPushState {
         var next: String? = path
         var ids: [String: String] = [:]
         while let page = next {
-            let response = try await transport.fetch(page)
+            let response = try await fetch(page, transport: transport)
             note(response.rateLimit)
             let object = try? JSONSerialization.jsonObject(with: response.data) as? [String: Any]
             for resource in object?["data"] as? [[String: Any]] ?? [] {
@@ -191,7 +209,7 @@ final class QueuedVersionPushState {
         case let .appInfoLocalization(locale):
             if appInfoLocalizations[infoID]?[locale] == nil {
                 let path = "/v1/appInfos/\(infoID)/appInfoLocalizations?fields%5BappInfoLocalizations%5D=locale&limit=50"
-                appInfoLocalizations[infoID] = try await Self.localeIDs(from: path, transport: transport, note: note)
+                appInfoLocalizations[infoID] = try await localeIDs(from: path, transport: transport, note: note)
             }
             guard let id = appInfoLocalizations[infoID]?[locale] else {
                 throw QueuedVersionPlaceholder.MissingLocalization(locale: locale, versionString: placeholder.versionString)
@@ -199,7 +217,7 @@ final class QueuedVersionPushState {
             return id
         case .ageRating:
             if let known = ageRatings[infoID] { return known }
-            let response = try await transport.fetch("/v1/appInfos/\(infoID)/ageRatingDeclaration")
+            let response = try await fetch("/v1/appInfos/\(infoID)/ageRatingDeclaration", transport: transport)
             note(response.rateLimit)
             let object = try? JSONSerialization.jsonObject(with: response.data) as? [String: Any]
             guard let id = (object?["data"] as? [String: Any])?["id"] as? String else {
@@ -219,7 +237,7 @@ final class QueuedVersionPushState {
         note: (AppStoreConnectRateLimit?) -> Void
     ) async throws -> String {
         if let known = appInfos[appID] { return known }
-        let response = try await transport.fetch("/v1/apps/\(appID)/appInfos?fields%5BappInfos%5D=state&limit=50")
+        let response = try await fetch("/v1/apps/\(appID)/appInfos?fields%5BappInfos%5D=state&limit=50", transport: transport)
         note(response.rateLimit)
         let object = try? JSONSerialization.jsonObject(with: response.data) as? [String: Any]
         let infos: [(id: String, state: String)] = (object?["data"] as? [[String: Any]] ?? []).compactMap { resource in
@@ -243,7 +261,7 @@ final class QueuedVersionPushState {
         if let known = reviewDetails[versionID] { return known }
         let id: String?
         do {
-            let response = try await transport.fetch("/v1/appStoreVersions/\(versionID)/appStoreReviewDetail")
+            let response = try await fetch("/v1/appStoreVersions/\(versionID)/appStoreReviewDetail", transport: transport)
             note(response.rateLimit)
             let object = try? JSONSerialization.jsonObject(with: response.data) as? [String: Any]
             id = (object?["data"] as? [String: Any])?["id"] as? String

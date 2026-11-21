@@ -11,4 +11,7 @@ struct SubscriptionAttributes: Decodable, Sendable {
     var productId: String
     var state: String?
     var subscriptionPeriod: String?
+    /// Review Information › Review Notes: for App Review only, one per
+    /// product (not localized).
+    var reviewNote: String?
 }

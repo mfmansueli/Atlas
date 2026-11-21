@@ -32,7 +32,8 @@ struct ReleaseBuild: Identifiable, Hashable, Sendable {
         "\(version) (\(number))"
     }
 
-    /// "Uploaded Nov 15", or why it can't be chosen.
+    /// "Uploaded Nov 15, 14:50" (the time tells two builds of the same day
+    /// apart), or why it can't be chosen.
     var detail: String {
         if isExpired { return String(localized: "Expired") }
         switch processing {
@@ -42,7 +43,7 @@ struct ReleaseBuild: Identifiable, Hashable, Sendable {
             return String(localized: "Apple couldn’t process it")
         case .valid:
             guard let uploaded else { return String(localized: "Ready") }
-            return String(localized: "Uploaded \(uploaded.formatted(.dateTime.month(.abbreviated).day()))")
+            return String(localized: "Uploaded \(uploaded.formatted(.dateTime.month(.abbreviated).day().hour().minute()))")
         }
     }
 }

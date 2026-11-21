@@ -20,7 +20,8 @@ struct GetInAppTextsTool: MCPTool {
         the columns still empty, and `states` what App Review would reject in a text, per column: propose a \
         version without it. `textRules` lists App Review's rules for these texts. App Store Connect needs at least one group name localization before a \
         subscription can be added for review, and a name to create a locale. Pass `locales` to read only some. \
-        Propose texts with propose_in_app_texts.
+        Propose texts with propose_in_app_texts. Each product's Review Notes for App Review (one per product, not \
+        localized) are read and proposed with get_in_app_review_notes and propose_in_app_review_note.
         """,
         inputSchema: MCPToolDefinition.schema(
             [

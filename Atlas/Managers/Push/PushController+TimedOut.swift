@@ -13,9 +13,18 @@ extension PushController {
     Apple didn’t answer in time, so it may have gone through. Refresh to see before you retry.
     """)
 
-    /// Failed with `timedOutText` for a timeout; nil for any other error.
+    /// After Apple's own error for a server failure (5xx): Apple's servers
+    /// sometimes give up on a slow write they still finish (a 14-language
+    /// custom product page answered `UNEXPECTED_ERROR` after 30 s).
+    static let serverFailureText = String(localized: "It may still have gone through: refresh to see before you retry.")
+
+    /// Failed with `timedOutText` for a timeout, or Apple's error and
+    /// `serverFailureText` for a server failure; nil for any other error.
     static func timedOutStatus(_ error: any Error) -> PushItemStatus? {
-        guard let error = error as? URLError, error.code == .timedOut else { return nil }
-        return .failed(timedOutText)
+        if let error = error as? URLError, error.code == .timedOut { return .failed(timedOutText) }
+        if let error = error as? AppStoreConnectError, case .server = error {
+            return .failed(error.pushFailureText + " " + serverFailureText)
+        }
+        return nil
     }
 }

@@ -141,4 +141,12 @@ struct ReleasePhaseTests {
         #expect(ReleaseBuild(id: "b", number: "213", processing: .processing).detail == "Apple is still processing it")
         #expect(ReleaseBuild(id: "b", number: "212", processing: .valid).title(version: "1.4") == "1.4 (212)")
     }
+
+    @Test func anUploadedBuildShowsTheDayAndTime() throws {
+        let uploaded = try #require(Calendar.current.date(from: DateComponents(year: 2026, month: 11, day: 21, hour: 14, minute: 50)))
+        let detail = ReleaseBuild(id: "b", number: "22", uploaded: uploaded, processing: .valid).detail
+        #expect(detail.hasPrefix("Uploaded "))
+        #expect(detail.contains(uploaded.formatted(.dateTime.day())))
+        #expect(detail.contains(uploaded.formatted(.dateTime.hour().minute())))
+    }
 }

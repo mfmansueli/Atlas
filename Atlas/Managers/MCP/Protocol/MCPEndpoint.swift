@@ -107,7 +107,9 @@ enum MCPEndpoint {
     looks with propose_page_look; when it has recapture, capture the screens that should show something else in the \
     Simulator and name each with report_page_capture. When a release needs a new App Store version, read \
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
-    App Store Connect creates it when the person pushes. App Compliance answers (trader status, ICP Filing Number, \
+    App Store Connect creates it when the person pushes. When a release changes what a subscription or in-app \
+    purchase unlocks, update its Review Notes for App Review in the same task: get_in_app_review_notes, then \
+    propose_in_app_review_note. App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. Submitting a version or an event for App Review and \
     releasing it are the person's: there is no tool for either, and the tools only ever queue changes. Always tell \
