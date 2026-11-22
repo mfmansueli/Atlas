@@ -127,7 +127,7 @@ struct CaptureCoverageView: View {
             }
         }
         .font(.caption.weight(.medium))
-        .foregroundStyle(Palette.label3)
+        .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.small)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -140,7 +140,7 @@ struct CaptureCoverageView: View {
             Text(group.title)
                 .textCase(.uppercase)
             Text(verbatim: "\(group.rows.count)")
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
         }
         .font(.caption.weight(.semibold))
         .foregroundStyle(Palette.label2)

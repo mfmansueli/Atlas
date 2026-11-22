@@ -83,7 +83,7 @@ struct ReviewCard: View {
                 .accessibilityHidden(true)
             Text(note)
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
             if let toggle {
                 Button(toggle) { viewModel.toggleTranslation(review) }
                     .buttonStyle(.link)
@@ -147,7 +147,7 @@ struct ReviewCard: View {
         HStack(spacing: Spacing.small) {
             Text(writeText)
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.isDismissed(review) {
                 Button("Restore") { viewModel.restoreSuggestion(for: review) }

@@ -12,7 +12,7 @@ struct RetentionSaveRateLine: View {
 
     var body: some View {
         HStack(spacing: Spacing.xSmall) {
-            Text("Save rate · 28 days").foregroundStyle(Palette.label3)
+            Text("Save rate · 28 days").foregroundStyle(Palette.label2)
             if let measured, measured.opened > 0 {
                 RateLabel(rate: measured.rate)
                 Text("· \(AnalyticsText.count(measured.stayed)) of \(AnalyticsText.count(measured.opened))").foregroundStyle(Palette.label2)
@@ -21,7 +21,7 @@ struct RetentionSaveRateLine: View {
                         .foregroundStyle(outcome.isHigher ? Palette.done : outcome.isLower ? Palette.danger : Palette.label2)
                 }
             } else {
-                Text("— · No one has opened Cancel Subscription yet").foregroundStyle(Palette.label3)
+                Text("— · No one has opened Cancel Subscription yet").foregroundStyle(Palette.label2)
             }
         }
         .font(.caption)

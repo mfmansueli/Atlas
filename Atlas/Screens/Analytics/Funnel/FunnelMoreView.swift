@@ -37,7 +37,7 @@ struct FunnelMoreView: View {
                     }
                     .padding(.horizontal, Spacing.medium)
                     Text("From people who share analytics with developers.")
-                        .font(.caption).foregroundStyle(Palette.label3)
+                        .font(.caption).foregroundStyle(Palette.label2)
                         .padding(.horizontal, Spacing.medium)
                 }
                 .accessibilityIdentifier("analytics.funnel.afterDownload")

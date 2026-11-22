@@ -23,7 +23,7 @@ struct PhasedReleaseBar: View {
                         .font(.caption.monospacedDigit())
                     Text("Day \(index + 1)")
                         .font(.caption2)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

@@ -22,7 +22,7 @@ struct TranslateProviderRow: View {
         Button(action: action) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.medium) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                    .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                    .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title ?? provider.title)

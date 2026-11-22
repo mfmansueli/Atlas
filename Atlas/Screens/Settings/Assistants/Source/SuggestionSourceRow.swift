@@ -21,7 +21,7 @@ struct SuggestionSourceRow<Content: View>: View {
             } label: {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                        .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                        .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                         .imageScale(.large)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {

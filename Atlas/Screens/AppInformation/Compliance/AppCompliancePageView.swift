@@ -63,7 +63,7 @@ struct AppCompliancePageView: View {
         }
         Text("Checked again whenever \(viewModel.app.name)’s category, age rating or countries change.")
             .font(.caption)
-            .foregroundStyle(Palette.label3)
+            .foregroundStyle(Palette.label2)
     }
 
     @ViewBuilder

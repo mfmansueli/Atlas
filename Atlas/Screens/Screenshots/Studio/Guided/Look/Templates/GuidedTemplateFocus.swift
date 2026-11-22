@@ -92,7 +92,7 @@ struct GuidedTemplateFocus: View {
         let text = Text(preview.note).foregroundStyle(Palette.label2)
         return Group {
             if let count {
-                Text("\(text) \(Text(count).foregroundStyle(Palette.label3))")
+                Text("\(text) \(Text(count).foregroundStyle(Palette.label2))")
             } else {
                 text
             }

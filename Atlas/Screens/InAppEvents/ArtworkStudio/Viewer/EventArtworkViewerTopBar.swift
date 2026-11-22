@@ -34,7 +34,7 @@ struct EventArtworkViewerTopBar: View {
                     .lineLimit(1)
                     .accessibilityIdentifier("events.art.viewer.title")
                 Text(flow.viewerSubtitle)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: 12))
                     .foregroundStyle(EventArtworkViewerStyle.secondary(contrast))
                     .lineLimit(1)
                     .accessibilityIdentifier("events.art.viewer.subtitle")

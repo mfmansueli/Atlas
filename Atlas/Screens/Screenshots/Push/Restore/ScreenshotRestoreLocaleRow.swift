@@ -16,7 +16,7 @@ struct ScreenshotRestoreLocaleRow: View {
         Button(action: onSelect) {
             HStack(spacing: Spacing.small) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                    .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                    .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                     .accessibilityHidden(true)
                 FlagTile(regionCode: choice.locale.regionCode)
                 VStack(alignment: .leading, spacing: 1) {

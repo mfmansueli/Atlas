@@ -44,7 +44,7 @@ struct SuggestionPopover: View {
                     .foregroundStyle(Palette.label2)
                 ForEach(recommendation.basis, id: \.self) { line in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
-                        Text(verbatim: "•").foregroundStyle(Palette.label3).accessibilityHidden(true)
+                        Text(verbatim: "•").foregroundStyle(Palette.label2).accessibilityHidden(true)
                         Text(line).fixedSize(horizontal: false, vertical: true)
                     }
                     .font(.callout)

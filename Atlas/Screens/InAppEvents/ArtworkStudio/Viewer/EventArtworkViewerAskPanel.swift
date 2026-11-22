@@ -22,7 +22,7 @@ struct EventArtworkViewerAskPanel: View {
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
             TextEditor(text: Binding { flow.viewer?.request ?? "" } set: { flow.viewer?.request = $0 })
-                .font(.system(size: 12.5))
+                .font(.system(size: 13))
                 .scrollContentBackground(.hidden)
                 .foregroundStyle(.white)
                 .padding(6)
@@ -36,7 +36,7 @@ struct EventArtworkViewerAskPanel: View {
                         flow.useChip(chip)
                     } label: {
                         Text(chip)
-                            .font(.system(size: 11.5))
+                            .font(.system(size: 12))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 9)
                             .frame(height: 22)

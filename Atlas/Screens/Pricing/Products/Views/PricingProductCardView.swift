@@ -120,8 +120,11 @@ struct PricingProductCardView: View {
                 Spacer(minLength: Spacing.small)
                 Button("Dismiss", action: onDismiss)
                     .accessibilityIdentifier("pricing.card.dismiss")
+                // A row action (README — Design system §4): tinted, so the
+                // banner's Accept All stays the one filled button.
                 Button("Accept", action: onAccept)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.bordered)
+                    .tint(.accentColor)
                     .accessibilityIdentifier("pricing.card.accept")
             }
             .controlSize(.small)

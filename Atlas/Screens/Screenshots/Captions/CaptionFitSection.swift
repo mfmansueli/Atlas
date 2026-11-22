@@ -27,7 +27,7 @@ struct CaptionFitSection: View {
                 Text("Overflows")
             }
             .font(.caption2)
-            .foregroundStyle(Palette.label3)
+            .foregroundStyle(Palette.label2)
             if let fit, !fit.isEmpty {
                 Text(fit.label)
                     .font(.callout.weight(.medium))

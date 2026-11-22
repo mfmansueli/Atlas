@@ -129,12 +129,11 @@ struct EventArtworkPanel: View {
                 if state.showsMake {
                     Button(action: actions.make) {
                         HStack(spacing: Spacing.xxSmall) {
-                            Text("✦ Make the Artwork…")
+                            AIStartLabel(String(localized: "Make the Artwork…"))
                             if isFree { ProChip() }
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Palette.machineTranslated)
+                    .buttonStyle(.bordered)
                     .accessibilityIdentifier("events.art.make")
                 }
                 if state.showsChooseFiles {

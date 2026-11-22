@@ -112,7 +112,7 @@ struct AppInformationPreviewPane: View {
             if chips.isEmpty {
                 Text("No details provided")
                     .font(.caption2)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
             } else {
                 FlowLayout(spacing: Spacing.xxSmall) {
                     ForEach(chips, id: \.value) { chip in

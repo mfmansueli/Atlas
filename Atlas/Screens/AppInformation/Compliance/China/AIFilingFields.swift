@@ -52,7 +52,7 @@ struct AIFilingFields: View {
             }
             Text("Only the Cyberspace Administration of China approves a filing. Atlas keeps it here: Apple’s API doesn’t take it.")
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .contain)

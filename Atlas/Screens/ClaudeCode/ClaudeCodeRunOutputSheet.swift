@@ -162,7 +162,7 @@ struct ClaudeCodeRunOutputSheet: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text(item.date, format: .dateTime.hour().minute())
                 .font(.caption2.monospacedDigit())
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
         }
         .padding(.vertical, 5)
         .accessibilityElement(children: .combine)

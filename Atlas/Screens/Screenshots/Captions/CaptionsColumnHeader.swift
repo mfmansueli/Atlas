@@ -26,14 +26,14 @@ struct CaptionsColumnHeader: View {
                         Text("· with subhead")
                     }
                 }
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .frame(width: cellWidth, alignment: .leading)
             }
             // The header and search artwork's own texts.
             ForEach(model.artworkRoles, id: \.self) { role in
                 Text(role.title)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .frame(width: cellWidth, alignment: .leading)
                     .accessibilityIdentifier("screenshots.captions.column.\(role.rawValue)")
@@ -41,7 +41,7 @@ struct CaptionsColumnHeader: View {
             // The phrases Claude wrote on those pages.
             ForEach(Array(model.artworkPhrases.enumerated()), id: \.offset) { index, phrase in
                 Text(ArtworkTextCell.phraseTitle(index))
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .frame(width: cellWidth, alignment: .leading)
                     .help(phrase)

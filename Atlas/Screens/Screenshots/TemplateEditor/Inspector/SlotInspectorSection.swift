@@ -47,7 +47,7 @@ struct SlotInspectorSection: View {
                         Image(systemName: "xmark.circle.fill")
                     }
                     .buttonStyle(.borderless)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .help(Text("Follow the template here"))
                     .accessibilityLabel(Text("Clear the \(TemplateSchema.title(for: change.fieldPath)) override"))
                     .accessibilityIdentifier("screenshots.template.clearOverride.\(change.fieldPath)")

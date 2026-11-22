@@ -30,7 +30,7 @@ struct ImportChangeRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(change.oldValue.isEmpty ? String(localized: "Empty") : change.oldValue)
                     .strikethrough()
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                 Text(change.newValue)
                     .lineLimit(3)

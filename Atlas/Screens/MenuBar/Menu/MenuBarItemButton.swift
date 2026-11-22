@@ -27,7 +27,7 @@ struct MenuBarItemButton: View {
                         .foregroundStyle(isHovered ? Color.white : Palette.label)
                     if let detail {
                         Text(detail)
-                            .font(.system(size: 11.5))
+                            .font(.system(size: 12))
                             .foregroundStyle(isHovered ? Color.white.opacity(0.85) : Palette.label2)
                     }
                 }

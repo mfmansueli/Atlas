@@ -22,7 +22,7 @@ struct ComplianceDeclarationCard: View {
             HStack(spacing: Spacing.xSmall) {
                 Text("Apple’s API can’t take or show this one.")
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if hasAnswer {
                     Button(String(localized: "Change")) { viewModel.clearMedicalDeviceAnswer() }

@@ -46,7 +46,7 @@ struct ExtrasReviewTile: View {
             .overlay(alignment: .bottomTrailing) {
                 if item.isMotion {
                     Text("\(AutopilotRun.timeTitle(Double(AutopilotArtworkMotion.loopSeconds))) loop")
-                        .font(.system(size: 9, weight: .semibold))
+                        .font(.system(size: 10, weight: .semibold))
                         .monospacedDigit()
                         .foregroundStyle(.white)
                         .padding(.horizontal, 4)

@@ -51,6 +51,6 @@ struct OverviewWaitingSectionTests {
         let rows = OverviewWaitingSection.rows(OverviewWaitingSection.Facts(counts: SectionBadgeCounts()))
         #expect(rows[0].what(appName: "Lumen") == "The words on the page and in search")
         #expect(rows[2].what(appName: "Lumen") == "What Lumen costs in each country")
-        #expect(rows.map(\.systemImage) == ["doc.text", "iphone", "tag", "info.circle"])
+        #expect(rows.map(\.systemImage) == ["doc.text.fill", "iphone", "tag.fill", "info.circle.fill"])
     }
 }

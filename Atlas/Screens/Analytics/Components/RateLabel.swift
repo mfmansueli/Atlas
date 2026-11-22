@@ -18,14 +18,14 @@ struct RateLabel: View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             switch rate {
             case .missing:
-                Text("—").foregroundStyle(Palette.label3)
+                Text("—").foregroundStyle(Palette.label2)
             case .tooFew:
-                Text(rate.text).foregroundStyle(Palette.label3)
+                Text(rate.text).foregroundStyle(Palette.label2)
             case let .measured(measured):
                 Text(rate.text)
                 if let standing = measured.standing {
                     Text(standing.mark)
-                        .font(.system(size: 9))
+                        .font(.system(size: 10))
                         .foregroundStyle(Self.color(for: standing))
                 }
                 ConfidenceMeter(bars: measured.bars)

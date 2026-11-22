@@ -22,7 +22,7 @@ struct SetsGroupHeader: View {
                     .foregroundStyle(Palette.label2)
                 Text(verbatim: "\(group.count)")
                     .font(.caption.monospacedDigit())
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                 if let onToggle {
                     Button(isExpanded ? String(localized: "Hide") : String(localized: "Show All"), action: onToggle)
                         .buttonStyle(.link)
@@ -34,7 +34,7 @@ struct SetsGroupHeader: View {
             if let note = group.note {
                 Text(note)
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
             }
         }
         .padding(.leading, SetsColumns.leading)

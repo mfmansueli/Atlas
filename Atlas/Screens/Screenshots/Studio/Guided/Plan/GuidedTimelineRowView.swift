@@ -49,7 +49,7 @@ struct GuidedTimelineRowView<Accessory: View>: View {
         } else {
             HStack(spacing: Spacing.xxSmall) {
                 Text(row.who.initials)
-                    .font(.system(size: 9, weight: .bold))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(Palette.label2)
                     .frame(width: 20, height: 20)
                     .background(Palette.fill2, in: RoundedRectangle(cornerRadius: 5, style: .continuous))

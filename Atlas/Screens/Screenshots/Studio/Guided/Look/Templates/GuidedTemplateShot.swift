@@ -57,7 +57,7 @@ struct GuidedTemplateShot: View {
     /// than white on orange.
     private var interfaceMark: some View {
         Text("\(primaryName) UI")
-            .font(.system(size: 9.5, weight: .semibold))
+            .font(.system(size: 10, weight: .semibold))
             .foregroundStyle(Color.black.opacity(0.85))
             .padding(.horizontal, 5)
             .padding(.vertical, 1)

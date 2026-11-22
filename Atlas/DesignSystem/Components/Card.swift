@@ -24,6 +24,9 @@ struct Card<Content: View>: View {
             RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
                 .strokeBorder(contrast == .increased ? Palette.separator2 : Palette.separator, lineWidth: contrast == .increased ? 1 : 0.5)
         }
+        // The card depth (README — Design system §6): the line and a soft
+        // 3 pt shadow, the only depth the app draws itself.
+        .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
         // One element, so an identifier on the card doesn't land on every
         // text inside it.
         .accessibilityElement(children: .contain)

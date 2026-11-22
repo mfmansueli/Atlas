@@ -21,7 +21,7 @@ struct WelcomeChipView: View {
                 Text(verbatim: name)
             case let .price(currency, amount):
                 Text(verbatim: currency)
-                    .font(.system(size: 11.5, weight: .bold))
+                    .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(Self.coinColor)
                     .padding(.horizontal, 5)
                     .frame(minWidth: 20, minHeight: 20)
@@ -31,7 +31,7 @@ struct WelcomeChipView: View {
                     .monospacedDigit()
             }
         }
-        .font(.system(size: 12.5, weight: .semibold))
+        .font(.system(size: 13, weight: .semibold))
         .foregroundStyle(.white)
         .lineLimit(1)
         .fixedSize()

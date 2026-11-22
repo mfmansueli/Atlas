@@ -26,7 +26,7 @@ struct ScreenshotThumbnail: View {
             } else if let placeholder {
                 Text(placeholder)
                     .font(.system(size: placeholderSize))
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)
                     .allowsTightening(true)
                     .minimumScaleFactor(0.6)

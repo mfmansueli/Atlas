@@ -55,7 +55,7 @@ struct ChinaDeclarationCard: View {
         HStack(spacing: Spacing.xSmall) {
             Text("Apple’s API can’t take or show this one.")
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             ExternalLinkButton(title: String(localized: "Open App Store Connect"), url: viewModel.appStoreConnectComplianceURL)
             Button(String(localized: "Mark as Declared")) { viewModel.setDeclared(true, for: rule) }

@@ -25,7 +25,7 @@ struct ProToolbarButton: View {
         // Liquid Glass like the toolbar's other buttons, tinted with the
         // paywall's violet as Review & Push's prominent glass is with the
         // accent color.
-        .glassEffect(.regular.tint(PaywallStyle.violet).interactive(), in: Capsule())
+        .glassEffect(.regular.tint(PaywallStyle.brandBlue).interactive(), in: Capsule())
         .help("Upgrade to Atlas Pro")
         .accessibilityLabel(Text("Upgrade to Atlas Pro"))
         .accessibilityIdentifier("workspace.proButton")

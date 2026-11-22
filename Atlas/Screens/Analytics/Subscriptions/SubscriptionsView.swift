@@ -116,7 +116,7 @@ struct SubscriptionsView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(alignment: .firstTextBaseline) {
                         Text(reason.name).font(.callout)
-                        Text(reason.detail).font(.caption).foregroundStyle(Palette.label3).lineLimit(1)
+                        Text(reason.detail).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
                         Spacer(minLength: Spacing.small)
                         Text("\(AnalyticsText.count(reason.count)) · \(AnalyticsText.wholePercent(reason.share))").font(.callout).monospacedDigit()
                     }

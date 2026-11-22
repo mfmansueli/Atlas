@@ -25,13 +25,13 @@ struct EventArtworkViewerBottomBar: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(flow.viewerWhy)
-                    .font(.system(size: 12.5))
+                    .font(.system(size: 13))
                     .foregroundStyle(.white.opacity(0.92))
                     .lineLimit(2)
                     .accessibilityIdentifier("events.art.viewer.why")
                 if !isNarrow {
                     Text(flow.viewerChecks)
-                        .font(.system(size: 11.5))
+                        .font(.system(size: 12))
                         .foregroundStyle(EventArtworkViewerStyle.secondary(contrast))
                         .lineLimit(1)
                         .accessibilityIdentifier("events.art.viewer.checks")
@@ -51,7 +51,7 @@ struct EventArtworkViewerBottomBar: View {
                 .disabled(!flow.viewerCanAsk || viewer.isAsking)
                 if flow.viewerIsUsed {
                     Text("✓ In use")
-                        .font(.system(size: 12.5, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(EventArtworkViewerStyle.inUse)
                         .accessibilityIdentifier("events.art.viewer.inUse")
                 } else {
@@ -134,7 +134,7 @@ struct EventArtworkViewerBottomBar: View {
                     flow.viewer?.locale = code
                 } label: {
                     Text(StoreLocaleCatalog.locale(code: code)?.shortName ?? code)
-                        .font(.system(size: 11.5, weight: isOn ? .semibold : .regular))
+                        .font(.system(size: 12, weight: isOn ? .semibold : .regular))
                         .foregroundStyle(isOn ? EventArtworkViewerStyle.selectedText : .white)
                         .padding(.horizontal, 9)
                         .frame(height: 22)

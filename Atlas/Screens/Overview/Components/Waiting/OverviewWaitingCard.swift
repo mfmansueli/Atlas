@@ -65,12 +65,7 @@ struct OverviewWaitingCard: View {
 
     private func rowView(_ row: OverviewWaitingSection) -> some View {
         HStack(spacing: Spacing.medium) {
-            Image(systemName: row.systemImage)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.white)
-                .frame(width: 26, height: 26)
-                .background(Self.tint(for: row.section), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-                .accessibilityHidden(true)
+            SectionIconTile(section: row.section, size: 30)
             VStack(alignment: .leading, spacing: 1) {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                     Text(row.title)
@@ -101,19 +96,5 @@ struct OverviewWaitingCard: View {
         .padding(.vertical, Spacing.small)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("overview.waiting.row.\(row.section.rawValue)")
-    }
-
-    static func tint(for section: AppWorkspaceSection) -> Color {
-        switch section {
-        case .overview: Palette.accent
-        case .storePage: Palette.sectionStorePage
-        case .screenshots: Palette.sectionScreenshots
-        case .subscriptionPricing: Palette.sectionPricing
-        case .appInformation: Palette.sectionAppInformation
-        case .analytics: Palette.sectionAnalytics
-        case .reviews: Palette.sectionReviews
-        case .inAppEvents: Palette.sectionEvents
-        case .productPages: Palette.sectionProductPages
-        }
     }
 }

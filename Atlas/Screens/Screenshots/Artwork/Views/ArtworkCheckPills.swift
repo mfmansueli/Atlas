@@ -33,7 +33,7 @@ struct ArtworkCheckPills: View {
                     let more = checks.count - lineCount
                     Text(more == 1 ? String(localized: "1 more finding") : String(localized: "\(more) more findings"))
                         .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
             }
             .accessibilityElement(children: .combine)

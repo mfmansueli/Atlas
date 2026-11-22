@@ -113,7 +113,7 @@ struct AppInformationPageBar: View {
                 if pro.isFree, model.otherPageCount > 0 { ProChip() }
                 if model.totalCount > 0 {
                     Text(SuggestionBadge.text(for: model.totalCount))
-                        .font(.system(size: 10.5, weight: .bold))
+                        .font(.system(size: 11, weight: .bold))
                         .monospacedDigit()
                         .padding(.horizontal, 5)
                         .frame(minWidth: 17, minHeight: 17)

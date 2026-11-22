@@ -44,7 +44,7 @@ struct SuggestedPriceCell: View {
             }
         } else {
             Text(verbatim: "—")
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .accessibilityLabel(String(localized: "No suggestion"))
         }
     }

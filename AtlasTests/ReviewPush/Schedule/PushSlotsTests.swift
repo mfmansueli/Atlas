@@ -35,6 +35,25 @@ struct PushSlotsTests {
         var item: Int
     }
 
+    /// `finished` runs in the caller's isolation: a push notes each
+    /// response in its main-actor rate tracker there, which trapped when the
+    /// group's body ran off the main actor.
+    @Test func finishedRunsOnTheCallersActor() async throws {
+        let slots = PushSlots()
+        let tracker = RequestRateTracker()
+        var onMain = 0
+        try await slots.forEach(Array(0..<12), key: "prices", width: 4) { item in
+            try? await Task.sleep(for: .milliseconds(5))
+            return item
+        } finished: { _, _ in
+            MainActor.assertIsolated()
+            tracker.note(nil)
+            onMain += 1
+        }
+        #expect(onMain == 12)
+        #expect(tracker.rateLimit.remaining == AppStoreConnectRateLimit.defaultHourlyLimit - 12)
+    }
+
     @Test func oneKeyGoesOneAtATimeAndOthersBesideIt() async {
         let slots = PushSlots()
         let gauge = Gauge()

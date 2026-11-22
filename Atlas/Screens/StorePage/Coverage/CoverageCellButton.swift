@@ -47,7 +47,7 @@ struct CoverageCellButton: View {
             .foregroundStyle(Palette.label2)
         case .missing:
             Text(cell.text)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
         case .overLimit, .invalidURL:
             HStack(spacing: 3) {
                 Image(systemName: "exclamationmark.triangle")
@@ -75,7 +75,7 @@ struct CoverageCellButton: View {
             .foregroundStyle(Palette.label)
         case .notApplicable:
             Text(cell.text)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
         }
     }
 

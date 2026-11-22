@@ -163,7 +163,7 @@ struct AppStorePagePreview<Shots: View>: View {
             }
             Text(bottom)
                 .font(.caption2)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
         }

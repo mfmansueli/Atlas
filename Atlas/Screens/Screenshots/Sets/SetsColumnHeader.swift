@@ -44,7 +44,7 @@ struct SetsColumnHeader: View {
             Text(verbatim: "\(slot.index + 1)")
                 .foregroundStyle(Palette.label)
             Text(slot.name)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
             if showsInSearch(slot.index) {
                 Image(systemName: "magnifyingglass")
                     .imageScale(.small)

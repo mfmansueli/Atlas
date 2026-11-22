@@ -36,11 +36,7 @@ struct InAppEventLanguageBar: View {
                         HStack(spacing: Spacing.xSmall) {
                             Image(systemName: "sparkles")
                             Text("Accept All Languages")
-                            Text(viewModel.suggestedCount, format: .number)
-                                .font(.caption.weight(.semibold))
-                                .monospacedDigit()
-                                .padding(.horizontal, 5)
-                                .background(.white.opacity(0.26), in: Capsule())
+                            SuggestionBadge(count: viewModel.suggestedCount, isSmall: true)
                         }
                     }
                     .buttonStyle(.borderedProminent)

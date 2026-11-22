@@ -105,7 +105,7 @@ struct ConnectView: View {
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("connect.title")
             Text("Atlas uses an App Store Connect API key to read your apps and to push what you approve.")
-                .font(.system(size: 13.5))
+                .font(.system(size: 13))
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 440)

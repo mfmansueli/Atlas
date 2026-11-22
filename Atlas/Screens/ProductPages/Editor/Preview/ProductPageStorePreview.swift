@@ -49,7 +49,7 @@ struct ProductPageStorePreview: View {
                 .accessibilityIdentifier("pages.preview.note")
             Text("The name, subtitle, icon and description are the default page’s on every page.")
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(Spacing.medium)

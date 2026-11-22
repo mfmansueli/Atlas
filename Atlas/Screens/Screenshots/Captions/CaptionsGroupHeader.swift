@@ -20,7 +20,7 @@ struct CaptionsGroupHeader<Accessory: View>: View {
             Text("\(count)")
                 .font(.caption)
                 .monospacedDigit()
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
             accessory()
                 .font(.caption)
         }

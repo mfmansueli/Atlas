@@ -5,21 +5,23 @@
 
 import SwiftUI
 
-/// Pro's own colors: the indigo-to-purple of the paywall's left side, the
-/// PRO chip and the toolbar's Pro button.
+/// Pro's colours: the brand's blue (README — Design system §1, "Atlas Pro is
+/// Atlas; purple stays AI"), on the paywall's left side, the PRO chip and the
+/// toolbar's Pro button. Where white text sits on it, the icon's deeper
+/// stops (#1590E8 → #0A3FB8) keep it readable; the bright #1FC2FF → #0A5CF2
+/// is for fills without text.
 enum PaywallStyle {
-    static let indigo = Color(red: 0x3B / 255, green: 0x2F / 255, blue: 0xC4 / 255)
-    static let violet = Color(red: 0x6A / 255, green: 0x35 / 255, blue: 0xD0 / 255)
-    static let purple = Color(red: 0x8A / 255, green: 0x3C / 255, blue: 0xD6 / 255)
+    /// #0A5CF2, the brand gradient's lower colour.
+    static let brandBlue = Color(red: 0x0A / 255, green: 0x5C / 255, blue: 0xF2 / 255)
 
-    static let gradient = LinearGradient(
-        colors: [Color(red: 0x4B / 255, green: 0x3B / 255, blue: 0xD6 / 255), purple], startPoint: .topLeading, endPoint: .bottomTrailing
-    )
+    /// Behind white text: the chip.
+    static let gradient = LinearGradient(colors: AtlasIconGradient.dark, startPoint: .topLeading, endPoint: .bottomTrailing)
 
-    static let paneGradient = LinearGradient(
-        stops: [.init(color: indigo, location: 0), .init(color: violet, location: 0.55), .init(color: purple, location: 1)],
-        startPoint: .top, endPoint: .bottom
-    )
+    /// The paywall's left pane, white text on it.
+    static let paneGradient = LinearGradient(colors: AtlasIconGradient.dark, startPoint: .top, endPoint: .bottom)
+
+    /// A fill without text on it (the Settings tile).
+    static let brightGradient = LinearGradient(colors: AtlasIconGradient.light, startPoint: .top, endPoint: .bottom)
 
     static let sheetSize = CGSize(width: 840, height: 600)
     static let paneWidth: CGFloat = 320

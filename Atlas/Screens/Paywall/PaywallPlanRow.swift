@@ -18,14 +18,14 @@ struct PaywallPlanRow: View {
             HStack(spacing: Spacing.medium) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                     .font(.system(size: 16))
-                    .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                    .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 1) {
                     HStack(spacing: Spacing.xSmall) {
                         Text(offer.plan.title).font(.headline)
                         if let tag {
                             Text(tag)
-                                .font(.system(size: 10.5, weight: .bold))
+                                .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(Palette.positive)
                                 .padding(.horizontal, 6)
                                 .frame(height: 17)

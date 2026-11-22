@@ -18,7 +18,7 @@ struct MenuBarJobRow: View {
             }
             if !job.detail.isEmpty {
                 Text(job.detail)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: 12))
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)

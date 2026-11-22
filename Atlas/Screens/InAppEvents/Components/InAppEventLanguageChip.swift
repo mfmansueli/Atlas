@@ -38,7 +38,7 @@ struct InAppEventLanguageChip: View {
             }
             .padding(.leading, 3)
             .padding(.trailing, 9)
-            .frame(height: 26)
+            .frame(height: 24)
             .foregroundStyle(isSelected ? Color.white : Palette.label)
             .background(isSelected ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(Palette.fill1), in: Capsule())
             .overlay(Capsule().strokeBorder(isSelected ? Color.clear : Palette.separator, lineWidth: 0.5))

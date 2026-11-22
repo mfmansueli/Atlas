@@ -59,13 +59,13 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
     /// The glyph on the section's tile, in the sidebar and its own header.
     var systemImage: String {
         switch self {
-        case .overview: "square.grid.2x2"
-        case .storePage: "doc.text"
+        case .overview: "square.grid.2x2.fill"
+        case .storePage: "doc.text.fill"
         case .screenshots: "iphone"
-        case .productPages: "doc.on.doc"
+        case .productPages: "doc.on.doc.fill"
         case .inAppEvents: "calendar"
-        case .appInformation: "info.circle"
-        case .subscriptionPricing: "tag"
+        case .appInformation: "info.circle.fill"
+        case .subscriptionPricing: "tag.fill"
         case .reviews: "star.fill"
         case .analytics: "chart.bar.fill"
         }

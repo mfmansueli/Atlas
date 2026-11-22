@@ -76,7 +76,7 @@ struct TraderStatusCard: View {
                 }
                 Text("Prepared from your team’s name and App Review’s contact. Apple’s API doesn’t share your address: add it yourself.")
                     .font(.caption2)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.leading, 84)

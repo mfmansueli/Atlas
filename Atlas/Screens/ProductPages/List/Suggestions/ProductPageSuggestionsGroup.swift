@@ -38,6 +38,8 @@ struct ProductPageSuggestionsGroup: View {
                             SuggestionBadge(count: suggestions.count, isSmall: true)
                         }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
                     .controlSize(.small)
                     .accessibilityLabel(Text("Accept all \(suggestions.count) suggested pages"))
                     .accessibilityIdentifier("pages.suggestions.acceptAll")

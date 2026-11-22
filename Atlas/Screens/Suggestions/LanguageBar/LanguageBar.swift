@@ -84,7 +84,7 @@ struct LanguageBar<Trailing: View>: View {
                     .lineLimit(1)
                 if model.hereCount > 0 {
                     Text(SuggestionBadge.text(for: model.hereCount))
-                        .font(.system(size: 10.5, weight: .bold))
+                        .font(.system(size: 11, weight: .bold))
                         .monospacedDigit()
                         .foregroundStyle(.white)
                         .padding(.horizontal, 5)
@@ -175,14 +175,7 @@ struct LanguageBar<Trailing: View>: View {
                 Image(systemName: model.totalCount > 0 ? "sparkles" : "checkmark")
                     .imageScale(.small)
                 Text(model.acceptAllTitle)
-                if model.totalCount > 0 {
-                    Text(SuggestionBadge.text(for: model.totalCount))
-                        .font(.system(size: 10.5, weight: .bold))
-                        .monospacedDigit()
-                        .padding(.horizontal, 5)
-                        .frame(minWidth: 17, minHeight: 17)
-                        .background(.white.opacity(0.26), in: Capsule())
-                }
+                SuggestionBadge(count: model.totalCount)
                 if showsProChip { ProChip() }
             }
         }

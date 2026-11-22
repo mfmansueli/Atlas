@@ -5,16 +5,20 @@
 
 import CoreGraphics
 
-/// Corner radii from the design handoff. Buttons, segmented controls and
-/// pills are capsules; windows use the system's radius.
+/// The seven corner radii (README — Design system §6), plus capsules for
+/// buttons, pills, badges and segmented controls. Always `.continuous`.
 enum Radius {
-    static let flag: CGFloat = 3
-    static let badge: CGFloat = 5
-    /// Text fields and keyword tokens.
-    static let field: CGFloat = 7
-    /// Banners and menus.
+    /// Tags and flag tiles.
+    static let flag: CGFloat = 4
+    static let badge: CGFloat = 4
+    /// Menu rows and small tiles.
+    static let menuRow: CGFloat = 6
+    /// Text fields, keyword tokens and sidebar rows.
+    static let field: CGFloat = 8
+    /// Banners and suggestions.
     static let banner: CGFloat = 10
     static let card: CGFloat = 12
-    static let popover: CGFloat = 14
-    static let sheet: CGFloat = 18
+    /// Popovers and tips.
+    static let popover: CGFloat = 16
+    static let sheet: CGFloat = 20
 }

@@ -23,7 +23,7 @@ struct PriceIndexCard: View {
             Button(action: onSelect) {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                        .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                        .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(source.name).font(.body.weight(.semibold))

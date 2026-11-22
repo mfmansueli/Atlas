@@ -28,7 +28,7 @@ struct FallbackChainSection: View {
                     HStack(spacing: Spacing.xSmall) {
                         Text(position + 2, format: .number)
                             .font(.caption.monospacedDigit())
-                            .foregroundStyle(Palette.label3)
+                            .foregroundStyle(Palette.label2)
                         Text(step.title(chosen: strategy.indexSource)).font(.callout)
                         Spacer(minLength: Spacing.xSmall)
                         Button { move(step, by: -1) } label: { Image(systemName: "arrow.up") }

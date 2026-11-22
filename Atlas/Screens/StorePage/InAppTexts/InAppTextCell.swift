@@ -25,7 +25,7 @@ struct InAppTextCell: View {
             Group {
                 if value.isEmpty {
                     Text("Missing")
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, minHeight: 20)
                         .overlay(
                             RoundedRectangle(cornerRadius: Radius.badge, style: .continuous)
@@ -53,7 +53,7 @@ struct InAppTextCell: View {
                         } else {
                             Text(verbatim: "\(counter.count)/\(counter.limit.maximum)")
                                 .font(.caption.monospaced())
-                                .foregroundStyle(Palette.label3)
+                                .foregroundStyle(Palette.label2)
                         }
                     }
                 }

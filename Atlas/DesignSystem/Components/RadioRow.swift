@@ -20,7 +20,7 @@ struct RadioRow<Leading: View>: View {
         Button(action: action) {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                    .foregroundStyle(isSelected ? Palette.accent : Palette.label3)
+                    .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                     .accessibilityHidden(true)
                 leading()
                 VStack(alignment: .leading, spacing: 1) {

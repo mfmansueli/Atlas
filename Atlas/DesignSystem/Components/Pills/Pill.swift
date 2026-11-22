@@ -28,10 +28,12 @@ struct Pill: View {
                 .monospacedDigit()
                 .lineLimit(1)
         }
-        .font(isProminent ? .callout.weight(.medium) : .caption.weight(.medium))
+        // A state pill (README — Design system §5): 20 pt, 11 pt semibold.
+        .font(isProminent ? .callout.weight(.medium) : .subheadline.weight(.semibold))
         .foregroundStyle(onSelection ? Color.white : style.foreground)
-        .padding(.horizontal, isProminent ? 8 : 6)
-        .padding(.vertical, isProminent ? 2 : 1)
+        .padding(.horizontal, isProminent ? 8 : 7)
+        .padding(.vertical, isProminent ? 2 : 0)
+        .frame(minHeight: isProminent ? nil : 20)
         .background(onSelection ? Color.white.opacity(0.2) : style.background, in: Capsule())
         .overlay {
             if let border = style.border(increasedContrast: contrast == .increased), !onSelection {

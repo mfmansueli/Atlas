@@ -24,7 +24,7 @@ struct ProductPageSubscribersCells: View {
             RateLabel(rate: subscribers.trialToPaid(average: average))
                 .frame(width: widths.rate, alignment: .leading)
         } else {
-            Text("—").foregroundStyle(Palette.label3).frame(width: widths.subscribers, alignment: .leading)
+            Text("—").foregroundStyle(Palette.label2).frame(width: widths.subscribers, alignment: .leading)
             Color.clear.frame(width: widths.rate, height: 1)
         }
     }

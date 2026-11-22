@@ -77,7 +77,7 @@ struct GuidedLiveTimelineView: View {
             if row.isYours {
                 Image(systemName: "person.fill").font(.system(size: 9, weight: .semibold))
             } else {
-                Text(row.who.initials).font(.system(size: 8, weight: .bold))
+                Text(row.who.initials).font(.system(size: 10, weight: .bold))
             }
         }
         .foregroundStyle(active ? Palette.accent : Palette.label2)

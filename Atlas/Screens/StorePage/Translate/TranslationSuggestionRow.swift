@@ -29,7 +29,7 @@ struct TranslationSuggestionRow: View {
                     Text(suggestion.currentText)
                         .font(.caption)
                         .strikethrough()
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
                 Text(suggestion.suggestedText)
                     .font(.callout)

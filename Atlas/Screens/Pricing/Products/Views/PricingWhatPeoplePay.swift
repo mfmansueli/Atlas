@@ -54,7 +54,7 @@ struct PricingWhatPeoplePay: View {
                 if rows.isEmpty {
                     Text("Prices are loading…")
                         .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
             }
             .padding(Spacing.medium)

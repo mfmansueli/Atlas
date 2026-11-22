@@ -57,7 +57,7 @@ struct ReviewSuggestionBox: View {
             HStack(spacing: Spacing.small) {
                 Text("Public on the App Store. You can edit or delete it later.")
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if isScheduled {
@@ -69,8 +69,10 @@ struct ReviewSuggestionBox: View {
                 }
                 Button("Edit…", action: onEdit)
                     .accessibilityIdentifier("reviews.suggestion.edit.\(review.id)")
+                // Repeated on every review card: a tinted row action.
                 Button(isScheduled ? String(localized: "Send Now") : String(localized: "Send Reply"), action: onSend)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.bordered)
+                    .tint(.accentColor)
                     .disabled(isSending)
                     .accessibilityIdentifier("reviews.suggestion.send.\(review.id)")
             }

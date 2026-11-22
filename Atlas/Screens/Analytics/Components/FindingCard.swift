@@ -41,7 +41,7 @@ struct FindingCard: View {
                             Text(number.label).font(.caption).foregroundStyle(Palette.label2)
                             Text(number.value).font(.callout.weight(.semibold)).monospacedDigit()
                             if let note = number.note, !note.isEmpty {
-                                Text(note).font(.caption).foregroundStyle(Palette.label3).monospacedDigit()
+                                Text(note).font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
                             }
                         }
                         .padding(.horizontal, 10)
@@ -53,12 +53,12 @@ struct FindingCard: View {
             }
             Text("How sure: \(finding.surenessDetail)")
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             if let read = finding.read, !read.isEmpty {
                 Text("Read: \(read.joined(separator: " · "))")
                     .font(.caption.monospaced())
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .accessibilityIdentifier("analytics.finding.read.\(finding.id)")
             }

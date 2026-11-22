@@ -55,7 +55,7 @@ struct ChangesView: View {
                                 Text(change.title).font(.callout).lineLimit(1)
                             }
                             HStack(spacing: Spacing.small) {
-                                Text(change.kind.area.title).font(.caption).foregroundStyle(Palette.label3)
+                                Text(change.kind.area.title).font(.caption).foregroundStyle(Palette.label2)
                                 Spacer(minLength: 0)
                                 Text(status(change)).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
                             }

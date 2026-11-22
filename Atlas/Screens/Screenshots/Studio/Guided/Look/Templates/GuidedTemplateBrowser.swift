@@ -103,11 +103,11 @@ struct GuidedTemplateBrowser: View {
                     .lineLimit(2)
                     .frame(minHeight: 24, alignment: .top)
                 if isInUse {
-                    Text("In use now").font(.system(size: 9.5)).foregroundStyle(Palette.label2)
+                    Text("In use now").font(.system(size: 10)).foregroundStyle(Palette.label2)
                 }
                 if starter.isNew {
                     Text("New")
-                        .font(.system(size: 9.5))
+                        .font(.system(size: 10))
                         .foregroundStyle(Palette.accentText)
                 }
             }

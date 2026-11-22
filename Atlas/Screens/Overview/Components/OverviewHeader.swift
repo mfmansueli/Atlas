@@ -38,7 +38,7 @@ struct OverviewHeader: View {
                 }
                 Text(detail)
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
             }

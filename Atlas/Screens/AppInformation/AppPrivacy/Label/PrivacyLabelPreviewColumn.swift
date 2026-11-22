@@ -34,7 +34,7 @@ struct PrivacyLabelPreviewColumn: View {
                 }
                 Text("Updates as you answer. Unreviewed suggestions aren’t included.")
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, Spacing.xxSmall)
             }

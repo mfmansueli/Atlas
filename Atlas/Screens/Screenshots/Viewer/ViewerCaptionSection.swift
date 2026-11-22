@@ -37,7 +37,7 @@ struct ViewerCaptionSection: View {
                 }
                 Text(caption.provenance.title)
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
             } else {
                 Text("No caption for this slot yet.")
                     .font(.callout)

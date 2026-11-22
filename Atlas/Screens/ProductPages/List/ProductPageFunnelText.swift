@@ -32,7 +32,7 @@ struct ProductPageFunnelText: View {
         } else {
             Text(emptyText)
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }

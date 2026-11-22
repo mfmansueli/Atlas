@@ -10,7 +10,7 @@ import SwiftUI
 struct ProChip: View {
     var body: some View {
         Text(verbatim: "PRO")
-            .font(.system(size: 9, weight: .bold))
+            .font(.system(size: 10, weight: .bold))
             .kerning(0.4)
             .foregroundStyle(.white)
             .padding(.horizontal, 5)

@@ -50,14 +50,19 @@ final class PushSlots: Sendable {
         _ items: [Item],
         key: String,
         width: Int = PushSchedule.concurrentRequests,
-        isolation _: isolated (any Actor)? = #isolation,
+        isolation: isolated (any Actor)? = #isolation,
         _ operation: @escaping @Sendable (Item) async throws -> Output,
         finished: (Item, Output) -> Void
     ) async throws {
         var failure: (any Error)?
         var pending = items[...]
         var going = 0
-        await withTaskGroup(of: Result<(Item, Output), any Error>.self) { group in
+        // The group's body must run in the caller's isolation: a closure is
+        // isolated to an `isolated` parameter only when it captures it. Left
+        // uncaptured, the body (and `finished`) ran on the generic executor
+        // and a push's main-actor rate tracker trapped on its isolation check.
+        await withTaskGroup(of: Result<(Item, Output), any Error>.self, isolation: isolation) { group in
+            _ = isolation
             while true {
                 while failure == nil, going < max(1, width), let item = pending.popFirst() {
                     going += 1

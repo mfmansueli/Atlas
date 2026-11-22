@@ -27,7 +27,7 @@ struct AppPreviewTile: View {
             .accessibilityLabel(Text(accessibilityText(previews)))
         } else {
             Text(verbatim: "—")
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .frame(width: width)
                 .accessibilityLabel(Text("No App Preview"))
         }

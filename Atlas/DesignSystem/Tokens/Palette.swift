@@ -26,6 +26,8 @@ enum Palette {
     static let label = Color.primary
     /// Darker than the system's secondary label so 11 pt grey still passes 4.5:1.
     static let label2 = dynamic(light: 0x6B6B70, dark: 0xA3A3AA, lightHC: 0x3D3D42, darkHC: 0xD4D4DA)
+    /// Placeholders, disabled controls and separators only: 2.8:1 on white,
+    /// never readable text (README — Design system §1). Readable text is label2.
     static let label3 = dynamic(light: 0x9A9AA0, dark: 0x6E6E75, lightHC: 0x5F5F66, darkHC: 0xA8A8B0)
 
     // MARK: - Surfaces
@@ -84,18 +86,34 @@ enum Palette {
     /// The outline of an asking button while its request runs.
     static let suggestionEdge = dynamic(light: 0x9646D2, dark: 0xC88CFF, lightHC: 0x5C1E91, darkHC: 0xE6C8FF, alpha: [0.28, 0.32, 0.70, 0.70])
 
-    /// The square icons at the top of each section.
-    static let sectionStorePage = dynamic(light: 0x2F7BF5, dark: 0x2F7BF5, lightHC: 0x1A5FD0, darkHC: 0x2F7BF5)
-    static let sectionScreenshots = dynamic(light: 0xF08A1C, dark: 0xF08A1C, lightHC: 0xB86200, darkHC: 0xF08A1C)
-    static let sectionPricing = dynamic(light: 0x2FA75A, dark: 0x2FA75A, lightHC: 0x1B7A3D, darkHC: 0x2FA75A)
-    static let sectionAppInformation = dynamic(light: 0x7D7D86, dark: 0x7D7D86, lightHC: 0x55555C, darkHC: 0x7D7D86)
-    static let sectionAnalytics = dynamic(light: 0x5856D6, dark: 0x5E5CE6, lightHC: 0x3634A3, darkHC: 0x7D7AFF)
-    static let sectionOverview = dynamic(light: 0x636366, dark: 0x8E8E93, lightHC: 0x48484A, darkHC: 0xAEAEB2)
-    static let sectionProductPages = dynamic(light: 0x0E9AA7, dark: 0x0E9AA7, lightHC: 0x0A6E78, darkHC: 0x2CC3CF)
-    static let sectionEvents = dynamic(light: 0xE5484D, dark: 0xE5484D, lightHC: 0xB3261E, darkHC: 0xFF6B6F)
-    static let sectionReviews = dynamic(light: 0xF5A30A, dark: 0xF5A30A, lightHC: 0xA86A00, darkHC: 0xFFB733)
+    /// The section tiles (README — Design system §2): a soft vertical
+    /// gradient, top lighter, like System Settings. Purple is never one of
+    /// them: it means AI. The flat value is the tile's lower colour, for the
+    /// few marks drawn in a section's colour (stars, Analytics' funnel).
+    static let sectionOverview = flat(0x2C2C30)
+    static let sectionStorePage = flat(0x2869D2)
+    static let sectionScreenshots = flat(0xCE5619)
+    static let sectionProductPages = flat(0x0C848F)
+    static let sectionEvents = flat(0xC03B69)
+    static let sectionAppInformation = flat(0x6B6B73)
+    static let sectionPricing = flat(0x288F4D)
+    static let sectionReviews = flat(0xD99700)
+    static let sectionAnalytics = flat(0x4B49B8)
+    /// The upper colour of each tile's gradient.
+    static let sectionOverviewTop = flat(0x4A4A50)
+    static let sectionStorePageTop = flat(0x3D86F7)
+    static let sectionScreenshotsTop = flat(0xF57A35)
+    static let sectionProductPagesTop = flat(0x16A9B6)
+    static let sectionEventsTop = flat(0xEC5B8D)
+    static let sectionAppInformationTop = flat(0x8E8E96)
+    static let sectionPricingTop = flat(0x3BB466)
+    static let sectionReviewsTop = flat(0xF7BE1A)
+    static let sectionAnalyticsTop = flat(0x6866E0)
     /// The Overview's version card: submitting and releasing.
     static let sectionRelease = dynamic(light: 0x0A84FF, dark: 0x0A84FF, lightHC: 0x0040DD, darkHC: 0x409CFF)
+
+    /// The hero button's tint: Welcome's Get Started, the paywall's buy.
+    static let heroBlue = dynamic(light: 0x0B63D6, dark: 0x0B63D6, lightHC: 0x0040DD, darkHC: 0x0B63D6)
 
     /// The 8 pt dot on anything that isn't pushed yet.
     static let unsaved = dynamic(light: 0x0071E3, dark: 0x4DA3FF, lightHC: 0x0040DD, darkHC: 0x8CC4FF)
@@ -112,6 +130,11 @@ enum Palette {
     static let stage = dynamic(light: 0xE7E7EC, dark: 0x0E0E10, lightHC: 0xDADAE0, darkHC: 0x000000)
 
     // MARK: - Building
+
+    /// The same colour in every appearance (decorative tiles).
+    private static func flat(_ hex: UInt32) -> Color {
+        dynamic(light: hex, dark: hex, lightHC: hex, darkHC: hex)
+    }
 
     /// A color that resolves per appearance: light, dark, and their Increase
     /// Contrast variants. `alpha` lists the four opacities in the same order.

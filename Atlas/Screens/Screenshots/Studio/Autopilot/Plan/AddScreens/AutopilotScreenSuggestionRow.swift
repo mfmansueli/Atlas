@@ -24,7 +24,7 @@ struct AutopilotScreenSuggestionRow: View {
                 if let evidence = suggestion.evidence {
                     Text(evidence)
                         .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Text(suggestion.steps)

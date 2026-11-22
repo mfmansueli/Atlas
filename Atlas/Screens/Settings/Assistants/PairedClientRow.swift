@@ -29,7 +29,7 @@ struct PairedClientRow: View {
                 if let directory = client.workingDirectory {
                     Text(directory)
                         .font(.caption.monospaced())
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }

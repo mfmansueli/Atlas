@@ -244,7 +244,7 @@ struct SubmitForReviewSheet: View {
             }
             Text("Saved to App Information → Export Compliance, so the next version asks only if something changed.")
                 .font(.caption)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
         }
     }
 

@@ -48,12 +48,16 @@ struct SettingsSidebar: View {
         return Button {
             selection = pane
         } label: {
-            Label(pane.title, systemImage: pane.systemImage)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 3)
-                .padding(.horizontal, Spacing.xSmall)
-                .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: 6))
-                .contentShape(Rectangle())
+            Label {
+                Text(pane.title)
+            } icon: {
+                SettingsPaneTile(pane: pane)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 3)
+            .padding(.horizontal, Spacing.xSmall)
+            .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])

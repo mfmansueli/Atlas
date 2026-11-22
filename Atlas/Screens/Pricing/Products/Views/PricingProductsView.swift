@@ -65,12 +65,14 @@ struct PricingProductsView: View {
                 }
             } label: {
                 HStack(spacing: Spacing.xSmall) {
-                    Text("Accept All \(viewModel.openPriceSuggestionCount)")
+                    Text("Accept All")
+                    SuggestionBadge(count: viewModel.openPriceSuggestionCount)
                     if pro.isFree { ProChip() }
                 }
             }
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
+            .accessibilityLabel(Text("Accept All, \(viewModel.openPriceSuggestionCount) suggested"))
             .accessibilityIdentifier("pricing.acceptAll")
         }
         .padding(.horizontal, Spacing.medium)

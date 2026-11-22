@@ -272,7 +272,7 @@ struct NewSubscriptionSheet: View {
                     let count = NewSubscription.trimmed(text.wrappedValue).count
                     Text(verbatim: "\(count)/\(limit)")
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(count > limit ? Palette.danger : Palette.label3)
+                        .foregroundStyle(count > limit ? Palette.danger : Palette.label2)
                 }
             }
             problemText(for: field)

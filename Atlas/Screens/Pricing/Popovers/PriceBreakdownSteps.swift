@@ -27,7 +27,7 @@ struct PriceBreakdownSteps: View {
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         Text(index + 1, format: .number)
                             .font(.caption.monospacedDigit())
-                            .foregroundStyle(Palette.label3)
+                            .foregroundStyle(Palette.label2)
                             .frame(width: 12, alignment: .trailing)
                         Text(step)
                             .font(.callout)

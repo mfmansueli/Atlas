@@ -50,12 +50,12 @@ struct RetentionMessagesTable: View {
     @ViewBuilder
     private func against(_ message: RetentionReport.Message) -> some View {
         if message.isNoMessage {
-            Text("The reference").foregroundStyle(Palette.label3)
+            Text("The reference").foregroundStyle(Palette.label2)
         } else if let outcome = message.againstNoMessage {
             Text(outcome.verdict)
                 .foregroundStyle(outcome.isHigher ? Palette.done : outcome.isLower ? Palette.danger : Palette.label2)
         } else {
-            Text("—").foregroundStyle(Palette.label3)
+            Text("—").foregroundStyle(Palette.label2)
         }
     }
 }

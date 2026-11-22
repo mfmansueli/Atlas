@@ -91,7 +91,7 @@ struct InAppEventGalleryTile: View {
                 VStack(alignment: .leading, spacing: 1) {
                     if let badge = event.badge {
                         Text(badge.title.uppercased())
-                            .font(.system(size: 9.5, weight: .bold))
+                            .font(.system(size: 10, weight: .bold))
                             .tracking(0.4)
                             .foregroundStyle(.white.opacity(0.85))
                     }
@@ -115,7 +115,7 @@ struct InAppEventGalleryTile: View {
                         Image(systemName: "sparkles")
                             .font(.system(size: 10, weight: .semibold))
                         Text(readyConcepts == 1 ? "1 concept ready" : "\(readyConcepts) concepts ready")
-                            .font(.system(size: 11.5, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold))
                     }
                     .foregroundStyle(.white)
                     .padding(.leading, 7)

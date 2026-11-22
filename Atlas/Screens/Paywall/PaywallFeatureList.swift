@@ -25,7 +25,7 @@ struct PaywallFeatureList: View {
                         .accessibilityAddTraits(.isHeader)
                         .accessibilityIdentifier("paywall.title")
                     Text("Free does it one at a time. Pro does it all at once.")
-                        .font(.system(size: 12.5))
+                        .font(.system(size: 13))
                         .opacity(0.82)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -36,7 +36,7 @@ struct PaywallFeatureList: View {
             }
             Spacer(minLength: Spacing.small)
             Text("AI runs on your own assistant or API key, so Pro’s price never includes AI usage.")
-                .font(.system(size: 11.5))
+                .font(.system(size: 12))
                 .opacity(0.78)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Spacing.xxSmall)
@@ -62,7 +62,7 @@ struct PaywallFeatureList: View {
                 Text(feature.title)
                     .font(.system(size: 13, weight: .semibold))
                 Text(feature.detail)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: 12))
                     .opacity(0.78)
                     .fixedSize(horizontal: false, vertical: true)
             }

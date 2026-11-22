@@ -37,9 +37,7 @@ struct WelcomeIntro: View {
                         .font(.system(size: 14, weight: .semibold))
                         .padding(.horizontal, 10)
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.large)
+                .heroButton()
                 .keyboardShortcut(.defaultAction)
                 .accessibilityIdentifier("welcome.getStarted")
                 Label("You’ll need an App Store Connect API key. It stays in this Mac’s Keychain.", systemImage: "lock")

@@ -37,7 +37,7 @@ struct CaptionProposalRowView: View {
                     Text(current)
                         .font(.callout)
                         .strikethrough()
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
                 Text(row.item.headline)
                     .font(.callout.weight(.semibold))

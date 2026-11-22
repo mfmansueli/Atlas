@@ -12,16 +12,17 @@ struct ReviewsFilterBar: View {
 
     var body: some View {
         HStack(spacing: Spacing.small) {
-            ForEach(ReviewFilter.allCases) { filter in
-                ReviewFilterChip(
-                    title: filter.title, count: viewModel.count(for: filter),
-                    isOn: viewModel.themeFilter == nil && viewModel.filter == filter
-                ) {
-                    viewModel.themeFilter = nil
-                    viewModel.filter = filter
+            // A segmented control, not blue buttons (README — Design
+            // system §4): none is selected while a group is shown.
+            Picker("Show", selection: filterSelection) {
+                ForEach(ReviewFilter.allCases) { filter in
+                    Text(segmentTitle(filter)).tag(Optional(filter))
                 }
-                .accessibilityIdentifier("reviews.filter.\(filter.rawValue)")
             }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .fixedSize()
+            .accessibilityIdentifier("reviews.filter")
             if let theme = viewModel.selectedTheme {
                 themePill(theme)
             }
@@ -31,6 +32,21 @@ struct ReviewsFilterBar: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.filterBar")
+    }
+
+    private var filterSelection: Binding<ReviewFilter?> {
+        Binding {
+            viewModel.themeFilter == nil ? viewModel.filter : nil
+        } set: { filter in
+            guard let filter else { return }
+            viewModel.themeFilter = nil
+            viewModel.filter = filter
+        }
+    }
+
+    private func segmentTitle(_ filter: ReviewFilter) -> String {
+        guard let count = viewModel.count(for: filter) else { return filter.title }
+        return "\(filter.title) \(count.formatted())"
     }
 
     /// "A dark widget ×": the group "Show Reviews" opened.
@@ -51,7 +67,7 @@ struct ReviewsFilterBar: View {
         }
         .padding(.leading, 10)
         .padding(.trailing, Spacing.small)
-        .frame(height: 26)
+        .frame(height: 24)
         .background(Palette.fill2, in: Capsule())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.filter.theme")

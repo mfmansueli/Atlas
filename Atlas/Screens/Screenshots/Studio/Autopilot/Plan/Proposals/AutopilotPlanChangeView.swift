@@ -45,7 +45,7 @@ struct AutopilotPlanChangeView: View {
             if let evidence = change.evidence {
                 Text(evidence)
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             ForEach(lines) { line in
@@ -62,7 +62,7 @@ struct AutopilotPlanChangeView: View {
             if let now = line.now {
                 Text("Now: \(now)")
                     .font(.caption)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .strikethrough()
                     .fixedSize(horizontal: false, vertical: true)
             }

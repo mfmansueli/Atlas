@@ -69,7 +69,7 @@ struct GuidedPicksTray<Item: Hashable, Thumbnail: View>: View {
     private func empty(number: Int) -> some View {
         Text("Pick \(number) · empty")
             .font(.callout)
-            .foregroundStyle(Palette.label3)
+            .foregroundStyle(Palette.label2)
             .frame(maxWidth: .infinity)
             .frame(height: emptyHeight)
             .overlay(

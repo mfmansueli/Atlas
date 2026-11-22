@@ -209,7 +209,7 @@ struct AutopilotPlanTable: View {
     private func caption(screen: AutopilotScreen, display: ScreenshotDisplayType, tag: String) -> some View {
         if !display.hasCaptions {
             Text(verbatim: "—")
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .accessibilityLabel(Text("No caption"))
         } else if screen.sourceScreenID != nil {
             Text(plan.caption(of: screen))

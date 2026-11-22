@@ -43,7 +43,7 @@ extension PriceMatrixTable {
                 Text(recommendation.feelsLikeText).monospacedDigit()
                 Text(recommendation.ratioText)
                     .font(.caption2)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
                     .monospacedDigit()
             }
             .accessibilityElement(children: .combine)
@@ -93,7 +93,7 @@ extension PriceMatrixTable {
                 .lineLimit(1)
         } else {
             Text(status.title)
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .lineLimit(1)
         }
     }

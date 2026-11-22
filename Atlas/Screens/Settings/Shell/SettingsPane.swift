@@ -52,15 +52,15 @@ enum SettingsPane: String, CaseIterable, Identifiable, Hashable, Sendable {
 
     var systemImage: String {
         switch self {
-        case .general: "gearshape"
-        case .accounts: "key.horizontal"
+        case .general: "gearshape.fill"
+        case .accounts: "key.horizontal.fill"
         case .assistants: "sparkles"
         case .suggestions: "text.badge.checkmark"
-        case .pricing: "tag"
+        case .pricing: "tag.fill"
         case .screenshots: "iphone"
-        case .notifications: "bell.badge"
-        case .pro: "star.circle"
-        case .privacy: "hand.raised"
+        case .notifications: "bell.badge.fill"
+        case .pro: "star.fill"
+        case .privacy: "hand.raised.fill"
         }
     }
 

@@ -80,7 +80,7 @@ struct ProposalStressStripView: View {
                 } else {
                     Text("Can’t apply")
                         .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                 }
             }
         }

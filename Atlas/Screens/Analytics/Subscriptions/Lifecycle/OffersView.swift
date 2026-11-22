@@ -81,12 +81,12 @@ struct OffersView: View {
     @ViewBuilder
     private func standing(_ offer: LifecycleReport.Offer) -> some View {
         if offer.isTooYoung {
-            Text("Still measuring").foregroundStyle(Palette.label3)
+            Text("Still measuring").foregroundStyle(Palette.label2)
         } else if let standing = offer.standing {
             Text("\(standing.mark) \(standing.title)")
                 .foregroundStyle(standing == .better ? Palette.done : standing == .worse ? Palette.danger : Palette.label2)
         } else {
-            Text(offer.rate.isTooFew ? String(localized: "Too few to tell") : "—").foregroundStyle(Palette.label3)
+            Text(offer.rate.isTooFew ? String(localized: "Too few to tell") : "—").foregroundStyle(Palette.label2)
         }
     }
 

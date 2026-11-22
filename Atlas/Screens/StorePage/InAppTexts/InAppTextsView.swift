@@ -87,7 +87,7 @@ struct InAppTextsView: View {
             Text("Locale")
                 .frame(width: Self.localeWidth, alignment: .leading)
             ForEach(columns) { column in
-                Text("\(column.title) \(Text("· \(column.field.limit.maximum)").foregroundStyle(Palette.label3))")
+                Text("\(column.title) \(Text("· \(column.field.limit.maximum)").foregroundStyle(Palette.label2))")
                     .lineLimit(1)
                     .frame(width: columnWidth, alignment: .leading)
             }

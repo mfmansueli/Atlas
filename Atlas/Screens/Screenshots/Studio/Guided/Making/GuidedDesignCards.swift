@@ -69,7 +69,7 @@ struct GuidedDesignCards: View {
                 .foregroundStyle(Palette.label2)
                 placeholder
             case .upNext, .waiting:
-                Text("Waiting").font(.callout.weight(.semibold)).foregroundStyle(Palette.label3)
+                Text("Waiting").font(.callout.weight(.semibold)).foregroundStyle(Palette.label2)
                 placeholder
             }
             Spacer(minLength: 0)

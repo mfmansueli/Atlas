@@ -13,10 +13,10 @@ struct AssistantMonogram: View {
 
     var body: some View {
         Text(letters)
-            .font(.system(size: 8, weight: .bold))
+            .font(.system(size: 10, weight: .bold))
             .foregroundStyle(Color(nsColor: .windowBackgroundColor))
-            .frame(width: 14, height: 14)
-            .background(Palette.label, in: RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .frame(width: 16, height: 16)
+            .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             .accessibilityHidden(true)
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 struct InterfaceChip: View {
     var body: some View {
         Text("UI")
-            .font(.system(size: 8, weight: .bold).monospaced())
+            .font(.system(size: 10, weight: .bold).monospaced())
             .foregroundStyle(Color.black.opacity(0.85))
             .padding(.horizontal, 3)
             .padding(.vertical, 1)

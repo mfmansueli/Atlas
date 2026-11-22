@@ -18,7 +18,7 @@ struct AutopilotLogView: View {
             ForEach(entries) { entry in
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.medium) {
                     Text(entry.date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).second(.twoDigits)))
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                     Text(entry.text)
                         .foregroundStyle(color(entry.kind))
                         .lineLimit(1)

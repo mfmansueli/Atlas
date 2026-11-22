@@ -50,7 +50,7 @@ struct ProposedPriceCell: View {
             .accessibilityIdentifier("pricing.apply.\(row.id)")
         } else {
             Text(verbatim: "—")
-                .foregroundStyle(Palette.label3)
+                .foregroundStyle(Palette.label2)
                 .accessibilityLabel(String(localized: "No change proposed"))
         }
     }

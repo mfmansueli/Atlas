@@ -145,7 +145,7 @@ struct ProductPageTestAskingView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(step.date.formatted(date: .omitted, time: .standard))
                             .font(.caption2.monospacedDigit())
-                            .foregroundStyle(Palette.label3)
+                            .foregroundStyle(Palette.label2)
                     }
                 }
             }

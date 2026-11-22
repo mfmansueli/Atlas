@@ -34,11 +34,7 @@ struct ProductPageLanguageBar: View {
                         HStack(spacing: Spacing.xSmall) {
                             Image(systemName: "sparkles")
                             Text("Accept All Languages")
-                            Text(suggested.count, format: .number)
-                                .font(.caption.weight(.semibold))
-                                .monospacedDigit()
-                                .padding(.horizontal, 5)
-                                .background(.white.opacity(0.26), in: Capsule())
+                            SuggestionBadge(count: suggested.count, isSmall: true)
                         }
                     }
                     .buttonStyle(.borderedProminent)

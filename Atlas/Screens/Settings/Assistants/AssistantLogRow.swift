@@ -34,7 +34,7 @@ struct AssistantLogRow: View {
                 }
                 Text(entry.client)
                     .font(.caption2)
-                    .foregroundStyle(Palette.label3)
+                    .foregroundStyle(Palette.label2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Pill(text: entry.outcome.title, style: entry.outcome.pillStyle)

@@ -7,7 +7,9 @@ import SwiftUI
 
 /// The purple count of suggestions waiting for someone, on an app in the
 /// sidebar, a language, a page or a tab. Nothing at zero. VoiceOver hears the
-/// number from the row it sits on.
+/// number from the row it sits on. A 17 pt capsule, 11 pt semibold
+/// (README — Design system §5); on Accept All too, the purple part of a blue
+/// button.
 struct SuggestionBadge: View {
     /// More than this reads "99+".
     nonisolated static let maximumShown = 99
@@ -18,7 +20,7 @@ struct SuggestionBadge: View {
     var body: some View {
         if count > 0 {
             Text(Self.text(for: count))
-                .font(.system(size: isSmall ? 9.5 : 10.5, weight: .bold))
+                .font(.system(size: isSmall ? 10 : 11, weight: .semibold))
                 .monospacedDigit()
                 .lineLimit(1)
                 .fixedSize()

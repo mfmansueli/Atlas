@@ -36,7 +36,7 @@ struct ProductPageScreenshotStrip: View {
                 if shots.isEmpty {
                     Text("No screenshots for \(device.title) in this language.")
                         .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .foregroundStyle(Palette.label2)
                         .frame(height: limit == nil ? height : nil)
                 } else if limit == nil {
                     ScrollView(.horizontal) {

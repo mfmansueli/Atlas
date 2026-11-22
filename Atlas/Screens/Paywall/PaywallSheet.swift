@@ -159,8 +159,7 @@ struct PaywallSheet: View {
                     .font(.system(size: 14, weight: .semibold))
                     .frame(maxWidth: .infinity, minHeight: 28)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .heroButton()
             .disabled(!model.canBuy)
             .keyboardShortcut(.defaultAction)
             .accessibilityIdentifier("paywall.buy")
@@ -204,8 +203,8 @@ struct PaywallSheet: View {
             }
         }
         .buttonStyle(.link)
-        .font(.system(size: 11.5))
-        .foregroundStyle(Palette.label3)
+        .font(.system(size: 12))
+        .foregroundStyle(Palette.label2)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 

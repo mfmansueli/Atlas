@@ -75,7 +75,7 @@ struct MenuBarMenuView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("menuBar.quietTitle")
                 Text(snapshot.checkLine)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: 12))
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)
