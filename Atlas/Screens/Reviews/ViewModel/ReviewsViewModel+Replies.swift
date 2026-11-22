@@ -17,6 +17,9 @@ extension ReviewsViewModel {
 
     /// "Edit…" on a suggestion, "Write a Reply…", or "Edit" on a reply.
     func startEditing(_ review: AppReview) {
+        // An automatic reply being edited is the person's: it won't go
+        // out by itself.
+        if autoReply.draft(for: review.id, appID: app.id)?.state.isScheduled == true { autoReply.hold(review.id, appID: app.id) }
         let text = isPro ? draft(for: review) : drafts[review.id] ?? review.reply?.text ?? ""
         drafts[review.id] = text
         replyErrors[review.id] = nil
@@ -69,6 +72,9 @@ extension ReviewsViewModel {
 
     private func didSend(_ reply: ReviewReply, to review: AppReview) {
         store.setReply(reply, reviewID: review.id, for: app.id)
+        // The write works: Reply Automatically may send by itself now.
+        store.markReplySentByHand()
+        autoReply.personReplied(to: review.id, appID: app.id)
         keptVisible.insert(review.id)
         sentNow.insert(review.id)
         replyErrors[review.id] = nil
@@ -107,6 +113,7 @@ extension ReviewsViewModel {
     /// Dismiss on a suggestion. The review still has no reply.
     func dismissSuggestion(for review: AppReview) {
         store.dismissSuggestion(reviewID: review.id, for: app.id)
+        autoReply.personReplied(to: review.id, appID: app.id)
         keptVisible.insert(review.id)
     }
 

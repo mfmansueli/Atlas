@@ -51,7 +51,7 @@ final class AssistUITests: XCTestCase {
         XCTAssertEqual(next.label, "Done")
         next.click()
         XCTAssertTrue(element("assistantSetup.sheet").waitForNonExistence(timeout: 5))
-        XCTAssertEqual(element("workspace.assistantIndicator").label, "Assistant, Ready")
+        XCTAssertTrue(app.assistantStatusTitle().hasSuffix("· Ready"))
     }
 
     func testARejectedKeySaysWhyAndCantContinue() {
@@ -86,7 +86,7 @@ final class AssistUITests: XCTestCase {
         let note = element("suggestions.keyNote")
         XCTAssertTrue(note.waitForExistence(timeout: 10))
         XCTAssertTrue(note.descendants(matching: .any).matching(Self.showing("come from Lumen Journal’s code")).firstMatch.exists, note.debugDescription)
-        XCTAssertFalse(app.buttons["suggestions.ask"].isEnabled)
+        XCTAssertFalse(app.buttons["suggestions.ask"].exists, "Asking is the toolbar's Suggest Answers… (board 57)")
 
         app.buttons["suggestions.addAssistant"].click()
         XCTAssertTrue(element("assistantSetup.sheet").waitForExistence(timeout: 5))

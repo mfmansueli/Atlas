@@ -180,6 +180,7 @@ final class MenuBarController {
             open: { close(); actions.open($0) },
             checkNow: { close(); actions.checkNow() },
             setPaused: { close(); actions.setPaused($0) },
+            setAutoReplyPaused: { close(); actions.setAutoReplyPaused($0) },
             openSettings: { close(); actions.openSettings() },
             quit: { close(); actions.quit() }
         )

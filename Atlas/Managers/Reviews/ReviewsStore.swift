@@ -70,6 +70,15 @@ final class ReviewsStore {
         Self.write(settings, to: directory.appending(path: "settings.json"))
     }
 
+    /// A reply the person sent reached the App Store: Reply Automatically
+    /// may send by itself from now on. Kept once.
+    func markReplySentByHand() {
+        guard settings.sentReplyByHandAt == nil else { return }
+        settings.sentReplyByHandAt = now()
+        guard let directory else { return }
+        Self.write(settings, to: directory.appending(path: "settings.json"))
+    }
+
     // MARK: - Reviews
 
     /// The newest reviews, read again: they replace what was kept, and

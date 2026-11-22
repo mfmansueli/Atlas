@@ -5,8 +5,9 @@
 
 import SwiftUI
 
-/// Done: the push to App Store Connect as it goes (the images, then the
-/// header, search and App Preview), then "Sent to the App Store". What
+/// Done: after Approve All, "Waiting in Review & Push" with Open Review &
+/// Push…; then the push to App Store Connect as it goes (the images, then
+/// the header, search and App Preview), then "Sent to the App Store". What
 /// couldn't be sent says so, with Try Again and Open Review & Push….
 struct GuidedDoneStepView: View {
     @Bindable var studio: ScreenshotStudioModel
@@ -19,7 +20,8 @@ struct GuidedDoneStepView: View {
         let extras = extrasRun
         let outcome = GuidedPushOutcome.make(
             images: images.map { GuidedPushOutcome.Tally(total: $0.totalCount, done: $0.doneCount, isRunning: $0.isRunning) },
-            extras: extras.map { GuidedPushOutcome.Tally(total: $0.items.count, done: $0.doneCount, isRunning: $0.isRunning) }
+            extras: extras.map { GuidedPushOutcome.Tally(total: $0.items.count, done: $0.doneCount, isRunning: $0.isRunning) },
+            approvedOnly: run.guidedReview?.pushedAt == nil
         )
         VStack(spacing: Spacing.medium) {
             Spacer(minLength: 0)
@@ -57,7 +59,7 @@ struct GuidedDoneStepView: View {
                 }
             }
             .frame(maxWidth: 520)
-            if outcome == .partly || outcome == .unknown {
+            if outcome == .partly || outcome == .unknown || outcome == .approved {
                 HStack(spacing: Spacing.small) {
                     Button("Open Review & Push…") { studio.openReviewPush(navigator) }
                         .accessibilityIdentifier("autopilot.guided.done.openReview")

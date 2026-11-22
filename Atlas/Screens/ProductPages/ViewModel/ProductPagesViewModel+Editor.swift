@@ -220,7 +220,7 @@ extension ProductPagesViewModel {
             let builder = builder
             queue.discardAll { builder.isChange($0, of: page.id) }
             queue.upsert(builder.deleteChange(of: page))
-            show(String(localized: "“\(page.name)” is deleted when you push. It’s in Review & Push."), undo: undo)
+            show(String(localized: "“\(page.name)” is deleted when you push. It’s waiting in Review & Push, top right."), undo: undo)
         }
         if selectedPageID == pageID { selectedPageID = nil }
     }

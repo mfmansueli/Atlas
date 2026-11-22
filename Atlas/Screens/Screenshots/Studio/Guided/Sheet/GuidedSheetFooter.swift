@@ -7,8 +7,8 @@ import SwiftUI
 
 /// The guided sheet's bottom line: what you'll get, how long it takes or
 /// what's next, and the step's buttons: Next and Back while it's set up,
-/// Start Autopilot, Cancel Run… while it runs, Use These, and Push to App
-/// Store….
+/// Start Autopilot, Cancel Run… while it runs, Use These, and Approve All,
+/// which puts the set in Review & Push and closes on it (board 57).
 struct GuidedSheetFooter: View {
     @Bindable var studio: ScreenshotStudioModel
     let run: AutopilotRun
@@ -40,19 +40,6 @@ struct GuidedSheetFooter: View {
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.vertical, Spacing.medium)
-        .confirmationDialog(Text("Push to App Store Connect?"), isPresented: $studio.guided.isConfirmingPush) {
-            Button("Push") {
-                guard let push else { return }
-                Task {
-                    // Review & Push follows the upload image by image.
-                    if await studio.pushGuided(with: push) { studio.openReviewPush(navigator) }
-                }
-            }
-            .accessibilityIdentifier("autopilot.guided.push.confirm")
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text(pushMessage)
-        }
     }
 
     private var plan: AutopilotPlan { run.plan }
@@ -93,9 +80,9 @@ struct GuidedSheetFooter: View {
             let parts = studio.guidedParts.count
             let approved = studio.guidedApprovedCount
             if run.stage == .watchPreview, approved == parts {
-                return String(localized: "Making the last changes before the push.")
+                return String(localized: "Making the last changes before Approve All.")
             }
-            return String(localized: "\(approved) of \(parts) approved. Nothing is sent until you push.")
+            return String(localized: "\(approved) of \(parts) approved. Approve All puts them in Review & Push; nothing is sent until you push.")
         case .done:
             return ""
         }
@@ -124,14 +111,6 @@ struct GuidedSheetFooter: View {
 
     private var canUseChoices: Bool {
         run.usesConcepts ? run.canUseChoices : run.directionToUse != nil
-    }
-
-    private var pushMessage: String {
-        let what = GuidedMakeSummary.pushed(plan) ?? String(localized: "Everything")
-        return String(localized: """
-        \(what) go to App Store Connect, each in the place of the one there now. Review & Push opens to show them as they go; \
-        the live page changes when Apple finishes processing, usually within minutes.
-        """)
     }
 
     @ViewBuilder
@@ -171,11 +150,13 @@ struct GuidedSheetFooter: View {
                 .accessibilityIdentifier("autopilot.guided.useChoices")
         case .review:
             if run.stage == .watchPreview { AutopilotCancelRunButton(studio: studio, run: run) }
-            Button("Push to App Store…") { studio.guided.isConfirmingPush = true }
+            if studio.isPushingGuided { ProgressView().controlSize(.small) }
+            Button("Approve All") { approveAll() }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
-                .disabled(!studio.canPushGuided || push == nil)
-                .accessibilityIdentifier("autopilot.guided.push")
+                .disabled(!studio.canApproveAllGuided || push == nil)
+                .help(Text("Approves every part and puts the set in Review & Push, top right, where you push it."))
+                .accessibilityIdentifier("autopilot.guided.approveAll")
         case .done:
             EmptyView()
         }
@@ -198,6 +179,15 @@ struct GuidedSheetFooter: View {
                 .accessibilityIdentifier("autopilot.guided.usePicks")
         default:
             AutopilotCancelRunButton(studio: studio, run: run)
+        }
+    }
+
+    /// Approve All: the set joins Review & Push, which opens on Screenshots
+    /// as Autopilot closes; when nothing could join, the sheet says why.
+    private func approveAll() {
+        guard let push else { return }
+        Task {
+            if await studio.approveAllGuided(with: push) { studio.openReviewPush(navigator) }
         }
     }
 

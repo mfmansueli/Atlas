@@ -31,6 +31,8 @@ struct MCPBridgeMessage: Sendable {
 
     var isInitialize: Bool { method == "initialize" }
 
+    var isInitialized: Bool { method == "notifications/initialized" }
+
     /// A JSON-RPC error answering `idJSON` (or `null`), as one line.
     static func error(id idJSON: String?, code: Int, message: String) -> String {
         let message = (try? JSONEncoder().encode(message)).flatMap { String(data: $0, encoding: .utf8) } ?? "\"\""

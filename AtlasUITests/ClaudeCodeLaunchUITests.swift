@@ -52,20 +52,20 @@ final class ClaudeCodeLaunchUITests: XCTestCase {
 
     // MARK: - Runs
 
-    /// Ask sends the request to the toolbar (board 56): the button and the
-    /// Assistant button say Claude Code is working; the Assistant button's
-    /// popover has the run, its output and Stop, which ends the request.
+    /// Ask sends the request to the toolbar (boards 56–57): the Autopilot
+    /// button says Claude Code is working, and no page has an Ask button of
+    /// its own; its popover has the run, its output and Stop, which ends
+    /// the request.
     func testAskStartsClaudeCodeAndShowOutputCanStopIt() {
         launch(scene: "cc-ask")
-        let ask = app.buttons["suggestions.ask"]
-        XCTAssertTrue(ask.waitForExistence(timeout: 10))
-        XCTAssertTrue(waitForLabel("Claude Code Is Working…", of: ask))
-        XCTAssertFalse(ask.isEnabled)
-        let indicator = app.buttons["workspace.assistantIndicator"]
-        XCTAssertTrue(waitForLabel("Assistant, Claude Code is working on Store Page", of: indicator))
+        let autopilot = app.autopilotButton
+        XCTAssertTrue(autopilot.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForLabel("Autopilot, Claude Code is working on Store Page", of: autopilot))
+        XCTAssertFalse(app.buttons["suggestions.ask"].exists)
         XCTAssertFalse(element("ask.popover").exists)
 
-        indicator.click()
+        // While a request runs, a click shows what it's doing.
+        autopilot.click()
         XCTAssertTrue(element("workspace.assistantPopover.ask").waitForExistence(timeout: 5))
         let show = app.buttons["assistant.runs.show"].firstMatch
         XCTAssertTrue(show.waitForExistence(timeout: 5))

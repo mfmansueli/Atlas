@@ -38,10 +38,9 @@ final class GuidedSheetModel {
     /// Review & push's language; nil is the primary one.
     var reviewLocale: String?
     var reviewDevice: ScreenshotDisplayType = .iPhone
-    var isConfirmingPush = false
-    /// Why the push couldn't start.
+    /// Why Approve All couldn't put the set in Review & Push.
     var pushError: String?
-    /// The push from Done, while it's being planned.
+    /// Approve All, while Review & Push's plan is read.
     var isPreparingPush = false
 
     /// A new run starts at What to make.
@@ -58,7 +57,6 @@ final class GuidedSheetModel {
         reviewPart = nil
         reviewLocale = nil
         reviewDevice = .iPhone
-        isConfirmingPush = false
         pushError = nil
         isPreparingPush = false
     }

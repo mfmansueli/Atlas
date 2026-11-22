@@ -39,10 +39,10 @@ struct WorkspaceToastTests {
     @Test func acceptAllOffersUndo() {
         let undo = SuggestionRunAcceptance.Undo(review: SuggestionReviewState())
         let many = WorkspaceToast.accepted(18, undo: undo)
-        #expect(many.message.text == "Accepted 18 suggestions. Nothing is pushed yet.")
+        #expect(many.message.text == "Accepted 18 suggestions. They’re waiting in Review & Push, top right.")
         #expect(many.message.canUndo)
         #expect(many.undo == undo)
-        #expect(WorkspaceToast.accepted(1, undo: undo).message.text == "Accepted 1 suggestion. Nothing is pushed yet.")
+        #expect(WorkspaceToast.accepted(1, undo: undo).message.text == "Accepted 1 suggestion. It’s waiting in Review & Push, top right.")
     }
 
     @Test func setupOffersSuggestEverything() {

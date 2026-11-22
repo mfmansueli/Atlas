@@ -78,6 +78,7 @@ struct ScreenshotsSectionView: View {
         self.model = model
         handleIntent()
         await load(model)
+        handleIntent()
     }
 
     /// Reads the version and notes when, so the kept model isn't read
@@ -99,9 +100,26 @@ struct ScreenshotsSectionView: View {
 
     /// Show Screenshots (Review & Push's Show in Captions): the section
     /// is already open; the push hooks open Captions on the render.
+    /// The toolbar's Autopilot actions open the guided run, once the page
+    /// has loaded.
     private func handleIntent() {
-        guard let intent = navigator.intent, intent == .showScreenshots,
-              navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
-        navigator.consume(intent)
+        guard let intent = navigator.intent, navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
+        switch intent {
+        case .showScreenshots:
+            navigator.consume(intent)
+        case let .autopilot(action) where [.makeScreenshots, .makeAppPreview, .makeArtwork].contains(action):
+            guard let screenshots = model?.screenshots else { return }
+            navigator.consume(intent)
+            screenshots.tab = .preview
+            // Make Screenshots… makes everything the plan has.
+            let part: GuidedReviewPart? = switch action {
+            case .makeAppPreview: .appPreview
+            case .makeArtwork: .artwork
+            default: nil
+            }
+            screenshots.studio.openGuidedAutopilot(making: part)
+        default:
+            break
+        }
     }
 }

@@ -21,6 +21,8 @@ struct BackgroundAppFacts: Hashable, Sendable {
     var approvedVersion: String?
     /// Reviews with a suggested reply waiting.
     var reviewReplies = 0
+    /// Reviews Reply Automatically left for the person (board 58).
+    var autoReplyNeeds = 0
     /// Analytics findings the person hasn't seen.
     var newFindings = 0
     /// The first of them, for the line's detail.

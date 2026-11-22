@@ -16,6 +16,7 @@ import SwiftUI
 /// - `mb-running`: a push and Autopilot at work, with what needs you.
 /// - `mb-needs`: nothing running, four things waiting.
 /// - `mb-paused`, `mb-offline`: paused; the key refused.
+/// - `mb-autoreply`: Reply Automatically on, a review left for you.
 /// - `mb-note`: "Atlas is still running", the first time the window closes.
 /// - `mb-glyphs`: the icon in every state, and the working loop's frames.
 /// - `mb-live`: the sample library with Atlas running as a real launch
@@ -23,7 +24,7 @@ import SwiftUI
 ///   closed, the note, the checks (against the canned services). Settings
 ///   and data stay in memory.
 enum MenuBarDebugScenes {
-    static let ids = ["mb-quiet", "mb-running", "mb-needs", "mb-paused", "mb-offline", "mb-note", "mb-glyphs", "mb-live"]
+    static let ids = ["mb-quiet", "mb-running", "mb-needs", "mb-paused", "mb-offline", "mb-autoreply", "mb-note", "mb-glyphs", "mb-live"]
 
     /// Whether the scene runs `AtlasLifecycle` as a real launch.
     static func isLive(_ id: String) -> Bool {
@@ -51,6 +52,14 @@ enum MenuBarDebugScenes {
             MenuBarSnapshot(needs: needs, checkLine: checkLine, reviewPushCount: 4)
         case "mb-paused":
             MenuBarSnapshot(checkLine: "Last checked today at 18:20 · paused", reviewPushCount: 4, isPaused: true)
+        case "mb-autoreply":
+            MenuBarSnapshot(
+                needs: [BackgroundNeed(
+                    id: "autoreply-lumen", title: "1 review needs your reply", detail: "Lumen Journal · Reply Automatically left them for you",
+                    destination: .section(.reviews, appID: DebugFixtures.AppID.lumen)
+                )],
+                checkLine: checkLine, reviewPushCount: 4, autoReplyPaused: false
+            )
         case "mb-offline":
             MenuBarSnapshot(
                 checkLine: checkLine, reviewPushCount: 4,

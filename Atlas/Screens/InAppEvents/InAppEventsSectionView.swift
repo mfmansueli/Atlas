@@ -111,6 +111,14 @@ struct InAppEventsSectionView: View {
                 }
             }
             .animation(.default, value: viewModel.toast)
+            // The toolbar's Autopilot button leads with the open event's
+            // Make the Artwork….
+            .onChange(of: viewModel.showsEvent, initial: true) { _, isOpen in
+                navigator.autopilotDetail = isOpen ? .event : nil
+            }
+            .onDisappear {
+                if navigator.autopilotDetail == .event { navigator.autopilotDetail = nil }
+            }
             .overlay {
                 // Without the main window (previews), the viewer covers the section.
                 if cover == nil, let flow = viewModel.artworkFlow, flow.viewer != nil {
@@ -211,6 +219,16 @@ struct InAppEventsSectionView: View {
                 try? await Task.sleep(for: .milliseconds(300))
                 viewModel.focusedDateField = field
             }
+        case .autopilot(.makeEventArtwork):
+            navigator.consume(.autopilot(.makeEventArtwork))
+            // The open event's, else the first event's; the Brief sheet
+            // takes it from there.
+            guard let event = (viewModel.showsEvent ? viewModel.selectedEvent : nil) ?? viewModel.events.first else {
+                let text = String(localized: "Make an event first, with New Event…; then Autopilot makes its artwork.")
+                navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+                return
+            }
+            viewModel.requestArtwork(.make, for: event)
         default:
             return
         }

@@ -13,7 +13,7 @@ A custom product page changes what people see first: its screenshots, App Previe
 
 1. Click **New Page…**, give it a name, and choose what it starts from: the default page, a copy of another page, or nothing.
 2. Write its promotional text and choose its keywords in each language that needs its own.
-3. Click **Push and Submit…**. Review & Push opens on that page’s changes (switch to the whole app above the list) and sends them to App Store Connect, then **Submit for Review** sends the page to App Review by itself, with no new version of the app.
+3. Click **Submit for Review…**. Review & Push opens on that page’s changes (switch to the whole app above the list) and sends them to App Store Connect, then **Submit for Review** sends the page to App Review by itself, with no new version of the app.
 
 Once Apple approves it, the page’s link works. Turn **Visible** on to show it for the keywords you chose; that needs no review.
 

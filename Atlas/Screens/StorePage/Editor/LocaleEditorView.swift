@@ -60,7 +60,7 @@ struct LocaleEditorView: View {
     }
 
     private func languageBar(_ model: LanguageBarModel) -> some View {
-        LanguageBar(model: model, showsProChip: pro.isFree && model.withSuggestions.count > 1) { locale in
+        LanguageBar(model: model, showsProChip: pro.isFree && model.withSuggestions.count > 1, picksInToolbar: true) { locale in
             viewModel.editorLocale = locale
             viewModel.editorFocus = nil
         } onAcceptAll: {

@@ -83,7 +83,7 @@ enum ReviewsDebugScenes {
     }
 
     @MainActor
-    private static func scene(
+    static func scene(
         store: ReviewsStore? = nil,
         services reviews: DebugReviewsServices = DebugReviewsServices(),
         launch: ReviewsDebugLaunch = ReviewsDebugLaunch(),

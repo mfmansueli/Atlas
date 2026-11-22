@@ -28,7 +28,6 @@ struct RetentionHeader: View {
             .layoutPriority(1)
             HStack(spacing: Spacing.small) {
                 RetentionPageSwitch(page: $page)
-                RetentionAskButton(app: model.app, kind: .draft)
                 Button {
                     pro.require(.retention) { model.newMessage() }
                 } label: {

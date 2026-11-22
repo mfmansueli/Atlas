@@ -47,6 +47,16 @@ enum BackgroundNeedsBuilder {
                     destination: .version(appID: facts.appID)
                 ))
             }
+            if facts.autoReplyNeeds > 0 {
+                reviews.append(BackgroundNeed(
+                    id: "autoreply-\(facts.appID)",
+                    title: facts.autoReplyNeeds == 1
+                        ? String(localized: "1 review needs your reply")
+                        : String(localized: "\(facts.autoReplyNeeds) reviews need your reply"),
+                    detail: prefix + String(localized: "Reply Automatically left them for you"),
+                    destination: .section(.reviews, appID: facts.appID)
+                ))
+            }
             if facts.reviewReplies > 0 {
                 reviews.append(BackgroundNeed(
                     id: "reviews-\(facts.appID)",

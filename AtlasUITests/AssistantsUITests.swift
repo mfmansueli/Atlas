@@ -47,7 +47,8 @@ final class AssistantsUITests: XCTestCase {
         let snippet = element("settings.ai.pairSnippet")
         XCTAssertTrue(snippet.waitForExistence(timeout: 10))
         XCTAssertTrue(text(of: snippet).hasPrefix("claude mcp remove atlas --scope user"))
-        XCTAssertTrue(text(of: snippet).contains("claude mcp add --scope user --transport http atlas"))
+        XCTAssertTrue(text(of: snippet).contains("claude mcp add --scope user atlas -- "))
+        XCTAssertTrue(text(of: snippet).contains("Contents/MacOS/atlas-mcp"))
         XCTAssertTrue(text(of: snippet).contains("al_pair_"))
         XCTAssertTrue(element("settings.ai.pairCode").exists)
         // The scene starts after Copy (never clicked here: it would write to

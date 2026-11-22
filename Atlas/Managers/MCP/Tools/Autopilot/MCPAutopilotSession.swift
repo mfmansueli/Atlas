@@ -20,7 +20,11 @@ struct MCPAutopilotSession {
     static func load(_ arguments: MCPToolArguments, in context: MCPToolContext, atPlan: Bool = false) async throws -> MCPAutopilotSession {
         let (app, center) = try await center(arguments, in: context)
         guard let run = center.run(for: app.id), run.stage != .plan || atPlan else {
-            throw MCPToolError.notFound(String(localized: "\(app.name) has no Autopilot run waiting. Ask the person to open Atlas → Screenshots → Run Autopilot… and press Start Autopilot."))
+            throw MCPToolError.notFound(String(localized: """
+            \(app.name) has no Autopilot run waiting. To redo only some captures, ask with request_recapture: it works \
+            without a saved run too, from the captures the set uses (list_captures). For a whole new set, ask the person \
+            to open Atlas → Screenshots → Run Autopilot… and press Start Autopilot.
+            """))
         }
         if let wanted = try arguments.optionalString("run"), !wanted.isEmpty, wanted != run.id {
             throw MCPToolError.notFound(String(localized: "Run “\(wanted)” is over; \(app.name)’s current run is “\(run.id)”. Call get_capture_plan."))

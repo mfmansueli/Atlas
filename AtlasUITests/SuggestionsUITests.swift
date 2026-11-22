@@ -25,13 +25,16 @@ final class SuggestionsUITests: XCTestCase {
 
     // MARK: - Assistant button and overview
 
-    func testTheAssistantButtonIsThereBeforeSetupAndOpensIt() {
+    /// The Autopilot button's menu ends with the assistant's status, there
+    /// before setup, opening what the Assistant button did (board 57).
+    func testTheAssistantStatusIsThereBeforeSetupAndOpensIt() {
         app.launch(debugScene: "ov-first")
-        let indicator = element("workspace.assistantIndicator")
-        XCTAssertTrue(indicator.waitForExistence(timeout: 10))
-        XCTAssertEqual(indicator.label, "Assistant, Not set up")
+        let autopilot = app.autopilotButton
+        XCTAssertTrue(autopilot.waitForExistence(timeout: 10))
+        XCTAssertEqual(autopilot.label, "Autopilot, Suggest Everything")
+        XCTAssertEqual(app.assistantStatusTitle(), "Claude Code · Not set up")
 
-        indicator.click()
+        app.openAssistantStatus()
         let popover = element("workspace.assistantPopover")
         XCTAssertTrue(popover.waitForExistence(timeout: 5))
         popover.buttons["assistant.setUp"].click()

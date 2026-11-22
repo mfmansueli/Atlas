@@ -114,7 +114,10 @@ final class NavigationUITests: XCTestCase {
         XCTAssertFalse(element("sidebar.section.storePage").exists)
         let title = element("workspace.title")
         XCTAssertTrue(title.exists)
-        XCTAssertTrue(text(of: title).contains("Version 1.4"), text(of: title))
+        // Board 57: the title is the section's; the version leads only
+        // Overview's status line.
+        XCTAssertEqual(text(of: title), "Store Page")
+        XCTAssertTrue(element("workspace.status").exists)
         attach("nav-s")
         menu.click()
         let reviews = element("workspace.sectionMenu.item.reviews")

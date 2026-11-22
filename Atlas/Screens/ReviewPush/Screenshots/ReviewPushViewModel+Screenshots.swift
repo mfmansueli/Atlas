@@ -19,6 +19,9 @@ extension ReviewPushViewModel {
         // The default page's screenshots aren't the page's: they're left
         // for This app.
         case .productPage: []
+        // Planned images are Screenshots' changes.
+        case let .section(section):
+            section == .screenshots ? screenshots.plans(for: selectedAppID.map { [$0] } ?? []) : []
         }
     }
 

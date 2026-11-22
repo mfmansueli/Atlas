@@ -18,6 +18,12 @@ struct PageShotsRecapture: Codable, Hashable, Sendable {
     var claudeRunID: UUID?
     var askedAt: Date?
     var problem: String?
+    /// The screens the assistant asked to capture again with
+    /// `request_page_recapture`, when the person accepted it (or let it
+    /// open by itself); nil when the person turned it on.
+    var requested: PageRecaptureTarget?
+    /// Why, as the assistant said.
+    var requestReason: String?
 
     /// The default set's slots captured again, in order.
     var slots: [Int] { Array(Set(captures.map(\.slot))).sorted() }

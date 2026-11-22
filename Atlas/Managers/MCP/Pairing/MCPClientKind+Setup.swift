@@ -49,8 +49,8 @@ extension MCPClientKind {
         switch self {
         case .claudeCode:
             String(localized: """
-            It replaces Atlas’s older entry and works in every project. Start Claude Code in each app’s folder: \
-            Atlas sees which folder it works in and matches it to the app.
+            It replaces Atlas’s older entry and works in every project, and opens Atlas when it’s closed. Start \
+            Claude Code in each app’s folder: Atlas sees which folder it works in and matches it to the app.
             """)
         case .claudeDesktop:
             String(localized: """

@@ -23,7 +23,7 @@ extension AutopilotStripContent {
         now: Date = .now
     ) -> AutopilotStripContent {
         let stage = run?.stage
-        if assistant == nil, stage == nil || stage == .plan || (stage == .ready && run?.guidedReview?.pushedAt != nil) {
+        if assistant == nil, stage == nil || stage == .plan || (stage == .ready && run?.guidedReview?.isFinished == true) {
             return make(run: run, appName: appName, assistant: assistant, designProject: designProject, hasNewSet: hasNewSet)
         }
         guard let run, let stage else { return start(isSetUp: false) }
@@ -46,29 +46,38 @@ extension AutopilotStripContent {
             if let loop = AutopilotLoopProgress.make(run, now: now) { return makingLoop(loop) }
             return yourTurn(text: reviewText, title: String(localized: "Review…"))
         case .ready:
-            guard run.guidedReview?.pushedAt != nil else {
-                // A set the person doesn't want to push can be dropped for
-                // a new run (the captures stay to reuse); Review was the
-                // only way out before.
-                var review = yourTurn(text: reviewText, title: String(localized: "Review…"))
-                review.secondary = .runAutopilot
-                review.secondaryTitle = String(localized: "New Run…")
-                return review
-            }
-            return AutopilotStripContent(
-                kind: .ready,
-                title: String(localized: "Sent to the App Store"),
-                pill: String(localized: "Pushed"),
-                pillStyle: .decrease,
-                text: String(localized: "Apple is processing the new files; the live page changes within minutes."),
-                primary: .runAutopilot,
-                primaryTitle: String(localized: "New Run…"),
-                secondary: .open
-            )
+            return ready(run)
         }
     }
 
-    private static let reviewText = String(localized: "Everything is made and checked. Review it, then push.")
+    /// Ready: Review… until Approve All; then approved, waiting in Review
+    /// & Push; or, for a run pushed from the sheet before board 57, sent.
+    private static func ready(_ run: AutopilotRun) -> AutopilotStripContent {
+        guard run.guidedReview?.isFinished == true else {
+            // A set the person doesn't want to push can be dropped for a
+            // new run (the captures stay to reuse); Review was the only way
+            // out before.
+            var review = yourTurn(text: reviewText, title: String(localized: "Review…"))
+            review.secondary = .runAutopilot
+            review.secondaryTitle = String(localized: "New Run…")
+            return review
+        }
+        let pushed = run.guidedReview?.pushedAt != nil
+        return AutopilotStripContent(
+            kind: .ready,
+            title: pushed ? String(localized: "Sent to the App Store") : String(localized: "Approved"),
+            pill: pushed ? String(localized: "Pushed") : String(localized: "In Review & Push"),
+            pillStyle: .decrease,
+            text: pushed
+                ? String(localized: "Apple is processing the new files; the live page changes within minutes.")
+                : String(localized: "Everything is approved and waiting in Review & Push, top right. Push it from there."),
+            primary: .runAutopilot,
+            primaryTitle: String(localized: "New Run…"),
+            secondary: .open
+        )
+    }
+
+    private static let reviewText = String(localized: "Everything is made and checked. Review it, then approve it.")
 
     /// "Choose the look: the screenshot looks and headers are ready."
     private static func chooseText(_ run: AutopilotRun) -> String {

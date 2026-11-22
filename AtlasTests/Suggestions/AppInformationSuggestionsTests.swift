@@ -67,7 +67,7 @@ struct AppInformationSuggestionsTests {
         #expect(vm.general?.copyright == "© \(year) Northpier Studio")
         #expect(vm.shownSuggestion(.copyright) == nil)
         #expect(vm.provenance(.copyright)?.line(currentValue: vm.suggestionValue(.copyright)) == "Accepted a built-in suggestion.")
-        #expect(vm.suggestionToast?.text == "Copyright accepted. It’s in Review & Push.")
+        #expect(vm.suggestionToast?.text == "Copyright accepted. It’s waiting in Review & Push, top right.")
         #expect(vm.suggestionToast?.canUndo == true)
     }
 
@@ -109,7 +109,7 @@ struct AppInformationSuggestionsTests {
         #expect(vm.review?.notes == "Settings → Debug → Add Sample Week shows Weekly Reflections.")
         #expect(vm.suggestionCount(on: .appReview) == 0)
         #expect(vm.suggestionCount(on: .general) == 1)
-        #expect(vm.suggestionToast?.text == "Accepted 2 on App Review. They’re in Review & Push.")
+        #expect(vm.suggestionToast?.text == "Accepted 2 on App Review. They’re waiting in Review & Push, top right.")
         #expect(vm.suggestionBar(for: .appReview, assistant: nil).countText == "All suggestions reviewed")
     }
 

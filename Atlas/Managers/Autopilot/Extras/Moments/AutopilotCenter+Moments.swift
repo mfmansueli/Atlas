@@ -35,7 +35,8 @@ extension AutopilotCenter {
         appID: StoreApp.ID, upload: AutopilotRecordingUpload, target: AutopilotRecordingTarget, retake: AutopilotMomentRetake
     ) throws -> AutopilotRecording {
         let screenID = retake.screenID
-        guard let run = runs[appID], [.pick, .design, .choose].contains(run.stage) else {
+        let stages: [AutopilotStage] = runs[appID]?.isRecapturing == true ? [.waiting, .capture] : [.pick, .design, .choose]
+        guard let run = runs[appID], stages.contains(run.stage) else {
             throw AutopilotError(String(localized: "Moments are recorded again before the design step. Call next_step to see what Atlas wants."))
         }
         guard run.momentRetakes?.contains(screenID) == true else {

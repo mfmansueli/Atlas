@@ -68,6 +68,10 @@ struct MenuBarDebugScene: View {
                 snapshot.isPaused = paused
                 lastAction = paused ? "Paused" : "Resumed"
             },
+            setAutoReplyPaused: { paused in
+                snapshot.autoReplyPaused = paused
+                lastAction = paused ? "Auto-reply paused" : "Auto-reply resumed"
+            },
             openSettings: { lastAction = "Settings" },
             quit: { lastAction = "Quit" }
         )

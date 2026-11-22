@@ -18,11 +18,14 @@ struct MCPClientKindTests {
     }
 
     /// One registration for every project, replacing the older one whose
-    /// token Atlas would refuse.
+    /// token Atlas would refuse, through the bridge: it connects even when
+    /// Atlas was closed as the session started.
     @Test func claudeCodeGetsOneCommandForEveryProject() {
         let expected = #"claude mcp remove atlas --scope user >/dev/null 2>&1; "#
-            + #"claude mcp add --scope user --transport http atlas http://127.0.0.1:47321/mcp --header "Authorization: Bearer al_pair_C7Q2m9xV4k""#
+            + #"claude mcp add --scope user atlas -- "/Applications/Atlas.app/Contents/MacOS/atlas-mcp" --token al_pair_C7Q2m9xV4k"#
         #expect(snippet(.claudeCode) == expected)
+        #expect(MCPClientKind.claudeCode.usesBridge)
+        #expect(!snippet(.claudeCode).contains(url))
     }
 
     @Test func clientsThatLaunchServersUseTheBridge() {
@@ -37,7 +40,7 @@ struct MCPClientKindTests {
     }
 
     @Test func httpClientsGetTheURLAndHeader() {
-        for kind in [MCPClientKind.claudeCode, .cursor, .other] {
+        for kind in [MCPClientKind.cursor, .other] {
             #expect(!kind.usesBridge)
             #expect(snippet(kind).contains(url))
             #expect(snippet(kind).contains("Bearer al_pair_C7Q2m9xV4k"))

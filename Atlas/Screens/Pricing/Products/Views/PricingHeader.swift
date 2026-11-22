@@ -14,9 +14,6 @@ struct PricingHeader: View {
 
     var body: some View {
         SectionHeader(
-            systemImage: "tag",
-            tint: Palette.sectionPricing,
-            title: String(localized: "Pricing"),
             subtitle: subtitle
         ) {
             BadgedSegments(

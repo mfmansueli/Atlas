@@ -81,20 +81,7 @@ struct AutopilotLocalizer {
         // still says side by side.
         document.captures.removeCompanions(on: .iPhoneDuo)
         for target in run.plan.targets {
-            guard let capture = run.finalCapture(for: target), var slot = run.plan.slot(of: target.screenID),
-                  let screen = run.plan.screen(id: target.screenID) else { continue }
-            var isCompanion: Bool?
-            if let pose = run.plan.duoPose(for: target) {
-                guard let placed = run.plan.duoPlacement(slot: slot, pose: pose) else { continue }
-                slot = placed.slot
-                isCompanion = placed.isCompanion ? true : nil
-            }
-            let suffix = isCompanion == true ? "_cover" : ""
-            let fileName = String(format: "%@/%@-%02d_%@%@.png", target.locale, target.displayType.deviceName, slot + 1, screen.name, suffix)
-            document.captures.add(ScreenshotCapture(
-                id: capture.captureID, locale: target.locale, displayType: target.displayType, slot: slot,
-                source: .autopilot, fileName: fileName, pixelSize: capture.pixelSize, importedAt: capture.receivedAt, isCompanion: isCompanion
-            ))
+            if let placed = placed(target, of: run) { document.captures.add(placed) }
         }
         document.slotNames = run.plan.screens.map(\.name)
         for display in ScreenshotDisplayType.ownScreens {
@@ -104,6 +91,21 @@ struct AutopilotLocalizer {
             }, on: display)
         }
         document.setScreens(run.plan.duoDeviceScreens, on: .iPhoneDuo)
+    }
+
+    /// `target`'s final capture as the set keeps it: on its slot (iPhone
+    /// Duo's where the plan's Duo row puts it), named after its screen.
+    /// Nil without a capture, or for a pose the plan doesn't place.
+    nonisolated static func placed(_ target: AutopilotCaptureTarget, of run: AutopilotRun) -> ScreenshotCapture? {
+        guard let capture = run.finalCapture(for: target), let screen = run.plan.screen(id: target.screenID),
+              let placed = AutopilotRecaptureTargets.documentSlot(of: target, in: run.plan) else { return nil }
+        let isCompanion: Bool? = placed.isCompanion ? true : nil
+        let suffix = isCompanion == true ? "_cover" : ""
+        let fileName = String(format: "%@/%@-%02d_%@%@.png", target.locale, target.displayType.deviceName, placed.slot + 1, screen.name, suffix)
+        return ScreenshotCapture(
+            id: capture.captureID, locale: target.locale, displayType: target.displayType, slot: placed.slot,
+            source: .autopilot, fileName: fileName, pixelSize: capture.pixelSize, importedAt: capture.receivedAt, isCompanion: isCompanion
+        )
     }
 
     /// The canvas turned the way each device's captures are: the device

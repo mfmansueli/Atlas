@@ -6,8 +6,8 @@
 import XCTest
 
 /// The guided Autopilot's last steps, on `StudioDebugGuided`'s scenes:
-/// Review & push (every part approved before Push to App Store…, which
-/// hands the upload to Review & Push) and Sent. Each test attaches the
+/// Review & push (Approve All, which puts the set in Review & Push) and
+/// Sent. Each test attaches the
 /// window's screenshot.
 @MainActor
 final class AutopilotGuidedPushUITests: XCTestCase {
@@ -22,44 +22,39 @@ final class AutopilotGuidedPushUITests: XCTestCase {
         app.terminate()
     }
 
-    func testPushWaitsForEveryPart() {
+    /// Approve All (board 57) is the last step: it approves what's left
+    /// itself, so it's on before every part is.
+    func testApproveAllIsTheLastStep() {
         app.launch(debugScene: "ap-review")
         let approve = element("autopilot.guided.review.approve")
         XCTAssertTrue(approve.waitForExistence(timeout: 20))
-        let push = element("autopilot.guided.push")
-        XCTAssertFalse(push.isEnabled)
+        let approveAll = element("autopilot.guided.approveAll")
+        XCTAssertTrue(approveAll.exists)
+        XCTAssertEqual(approveAll.label, "Approve All")
+        XCTAssertFalse(element("autopilot.guided.push").exists, "No push from the sheet")
         attachScreenshot("Review · screenshots")
-
-        for _ in 0..<3 {
-            approve.click()
-            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
-        }
-        XCTAssertTrue(waitUntil { push.isEnabled }, "Everything approved")
-        push.click()
-        XCTAssertTrue(element("autopilot.guided.push.confirm").waitForExistence(timeout: 5))
-        attachScreenshot("Review · push?")
     }
 
-    /// A push that starts closes Autopilot for Review & Push; one that
-    /// can't (this scene has no App Store Connect to push to) keeps
-    /// Autopilot open and says why.
-    func testAPushThatCantStartStaysInAutopilot() {
+    /// Approve All waits for a caption proposal to be decided; one that
+    /// then finds nothing to put in Review & Push (this scene has no App
+    /// Store Connect) keeps Autopilot open and says why.
+    func testApproveAllWithNothingToPushStaysInAutopilot() {
         app.launch(debugScene: "ap-review")
-        let approve = element("autopilot.guided.review.approve")
-        XCTAssertTrue(approve.waitForExistence(timeout: 20))
-        let push = element("autopilot.guided.push")
-        for _ in 0..<3 {
-            approve.click()
-            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
-        }
-        XCTAssertTrue(waitUntil { push.isEnabled }, "Everything approved")
-        push.click()
-        let confirm = element("autopilot.guided.push.confirm")
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
-        confirm.click()
-        XCTAssertTrue(app.staticTexts["Couldn’t push"].waitForExistence(timeout: 10))
+        let approveAll = element("autopilot.guided.approveAll")
+        XCTAssertTrue(approveAll.waitForExistence(timeout: 20))
+        // A caption proposal waits in the checks: Approve All waits for it.
+        XCTAssertFalse(approveAll.isEnabled, "Shorter German captions wait for a decision")
+        let reject = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH %@ AND identifier ENDSWITH %@", "autopilot.guided.review.check.", ".reject"))
+            .firstMatch
+        XCTAssertTrue(reject.waitForExistence(timeout: 10))
+        reject.click()
+        XCTAssertTrue(waitUntil(timeout: 30) { approveAll.isEnabled })
+        approveAll.click()
+        XCTAssertTrue(app.staticTexts["Couldn’t put it in Review & Push"].waitForExistence(timeout: 10))
         XCTAssertTrue(element("autopilot.guided.sheet").exists)
         XCTAssertFalse(element("review.sheet").exists)
+        attachScreenshot("Review · nothing to push")
     }
 
     func testTheHeaderTabFollowsTheApprovedScreenshots() {
@@ -70,13 +65,15 @@ final class AutopilotGuidedPushUITests: XCTestCase {
         attachScreenshot("Review · header and search")
     }
 
-    func testSentSaysWhatWasSent() {
+    /// The scene's push happened before this launch: Done can't tell how it
+    /// ended, and says so.
+    func testDoneAfterARelaunchSaysItCantTell() {
         app.launch(debugScene: "ap-done")
         let title = element("autopilot.guided.done.title")
         XCTAssertTrue(title.waitForExistence(timeout: 20))
-        XCTAssertEqual(text(of: title), "Sent to the App Store")
-        XCTAssertTrue(text(of: element("autopilot.guided.done.text")).contains("are on App Store Connect."))
-        XCTAssertFalse(element("autopilot.guided.push").exists, "No footer once it's sent")
+        XCTAssertEqual(text(of: title), "Sent from this Mac")
+        XCTAssertTrue(text(of: element("autopilot.guided.done.text")).contains("can’t tell how it ended"))
+        XCTAssertFalse(element("autopilot.guided.approveAll").exists, "No footer once it's sent")
         attachScreenshot("Sent")
     }
 

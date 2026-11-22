@@ -155,8 +155,9 @@ struct AutopilotStripContentTests {
         #expect(strip.pill == "Not pushed")
         #expect(strip.pillStyle == .accent)
         #expect(strip.text == "120 screenshots in Quiet Indigo · 1 caption shortened · waiting in Review & Push")
-        #expect(strip.primary == .reviewPush)
-        #expect(strip.secondary == .open)
+        // Pushing is the toolbar's Review & Push.
+        #expect(strip.primary == .open)
+        #expect(strip.secondary == nil)
     }
 
     @Test(arguments: [(0, "120 screenshots in Quiet Indigo · waiting in Review & Push"),

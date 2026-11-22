@@ -9,7 +9,8 @@ import SwiftUI
 /// with a bar and about how long is left, or "Everything is up to date"
 /// with the last and next check; what needs the person, each line opening
 /// Atlas at that place; then Open Atlas, Review & Push…, Check Now, Pause
-/// Background Work, Settings… and Quit Atlas.
+/// Background Work, Pause Auto-Reply (while it's on), Settings… and Quit
+/// Atlas.
 struct MenuBarMenuView: View {
     let snapshot: MenuBarSnapshot
     let actions: MenuBarActions
@@ -41,6 +42,14 @@ struct MenuBarMenuView: View {
                 identifier: "menuBar.pause"
             ) {
                 actions.setPaused(!snapshot.isPaused)
+            }
+            if let autoReplyPaused = snapshot.autoReplyPaused {
+                MenuBarItemButton(
+                    title: autoReplyPaused ? String(localized: "Resume Auto-Reply") : String(localized: "Pause Auto-Reply"),
+                    identifier: "menuBar.autoReplyPause"
+                ) {
+                    actions.setAutoReplyPaused(!autoReplyPaused)
+                }
             }
             separator
             MenuBarItemButton(title: String(localized: "Settings…"), shortcut: "⌘,", identifier: "menuBar.settings", action: actions.openSettings)

@@ -17,6 +17,12 @@ final class ReviewsViewModel {
     let app: StoreApp
     let store: ReviewsStore
     let services: any ReviewsServices
+    /// Reply Automatically's rule and queue (board 58).
+    var autoReply: AutoReplyCenter = .shared
+    /// Reply Automatically… (board 58 · 2).
+    var isAutoReplySettingsPresented = false
+    /// Its History (board 58 · 5).
+    var isAutoReplyHistoryPresented = false
 
     // MARK: - Loading
 

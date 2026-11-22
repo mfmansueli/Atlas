@@ -180,8 +180,7 @@ struct AutopilotStripContent: Hashable, Sendable {
                 pill: String(localized: "Not pushed"),
                 pillStyle: .accent,
                 text: String(localized: "\(what.prefix(1).uppercased() + what.dropFirst()) in \(run.plan.localeCodes.count) languages · waiting in Review & Push"),
-                primary: .reviewPush,
-                secondary: .open
+                primary: .open
             )
         }
         var parts = [String(localized: "\(run.totalScreenshots) screenshots")]
@@ -196,8 +195,7 @@ struct AutopilotStripContent: Hashable, Sendable {
             pill: String(localized: "Not pushed"),
             pillStyle: .accent,
             text: parts.joined(separator: " · "),
-            primary: .reviewPush,
-            secondary: .open
+            primary: .open
         )
     }
 

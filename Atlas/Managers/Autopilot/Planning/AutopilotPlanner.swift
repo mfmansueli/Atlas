@@ -45,6 +45,9 @@ enum AutopilotPlanner {
         // A device the app gained since the last run joins, unless the
         // person turned it off.
         plan = applyingRules(to: plan)
+        // The Duo row decides again: a plan made from a set's captures kept
+        // each slot's pose.
+        if plan.runChoice.duoSlotPoses != nil { plan.runChoice.duoSlotPoses = nil }
         let leftOut = plan.leftOutDevices ?? []
         for display in ScreenshotDisplayType.ownScreens
             where support.devices.contains(display) && !plan.displayTypes.contains(display) && !leftOut.contains(display)

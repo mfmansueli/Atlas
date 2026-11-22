@@ -48,7 +48,7 @@ struct GuidedAutopilotSheet: View {
             studio.uploadingProblem = nil
             Task { await studio.upload(url, for: problem) }
         }
-        .alert(Text("Couldn’t push"), isPresented: hasPushError) {
+        .alert(Text("Couldn’t put it in Review & Push"), isPresented: hasPushError) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(studio.guided.pushError ?? "")

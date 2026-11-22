@@ -15,7 +15,7 @@ struct ProductPagesListView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            ProductPagesListHeader(viewModel: viewModel, isCompact: isCompact)
+            ProductPagesListHeader(viewModel: viewModel)
                 .padding(.horizontal, Spacing.xLarge)
                 .padding(.top, Spacing.small)
             content

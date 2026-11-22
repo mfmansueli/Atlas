@@ -61,7 +61,20 @@ enum AutopilotPrompt {
 
     /// What picks `run` up where it is.
     static func continuing(_ run: AutopilotRun, appName: String) -> String {
-        continuing(appName: appName, appID: run.appID)
+        guard run.isRecapturing, let recapture = run.recapture else { return continuing(appName: appName, appID: run.appID) }
+        return recapturing(recapture, appName: appName, appID: run.appID)
+    }
+
+    /// A capture-only run: only some captures (and App Preview moments) are
+    /// redone; the plan, template and captions stay.
+    static func recapturing(_ recapture: AutopilotRecapture, appName: String, appID: StoreApp.ID) -> String {
+        let why = recapture.reason.map { " " + String(localized: "Why: \($0).") } ?? ""
+        return String(localized: """
+        Redo only \(recapture.title) of \(appName)’s screenshots in Atlas (app \(appID)): a capture-only run, with no \
+        new plan, design or captions.\(why) Call get_capture_plan for the plan, commands and upload link (its recapture \
+        lists what to redo), build the app as it is now, then ask next_step and do what it says after each step: it asks \
+        only for these captures, and report_capture refuses the others.
+        """) + " " + keepGoing
     }
 
     /// The prompt that picks a stopped run up where it is.

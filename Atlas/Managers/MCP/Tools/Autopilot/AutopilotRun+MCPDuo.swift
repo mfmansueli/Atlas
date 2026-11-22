@@ -12,8 +12,8 @@ extension AutopilotRun {
     /// open (the inner display) and which closed (the cover display).
     var mcpDuoPoses: JSONValue {
         [
-            "shows": .string(plan.duoScreens.rawValue),
-            "both": plan.duoScreens == .both ? .string(plan.duoBoth.rawValue) : .null,
+            "shows": .string(plan.runChoice.duoSlotPoses == nil ? plan.duoScreens.rawValue : "asCaptured"),
+            "both": plan.duoScreens == .both && plan.runChoice.duoSlotPoses == nil ? .string(plan.duoBoth.rawValue) : .null,
             "open": .array(plan.duoSlots(.open).map { .int($0 + 1) }),
             "closed": .array(plan.duoSlots(.closed).map { .int($0 + 1) }),
             "rule": .string(Self.duoRule(plan)),
@@ -23,6 +23,12 @@ extension AutopilotRun {
     /// What the person chose for iPhone Duo, for the assistant.
     static func duoRule(_ plan: AutopilotPlan) -> String {
         let steps = "The steps are the same screens as iPhone."
+        if plan.runChoice.duoSlotPoses != nil {
+            return """
+            iPhone Duo's screenshots keep the pose the set's captures have, slot by slot (open and closed above): each \
+            target says its pose. Capture the closed ones first: next_step folds the Duo before it gives them. \(steps)
+            """
+        }
         switch (plan.duoScreens, plan.duoBoth) {
         case (.inner, _):
             return "iPhone Duo's screenshots show the inner display, unfolded: Atlas opens the Duo in Device Hub. \(steps)"

@@ -50,7 +50,7 @@ enum GuidedStep: Int, CaseIterable, Hashable, Sendable {
     /// Where a run is: the setup step the person is on while it's planned,
     /// Making it while anything works on it (and at Pick captures, which
     /// it shows), Choose, Review & push at Watch and Ready, and Done once
-    /// it's pushed from here.
+    /// Approve All put it in Review & Push (or it was pushed from here).
     static func step(of run: AutopilotRun?, setup: GuidedStep) -> GuidedStep {
         guard let run else { return setup.isSetup ? setup : .make }
         switch run.stage {
@@ -58,7 +58,7 @@ enum GuidedStep: Int, CaseIterable, Hashable, Sendable {
         case .waiting, .capture, .pick, .design, .localize: return .making
         case .choose: return .choose
         case .watchPreview: return .review
-        case .ready: return run.guidedReview?.pushedAt == nil ? .review : .done
+        case .ready: return run.guidedReview?.isFinished == true ? .done : .review
         }
     }
 

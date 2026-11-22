@@ -13,7 +13,7 @@ import Foundation
 extension AutopilotPlan {
     /// Both displays are separate screenshots: iPhone Duo's set has
     /// screens of its own.
-    var duoHasOwnScreens: Bool { plansDuo && duoScreens == .both && duoBoth == .separate }
+    var duoHasOwnScreens: Bool { plansDuo && runChoice.duoSlotPoses == nil && duoScreens == .both && duoBoth == .separate }
 
     /// iPhone Duo's own screens, in the set's order: "Today · inner",
     /// "Today · cover"…; empty unless the displays are separate.
@@ -38,7 +38,13 @@ extension AutopilotPlan {
     /// and whether it's the slot's companion (the cover display beside the
     /// inner one); nil for a pose the plan doesn't use.
     func duoPlacement(slot: Int, pose: AutopilotDuoPose) -> (slot: Int, isCompanion: Bool)? {
-        switch (duoScreens, duoBoth) {
+        // Each slot in its own pose: the cover display beside the inner
+        // one where it has both.
+        if let poses = runChoice.duoSlotPoses {
+            guard poses.indices.contains(slot), poses[slot].contains(pose) else { return nil }
+            return (slot, poses[slot].count > 1 && pose == .closed)
+        }
+        return switch (duoScreens, duoBoth) {
         case (.inner, _): pose == .open ? (slot, false) : nil
         case (.cover, _): pose == .closed ? (slot, false) : nil
         case (.both, .sideBySide): (slot, pose == .closed)

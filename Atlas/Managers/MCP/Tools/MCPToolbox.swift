@@ -39,6 +39,7 @@ struct MCPToolbox {
             ProposeComplianceAnswersTool(),
             GetScreenshotContextTool(),
             ListCapturesTool(),
+            MarkCapturesStaleTool(),
             GetCaptureTool(),
             GetTemplateTool(),
             GetCaptionsTool(),
@@ -61,6 +62,7 @@ struct MCPToolbox {
             ReportRecordingTool(),
             ListRecordingMomentsTool(),
             RerecordMomentTool(),
+            RequestRecaptureTool(),
             ProposeArtworkVariantTool(),
             StartDisplayRecordingTool(),
             FinishDisplayRecordingTool(),
@@ -100,6 +102,7 @@ struct MCPToolbox {
             ProposePageScreenshotsTool(),
             ProposePageLookTool(),
             ReportPageCaptureTool(),
+            RequestPageRecaptureTool(),
         ])
     }
 

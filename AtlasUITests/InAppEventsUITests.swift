@@ -64,7 +64,9 @@ final class InAppEventsUITests: XCTestCase {
         XCTAssertTrue(element("events.suggestion").exists)
         XCTAssertEqual(text(of: element("events.field.name.suggested")), "Winter-Reflexion in 31 Tagen")
         XCTAssertEqual(element("events.language.de-DE").label, "German, suggestion to review")
-        XCTAssertEqual(text(of: element("events.preview.name")), "Winter-Reflexion in 31 Tagen")
+        // The card's texts are on its art button, for VoiceOver.
+        let card = element("events.preview.card").value as? String ?? ""
+        XCTAssertTrue(card.hasPrefix("Winter-Reflexion in 31 Tagen"), card)
         XCTAssertTrue(text(of: element("events.preview.note")).hasPrefix("Text: the German suggestion."), text(of: element("events.preview.note")))
         attach("ev")
     }
@@ -114,7 +116,9 @@ final class InAppEventsUITests: XCTestCase {
         app.launch(debugScene: "ev-ar")
         XCTAssertTrue(element("events.field.name.suggested").waitForExistence(timeout: 15))
         XCTAssertEqual(text(of: element("events.field.name.suggested")), "تحدي تأملات الشتاء")
-        XCTAssertEqual(text(of: element("events.preview.name")), "تحدي تأملات الشتاء")
+        // The card's texts are on its art button, for VoiceOver.
+        let card = element("events.preview.card").value as? String ?? ""
+        XCTAssertTrue(card.hasPrefix("تحدي تأملات الشتاء"), card)
         attach("ev-ar")
     }
 
@@ -126,7 +130,7 @@ final class InAppEventsUITests: XCTestCase {
         let title = element("events.languages.title")
         let done = NSPredicate(format: "value == %@ OR label == %@", "Every language written or accepted", "Every language written or accepted")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: done, object: title)], timeout: 10), .completed, text(of: title))
-        XCTAssertTrue(app.staticTexts["Accepted 9 languages for Winter Reflection Challenge. They’re in Review & Push."].exists)
+        XCTAssertTrue(app.staticTexts["Accepted 9 languages for Winter Reflection Challenge. They’re waiting in Review & Push, top right."].exists)
         XCTAssertFalse(element("events.acceptAll").exists)
         attach("ev-accepted")
     }

@@ -34,6 +34,8 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     case pageLooks(pageName: String)
     /// Its screens captured again in the Simulator.
     case pageCaptures(pageName: String)
+    /// Reply Automatically: replies to an app's new reviews (board 58).
+    case autoReply
 
     /// Make Screenshots for This Page's sessions: the plan's, the looks'
     /// and the captures'.
@@ -61,6 +63,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case let .pageScreenshots(pageName): String(localized: "Screenshots for “\(pageName)”")
         case let .pageLooks(pageName): String(localized: "Looks for “\(pageName)”")
         case let .pageCaptures(pageName): String(localized: "Captures for “\(pageName)”")
+        case .autoReply: String(localized: "Replies to new reviews")
         }
     }
 
@@ -72,7 +75,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
         case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Product page screenshots")
-        case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts: title
+        case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply: title
         }
     }
 
@@ -84,7 +87,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .deepLinkCheck: .deepLinkCheck
         case .deepLinkWork: .deepLinkWork
         case .pageCaptures: .pageCaptures
-        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks: .readProject
+        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks, .autoReply: .readProject
         }
     }
 }

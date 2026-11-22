@@ -62,8 +62,8 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
   is released; afterwards the card follows App Review and the phased release. See
   [Submit for Review and release](#submit-for-review-and-release).
 - **Ratings & Reviews (⌘7):** the written reviews from every country, translated on this Mac, each with a reply an
-  assistant suggested in the reviewer's language; one message per language for a whole group of reviews; and the
-  ratings since the newest version. See [Ratings & Reviews](#ratings--reviews).
+  assistant suggested in the reviewer's language; one message per language for a whole group of reviews; Reply
+  Automatically (Pro); and the ratings since the newest version. See [Ratings & Reviews](#ratings--reviews).
 - **Navigation:** the sections are in the sidebar (Overview ⌘1 · Store Listing: Store Page ⌘2, Screenshots ⌘3, In-App
   Events ⌘4, App Information ⌘5, Pricing ⌘6 · After Release: Reviews ⌘7, Analytics ⌘8), the apps in a menu at its
   top, and the version's status at its bottom. See [Navigation](#navigation).
@@ -118,7 +118,9 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
 - **Ratings & Reviews** (`ReviewsDebugScenes`; "today" is Nov 16, 2026): `rv`, every review `rv-all`, Show Original
   `rv-orig`, editing a reply `rv-edit`, one sent `rv-sent`, Reply to All `rv-bulk`, Free `rv-free`, the sidebar hidden
   `rv-s`, no suggestions yet `rv-none`, no reviews `rv-empty`, `rv-error`, `rv-loading`, a reply Apple refuses
-  `rv-refused`, a language to download `rv-download`, and the overview's card `rv-overview`.
+  `rv-refused`, a language to download `rv-download`, and the overview's card `rv-overview`. Reply Automatically
+  (`AutoReplyDebugScenes`): on `ar`, no reply sent by hand yet `ar-first`, paused `ar-paused`, its settings `ar-settings`
+  / `ar-settings-on` / Free `ar-free`, History `ar-history`; the menu bar's Pause Auto-Reply `mb-autoreply`.
 - **Submit for Review and release** (`ReleaseDebugScenes`, on Overview): before submitting `rel-prep`; the sheet
   `rel-sheet`, with changes to push `rel-sheet-push`, ready `rel-sheet-ok`; then `rel-wait`, `rel-review`,
   `rel-pending`, `rel-phased`, `rel-paused`, `rel-rejected`, `rel-live`, and writes Apple refuses, `rel-refused`.
@@ -201,7 +203,7 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
 - **Claude Code started by Atlas:** through a pretend helper (`DebugUnixScriptRunner`), so nothing runs:
   setup's step 3 before and after the helper is saved, `cc-setup` and `cc-setup-installed`, and its test run
   connecting, `cc-setup-test`; Ask working, `cc-ask`; Suggest Everything working, `cc-everything`; Show Output,
-  `cc-output`; not logged in, `cc-login`; refused steps, `cc-denied`; Settings, `cc-settings`; the Assistant button
+  `cc-output`; not logged in, `cc-login`; refused steps, `cc-denied`; Settings, `cc-settings`; the Autopilot button
   with two runs, `cc-toolbar`; and Ask without the helper, `cc-hint` (`ClaudeCodeDebugScenes`). `cc-live` is the
   exception: setup's test through the helper really saved in the scripts folder, with your own Claude Code and login,
   and the MCP server on port 47399, away from the real app's. `CC_LIVE_FOLDER` picks the folder and
@@ -229,7 +231,9 @@ The Settings window (⌘,, board 48) is a sidebar with search and nine panes (`S
   (`AppPreferences.checksRepeatedWords`, which the Store Page's built-in suggestions follow), asking before Accept All,
   and what is never accepted for you.
 - **Pricing:** the defaults for new apps and prices by country, and Apple's commission (Proceeds).
-- **Screenshots:** the defaults an event's artwork Brief starts with (words in the art, moving versions).
+- **Screenshots:** whether Claude Code may open capture-only runs by itself (`AppPreferences.opensCaptureRuns`, off by
+  default: each `request_recapture` waits for Accept), and the defaults an event's artwork Brief starts with (words in
+  the art, moving versions).
 - **Notifications:** whether macOS allows them, then what Atlas tells you about and how (`NotificationPreferences`,
   `AtlasNotifier`, `AtlasNotifications`): something needs you (Autopilot's turns, concepts ready behind a hidden
   sheet), App Review's status changes, a push that finished (a failed one always tells), new reviews (never, 3 stars
@@ -290,7 +294,7 @@ and Accept, and accepting queues an unpushed change tagged with who suggested it
   Atlas can't start the assistant), Dismiss All, Accept All and Accept All in Every Language. Accept All asks
   nothing first; its toast, and Edit → Undo, put everything back. With Claude Code's helper saved, Ask starts Claude
   Code instead of copying (see [Starting Claude Code](#starting-claude-code-from-atlas)).
-- **Suggest Everything** (Overview's assistant and Suggestions cards, and the Assistant button) copies one prompt (or,
+- **Suggest Everything** (Overview's assistant and Suggestions cards, and the Autopilot button) copies one prompt (or,
   with Claude Code's helper saved, starts Claude Code with it) for every field the connected assistant can suggest, listing what it covers page by page: the Store Page's fields
   that can change, General, Age Rating, Accessibility and App Review. While the version is in review only what can
   still change is asked, and App Review says it's locked. The assistant announces its plan with
@@ -368,7 +372,7 @@ the canvas's Analytics page (boards 29–37).
 ## Navigation
 
 The sections left the toolbar for the sidebar (the design canvas's Navigation page, boards 41–43), so the window has
-room for more of them and the toolbar only holds actions.
+room for more of them; the toolbar names the section and holds its actions.
 
 - **The sidebar** (`Screens/Main/Sidebar/`): the app menu, then the sections in three groups (`AppWorkspaceSection`,
   `AppWorkspaceSectionGroup`): Overview; Store Listing (Store Page, Screenshots, In-App Events, App Information,
@@ -379,8 +383,27 @@ room for more of them and the toolbar only holds actions.
 - **The version's status** (`VersionStatusFooter`, `VersionStatusSummary`) stays at the bottom of the sidebar in
   every section: "Version 1.4 · Not submitted yet" with Submit…, "Rolling out · day 3 of 7", "Rejected by App
   Review" with Fix…. A click opens the Submit sheet before submitting and Overview's version card after.
-- **With the sidebar hidden** the toolbar gets a section menu (`SectionMenuButton`) and the app's name with the
-  version's status (`WorkspaceToolbarLayout`); under 720 points the title goes and Review & Push keeps its count.
+- **The toolbar** (board 57, README-Toolbar; `Screens/Main/Workspace/Toolbar/`) leads with the section's title over
+  one line of its state (`WorkspaceToolbarTitle`, `WorkspaceSectionStatus`): "32 suggestions · 3 not pushed", with the
+  not-pushed part a link that opens Review & Push on that section only (`ReviewScope.section`, `focus(on:)`; its push
+  reads "Push 3 from Store Page…"). Overview leads with the app and its version. The pages lost their own title row:
+  `SectionHeader` is the one-sentence description and the page's controls. With the sidebar hidden the section menu
+  comes first. At 940 points of detail width the Autopilot and Review & Push labels fold to their icons; under 620
+  the title goes (`WorkspaceToolbarLayout`).
+- **Autopilot** (`Toolbar/Autopilot/`): one split button in every section, replacing the Assistant button. Its label
+  is what Autopilot makes there (`WorkspaceAutopilotAction.actions(for:)`): Suggest Everything…, Suggest Texts…, Make
+  Screenshots…, Suggest Pages…, Make Event Artwork…, Suggest Answers…, Suggest Prices…, Draft Replies…, Find What to
+  Try…; the arrow lists the section's other actions, Everything for the app, the assistant's connection (its status
+  popover, the old Assistant popover) and Settings…. Actions a section already had run that section's flow through
+  `WorkspaceIntent.autopilot` (the guided run, page shots, event artwork) or an existing intent; the new ones ask
+  Claude Code from the toolbar (`WorkspaceAutopilotAsk`, `AssistantAskStarter`; copied when it can't start). Running,
+  it shows a ring and what's being done; when the guided run waits for the person (`AutopilotTurn`), purple with
+  "Choose the Look" and a click opens that step (`WorkspaceAutopilotState`). Free shows PRO on Pro's actions and opens
+  the paywall. ⌥⌘A runs it and ⇧⌘P opens Review & Push, both in the Product menu.
+- **One Review & Push.** No page has a push button: Overview's cards, Screenshots' strip and set card, Pricing's
+  starting price and new subscriptions, and Analytics' findings say what's waiting "in Review & Push, top right"; the
+  toolbar button reads Up to Date when nothing is. A product page's button is Submit for Review…, which still opens
+  Review & Push on the page first.
 - **Sections open loaded** (`Screens/Main/Workspace/SectionModels/`): the window keeps each section's model for the
   four apps opened last (`WorkspaceSectionModels`, `AppSectionModels`), stamped when a read finished and read again
   after Refresh, a push or 15 minutes. Two seconds after an app opens, and again after Refresh or a push, the
@@ -414,7 +437,18 @@ The design is on the canvas's "Avaliações, envio e eventos" page (board 38).
 - **Since the newest version** (`VersionRatingComparison`): the written reviews' average for the current version
   against the ones before, said only as sure as the numbers allow (at least 10 on each side; fairly sure at 90%, sure
   at 99%).
-- **Free and Pro:** Free reads, translates and replies by hand; suggested replies, groups and Reply to All are Pro.
+- **Reply Automatically** (board 58, `AutoReplyCenter`, Pro): on each hourly check Claude Code (purpose `.autoReply`,
+  only in a project folder Atlas already knows) writes a reply to each review newer than the moment it was turned on
+  and at most a week old; without Claude Code the person's API key writes them, only when Settings → AI Assistants
+  lets it read reviews (`AutoReplyKeyPrompt`). Replies come back through `propose_review_replies` with `waitTopics`
+  and `unsure`, and `AutoReplyDecision` decides: draft and tell, or send by itself after the wait (15 min, 1 h, 3 h)
+  when the rating, language, topics and App Review's rules for replies allow; everything else waits, with the reason
+  and a notification (Send Reply / Open Reviews buttons). Due replies go out on the 30 s background tick through the
+  same write as Send Reply, at most the daily cap, and **never before a reply the person sent by hand reached the App
+  Store** (`ReviewsSettings.sentReplyByHandAt`). Pause in the strip, the Autopilot menu or the menu bar; History's
+  Undo deletes the reply and keeps the draft. Kept as `auto-reply-<appID>.json` next to the reviews.
+- **Free and Pro:** Free reads, translates and replies by hand; suggested replies, groups, Reply to All and Reply
+  Automatically are Pro.
 - **Not there, because Apple's API doesn't have it:** resetting the rating summary with a new version (the row
   explains it and links to App Store Connect) and ratings without text.
 
@@ -487,7 +521,7 @@ The design is on the same page (board 40). In-App Events is its own section (⌘
 
 Settings → AI Assistants turns on a Streamable HTTP MCP server at `http://127.0.0.1:47321/mcp`. It's off by default,
 only accepts connections from this Mac, and runs only while the app is open (`Managers/MCP/`). "Set Up Your AI
-Assistant" (from the toolbar's Assistant button, the overview or a suggestion bar) walks through choosing a client,
+Assistant" (from the Autopilot button's menu, the overview or a suggestion bar) walks through choosing a client,
 turning the server on with Suggest only or Suggest and edit drafts, adding Atlas to the client, and a first
 call.
 
@@ -585,6 +619,32 @@ call.
     `propose_captions` and `list_proposals`. `get_capture` and `render_preview` return PNG images. Slots are
     numbered from 1. Screenshot proposals wait in their own Proposals sheet, opened from the toolbar's assistant
     indicator, rather than in Review & Push.
+  - **Redoing some captures** (`Managers/Autopilot/Recapture/`, `Managers/MCP/Tools/Autopilot/Recapture/`): a
+    capture-only run isn't a new run. The app's finished run is opened again in place with `run.recapture`
+    (`AutopilotRecapture`: the plan's targets and App Preview moments redone, why, and what Cancel gives back), so the
+    plan, look, template and captions stay. `totalCaptures`, `remainingTargets`, `isSettled` and `next_step` count
+    only those targets, `report_capture` refuses the others, and captures from before it opened don't count
+    (`isRedone`). Pick (`AutopilotRecapturePickView`) shows each redone capture beside the one before; then
+    `placeRecaptures` puts the final ones in their slots (`AutopilotLocalizer.placed`), makes the App Preview again
+    when moments were recorded again (the artwork stays, `extrasPlan(for:)`), and the run is back in Review & Push,
+    where render keys send only the changed images. Cancel Run puts the captures, Review and end back. Opened from
+    Screenshots → Captures (⌘-click, a row or a column: `CapturesViewModel+Selection`, then Capture Again with
+    Claude Code; Replace… swaps one PNG with no run, checked by `CaptureReplacement`), or by `request_recapture`
+    (screens or slots, locale, device, Duo pose, moments, reason, evidence): queued as an
+    `AutopilotRecaptureRequest` in `AutopilotPlanProposals.recaptures` (status `queued` with `requestId`, shown as
+    `RecaptureRequestBanner` with Accept and Decline), or opened at once (`opened`) with Settings → Screenshots on.
+    `request_page_recapture` does the same for a product page (at most 3 screens, `PageRecaptureTarget`): accepted, it
+    turns on the page's Capture Screens Again (`PageShotsStudio.openRecapture`, making the page's run at Plan when it
+    has none). `mark_captures_stale` sets `ScreenshotCapture.stale` (`CaptureStaleness`), labelled Out of date in the
+    grid and viewer and returned by `list_captures` with `capturedAt`. DEBUG scenes `ap-recapture-request`,
+    `ap-recapture-run`, `ap-recapture-pick`, `ap-captures-stale`, `ap-recapture-no-run`. With no saved run (none, or a
+    new plan never started) the run is made from the set's captures (`AutopilotRecapturePlanFromCaptures`: a screen a
+    slot named by the set or its capture files, the devices, languages and sizes of the captures, iPhone Duo's pose
+    slot by slot in `AutopilotRunChoice.duoSlotPoses`, the open plan's steps and the queued `update_capture_plan`
+    setup), kept in the request (`fromCaptures`) until Accept; only targets with a capture can be asked for ("… has no
+    captures in ja on ipad"), App Preview moments come back in `unknownMoments`, and Cancel takes the run away again
+    (`madeFromCaptures`). In a capture-only run `get_capture_plan` lists only its languages and devices, and each
+    capture's `previousPixelSize`.
   - Screenshot Autopilot: `get_capture_plan` returns the plan, the simulator commands and an upload URL;
     `update_capture_plan` writes the screens and steps; captures are sent as raw PNG bodies to
     `POST /autopilot/<token>` on the MCP server (the app is sandboxed, so it can't read the assistant's files), which
@@ -734,10 +794,17 @@ call.
   `store` or `info`), `suggest_all`, Suggest Everything's, and `run_screenshots`, Screenshot Autopilot's. A prompt is offered only while its
   tools are.
 - **Clients:**
-  - Claude Code and Cursor connect over HTTP.
-  - Claude Desktop and Codex launch servers as processes, so they run the bundled bridge,
+  - Cursor connects over HTTP.
+  - Claude Code, Claude Desktop and Codex launch servers as processes, so they run the bundled bridge,
     `Atlas.app/Contents/MacOS/atlas-mcp --token <token>`. It forwards stdio to the HTTP endpoint and
-    starts a new session on its own when the app relaunches.
+    starts a new session on its own when the app relaunches. Once the client is initialized it opens the
+    session's `GET` event stream, so Atlas's `roots/list` reaches the client and Atlas learns its project folder.
+  - Claude Code goes through the bridge, not HTTP: an HTTP server that failed as the session started (Atlas
+    closed) stays failed until `/mcp`, while the bridge always starts. When nothing listens on the port, the
+    bridge opens Atlas in the background (`MCPBridgeAppLauncher`: the Atlas.app it's in, else the one Launch
+    Services knows) and the request waits up to 20 s for its server. An Atlas open for over 20 s isn't
+    waited for: its server is off. Only a refused connection is tried again, since nothing was sent.
+  - Runs Atlas starts itself (`ClaudeCodeInvocation`) still pass an HTTP `--mcp-config`: Atlas is open then.
 
 ### Starting Claude Code from Atlas
 
@@ -840,7 +907,7 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
 - **Where:** Ask on every suggestion bar, Suggest Everything, Screenshot Autopilot, Translate Missing, Translate
   Captions, App Privacy's scan, and setup's test. Each app's project folder is asked for once, and Settings lists
   them. Without the helper, every screen copies its prompt as before.
-- **Seeing it:** a status strip where it started, the Assistant button's popover, and Show Output with each step, the
+- **Seeing it:** a status strip where it started, the Autopilot menu's status popover, and Show Output with each step, the
   result, refused steps and Copy Resume Command (`ClaudeCodeRun`). A failure says why (not logged in, no Claude Code,
   folder moved, Atlas unreachable) with the way through: Open in Terminal (Claude Code's `claude-cli://open`
   link), Try Again or Choose Folder…, and Copy Prompt.

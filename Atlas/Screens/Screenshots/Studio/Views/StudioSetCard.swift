@@ -6,12 +6,11 @@
 import SwiftUI
 
 /// "Live set" or "New set": how it was made, languages, iPad and checks,
-/// with the way to Sets, Template and Captions, and Review & Push.
+/// with the way to Sets, Template and Captions. A new set waits in the
+/// toolbar's Review & Push, the only push (board 57).
 struct StudioSetCard: View {
     let summary: StudioSetSummary
-    let canReview: Bool
     let onOpenSets: () -> Void
-    let onReview: () -> Void
 
     var body: some View {
         Card {
@@ -40,12 +39,6 @@ struct StudioSetCard: View {
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
                     .accessibilityIdentifier("studio.setCard.openSets")
-                if canReview {
-                    Button("Review & Push…", action: onReview)
-                        .buttonStyle(.borderedProminent)
-                        .buttonBorderShape(.capsule)
-                        .accessibilityIdentifier("studio.setCard.review")
-                }
             }
             .padding(.top, Spacing.xxSmall)
         }

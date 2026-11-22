@@ -90,7 +90,7 @@ final class InAppEventSuggestionsUITests: XCTestCase {
         let suggested = element("events.revision.longDescription.suggested")
         XCTAssertTrue(text(of: now).hasSuffix("milestone by Sunday."), text(of: now))
         XCTAssertTrue(text(of: suggested).contains("milestone by November 26."), text(of: suggested))
-        XCTAssertTrue(text(of: suggested).contains("Changed: November 26."), text(of: suggested))
+        XCTAssertTrue(text(of: suggested).contains("Changed: November 26"), text(of: suggested))
         // Only the long description changes: the name and short one stay.
         XCTAssertFalse(element("events.revision.name").exists)
         XCTAssertFalse(element("events.revision.shortDescription").exists)
@@ -149,7 +149,12 @@ final class InAppEventSuggestionsUITests: XCTestCase {
     /// A date's two columns in the suggestion beside the person's dates.
     private func yoursAndSuggested(_ field: String) -> (yours: String, suggested: String) {
         let prefix = "events.details.dates.alternative.\(field)"
-        return (text(of: element("\(prefix).yours")), text(of: element(prefix)))
+        // The suggested date reads “Shows from: 18 Nov at 12:00, changed” to
+        // VoiceOver: compare the dates alone.
+        var suggested = text(of: element(prefix))
+        if let colon = suggested.range(of: ": ") { suggested = String(suggested[colon.upperBound...]) }
+        if suggested.hasSuffix(", changed") { suggested = String(suggested.dropLast(", changed".count)) }
+        return (text(of: element("\(prefix).yours")), suggested)
     }
 
     /// A text field's text.

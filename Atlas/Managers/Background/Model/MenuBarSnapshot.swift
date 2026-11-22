@@ -16,6 +16,9 @@ struct MenuBarSnapshot: Hashable, Sendable {
     var checkLine: String
     var reviewPushCount = 0
     var isPaused = false
+    /// Reply Automatically: nil when no app has it on, else whether every
+    /// app that has it is paused (Pause Auto-Reply / Resume Auto-Reply).
+    var autoReplyPaused: Bool?
     /// The key was refused or Apple can't be reached: what went wrong.
     var connectionProblem: String?
 

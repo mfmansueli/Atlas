@@ -35,14 +35,10 @@ struct InAppEventsScreen: View {
 
     private var galleryHeader: some View {
         SectionHeader(
-            systemImage: AppWorkspaceSection.inAppEvents.systemImage,
-            tint: Palette.sectionEvents,
-            title: String(localized: "In-App Events"),
             subtitle: String(localized: "Cards on the App Store for what’s happening in \(viewModel.app.name), in every language.")
         ) {
+            // Writing and artwork are the toolbar's Autopilot (board 57).
             if viewModel.state.value != nil {
-                InAppEventsAskButton(app: viewModel.app)
-                    .buttonBorderShape(.capsule)
                 Button {
                     viewModel.isNewEventPresented = true
                 } label: {

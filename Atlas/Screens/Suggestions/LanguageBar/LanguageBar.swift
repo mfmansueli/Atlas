@@ -10,10 +10,17 @@ import SwiftUI
 /// total, arrows to the previous or next language with suggestions, how many
 /// wait elsewhere, and Accept n in this language. When Accept All doesn't
 /// ask first, the line under it says so and offers Ask First.
+///
+/// On the Store Page and Screenshots the language picker sits in the
+/// window's toolbar beside the section's title (board 57: a control that
+/// changes the whole page moves up), and Accept All Languages stays here,
+/// next to the suggestions it accepts.
 struct LanguageBar<Trailing: View>: View {
     let model: LanguageBarModel
     /// Accept All Languages is part of Pro and the person is on Free.
     var showsProChip = false
+    /// The picker goes in the window's toolbar instead of the bar.
+    var picksInToolbar = false
     let onSelect: (StoreLocale) -> Void
     let onAcceptAll: () -> Void
     let onAcceptHere: () -> Void
@@ -26,7 +33,7 @@ struct LanguageBar<Trailing: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             FlowLayout(spacing: Spacing.small) {
-                picker
+                if !picksInToolbar { picker }
                 acceptAll
                 arrows
                 if !model.restText.isEmpty {
@@ -55,6 +62,59 @@ struct LanguageBar<Trailing: View>: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("languageBar")
+        .toolbar {
+            if picksInToolbar {
+                ToolbarItem(placement: .navigation) {
+                    toolbarPicker
+                }
+            }
+        }
+    }
+
+    /// The picker as a toolbar item: the flag, the language and its count.
+    private var toolbarPicker: some View {
+        Button {
+            showsMenu.toggle()
+        } label: {
+            HStack(spacing: 6) {
+                FlagTile(regionCode: model.current.regionCode)
+                    .frame(width: 18)
+                Text(model.current.name)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+                if model.hereCount > 0 {
+                    Text(SuggestionBadge.text(for: model.hereCount))
+                        .font(.system(size: 10.5, weight: .bold))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .frame(minWidth: 17, minHeight: 17)
+                        .background(Palette.machineTranslated, in: Capsule())
+                }
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(Palette.label2)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, Spacing.xSmall)
+            .contentShape(Rectangle())
+        }
+        .help(model.pickerAccessibilityText)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(model.pickerAccessibilityText))
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("languageBar.picker")
+        .popover(isPresented: $showsMenu, arrowEdge: .bottom) { menu }
+    }
+
+    private var menu: some View {
+        LanguageMenu(model: model) { locale in
+            showsMenu = false
+            onSelect(locale)
+        } onAcceptAll: {
+            showsMenu = false
+            onAcceptAll()
+        }
     }
 
     private var picker: some View {
@@ -94,15 +154,7 @@ struct LanguageBar<Trailing: View>: View {
         .accessibilityLabel(Text(model.pickerAccessibilityText))
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("languageBar.picker")
-        .popover(isPresented: $showsMenu, arrowEdge: .bottom) {
-            LanguageMenu(model: model) { locale in
-                showsMenu = false
-                onSelect(locale)
-            } onAcceptAll: {
-                showsMenu = false
-                onAcceptAll()
-            }
-        }
+        .popover(isPresented: $showsMenu, arrowEdge: .bottom) { menu }
     }
 
     /// Prominent while there's something to accept; once every language is

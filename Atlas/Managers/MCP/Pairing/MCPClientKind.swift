@@ -44,22 +44,25 @@ enum MCPClientKind: String, CaseIterable, Identifiable, Codable, Sendable {
     }
 
     /// Clients that launch servers as processes go through the stdio bridge
-    /// in the app bundle; the others connect over HTTP directly.
+    /// in the app bundle; the others connect over HTTP directly. Claude Code
+    /// could do either: through the bridge it connects even when Atlas was
+    /// closed as the session started (the bridge opens it), where an HTTP
+    /// server that failed then stays failed until `/mcp`.
     var usesBridge: Bool {
-        self == .claudeDesktop || self == .codex
+        self == .claudeCode || self == .claudeDesktop || self == .codex
     }
 
     /// The command or configuration that connects this client with `token`.
     /// Claude Code's is one registration for every project (user scope),
     /// replacing an older one, whose token Atlas would refuse: one server
     /// serves every app, and Atlas tells the apps apart by the folder each
-    /// session works in.
+    /// session works in (the bridge passes Atlas's `roots/list` on).
     func setupSnippet(token: String, url: String, bridgePath: String) -> String {
         let server = MCPEndpoint.serverName
         switch self {
         case .claudeCode:
             return "claude mcp remove \(server) --scope user >/dev/null 2>&1; "
-                + "claude mcp add --scope user --transport http \(server) \(url) --header \"Authorization: Bearer \(token)\""
+                + "claude mcp add --scope user \(server) -- \"\(bridgePath)\" --token \(token)"
         case .claudeDesktop:
             return """
             "\(server)": {

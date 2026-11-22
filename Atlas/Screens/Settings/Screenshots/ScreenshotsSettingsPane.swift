@@ -16,6 +16,21 @@ struct ScreenshotsSettingsPane: View {
         Form {
             SettingsPaneHeader(pane: .screenshots)
             Section {
+                Toggle(isOn: $preferences.opensCaptureRuns) {
+                    SettingsRowLabel(
+                        title: "Let Claude Code open capture-only runs",
+                        caption: String(localized: """
+                        When Claude Code asks to redo some captures, the run opens at once. Off: each request waits in \
+                        Screenshots for Accept. Nothing is pushed either way.
+                        """)
+                    )
+                }
+                .toggleStyle(.switch)
+                .accessibilityIdentifier("settings.opensCaptureRuns")
+            } header: {
+                Text("Captures")
+            }
+            Section {
                 Toggle(isOn: $preferences.eventArtworkHasWords) {
                     SettingsRowLabel(
                         title: "Words in event artwork",

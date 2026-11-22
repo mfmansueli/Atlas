@@ -21,6 +21,10 @@ extension AutopilotCenter {
     /// Use These Picks: on to Design.
     func usePicks(appID: StoreApp.ID, context: AutopilotContext) async {
         guard runs[appID]?.stage == .pick else { return }
+        if runs[appID]?.isRecapturing == true {
+            await useRecapturePicks(appID: appID, context: context)
+            return
+        }
         update(appID) { run in
             run.stage = .design
             run.handedBackAt = now()

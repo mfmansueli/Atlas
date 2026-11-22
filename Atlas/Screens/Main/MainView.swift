@@ -398,11 +398,15 @@ struct MainView: View {
         guard let background else { return }
         let handlers = MainWindowBackground(
             library: viewModel, navigator: navigator, services: services, releases: releases, analytics: analytics, reviews: reviews,
-            artwork: artwork, productPages: productPages, isSyncing: { isSyncing }, selectedRelease: { selectedRelease }
+            artwork: artwork, productPages: productPages, launcher: launcher, keyAssistant: keyAssistant, isSyncing: { isSyncing },
+            selectedRelease: { selectedRelease }
         )
+        AutoReplyCenter.shared.isPro = { [pro] in !pro.isFree }
+        AutoReplyCenter.shared.sendFromNotification = { await handlers.sendReplyFromNotification(appID: $0, reviewID: $1) }
         background.library = viewModel.apps
         background.isFree = { [pro] in pro.isFree }
         background.checkHandler = { await handlers.check() }
+        background.tickHandler = { await handlers.sendDueReplies() }
         background.openHandler = { handlers.open($0) }
     }
 

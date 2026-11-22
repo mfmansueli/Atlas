@@ -10,8 +10,9 @@ import SwiftUI
 struct FindingCard: View {
     let finding: AnalyticsFinding
     var isNew = false
-    /// "A change is waiting in Review & Push", with its button's title and action.
-    var state: (text: String, button: String, action: () -> Void)?
+    /// "A change is waiting in Review & Push, top right": the toolbar's
+    /// button is the only push (board 57).
+    var state: String?
     let onDismiss: () -> Void
     let onSecondAction: () -> Void
     let onAction: () -> Void
@@ -56,9 +57,8 @@ struct FindingCard: View {
                 .fixedSize(horizontal: false, vertical: true)
             if let state {
                 HStack(spacing: Spacing.small) {
-                    Text(state.text).font(.callout)
+                    Text(state).font(.callout)
                     Spacer(minLength: Spacing.small)
-                    Button(state.button, action: state.action).controlSize(.small)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)

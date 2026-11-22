@@ -54,7 +54,8 @@ final class NewSubscriptionUITests: XCTestCase {
         XCTAssertTrue(row.waitForExistence(timeout: 5))
         XCTAssertEqual(reviewCount(), before + 1)
 
-        app.buttons["pricing.newSubscriptions.review"].click()
+        // Pushed from the toolbar: the only Review & Push (board 57).
+        app.buttons["workspace.reviewPushButton"].click()
         XCTAssertTrue(element("review.sheet").waitForExistence(timeout: 10))
         XCTAssertTrue(element("review.creation.subscriptionSetup.6450000006.dev.northpier.quiet.premium.monthly").waitForExistence(timeout: 5))
     }
@@ -92,7 +93,7 @@ final class NewSubscriptionUITests: XCTestCase {
         return element.label
     }
 
-    /// The number on Review & Push, from "N pending changes".
+    /// The number on Review & Push, from "N changes ready" (0 when Up to date).
     private func reviewCount() -> Int {
         let value = app.buttons["workspace.reviewPushButton"].value as? String ?? ""
         return Int(value.prefix { $0.isNumber }) ?? 0

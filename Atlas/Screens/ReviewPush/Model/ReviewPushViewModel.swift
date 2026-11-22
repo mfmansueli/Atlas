@@ -16,6 +16,8 @@ final class ReviewPushViewModel {
     /// The custom product page Push and Submit… opened the sheet on; it
     /// adds that page to the scope switch (board 54).
     var pageFocus: ReviewPageFocus?
+    /// The section the toolbar's “N not pushed” opened it on.
+    private(set) var sectionFocus: AppWorkspaceSection?
     /// nil shows every source.
     var sourceFilter: ChangeSourceFilter?
     var selection: Set<PendingChange.ID> = []
@@ -63,11 +65,20 @@ final class ReviewPushViewModel {
         return queue.changes(for: pageFocus.appID).count(where: pageFocus.owns)
     }
 
+    /// The focused section's changes, with Screenshots' images.
+    var sectionCount: Int {
+        guard let sectionFocus, let selectedAppID else { return 0 }
+        let images = sectionFocus == .screenshots ? imageCount(thisAppOnly: true) : 0
+        return queue.changes(for: selectedAppID, section: sectionFocus).count + images
+    }
+
     /// This app | All apps, only when other apps have changes too; with a
-    /// page in focus, whenever the app has more than that page's changes.
+    /// page or a section in focus, whenever the app has more than its
+    /// changes.
     var showsScopeSwitch: Bool {
         guard selectedAppName != nil else { return false }
         if pageFocus != nil { return thisAppCount != pageCount || thisAppCount != allAppsCount }
+        if sectionFocus != nil { return thisAppCount != sectionCount || thisAppCount != allAppsCount }
         return thisAppCount != allAppsCount
     }
 
@@ -76,6 +87,19 @@ final class ReviewPushViewModel {
         guard page.appID == selectedAppID else { return }
         pageFocus = page
         if pageCount > 0 { scope = .productPage(page.pageID) }
+    }
+
+    /// “Push 3 from Store Page…”: under a section's scope, the push takes
+    /// only what's shown.
+    static func pushTitle(_ count: Int, from section: AppWorkspaceSection) -> String {
+        String(localized: "Push \(count) from \(section.fullTitle)…")
+    }
+
+    /// Opens on one section's changes, when it has any.
+    func focus(on section: AppWorkspaceSection) {
+        guard selectedAppID != nil else { return }
+        sectionFocus = section
+        if sectionCount > 0 { scope = .section(section) }
     }
 
     /// The source filter, only when text changes come from more than one
@@ -93,6 +117,8 @@ final class ReviewPushViewModel {
         case let .productPage(pageID):
             guard let pageFocus, pageFocus.pageID == pageID else { return [] }
             return queue.changes(for: pageFocus.appID).filter(pageFocus.owns)
+        case let .section(section):
+            return selectedAppID.map { queue.changes(for: $0, section: section) } ?? []
         }
     }
 

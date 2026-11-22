@@ -33,7 +33,9 @@ struct GetPageScreenshotsTool: MCPTool {
         propose_page_screenshots: the screens in the order that tells this page's story and a caption for each in every \
         language. `look` says how the set looks: when its choice is claudeDesign, send three looks with \
         propose_page_look. `recapture`, when the person turned on Capture Screens Again, has the upload link for \
-        screens captured again in the Simulator, named with report_page_capture. The default page's screenshots never \
+        screens captured again in the Simulator, named with report_page_capture (`requested` lists the screens a \
+        request_page_recapture asked for). To capture some screens again when it isn't on, ask with \
+        request_page_recapture instead of telling the person to turn it on. The default page's screenshots never \
         change.
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -206,6 +208,13 @@ struct GetPageScreenshotsTool: MCPTool {
             "languages": .array(run.locales.map(JSONValue.string)),
             "maxScreens": .int(PageShotsRecapture.maxScreens),
             "captured": Self.capturesJSON(recapture.captures),
+            "requested": recapture.requested.map { requested in
+                [
+                    "screens": .array(requested.slots.map { .int($0 + 1) }), "locale": .string(requested.locale),
+                    "displayType": .string(requested.displayType.mcpValue),
+                    "reason": recapture.requestReason.map(JSONValue.string) ?? .null,
+                ]
+            } ?? .null,
             "note": .string(String(localized: """
             Capture only the screens that should show something else for this page, at each device's pixelSize and \
             orientation (rotate the simulator for landscape). Send each PNG with curl --data-binary @file.png to \

@@ -32,6 +32,11 @@ struct AutopilotRunChoice: Codable, Hashable, Sendable {
     /// With both: side by side in each screenshot, or separate ones; nil
     /// is side by side.
     var duoBoth: AutopilotDuoBoth?
+    /// iPhone Duo's poses slot by slot, as the set's captures show them
+    /// when they mix poses (Alba's inner, cover, inner…): a capture-only
+    /// run made from the captures keeps each one's. Nil follows
+    /// `duoScreens` and `duoBoth`; the next plan drops it.
+    var duoSlotPoses: [[AutopilotDuoPose]]?
     /// Screenshot style: the design source's own directions, one from each
     /// picked gallery template, or the current template kept; nil (plans
     /// from before) is the design source's own.

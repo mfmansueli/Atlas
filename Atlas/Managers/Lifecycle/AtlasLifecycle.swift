@@ -31,6 +31,8 @@ final class AtlasLifecycle {
     private var push: PushController?
     /// The menu bar's Quit already asked about the push.
     private var quitIsConfirmed = false
+    /// Answers the notifications' buttons (board 58).
+    private let notificationResponder = AtlasNotificationResponder()
 
     func configure(work: BackgroundWork, preferences: AppPreferences, push: PushController, isActive: Bool) {
         self.work = work
@@ -47,6 +49,10 @@ final class AtlasLifecycle {
             open: { [weak self] in self?.open($0) },
             checkNow: { [weak work] in Task { await work?.check() } },
             setPaused: { [weak work] in work?.setPaused($0) },
+            setAutoReplyPaused: { [weak work] paused in
+                guard let work else { return }
+                work.autoReply.setPaused(paused, forAll: work.library.map(\.id))
+            },
             openSettings: { [weak self] in self?.showSettings() },
             quit: { [weak self] in self?.quit() }
         )
@@ -60,6 +66,11 @@ final class AtlasLifecycle {
         guard isActive else { return }
         menuBar?.start()
         work?.start()
+        notificationResponder.open = { [weak self] in self?.open($0) }
+        notificationResponder.sendReply = { appID, reviewID in
+            await AutoReplyCenter.shared.sendFromNotification?(appID, reviewID) ?? false
+        }
+        AtlasNotifier.shared.register(notificationResponder)
         // "Starts in the menu bar, with no window" (only with the icon
         // there to open it).
         if atLogin, preferences?.showsMenuBarIcon == true {
@@ -119,11 +130,28 @@ final class AtlasLifecycle {
         terminateClosingSheets()
     }
 
-    private func terminateClosingSheets() {
-        quitIsConfirmed = true
-        for window in NSApp.windows {
-            if let sheet = window.attachedSheet { window.endSheet(sheet) }
+    /// A SwiftUI sheet that AppKit's `endSheet` closes comes back (its
+    /// state still says it's shown) and AppKit then ignores the quit: each
+    /// is cancelled like Esc, which SwiftUI dismisses for good, and Atlas
+    /// quits once they're gone.
+    private func terminateClosingSheets(attempt: Int = 0) {
+        let sheets = NSApp.windows.compactMap(\.attachedSheet)
+        guard !sheets.isEmpty, attempt < Self.sheetCloseAttempts else { return terminate() }
+        for sheet in sheets {
+            sheet.cancelOperation(nil)
+            if let parent = sheet.sheetParent, parent.attachedSheet == sheet { parent.endSheet(sheet) }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.sheetCloseTime) { [weak self] in
+            self?.terminateClosingSheets(attempt: attempt + 1)
+        }
+    }
+
+    /// A sheet's closing animation, and how many sheets over sheets.
+    private static let sheetCloseTime: TimeInterval = 0.3
+    private static let sheetCloseAttempts = 4
+
+    private func terminate() {
+        quitIsConfirmed = true
         NSApp.terminate(nil)
         // Something else said no: ask again next time.
         quitIsConfirmed = false

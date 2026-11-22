@@ -50,6 +50,18 @@ extension ScreenshotStudioModel {
         openAutopilot()
     }
 
+    /// The toolbar's Make Screenshots…, Make the App Preview… and Make
+    /// Header and Search Artwork…: a run under way opens as it is; a new
+    /// plan makes only `part`, when one is given.
+    func openGuidedAutopilot(making part: GuidedReviewPart?) {
+        let before = run?.id
+        openOrStartGuidedAutopilot()
+        guard let part, let run, run.stage == .plan, run.id != before else { return }
+        for other in GuidedReviewPart.allCases {
+            setGuidedMakes(other, other == part)
+        }
+    }
+
     /// What to make's cards.
     func setGuidedMakes(_ part: GuidedReviewPart, _ isOn: Bool) {
         guard let current = run else { return }
@@ -146,11 +158,11 @@ extension ScreenshotStudioModel {
 
     var guidedApprovedCount: Int { guidedParts.count(where: isApproved) }
 
-    /// Every part is approved and the run is ready: Push to App Store…
-    /// can go.
-    var canPushGuided: Bool {
-        run?.stage == .ready && !guidedParts.isEmpty && guidedApprovedCount == guidedParts.count && !isPushingGuided
-            && guidedCaptionProposals.isEmpty
+    /// The run is ready and every part is approved or can be, with no
+    /// caption proposal waiting: Approve All can go.
+    var canApproveAllGuided: Bool {
+        run?.stage == .ready && !guidedParts.isEmpty && !isPushingGuided && guidedCaptionProposals.isEmpty
+            && guidedParts.allSatisfy { isApproved($0) || canApprove($0) }
     }
 
     /// The assistants' caption proposals waiting that change the run's
@@ -309,54 +321,49 @@ extension ScreenshotStudioModel {
 
     var isPushingGuided: Bool { guided.isPreparingPush }
 
-    /// Push to App Store…: the set's images and extras go to App Store
-    /// Connect through Review & Push's own pushes. Returns whether they
-    /// started: the footer then closes Autopilot for Review & Push, which
-    /// shows each image beside the one it replaces as it goes (Done shows
-    /// the same push when Autopilot opens again).
+    /// Approve All (board 57): every part is approved and the set's
+    /// images and extras join Review & Push, where they're pushed like
+    /// everything else; Autopilot is done here. Returns whether they
+    /// joined: the footer then closes Autopilot on Review & Push, showing
+    /// Screenshots. When there's nothing to push, it says why and stays.
     @discardableResult
-    func pushGuided(with push: PushController) async -> Bool {
-        guard run?.stage == .ready, !guided.isPreparingPush else { return false }
+    func approveAllGuided(with push: PushController) async -> Bool {
+        guard canApproveAllGuided else { return false }
         let controller = push.screenshots
-        guard controller.canPush else {
-            guided.pushError = String(localized: "App Store Connect isn’t connected for pushing. Open Review & Push… to see why.")
-            return false
-        }
-        guard !controller.isRunning, !controller.extras.isPushing else {
-            guided.pushError = String(localized: "A push is already going. Wait for it to finish, then push again.")
-            return false
-        }
         guided.pushError = nil
         guided.isPreparingPush = true
         defer { guided.isPreparingPush = false }
         await controller.loadPlan(for: app)
-        let plans = controller.plans(for: [app.id]).filter(\.canPush)
+        let plans = controller.plans(for: [app.id])
         let extras = controller.extras.plans(for: [app.id])
         let hasImages = plans.contains { !$0.items.isEmpty }
         let hasExtras = extras.contains { !controller.extras.checkedItems(in: $0).isEmpty }
         guard hasImages || hasExtras else {
-            if let reason = controller.plans(for: [app.id]).first?.blockedReason {
-                guided.pushError = reason
-            } else {
-                guided.pushError = String(localized: "Nothing new to push: App Store Connect already has all of it.")
-            }
+            guided.pushError = plans.first?.blockedReason
+                ?? String(localized: "Nothing new to push: App Store Connect already has all of it.")
             return false
         }
-        if hasImages { controller.push(plans) }
-        if hasExtras { controller.pushExtras(extras) }
-        let now = autopilot?.now() ?? .now
-        autopilot?.update(app.id) { run in
-            var review = run.guidedReview ?? AutopilotGuidedReview()
-            review.pushedAt = now
-            run.guidedReview = review
-        }
-        guided.isConfirmingPush = false
+        approveRemainingParts(at: autopilot?.now() ?? .now)
         return true
     }
 
-    /// Open Review & Push…: what couldn't be sent, retried from there.
+    /// Approves what isn't yet (the watched parts' approval approves the
+    /// App Preview too) and marks the set as handed to Review & Push.
+    func approveRemainingParts(at date: Date) {
+        for part in guidedParts where !isApproved(part) {
+            toggleApproval(part)
+        }
+        autopilot?.update(app.id) { run in
+            var review = run.guidedReview ?? AutopilotGuidedReview()
+            review.approvedAllAt = date
+            run.guidedReview = review
+        }
+    }
+
+    /// Open Review & Push…: what couldn't be sent, retried from there;
+    /// after Approve All, on Screenshots' changes.
     func openReviewPush(_ navigator: WorkspaceNavigator?) {
         isAutopilotPresented = false
-        navigator?.isReviewPresented = true
+        navigator?.review(section: .screenshots)
     }
 }

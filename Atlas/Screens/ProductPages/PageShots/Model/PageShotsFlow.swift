@@ -250,8 +250,8 @@ final class PageShotsFlow {
         studio.presentedKey = nil
         let count = run.usedImages.count
         let text = count == 1
-            ? String(localized: "1 screenshot added to “\(page.name)”. It’s in Review & Push.")
-            : String(localized: "\(count) screenshots added to “\(page.name)”. They’re in Review & Push.")
+            ? String(localized: "1 screenshot added to “\(page.name)”. It’s waiting in Review & Push, top right.")
+            : String(localized: "\(count) screenshots added to “\(page.name)”. They’re waiting in Review & Push, top right.")
         onToast(ToastMessage(text: text, actionTitle: String(localized: "Review & Push")))
     }
 

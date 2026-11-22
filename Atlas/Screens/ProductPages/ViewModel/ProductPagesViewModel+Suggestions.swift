@@ -138,7 +138,7 @@ extension ProductPagesViewModel {
         guard !suggestion.isRefused, let page = page(suggestion.pageID), canEdit(page) else { return }
         write(text: suggestion.text, locale: suggestion.locale, of: page, source: .assistant(client: suggestion.source))
         store.removeSuggestions([suggestion.id], for: app.id)
-        show(String(localized: "Accepted. It’s in Review & Push."), undo: nil)
+        show(String(localized: "Accepted. It’s waiting in Review & Push, top right."), undo: nil)
     }
 
     /// Use and Edit: the text goes into the field, as the person's.
@@ -162,8 +162,8 @@ extension ProductPagesViewModel {
         }
         store.removeSuggestions(Set(suggestions.map(\.id)), for: app.id)
         let text = suggestions.count == 1
-            ? String(localized: "1 suggestion accepted. It’s in Review & Push.")
-            : String(localized: "\(suggestions.count) suggestions accepted. They’re in Review & Push.")
+            ? String(localized: "1 suggestion accepted. It’s waiting in Review & Push, top right.")
+            : String(localized: "\(suggestions.count) suggestions accepted. They’re waiting in Review & Push, top right.")
         show(text, undo: undo)
     }
 

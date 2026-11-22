@@ -18,6 +18,10 @@ extension AutopilotCenter {
     /// the next start. A template version saved by Use This Direction stays
     /// in the set.
     func cancelRun(appID: StoreApp.ID) {
+        if runs[appID]?.isRecapturing == true {
+            cancelRecapture(appID: appID)
+            return
+        }
         guard let run = runs[appID], Self.cancellableStages.contains(run.stage) else { return }
         making.removeValue(forKey: appID)?.stop()
         update(appID) { run in

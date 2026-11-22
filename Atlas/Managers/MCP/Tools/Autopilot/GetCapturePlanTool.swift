@@ -35,7 +35,11 @@ struct GetCapturePlanTool: MCPTool {
         the run starts from it. Pass xcode and simulators so the person sees what you use. simulatorSetup.commands \
         ends with addedByFixes, the commands fixes added; simulatorSetup.notes are instructions fixes left, never \
         run as they are. queuedForNextPlan lists what you or another assistant sent for the next plan that still \
-        waits for the person: don't send it again.
+        waits for the person (kind recapture: a request_recapture waiting for Accept): don't send it again. In a \
+        capture-only run (recapture), capture only what it lists: the rest of the set stays. When the app's screens \
+        changed, don't tell the person to run Autopilot again: ask for just those captures with request_recapture, \
+        which works even when no Autopilot run was saved (the run is made from the set's captures). In such a run, \
+        each capture's previousPixelSize is the size to match.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -59,6 +63,7 @@ struct GetCapturePlanTool: MCPTool {
         Self.addSimulatorIDs(&plan, inventory: context.simulators?.inventory)
         if case var .object(json) = plan {
             if let queued = session.center.planProposals(for: session.app.id).mcpJSON { json["queuedForNextPlan"] = queued }
+            if let recapture = session.run.recaptureJSON { json["recapture"] = recapture }
             MacCapacity.addGuidance(to: &json, capacity: context.macCapacity())
             plan = .object(json)
         }

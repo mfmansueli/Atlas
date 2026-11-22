@@ -101,7 +101,7 @@ enum ClaudeCodeDebugScenes {
         case "cc-output":
             return AnyView(overview().modifier(StartsRuns(purposes: [.suggestEverything], showsOutput: true)))
         case "cc-toolbar":
-            AssistantToolbarIndicator.debugShowsPopover = true
+            AutopilotToolbarButton.debugShowsPopover = true
             return AnyView(overview().modifier(StartsRuns(purposes: [.suggestEverything, .autopilot])))
         case "cc-live":
             let stopsAfter = ProcessInfo.processInfo.environment["CC_LIVE_STOP_AFTER"].flatMap(Double.init)

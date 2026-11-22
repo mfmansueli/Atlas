@@ -113,6 +113,18 @@ final class AppPreferences {
         didSet { defaults?.set(eventArtworkMakesMotion, forKey: Key.eventArtworkMakesMotion) }
     }
 
+    /// Settings → Screenshots → "Let Claude Code open capture-only runs":
+    /// a `request_recapture` opens the run at once instead of waiting in
+    /// Screenshots for Accept. Off by default; nothing reaches App Store
+    /// Connect until the person pushes either way.
+    var opensCaptureRuns: Bool {
+        didSet { defaults?.set(opensCaptureRuns, forKey: Self.opensCaptureRunsKey) }
+    }
+
+    /// Where `opensCaptureRuns` is kept: Autopilot reads it when a request
+    /// arrives.
+    nonisolated static let opensCaptureRunsKey = "opensCaptureRuns"
+
     /// Settings → Suggestions → "Words repeated between name, subtitle and
     /// keywords": the Store Page's built-in keywords check.
     var checksRepeatedWords: Bool {
@@ -171,6 +183,7 @@ final class AppPreferences {
         eventArtworkHasWords = defaults?.bool(forKey: Key.eventArtworkHasWords) ?? false
         eventArtworkMakesMotion = defaults?.bool(forKey: Key.eventArtworkMakesMotion) ?? false
         checksRepeatedWords = defaults?.object(forKey: Key.checksRepeatedWords) as? Bool ?? true
+        opensCaptureRuns = defaults?.bool(forKey: Self.opensCaptureRunsKey) ?? false
         // The Guided/Classic choice is gone: the guided Autopilot is the
         // only one.
         defaults?.removeObject(forKey: Key.retiredAutopilotFront)

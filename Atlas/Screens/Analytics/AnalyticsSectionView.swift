@@ -33,7 +33,6 @@ struct AnalyticsSectionView: View {
                 AnalyticsScreen(
                     viewModel: viewModel,
                     waitingCount: waitingCount,
-                    onReview: { navigator.isReviewPresented = true },
                     onAct: { action, text in
                         navigator.follow(action, origin: AnalyticsOrigin(appID: app.id, text: text, tab: viewModel.tab))
                     }

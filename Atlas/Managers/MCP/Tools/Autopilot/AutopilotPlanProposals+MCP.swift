@@ -25,7 +25,15 @@ extension AutopilotPlanProposals {
                 "screens": .array(batch.open.map { .string($0.name) }),
             ]
         }
-        let all = changes + screens
+        let recaptures: [JSONValue] = recaptureRequests.map { request in
+            var item: [String: JSONValue] = [
+                "requestId": .string(request.id), "kind": "recapture", "client": .string(request.client),
+                "receivedAt": .string(request.receivedAt.formatted(.iso8601)), "title": .string(request.headline),
+            ]
+            if let page = request.page { item["page"] = .string(page.pageName) }
+            return .object(item)
+        }
+        let all = changes + screens + recaptures
         return all.isEmpty ? nil : .array(all)
     }
 }

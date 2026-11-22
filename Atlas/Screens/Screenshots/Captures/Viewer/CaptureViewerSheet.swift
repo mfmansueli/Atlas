@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// A capture clicked in the Captures tab, shown large: which locale and
 /// screen, its size, source and file, what its label means, and ◀ ▶ / ▲ ▼
@@ -14,6 +15,11 @@ struct CaptureViewerSheet: View {
     let target: CaptureViewerTarget
 
     private var captures: CapturesViewModel { viewModel.captures }
+    @State private var isChoosingReplacement = false
+
+    private var cellKey: CaptureCellKey {
+        CaptureCellKey(locale: target.localeCode, displayType: viewModel.displayType, slot: target.slot)
+    }
 
     var body: some View {
         let coverage = captures.coverage
@@ -127,7 +133,37 @@ struct CaptureViewerSheet: View {
                     .lineLimit(2)
                     .accessibilityIdentifier("captures.viewer.status")
             }
+            if let stale = coverage?.cell(for: target)?.stale {
+                Text("Out of date: \(stale.reason)")
+                    .font(.callout)
+                    .foregroundStyle(Palette.warning)
+                    .lineLimit(2)
+                    .help(stale.evidence.map { Text($0) } ?? Text(stale.reason))
+                    .accessibilityIdentifier("captures.viewer.stale")
+            }
             Spacer()
+            if captures.isReplacing { ProgressView().controlSize(.small) }
+            Button("Replace…") { isChoosingReplacement = true }
+                .disabled(captures.isReplacing)
+                .help("Choose a PNG for this capture")
+                .accessibilityIdentifier("captures.viewer.replace")
+                .fileImporter(isPresented: $isChoosingReplacement, allowedContentTypes: [.png, .image]) { result in
+                    guard case let .success(url) = result else { return }
+                    let cell = cellKey
+                    Task { await captures.replace(cell, with: url, securityScoped: true) }
+                }
+            Button("Capture Again with Claude Code") {
+                let cell = cellKey
+                captures.viewed = nil
+                // The viewer closes before the Autopilot sheet opens.
+                Task {
+                    try? await Task.sleep(for: .milliseconds(350))
+                    captures.captureAgain([cell])
+                }
+            }
+            .disabled(viewModel.studio.autopilot?.recaptureRefusal(appID: viewModel.app.id) != nil)
+            .help(viewModel.studio.autopilot?.recaptureRefusal(appID: viewModel.app.id).map { Text($0) } ?? Text("A run for just this capture"))
+            .accessibilityIdentifier("captures.viewer.captureAgain")
             Button("Done") { captures.viewed = nil }
                 .keyboardShortcut(.defaultAction)
                 .accessibilityIdentifier("captures.viewer.done")

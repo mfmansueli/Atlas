@@ -9,20 +9,19 @@ import Testing
 /// The strip's buttons: their titles and identifiers.
 @Suite("AutopilotStripAction")
 struct AutopilotStripActionTests {
-    private static let all: [AutopilotStripAction] = [.runAutopilot, .open, .setUpAssistant, .importCaptures, .reviewPush]
+    private static let all: [AutopilotStripAction] = [.runAutopilot, .open, .setUpAssistant, .importCaptures]
 
     @Test(arguments: [
         (AutopilotStripAction.runAutopilot, "Run Autopilot…"),
         (.open, "Open"),
         (.setUpAssistant, "Set Up Assistant…"),
         (.importCaptures, "Import Captures…"),
-        (.reviewPush, "Review & Push…"),
     ])
     func eachButtonHasItsTitle(action: AutopilotStripAction, title: String) {
         #expect(action.title == title)
     }
 
-    @Test func openSaysWhatItOpensNextToReviewAndPush() {
+    @Test func openSaysWhatItOpensNextToAnotherButton() {
         #expect(AutopilotStripAction.open.secondaryTitle == "Open Autopilot")
         for action in Self.all where action != .open {
             #expect(action.secondaryTitle == action.title)

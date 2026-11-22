@@ -56,6 +56,7 @@ struct ScreenshotReviewFooter: View {
     /// "Push 40 Images", or "Push 66 Changes" with text changes too.
     private var pushAllTitle: String {
         let count = viewModel.allPushCount
+        if let section = viewModel.scope.section { return ReviewPushViewModel.pushTitle(count, from: section) }
         if viewModel.pushableChanges.isEmpty {
             return count == 1 ? String(localized: "Push 1 Image") : String(localized: "Push \(count) Images")
         }

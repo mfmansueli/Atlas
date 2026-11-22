@@ -79,7 +79,7 @@ struct ProductPageChosenFilesTests {
         #expect(files.map(\.fileName) == ["3.png"])
         #expect(FileManager.default.fileExists(atPath: files[0].path))
         #expect(files[0].checksum == ScreenshotPNG.checksum(Data("3.png".utf8)))
-        #expect(model.toast?.text == "1 screenshot added to “\(page.name)” in \(ProductPageChangeBuilder.localeName("en-US")). It’s in Review & Push.")
+        #expect(model.toast?.text == "1 screenshot added to “\(page.name)” in \(ProductPageChangeBuilder.localeName("en-US")). It’s waiting in Review & Push, top right.")
         #expect(model.filesProblem == nil)
     }
 

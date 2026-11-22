@@ -55,8 +55,7 @@ struct OverviewSectionView: View {
                         territoryCount: pricing.map { $0.equalizedTerritoryCount + $0.customTerritoryCount },
                         showsReviewSuggestions: mode.showsSuggestions && pricing?.sellsAnything == true,
                         onReviewSuggestions: reviewSuggestions,
-                        onTranslateMissing: { navigator.open(.storePage, intent: .translateMissing) },
-                        onReviewAndPush: { navigator.isReviewPresented = true }
+                        onTranslateMissing: { navigator.open(.storePage, intent: .translateMissing) }
                     )
                     if let message = errorMessage {
                         InlineMessage.error(message)
@@ -255,7 +254,7 @@ struct OverviewSectionView: View {
             } onReplyToAll: {
                 navigator.open(.reviews, intent: .replyToAllReviews)
             }
-            PendingChangesCard(count: changes.count(for: app.id)) { navigator.isReviewPresented = true }
+            PendingChangesCard(count: changes.count(for: app.id))
             LastPushCard(record: history.lastRecord(for: app.id)) { navigator.isActivityPresented = true }
         }
     }

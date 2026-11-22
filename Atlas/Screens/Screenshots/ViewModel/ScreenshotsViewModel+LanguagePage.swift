@@ -159,13 +159,13 @@ extension ScreenshotsViewModel {
         let locale = currentPageLocale
         let captions = proposedCaptions(in: locale)
         let text = captions.count == 1
-            ? String(localized: "Accepted 1 caption in \(locale.name). It’s in Review & Push.")
-            : String(localized: "Accepted \(captions.count) captions in \(locale.name). They’re in Review & Push.")
+            ? String(localized: "Accepted 1 caption in \(locale.name). It’s waiting in Review & Push, top right.")
+            : String(localized: "Accepted \(captions.count) captions in \(locale.name). They’re waiting in Review & Push, top right.")
         await decide(Set(captions.map(\.id)), accept: true, toast: text)
     }
 
     func acceptCaption(_ caption: ProposedCaption) async {
-        await decide([caption.id], accept: true, toast: String(localized: "Screenshot \(caption.slot + 1) caption accepted. It’s in Review & Push."))
+        await decide([caption.id], accept: true, toast: String(localized: "Screenshot \(caption.slot + 1) caption accepted. It’s waiting in Review & Push, top right."))
     }
 
     func dismissCaption(_ caption: ProposedCaption) async {

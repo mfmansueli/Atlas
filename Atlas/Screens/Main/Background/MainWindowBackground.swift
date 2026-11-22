@@ -19,6 +19,12 @@ struct MainWindowBackground {
     let artwork: EventArtworkStudio
     /// Custom product pages followed while App Review has them.
     let productPages: ProductPagesStore
+    /// Starts Claude Code for Reply Automatically.
+    let launcher: ClaudeCodeLauncher
+    var autoReply: AutoReplyCenter = .shared
+    /// The person's API key, which writes the replies when Claude Code
+    /// can't start.
+    var keyAssistant: KeyAssistantController?
     /// The first sync is still going: no check then.
     let isSyncing: () -> Bool
     let selectedRelease: () -> ReleaseViewModel?
@@ -57,9 +63,49 @@ struct MainWindowBackground {
             let arrived = reviews.archive(for: app.id).reviews.filter { !known.contains($0.id) }
             AtlasNotifications.newReviews(arrived, appName: app.name, appID: app.id)
         }
+        await replyAutomatically()
         let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
         AtlasNotifications.analyticsFindings(findings, now: .now)
         return nil
+    }
+
+    /// Reply Automatically (board 58): Claude Code writes the new reviews'
+    /// replies; the ones due go out.
+    private func replyAutomatically() async {
+        for app in library.apps where autoReply.rule(for: app.id).isOn {
+            await autoReply.writeReplies(app: app, reviews: reviews, launcher: launcher, keyAssistant: keyAssistant)
+        }
+        await sendDueReplies()
+    }
+
+    /// Send Reply on a drafted reply's notification: sent as written, like
+    /// the person's own Send Reply. Says so when Apple refuses it.
+    func sendReplyFromNotification(appID: StoreApp.ID, reviewID: AppReview.ID) async -> Bool {
+        let archive = reviews.archive(for: appID)
+        guard let review = archive.review(id: reviewID), !review.hasReply, let suggestion = archive.openSuggestion(for: review) else {
+            return false
+        }
+        do {
+            let reply = try await services.reviews.sendReply(suggestion.text, to: reviewID)
+            reviews.setReply(reply, reviewID: reviewID, for: appID)
+            reviews.markReplySentByHand()
+            autoReply.personReplied(to: reviewID, appID: appID)
+        } catch {
+            AtlasNotifier.shared.post(
+                .pushFailed, title: String(localized: "The reply wasn’t sent"),
+                body: String(localized: "\(error.localizedDescription) It waits under the review."),
+                identifier: "autoreply.\(appID).\(reviewID)"
+            )
+        }
+        return true
+    }
+
+    /// Every app's automatic replies whose wait is over go out; on every
+    /// background tick, so “Sends by itself in 42 min” keeps its word.
+    func sendDueReplies() async {
+        for app in library.apps where autoReply.isActive(for: app.id) {
+            await autoReply.sendDue(app: app, reviews: reviews, services: services.reviews)
+        }
     }
 
     /// Reads the custom product pages of every app with one waiting for

@@ -14,11 +14,22 @@ actor FakeBridgeTransport: MCPBridgeTransport {
         var body = ""
     }
 
-    private var replies: [Result<Reply, URLError>]
-    private(set) var requests: [URLRequest] = []
+    /// One scripted event stream: its status and the lines it sends
+    /// before it ends.
+    struct Stream {
+        var status = 200
+        var lines: [String] = []
+    }
 
-    init(_ replies: [Result<Reply, URLError>]) {
+    private var replies: [Result<Reply, URLError>]
+    private var streams: [Stream]
+    private(set) var requests: [URLRequest] = []
+    /// The event streams the bridge opened, oldest first.
+    private(set) var streamRequests: [URLRequest] = []
+
+    init(_ replies: [Result<Reply, URLError>], streams: [Stream] = []) {
         self.replies = replies
+        self.streams = streams
     }
 
     func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
@@ -27,6 +38,19 @@ actor FakeBridgeTransport: MCPBridgeTransport {
         let reply = try replies.removeFirst().get()
         let response = HTTPURLResponse(url: request.url!, statusCode: reply.status, httpVersion: "HTTP/1.1", headerFields: reply.headers)!
         return (Data(reply.body.utf8), response)
+    }
+
+    /// A refused connection once the script runs out, as when Atlas is
+    /// closed.
+    func stream(_ request: URLRequest) async throws -> (HTTPURLResponse, AsyncThrowingStream<String, any Error>) {
+        streamRequests.append(request)
+        guard !streams.isEmpty else { throw URLError(.cannotConnectToHost) }
+        let stream = streams.removeFirst()
+        let response = HTTPURLResponse(url: request.url!, statusCode: stream.status, httpVersion: "HTTP/1.1", headerFields: [:])!
+        return (response, AsyncThrowingStream { continuation in
+            stream.lines.forEach { continuation.yield($0) }
+            continuation.finish()
+        })
     }
 
     /// The bodies the bridge posted, as text.

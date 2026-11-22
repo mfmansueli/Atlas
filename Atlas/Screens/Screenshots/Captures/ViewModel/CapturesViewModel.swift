@@ -28,6 +28,12 @@ final class CapturesViewModel {
     var showsAllMatched = false
     /// The capture shown large, after a click in the coverage.
     var viewed: CaptureViewerTarget?
+    /// The cells chosen to redo (⌘-click, a row or a column).
+    var selection: Set<CaptureCellKey> = []
+    /// The cell Replace…'s open panel is for.
+    var replaceTarget: CaptureCellKey?
+    var isReplaceImporterPresented = false
+    var isReplacing = false
     /// Folders chosen with the open panel, kept accessible until Import.
     @ObservationIgnored private var scopedURLs: [URL] = []
 

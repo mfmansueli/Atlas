@@ -23,13 +23,14 @@ extension ProductPagesViewModel {
         }
     }
 
-    /// The header's button: "Push and Submit…" while the page has changes
-    /// to push (a draft always does), "Submit for Review…" once they're
-    /// pushed; nil while it's with App Review or approved and untouched.
+    /// The header's button: "Submit for Review…" (board 57). While the
+    /// page has changes to push (a draft always does) it opens Review &
+    /// Push on the page first, and Submit for Review after the push; nil
+    /// while it's with App Review or approved and untouched.
     func primaryActionTitle(of page: ProductPage) -> String? {
         guard canChange, !isLocked(page) else { return nil }
         if page.isDraft || pendingCount(of: page) > 0 {
-            return canPushAndSubmit(page) ? String(localized: "Push and Submit…") : nil
+            return canPushAndSubmit(page) ? String(localized: "Submit for Review…") : nil
         }
         return submittableVersion(of: page) == nil ? nil : String(localized: "Submit for Review…")
     }

@@ -56,9 +56,7 @@ struct OverviewPageAndWaiting: View {
                     readyCount: readyCount,
                     liveVersion: content?.versions.first { $0.state.isLive }?.versionString,
                     editedVersion: storePage?.versionString
-                ) {
-                    navigator.isReviewPresented = true
-                }
+                )
                 newLanguagesBanner
             }
             .frame(minWidth: isWide ? 380 : nil, maxWidth: .infinity, alignment: .leading)

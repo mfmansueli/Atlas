@@ -133,6 +133,9 @@ struct AutopilotRun: Codable, Hashable, Sendable, Identifiable {
     /// The guided Review & push: approvals, confirmed shortenings and the
     /// push; nil before, in classic runs and in runs from before.
     var guidedReview: AutopilotGuidedReview?
+    /// A capture-only run: the run opened again to redo only some
+    /// captures and App Preview moments; nil in every other run.
+    var recapture: AutopilotRecapture?
     var createdAt: Date
     var startedAt: Date?
     var finishedAt: Date?
@@ -142,28 +145,48 @@ struct AutopilotRun: Codable, Hashable, Sendable, Identifiable {
 
     // MARK: - Capture
 
-    var totalCaptures: Int { plan.targets.count }
+    var totalCaptures: Int { capturingTargets.count }
+
+    /// What this run captures: the plan's targets, or in a capture-only
+    /// run only the ones it redoes.
+    var capturingTargets: [AutopilotCaptureTarget] {
+        recapture?.targets ?? plan.targets
+    }
 
     /// Captured, or settled by the person (the primary language's capture
     /// reused, or one uploaded by hand).
     func isSettled(_ target: AutopilotCaptureTarget) -> Bool {
-        hasCapture(for: target)
+        // Redone: settled only by what came since it opened.
+        if let recapture, recapture.covers(target) {
+            return hasCapture(for: target) || problems.contains { problem in
+                problem.target == target && problem.reportedAt >= recapture.openedAt
+                    && (problem.resolution == .usePrimaryCapture || problem.resolution == .uploadedByHand)
+            }
+        }
+        return hasCapture(for: target)
             || primaryCaptureTargets?.contains(target) == true
             || problems.contains { $0.target == target && ($0.resolution == .usePrimaryCapture || $0.resolution == .uploadedByHand) }
     }
 
-    var capturedCount: Int { plan.targets.count(where: isSettled) }
+    var capturedCount: Int { capturingTargets.count(where: isSettled) }
 
-    /// A capture of `target` that fits the plan arrived.
+    /// A capture of `target` that fits the plan arrived (in a capture-only
+    /// run, since it opened, for a target it redoes).
     func hasCapture(for target: AutopilotCaptureTarget) -> Bool {
-        captures.contains { $0.target == target && plan.fits($0) }
+        captures.contains { $0.target == target && counts($0) }
+    }
+
+    /// The capture fits the plan and isn't one a capture-only run redoes.
+    func counts(_ capture: AutopilotCapture) -> Bool {
+        plan.fits(capture) && !isRedone(capture)
     }
 
     /// What's left to capture, the rehearsal's first (see
     /// `AutopilotPlan.rehearsalLocale`), without the ones a problem holds.
     var remainingTargets: [AutopilotCaptureTarget] {
         let held = heldTargets
-        return plan.rehearsalFirstTargets.filter { !isSettled($0) && !held.contains($0) }
+        let redone = recapture.map { Set($0.targets) }
+        return plan.rehearsalFirstTargets.filter { !isSettled($0) && !held.contains($0) && redone?.contains($0) != false }
     }
 
     /// What the assistant captures now: each screen on each device in the
@@ -279,6 +302,11 @@ struct AutopilotRun: Codable, Hashable, Sendable, Identifiable {
         // recordings were all skipped before any screen was chosen went on
         // to Review with 0 screenshots, every check "passed".
         guard !plan.awaitsScreens else { return false }
+        if let recapture {
+            // Its captures and the moments recorded again.
+            return capturingTargets.allSatisfy(isSettled) && openProblems.isEmpty && retries.isEmpty
+                && (recapture.momentIDs.isEmpty || retakeTargets.isEmpty)
+        }
         let hasWork = !plan.targets.isEmpty || !plan.recordingTargets.isEmpty
         return hasWork && plan.targets.allSatisfy(isSettled) && openProblems.isEmpty && retries.isEmpty && remainingRecordings.isEmpty
     }
@@ -286,7 +314,7 @@ struct AutopilotRun: Codable, Hashable, Sendable, Identifiable {
     /// A target's captures, best first: clean text before an issue, then
     /// by score.
     func captures(for target: AutopilotCaptureTarget) -> [AutopilotCapture] {
-        captures.filter { $0.target == target && plan.fits($0) }
+        captures.filter { $0.target == target && counts($0) }
             .map { (capture: $0, isClean: textIssues(of: $0).isEmpty) }
             .sorted { first, second in
                 if first.isClean != second.isClean { return first.isClean }
@@ -337,6 +365,7 @@ struct AutopilotRun: Codable, Hashable, Sendable, Identifiable {
     /// language and device has it and its text is clean, else its best. An
     /// Apple Vision Pro window follows its iPhone screen's pick.
     func finalCapture(for target: AutopilotCaptureTarget) -> AutopilotCapture? {
+        if let chosen = recaptureChoice(for: target) { return chosen }
         let own = captures(for: target)
         let attempt = pickedCapture(for: plan.pickScreenID(for: target.screenID))?.attempt
         let same = own.first { $0.attempt == attempt }

@@ -216,8 +216,9 @@ struct CapturePlanToolsTests {
 
     @Test func theToolsNeedAStartedRun() async throws {
         let message = """
-        Lumen Journal has no Autopilot run waiting. Ask the person to open Atlas → Screenshots → Run Autopilot… \
-        and press Start Autopilot.
+        Lumen Journal has no Autopilot run waiting. To redo only some captures, ask with request_recapture: it works \
+        without a saved run too, from the captures the set uses (list_captures). For a whole new set, ask the person \
+        to open Atlas → Screenshots → Run Autopilot… and press Start Autopilot.
         """
         await #expect(throws: MCPToolError.notFound(message)) {
             try await MCPAutopilotFixtures().call(GetCapturePlanTool())

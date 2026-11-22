@@ -49,7 +49,8 @@ enum MCPEndpoint {
         "http://\(host):\(port)\(path)"
     }
 
-    /// The stdio bridge Claude Desktop and Codex launch, inside this app.
+    /// The stdio bridge Claude Code, Claude Desktop and Codex launch, inside
+    /// this app.
     static var bridgePath: String {
         Bundle.main.bundleURL.appending(path: "Contents/MacOS/\(bridgeName)").path(percentEncoded: false)
     }
@@ -70,7 +71,12 @@ enum MCPEndpoint {
     and include. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
     starts one, call get_capture_plan, then next_step after each step until it says done. When the app's \
     screens change outside a run, send new ones with propose_screens and new steps, sample data or setup \
-    commands with update_capture_plan: they wait for the person in the next plan. To find what to improve, read \
+    commands with update_capture_plan: they wait for the person in the next plan. When only some captures no \
+    longer show the app as it is (texts rewritten in a language, a redesigned screen), don't send the person back \
+    to Autopilot: ask to redo just those with request_recapture (and a product page's with \
+    request_page_recapture), even when no Autopilot run was saved (the run is then made from the captures the \
+    set uses), or mark them out of date with mark_captures_stale; the person accepts, and \
+    get_capture_plan and next_step then ask only for those. To find what to improve, read \
     the get_analytics_ tools (the funnel from impression to paid subscriber, where it's weak, subscriptions), \
     propose the fix, and say why with add_finding; never quote a rate marked tooFewToTell. After release, read \
     the reviews with get_reviews, suggest a reply to each in the reviewer's own language with \

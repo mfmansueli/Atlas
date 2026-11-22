@@ -1,5 +1,5 @@
 //
-//  AssistantToolbarIndicator+Debug.swift
+//  AutopilotToolbarButton+Debug.swift
 //  Atlas
 //
 
@@ -7,7 +7,7 @@
 import Foundation
 
 @MainActor
-extension AssistantToolbarIndicator {
+extension AutopilotToolbarButton {
     /// DEBUG scenes set it to open the popover once the indicator appears
     /// (design `prop-list`).
     static var debugShowsPopover = false

@@ -47,6 +47,20 @@ struct ReviewsSectionView: View {
                     ReviewBulkSheet(viewModel: viewModel, plan: plan)
                 }
             }
+            .sheet(isPresented: Binding { viewModel.isAutoReplySettingsPresented } set: { viewModel.isAutoReplySettingsPresented = $0 }) {
+                AutoReplySettingsSheet(
+                    appName: app.name, rule: viewModel.autoReplyRule, languages: viewModel.reviewLanguages, isPro: viewModel.isPro,
+                    onSave: { viewModel.saveAutoReply($0) },
+                    onTurnOff: { viewModel.turnOffAutoReply() },
+                    onUpgrade: {
+                        viewModel.isAutoReplySettingsPresented = false
+                        pro?.showPlans()
+                    }
+                )
+            }
+            .sheet(isPresented: Binding { viewModel.isAutoReplyHistoryPresented } set: { viewModel.isAutoReplyHistoryPresented = $0 }) {
+                AutoReplyHistorySheet(entries: viewModel.autoReplyHistory) { await viewModel.undoAutoReply($0) }
+            }
             .overlay(alignment: .bottom) {
                 if let toast = viewModel.toast {
                     ActionToast(message: toast) {
@@ -103,10 +117,16 @@ struct ReviewsSectionView: View {
     }
 
     /// The Overview's "Reply to All…": the most mentioned group that has
-    /// reviews left to reply to.
+    /// reviews left to reply to; the toolbar's Reply Automatically….
     private func handleIntent() {
-        guard let viewModel, navigator.intent == .replyToAllReviews, viewModel.hasLoaded,
-              navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
+        guard let viewModel, viewModel.hasLoaded, navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
+        // The toolbar's Reply Automatically…: its settings, on Free too.
+        if navigator.intent == .autopilot(.replyAutomatically) {
+            navigator.consume(.autopilot(.replyAutomatically))
+            viewModel.isAutoReplySettingsPresented = true
+            return
+        }
+        guard navigator.intent == .replyToAllReviews else { return }
         navigator.consume(.replyToAllReviews)
         guard viewModel.isPro else {
             pro?.showPlans()

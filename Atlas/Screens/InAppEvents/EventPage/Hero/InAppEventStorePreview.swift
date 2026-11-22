@@ -72,7 +72,8 @@ struct InAppEventStorePreview: View {
     private var cardLockup: some View {
         VStack(spacing: 0) {
             InAppEventPreviewArtButton(
-                label: String(localized: "View the event card full size"), cornerRadius: 11, identifier: "events.preview.card"
+                label: String(localized: "View the event card full size"), cornerRadius: 11, identifier: "events.preview.card",
+                value: [texts.name, texts.shortDescription].filter { !$0.isEmpty }.joined(separator: ". ")
             ) {
                 onOpen(.card)
             } content: {

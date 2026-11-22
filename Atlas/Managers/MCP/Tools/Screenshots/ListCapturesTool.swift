@@ -14,7 +14,9 @@ struct ListCapturesTool: MCPTool {
         description: """
         Lists the captures (real screenshots of the app) each locale in scope uses, per display type and slot \
         (from 1). localizedUI is false when a locale has none of its own and shows the primary locale's \
-        interface. Pass captureId to get_capture to see one.
+        interface. capturedAt is when it was imported or captured; stale is true when it was marked out of date \
+        (mark_captures_stale), with staleReason. Pass captureId to get_capture to see one. When some no longer show \
+        the app as it is, ask to redo just those with request_recapture instead of a whole Autopilot run.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -38,7 +40,7 @@ struct ListCapturesTool: MCPTool {
                         locale: locale.code, displayType: display, slot: slot, primary: draft.primary.code
                     ) else { continue }
                     let capture = resolved.capture
-                    captures.append([
+                    var item: [String: JSONValue] = [
                         "captureId": .string(capture.id),
                         "locale": .string(locale.code),
                         "displayType": .string(display.mcpValue),
@@ -46,7 +48,11 @@ struct ListCapturesTool: MCPTool {
                         "source": .string(capture.source.rawValue),
                         "localizedUI": .bool(resolved.isInterfaceLocalized),
                         "pixelSize": ["width": .int(capture.pixelSize.width), "height": .int(capture.pixelSize.height)],
-                    ])
+                        "stale": .bool(capture.stale != nil),
+                    ]
+                    if let date = capture.importedAt { item["capturedAt"] = .string(date.formatted(.iso8601)) }
+                    if let stale = capture.stale { item["staleReason"] = .string(stale.reason) }
+                    captures.append(.object(item))
                 }
             }
         }

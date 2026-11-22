@@ -60,6 +60,23 @@ struct CaptureIndex: Codable, Hashable, Sendable {
         Set(captures.filter { displayType == nil || $0.displayType == displayType }.map(\.locale)).sorted()
     }
 
+    /// Marks `locale`'s own capture of a slot on `displayType` (and the
+    /// slot's companion) out of date; false when it has none.
+    @discardableResult
+    mutating func markStale(locale: String, displayType: ScreenshotDisplayType, slot: Int, as staleness: CaptureStaleness) -> Bool {
+        var marked = false
+        for index in captures.indices
+            where captures[index].locale == locale && captures[index].displayType == displayType && captures[index].slot == slot
+        {
+            captures[index].stale = staleness
+            marked = true
+        }
+        return marked
+    }
+
+    /// The captures marked out of date.
+    var staleCaptures: [ScreenshotCapture] { captures.filter { $0.stale != nil } }
+
     /// Adds a capture in place of the slot's (or its companion's).
     mutating func add(_ capture: ScreenshotCapture) {
         let isCompanion = capture.isCompanion == true

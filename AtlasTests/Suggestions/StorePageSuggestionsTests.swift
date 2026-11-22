@@ -94,7 +94,7 @@ struct StorePageSuggestionsTests {
         #expect(model.visibleSuggestions(in: .englishUS).count == 2)
 
         model.acceptAllSuggestions(in: .englishUS)
-        #expect(model.toast?.text == "Accepted 2 in English. They’re in Review & Push.")
+        #expect(model.toast?.text == "Accepted 2 in English. They’re waiting in Review & Push, top right.")
         #expect(model.value(.promotionalText, in: .englishUS) == "Weekly reflections are here: every Sunday.")
         #expect(model.visibleSuggestions(in: .englishUS).isEmpty)
 

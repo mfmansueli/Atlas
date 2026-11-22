@@ -22,6 +22,9 @@ struct ReviewsDebugLaunch {
     var sent: [AppReview.ID] = []
     /// The group Reply to All opens for.
     var bulkTheme: ReviewTheme.ID?
+    /// Reply Automatically's settings or History open (board 58).
+    var opensAutoReplySettings = false
+    var opensAutoReplyHistory = false
 
     @MainActor
     func apply(to model: ReviewsViewModel) {
@@ -37,6 +40,8 @@ struct ReviewsDebugLaunch {
             model.startEditing(review)
             if let draft { model.drafts[editing] = draft }
         }
+        model.isAutoReplySettingsPresented = opensAutoReplySettings
+        model.isAutoReplyHistoryPresented = opensAutoReplyHistory
         if let bulkTheme, let theme = model.archive.themes.first(where: { $0.id == bulkTheme }) {
             model.openBulk(theme)
         }

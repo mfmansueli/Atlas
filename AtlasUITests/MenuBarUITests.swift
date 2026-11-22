@@ -58,6 +58,25 @@ final class MenuBarUITests: XCTestCase {
         XCTAssertEqual(text(of: element("menuBar.quietTitle")), "Everything is up to date")
     }
 
+    /// Board 58: Reply Automatically on, a review left for the person and
+    /// Pause Auto-Reply.
+    func testPauseAutoReplyFromTheMenuBar() {
+        app.launch(debugScene: "mb-autoreply")
+        let pause = app.buttons["menuBar.autoReplyPause"]
+        XCTAssertTrue(pause.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("menuBar.need.autoreply-lumen").exists)
+        pause.click()
+        XCTAssertEqual(lastAction(), "Auto-reply paused")
+        pause.click()
+        XCTAssertEqual(lastAction(), "Auto-reply resumed")
+    }
+
+    func testNoAutoReplyLineWhileItsOff() {
+        app.launch(debugScene: "mb-quiet")
+        XCTAssertTrue(app.buttons["menuBar.pause"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["menuBar.autoReplyPause"].exists)
+    }
+
     func testCheckNowShowsTheCheckWhileItRuns() {
         app.launch(debugScene: "mb-quiet")
         let checkNow = app.buttons["menuBar.checkNow"]

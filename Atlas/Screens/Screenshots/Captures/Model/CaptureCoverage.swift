@@ -37,6 +37,9 @@ struct CaptureCoverage: Hashable {
         var slot: Int
         var capture: ScreenshotCapture?
         var label: Label
+        /// Why the locale's own capture is out of date, as the assistant
+        /// said (`mark_captures_stale`).
+        var stale: CaptureStaleness?
         var id: Int { slot }
     }
 
@@ -98,7 +101,8 @@ struct CaptureCoverage: Hashable {
             }
             if !fits(resolved.capture, display: display) { return Cell(slot: slot, capture: resolved.capture, label: .wrongSize) }
             let label: Label = resolved.isInterfaceLocalized ? .localized : .primaryInterface(language: language)
-            return Cell(slot: slot, capture: resolved.capture, label: label)
+            let stale = resolved.capture.locale == locale.code ? resolved.capture.stale : nil
+            return Cell(slot: slot, capture: resolved.capture, label: label, stale: stale)
         }
         return Row(locale: locale, sourceText: sourceText, cells: cells)
     }

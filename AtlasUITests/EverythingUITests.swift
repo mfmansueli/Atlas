@@ -150,7 +150,7 @@ final class EverythingUITests: XCTestCase {
         acceptAll.click()
 
         XCTAssertTrue(waitFor(text(of: toast).hasPrefix("Accepted ")))
-        XCTAssertTrue(text(of: toast).hasSuffix("Nothing is pushed yet."))
+        XCTAssertTrue(text(of: toast).hasSuffix("waiting in Review & Push, top right."))
         XCTAssertTrue(element("overview.assistantConnected").waitForExistence(timeout: 5))
         XCTAssertNotEqual(text(of: count), before)
 

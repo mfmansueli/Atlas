@@ -140,7 +140,7 @@ final class PricingViewsUITests: XCTestCase {
         return element.label
     }
 
-    /// The number on Review & Push, from "N pending changes".
+    /// The number on Review & Push, from "N changes ready" (0 when Up to date).
     private func reviewCount() -> Int {
         let value = app.buttons["workspace.reviewPushButton"].value as? String ?? ""
         return Int(value.prefix { $0.isNumber }) ?? 0

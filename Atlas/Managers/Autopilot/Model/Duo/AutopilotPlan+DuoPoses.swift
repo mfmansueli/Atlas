@@ -32,6 +32,12 @@ extension AutopilotPlan {
     /// iPhone Duo's screenshots in the set's order.
     var duoShots: [AutopilotDuoShot] {
         let slots = Array(screens.indices)
+        if let poses = runChoice.duoSlotPoses {
+            return slots.compactMap { slot in
+                let shown = poses.indices.contains(slot) ? poses[slot] : [.open]
+                return shown.isEmpty ? nil : AutopilotDuoShot(screenSlot: slot, poses: shown)
+            }
+        }
         switch (duoScreens, duoBoth) {
         case (.inner, _):
             return slots.map { AutopilotDuoShot(screenSlot: $0, poses: [.open]) }

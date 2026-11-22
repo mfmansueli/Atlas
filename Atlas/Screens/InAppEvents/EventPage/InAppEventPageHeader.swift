@@ -41,8 +41,6 @@ struct InAppEventPageHeader: View {
                 .accessibilityIdentifier("events.status")
             Spacer(minLength: Spacing.small)
             HStack(spacing: Spacing.small) {
-                InAppEventsAskButton(app: viewModel.app, event: event)
-                    .buttonBorderShape(.capsule)
                 if viewModel.isSubmitting {
                     ProgressView()
                         .controlSize(.small)

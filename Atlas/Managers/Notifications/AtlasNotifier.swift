@@ -26,7 +26,15 @@ final class AtlasNotifier {
     private let center: UNUserNotificationCenter?
     private let preferences: NotificationPreferences
     /// What was sent, newest last (tests).
-    private(set) var sent: [(kind: Kind, title: String, body: String)] = []
+    private(set) var sent: [Sent] = []
+
+    /// One notification as it was sent.
+    struct Sent {
+        let kind: Kind
+        let title: String
+        let body: String
+        let category: AtlasNotificationCategory?
+    }
 
     /// No center without a bundle, in DEBUG scenes or in the tests' host.
     init(center: UNUserNotificationCenter? = AtlasNotifier.defaultCenter, preferences: NotificationPreferences = .shared) {
@@ -57,9 +65,14 @@ final class AtlasNotifier {
         preferences.playsSound ? .default : nil
     }
 
-    func post(_ kind: Kind, title: String, body: String, identifier: String) {
+    /// `category` adds its buttons; `userInfo` says which app and review
+    /// they act on.
+    func post(
+        _ kind: Kind, title: String, body: String, identifier: String, category: AtlasNotificationCategory? = nil,
+        userInfo: [String: String] = [:]
+    ) {
         guard allows(kind) else { return }
-        sent.append((kind, title, body))
+        sent.append(Sent(kind: kind, title: title, body: body, category: category))
         guard let center else { return }
         center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
         let content = UNMutableNotificationContent()
@@ -67,7 +80,17 @@ final class AtlasNotifier {
         content.body = body
         content.sound = sound
         content.threadIdentifier = identifier.components(separatedBy: ".").first ?? identifier
+        if let category { content.categoryIdentifier = category.rawValue }
+        content.userInfo = userInfo
         center.add(UNNotificationRequest(identifier: identifier, content: content, trigger: nil))
+    }
+
+    /// The buttons Atlas's notifications can have, and who answers them;
+    /// once, at launch.
+    func register(_ responder: AtlasNotificationResponder) {
+        guard let center else { return }
+        center.setNotificationCategories(AtlasNotificationCategory.all)
+        center.delegate = responder
     }
 
     /// What macOS allows, for the top of Settings → Notifications.

@@ -11,7 +11,6 @@ struct FindingsView: View {
     @Bindable var viewModel: AnalyticsViewModel
     /// Changes of the finding's area waiting in Review & Push.
     let waitingCount: (AnalyticsFinding) -> Int
-    let onReview: () -> Void
     let onAct: (AnalyticsFinding, FindingAction) -> Void
 
     var body: some View {
@@ -83,14 +82,9 @@ struct FindingsView: View {
             FindingCard(
                 finding: finding,
                 isNew: viewModel.findings.isNew(finding),
-                state: waiting > 0
-                    ? (
-                        waiting == 1
-                            ? String(localized: "1 change in \(finding.area.title) is waiting in Review & Push.")
-                            : String(localized: "\(waiting) changes in \(finding.area.title) are waiting in Review & Push."),
-                        String(localized: "Review & Push"), onReview
-                    )
-                    : nil
+                state: waiting == 0 ? nil : waiting == 1
+                    ? String(localized: "1 change in \(finding.area.title) is waiting in Review & Push, top right.")
+                    : String(localized: "\(waiting) changes in \(finding.area.title) are waiting in Review & Push, top right.")
             ) {
                 viewModel.dismiss(finding)
             } onSecondAction: {

@@ -64,7 +64,7 @@ enum StudioDebugScenes {
         "st-ready", "st-ready-de", "st-ready-ar", "st-ready-ipad", "st-asc-watch", "st-plan-link",
     ] + everyDeviceIDs + StudioDebugExtras.ids + StudioDebugRunChoice.ids + StudioDebugAddScreens.ids + StudioDebugPreviewReview.ids
         + StudioDebugDuoStates.ids + StudioDebugPick.ids + StudioDebugArtMotion.ids + StudioDebugWebArtwork.ids + StudioDebugHeaderStyle.ids
-        + StudioDebugGuided.ids + StudioDebugPlanProposals.ids
+        + StudioDebugGuided.ids + StudioDebugPlanProposals.ids + StudioDebugRecapture.ids
 
     static let everyDeviceIDs = [
         "st-plan-all", "st-cap-watch", "st-cap-vision", "st-pick-all", "st-choose-all", "st-loc-all", "st-ready-sheet-all",
@@ -83,6 +83,10 @@ enum StudioDebugScenes {
         }
         if id == StudioDebugGuided.homeID {
             return scene()
+        }
+        if id == StudioDebugRecapture.noRunID {
+            // No run installed: the request is made from the set's captures.
+            return scene(setUp: StudioDebugRecapture.queueRequestFromCaptures)
         }
         if let extras = extrasScene(for: id) {
             let saved = extras.savesExtras ? StudioDebugExtras.extras(for: extras.run) : nil
@@ -112,7 +116,7 @@ enum StudioDebugScenes {
             StudioDebugExtras.scene(for:), StudioDebugRunChoice.scene(for:), StudioDebugAddScreens.scene(for:),
             StudioDebugPreviewReview.scene(for:), StudioDebugDuoStates.scene(for:), StudioDebugPick.scene(for:),
             StudioDebugArtMotion.scene(for:), StudioDebugWebArtwork.scene(for:), StudioDebugHeaderStyle.scene(for:),
-            StudioDebugGuided.scene(for:), StudioDebugPlanProposals.scene(for:),
+            StudioDebugGuided.scene(for:), StudioDebugPlanProposals.scene(for:), StudioDebugRecapture.scene(for:),
         ]
         for board in boards {
             if let scene = board(id) { return scene }

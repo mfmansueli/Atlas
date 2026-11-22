@@ -48,8 +48,8 @@ extension ProductPagesViewModel {
         queue.upsert(change)
         let name = ProductPageChangeBuilder.localeName(locale)
         let text = saved.count == 1
-            ? String(localized: "1 screenshot added to “\(page.name)” in \(name). It’s in Review & Push.")
-            : String(localized: "\(saved.count) screenshots added to “\(page.name)” in \(name). They’re in Review & Push.")
+            ? String(localized: "1 screenshot added to “\(page.name)” in \(name). It’s waiting in Review & Push, top right.")
+            : String(localized: "\(saved.count) screenshots added to “\(page.name)” in \(name). They’re waiting in Review & Push, top right.")
         toast = ToastMessage(text: text, actionTitle: String(localized: "Review & Push"))
     }
 

@@ -30,7 +30,7 @@ struct ProductPagesSubmitTests {
         let model = await ProductPagesTestModel.make(services, queue: queue)
         let draft = try ProductPagesTestModel.page(model, PageID.privateDiary)
         model.open(draft.id)
-        #expect(model.primaryActionTitle(of: draft) == "Push and Submit…")
+        #expect(model.primaryActionTitle(of: draft) == "Submit for Review…")
         #expect(model.submittableVersion(of: draft) == nil)
         #expect(model.pushAndSubmit(draft))
         #expect(model.submitsAfterPushPageName == "Private diary")

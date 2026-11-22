@@ -13,6 +13,8 @@ struct MenuBarActions {
     var open: @MainActor (BackgroundDestination) -> Void = { _ in }
     var checkNow: @MainActor () -> Void = {}
     var setPaused: @MainActor (Bool) -> Void = { _ in }
+    /// Pause Auto-Reply for every app that has it on (board 58).
+    var setAutoReplyPaused: @MainActor (Bool) -> Void = { _ in }
     var openSettings: @MainActor () -> Void = {}
     var quit: @MainActor () -> Void = {}
 }

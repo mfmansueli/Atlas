@@ -41,6 +41,13 @@ extension AutopilotCenter {
             throw AutopilotError(String(localized: "The run isn’t capturing now. Call next_step to see what Atlas wants."))
         }
         let target = run.plan.resolvedTarget(report.target, size: file.pixelSize)
+        if let recapture = run.recapture, run.isRecapturing, !recapture.covers(target) {
+            let name = run.plan.screen(id: target.screenID)?.name ?? target.screenID
+            throw AutopilotError(String(localized: """
+            This run redoes only \(recapture.title), not \(name) (\(target.locale)) on \(target.displayType.title). \
+            Call next_step for the captures it wants.
+            """))
+        }
         try Self.checkSize(file.pixelSize, for: target.displayType, duoPose: run.plan.duoPose(for: target))
         var capture = AutopilotCapture(
             id: makeID(), target: target, attempt: max(1, report.attempt), score: min(max(report.score, 0), 1), notes: report.notes,
@@ -263,6 +270,9 @@ extension AutopilotCenter {
         if run.plan.awaitsScreens { return .chooseScreens }
         if !run.remainingTargets.isEmpty || !run.retries.isEmpty { return captureStep(run) }
         if !run.remainingRecordings.isEmpty { return .record(targets: run.remainingRecordings) }
+        // A capture-only run records its App Preview moments again.
+        let moments = run.recaptureMomentsLeft
+        if run.isRecapturing, !moments.isEmpty { return .recordAgain(screenIDs: moments) }
         if let problem = run.openProblems.first {
             return .wait(reason: String(localized: "A problem waits for the person: \(problem.what)"), seconds: 15)
         }
@@ -290,6 +300,10 @@ extension AutopilotCenter {
     /// first direction).
     func advance(_ appID: StoreApp.ID, context: AutopilotContext) async {
         guard !holdsStages, let run = runs[appID] else { return }
+        if run.isRecapturing {
+            await advanceRecapture(appID, context: context)
+            return
+        }
         switch run.stage {
         case .capture where run.isCaptureComplete:
             update(appID) { run in

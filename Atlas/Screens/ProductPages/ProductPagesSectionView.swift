@@ -25,6 +25,9 @@ struct ProductPagesSectionView: View {
     @Environment(PushHistory.self) private var history
     @Environment(PageShotsStudio.self) private var pageShots: PageShotsStudio?
     @Environment(ClaudeCodeLauncher.self) private var launcher: ClaudeCodeLauncher?
+    @Environment(MCPServerController.self) private var assistants: MCPServerController?
+    @Environment(\.askCenterOverride) private var askCenterOverride
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
 
@@ -55,6 +58,13 @@ struct ProductPagesSectionView: View {
     private func content(_ viewModel: ProductPagesViewModel) -> some View {
         ProductPagesScreen(viewModel: viewModel) { page in
             navigator.review(page: ReviewPageFocus(appID: app.id, pageID: page.id, name: page.name))
+        }
+        // The toolbar's Autopilot button leads with the open page's action.
+        .onChange(of: viewModel.selectedPageID != nil, initial: true) { _, isOpen in
+            navigator.autopilotDetail = isOpen ? .productPage : nil
+        }
+        .onDisappear {
+            if navigator.autopilotDetail == .productPage { navigator.autopilotDetail = nil }
         }
         .sheet(
             isPresented: Binding { viewModel.isNewPagePresented } set: { viewModel.isNewPagePresented = $0 },
@@ -205,16 +215,61 @@ struct ProductPagesSectionView: View {
         model.setNumbers(from: analytics.archive(for: app.id).pageFacts)
     }
 
-    /// Analytics' Open Page, or the Overview's card.
+    /// Analytics' Open Page, or the Overview's card; the toolbar's Suggest
+    /// Pages… and Make Screenshots for a Page….
     private func handleIntent() {
-        guard let viewModel, case let .showProductPage(name) = navigator.intent, viewModel.state.value != nil,
+        guard let viewModel, let intent = navigator.intent, viewModel.state.value != nil,
               navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
-        navigator.consume(.showProductPage(name: name))
-        if let name {
-            viewModel.openPage(named: name)
-        } else {
-            viewModel.back()
+        switch intent {
+        case let .showProductPage(name):
+            navigator.consume(intent)
+            if let name {
+                viewModel.openPage(named: name)
+            } else {
+                viewModel.back()
+            }
+        case .autopilot(.suggestPages):
+            navigator.consume(intent)
+            suggestPages(viewModel)
+        case .autopilot(.makePageScreenshots):
+            navigator.consume(intent)
+            makePageScreenshots(viewModel)
+        default:
+            break
         }
+    }
+
+    /// The list's Suggest Pages, from the toolbar.
+    private func suggestPages(_ viewModel: ProductPagesViewModel) {
+        guard let launcher else { return }
+        guard viewModel.canMakePages else {
+            let text = String(localized: "No more pages can be made now: the app has as many as Apple allows, or it’s offline.")
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+            return
+        }
+        let client = assistants?.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
+        let ask = WorkspaceAutopilotAsk(
+            purpose: ProductPagesAskPrompt.purpose, prompt: viewModel.suggestPagesPrompt,
+            subject: String(localized: "Custom Product Pages · ideas for new pages"),
+            done: String(localized: "\(client) is done. Its suggestions are in Custom Product Pages.")
+        )
+        let outcome = AssistantAskStarter.start(
+            ask, app: app, client: client, launcher: launcher, askCenter: askCenterOverride ?? .shared, reduceMotion: reduceMotion
+        )
+        if outcome == .copied {
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAskStarter.copiedText(client: client)))
+        }
+    }
+
+    /// Make Screenshots for This Page… on the open page, else the first.
+    private func makePageScreenshots(_ viewModel: ProductPagesViewModel) {
+        guard let page = viewModel.selectedPage ?? viewModel.pages.first else {
+            let text = String(localized: "Make a page first, with New Page…; then Autopilot makes its screenshots.")
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+            return
+        }
+        viewModel.open(page.id)
+        Task { await viewModel.openPageShots(page) }
     }
 
     /// A push of this app finished: when it had pages in it, they're read

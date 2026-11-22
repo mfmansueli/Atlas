@@ -115,9 +115,11 @@ struct ReviewCard: View {
         } else if let suggestion = viewModel.suggestion(for: review) {
             ReviewSuggestionBox(
                 review: review, suggestion: suggestion, isSending: viewModel.sending.contains(review.id),
+                autoReply: viewModel.autoReplyDraft(for: review),
                 onDismiss: { viewModel.dismissSuggestion(for: review) },
                 onEdit: { viewModel.startEditing(review) },
-                onSend: { Task { await viewModel.sendSuggestion(for: review) } }
+                onSend: { Task { await viewModel.sendSuggestion(for: review) } },
+                onDontSend: { viewModel.dontSend(review) }
             )
             failure
         } else {

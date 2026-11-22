@@ -51,7 +51,7 @@ struct ProductPageAppPreviewsTests {
         #expect(model.queuedAppPreviews(of: page, locale: "en-US", device: .iPhone)?.count == 2)
         #expect(model.queuedScreenshots(of: page, locale: "en-US", device: .iPhone) == nil)
         #expect(model.builder.edits(for: page.id, in: queue.changes).appPreviews["en-US"]?[.iPhone]?.count == 2)
-        #expect(model.toast?.text == "2 App Previews added to “\(page.name)” in English (U.S.). They’re in Review & Push.")
+        #expect(model.toast?.text == "2 App Previews added to “\(page.name)” in English (U.S.). They’re waiting in Review & Push, top right.")
     }
 
     @Test func aWrongVideoIsRefusedAndNothingIsQueued() async throws {

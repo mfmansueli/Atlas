@@ -237,12 +237,13 @@ enum StudioDebugGuided {
     }
 
     /// Ready to review, `approved` approved; pushed a minute ago when
-    /// `pushed`.
-    static func ready(approved: [GuidedReviewPart], pushed: Bool = false) -> AutopilotRun {
+    /// `pushed`, put in Review & Push with Approve All when `approvedAll`.
+    static func ready(approved: [GuidedReviewPart], pushed: Bool = false, approvedAll: Bool = false) -> AutopilotRun {
         var run = started(StudioDebugExtras.run(.ready, languages: .primary))
         var review = AutopilotGuidedReview()
         review.approved = approved
         if pushed { review.pushedAt = StudioDebugRuns.date(day: 31, month: 10, hour: 14, minute: 31) }
+        if approvedAll { review.approvedAllAt = StudioDebugRuns.date(day: 31, month: 10, hour: 14, minute: 31) }
         run.guidedReview = review
         return run
     }

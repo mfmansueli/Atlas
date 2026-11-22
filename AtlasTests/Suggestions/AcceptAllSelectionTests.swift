@@ -61,10 +61,10 @@ struct AcceptAllSelectionTests {
         #expect(AcceptAllKind.screenshots.countText(3, groups: 1) == "3 screenshot caption suggestions in 1 language")
         #expect(AcceptAllKind.appInformation.countText(5, groups: 2) == "5 App Information suggestions on 2 pages")
         #expect(AcceptAllKind.appInformation.groupsTitle == "Pages")
-        #expect(AcceptAllKind.storePage.acceptedText(1, groups: 1) == "Accepted 1 suggestion in 1 language. They’re in Review & Push.")
+        #expect(AcceptAllKind.storePage.acceptedText(1, groups: 1) == "Accepted 1 suggestion in 1 language. They’re waiting in Review & Push, top right.")
         #expect(AcceptAllKind.storePage.acceptedText(3, groups: 2, withoutAsking: true)
-            == "Accepted 3 suggestions in 2 languages, without asking. They’re in Review & Push.")
+            == "Accepted 3 suggestions in 2 languages, without asking. They’re waiting in Review & Push, top right.")
         #expect(AcceptAllKind.appInformation.acceptedText(2, groups: 1, turnedOffAsking: true)
-            == "Accepted 2 suggestions in 1 page. They’re in Review & Push. Next time, Accept All won’t ask first.")
+            == "Accepted 2 suggestions in 1 page. They’re waiting in Review & Push, top right. Next time, Accept All won’t ask first.")
     }
 }

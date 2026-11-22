@@ -67,7 +67,7 @@ struct InAppEventRevisionViewModelTests {
         #expect(change.source == .assistant(client: "Claude Code"))
         #expect(model.revision == nil)
         #expect(store.open(for: Data.app.id).isEmpty)
-        #expect(model.toast?.text == "Accepted \(InAppEventChangeBuilder.localeName("en-US")). It’s in Review & Push.")
+        #expect(model.toast?.text == "Accepted \(InAppEventChangeBuilder.localeName("en-US")). It’s waiting in Review & Push, top right.")
         #expect(model.text(.longDescription) == Streak.december["en-US"])
         #expect(model.text(.name) == Streak.names["en-US"])
     }

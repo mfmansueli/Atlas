@@ -73,7 +73,7 @@ final class PricingViewModel {
     var showsSuggestedPrices = true
     /// "What people pay"'s country (alpha-3).
     var payTerritoryID = "USA"
-    /// After Accept: "Prices for Annual accepted. They’re in Review & Push."
+    /// After Accept: "Prices for Annual accepted. They’re waiting in Review & Push, top right."
     var toast: ToastMessage?
     @ObservationIgnored var toastUndo: (() -> Void)?
     @ObservationIgnored var productsTask: Task<Void, Never>?

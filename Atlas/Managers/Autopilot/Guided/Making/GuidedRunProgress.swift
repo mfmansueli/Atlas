@@ -18,6 +18,15 @@ struct GuidedRunProgress: Hashable, Sendable {
     var minutesLeft: Int?
 
     static func make(_ run: AutopilotRun, now: Date) -> GuidedRunProgress {
+        var progress = stageProgress(run, now: now)
+        // A capture-only run says what it redoes.
+        if run.isRecapturing, let title = run.recaptureTitle, [.waiting, .capture, .localize].contains(run.stage) {
+            progress.title = title
+        }
+        return progress
+    }
+
+    private static func stageProgress(_ run: AutopilotRun, now: Date) -> GuidedRunProgress {
         switch run.stage {
         case .plan, .waiting:
             waiting(run)

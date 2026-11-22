@@ -65,8 +65,8 @@ enum AcceptAllKind: Hashable, Sendable {
             ? String(localized: "Accepted 1 suggestion in \(groups) \(unit)")
             : String(localized: "Accepted \(count) suggestions in \(groups) \(unit)")
         let text = withoutAsking
-            ? String(localized: "\(what), without asking. They’re in Review & Push.")
-            : String(localized: "\(what). They’re in Review & Push.")
+            ? String(localized: "\(what), without asking. They’re waiting in Review & Push, top right.")
+            : String(localized: "\(what). They’re waiting in Review & Push, top right.")
         return turnedOffAsking ? "\(text) \(nextTimeText)" : text
     }
 }

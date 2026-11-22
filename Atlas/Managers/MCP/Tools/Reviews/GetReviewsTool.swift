@@ -7,6 +7,7 @@ import Foundation
 
 struct GetReviewsTool: MCPTool {
     var store = ReviewsStore.shared
+    var autoReply = AutoReplyCenter.shared
 
     static let defaultLimit = 60
     static let maximumLimit = 200
@@ -62,9 +63,26 @@ struct GetReviewsTool: MCPTool {
             "textRules": StoreTextGuidelinePlace.reviewReply.rulesJSON,
             "reviews": .array(matching.prefix(limit).map { ReviewsMCPJSON.review($0, in: archive) }),
             "groups": .array(archive.themes.map(ReviewsMCPJSON.theme)),
+            "autoReply": Self.autoReply(autoReply.rule(for: app.id)),
             "notes": .array(notes),
         ]
         return .read(result, target: target)
+    }
+
+    /// Reply Automatically, so the assistant sends what the rule decides
+    /// from. It can't change it.
+    static func autoReply(_ rule: AutoReplyRule) -> JSONValue {
+        guard rule.isOn else { return ["on": false] }
+        return [
+            "on": true,
+            "paused": .bool(rule.isPaused),
+            "tone": .string(rule.tone.rawValue),
+            "signature": .string(rule.signature),
+            "note": .string(
+                "With each reply send waitTopics (bug, billing, account, featureRequest, personal) and unsure. "
+                    + "The person's rule decides what goes out; you never send and can't change it."
+            ),
+        ]
     }
 
     private static func filter(_ arguments: MCPToolArguments) throws -> ReviewFilter {

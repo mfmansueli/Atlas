@@ -27,6 +27,9 @@ extension AutopilotCenter {
         /// relaunched with no Claude Code to ask what's next, and the run
         /// sat at "224 of 224".
         case advance
+        /// A capture-only run stopped while its new captures went into the
+        /// set: they go in again.
+        case placeRecaptures
     }
 
     /// What to resume in `run`, when nothing on this Mac works on it
@@ -36,6 +39,8 @@ extension AutopilotCenter {
         switch run.stage {
         case .capture:
             return run.isCaptureComplete ? .advance : nil
+        case .localize where run.isRecapturing:
+            return .placeRecaptures
         case .localize:
             // The header loop's animated pages are the design AI's to send.
             guard run.overflows.isEmpty, (run.artworkTextNeeds ?? []).isEmpty, run.loopReview?.waitsToMake != true else { return nil }
@@ -60,6 +65,8 @@ extension AutopilotCenter {
         switch resume {
         case .advance:
             Task { await advance(appID, context: context) }
+        case .placeRecaptures:
+            Task { await placeRecaptures(appID, context: context) }
         case .localize:
             update(appID) {
                 $0.appendLog(String(localized: "Atlas closed while it was making them; picking up where it stopped"), kind: .event, at: now())

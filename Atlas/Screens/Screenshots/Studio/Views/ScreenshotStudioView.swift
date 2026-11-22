@@ -72,10 +72,8 @@ struct ScreenshotStudioView: View {
     private func bottomCards(_ preview: StudioPreview) -> some View {
         StudioSearchCard(app: screenshots.app, preview: preview, appearance: studio.appearance, image: studio.image(for:), studio: studio)
             .frame(minWidth: 340)
-        StudioSetCard(summary: studio.summary, canReview: studio.builder.effectiveChoice == .new) {
+        StudioSetCard(summary: studio.summary) {
             studio.openSets()
-        } onReview: {
-            navigator?.isReviewPresented = true
         }
         .frame(minWidth: 340)
     }
@@ -98,8 +96,6 @@ struct ScreenshotStudioView: View {
         case .importCaptures:
             screenshots.tab = .captures
             screenshots.captures.isImporterPresented = true
-        case .reviewPush:
-            navigator?.isReviewPresented = true
         }
     }
 }

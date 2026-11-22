@@ -36,7 +36,11 @@ struct PushProgressFailures: View {
                             }
                             Spacer(minLength: 0)
                         }
-                        .accessibilityElement(children: .combine)
+                        // Selectable text drops out of a combined element:
+                        // VoiceOver hears the reason, then the rows.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text("\(group.titles.count) failed · \(group.reason)"))
+                        .accessibilityValue(Text(group.itemsTitle))
                     }
                 }
                 .font(.caption)

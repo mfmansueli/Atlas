@@ -181,6 +181,21 @@ final class KeyAssistantController {
         return try KeyAssistantAnswerParser.items(from: answer.text, vendor: configuration.vendor)
     }
 
+    /// One request with the key and model the person chose, noted in
+    /// Recent Requests (Reply Automatically's replies).
+    func complete(system: String, user: String, title: String) async throws -> KeyAssistantAnswer {
+        guard let configuration, let key = try secrets.secret(named: configuration.vendor.assistantSecretName) else {
+            throw KeyAssistantKeyError.missing
+        }
+        let answer = try await service.complete(
+            AIProviderCompletion(system: system, user: user, model: configuration.model.id, maxTokens: 8000, wantsJSON: true),
+            vendor: configuration.vendor,
+            apiKey: key
+        )
+        noteRequest(title, tokens: answer.tokens ?? 0)
+        return answer
+    }
+
     // MARK: - Helpers
 
     /// Recent Requests, newest first.

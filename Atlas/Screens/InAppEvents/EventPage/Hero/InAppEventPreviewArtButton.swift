@@ -12,6 +12,8 @@ struct InAppEventPreviewArtButton<Content: View>: View {
     let label: String
     let cornerRadius: CGFloat
     let identifier: String
+    /// What the art shows, for VoiceOver: the button hides the texts on it.
+    var value: String = ""
     let action: () -> Void
     @ViewBuilder let content: () -> Content
 
@@ -43,6 +45,7 @@ struct InAppEventPreviewArtButton<Content: View>: View {
         .pointerStyle(.zoomIn)
         .help("View full size  Space")
         .accessibilityLabel(Text(label))
+        .accessibilityValue(Text(verbatim: value))
         .accessibilityIdentifier(identifier)
     }
 }

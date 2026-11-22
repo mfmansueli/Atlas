@@ -133,7 +133,7 @@ struct InAppEventsViewModelTests {
         #expect(store.open(for: Data.app.id).map(\.eventID) == ["winter", "winter", "winter"])
         #expect(model.suggestedCount == 3)
         model.acceptAllLanguages()
-        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. They’re in Review & Push.")
+        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. They’re waiting in Review & Push, top right.")
         let prefix = "inAppEvents.\(Data.app.id).winter."
         #expect(queue.changes(for: Data.app.id).map { String($0.id.dropFirst(prefix.count)) }.sorted() == [
             "de-DE.longDescription", "de-DE.name", "de-DE.shortDescription", "ja.new", "ko.new",

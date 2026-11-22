@@ -35,8 +35,8 @@ struct MCPServerControllerPairingTests {
         #expect(pairing.token.hasPrefix(MCPAccessToken.prefix))
         #expect(pairing.code.expiresAt == clock.now.addingTimeInterval(MCPPairingCode.lifetime))
         #expect(!pairing.isWaiting)
-        #expect(controller.pairingSnippet?.contains("Bearer \(pairing.token)") == true)
-        #expect(controller.pairingSnippet?.contains(controller.url) == true)
+        #expect(controller.pairingSnippet?.contains("--token \(pairing.token)") == true)
+        #expect(controller.pairingSnippet?.contains(MCPTestFixtures.bridgePath) == true)
 
         controller.markPairingCopied()
         #expect(controller.pendingPairing?.isWaiting == true)

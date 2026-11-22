@@ -47,6 +47,16 @@ struct BackgroundNeedsBuilderTests {
         #expect(needs.map(\.detail) == ["Replies are suggested in each language", "Nothing changes until you accept it"])
     }
 
+    /// Board 58: reviews Reply Automatically left for the person get their
+    /// own line, before the suggested replies.
+    @Test func autoReplyNeedsComeBeforeSuggestedReplies() {
+        let facts = BackgroundAppFacts(appID: "1", appName: "Lumen Journal", reviewReplies: 3, autoReplyNeeds: 2)
+        let needs = BackgroundNeedsBuilder.needs(for: [facts], namesApps: false)
+        #expect(needs.map(\.title) == ["2 reviews need your reply", "3 reviews need a reply"])
+        #expect(needs.first?.detail == "Reply Automatically left them for you")
+        #expect(needs.first?.destination == .section(.reviews, appID: "1"))
+    }
+
     @Test func autopilotWaitsOnThePersonOnlyAtItsTurns() {
         #expect(BackgroundNeedsBuilder.turn(for: .pick) == .pick)
         #expect(BackgroundNeedsBuilder.turn(for: .choose) == .choose)

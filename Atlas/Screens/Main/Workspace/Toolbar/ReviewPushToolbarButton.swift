@@ -6,9 +6,13 @@
 import SwiftUI
 
 /// "Review & Push" with the number of pending changes and planned images
-/// across all apps: prominent glass while anything is waiting (⇧⌘P). While
+/// across all apps: prominent glass while anything is waiting (⇧⌘P), plain
+/// glass reading “Up to Date” when nothing is. It's the only way to push:
+/// no page has a push button of its own. While
 /// a push runs, its arrow keeps rising and the badge says how many were
 /// sent, so the sheet can be minimized; a click opens the progress again.
+/// Something accepted joining it makes the arrow bounce once (board 57: the
+/// toast says it's waiting here, top right).
 struct ReviewPushToolbarButton: View {
     let count: Int
     /// Sent and total while a push runs; nil otherwise.
@@ -18,6 +22,8 @@ struct ReviewPushToolbarButton: View {
     let action: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Bumped when changes join; the arrow bounces once each time.
+    @State private var arrivals = 0
 
     var body: some View {
         if count > 0 || sending != nil {
@@ -47,22 +53,37 @@ struct ReviewPushToolbarButton: View {
                 }
             }
         }
+        .onChange(of: count) { old, new in
+            if Self.bounces(from: old, to: new, isSending: sending != nil) { arrivals += 1 }
+        }
         .help(help)
         .accessibilityLabel(Text("Review & Push"))
         .accessibilityValue(Text(accessibilityValue))
         .accessibilityIdentifier("workspace.reviewPushButton")
     }
 
+    /// Nothing queued and nothing sending.
+    private var isUpToDate: Bool { count == 0 && sending == nil }
+
     @ViewBuilder
     private var label: some View {
         let isSending = sending != nil
-        if reduceMotion {
+        if isUpToDate {
+            Label("Up to Date", systemImage: "checkmark.circle")
+        } else if reduceMotion {
             Label("Review & Push", systemImage: "arrow.up.circle")
                 .symbolEffect(.pulse, options: .repeat(.continuous), isActive: isSending)
         } else {
             Label("Review & Push", systemImage: "arrow.up.circle")
                 .symbolEffect(.bounce.up.byLayer, options: .repeat(.periodic(delay: 0.4)), isActive: isSending)
+                .symbolEffect(.bounce.up, value: arrivals)
         }
+    }
+
+    /// More waiting than before, and not because a push is running: what
+    /// was just accepted has joined.
+    static func bounces(from old: Int, to new: Int, isSending: Bool) -> Bool {
+        new > old && !isSending
     }
 
     /// "15/87" while sending, else the pending count.
@@ -78,6 +99,7 @@ struct ReviewPushToolbarButton: View {
 
     private var accessibilityValue: String {
         if let sending { return String(localized: "Pushing, \(sending.sent) of \(sending.total) sent") }
-        return count == 1 ? String(localized: "1 pending change") : String(localized: "\(count) pending changes")
+        if isUpToDate { return String(localized: "Up to date") }
+        return count == 1 ? String(localized: "1 change ready") : String(localized: "\(count) changes ready")
     }
 }

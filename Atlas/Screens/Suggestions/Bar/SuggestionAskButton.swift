@@ -15,6 +15,12 @@ import SwiftUI
 /// where they are. A pasted request ends with the section's toast; while
 /// its suggestions arrive the section's banner says so and the button steps
 /// aside.
+///
+/// Since board 57 the pages don't show it (`showsButton` false): the
+/// toolbar's Autopilot button asks (Suggest Texts…, Suggest Answers…) and
+/// this stays as the request's host, an invisible point at the page's
+/// trailing edge that runs it and holds its popovers (the prompt to paste,
+/// Generate Suggestions… with an API key).
 struct SuggestionAskButton: View {
     let appID: StoreApp.ID
     let area: SuggestionArea
@@ -30,6 +36,8 @@ struct SuggestionAskButton: View {
     var appName = ""
     /// The assistant stopped sending: the section shows this in its toast.
     var onRequestFinished: (String) -> Void = { _ in }
+    /// The button itself on screen; off, only the request's host.
+    var showsButton = true
 
     @Environment(MCPServerController.self) private var assistants
     @Environment(FieldSuggestionStore.self) private var suggestions
@@ -48,7 +56,9 @@ struct SuggestionAskButton: View {
     var body: some View {
         // A stack, so the tasks below keep running while the button is away.
         ZStack {
-            if run == nil {
+            if !showsButton {
+                host
+            } else if run == nil {
                 if let appAsk {
                     busyButton(appAsk)
                 } else if streamingRequest == nil {
@@ -111,19 +121,32 @@ struct SuggestionAskButton: View {
         .disabled(status.isReady && generator == nil)
         .background(AskAnchorView(anchor: anchor))
         .accessibilityIdentifier("suggestions.ask")
-        .popover(isPresented: $showsPopover, arrowEdge: .bottom) {
-            if status.isReady, let generate {
-                GenerateSuggestionsPopover(model: generate, onGenerate: startGenerating) {
-                    showsPopover = false
-                    cancelGenerating()
-                }
-            } else if let request {
-                AskAssistantPopover(request: request) {
-                    Self.copy(request.prompt)
-                } onCancel: {
-                    showsPopover = false
-                    suggestions.cancelRequest()
-                }
+        .popover(isPresented: $showsPopover, arrowEdge: .bottom) { popover }
+    }
+
+    /// No button: a point the popovers come from, just under the toolbar's
+    /// Autopilot button.
+    private var host: some View {
+        Color.clear
+            .frame(width: 1, height: 1)
+            .background(AskAnchorView(anchor: anchor))
+            .accessibilityHidden(true)
+            .popover(isPresented: $showsPopover, arrowEdge: .bottom) { popover }
+    }
+
+    @ViewBuilder
+    private var popover: some View {
+        if status.isReady, let generate {
+            GenerateSuggestionsPopover(model: generate, onGenerate: startGenerating) {
+                showsPopover = false
+                cancelGenerating()
+            }
+        } else if let request {
+            AskAssistantPopover(request: request) {
+                Self.copy(request.prompt)
+            } onCancel: {
+                showsPopover = false
+                suggestions.cancelRequest()
             }
         }
     }

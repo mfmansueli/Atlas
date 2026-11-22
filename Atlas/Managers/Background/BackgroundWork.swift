@@ -25,11 +25,17 @@ final class BackgroundWork {
     /// due analytics reports, stale reviews. Returns what went wrong when
     /// Apple refused the key or couldn't be reached, else nil.
     var checkHandler: (@MainActor () async -> String?)?
+    /// Runs on every tick, paused or not checking: Reply Automatically's
+    /// replies whose wait is over go out (board 58).
+    var tickHandler: (@MainActor () async -> Void)?
     /// Opens a place in the main window (it's on screen by then).
     var openHandler: (@MainActor (BackgroundDestination) -> Void)?
     /// Whether the account is on Free, where suggested review replies
     /// don't exist.
     var isFree: @MainActor () -> Bool = { false }
+    /// Reply Automatically, for the menu's Pause Auto-Reply and its
+    /// "Needs you" lines (board 58).
+    var autoReply: AutoReplyCenter = .shared
 
     private(set) var isPaused: Bool {
         didSet { defaults?.set(isPaused, forKey: Key.isPaused) }
@@ -114,6 +120,7 @@ final class BackgroundWork {
             ),
             reviewPushCount: changes.totalCount,
             isPaused: isPaused,
+            autoReplyPaused: isFree() ? nil : autoReply.pausedState(for: library.map(\.id)),
             connectionProblem: connectionProblem
         )
     }
@@ -132,7 +139,9 @@ final class BackgroundWork {
                 autopilotTurn: autopilot.run(for: app.id).flatMap { BackgroundNeedsBuilder.turn(for: $0.stage) },
                 openSuggestions: suggestions.toReview(for: app.id).count,
                 approvedVersion: snapshot?.phase == .pendingDeveloperRelease ? snapshot?.versionString : nil,
-                reviewReplies: isFree() ? 0 : reviews.suggestionCount(for: app.id),
+                // The ones Reply Automatically left for the person have their own line.
+                reviewReplies: isFree() ? 0 : max(0, reviews.suggestionCount(for: app.id) - autoReply.needsYouCount(for: app.id)),
+                autoReplyNeeds: isFree() ? 0 : autoReply.needsYouCount(for: app.id),
                 newFindings: newFindings,
                 firstFindingTitle: newFindings > 0 ? findings.open.first(where: findings.isNew)?.title : nil,
                 readyArtwork: artwork.readyRuns.filter { $0.appID == app.id }.map { run in
@@ -258,6 +267,7 @@ final class BackgroundWork {
                 if BackgroundCheckSchedule.isDue(after: lastCheckedAt, interval: preferences.checkInterval, isPaused: isPaused, now: now()) {
                     await check()
                 }
+                if !isPaused { await tickHandler?() }
                 try? await Task.sleep(for: Self.tick)
             }
         }
@@ -273,6 +283,7 @@ final class BackgroundWork {
     func detach() {
         library = []
         checkHandler = nil
+        tickHandler = nil
         openHandler = nil
         connectionProblem = nil
     }

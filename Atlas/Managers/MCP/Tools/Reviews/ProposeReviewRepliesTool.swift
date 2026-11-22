@@ -7,14 +7,19 @@ import Foundation
 
 struct ProposeReviewRepliesTool: MCPTool {
     var store = ReviewsStore.shared
+    var autoReply = AutoReplyCenter.shared
 
     let definition = MCPToolDefinition(
         name: "propose_review_replies",
         title: "Suggest replies to reviews",
         description: """
         Suggests a reply for each review, shown under it in Atlas's Reviews with Send Reply, Edit and Dismiss. \
-        `replies` is a list of {reviewId, text, meaning}: `text` in the reviewer's own language (≤5,970 characters; a few \
-        sentences is right), `meaning` what it says in English, for the person. Be specific to what the review says, read \
+        `replies` is a list of {reviewId, text, meaning, waitTopics?, unsure?}: `text` in the reviewer's own language \
+        (≤5,970 characters; a few sentences is right), `meaning` what it says in English, for the person. When the \
+        person has Reply Automatically on, also send `waitTopics`, what the review is about from bug, billing, account, \
+        featureRequest and personal (empty when none), and `unsure: true` when you aren't sure what it means: Atlas's rule \
+        decides from them which replies go out by themselves and which wait. You can't turn it on, change it or send. \
+        Be specific to what the review says, read \
         the project to say what is fixed or planned, and never promise what isn't there; no personal data, no asking for a \
         better rating. Reviews that already have a reply are skipped. Nothing is sent to the App Store: the person sends \
         each reply. A new suggestion for the same review replaces the earlier one. \
@@ -24,7 +29,7 @@ struct ProposeReviewRepliesTool: MCPTool {
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "replies": [
-                    "type": "array", "description": "{reviewId, text, meaning} objects, one per review.",
+                    "type": "array", "description": "{reviewId, text, meaning, waitTopics?, unsure?} objects, one per review.",
                     "items": ["type": "object"],
                 ],
             ],
@@ -42,6 +47,7 @@ struct ProposeReviewRepliesTool: MCPTool {
             return .refused("Atlas has no reviews of \(app.name) yet. Call get_reviews first.", target: target)
         }
         var kept: [ReviewReplySuggestion] = []
+        var flags: [AppReview.ID: (topics: Set<AutoReplyTopic>, isUnsure: Bool)] = [:]
         var skipped: [JSONValue] = []
         for value in try arguments.array("replies") {
             let reviewID = value["reviewId"]?.stringValue ?? ""
@@ -60,11 +66,13 @@ struct ProposeReviewRepliesTool: MCPTool {
             }
             let meaning = (value["meaning"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             kept.append(ReviewReplySuggestion(reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now()))
+            flags[reviewID] = Self.flags(value)
         }
         guard !kept.isEmpty else {
             return .refused("No reply could be kept.", target: target, details: ["skipped": .array(skipped)])
         }
-        store.add(kept, for: app.id)
+        let added = store.add(kept, for: app.id)
+        autoReply.received(added, flags: flags, reviews: store.archive(for: app.id), app: app)
         return MCPToolOutcome(
             result: [
                 "status": "suggested", "replies": .int(kept.count), "skipped": .array(skipped),
@@ -73,6 +81,15 @@ struct ProposeReviewRepliesTool: MCPTool {
             isError: false,
             logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]
         )
+    }
+
+    /// What the assistant read in the review, for Reply Automatically:
+    /// the topics that wait (unknown names are left out) and whether it
+    /// was unsure.
+    static func flags(_ value: JSONValue) -> (topics: Set<AutoReplyTopic>, isUnsure: Bool) {
+        let names = value["waitTopics"]?.arrayValue?.compactMap(\.stringValue) ?? []
+        let topics = Set(names.compactMap { AutoReplyTopic(rawValue: $0) })
+        return (topics, value["unsure"]?.boolValue ?? false)
     }
 
     /// Why a reply can't be kept, in words the assistant can act on.

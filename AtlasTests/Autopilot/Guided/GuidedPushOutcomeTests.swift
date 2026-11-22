@@ -17,6 +17,17 @@ struct GuidedPushOutcomeTests {
         #expect(GuidedPushOutcome.make(images: nil, extras: nil) == .unknown)
     }
 
+    /// Approve All (board 57) put the set in Review & Push: it waits
+    /// there until a push for the app goes.
+    @Test func approvedAndNotPushedWaitsInReviewAndPush() {
+        let outcome = GuidedPushOutcome.make(images: nil, extras: nil, approvedOnly: true)
+        #expect(outcome == .approved)
+        #expect(outcome.title == "Waiting in Review & Push")
+        #expect(outcome.detail?.contains("top right") == true)
+        let running = Tally(total: 4, done: 1, isRunning: true)
+        #expect(GuidedPushOutcome.make(images: running, extras: nil, approvedOnly: true) == .sending, "Pushed from Review & Push")
+    }
+
     @Test func aPushStillGoingIsSending() {
         let running = Tally(total: 4, done: 1, isRunning: true)
         let finished = Tally(total: 2, done: 2, isRunning: false)

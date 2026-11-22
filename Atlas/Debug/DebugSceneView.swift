@@ -80,6 +80,7 @@ struct DebugSceneView: View {
             ClaudeCodeDebugScenes.view(for:),
             AnalyticsDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
+            AutoReplyDebugScenes.view(for:),
             ReleaseDebugScenes.view(for:),
             ReleaseEventsDebugScenes.view(for:),
             InAppEventsDebugScenes.view(for:),

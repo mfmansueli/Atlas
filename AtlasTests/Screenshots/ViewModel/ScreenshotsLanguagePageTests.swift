@@ -47,7 +47,7 @@ struct ScreenshotsLanguagePageTests {
         let (model, services) = await german()
         let caption = try #require(model.proposedCaption(locale: "de-DE", slot: 1))
         await model.acceptCaption(caption)
-        #expect(model.captionToast?.text == "Screenshot 2 caption accepted. It’s in Review & Push.")
+        #expect(model.captionToast?.text == "Screenshot 2 caption accepted. It’s waiting in Review & Push, top right.")
         #expect(model.captionToast?.actionTitle == "Review & Push")
         #expect(savedHeadline(services, slot: 1) == "Deine Woche auf einen Blick")
         #expect(model.proposedCaptions.count == 2)
@@ -72,7 +72,7 @@ struct ScreenshotsLanguagePageTests {
     @Test func acceptHereTakesTheLanguageInView() async {
         let (model, _) = await german()
         await model.acceptCaptionsHere()
-        #expect(model.captionToast?.text == "Accepted 3 captions in German. They’re in Review & Push.")
+        #expect(model.captionToast?.text == "Accepted 3 captions in German. They’re waiting in Review & Push, top right.")
         #expect(model.proposedCaptions.isEmpty)
     }
 
@@ -87,7 +87,7 @@ struct ScreenshotsLanguagePageTests {
         #expect(selection.groups.first?.items.first?.suggested == "Deine Woche auf einen Blick")
 
         await model.acceptAllCaptions(withoutAsking: true)
-        #expect(model.captionToast?.text == "Accepted 3 suggestions in 1 language, without asking. They’re in Review & Push.")
+        #expect(model.captionToast?.text == "Accepted 3 suggestions in 1 language, without asking. They’re waiting in Review & Push, top right.")
         #expect(model.proposedCaptions.isEmpty)
     }
 
@@ -98,7 +98,7 @@ struct ScreenshotsLanguagePageTests {
         await model.acceptCaptions(ids: [first.id], turnedOffAsking: true)
         #expect(!model.isAcceptAllCaptionsPresented)
         #expect(model.captionToast?.text
-            == "Accepted 1 suggestion in 1 language. They’re in Review & Push. Next time, Accept All Languages won’t ask first.")
+            == "Accepted 1 suggestion in 1 language. They’re waiting in Review & Push, top right. Next time, Accept All Languages won’t ask first.")
         #expect(model.proposedCaptions.count == 2)
     }
 

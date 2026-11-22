@@ -17,6 +17,8 @@ extension ReviewPushViewModel {
         case .allApps: extras.orderedPlans
         // A page's own screenshots are its changes, not Autopilot's extras.
         case .productPage: []
+        case let .section(section):
+            section == .screenshots ? extras.plans(for: selectedAppID.map { [$0] } ?? []) : []
         }
     }
 

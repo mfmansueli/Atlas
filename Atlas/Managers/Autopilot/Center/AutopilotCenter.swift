@@ -49,6 +49,13 @@ final class AutopilotCenter {
         await AppPreviewMotionReader.motion(of: file, from: start, to: end)
     }
 
+    /// Settings → Screenshots → "Let Claude Code open capture-only runs":
+    /// on, `request_recapture` opens the run at once instead of waiting
+    /// for Accept.
+    @ObservationIgnored var opensCaptureRuns: () -> Bool = {
+        UserDefaults.standard.bool(forKey: AppPreferences.opensCaptureRunsKey)
+    }
+
     /// DEBUG scenes hold a run where it is: nothing moves on by itself.
     @ObservationIgnored var holdsStages = false
     /// What each app's run is making on this Mac (the artwork, loops and
@@ -180,6 +187,11 @@ final class AutopilotCenter {
         scheduleSave()
     }
 
+    /// The run Run Autopilot… replaced, while its plan is open.
+    func replacedRun(for appID: StoreApp.ID) -> AutopilotRun? {
+        replaced[appID]
+    }
+
     /// Cancel on the Plan step: brings back the run it replaced.
     func cancelPlan(for appID: StoreApp.ID) {
         guard let run = runs[appID], run.stage == .plan else { return }
@@ -222,6 +234,11 @@ final class AutopilotCenter {
     /// Cancel Run (waiting) and Stop (capturing): back to the plan; the
     /// captures are kept for the next start.
     func stop(appID: StoreApp.ID) {
+        // A capture-only run goes back to Review & Push as it was.
+        if runs[appID]?.isRecapturing == true {
+            cancelRecapture(appID: appID)
+            return
+        }
         guard var run = runs[appID], run.stage == .waiting || run.stage == .capture else { return }
         run.stage = .plan
         run.problems.removeAll(where: \.isOpen)
@@ -247,6 +264,14 @@ final class AutopilotCenter {
         var proposals = planProposals(for: appID)
         change(&proposals)
         proposalsForNextPlan[appID] = proposals.isEmpty ? nil : proposals
+        scheduleSave()
+    }
+
+    /// Takes the app's run away: a capture-only run made from the set's
+    /// captures, cancelled, leaves the app with no run, as it was.
+    func removeRun(for appID: StoreApp.ID) {
+        runs[appID] = nil
+        replaced[appID] = nil
         scheduleSave()
     }
 

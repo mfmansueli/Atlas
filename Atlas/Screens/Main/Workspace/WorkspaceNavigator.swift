@@ -25,6 +25,16 @@ final class WorkspaceNavigator {
     /// Review & Push opened by a custom product page's Push and Submit…:
     /// on that page's changes first (board 54).
     private(set) var reviewPage: ReviewPageFocus?
+    /// Review & Push opened by the toolbar's “N not pushed”: on that
+    /// section's changes first (board 57).
+    private(set) var reviewSection: AppWorkspaceSection?
+    /// ⌥⌘A: asks the toolbar's Autopilot button to run its action; the
+    /// button clears it.
+    var requestsAutopilot = false
+    /// The detail page open in the section (an event, a product page),
+    /// whose action the Autopilot button leads with; the section sets and
+    /// clears it.
+    var autopilotDetail: WorkspaceAutopilotDetail?
     /// Activity history (the toolbar clock).
     var isActivityPresented = false
     /// Set by Activity's "Restore Previous Values": Review & Push opens once
@@ -130,8 +140,17 @@ final class WorkspaceNavigator {
         isReviewPresented = true
     }
 
+    /// Opens Review & Push on one section's changes.
+    func review(section: AppWorkspaceSection) {
+        reviewSourceFilter = nil
+        reviewsEveryApp = false
+        reviewPage = nil
+        reviewSection = section
+        isReviewPresented = true
+    }
+
     /// What Review & Push opens on: one assistant's proposals or every
-    /// app's changes, or the custom product page that opened it.
+    /// app's changes, or the custom product page or section that opened it.
     func configure(_ review: ReviewPushViewModel) {
         if let filter = reviewSourceFilter {
             review.scope = .allApps
@@ -140,6 +159,8 @@ final class WorkspaceNavigator {
             review.scope = .allApps
         } else if let reviewPage {
             review.focus(on: reviewPage)
+        } else if let reviewSection {
+            review.focus(on: reviewSection)
         }
     }
 
@@ -148,6 +169,7 @@ final class WorkspaceNavigator {
         reviewSourceFilter = nil
         reviewsEveryApp = false
         reviewPage = nil
+        reviewSection = nil
     }
 
     /// Closes Activity and opens Review & Push after it.

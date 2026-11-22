@@ -148,6 +148,9 @@ struct ScreenshotsView: View {
         case nil:
             EmptyView()
         }
+        ForEach(viewModel.studio.recaptureRequests) { request in
+            RecaptureRequestBanner(studio: viewModel.studio, request: request)
+        }
         if let notice = viewModel.notice {
             Banner(kind: .info, title: notice) {
                 Button {

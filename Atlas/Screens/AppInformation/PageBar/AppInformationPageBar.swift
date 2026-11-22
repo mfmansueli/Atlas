@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// Under a page's title: where it shows on the App Store, Accept n on This
-/// Page, Accept All Pages with the total, Ask, and the ⋯ menu. A page that
-/// takes no suggestions only says where it shows.
+/// Page, Accept All Pages with the total, and the ⋯ menu. A page that
+/// takes no suggestions only says where it shows. Asking Claude Code is the
+/// toolbar's Suggest Answers… (board 57); the request's host stays here.
 struct AppInformationPageBar: View {
     @Bindable var viewModel: AppInformationViewModel
     let page: AppInformationPage
@@ -31,15 +32,20 @@ struct AppInformationPageBar: View {
                         .font(.caption)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
+                    moreMenu
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                if takesSuggestions {
                     SuggestionAskButton(
                         appID: viewModel.app.id,
                         area: .appInformation,
                         requestsAsk: $viewModel.requestsAsk,
                         prompt: viewModel.suggestionPrompt,
                         appName: viewModel.app.name,
-                        onRequestFinished: { viewModel.suggestionToast = ToastMessage(text: $0) }
+                        onRequestFinished: { viewModel.suggestionToast = ToastMessage(text: $0) },
+                        showsButton: false
                     )
-                    moreMenu
                 }
             }
             if takesSuggestions, model.acceptsRightAway, model.totalCount > 0 {

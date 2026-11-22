@@ -22,13 +22,13 @@ final class AssistantWorkspaceUITests: XCTestCase {
         app.terminate()
     }
 
-    func testTheIndicatorOpensTheAssistantsProposals() {
+    func testTheAutopilotMenuOpensTheAssistantsProposals() {
         launch(scene: "ai-streaming")
-        let indicator = element("workspace.assistantIndicator")
-        XCTAssertTrue(indicator.waitForExistence(timeout: 10))
-        XCTAssertEqual(indicator.label, "Claude Code is proposing changes")
+        let autopilot = app.autopilotButton
+        XCTAssertTrue(autopilot.waitForExistence(timeout: 10))
+        XCTAssertEqual(autopilot.label, "Autopilot, Claude Code is working")
 
-        indicator.click()
+        app.openAssistantStatus()
         let popover = element("workspace.assistantPopover")
         XCTAssertTrue(popover.waitForExistence(timeout: 5))
         // The group header is drawn in capitals.

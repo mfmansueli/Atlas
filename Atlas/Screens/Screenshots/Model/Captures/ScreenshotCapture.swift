@@ -25,4 +25,7 @@ struct ScreenshotCapture: Codable, Hashable, Sendable, Identifiable {
     /// iPhone Duo's cover display, shown beside the inner display's
     /// capture of the same slot (both, side by side); nil otherwise.
     var isCompanion: Bool?
+    /// Why it's out of date, once the assistant said the app changed under
+    /// it; nil while it isn't. A new capture in its place has none.
+    var stale: CaptureStaleness?
 }

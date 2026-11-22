@@ -16,7 +16,7 @@ struct StartingPriceView: View {
             Label("\(viewModel.selectedProduct?.name ?? "") has no price yet", systemImage: "tag")
         } description: {
             if let queued = viewModel.queuedStartingPrice {
-                Text("Its starting price, \(queued.newValue), waits in Review & Push.")
+                Text("Its starting price, \(queued.newValue), waits in Review & Push, top right.")
             } else {
                 Text("""
                 Set its price in the United States; every other country or region gets Apple’s equalized price, \
@@ -30,10 +30,6 @@ struct StartingPriceView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("pricing.setStartingPrice")
-                if viewModel.queuedStartingPrice != nil {
-                    Button("Review & Push…", action: viewModel.onOpenReview)
-                        .accessibilityIdentifier("pricing.startingPrice.review")
-                }
             }
             .buttonBorderShape(.capsule)
         }

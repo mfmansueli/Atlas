@@ -30,7 +30,7 @@ enum EverythingDebugScenes {
         case "ev-start":
             return overview(SuggestionsDebugData.store())
         case "ev-pop":
-            AssistantToolbarIndicator.debugShowsPopover = true
+            AutopilotToolbarButton.debugShowsPopover = true
             return overview(SuggestionsDebugData.store())
         case "ev-wait":
             OverviewSectionView.debugRequestsSuggestEverything = true
@@ -65,7 +65,7 @@ enum EverythingDebugScenes {
                 $0.showsOnlySuggestedFields = true
             }
         case "ev-run-pop":
-            AssistantToolbarIndicator.debugShowsPopover = true
+            AutopilotToolbarButton.debugShowsPopover = true
             return SuggestionsDebugScenes.storePage(.connected, store: SuggestionsDebugData.runStore(arrived: 9)) { $0.openEditor(.german) }
         case "ev-quiet":
             let clock = Clock(offset: -3 * 60)

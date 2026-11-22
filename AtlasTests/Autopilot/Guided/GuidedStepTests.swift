@@ -35,6 +35,10 @@ struct GuidedStepTests {
         var pushed = AutopilotTestFixtures.run(.ready)
         pushed.guidedReview = AutopilotGuidedReview(pushedAt: AutopilotTestFixtures.now)
         #expect(GuidedStep.step(of: pushed, setup: .make) == .done)
+
+        var approved = AutopilotTestFixtures.run(.ready)
+        approved.guidedReview = AutopilotGuidedReview(approvedAllAt: AutopilotTestFixtures.now)
+        #expect(GuidedStep.step(of: approved, setup: .make) == .done, "Approve All ends the sheet's part")
     }
 
     @Test func theStepperShowsSixStepsAndMarksTheTwoStops() {

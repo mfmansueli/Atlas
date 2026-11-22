@@ -5,8 +5,9 @@
 
 import SwiftUI
 
-/// The top of the Store Page: what it changes, which version, Ask Claude
-/// Code…, Editor or In-App Texts, and the ⋯ menu.
+/// The top of the Store Page: what it changes, which version, Editor or
+/// In-App Texts, and the ⋯ menu. Asking Claude Code is the toolbar's
+/// Suggest Texts… (board 57); the request's host stays at the trailing edge.
 struct StorePageHeader: View {
     @Bindable var viewModel: StorePageViewModel
 
@@ -16,9 +17,6 @@ struct StorePageHeader: View {
 
     var body: some View {
         SectionHeader(
-            systemImage: "doc.text",
-            tint: Palette.sectionStorePage,
-            title: String(localized: "Store Page"),
             subtitle: String(localized: "The words on \(viewModel.app.name)’s App Store page and in search, in every language.")
         ) {
             StorePageVersionMenu(viewModel: viewModel)
@@ -26,17 +24,6 @@ struct StorePageHeader: View {
                 Pill(text: String(localized: "Live · read-only"), systemImage: "lock", style: .outline)
                     .fixedSize()
                     .accessibilityIdentifier("storePage.readOnly")
-            }
-            if viewModel.isLoaded, viewModel.tracksSuggestions, viewModel.mode != .inAppTexts {
-                SuggestionAskButton(
-                    appID: viewModel.app.id,
-                    area: .storePage,
-                    requestsAsk: $viewModel.requestsAsk,
-                    prompt: viewModel.suggestionPrompt,
-                    generator: viewModel,
-                    appName: viewModel.app.name,
-                    onRequestFinished: { viewModel.toast = ToastMessage(text: $0) }
-                )
             }
             FittingSegmentedPicker(
                 label: String(localized: "Store Page views"),
@@ -47,6 +34,20 @@ struct StorePageHeader: View {
             .accessibilityIdentifier("storePage.modePicker")
             if viewModel.isLoaded, !viewModel.showsNoVersionPage {
                 StorePageMoreMenu(viewModel: viewModel)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if viewModel.isLoaded, viewModel.tracksSuggestions, viewModel.mode != .inAppTexts {
+                SuggestionAskButton(
+                    appID: viewModel.app.id,
+                    area: .storePage,
+                    requestsAsk: $viewModel.requestsAsk,
+                    prompt: viewModel.suggestionPrompt,
+                    generator: viewModel,
+                    appName: viewModel.app.name,
+                    onRequestFinished: { viewModel.toast = ToastMessage(text: $0) },
+                    showsButton: false
+                )
             }
         }
     }

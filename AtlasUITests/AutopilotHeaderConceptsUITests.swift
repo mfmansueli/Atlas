@@ -290,7 +290,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         let approve = element("autopilot.guided.review.approve")
         XCTAssertTrue(approve.label.hasPrefix("Approve Header"), approve.label)
         let footer = text(of: element("autopilot.guided.footer.text"))
-        XCTAssertTrue(footer.hasSuffix("Nothing is sent until you push."), footer)
+        XCTAssertTrue(footer.hasSuffix("nothing is sent until you push."), footer)
         XCTAssertFalse(element("autopilot.guided.review.tabs").exists, "Only the header and search: no App Preview tab")
         attachScreenshot("Review · header loop v1")
 

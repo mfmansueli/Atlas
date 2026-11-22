@@ -57,8 +57,8 @@ extension ProductPagesViewModel {
         queue.upsert(builder.appPreviewsChange(saved, locale: locale, displayType: displayType, of: page, hadOwn: hadOwn))
         let name = ProductPageChangeBuilder.localeName(locale)
         let text = saved.count == 1
-            ? String(localized: "1 App Preview added to “\(page.name)” in \(name). It’s in Review & Push.")
-            : String(localized: "\(saved.count) App Previews added to “\(page.name)” in \(name). They’re in Review & Push.")
+            ? String(localized: "1 App Preview added to “\(page.name)” in \(name). It’s waiting in Review & Push, top right.")
+            : String(localized: "\(saved.count) App Previews added to “\(page.name)” in \(name). They’re waiting in Review & Push, top right.")
         toast = ToastMessage(text: text, actionTitle: String(localized: "Review & Push"))
     }
 

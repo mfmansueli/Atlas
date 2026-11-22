@@ -11,7 +11,6 @@ struct AnalyticsScreen: View {
     @Bindable var viewModel: AnalyticsViewModel
     /// Changes of a finding's area waiting in Review & Push.
     var waitingCount: (AnalyticsFinding) -> Int = { _ in 0 }
-    var onReview: () -> Void = {}
     /// Follows an action to its section, with what the bar there says.
     var onAct: (FindingAction, String) -> Void = { _, _ in }
 
@@ -28,9 +27,6 @@ struct AnalyticsScreen: View {
 
     private var header: some View {
         SectionHeader(
-            systemImage: AppWorkspaceSection.analytics.systemImage,
-            tint: Palette.sectionAnalytics,
-            title: String(localized: "Analytics"),
             subtitle: String(localized: "Where people drop off between seeing \(viewModel.app.name) and paying, and what to change next.")
         ) {
             if viewModel.setup == .ready, viewModel.funnel != nil {
@@ -140,7 +136,7 @@ struct AnalyticsScreen: View {
                 BreakdownView(viewModel: viewModel, table: table, onAct: onAct)
             }
         case .findings:
-            FindingsView(viewModel: viewModel, waitingCount: waitingCount, onReview: onReview) { finding, action in
+            FindingsView(viewModel: viewModel, waitingCount: waitingCount) { finding, action in
                 viewModel.markActed(finding)
                 onAct(action, finding.title)
             }

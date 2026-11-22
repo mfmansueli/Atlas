@@ -28,6 +28,9 @@ struct ReviewHeader: View {
                         if let page = viewModel.pageFocus {
                             Text("\(page.name) · \(viewModel.pageCount)").tag(ReviewScope.productPage(page.pageID))
                         }
+                        if let section = viewModel.sectionFocus {
+                            Text("\(section.fullTitle) · \(viewModel.sectionCount)").tag(ReviewScope.section(section))
+                        }
                         Text("\(appName) · \(viewModel.thisAppCount)").tag(ReviewScope.thisApp)
                         if viewModel.thisAppCount != viewModel.allAppsCount {
                             Text("All apps · \(viewModel.allAppsCount)").tag(ReviewScope.allApps)

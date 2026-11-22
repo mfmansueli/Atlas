@@ -15,6 +15,8 @@ enum GuidedPushOutcome: Hashable, Sendable {
     case partly
     /// Atlas closed since the push, so it can't tell how it ended.
     case unknown
+    /// Approve All put it in Review & Push, and no push has gone yet.
+    case approved
 
     /// One push's counts.
     struct Tally: Hashable, Sendable {
@@ -23,9 +25,11 @@ enum GuidedPushOutcome: Hashable, Sendable {
         var isRunning: Bool
     }
 
-    static func make(images: Tally?, extras: Tally?) -> GuidedPushOutcome {
+    /// `approvedOnly`: the set went to Review & Push with Approve All, not
+    /// pushed from the sheet.
+    static func make(images: Tally?, extras: Tally?, approvedOnly: Bool = false) -> GuidedPushOutcome {
         let tallies = [images, extras].compactMap(\.self)
-        guard !tallies.isEmpty else { return .unknown }
+        guard !tallies.isEmpty else { return approvedOnly ? .approved : .unknown }
         if tallies.contains(where: \.isRunning) { return .sending }
         return tallies.allSatisfy { $0.done == $0.total } ? .sent : .partly
     }
@@ -34,7 +38,7 @@ enum GuidedPushOutcome: Hashable, Sendable {
         switch self {
         case .partly: "exclamationmark"
         case .unknown: "arrow.up"
-        case .sending, .sent: "checkmark"
+        case .sending, .sent, .approved: "checkmark"
         }
     }
 
@@ -44,6 +48,7 @@ enum GuidedPushOutcome: Hashable, Sendable {
         case .sent: String(localized: "Sent to the App Store")
         case .partly: String(localized: "Not everything was sent")
         case .unknown: String(localized: "Sent from this Mac")
+        case .approved: String(localized: "Waiting in Review & Push")
         }
     }
 
@@ -53,6 +58,7 @@ enum GuidedPushOutcome: Hashable, Sendable {
         case .sending, .sent: nil
         case .partly: String(localized: "What was sent is on App Store Connect; the rest stays in Review & Push.")
         case .unknown: String(localized: "Atlas closed since this push, so it can’t tell how it ended. Anything not sent is still in Review & Push.")
+        case .approved: String(localized: "Everything is approved and waiting in Review & Push, top right. Push it from there; this shows how it goes.")
         }
     }
 }

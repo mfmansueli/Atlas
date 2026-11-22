@@ -63,4 +63,7 @@ enum WorkspaceIntent: Hashable, Sendable {
     case showProductPage(name: String?)
     /// Any section: focus its search field.
     case search
+    /// Screenshots, Custom Product Pages or In-App Events: run one of the
+    /// toolbar Autopilot button's actions with the section's own flow.
+    case autopilot(WorkspaceAutopilotAction)
 }

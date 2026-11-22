@@ -129,9 +129,10 @@ struct PrivacyScanCard: View {
     /// The pairing command, with the token shortened until Copy makes one.
     private var connectCommand: String {
         if let pairing = assistants.pendingPairing, pairing.kind == .claudeCode {
-            return MCPClientKind.claudeCode.setupSnippet(token: MCPAccessToken.abbreviated(pairing.token), url: assistants.url, bridgePath: "")
+            let token = MCPAccessToken.abbreviated(pairing.token)
+            return MCPClientKind.claudeCode.setupSnippet(token: token, url: assistants.url, bridgePath: MCPEndpoint.bridgePath)
         }
-        return MCPClientKind.claudeCode.setupSnippet(token: MCPAccessToken.prefix + "…", url: assistants.url, bridgePath: "")
+        return MCPClientKind.claudeCode.setupSnippet(token: MCPAccessToken.prefix + "…", url: assistants.url, bridgePath: MCPEndpoint.bridgePath)
     }
 
     /// Copy: a pairing for Claude Code (its own token), the full command on

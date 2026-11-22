@@ -41,10 +41,13 @@ struct Banner<Actions: View>: View {
                 .layoutPriority(1)
             }
             Spacer(minLength: Spacing.medium)
+            // The buttons keep their whole titles; a long message wraps
+            // instead of squeezing them to a letter each.
             HStack(spacing: Spacing.small) {
                 actions()
             }
             .controlSize(.small)
+            .fixedSize()
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)

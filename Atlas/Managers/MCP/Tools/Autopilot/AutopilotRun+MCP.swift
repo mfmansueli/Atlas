@@ -11,7 +11,7 @@ extension AutopilotRun {
     func mcpPlan(appName: String, bundleID: String, port: UInt16) -> JSONValue {
         let upload = MCPEndpoint.autopilotUploadURL(port: port, token: uploadToken)
         let screens = plan.screens.enumerated().map { mcpScreen($0.element, slot: $0.offset + 1) }
-        let devices: [JSONValue] = plan.runDisplays.map { display in
+        let devices: [JSONValue] = mcpDisplays.map { display in
             var device: [String: JSONValue] = [
                 "displayType": .string(display.mcpValue),
                 "simulator": .string(display == .mac ? String(localized: "This Mac (no simulator)") : display.deviceName),
@@ -34,7 +34,7 @@ extension AutopilotRun {
         // Each locale's own language (`zh-Hant` and `pt-PT` aren't `zh`
         // and `pt`) and its App Store country's formats.
         let newCodes = Set(plan.addedLocaleCodes)
-        let locales: [JSONValue] = plan.capturedLocales.map { code in
+        let locales: [JSONValue] = mcpLocales.map { code in
             var locale: [String: JSONValue] = [
                 "locale": .string(code),
                 "launchArguments": .string(StoreLocale.simulatorLaunchArguments(for: code)),
@@ -70,6 +70,24 @@ extension AutopilotRun {
         json["alsoMake"] = mcpAlsoMake(upload: upload)
         json["noScreenshots"] = mcpNoScreenshots
         return .object(json)
+    }
+
+    /// The devices `get_capture_plan` lists: the run's, or in a
+    /// capture-only run the ones it redoes captures on (and the App
+    /// Preview's, when it records moments again).
+    private var mcpDisplays: [ScreenshotDisplayType] {
+        guard isRecapturing, let recapture else { return plan.runDisplays }
+        let redone = Set(recapture.targets.map(\.displayType))
+        let recorded = recapture.momentIDs.isEmpty ? [] : Set(plan.previewDisplays)
+        return plan.runDisplays.filter { redone.contains($0) || recorded.contains($0) }
+    }
+
+    /// The languages `get_capture_plan` lists: the run's, or in a
+    /// capture-only run the ones it redoes (Alba's ja, not the other 13).
+    private var mcpLocales: [String] {
+        guard isRecapturing, let recapture, !recapture.targets.isEmpty else { return plan.capturedLocales }
+        let redone = Set(recapture.locales)
+        return plan.capturedLocales.filter(redone.contains)
     }
 
     /// `get_capture_plan`'s `simulatorSetup`: the commands to run (the

@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// "How a change reaches the App Store": Suggested, then Ready to push
-/// (with Review & Push… while something waits), then On the App Store.
+/// (in the toolbar's Review & Push, which is the only push: board 57),
+/// then On the App Store.
 struct OverviewChangePathCard: View {
     let suggestedCount: Int
     let readyCount: Int
@@ -14,7 +15,6 @@ struct OverviewChangePathCard: View {
     let liveVersion: String?
     /// The version being edited, when it isn't the live one: "1.4".
     let editedVersion: String?
-    let onReviewAndPush: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -45,17 +45,9 @@ struct OverviewChangePathCard: View {
         step(
             number: readyCount.formatted(),
             title: String(localized: "Ready to push"),
-            text: String(localized: "What you accepted or edited. The App Store doesn’t change yet."),
+            text: String(localized: "What you accepted or edited, waiting in Review & Push, top right. The App Store doesn’t change yet."),
             tint: readyCount > 0 ? Palette.accent : nil
-        ) {
-            if readyCount > 0 {
-                Button("Review & Push…", action: onReviewAndPush)
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
-                    .controlSize(.small)
-                    .accessibilityIdentifier("overview.changePath.reviewAndPush")
-            }
-        }
+        )
         step(number: liveVersion ?? "—", title: String(localized: "On the App Store"), text: liveText, tint: nil)
     }
 

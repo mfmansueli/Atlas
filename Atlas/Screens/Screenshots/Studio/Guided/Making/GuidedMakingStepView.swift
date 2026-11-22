@@ -19,7 +19,9 @@ struct GuidedMakingStepView: View {
     @Environment(ClaudeCodeLauncher.self) private var launcher: ClaudeCodeLauncher?
 
     var body: some View {
-        if run.stage == .pick {
+        if run.stage == .pick, run.isRecapturing {
+            AutopilotRecapturePickView(studio: studio, run: run)
+        } else if run.stage == .pick {
             AutopilotPickStageView(studio: studio, run: run, isEditable: true)
         } else {
             let simulators = launcher?.simulators

@@ -123,7 +123,7 @@ final class ProductPagesUITests: XCTestCase {
         XCTAssertTrue(element("pages.languageBar").exists)
         XCTAssertTrue(text(of: element("pages.promo.counter")).contains("/ 170"))
         XCTAssertTrue(element("pages.keywordsBox").exists)
-        XCTAssertEqual(element("pages.editor.submit").label, "Push and Submit…")
+        XCTAssertEqual(element("pages.editor.submit").label, "Submit for Review…")
         attach("cp-edit")
         scrollTo(element("pages.screenshotsBox"))
         XCTAssertTrue(element("pages.screenshotsBox").exists)

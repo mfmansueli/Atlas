@@ -99,32 +99,37 @@ struct ScreenshotStudioGuidedTests {
         #expect(ScreenshotStudioModel.directionNote("bigger headline", name: "Night Ink") == "For “Night Ink”: bigger headline")
     }
 
-    @Test func pushWaitsForEveryPart() async {
+    @Test func approveAllWaitsForCaptionProposalsOnly() async {
         let (model, _) = await screenshots(StudioDebugGuided.ready(approved: []))
         let studio = model.studio
         #expect(studio.guidedParts == [.screenshots, .artwork, .appPreview])
         #expect(studio.guidedShownPart == .screenshots)
-        #expect(!studio.canPushGuided)
 
         studio.toggleApproval(.screenshots)
         #expect(studio.isApproved(.screenshots))
         #expect(studio.guided.reviewPart == .artwork, "On to the next part not approved")
         #expect(studio.guidedApprovedCount == 1)
 
-        studio.toggleApproval(.artwork)
-        studio.toggleApproval(.appPreview)
-        // The sample's caption proposals change these screenshots: the push
-        // waits for the person to decide them.
+        // The sample's caption proposals change these screenshots: Approve
+        // All waits for the person to decide them.
         let waiting = studio.guidedCaptionProposals
         #expect(!waiting.isEmpty)
-        #expect(!studio.canPushGuided, "A caption proposal waits")
+        #expect(!studio.canApproveAllGuided, "A caption proposal waits")
         for proposal in waiting {
             await studio.rejectGuidedProposal(proposal.id)
         }
-        #expect(studio.canPushGuided)
+        #expect(studio.canApproveAllGuided, "Approve All approves what's left itself")
+    }
 
-        studio.toggleApproval(.artwork)
-        #expect(!studio.canPushGuided, "Taken back")
+    @Test func approveAllApprovesEveryPartAndEndsTheSheet() async throws {
+        let (model, center) = await screenshots(StudioDebugGuided.ready(approved: [.screenshots]))
+        let studio = model.studio
+        studio.approveRemainingParts(at: StudioTestFixtures.now)
+        #expect(studio.guidedParts.allSatisfy(studio.isApproved))
+        let run = try #require(center.run(for: appID))
+        #expect(run.guidedReview?.approvedAllAt == StudioTestFixtures.now)
+        #expect(run.guidedReview?.pushedAt == nil, "Nothing is pushed from the sheet")
+        #expect(GuidedStep.step(of: run, setup: .make) == .done)
     }
 
     @Test func looksGoodConfirmsTheShortenedCaption() async throws {

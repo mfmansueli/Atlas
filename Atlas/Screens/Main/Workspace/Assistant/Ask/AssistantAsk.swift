@@ -11,7 +11,7 @@ import Foundation
 /// each app (`AssistantAskCenter`).
 struct AssistantAsk: Identifiable, Hashable, Sendable {
     enum Phase: Hashable, Sendable {
-        /// The token is flying to the toolbar's Assistant button.
+        /// The token is flying to the toolbar's Autopilot button.
         case sending
         /// The assistant works on it: the toolbar says Working….
         case working
@@ -31,10 +31,10 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
     /// The subject as VoiceOver says it: commas, not dots.
     var spokenSubject: String { subject.replacingOccurrences(of: " · ", with: ", ") }
 
-    /// "Sent to Claude Code: Store Page. The Assistant button in the
+    /// "Sent to Claude Code: Store Page. The Autopilot button in the
     /// toolbar shows it’s working."
     var announcement: String {
-        String(localized: "Sent to \(client): \(spokenSubject). The Assistant button in the toolbar shows it’s working.")
+        String(localized: "Sent to \(client): \(spokenSubject). The Autopilot button in the toolbar shows it’s working.")
     }
 
     /// The asking buttons' title meanwhile: "Claude Code Is Working…".
@@ -44,10 +44,10 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
         String(localized: "\(client) Is Working…")
     }
 
-    /// The toolbar button's label: "Assistant, Claude Code is working on
+    /// The toolbar button's label: "Autopilot, Claude Code is working on
     /// Store Page".
     var toolbarLabel: String {
-        String(localized: "Assistant, \(client) is working on \(spokenSubject)")
+        String(localized: "Autopilot, \(client) is working on \(spokenSubject)")
     }
 
     /// What the toolbar's popover says about it.

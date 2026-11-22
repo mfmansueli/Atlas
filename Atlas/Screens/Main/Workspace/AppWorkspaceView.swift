@@ -5,11 +5,12 @@
 
 import SwiftUI
 
-/// The detail column for the selected app: the toolbar (the Assistant
-/// button, Refresh, Activity and Review & Push; while the sidebar is
-/// hidden also the section menu and the app's title) over the current
-/// section, and the window's toasts (Suggest Everything's total when it
-/// finishes).
+/// The detail column for the selected app: the toolbar (board 57: the
+/// section's title over its state, with “N not pushed” opening Review &
+/// Push on that section; the Autopilot button, Refresh, Activity and
+/// Review & Push; while the sidebar is hidden the section menu first) over
+/// the current section, and the window's toasts (Suggest Everything's
+/// total when it finishes).
 struct AppWorkspaceView: View {
     let app: StoreApp
     /// Every app in the library.
@@ -28,7 +29,14 @@ struct AppWorkspaceView: View {
     @Environment(FieldSuggestionStore.self) private var suggestions
     @Environment(ProGate.self) private var pro: ProGate?
     @Environment(\.askCenterOverride) private var askCenterOverride
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var toolbarLayout = WorkspaceToolbarLayout()
+    @State private var isAskingQuestion = false
+    /// The guided runs, which the menu bar icon reads too.
+    private var autopilot: AutopilotCenter { .shared }
+    /// Reply Automatically (board 58).
+    private var autoReply: AutoReplyCenter { .shared }
 
     private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
 
@@ -50,9 +58,13 @@ struct AppWorkspaceView: View {
                     navigator.analyticsOrigin = nil
                 }
             }
+            // The page scrolls under the toolbar, which has no background
+            // of its own (board 57): the soft edge keeps the title readable;
+            // with Reduce Transparency, the hard edge gives it the window's
+            // color.
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scrollEdgeEffectStyle(.hard, for: .top)
+                .scrollEdgeEffectStyle(reduceTransparency ? .hard : .soft, for: .top)
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
         .overlay(alignment: .bottom) {
@@ -78,28 +90,35 @@ struct AppWorkspaceView: View {
             guard let finished else { return }
             navigator.toast = WorkspaceToast(message: ToastMessage(text: finished.text))
         }
+        .sheet(isPresented: $isAskingQuestion) {
+            AutopilotQuestionSheet(client: clientName, appName: app.name) { question in
+                startAsk(.askSomethingElse, question: question)
+            }
+        }
         .navigationTitle(app.name)
         .navigationSubtitle(app.bundleID)
         .toolbar(removing: .title)
         .toolbar {
-            // The sections are in the sidebar. While it's hidden, the
-            // toolbar has them as a menu, and names the app and its version.
+            // The sections are in the sidebar; while it's hidden, the
+            // toolbar has them as a menu, first.
             if !navigator.isSidebarShown {
                 ToolbarItem(placement: .navigation) {
                     SectionMenuButton(counts: counts, selection: $navigator.section, startsOpen: Self.opensSectionMenu)
                 }
-                if toolbarLayout.showsTitle(isSidebarShown: false) {
-                    ToolbarItem(placement: .navigation) {
-                        WorkspaceToolbarTitle(name: app.name, subtitle: version?.line ?? app.bundleID)
+            }
+            if toolbarLayout.showsTitle {
+                ToolbarItem(placement: .navigation) {
+                    WorkspaceToolbarTitle(title: navigator.section.fullTitle, status: sectionStatus) {
+                        navigator.review(section: navigator.section)
                     }
-                    .sharedBackgroundVisibility(.hidden)
                 }
+                .sharedBackgroundVisibility(.hidden)
             }
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
             // Its own capsule: a request's token lands on it.
             ToolbarItem(placement: .primaryAction) {
-                assistantIndicator
+                autopilotButton
             }
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItemGroup(placement: .primaryAction) {
@@ -147,9 +166,41 @@ struct AppWorkspaceView: View {
         #endif
     }
 
-    /// The toolbar's Assistant button.
-    private var assistantIndicator: some View {
-        AssistantToolbarIndicator(
+    // MARK: - Title
+
+    /// “32 suggestions · 3 not pushed” under the section's title; on
+    /// Overview, the app and its version first.
+    private var sectionStatus: WorkspaceSectionStatus {
+        let section = navigator.section
+        var notPushed = changes.changes(for: app.id, section: section).count
+        if section == .screenshots {
+            notPushed += push.screenshots.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
+            notPushed += push.screenshots.extras.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
+        }
+        let lead = section == .overview ? [app.name, version?.line].compactMap(\.self).joined(separator: " · ") : nil
+        let rule = autoReply.rule(for: app.id)
+        let note = section == .reviews && rule.isOn && !pro.isFree
+            ? (rule.isPaused ? String(localized: "auto-reply paused") : String(localized: "auto-reply on")) : nil
+        return WorkspaceSectionStatus(section: section, waiting: counts.count(for: section), notPushed: notPushed, lead: lead, note: note)
+    }
+
+    // MARK: - Autopilot
+
+    /// The toolbar's Autopilot button.
+    private var autopilotButton: some View {
+        let run = autopilot.run(for: app.id)
+        return AutopilotToolbarButton(
+            items: autopilotItems,
+            everythingTitle: navigator.section == .overview ? nil : String(localized: "Everything for \(app.name)…"),
+            state: autopilotState(run: run),
+            runProgress: run.flatMap { $0.stage.isRunning ? GuidedRunProgress.make($0, now: .now) : nil },
+            isCompact: toolbarLayout.isAutopilotCompact,
+            onAction: runAutopilot,
+            onOpenRun: openNeeds,
+            onCancelRun: run.flatMap { AutopilotCenter.cancellableStages.contains($0.stage) ? { autopilot.cancelRun(appID: app.id) } : nil },
+            autoReplyPaused: autoReply.rule(for: app.id).isOn && !pro.isFree ? autoReply.rule(for: app.id).isPaused : nil,
+            onPauseAutoReply: { autoReply.setPaused($0, for: app.id) },
+            onAutoReplySettings: { navigator.open(.reviews, intent: .autopilot(.replyAutomatically), appID: app.id) },
             activity: assistantActivity,
             status: assistants.assistantStatus,
             client: assistants.assistantClient,
@@ -166,6 +217,111 @@ struct AppWorkspaceView: View {
             onSetUp: { navigator.isAssistantSetupPresented = true },
             ask: askCenter.ask(for: app.id)
         )
+    }
+
+    /// The section's actions, named for this app.
+    private var autopilotItems: [WorkspaceAutopilotItem] {
+        let language = app.primaryLocale.flatMap { Locale.current.localizedString(forIdentifier: $0) }
+        let detail = navigator.autopilotDetail
+        return WorkspaceAutopilotAction.actions(for: navigator.section, detail: detail).map { action in
+            WorkspaceAutopilotItem(
+                action: action,
+                title: action.title(version: version?.versionString, sourceLanguage: language, detail: detail),
+                systemImage: action.systemImage,
+                isPro: pro.isFree && action.paywall != nil
+            )
+        }
+    }
+
+    /// What the button says, from what the menu bar icon reads too.
+    private func autopilotState(run: AutopilotRun?) -> WorkspaceAutopilotState {
+        var inputs = WorkspaceAutopilotState.Inputs(
+            askSubject: askCenter.ask(for: app.id)?.subject,
+            workingClient: assistants.isWorking ? assistants.workingClient : nil,
+            isSuggestingEverything: suggestions.run.map { $0.isRunning && $0.appID == app.id } ?? false,
+            launchedRuns: launcher.activeRuns.count { $0.appID == app.id },
+            autoReplyNeeds: autoReply.needsYouCount(for: app.id)
+        )
+        if let run {
+            if run.stage.isRunning, run.finishedAt == nil {
+                inputs.screenshotRunWorking = GuidedRunProgress.make(run, now: .now).title
+            } else {
+                inputs.screenshotRunNeeds = screenshotNeeds(run)
+            }
+        }
+        let rule = autoReply.rule(for: app.id)
+        if navigator.section == .reviews, rule.isOn, !pro.isFree {
+            inputs.autoReplyOn = WorkspaceAutopilotState.autoReplyLine(isPaused: rule.isPaused, sentToday: autoReply.sentToday(for: app.id))
+        }
+        return WorkspaceAutopilotState(inputs)
+    }
+
+    /// What the guided run waits for; a set approved into Review & Push
+    /// waits for nothing.
+    private func screenshotNeeds(_ run: AutopilotRun) -> String? {
+        guard !(run.stage.isRunning && run.finishedAt == nil), let turn = BackgroundNeedsBuilder.turn(for: run.stage),
+              !(run.stage == .ready && run.guidedReview?.isFinished == true) else { return nil }
+        return WorkspaceAutopilotState.needs(turn)
+    }
+
+    /// The purple button: the guided run's step, else the reviews Reply
+    /// Automatically left for the person.
+    private func openNeeds() {
+        if let run = autopilot.run(for: app.id), screenshotNeeds(run) != nil || run.stage.isRunning {
+            openRun()
+        } else if autoReply.needsYouCount(for: app.id) > 0 {
+            navigator.open(.reviews, appID: app.id)
+        } else {
+            openRun()
+        }
+    }
+
+    /// Runs one of the button's actions: Pro's ask for the paywall on Free;
+    /// a section's own flow opens there; the rest ask Claude Code.
+    private func runAutopilot(_ action: WorkspaceAutopilotAction) {
+        if let paywall = action.paywall {
+            pro.require(paywall) { perform(action) }
+        } else {
+            perform(action)
+        }
+    }
+
+    private func perform(_ action: WorkspaceAutopilotAction) {
+        switch action {
+        case .suggestEverything: suggestEverything()
+        case .suggestTexts: navigator.open(.storePage, intent: .askForSuggestions(.storePage), appID: app.id)
+        case .translateNewLanguage: navigator.open(.storePage, intent: .translateMissing, appID: app.id)
+        case .suggestAnswers: navigator.open(.appInformation, intent: .askForSuggestions(.appInformation), appID: app.id)
+        case .checkPrivacy: navigator.open(.appInformation, intent: .openAppInformationPage(.appPrivacy), appID: app.id)
+        case .askSomethingElse: isAskingQuestion = true
+        case .makeScreenshots, .makeAppPreview, .makeArtwork, .suggestPages, .makePageScreenshots, .makeEventArtwork, .replyAutomatically:
+            if let section = action.section { navigator.open(section, intent: .autopilot(action), appID: app.id) }
+        default: startAsk(action)
+        }
+    }
+
+    /// The assistant's name, for the requests' words.
+    private var clientName: String {
+        assistants.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
+    }
+
+    /// Asks Claude Code from the toolbar, or copies the request to paste.
+    private func startAsk(_ action: WorkspaceAutopilotAction, question: String? = nil) {
+        let language = app.primaryLocale.flatMap { Locale.current.localizedString(forIdentifier: $0) }
+        guard let ask = WorkspaceAutopilotAsk.make(
+            action, app: app.name, version: version?.versionString, sourceLanguage: language, question: question
+        ) else { return }
+        let client = clientName
+        switch AssistantAskStarter.start(ask, app: app, client: client, launcher: launcher, askCenter: askCenter, reduceMotion: reduceMotion) {
+        case .sent: break
+        case .copied: navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAskStarter.copiedText(client: client)))
+        case .busy: navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAsk.busyTitle(client: client)))
+        }
+    }
+
+    /// The guided run at its step, in Screenshots.
+    private func openRun() {
+        navigator.open(.screenshots, intent: .autopilot(.makeScreenshots), appID: app.id)
     }
 
     private var assistantActivity: AssistantActivity {

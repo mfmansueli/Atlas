@@ -11,8 +11,6 @@ import SwiftUI
 /// `propose_product_page_texts`, and wait here as suggestions.
 struct ProductPagesAskButton: View {
     enum Kind {
-        /// The list's Suggest Pages.
-        case suggestPages
         /// The empty list's Ask Claude Code for Ideas.
         case ideas
         /// After a text Atlas stopped: Ask for Another.
@@ -40,7 +38,6 @@ struct ProductPagesAskButton: View {
 
     private func title(_ client: String) -> String {
         switch kind {
-        case .suggestPages: String(localized: "Suggest Pages")
         case .ideas: String(localized: "Ask \(client) for Ideas")
         case .another: String(localized: "Ask for Another")
         }
@@ -48,14 +45,14 @@ struct ProductPagesAskButton: View {
 
     private func help(_ client: String) -> String {
         switch kind {
-        case .suggestPages, .ideas: String(localized: "Ask \(client) to suggest pages from your reviews, your numbers and your keywords")
+        case .ideas: String(localized: "Ask \(client) to suggest pages from your reviews, your numbers and your keywords")
         case .another: String(localized: "Ask \(client) for a text that follows App Review’s rules")
         }
     }
 
     private func explanation(_ client: String) -> String {
         switch kind {
-        case .suggestPages, .ideas:
+        case .ideas:
             String(localized: """
             \(client) reads \(app.name)’s pages, reviews and numbers, and suggests pages: who each is for, why, its \
             keywords and promotional text. They wait at the top of the list; accepted, each is a draft you push and submit \
@@ -71,7 +68,7 @@ struct ProductPagesAskButton: View {
 
     private var subject: String? {
         switch kind {
-        case .suggestPages, .ideas: String(localized: "Custom Product Pages · ideas for new pages")
+        case .ideas: String(localized: "Custom Product Pages · ideas for new pages")
         case let .another(pageName): String(localized: "Custom Product Pages · \(pageName)")
         }
     }

@@ -5,10 +5,10 @@
 
 import SwiftUI
 
-/// How many of this app's changes wait in Review & Push.
+/// How many of this app's changes wait in Review & Push, which is in the
+/// toolbar: the card says where, and has no push of its own (board 57).
 struct PendingChangesCard: View {
     let count: Int
-    let onReview: () -> Void
 
     var body: some View {
         Card {
@@ -20,10 +20,9 @@ struct PendingChangesCard: View {
                         .font(.title3.weight(.semibold))
                         .monospacedDigit()
                 }
-                Button("Review & Push…", action: onReview)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .buttonBorderShape(.capsule)
+                Text("They wait in Review & Push, top right.")
+                    .font(.subheadline)
+                    .foregroundStyle(Palette.label2)
             } else {
                 Text("Nothing waiting")
                     .font(.title3.weight(.semibold))

@@ -7,7 +7,7 @@ import SwiftUI
 
 /// The overview's top: icon and name, the version the Store Page edits and
 /// where the app is on the App Store, its bundle ID and SKU, plus the quick
-/// actions.
+/// actions. Pushing is the toolbar's Review & Push (board 57).
 struct OverviewHeader: View {
     let app: StoreApp
     let storePage: StorePageSummary?
@@ -21,7 +21,6 @@ struct OverviewHeader: View {
     let showsReviewSuggestions: Bool
     let onReviewSuggestions: () -> Void
     let onTranslateMissing: () -> Void
-    let onReviewAndPush: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.large) {
@@ -56,11 +55,6 @@ struct OverviewHeader: View {
                     Label("Translate Missing…", systemImage: "globe")
                 }
                 .accessibilityIdentifier("overview.translateMissing")
-                Button(action: onReviewAndPush) {
-                    Label("Review & Push", systemImage: "arrow.up.circle")
-                }
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("overview.reviewAndPush")
             }
             .buttonBorderShape(.capsule)
             .fixedSize()

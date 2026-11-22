@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R)
-/// in View, a Push menu with Review & Push (⇧⌘P) and Activity, plus the
+/// in View, a Product menu with Run Autopilot (⌥⌘A, the toolbar Autopilot
+/// button's action), Review & Push (⇧⌘P) and Activity, plus the
 /// section-specific commands that work through `WorkspaceIntent`.
 struct WorkspaceCommands: Commands {
     @FocusedValue(\.workspaceNavigator) private var navigator
@@ -56,8 +57,10 @@ struct WorkspaceCommands: Commands {
             }
             .disabled(navigator == nil)
         }
-        CommandMenu("Push") {
+        CommandMenu("Product") {
             Group {
+                Button("Run Autopilot") { navigator?.requestsAutopilot = true }
+                    .keyboardShortcut("a", modifiers: [.command, .option])
                 Button("Review & Push…") { navigator?.isReviewPresented = true }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
                 Button("Activity") { navigator?.isActivityPresented = true }

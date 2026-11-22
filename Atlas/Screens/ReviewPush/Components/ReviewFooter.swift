@@ -53,6 +53,7 @@ struct ReviewFooter: View {
 
     private var pushAllTitle: String {
         let count = viewModel.pushableChanges.count
+        if let section = viewModel.scope.section { return ReviewPushViewModel.pushTitle(count, from: section) }
         return count == 1 ? String(localized: "Push 1 Change") : String(localized: "Push \(count) Changes")
     }
 }

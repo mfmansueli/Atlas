@@ -14,6 +14,8 @@ struct ReviewsScreen: View {
     let onUpgrade: () -> Void
 
     @State private var width: CGFloat = 0
+    /// For Reply Automatically's next check; nil in previews.
+    @Environment(BackgroundWork.self) private var background: BackgroundWork?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -50,15 +52,9 @@ struct ReviewsScreen: View {
 
     private var header: some View {
         SectionHeader(
-            systemImage: AppWorkspaceSection.reviews.systemImage,
-            tint: Palette.sectionReviews,
-            title: String(localized: "Ratings & Reviews"),
             subtitle: String(localized: "What people write about \(viewModel.app.name), in every country, and your replies.")
         ) {
-            if viewModel.isPro, viewModel.hasLoaded {
-                ReviewsAskButton(app: viewModel.app)
-                    .buttonBorderShape(.capsule)
-            }
+            // Draft Replies… is the toolbar's Autopilot (board 57).
             Toggle(isOn: Binding { viewModel.translates } set: { viewModel.setTranslates($0) }) {
                 Text("Translate to \(ReviewLanguage.appLanguageName)")
                     .font(.callout)
@@ -71,6 +67,18 @@ struct ReviewsScreen: View {
 
     @ViewBuilder
     private var banners: some View {
+        if viewModel.showsAutoReplyStrip {
+            AutoReplyStrip(
+                rule: viewModel.autoReplyRule,
+                nextCheck: background?.nextCheckAt,
+                hold: viewModel.autoReplyHold,
+                writeProblem: viewModel.autoReplyWriteProblem,
+                historyCount: viewModel.autoReplyHistory.count,
+                onPause: { viewModel.setAutoReplyPaused($0) },
+                onHistory: { viewModel.isAutoReplyHistoryPresented = true },
+                onSettings: { viewModel.isAutoReplySettingsPresented = true }
+            )
+        }
         if let message = viewModel.errorMessage, viewModel.bulkPlan == nil {
             Banner(kind: .apiError, title: String(localized: "Couldn’t read the reviews"), message: message, isInline: true) {
                 Button("Try Again") {

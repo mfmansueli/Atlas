@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// The new subscriptions waiting in Review & Push, each with its product
-/// ID, duration and price, who proposed it, and Discard; then Review & Push.
+/// ID, duration and price, who proposed it, and Discard. They're pushed
+/// from the toolbar's Review & Push (board 57).
 struct QueuedNewSubscriptionsList: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -21,12 +22,6 @@ struct QueuedNewSubscriptionsList: View {
                         row(change)
                     }
                 }
-            }
-            HStack {
-                Spacer()
-                Button("Review & Push…", action: viewModel.onOpenReview)
-                    .buttonBorderShape(.capsule)
-                    .accessibilityIdentifier("pricing.newSubscriptions.review")
             }
         }
         .accessibilityElement(children: .contain)

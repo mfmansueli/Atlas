@@ -65,7 +65,7 @@ enum GuidedLiveTimeline {
             }
         }
         // A finished, pushed run has nothing left at all.
-        if run.stage == .ready, run.guidedReview?.pushedAt != nil {
+        if run.stage == .ready, run.guidedReview?.isFinished == true {
             for row in rows { states[row.kind] = .done }
         }
         return states

@@ -14,7 +14,7 @@ extension InAppEventsViewModel {
         guard let event = selectedEvent, let shown = suggestion ?? revision else { return }
         accept([shown], of: event)
         let name = InAppEventChangeBuilder.localeName(shown.locale)
-        toast = ToastMessage(text: String(localized: "Accepted \(name). It’s in Review & Push."), canUndo: true, actionTitle: String(localized: "Review & Push"))
+        toast = ToastMessage(text: String(localized: "Accepted \(name). It’s waiting in Review & Push, top right."), canUndo: true, actionTitle: String(localized: "Review & Push"))
     }
 
     /// Dismiss on the suggestion showing: people there keep seeing the
@@ -41,7 +41,7 @@ extension InAppEventsViewModel {
         accept(batch, of: event)
         let name = ReleaseViewModel.displayName(of: event)
         toast = ToastMessage(
-            text: String(localized: "Accepted \(ReviewText.languages(batch.count)) for \(name). They’re in Review & Push."),
+            text: String(localized: "Accepted \(ReviewText.languages(batch.count)) for \(name). They’re waiting in Review & Push, top right."),
             canUndo: true, actionTitle: String(localized: "Review & Push")
         )
     }

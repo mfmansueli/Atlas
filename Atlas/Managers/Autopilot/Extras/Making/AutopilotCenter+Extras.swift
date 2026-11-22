@@ -21,7 +21,7 @@ extension AutopilotCenter {
     private func makeEveryExtra(_ appID: StoreApp.ID, context: AutopilotContext) async -> ScreenshotExtras? {
         guard let run = runs[appID], Self.makesExtras(run) else { return nil }
         let direction = run.chosenDirection
-        let plan = run.plan
+        let plan = Self.extrasPlan(for: run)
         var progress = AutopilotExtrasProgress()
         progress.artworkTotal = plan.artworkKinds.isEmpty ? 0 : plan.localeCodes.count
         progress.previewsTotal = direction == nil ? 0 : plan.previewDisplays.count * plan.previewLocales.count
@@ -160,5 +160,13 @@ extension AutopilotCenter {
             return String(localized: "\(what) rendered in \(count) languages · headline fits in all")
         }
         return String(localized: "\(what) rendered in \(count) languages · headline too long in \(tooLong.formatted(.list(type: .and)))")
+    }
+
+    /// What `run` makes: a capture-only run makes the App Preview again with
+    /// its new takes, and the header and search artwork stay as they were.
+    static func extrasPlan(for run: AutopilotRun) -> AutopilotPlan {
+        var plan = run.plan
+        if run.recapture != nil { plan.alsoMakes.makesArtwork = false }
+        return plan
     }
 }
