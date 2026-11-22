@@ -550,6 +550,7 @@ extension PushController {
         // The app's price or first availability: one POST, its refusal explained.
         let appSale = try await sendAppSaleStep(request, transport: transport)
         if retention || appSale { return true }
+        if try await sendPurchaseSetupStep(request, at: index, transport: transport) { return true }
         if let create = NewSubscriptionCreate(request) {
             let id = try await create.send(via: transport) { noteRequest($0) }
             items[index].createdID = id
@@ -587,12 +588,6 @@ extension PushController {
             )
             return true
         }
-        if let availability = SubscriptionAvailabilityEverywhere(request) {
-            let territories = try await everyTerritory(transport: transport)
-            let response = try await transport.send(availability.request(territoryIDs: territories))
-            noteRequest(response.rateLimit)
-            return true
-        }
         guard let prices = SubscriptionStartingPrices(request) else { return false }
         defer { items[index].progressNote = nil }
         try await subscriptionSetup.send(prices, via: transport) { set, total in
@@ -614,7 +609,7 @@ extension PushController {
     }
 
     /// Every territory App Store Connect has, read on first use in a push.
-    private func everyTerritory(transport: any PushTransport) async throws -> [String] {
+    func everyTerritory(transport: any PushTransport) async throws -> [String] {
         try await subscriptionSetup.everyTerritory(via: transport) { noteRequest($0) }
     }
 

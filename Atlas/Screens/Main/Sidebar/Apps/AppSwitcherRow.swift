@@ -6,12 +6,15 @@
 import SwiftUI
 
 /// One app in the app menu: icon, name and bundle ID, a dot for unpushed
-/// changes, the purple count of suggestions to review, and a check on the
-/// app being viewed.
+/// changes, the purple count of suggestions to review, a check on the
+/// app being viewed, and a PRO chip on the apps Free doesn't open.
 struct AppSwitcherRow: View {
     let app: StoreApp
     var indicators = AppIndicators()
     let isCurrent: Bool
+    /// In Free, an app other than the free one: choosing it opens the
+    /// paywall.
+    var isLocked = false
     let action: () -> Void
 
     @State private var isHovered = false
@@ -36,6 +39,9 @@ struct AppSwitcherRow: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 SuggestionBadge(count: indicators.suggestionCount)
+                if isLocked {
+                    ProChip()
+                }
                 if isCurrent {
                     Image(systemName: "checkmark")
                         .font(.caption.weight(.semibold))
@@ -52,7 +58,7 @@ struct AppSwitcherRow: View {
         .onHover { isHovered = $0 }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(app.name))
-        .accessibilityValue(suggestionText)
+        .accessibilityValue(isLocked ? Text("Needs Atlas Pro") : suggestionText)
         .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
     }
 

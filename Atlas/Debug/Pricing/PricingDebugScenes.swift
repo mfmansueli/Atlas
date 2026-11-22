@@ -34,6 +34,9 @@ import SwiftUI
 /// - `offers`: Lumen Annual's promotional offer.
 /// - `pricing-products`: the Prices page's card per product, with their
 ///   suggestions and "What people pay".
+/// - `new-iap`: Create In-App Purchase over Lumen's cards.
+/// - `intro-offer`: Add Introductory Offer… for Lumen Monthly.
+/// - `review-screenshot`: Review Screenshot… for Lumen Lifetime.
 enum PricingDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
 
@@ -42,12 +45,12 @@ enum PricingDebugScenes {
         "pricing-nosales", "pricing-skeleton", "pricing-refresh", "pricing-nosubs", "iap",
         "custom", "custom-tune", "custom-compare", "custom-csv",
         "pricing-map", "pricing-hist", "schedule", "results", "results-waiting", "offers",
-        "pricing-products",
+        "pricing-products", "new-iap", "intro-offer", "review-screenshot",
     ]
 
     @MainActor
     static func view(for id: String) -> AnyView? {
-        pricingScene(id) ?? stateScene(id) ?? customizeScene(id) ?? viewScene(id)
+        pricingScene(id) ?? stateScene(id) ?? customizeScene(id) ?? viewScene(id) ?? setupScene(id)
     }
 
     @MainActor
@@ -132,6 +135,20 @@ enum PricingDebugScenes {
         default:
             nil
         }
+    }
+
+    /// Create In-App Purchase, Add Introductory Offer… and Review Screenshot…
+    /// over the product cards.
+    @MainActor
+    private static func setupScene(_ id: String) -> AnyView? {
+        let sheet: PricingDebugSheet? = switch id {
+        case "new-iap": .newInAppPurchase
+        case "intro-offer": .introductoryOffer(productID: DebugPricingCatalog.lumenMonthlyID)
+        case "review-screenshot": .reviewScreenshot(productID: DebugPricingCatalog.lumenLifetimeID)
+        default: nil
+        }
+        guard let sheet else { return nil }
+        return scene(launch: PricingDebugLaunch(showsProducts: true, sheet: sheet))
     }
 
     /// Lumen Annual's push on Oct 26, 2026 on top of the usual history.

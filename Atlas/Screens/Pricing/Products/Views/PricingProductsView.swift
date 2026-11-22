@@ -31,10 +31,16 @@ struct PricingProductsView: View {
                     ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.large))
                     : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.large))
                 layout {
-                    cards
+                    VStack(alignment: .leading, spacing: Spacing.large) {
+                        cards
+                        if !viewModel.queuedNewProducts.isEmpty {
+                            QueuedNewSubscriptionsList(viewModel: viewModel)
+                        }
+                    }
                     PricingWhatPeoplePay(viewModel: viewModel)
                 }
             }
+            .task(id: viewModel.catalog?.products.map(\.id)) { await viewModel.loadPurchaseExtras() }
             .padding(.horizontal, Spacing.xLarge)
             .padding(.vertical, Spacing.large)
             .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 - 2 * Spacing.xLarge }
@@ -93,7 +99,8 @@ struct PricingProductsView: View {
                                 accept()
                             }
                         },
-                        onOpen: { Task { await viewModel.openDetails(productID: product.id) } }
+                        onOpen: { Task { await viewModel.openDetails(productID: product.id) } },
+                        setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product))
                     )
                 } else if let message = viewModel.productErrors[product.id] {
                     unavailable(product, message: message)

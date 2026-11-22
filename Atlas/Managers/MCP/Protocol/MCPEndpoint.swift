@@ -54,6 +54,14 @@ enum MCPEndpoint {
         "http://\(host):\(port)\(screenshotFilePath)\(token)/\(appID)"
     }
 
+    /// The review screenshot upload link: a subscription's or in-app
+    /// purchase's App Review screenshot for `propose_purchase_review_screenshot`.
+    static let reviewScreenshotPath = "/review-screenshot/"
+
+    static func reviewScreenshotUploadURL(port: UInt16, token: String, appID: String) -> String {
+        "http://\(host):\(port)\(reviewScreenshotPath)\(token)/\(appID)"
+    }
+
     static func url(port: UInt16) -> String {
         "http://\(host):\(port)\(path)"
     }

@@ -42,6 +42,13 @@ final class ProGate {
 
     var isFree: Bool { !entitlements.isPro }
 
+    /// Whether `appID` needs Pro: in Free, every app but the free one once
+    /// it's chosen. Only asks; `mayOpen` is what picks the free app.
+    func isLocked(appID: String) -> Bool {
+        guard isFree, let freeAppID else { return false }
+        return freeAppID != appID
+    }
+
     func require(_ context: PaywallContext, then action: @escaping () -> Void) {
         if let feature = context.feature, !entitlements.canUse(feature) {
             paywall = PaywallModel(context: context, entitlements: entitlements, onContinue: action)

@@ -19,12 +19,16 @@ import Foundation
 ///    in new ones (`SubscriptionAvailabilityEverywhere`).
 /// 5. The starting price in the United States, equalized everywhere else
 ///    (`SubscriptionStartingPrices`).
+/// 6. Its App Review screenshot, when it has one, and an introductory
+///    offer added while it waits (`PurchaseSetupQueue`).
 ///
 /// A failure resumes after the steps that went through. A subscription
 /// can't be deleted through the API once it's created, so the change has
 /// nothing to restore. Its review screenshot is added in App Store Connect.
 struct NewSubscriptionChangeBuilder {
     let app: StoreApp
+    /// Where its review screenshot waits (step 6, when it has one).
+    var folder: PurchaseReviewScreenshotFolder = .shared
 
     static let idPrefix = "subscriptionSetup."
 
@@ -59,7 +63,9 @@ struct NewSubscriptionChangeBuilder {
     @MainActor
     static func takenProductIDs(appID: StoreApp.ID, catalog: PricingCatalog?, queue: ChangeQueue, except changeID: PendingChange.ID) -> Set<String> {
         let queued = queued(in: queue, appID: appID).filter { $0.id != changeID }.compactMap(productID(of:))
-        return Set((catalog?.products.map(\.productID) ?? []) + queued)
+        let purchases = NewInAppPurchaseChangeBuilder.queued(in: queue, appID: appID).filter { $0.id != changeID }
+            .compactMap(NewInAppPurchaseChangeBuilder.productID(of:))
+        return Set((catalog?.products.map(\.productID) ?? []) + queued + purchases)
     }
 
     var group: String { String(localized: "Subscription Pricing · New subscriptions") }
@@ -148,6 +154,9 @@ struct NewSubscriptionChangeBuilder {
         if let price = subscription.price {
             requests.append(SubscriptionStartingPrices.request(subscriptionID: subscriptionID, territoryID: NewSubscription.baseTerritoryID, price: price))
         }
+        if let file = subscription.reviewScreenshot {
+            requests.append(PurchaseReviewScreenshotChangeBuilder(app: app, folder: folder).step(file, owner: .subscription, ownerID: subscriptionID).request)
+        }
         return requests
     }
 
@@ -225,6 +234,9 @@ struct NewSubscriptionChangeBuilder {
         ]
         let note = NewSubscription.trimmed(subscription.reviewNote)
         if !note.isEmpty { fields.append(("reviewNote", NewSubscriptionField.reviewNote.title, note)) }
+        if let file = subscription.reviewScreenshot {
+            fields.append((PurchaseReviewScreenshotChangeBuilder.fieldID, String(localized: "Review screenshot"), file.summary))
+        }
         if !evidence.isEmpty { fields.append(("evidence", String(localized: "Found in"), evidence.joined(separator: "\n"))) }
         return fields.map { PendingChangePart(id: $0.0, title: $0.1, oldValue: "", newValue: $0.2, source: source) }
     }

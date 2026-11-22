@@ -43,5 +43,7 @@ struct PricingDebugLaunch {
     var offerID: SubscriptionOffer.ID?
     /// Pins today, for Results' 28 days and the schedule's earliest date.
     var today: Date?
+    /// Opens a purchase setup sheet.
+    var sheet: PricingDebugSheet?
 }
 #endif

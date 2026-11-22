@@ -46,6 +46,22 @@ final class AppLibraryUITests: XCTestCase {
         XCTAssertTrue(element("sidebar.sortMenu").exists)
     }
 
+    /// In Free, the app menu marks every app but the free one (the first
+    /// opened, Lumen) as needing Pro, and choosing one opens the paywall.
+    func testInFreeTheOtherAppsSayTheyNeedPro() {
+        app.launchArguments = ["-AtlasDebugScene", "apps", "-AtlasPro", "free", "-ApplePersistenceIgnoreState", "YES"]
+        app.launch()
+        XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 10))
+        openAppMenu()
+        let lumen = element("sidebar.app.\(AppID.lumen)")
+        let habitat = element("sidebar.app.\(AppID.habitat)")
+        XCTAssertTrue(habitat.waitForExistence(timeout: 5))
+        XCTAssertNotEqual(lumen.value as? String, "Needs Atlas Pro")
+        XCTAssertEqual(habitat.value as? String, "Needs Atlas Pro")
+        habitat.click()
+        XCTAssertTrue(element("paywall.sheet").waitForExistence(timeout: 5))
+    }
+
     func testTheAppSwitcherShowsTheTeam() {
         launch(scene: "apps")
         let switcher = element("sidebar.appSwitcher")

@@ -30,6 +30,7 @@ struct ProposeSubscriptionTool: MCPTool {
         ],
         "familySharing": ["type": "boolean", "description": "Whether Family Sharing is on. It can't be turned off later."],
         "reviewNote": MCPToolDefinition.string("Optional notes for App Review, e.g. how to reach the paywall."),
+        "reviewScreenshot": MCPToolDefinition.string(MCPReviewScreenshotArgument.description),
         "locale": MCPToolDefinition.string("The App Store Connect locale of displayName and description, e.g. en-US."),
         "evidence": [
             "type": "array",
@@ -48,7 +49,10 @@ struct ProposeSubscriptionTool: MCPTool {
         exactly the one the app's code uses; it can't be changed or reused once created. duration is ONE_WEEK, \
         ONE_MONTH, TWO_MONTHS, THREE_MONTHS, SIX_MONTHS or ONE_YEAR. displayName (≤30) and description (≤45) are \
         written in locale (the app's primary language when left out); price is the starting price in the United \
-        States in US dollars, and every other territory gets Apple's equalized price. Anything App Store Connect \
+        States in US dollars, and every other territory gets Apple's equalized price. reviewScreenshot is the App \
+        Review screenshot of the paywall (without one it stays in Missing Metadata): send the file to \
+        get_subscriptions' reviewScreenshotUploadURL and pass the fileId; add an introductory offer to it with \
+        propose_introductory_offer while it's queued. Anything App Store Connect \
         would refuse is refused with the reasons (status "refused"). An accepted proposal is queued for the \
         person to review (status "queued"); proposing the same productId again replaces it. Nothing reaches App \
         Store Connect until they push. \(StoreTextRules.inAppSummary)
@@ -83,19 +87,23 @@ struct ProposeSubscriptionTool: MCPTool {
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
-        queue.upsert(builder.change(for: subscription, source: .assistant(client: context.clientName), evidence: evidence))
-        let result: JSONValue = [
+        let change = builder.change(for: subscription, source: .assistant(client: context.clientName), evidence: evidence)
+        queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: id), into: change))
+        var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(id),
             "productId": .string(productID),
             "group": .string(subscription.group.isNew ? "\(subscription.group.referenceName) (new)" : subscription.group.referenceName),
             "note": """
             When the person pushes, App Store Connect gets the subscription with its texts, availability everywhere and \
-            the starting price. Its review screenshot is added in App Store Connect; other languages through \
+            the starting price, and its review screenshot when it has one; other languages through \
             propose_in_app_texts once it exists.
             """,
         ]
-        return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .proposed)])
+        if subscription.reviewScreenshot == nil {
+            result["missing"] = "reviewScreenshot: without one it stays in Missing Metadata. Add it with propose_purchase_review_screenshot."
+        }
+        return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .proposed)])
     }
 
     /// What App Review would reject in the subscription's display name,
@@ -148,7 +156,8 @@ struct ProposeSubscriptionTool: MCPTool {
             displayName: arguments.string("displayName"),
             description: arguments.string("description"),
             price: price,
-            reviewNote: arguments.optionalString("reviewNote") ?? ""
+            reviewNote: arguments.optionalString("reviewNote") ?? "",
+            reviewScreenshot: MCPReviewScreenshotArgument.file(arguments.optionalString("reviewScreenshot"), appID: app.id)
         )
     }
 }

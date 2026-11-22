@@ -5,7 +5,9 @@
 
 import Foundation
 
-/// A field of Create Subscription, with App Store Connect's limit.
+/// A field of Create Subscription or Create In-App Purchase, with App
+/// Store Connect's limit. An in-app purchase's display texts are
+/// `purchaseName` and `purchaseDescription`, whose limits differ.
 enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
     case groupReferenceName
     case groupDisplayName
@@ -13,6 +15,8 @@ enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
     case productID
     case displayName
     case description
+    case purchaseName
+    case purchaseDescription
     case price
     case reviewNote
 
@@ -22,8 +26,8 @@ enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
         case .groupDisplayName: String(localized: "Group display name")
         case .referenceName: String(localized: "Reference name")
         case .productID: String(localized: "Product ID")
-        case .displayName: String(localized: "Display name")
-        case .description: String(localized: "Description")
+        case .displayName, .purchaseName: String(localized: "Display name")
+        case .description, .purchaseDescription: String(localized: "Description")
         case .price: String(localized: "Price")
         case .reviewNote: String(localized: "Review notes")
         }
@@ -36,6 +40,8 @@ enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
         case .groupDisplayName: .subscriptionGroupName
         case .displayName: .subscriptionName
         case .description: .subscriptionDescription
+        case .purchaseName: .purchaseName
+        case .purchaseDescription: .purchaseDescription
         case .groupReferenceName, .referenceName, .productID, .price, .reviewNote: nil
         }
     }
@@ -49,6 +55,8 @@ enum NewSubscriptionField: String, CaseIterable, Hashable, Sendable {
         case .groupDisplayName: InAppTextField.subscriptionGroupName.limit.maximum
         case .displayName: InAppTextField.subscriptionName.limit.maximum
         case .description: InAppTextField.subscriptionDescription.limit.maximum
+        case .purchaseName: InAppTextField.purchaseName.limit.maximum
+        case .purchaseDescription: InAppTextField.purchaseDescription.limit.maximum
         case .reviewNote: 4000
         case .price: nil
         }

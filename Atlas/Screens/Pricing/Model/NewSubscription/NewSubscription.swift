@@ -29,6 +29,9 @@ struct NewSubscription: Hashable, Sendable {
     var price: Decimal?
     /// For App Review, e.g. how to reach the paywall.
     var reviewNote = ""
+    /// What App Review sees: the paywall. Without one the subscription
+    /// stays in Missing Metadata and StoreKit doesn't return it.
+    var reviewScreenshot: PurchaseReviewScreenshotFile?
 
     /// Where the starting price is set; the others are equalized with it.
     static let baseTerritoryID = "USA"

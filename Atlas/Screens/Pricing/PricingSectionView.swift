@@ -154,6 +154,7 @@ struct PricingSectionView: View {
         model.onNotice = { [push] notice in push.report(notice) }
         model.onOpenReview = { [navigator] in navigator.isReviewPresented = true }
         model.pushRecords = { [history] in history.records(for: appID) }
+        model.setup.transport = { [weak push] in push?.transport }
         retention.onOpenReview = { [navigator] in navigator.isReviewPresented = true }
     }
 

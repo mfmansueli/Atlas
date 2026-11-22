@@ -60,7 +60,7 @@ extension PricingViewModel {
     /// Create Subscription's Add to Review & Push.
     func queueNewSubscription(_ subscription: NewSubscription) {
         let change = newSubscriptionBuilder.change(for: subscription, problems: problems(for: subscription), at: today())
-        queue.upsert(change)
+        queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: change.id), into: change))
         isNewSubscriptionSheetPresented = false
     }
 

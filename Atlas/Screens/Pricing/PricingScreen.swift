@@ -69,6 +69,7 @@ struct PricingScreen: View {
         }
         .sheet(isPresented: $viewModel.isNewSubscriptionSheetPresented) {
             NewSubscriptionSheet(
+                appID: viewModel.app.id,
                 appName: viewModel.app.name,
                 bundleID: viewModel.app.bundleID,
                 groups: viewModel.subscriptionGroups,
@@ -78,6 +79,7 @@ struct PricingScreen: View {
                 onAdd: viewModel.queueNewSubscription
             )
         }
+        .modifier(PurchaseSetupSheets(viewModel: viewModel))
         .sheet(isPresented: $viewModel.isStartingPriceSheetPresented) {
             StartingPriceSheet(
                 productName: viewModel.selectedProduct?.name ?? "",

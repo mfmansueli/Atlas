@@ -13,12 +13,15 @@ struct AppPriceAvailabilityCards: View {
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
+            // Side by side, both as tall as the taller one, their links
+            // on the same line at the bottom.
             HStack(alignment: .top, spacing: Spacing.medium) {
                 AppPriceCard(model: model)
-                    .frame(minWidth: 280)
+                    .frame(minWidth: 280, maxHeight: .infinity)
                 AppAvailabilityCard(model: model)
-                    .frame(minWidth: 280)
+                    .frame(minWidth: 280, maxHeight: .infinity)
             }
+            .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 AppPriceCard(model: model)
                 AppAvailabilityCard(model: model)

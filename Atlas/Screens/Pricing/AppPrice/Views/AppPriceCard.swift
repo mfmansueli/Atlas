@@ -94,6 +94,8 @@ struct AppPriceCard: View {
                     .foregroundStyle(Palette.label2)
             }
         }
+        // At the bottom when the card is as tall as Availability.
+        Spacer(minLength: 0)
         HStack {
             Spacer()
             Button("Change Price…") { model.isPriceSheetPresented = true }

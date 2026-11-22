@@ -16,6 +16,8 @@ struct PricingProductCardView: View {
     let onAccept: () -> Void
     /// Edit Prices…: the product's matrix.
     let onOpen: () -> Void
+    /// Its review screenshot and introductory offer, above Edit Prices….
+    var setupRow: AnyView?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -65,6 +67,7 @@ struct PricingProductCardView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.card.settingStartingPrices")
             }
+            if let setupRow { setupRow }
             HStack {
                 Spacer()
                 // In-app purchase prices are shown, not changed.

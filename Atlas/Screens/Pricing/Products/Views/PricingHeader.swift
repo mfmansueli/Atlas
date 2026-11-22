@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// The top of Pricing's Prices page: what Pricing changes, Prices |
-/// Retention with the Prices count, Add Subscription…, and More (the
+/// Retention with the Prices count, Add Subscription…, Add In-App
+/// Purchase…, and More (the
 /// pricing mode, Customize…, every price of a product, and Restore
 /// Dismissed).
 struct PricingHeader: View {
@@ -32,6 +33,13 @@ struct PricingHeader: View {
             }
             .buttonBorderShape(.capsule)
             .accessibilityIdentifier("pricing.addSubscription")
+            Button {
+                viewModel.setup.isNewInAppPurchaseSheetPresented = true
+            } label: {
+                Label("Add In-App Purchase…", systemImage: "plus")
+            }
+            .buttonBorderShape(.capsule)
+            .accessibilityIdentifier("pricing.addInAppPurchase")
             PricingModeMenu(viewModel: viewModel)
             moreMenu
         }

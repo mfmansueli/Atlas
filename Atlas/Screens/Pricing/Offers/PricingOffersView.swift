@@ -23,6 +23,8 @@ struct PricingOffersView: View {
                     Label("No offers yet", systemImage: "tag")
                 } description: {
                     Text("Introductory, promotional and win-back offers and offer codes for this subscription appear here.")
+                } actions: {
+                    addIntroductoryOfferButton
                 }
                 .accessibilityIdentifier("pricing.offers.none")
             case let .loaded(offers):
@@ -52,6 +54,25 @@ struct PricingOffersView: View {
         .accessibilityIdentifier("pricing.offers")
     }
 
+    /// Add Introductory Offer… for a subscription without one; other
+    /// offers are edited in App Store Connect for now.
+    private var addIntroductoryOfferButton: some View {
+        let canAdd = viewModel.canAddIntroductoryOffer(to: matrix.product)
+            && viewModel.offers.value?.contains { $0.kind == .introductory } != true
+        return Button {
+            viewModel.openIntroductoryOffer(for: matrix.product)
+        } label: {
+            Label("Add Introductory Offer…", systemImage: "plus")
+        }
+        .controlSize(.small)
+        .buttonBorderShape(.capsule)
+        .disabled(!canAdd)
+        .help(canAdd
+            ? String(localized: "A free trial or a lower price for new subscribers, queued in Review & Push.")
+            : String(localized: "It has an introductory offer. Edit other offers in App Store Connect for now."))
+        .accessibilityIdentifier("pricing.offers.new")
+    }
+
     private func list(_ offers: [SubscriptionOffer]) -> some View {
         List(selection: $viewModel.selectedOfferID) {
             ForEach(OfferKind.allCases, id: \.self) { kind in
@@ -76,16 +97,9 @@ struct PricingOffersView: View {
                     }
                 }
             }
-            Button {} label: {
-                Label("New Offer…", systemImage: "plus")
-            }
-            .controlSize(.small)
-            .buttonBorderShape(.capsule)
-            .disabled(true)
-            .help(String(localized: "Creating offers comes later; edit them in App Store Connect for now."))
-            .padding(.top, Spacing.xSmall)
-            .selectionDisabled()
-            .accessibilityIdentifier("pricing.offers.new")
+            addIntroductoryOfferButton
+                .padding(.top, Spacing.xSmall)
+                .selectionDisabled()
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)

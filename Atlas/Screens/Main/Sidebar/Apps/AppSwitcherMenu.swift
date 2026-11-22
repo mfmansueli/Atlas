@@ -17,6 +17,7 @@ struct AppSwitcherMenu: View {
     let onAddKey: () -> Void
 
     @Environment(\.openSettings) private var openSettings
+    @Environment(ProGate.self) private var pro: ProGate?
 
     /// More apps than this get a search field.
     static let searchThreshold = 8
@@ -67,7 +68,12 @@ struct AppSwitcherMenu: View {
             ScrollView {
                 VStack(spacing: 1) {
                     ForEach(visible) { app in
-                        AppSwitcherRow(app: app, indicators: indicators(app), isCurrent: app.id == viewModel.selectedAppID) {
+                        AppSwitcherRow(
+                            app: app,
+                            indicators: indicators(app),
+                            isCurrent: app.id == viewModel.selectedAppID,
+                            isLocked: pro?.isLocked(appID: app.id) ?? false
+                        ) {
                             onSelectApp(app)
                         }
                         .accessibilityIdentifier("sidebar.app.\(app.id)")

@@ -90,6 +90,8 @@ struct AppAvailabilityCard: View {
         }
         .font(.caption)
         .foregroundStyle(Palette.label2)
+        // At the bottom when the card is as tall as App Price.
+        Spacer(minLength: 0)
         HStack {
             if model.queuedTerritoryCount > 0 {
                 Button("Review & Push…", action: model.onOpenReview)

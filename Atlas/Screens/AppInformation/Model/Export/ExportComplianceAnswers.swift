@@ -20,6 +20,9 @@ struct ExportComplianceAnswers: Hashable, Codable, Sendable {
     /// encryption.
     var visibleQuestions: [ExportComplianceQuestion] {
         guard self[.usesEncryption] == true else { return [.usesEncryption] }
+        // Exempt encryption ends the questionnaire, as in App Store Connect:
+        // the declaration's questions only matter when it isn't.
+        guard self[.isExempt] != true else { return [.usesEncryption, .isExempt] }
         return ExportComplianceQuestion.allCases
     }
 

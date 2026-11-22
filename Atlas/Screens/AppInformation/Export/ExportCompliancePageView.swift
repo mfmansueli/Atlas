@@ -45,8 +45,10 @@ struct ExportCompliancePageView: View {
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("appInformation.export.declaration")
                 }
-                if let build = viewModel.content?.export.buildNumber {
-                    Text("Sent to build \(build) as “uses non-exempt encryption”. The answers themselves are kept on this Mac.")
+                if let build = viewModel.content?.export.buildNumber, let usesNonExempt = answers.usesNonExemptEncryption {
+                    (usesNonExempt
+                        ? Text("Build \(build) is told it uses non-exempt encryption, so it needs an encryption declaration.")
+                        : Text("Build \(build) is told it uses no non-exempt encryption, so it needs no documents."))
                         .font(.caption)
                         .foregroundStyle(Palette.label2)
                 }

@@ -34,6 +34,18 @@ extension PricingViewModel {
         if launch.refreshes {
             Task { await reload() }
         }
+        if let sheet = launch.sheet { applyDebugSheet(sheet) }
+    }
+
+    private func applyDebugSheet(_ sheet: PricingDebugSheet) {
+        switch sheet {
+        case .newInAppPurchase:
+            setup.isNewInAppPurchaseSheetPresented = true
+        case let .introductoryOffer(productID):
+            if let product = catalog?.product(id: productID) { openIntroductoryOffer(for: product) }
+        case let .reviewScreenshot(productID):
+            if let product = catalog?.product(id: productID) { openReviewScreenshot(for: product) }
+        }
     }
 
     private func applyDebugStrategy(_ launch: PricingDebugLaunch) {

@@ -13,6 +13,7 @@ import SwiftUI
 /// until the person edits them. Add with a problem scrolls to the first
 /// field that has one and puts the cursor there.
 struct NewSubscriptionSheet: View {
+    let appID: StoreApp.ID
     let appName: String
     let bundleID: String
     let groups: [PricingProductGroup]
@@ -34,6 +35,7 @@ struct NewSubscriptionSheet: View {
     private static let newGroupTag = "new"
 
     init(
+        appID: StoreApp.ID,
         appName: String,
         bundleID: String,
         groups: [PricingProductGroup],
@@ -42,6 +44,7 @@ struct NewSubscriptionSheet: View {
         onCancel: @escaping () -> Void,
         onAdd: @escaping (NewSubscription) -> Void
     ) {
+        self.appID = appID
         self.appName = appName
         self.bundleID = bundleID
         self.groups = groups
@@ -213,14 +216,19 @@ struct NewSubscriptionSheet: View {
     private var reviewSection: some View {
         Section {
             field(.reviewNote, text: $draft.reviewNote, prompt: String(localized: "Optional: how App Review finds the paywall"), isMultiline: true)
+            ReviewScreenshotSlot(appID: appID, file: $draft.reviewScreenshot)
         } header: {
             Text("App Review")
+        } footer: {
+            note("The review screenshot shows App Review the paywall. Without it the subscription stays in Missing Metadata and StoreKit doesn’t return it.")
         }
     }
 
     private var footer: some View {
         HStack(spacing: Spacing.small) {
-            Text("Add its review screenshot in App Store Connect before you submit it.")
+            Text(draft.reviewScreenshot == nil
+                ? "Add its review screenshot here or later, before you submit it."
+                : "The push uploads its review screenshot too.")
                 .font(.caption)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -47,6 +47,9 @@ final class PricingViewModel {
     /// error banner and no Try Again.
     private(set) var hasNoPrice = false
     var isStartingPriceSheetPresented = false
+    /// Create In-App Purchase, Add Introductory Offer… and Review
+    /// Screenshot…, with what each product has beside its prices.
+    let setup = PricingPurchaseSetup()
     /// Existing subscribers per territory for the schedule's warning; nil
     /// until loaded, or when Atlas can't read them.
     private(set) var subscribers: [String: Int]?
@@ -132,16 +135,17 @@ final class PricingViewModel {
         return catalog?.siblings(of: product) ?? []
     }
 
-    /// Price changes waiting in Review & Push; new subscriptions and
-    /// retention aren't.
+    /// Price changes waiting in Review & Push; new products, their offers
+    /// and review screenshots, and retention aren't.
     var pendingPriceChangeCount: Int {
         queue.changes(for: app.id, section: .subscriptionPricing).count { Self.isPriceChange($0) }
     }
 
     /// A subscription or in-app purchase price change: not a new
-    /// subscription, retention, or the app's own price and availability.
+    /// subscription, in-app purchase, offer or review screenshot, retention,
+    /// or the app's own price and availability.
     static func isPriceChange(_ change: PendingChange) -> Bool {
-        !NewSubscriptionChangeBuilder.owns(change) && !RetentionChangeBuilder.owns(change)
+        !NewSubscriptionChangeBuilder.owns(change) && !PurchaseSetupQueue.isSetup(change) && !RetentionChangeBuilder.owns(change)
             && !AppPriceChangeBuilder.owns(change) && !AppAvailabilityChangeBuilder.owns(change)
     }
 
@@ -171,6 +175,7 @@ final class PricingViewModel {
     /// ⌘R and after a push: everything again from App Store Connect.
     func reload() async {
         siblingSheets = [:]
+        setup.forget()
         await load()
     }
 
@@ -286,7 +291,7 @@ final class PricingViewModel {
     }
 
     /// Keep my prices after confirming: queued price changes go (new
-    /// subscriptions and retention stay).
+    /// products, their setup and retention stay).
     func confirmKeepPrices() {
         queue.discardAll {
             $0.appID == app.id && $0.section == .subscriptionPricing && Self.isPriceChange($0)
@@ -381,7 +386,10 @@ final class PricingViewModel {
         guard let product = selectedProduct, !product.isInAppPurchase, !offers.isLoading, offers.value == nil else { return }
         offers = .loading
         do {
-            let list = try await services.offers(for: product)
+            var list = try await services.offers(for: product)
+            // Pricing's services don't read introductory offers from App
+            // Store Connect; the push's transport does.
+            if !list.contains(where: { $0.kind == .introductory }) { list += await readIntroductoryOffers(for: product) }
             guard selectedProductID == product.id else { return }
             offers = .loaded(list)
             if selectedOfferID == nil { selectedOfferID = (list.first { $0.kind == .promotional } ?? list.first)?.id }

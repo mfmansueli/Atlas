@@ -5,9 +5,11 @@
 
 import SwiftUI
 
-/// The new subscriptions waiting in Review & Push, each with its product
-/// ID, duration and price, who proposed it, and Discard. They're pushed
-/// from the toolbar's Review & Push (board 57).
+/// The new subscriptions and in-app purchases waiting in Review & Push,
+/// each with its product ID, duration or type and price, who proposed it,
+/// a menu that adds an introductory offer (subscriptions) or the review
+/// screenshot, and Discard. They're pushed from the toolbar's Review &
+/// Push (board 57).
 struct QueuedNewSubscriptionsList: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -17,7 +19,7 @@ struct QueuedNewSubscriptionsList: View {
                 .font(.headline)
             Card(padding: 0) {
                 VStack(spacing: 0) {
-                    ForEach(Array(viewModel.queuedNewSubscriptions.enumerated()), id: \.element.id) { index, change in
+                    ForEach(Array(viewModel.queuedNewProducts.enumerated()), id: \.element.id) { index, change in
                         if index > 0 { Divider() }
                         row(change)
                     }
@@ -51,6 +53,7 @@ struct QueuedNewSubscriptionsList: View {
                     .font(.caption)
                     .foregroundStyle(Palette.label2)
             }
+            setupMenu(change)
             Button {
                 viewModel.discardNewSubscription(id: change.id)
             } label: {
@@ -68,7 +71,31 @@ struct QueuedNewSubscriptionsList: View {
         .accessibilityIdentifier("pricing.newSubscriptions.\(change.id)")
     }
 
+    /// Add Introductory Offer… (a subscription without one) and Review
+    /// Screenshot…, as more steps of the queued change.
+    private func setupMenu(_ change: PendingChange) -> some View {
+        Menu {
+            if NewSubscriptionChangeBuilder.owns(change) {
+                Button(IntroductoryOfferChangeBuilder.offer(in: change) == nil ? "Add Introductory Offer…" : "Change Introductory Offer…") {
+                    viewModel.openIntroductoryOffer(forQueued: change)
+                }
+            }
+            Button(PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) == nil ? "Add Review Screenshot…" : "Replace Review Screenshot…") {
+                viewModel.openReviewScreenshot(forQueued: change)
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .foregroundStyle(Palette.label2)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help(Text("Set it up"))
+        .accessibilityLabel(Text("Set up \(change.title)"))
+        .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).setup")
+    }
+
     private func productID(of change: PendingChange) -> String {
-        NewSubscriptionChangeBuilder.productID(of: change) ?? ""
+        NewSubscriptionChangeBuilder.productID(of: change) ?? NewInAppPurchaseChangeBuilder.productID(of: change) ?? ""
     }
 }

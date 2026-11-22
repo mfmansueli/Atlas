@@ -20,7 +20,7 @@ extension NewSubscription {
             problems += Self.textProblems(displayName, field: .groupDisplayName)
         }
         problems += Self.textProblems(referenceName, field: .referenceName)
-        problems += productIDProblems(taken: takenProductIDs)
+        problems += Self.productIDProblems(productID, taken: takenProductIDs)
         problems += Self.textProblems(displayName, field: .displayName)
         problems += Self.textProblems(description, field: .description)
         if let price {
@@ -48,7 +48,10 @@ extension NewSubscription {
         return Decimal(string: cleaned, locale: Locale(identifier: "en_US_POSIX"))
     }
 
-    private func productIDProblems(taken: Set<String>) -> [NewSubscriptionProblem] {
+    /// A product ID's problems: missing, too long, characters App Store
+    /// Connect refuses, or one the app's products already use. Shared with
+    /// Create In-App Purchase.
+    static func productIDProblems(_ productID: String, taken: Set<String>) -> [NewSubscriptionProblem] {
         let id = Self.trimmed(productID)
         var problems = Self.textProblems(id, field: .productID)
         guard !id.isEmpty else { return problems }
@@ -61,7 +64,8 @@ extension NewSubscription {
         return problems
     }
 
-    private static func textProblems(_ text: String, field: NewSubscriptionField, isRequired: Bool = true) -> [NewSubscriptionProblem] {
+    /// A text's problems: missing (when required) or over its limit.
+    static func textProblems(_ text: String, field: NewSubscriptionField, isRequired: Bool = true) -> [NewSubscriptionProblem] {
         let text = trimmed(text)
         if text.isEmpty { return isRequired ? [.missing(field)] : [] }
         if let limit = field.limit, text.count > limit { return [.tooLong(field, count: text.count)] }

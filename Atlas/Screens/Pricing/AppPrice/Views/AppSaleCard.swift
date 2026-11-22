@@ -54,7 +54,7 @@ struct AppSaleCard<Content: View>: View {
             content()
         }
         .padding(14)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.raised, in: shape)
         .overlay(shape.strokeBorder(isQueued ? Palette.accentTint : Palette.separator, lineWidth: isQueued ? 1 : 0.5))
         .accessibilityElement(children: .contain)

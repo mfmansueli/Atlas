@@ -85,4 +85,25 @@ struct ProGateTests {
         #expect(ran == 1)
         #expect(!gate.isFree)
     }
+
+    @Test func inFreeEveryAppButTheFreeOneIsLocked() {
+        let gate = ProGate(entitlements: Entitlements(store: FakeProStore()))
+        // Nothing is locked before the free app is chosen.
+        #expect(!gate.isLocked(appID: "1"))
+        #expect(gate.mayOpen(appID: "1"))
+        #expect(!gate.isLocked(appID: "1"))
+        #expect(gate.isLocked(appID: "2"))
+    }
+
+    @Test func askingWhetherAnAppIsLockedDoesntChooseTheFreeApp() {
+        let gate = ProGate(entitlements: Entitlements(store: FakeProStore()))
+        _ = gate.isLocked(appID: "2")
+        #expect(gate.freeAppID == nil)
+    }
+
+    @Test func withProNothingIsLocked() {
+        let gate = ProGate(entitlements: Entitlements(store: FakeProStore(), override: true))
+        _ = gate.mayOpen(appID: "1")
+        #expect(!gate.isLocked(appID: "2"))
+    }
 }

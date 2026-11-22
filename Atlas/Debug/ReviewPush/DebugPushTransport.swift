@@ -42,10 +42,15 @@ final class DebugPushTransport: PushTransport {
     }
 
     /// Answers with `{"value": …}`; conflict checks in DEBUG data read
-    /// `["value"]`.
+    /// `["value"]`. A subscription's App Review screenshot is there; an
+    /// in-app purchase's is missing, so Pricing's cards show both.
     func fetch(_ path: String) async throws -> AppStoreConnectResponse {
         try await Task.sleep(for: delay)
         let rateLimit = countRequest()
+        if path.hasPrefix("/v1/subscriptions/"), path.contains("/appStoreReviewScreenshot") {
+            let screenshot = #"{"data":{"id":"debug-shot","attributes":{"fileName":"paywall.png","assetDeliveryState":{"state":"COMPLETE"}}}}"#
+            return AppStoreConnectResponse(data: Data(screenshot.utf8), rateLimit: rateLimit)
+        }
         let object: [String: String] = remoteValues[path].map { ["value": $0] } ?? [:]
         let data = try JSONSerialization.data(withJSONObject: object)
         return AppStoreConnectResponse(data: data, rateLimit: rateLimit)
