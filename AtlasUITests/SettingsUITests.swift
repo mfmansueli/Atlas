@@ -97,15 +97,15 @@ final class SettingsUITests: XCTestCase {
         let assistant = app.buttons["settings.source.assistant"]
         XCTAssertTrue(assistant.waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["settings.source.appleTranslation"].isSelected)
-        XCTAssertFalse(element("settings.ai.server").exists)
+        XCTAssertFalse(element("settings.ai.assistants").exists)
         attach("set-assistants-none")
         assistant.click()
         XCTAssertTrue(assistant.isSelected)
         XCTAssertFalse(app.buttons["settings.source.appleTranslation"].isSelected)
-        XCTAssertTrue(element("settings.ai.server").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("settings.ai.assistants").waitForExistence(timeout: 5))
         app.buttons["settings.source.aiProvider"].click()
         XCTAssertTrue(app.secureTextFields["settings.apiKey"].waitForExistence(timeout: 5))
-        XCTAssertFalse(element("settings.ai.server").exists)
+        XCTAssertFalse(element("settings.ai.assistants").exists)
     }
 
     func testASavedAPIKeySaysItIsConnected() {

@@ -45,7 +45,9 @@ enum ClaudeCodeDebugScenes {
 
     /// The real helper for `cc-live`, else the pretend one.
     static func scriptRunner(for id: String) -> any UnixScriptRunning {
-        isLive(id) ? LiveUnixScriptRunner() : runner(for: id)
+        if isLive(id) { return LiveUnixScriptRunner() }
+        if AssistantConnectDebugScenes.ids.contains(id) { return AssistantConnectDebugScenes.runner() }
+        return runner(for: id)
     }
 
     /// The pretend helper for a scene.
