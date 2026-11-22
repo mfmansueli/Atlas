@@ -17,7 +17,11 @@ struct AnalyticsReportsToolsTests {
     private let store = DebugAnalyticsData.store()
 
     private func call(_ tool: some MCPTool, _ arguments: [String: JSONValue]) async throws -> MCPToolOutcome {
-        try await tool.call(MCPToolArguments(arguments), in: MCPToolContext(workspace: MCPTestFixtures.workspace(), clientName: "Claude Code"))
+        // The sample account's Parcel Pal and Quiet Timer too: the reports
+        // below are theirs.
+        let sample = DebugFixtures.apps.filter { [DebugFixtures.AppID.parcel, DebugFixtures.AppID.quiet].contains($0.id) }
+        let workspace = MCPTestFixtures.workspace(apps: MCPTestFixtures.apps + sample)
+        return try await tool.call(MCPToolArguments(arguments), in: MCPToolContext(workspace: workspace, clientName: "Claude Code"))
     }
 
     @Test func theToolsAreInTheToolboxAndFree() {

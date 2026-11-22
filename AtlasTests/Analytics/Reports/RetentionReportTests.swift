@@ -59,7 +59,12 @@ struct RetentionReportTests {
     }
 
     @Test func fewPeopleAtTheCancelScreenAreTooFewToTell() throws {
-        let facts = [Rows.retention(5, event: "Page views", count: 14), Rows.retention(5, event: "Cancels", count: 11)]
+        // A newer day Apple hasn't completed yet: the last 4 days are left
+        // out, so the 14 views five days back are inside the period.
+        let facts = [
+            Rows.retention(5, event: "Page views", count: 14), Rows.retention(5, event: "Cancels", count: 11),
+            Rows.retention(0, event: "Page views", count: 2),
+        ]
         let report = try #require(RetentionReport.make(Rows.archive([.retention: facts]), days: 28))
         #expect(report.rate.measured == nil)
         #expect(report.stayed == 3)

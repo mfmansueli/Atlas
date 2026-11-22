@@ -111,7 +111,8 @@ struct ScreenshotsHandViewModelTests {
     @Test func undoChangeBringsTheTemplateBack() async {
         let (model, services) = await japanese()
         await model.replaceHand(slotID: items(model)[1].id, with: Files.chosen("ja-02.png"), scope: .one)
-        model.selectHand(items(model)[1])
+        // Replacing keeps it selected (clicking it again would deselect it).
+        #expect(model.handSelection?.slotID == items(model)[1].id)
         await model.undoSelectedHand()
         #expect(services.storedDocument?.handSets == nil)
         #expect(items(model)[1].cell.image.renderJob != nil)

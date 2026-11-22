@@ -40,12 +40,14 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         let app = catalog.app
         let queue = context.workspace.changes
         let identifier = try arguments.string("productId")
+        // The file first: one uploaded for another app is never this app's,
+        // whatever the product.
+        guard let file = try MCPReviewScreenshotArgument.file(arguments.optionalString("file"), appID: app.id) else {
+            throw MCPToolError.invalidArgument(name: "file", expected: String(localized: "a fileId from reviewScreenshotUploadURL"))
+        }
         guard let target = PurchaseSetupTarget.find(identifier, appID: app.id, catalog: catalog.catalog, queue: queue) else {
             let reason = String(localized: "\(app.name) has no subscription or in-app purchase “\(identifier)”, in App Store Connect or Review & Push.")
             return Self.refused([reason], productID: identifier, target: app.name)
-        }
-        guard let file = try MCPReviewScreenshotArgument.file(arguments.optionalString("file"), appID: app.id) else {
-            throw MCPToolError.invalidArgument(name: "file", expected: String(localized: "a fileId from reviewScreenshotUploadURL"))
         }
         let logTarget = "\(app.name) · \(target.name)"
         let id = PurchaseReviewScreenshotChangeBuilder.changeID(appID: app.id, productID: target.productID)

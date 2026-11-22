@@ -48,7 +48,12 @@ struct SuggestAllCompliancePromptTests {
         let content = DebugAppInformationContent.lumen(versionID: nil)
         let builder = AppInformationChangeBuilder(appID: DebugFixtures.AppID.lumen, ids: content.ids, versionString: content.version?.versionString)
         let slots = AppInformationSlotValues(content: content, accessibility: nil, builder: builder, changes: [])
-        let report = ComplianceTestSupport.report()
+        // Sold in the EU without a trader status, so the Digital Services Act
+        // is open for an answer.
+        let report = ComplianceTestSupport.report(ComplianceTestSupport.content(sold: [
+            ComplianceTestSupport.germany: [ComplianceContent.traderNotProvided], ComplianceRegion.chinaMainland: [],
+            ComplianceTestSupport.unitedStates: [],
+        ]))
         let scope = SuggestEverythingScope(
             appName: "Lumen Journal",
             listing: StorePageContentFixtures.editable.listing(),
