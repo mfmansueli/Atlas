@@ -81,7 +81,8 @@ final class NavigationUITests: XCTestCase {
         XCTAssertTrue(element("sidebar.accountSwitcher").exists)
         habitat.click()
         let switcher = element("sidebar.appSwitcher")
-        let showsHabitat = NSPredicate(format: "label CONTAINS %@", "Habitat")
+        // "App: Habitat…": the last line may name Habitat before the switch.
+        let showsHabitat = NSPredicate(format: "label BEGINSWITH %@", "App: Habitat")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: showsHabitat, object: switcher)], timeout: 10), .completed, switcher.label)
     }
 

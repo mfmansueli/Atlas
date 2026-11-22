@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// One app in the app menu: icon, name and bundle ID, a dot for unpushed
-/// changes, the purple count of suggestions to review, a check on the
-/// app being viewed, and a PRO chip on the apps Free doesn't open.
+/// changes, the purple count of suggestions to review, the accent tint on
+/// the app being viewed (board 63), and a PRO chip on the apps Free
+/// doesn't open.
 struct AppSwitcherRow: View {
     let app: StoreApp
     var indicators = AppIndicators()
@@ -42,16 +43,10 @@ struct AppSwitcherRow: View {
                 if isLocked {
                     ProChip()
                 }
-                if isCurrent {
-                    Image(systemName: "checkmark")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Palette.label2)
-                        .accessibilityHidden(true)
-                }
             }
             .padding(.horizontal, Spacing.small)
             .frame(height: 40)
-            .background(isCurrent ? Palette.fill3 : (isHovered ? Palette.fill1 : .clear), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(isCurrent ? Palette.accentTint : (isHovered ? Palette.fill2 : .clear), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

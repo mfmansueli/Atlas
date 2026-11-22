@@ -32,6 +32,10 @@ struct MainView: View {
     private let onTeamNameFound: (String) -> Void
     /// Reads the open app's other sections ahead.
     private let prefetchesSections: Bool
+    /// The first-run tour's tips (board 63).
+    @State private var tour: FirstRunTour
+    /// The tour starts by itself the first time this Mac shows an app.
+    private let startsTourOnFirstRun: Bool
 
     @Environment(ChangeQueue.self) private var changes
     @Environment(PushController.self) private var push
@@ -73,7 +77,9 @@ struct MainView: View {
             onFirstSyncFinished: onFirstSyncFinished,
             onCancelFirstSync: onCancelFirstSync,
             onTeamNameFound: onTeamNameFound,
-            prefetchesSections: true
+            prefetchesSections: true,
+            tourDefaults: FirstRunTour.liveDefaults,
+            startsTourOnFirstRun: true
         )
     }
 
@@ -93,10 +99,14 @@ struct MainView: View {
         onFirstSyncFinished: @escaping () -> Void = {},
         onCancelFirstSync: (() -> Void)? = nil,
         onTeamNameFound: @escaping (String) -> Void = { _ in },
-        prefetchesSections: Bool = false
+        prefetchesSections: Bool = false,
+        tourDefaults: UserDefaults? = nil,
+        startsTourOnFirstRun: Bool = false
     ) {
         self.services = services
         self.prefetchesSections = prefetchesSections
+        _tour = State(initialValue: FirstRunTour(defaults: tourDefaults))
+        self.startsTourOnFirstRun = startsTourOnFirstRun
         self.accounts = accounts
         self.currentAccountID = currentAccountID
         self.onSelectAccount = onSelectAccount
@@ -200,6 +210,11 @@ struct MainView: View {
             .environment(navigator)
             .environment(summaries)
             .environment(sectionModels)
+            // The first run's tour (board 63), once an app shows.
+            .modifier(FirstRunTourStarter(
+                tour: tour, isReady: !isSyncing && viewModel.selectedApp != nil, startsOnFirstRun: startsTourOnFirstRun,
+                navigator: navigator, columnVisibility: $columnVisibility
+            ))
             .focusedSceneValue(\.workspaceNavigator, isSyncing ? nil : navigator)
     }
 
@@ -391,8 +406,19 @@ struct MainView: View {
         }
     }
 
-    // MARK: - Background work
+    /// The run Show Output shows, as the sheet's item.
+    private var shownRun: Binding<ShownRun?> {
+        Binding { launcher.shownRunID.map(ShownRun.init) } set: { launcher.shownRunID = $0?.id }
+    }
 
+    private struct ShownRun: Identifiable {
+        let id: ClaudeCodeRun.ID
+    }
+}
+
+// MARK: - The library and background work
+
+extension MainView {
     /// Lets the menu bar check this account and open its places, while
     /// the window is on screen or hidden.
     private func attachBackgroundWork() {
@@ -409,15 +435,6 @@ struct MainView: View {
         background.checkHandler = { await handlers.check() }
         background.tickHandler = { await handlers.sendDueReplies() }
         background.openHandler = { handlers.open($0) }
-    }
-
-    /// The run Show Output shows, as the sheet's item.
-    private var shownRun: Binding<ShownRun?> {
-        Binding { launcher.shownRunID.map(ShownRun.init) } set: { launcher.shownRunID = $0?.id }
-    }
-
-    private struct ShownRun: Identifiable {
-        let id: ClaudeCodeRun.ID
     }
 
     /// The apps, then their summaries and, alongside, their icons: one

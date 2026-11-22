@@ -5,8 +5,10 @@
 
 import SwiftUI
 
-/// The top of the sidebar: the app being viewed and its team, opening the
-/// app menu. A small purple dot says other apps have suggestions waiting.
+/// The top of the sidebar (board 63): the app being viewed and its team
+/// beside a round chevron, opening the app menu (also ⌘K). A last line
+/// says how many other apps there are and, in purple, which have
+/// suggestions waiting. The tour's first tip points at it.
 struct AppSwitcher: View {
     @Bindable var viewModel: AppListViewModel
     let accounts: [TeamAccount]
@@ -18,6 +20,7 @@ struct AppSwitcher: View {
     var startsOpen = false
 
     @State private var isPresented = false
+    @State private var isHovered = false
 
     var body: some View {
         Button {
@@ -26,8 +29,10 @@ struct AppSwitcher: View {
             label
         }
         .buttonStyle(.plain)
+        .keyboardShortcut("k", modifiers: .command)
+        .help("Switch app  ⌘K")
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(accessibilityText))
+        .accessibilityLabel(Text(summary.accessibilityLabel(appName: viewModel.selectedApp?.name)))
         .accessibilityValue(Text(teamLine))
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("sidebar.appSwitcher")
@@ -51,41 +56,66 @@ struct AppSwitcher: View {
         .task {
             if startsOpen { isPresented = true }
         }
+        // The tour's first tip, pointing at the app's row.
+        .tourTip(.apps, arrowEdge: .trailing, anchor: summary.hasOthers ? .point(UnitPoint(x: 1, y: 0.32)) : .rect(.bounds))
     }
 
     private var label: some View {
         let shape = RoundedRectangle(cornerRadius: 11, style: .continuous)
-        return HStack(spacing: 9) {
-            if let app = viewModel.selectedApp {
-                AppIconTile(name: app.name, icon: app.icon, size: 30)
-            } else {
-                SkeletonBlock(width: 30, height: 30, cornerRadius: 7)
+        return VStack(spacing: 0) {
+            HStack(spacing: 9) {
+                if let app = viewModel.selectedApp {
+                    AppIconTile(name: app.name, icon: app.icon, size: 30)
+                } else {
+                    SkeletonBlock(width: 30, height: 30, cornerRadius: 7)
+                }
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(viewModel.selectedApp?.name ?? String(localized: "No app"))
+                        .font(.headline)
+                        .lineLimit(1)
+                    Text(teamLine)
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // The round control that says the switcher opens a menu.
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(Palette.label)
+                    .frame(width: 22, height: 22)
+                    .background(Palette.raised, in: Circle())
+                    .shadow(color: .black.opacity(0.18), radius: 0.5, y: 0.5)
+                    .overlay(Circle().strokeBorder(Palette.separator, lineWidth: 0.5))
             }
-            VStack(alignment: .leading, spacing: 1) {
-                Text(viewModel.selectedApp?.name ?? String(localized: "No app"))
-                    .font(.headline)
-                    .lineLimit(1)
-                Text(teamLine)
-                    .font(.caption)
-                    .foregroundStyle(Palette.label2)
-                    .lineLimit(1)
+            .frame(minHeight: 46)
+            if summary.hasOthers {
+                othersLine
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            if othersHaveSuggestions {
-                Circle()
-                    .fill(Palette.suggestionBadge)
-                    .frame(width: 8, height: 8)
-                    .help("Other apps have suggestions")
-            }
-            Image(systemName: "chevron.up.chevron.down")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(Palette.label2)
         }
         .padding(.horizontal, Spacing.small)
-        .frame(height: 48)
-        .background(Palette.fill1, in: shape)
+        .background(isHovered ? Palette.fill2 : Palette.fill1, in: shape)
         .overlay(shape.strokeBorder(Palette.separator, lineWidth: 0.5))
         .contentShape(shape)
+        .onHover { isHovered = $0 }
+    }
+
+    /// "5 other apps · 2 with suggestions", the suggestions in purple.
+    private var othersLine: some View {
+        let others = Text(summary.othersText).foregroundStyle(Palette.label2)
+        let suggestions = Text(summary.suggestionsText).foregroundStyle(Palette.machineTranslated).fontWeight(.semibold)
+        return Text("\(others)\(suggestions)")
+            .font(.caption)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 6)
+            .padding(.bottom, 7)
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(Palette.separator)
+                    .frame(height: 0.5)
+            }
     }
 
     private var current: TeamAccount? {
@@ -98,15 +128,10 @@ struct AppSwitcher: View {
         return "\(current.name) · \(current.role)"
     }
 
-    private var othersHaveSuggestions: Bool {
-        viewModel.apps.contains { $0.id != viewModel.selectedAppID && indicators($0).suggestionCount > 0 }
-    }
-
-    /// "App: Lumen Journal. Switch app".
-    private var accessibilityText: String {
-        guard let app = viewModel.selectedApp else { return String(localized: "Switch app") }
-        return othersHaveSuggestions
-            ? String(localized: "App: \(app.name). Switch app. Other apps have suggestions")
-            : String(localized: "App: \(app.name). Switch app")
+    /// The last line, from every other app's count.
+    private var summary: AppSwitcherSummary {
+        AppSwitcherSummary(others: viewModel.apps.filter { $0.id != viewModel.selectedAppID }.map { app in
+            (name: app.name, suggestionCount: indicators(app).suggestionCount)
+        })
     }
 }
