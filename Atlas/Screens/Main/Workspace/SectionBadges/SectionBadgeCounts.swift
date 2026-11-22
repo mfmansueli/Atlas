@@ -13,13 +13,18 @@ struct SectionBadgeCounts: Equatable {
     static let maximumShown = 99
 
     private let counts: [AppWorkspaceSection: Int]
+    /// Sections where Autopilot waits for the person (the guided run's
+    /// Pick, Choose or Review; replies Reply Automatically left): a purple
+    /// mark beside the count, as the toolbar's purple button says.
+    let needsYou: Set<AppWorkspaceSection>
     /// New Analytics findings to read: a gray count, since purple stays
     /// for suggestions to accept.
     private let newFindings: Int
 
-    init(_ counts: [AppWorkspaceSection: Int] = [:], newFindings: Int = 0) {
+    init(_ counts: [AppWorkspaceSection: Int] = [:], newFindings: Int = 0, needsYou: Set<AppWorkspaceSection> = []) {
         self.counts = counts
         self.newFindings = newFindings
+        self.needsYou = needsYou
     }
 
     /// The open field suggestions, captions an assistant suggested, from
@@ -40,6 +45,7 @@ struct SectionBadgeCounts: Equatable {
         counts[.productPages, default: 0] += extras.productPages
         self.counts = counts
         newFindings = extras.newFindings
+        needsYou = extras.needsYou
     }
 
     /// The counts that don't come from field suggestions.
@@ -55,6 +61,23 @@ struct SectionBadgeCounts: Equatable {
         var complianceAnswers = 0
         /// Suggested pages and promotional texts.
         var productPages = 0
+        /// Sections where Autopilot waits for the person.
+        var needsYou: Set<AppWorkspaceSection> = []
+    }
+
+    /// Where Autopilot waits for the person: Screenshots while the guided
+    /// run is at Pick, Choose or Review; Reviews while Reply Automatically
+    /// left replies for them.
+    @MainActor
+    static func needsYou(appID: StoreApp.ID, repliesArePro: Bool) -> Set<AppWorkspaceSection> {
+        needsYou(run: AutopilotCenter.shared.run(for: appID), autoReplyNeeds: repliesArePro ? AutoReplyCenter.shared.needsYouCount(for: appID) : 0)
+    }
+
+    static func needsYou(run: AutopilotRun?, autoReplyNeeds: Int) -> Set<AppWorkspaceSection> {
+        var sections: Set<AppWorkspaceSection> = []
+        if let run, WorkspaceAutopilotState.screenshotNeeds(run) != nil { sections.insert(.screenshots) }
+        if autoReplyNeeds > 0 { sections.insert(.reviews) }
+        return sections
     }
 
     /// The App Compliance answers waiting for the person: the section's
@@ -105,6 +128,11 @@ struct SectionBadgeCounts: Equatable {
     /// "Store Page, 12 suggestions to review", "Analytics, 2 new
     /// findings", or just the section's name.
     func accessibilityText(for section: AppWorkspaceSection) -> String {
+        let text = countText(for: section)
+        return needsYou.contains(section) ? String(localized: "\(text), Autopilot needs you") : text
+    }
+
+    private func countText(for section: AppWorkspaceSection) -> String {
         let count = count(for: section)
         guard count > 0 else { return section.title }
         if isNeutral(section) {
@@ -118,7 +146,7 @@ struct SectionBadgeCounts: Equatable {
     /// Every section's exact count, for VoiceOver: "Store Page, 12
     /// suggestions to review. App Information, 1 suggestion to review."
     var accessibilitySummary: String {
-        let parts = AppWorkspaceSection.allCases.filter { count(for: $0) > 0 }.map(accessibilityText)
+        let parts = AppWorkspaceSection.allCases.filter { count(for: $0) > 0 || needsYou.contains($0) }.map(accessibilityText)
         return parts.isEmpty ? String(localized: "No suggestions to review") : parts.joined(separator: ". ")
     }
 }

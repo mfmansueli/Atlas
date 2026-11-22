@@ -16,6 +16,10 @@ struct GuidedRunProgress: Hashable, Sendable {
     /// About how many minutes until the next part is done; nil when
     /// nothing is left to wait for.
     var minutesLeft: Int?
+    /// Whether `fraction` counts finished steps; false while starting or
+    /// picking the screens, when the bar only shows it began. The toolbar's
+    /// Autopilot button draws its bar only for counted progress.
+    var isCounted = true
 
     static func make(_ run: AutopilotRun, now: Date) -> GuidedRunProgress {
         var progress = stageProgress(run, now: now)
@@ -60,7 +64,7 @@ struct GuidedRunProgress: Hashable, Sendable {
         return GuidedRunProgress(
             title: String(localized: "Starting \(client)"), fraction: 0.02,
             line: String(localized: "\(client) opens the project and starts Simulator") + aboutLeft(left),
-            minutesLeft: left > 0 ? left : nil
+            minutesLeft: left > 0 ? left : nil, isCounted: false
         )
     }
 
@@ -122,7 +126,7 @@ struct GuidedRunProgress: Hashable, Sendable {
         return GuidedRunProgress(
             title: String(localized: "Picking the screens"), fraction: 0.04,
             line: String(localized: "\(client) reads the project and picks the screens that show the app best") + aboutLeft(left),
-            minutesLeft: left
+            minutesLeft: left, isCounted: false
         )
     }
 

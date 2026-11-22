@@ -13,11 +13,19 @@ import SwiftUI
 /// connection, whose status popover (recent calls, proposals waiting) was
 /// the Assistant button's, and Settings….
 ///
-/// It's also the run's status: running, a ring and what's being done, with
-/// the progress and Cancel Run… in the menu; needing the person, purple
-/// with what it needs, and a click opens that step. A request sent from an
-/// asking button lands on it (board 56) and it says Working… meanwhile.
-/// On Free, an action that's part of Pro shows PRO and opens the paywall.
+/// It's also the run's status, and it moves only while something really
+/// runs for the app (“While it works”): a light travels along its edge, the
+/// sparkle's stars twinkle, a 2 pt bar fills when the run counts its steps,
+/// and a green check draws itself when it's done. Needing the person it's
+/// solid purple with what it needs, and a click opens that step; a run that
+/// stopped says what stopped, and a click opens the reason. Reduce Motion
+/// keeps it all still. A request sent from an asking button lands on it
+/// (board 56). On Free, an action that's part of Pro shows PRO and opens
+/// the paywall.
+///
+/// A toolbar `Menu` draws only an image and a title, so the split is built
+/// by hand: a button with the animated label, and a menu with the arrow, on
+/// their own glass capsule.
 struct AutopilotToolbarButton: View {
     /// The section's actions, the button's own first.
     let items: [WorkspaceAutopilotItem]
@@ -61,105 +69,115 @@ struct AutopilotToolbarButton: View {
     var onSetUp: () -> Void = {}
     /// The app's request from an asking button, while it runs.
     var ask: AssistantAsk?
+    /// The app's last Claude Code run, while it's `.failed`: a click shows
+    /// its output, and closing that forgets it.
+    var failedRunID: ClaudeCodeRun.ID?
+    var onForgetFailure: () -> Void = {}
     @Environment(\.askCenterOverride) private var askCenterOverride
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(KeyAssistantController.self) private var keyAssistant
     @State private var isShowingPopover = false
     @State private var isConfirmingCancel = false
+    @State private var isShowingFailure = false
+    /// “Done · Store Page · German” while the check shows.
+    @State private var doneText: String?
+    /// Bumped when a run is done: the button bounces once, the check stays
+    /// about 2 s.
+    @State private var doneCount = 0
 
     private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
 
     private var primary: WorkspaceAutopilotItem? { items.first }
 
-    var body: some View {
-        Menu {
-            menu
-        } label: {
-            label
-        } primaryAction: {
-            runPrimary()
-        }
-        .menuIndicator(.visible)
-        .background(AskAnchorView(anchor: askCenter.toolbarAnchor))
-        .help(accessibilityLabel)
-        .accessibilityLabel(Text(accessibilityLabel))
-        .accessibilityIdentifier("workspace.autopilot")
-        .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) { popover }
-        .sheet(item: presentedProposals) { proposals in
-            ScreenshotProposalsSheet(viewModel: proposals)
-        }
-        .confirmationDialog("Cancel the run?", isPresented: $isConfirmingCancel) {
-            Button("Cancel Run", role: .destructive) { onCancelRun?() }
-            Button("Keep Running", role: .cancel) {}
-        } message: {
-            Text("What it made so far is dropped; the captures stay for the next start.")
-        }
-        .onChange(of: navigator.requestsAssistantPopover, initial: true) {
-            guard navigator.requestsAssistantPopover else { return }
-            navigator.requestsAssistantPopover = false
-            isShowingPopover = true
-        }
-        // A change in the run's state is said once, politely.
-        .onChange(of: state.announcementKey) {
-            guard let text = state.text else { return }
-            var announcement = AttributedString(Self.announcement(text))
-            announcement.accessibilitySpeechAnnouncementPriority = .low
-            AccessibilityNotification.Announcement(announcement).post()
-        }
-        .onChange(of: navigator.requestsAutopilot, initial: true) {
-            guard navigator.requestsAutopilot else { return }
-            navigator.requestsAutopilot = false
-            runPrimary()
-        }
-        #if DEBUG
-        .task {
-            if Self.debugShowsPopover {
-                Self.debugShowsPopover = false
-                isShowingPopover = true
-            }
-        }
-        #endif
+    private var look: AutopilotButtonLook {
+        AutopilotButtonLook(state: state, done: doneText, runProgress: runProgress)
     }
 
-    // MARK: - Label
+    var body: some View {
+        withEvents(withPresentations(decorated))
+    }
 
-    private var label: some View {
-        HStack(spacing: Spacing.xSmall) {
-            if ask?.phase == .working {
-                AssistantWorkingDot()
-                if !isCompact {
-                    Text("Working…")
-                        .foregroundStyle(Palette.machineTranslated)
-                }
-            } else {
-                switch state {
-                case let .running(text, _):
-                    ProgressView()
-                        .controlSize(.mini)
-                    if !isCompact { Text(text) }
-                case let .needsYou(text):
-                    Image(systemName: "sparkles")
-                        .foregroundStyle(Palette.machineTranslated)
-                    if !isCompact {
-                        Text(text)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Palette.machineTranslated)
-                    }
-                case let .autoReplyOn(text):
-                    Circle()
-                        .fill(Palette.positive)
-                        .frame(width: 7, height: 7)
-                        .accessibilityHidden(true)
-                    if !isCompact { Text(text) }
-                case .idle:
-                    Image(systemName: "sparkles")
-                    if !isCompact, let primary { Text(primary.title) }
-                    if primary?.isPro == true { ProChip() }
+    /// The split, drawn by `AutopilotButtonFace`.
+    private var decorated: some View {
+        AutopilotButtonFace(
+            look: look, title: primary?.title, isPro: primary?.isPro == true, isCompact: isCompact, doneCount: doneCount,
+            accessibilityLabel: accessibilityLabel, onMain: runPrimary
+        ) {
+            menu
+        }
+    }
+
+    private func withPresentations(_ content: some View) -> some View {
+        content
+            .background(AskAnchorView(anchor: askCenter.toolbarAnchor))
+            .help(accessibilityLabel)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(Text(accessibilityLabel))
+            .accessibilityIdentifier("workspace.autopilot")
+            .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) { popover }
+            .sheet(item: presentedProposals) { proposals in
+                ScreenshotProposalsSheet(viewModel: proposals)
+            }
+            .confirmationDialog("Cancel the run?", isPresented: $isConfirmingCancel) {
+                Button("Cancel Run", role: .destructive) { onCancelRun?() }
+                Button("Keep Running", role: .cancel) {}
+            } message: {
+                Text("What it made so far is dropped; the captures stay for the next start.")
+            }
+            .sheet(isPresented: $isShowingFailure, onDismiss: onForgetFailure) {
+                if let failedRunID { ClaudeCodeRunOutputSheet(runID: failedRunID) }
+            }
+            // A run that ends by itself shows the check for about 2 s.
+            .onChange(of: state) { old, new in
+                if let done = old.doneText(becoming: new) {
+                    doneText = done
+                    doneCount += 1
+                    announce(done)
+                } else if new.isRunning || new.text != nil {
+                    doneText = nil
                 }
             }
-        }
-        .lineLimit(1)
-        .frame(maxWidth: 280)
+            .task(id: doneCount) {
+                guard doneText != nil else { return }
+                try? await Task.sleep(for: AutopilotButtonLook.doneDuration)
+                if !Task.isCancelled { doneText = nil }
+            }
+    }
+
+    private func withEvents(_ content: some View) -> some View {
+        content
+            .onChange(of: navigator.requestsAssistantPopover, initial: true) {
+                guard navigator.requestsAssistantPopover else { return }
+                navigator.requestsAssistantPopover = false
+                isShowingPopover = true
+            }
+            // A change in the run's state is said once, politely.
+            .onChange(of: state.announcementKey) {
+                guard let text = state.text else { return }
+                announce(text)
+            }
+            .onChange(of: navigator.requestsAutopilot, initial: true) {
+                guard navigator.requestsAutopilot else { return }
+                navigator.requestsAutopilot = false
+                runPrimary()
+            }
+            #if DEBUG
+            .task {
+                if Self.debugShowsPopover {
+                    Self.debugShowsPopover = false
+                    isShowingPopover = true
+                }
+            }
+            #endif
+    }
+
+    // MARK: - VoiceOver
+
+    /// Says a change once, politely: “Autopilot, done, Store Page, German”.
+    private func announce(_ text: String) {
+        var announcement = AttributedString(Self.announcement(text))
+        announcement.accessibilitySpeechAnnouncementPriority = .low
+        AccessibilityNotification.Announcement(announcement).post()
     }
 
     // MARK: - Menu
@@ -280,6 +298,8 @@ struct AutopilotToolbarButton: View {
         switch state {
         case .needsYou:
             onOpenRun()
+        case .failed:
+            if failedRunID != nil { isShowingFailure = true } else { isShowingPopover = true }
         case .running:
             if isScreenshotRun { onOpenRun() } else { isShowingPopover = true }
         case .idle, .autoReplyOn:
@@ -290,9 +310,11 @@ struct AutopilotToolbarButton: View {
     /// “Autopilot, Make Screenshots”, “Autopilot, making screenshots, 5 of
     /// 10 captures”.
     private var accessibilityLabel: String {
-        if let ask { return ask.toolbarLabel }
+        if let doneText { return Self.announcement(doneText) }
+        if let ask { return [ask.toolbarLabel, look.spokenProgress].compactMap(\.self).joined(separator: ", ") }
         if let text = state.text {
-            return String(localized: "Autopilot, \(text.replacingOccurrences(of: " · ", with: ", "))")
+            let spoken = String(localized: "Autopilot, \(text.replacingOccurrences(of: " · ", with: ", "))")
+            return [spoken, look.spokenProgress].compactMap(\.self).joined(separator: ", ")
         }
         let title = primary.map { $0.title.replacingOccurrences(of: "…", with: "") } ?? ""
         return String(localized: "Autopilot, \(title)")

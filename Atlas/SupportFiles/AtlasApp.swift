@@ -33,6 +33,7 @@ struct AtlasApp: App {
         let preferences = AppPreferences(defaults: Self.defaults)
         _preferences = State(initialValue: preferences)
         let push = PushController(queue: changes, history: history)
+        if Self.watchesConnection { push.watchConnection(Self.networkWatcher) }
         _push = State(initialValue: push)
         let suggestions = FieldSuggestionStore(persistence: Self.suggestionPersistence)
         _suggestions = State(initialValue: suggestions)
@@ -177,6 +178,18 @@ struct AtlasApp: App {
         #if DEBUG
         if let id = DebugScene.requestedID { return MenuBarDebugScenes.isLive(id) }
         if UnitTestHost.isRunning { return false }
+        #endif
+        return true
+    }
+
+    /// Whether “You’re offline” follows the Mac's real connection: real
+    /// launches only, so DEBUG scenes (`banner-offline`) and the unit tests'
+    /// host show the notices they set.
+    private static let networkWatcher = NetworkPathWatcher()
+
+    private static var watchesConnection: Bool {
+        #if DEBUG
+        if DebugScene.requestedID != nil || UnitTestHost.isRunning { return false }
         #endif
         return true
     }

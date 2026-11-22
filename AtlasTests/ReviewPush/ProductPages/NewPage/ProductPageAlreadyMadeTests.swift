@@ -26,8 +26,10 @@ struct ProductPageAlreadyMadeTests {
     }
 
     private func push(_ changes: [PendingChange], remote: [String: Data]) async -> (PushController, FakePushTransport) {
-        let transport = FakePushTransport(remote: remote)
+        let made = Data(#"{"data":{"type":"appCustomProductPages","id":"p-2"}}"#.utf8)
+        let transport = FakePushTransport(remote: remote, responses: ["/v1/appCustomProductPages": made])
         let controller = PushController(queue: queue, history: PushHistory(), transport: transport)
+        controller.productPagePacing = .immediate
         queue.upsert(contentsOf: changes)
         controller.push(queue.changes)
         await controller.waitUntilFinished()
@@ -42,6 +44,7 @@ struct ProductPageAlreadyMadeTests {
         #expect(transport.sent.count == 1)
         #expect(ProductPageAlreadyMade.name(creating: transport.sent[0]) == "Gratitude")
         #expect(queue.changes.map(\.newValue) == ["Widgets & Lock Screen"])
+        #expect(controller.items.first { $0.change.newValue == "Gratitude" }?.createdIDs["appCustomProductPages"] == "p-2")
     }
 
     @Test func otherRequestsArentChecked() {

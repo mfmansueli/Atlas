@@ -25,8 +25,10 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
   percentage follows the bytes sent (`UploadProgressDelegate`), not just its parts. **Screenshot
   Autopilot** plans the screens, has a connected assistant (Claude Code, Cursor or Codex) capture them in Simulator in
   every language, lets you pick the best captures, gets three design directions (from Claude Design, a Figma file, a
-  brand folder or Atlas's starters), then localizes and checks every caption; the new set waits in Review &
-  Push. Once the assistant reports the Xcode project (`report_app_support`), or App Store Connect shows it (a build
+  brand folder or Atlas's starters), then localizes and checks every caption; Approve All, the sheet's last
+  button, puts the set (and its App Previews and header art) in the app-wide Review & Push with every other change
+  and closes Autopilot on a toast: the sheet never pushes, and its Done step only follows the push Review & Push
+  makes (`GuidedPushOutcome`), sending the person there for its progress and Try Again. Once the assistant reports the Xcode project (`report_app_support`), or App Store Connect shows it (a build
   with a watch app, from the build's icons; a visionOS version), the plan covers every device the app runs on, iPhone, iPad, Apple Watch (the watch app's own screens, no captions) and Apple Vision Pro (windows of the
   same moments as iPhone, under their captions, pushed to the visionOS version), and every language its string
   catalogs have, including the ones the App Store page doesn't have yet. Unless you keep your own screens, the
@@ -382,7 +384,10 @@ room for more of them; the toolbar names the section and holds its actions.
 - **The sidebar** (`Screens/Main/Sidebar/`): the app menu, then the sections in three groups (`AppWorkspaceSection`,
   `AppWorkspaceSectionGroup`): Overview; Store Listing (Store Page, Screenshots, In-App Events, App Information,
   Pricing); After Release (Reviews, Analytics). ⌘1–⌘8 follow that order. Each row shows what's waiting there
-  (`SectionBadgeCounts`): suggestions in purple, Analytics' new findings in gray.
+  (`SectionBadgeCounts`): suggestions in purple, Analytics' new findings in gray. Where Autopilot waits for the
+  person, a solid purple sparkle comes before the count (`AutopilotNeedsYouMark`, `SectionBadgeCounts.needsYou`):
+  Screenshots while the guided run is at Pick, Choose or Review, Reviews while Reply Automatically left replies;
+  VoiceOver adds "Autopilot needs you".
 - **The app menu** (`AppSwitcher`, `AppSwitcherMenu`): the selected app and its team; a click lists every app of the
   key with its own count, a search field once there are more than eight, the sort order, and Switch Account or Key….
 - **The version's status** (`VersionStatusFooter`, `VersionStatusSummary`) stays at the bottom of the sidebar in
@@ -394,20 +399,39 @@ room for more of them; the toolbar names the section and holds its actions.
   reads "Push 3 from Store Page…"). Overview leads with the app and its version. The pages lost their own title row:
   `SectionHeader` is the one-sentence description and the page's controls. With the sidebar hidden the section menu
   comes first. At 940 points of detail width the Autopilot and Review & Push labels fold to their icons; under 620
-  the title goes (`WorkspaceToolbarLayout`).
+  the title goes (`WorkspaceToolbarLayout`). The toolbar has the window's color with a hard edge: with the soft edge
+  alone a scrolled page showed through behind the title (Alba's Overview). Autopilot, Refresh and Activity (large
+  controls) and Review & Push are all 36 points tall.
+- **“You're offline”** (`PushNotice.offline`) follows the Mac's real connection (`NetworkPathWatcher`,
+  `PushController+Connection`): it shows only while the Mac has no network path and leaves by itself when it comes
+  back; a timeout or an unreachable host while online is said by the section or the push row, not the banner (it
+  used to stay until the next push). DEBUG scenes and the unit tests' host don't watch, so `banner-offline` keeps it.
 - **Autopilot** (`Toolbar/Autopilot/`): one split button in every section, replacing the Assistant button. Its label
   is what Autopilot makes there (`WorkspaceAutopilotAction.actions(for:)`): Suggest Everything…, Suggest Texts…, Make
   Screenshots…, Suggest Pages…, Make Event Artwork…, Suggest Answers…, Suggest Prices…, Draft Replies…, Find What to
   Try…; the arrow lists the section's other actions, Everything for the app, the assistant's connection (its status
   popover, the old Assistant popover) and Settings…. Actions a section already had run that section's flow through
   `WorkspaceIntent.autopilot` (the guided run, page shots, event artwork) or an existing intent; the new ones ask
-  Claude Code from the toolbar (`WorkspaceAutopilotAsk`, `AssistantAskStarter`; copied when it can't start). Running,
-  it shows a ring and what's being done; when the guided run waits for the person (`AutopilotTurn`), purple with
-  "Choose the Look" and a click opens that step (`WorkspaceAutopilotState`). Free shows PRO on Pro's actions and opens
-  the paywall. ⌥⌘A runs it and ⇧⌘P opens Review & Push, both in the Product menu.
+  Claude Code from the toolbar (`WorkspaceAutopilotAsk`, `AssistantAskStarter`; copied when it can't start). When the
+  guided run waits for the person (`AutopilotTurn`) it's solid purple with "Choose the Look" and a click opens that step
+  (`WorkspaceAutopilotState`). Free shows PRO on Pro's actions and opens the paywall. ⌥⌘A runs it and ⇧⌘P opens
+  Review & Push, both in the Product menu.
+  - **While it works** (`Toolbar/Autopilot/Animation/`): it moves only while something runs for the app. A purple light
+    crosses its edge every 2.2 s (`AutopilotEdgeLight`), the sparkle's two stars shrink, turn and fade in turn every
+    1.5 s (`AutopilotSparkle`), a 2 pt bar eases to the guided run's counted progress in 0.7 s (`AutopilotProgressLine`;
+    `GuidedRunProgress.isCounted` is false while starting or picking the screens, so no made-up bar), and when a run
+    ends by itself the label reads "Done · Store Page · German" with a green check drawn by SF Symbols' Draw On and one
+    0.45 s bounce, for 2 s (`AutopilotDoneMark`, `WorkspaceAutopilotState.doneText(becoming:)`). The app's last Claude
+    Code run that failed shows still, with the failure's title; a click opens Show Output and closing it forgets it.
+    Reduce Motion keeps everything still (a steady outline, the small star dimmed, the bar jumps, the check appears).
+    VoiceOver adds "55 percent" and announces Done once. `AutopilotButtonLook` decides the look; a toolbar `Menu` draws
+    only an image and a title, so `AutopilotButtonFace` builds the split by hand on its own glass capsule
+    (`sharedBackgroundVisibility(.hidden)`). DEBUG scenes `ap-btn` (every look) and `ap-btn-cycle`.
 - **One Review & Push.** No page has a push button: Overview's cards, Screenshots' strip and set card, Pricing's
   starting price and new subscriptions, and Analytics' findings say what's waiting "in Review & Push, top right"; the
-  toolbar button reads Up to Date when nothing is. A product page's button is Submit for Review…, which still opens
+  toolbar button reads Up to Date when nothing is. Screenshot Autopilot's Approve All and a product page's Use These
+  Screenshots only approve: the images join the same queue, and the toolbar's Autopilot button and the menu bar stop
+  saying "needs you" (`BackgroundNeedsBuilder.turn(for:)`). A product page's button is Submit for Review…, which still opens
   Review & Push on the page first.
 - **Sections open loaded** (`Screens/Main/Workspace/SectionModels/`): the window keeps each section's model for the
   four apps opened last (`WorkspaceSectionModels`, `AppSectionModels`), stamped when a read finished and read again
@@ -788,6 +812,18 @@ call.
     localization's link back to the version). Writes wait 300 s (`AppStoreConnectClient.writeTimeout`); a timed-out
     write is Failed, never Not sent. A draft Apple made anyway is taken as that page on the next read
     (`adoptCreatedDrafts`), and a queued create change from an older Atlas is rebuilt (`refreshDraftChanges`).
+    After a 5xx (Alba, 2026-11-22: `UNEXPECTED_ERROR` for the 14-language "Affirmations & Confidence"), a timeout or
+    an answer without the page's ID, the push itself looks for the page by name for about 2 minutes
+    (`ProductPageCreate`, `ProductPagePushPacing`; the row reads "Looking for … in App Store Connect…" and frees its
+    place). Found with a version that takes edits, it's the page this change made (no page of that name was there
+    when the create went): the languages Apple didn't make are made with their texts, and the keywords and texts go on.
+    The create is never sent again by itself, since not finding the page doesn't prove Apple won't still make it: the
+    row says so (`ProductPageNotConfirmed`) and keeps `PushItem.mayHaveMadePage`, so a retry, or a push after the
+    sheet closed, takes the page of that name once it's there instead of refusing it (`ProductPageAlreadyMade` is
+    only for a page made elsewhere). A language write that hits a 5xx or a timeout is sent once more by itself
+    (`ProductPagePushState.send`; it reads the version and language again, and a language made meanwhile is written
+    into, not made twice); one that still fails says which step ("Keywords · German") and that Retry goes on from
+    there (`ProductPageStepFailure`). A 400 isn't a server failure: it never says it may have gone through.
   - **Look and Capture Screens Again** (board 52's Plan): `PageShotsRun.design` (`PageShotsLook`: the default
     template, a starter, or `.claudeDesign` with three `PageShotsLookCandidate`s from `propose_page_look`, laid on
     `base` default or a starter and checked by `MCPDirectionTemplate`; Start waits for one to be chosen) and

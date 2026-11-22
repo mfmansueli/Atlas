@@ -6,9 +6,9 @@
 import XCTest
 
 /// The guided Autopilot's last steps, on `StudioDebugGuided`'s scenes:
-/// Review & push (Approve All, which puts the set in Review & Push) and
-/// Sent. Each test attaches the
-/// window's screenshot.
+/// Review & approve (Approve All, which puts the set in Review & Push) and
+/// Done, which only follows the push Review & Push makes. Each test
+/// attaches the window's screenshot.
 @MainActor
 final class AutopilotGuidedPushUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -65,10 +65,29 @@ final class AutopilotGuidedPushUITests: XCTestCase {
         attachScreenshot("Review · header and search")
     }
 
-    /// The scene's push happened before this launch: Done can't tell how it
-    /// ended, and says so.
-    func testDoneAfterARelaunchSaysItCantTell() {
+    /// After Approve All, Done says the set waits in Review & Push and
+    /// opens it: no push, progress or Try Again of its own.
+    func testDoneAfterApproveAllWaitsInReviewAndPush() {
         app.launch(debugScene: "ap-done")
+        let title = element("autopilot.guided.done.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 20))
+        XCTAssertEqual(text(of: title), "Waiting in Review & Push")
+        XCTAssertTrue(text(of: element("autopilot.guided.done.text")).contains("Push it from there"))
+        let open = element("autopilot.guided.done.openReview")
+        XCTAssertTrue(open.exists)
+        XCTAssertEqual(open.label, "Open Review & Push…")
+        XCTAssertFalse(element("autopilot.guided.done.retry").exists, "Try Again is Review & Push's")
+        XCTAssertFalse(element("autopilot.guided.done.images").exists, "The push's progress is Review & Push's")
+        XCTAssertFalse(element("autopilot.guided.done.extras").exists)
+        XCTAssertFalse(element("autopilot.guided.approveAll").exists, "No footer once it's approved")
+        XCTAssertFalse(element("autopilot.guided.push").exists, "No push from the sheet")
+        attachScreenshot("Done · waiting in Review & Push")
+    }
+
+    /// A run pushed from the sheet before board 57, after a relaunch: Done
+    /// can't tell how it ended, and says so.
+    func testDoneAfterARelaunchSaysItCantTell() {
+        app.launch(debugScene: "ap-done-sent")
         let title = element("autopilot.guided.done.title")
         XCTAssertTrue(title.waitForExistence(timeout: 20))
         XCTAssertEqual(text(of: title), "Sent from this Mac")

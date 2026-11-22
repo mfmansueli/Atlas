@@ -20,6 +20,12 @@ struct PushItem: Identifiable, Hashable, Sendable {
     /// Every resource this change's `POST`s created, by type, for later
     /// requests that use `{createdID:<type>}`. Kept across a retry.
     var createdIDs: [String: String] = [:]
+    /// The name of a custom product page this change's create may have
+    /// made: Apple failed on it (a 5xx or no answer), and the page wasn't
+    /// there ready yet, or later writes failed. A retry that finds a page of
+    /// this name goes on with it instead of refusing it as made by another
+    /// push (`ProductPageCreate`). Kept across a retry, even after an edit.
+    var mayHaveMadePage: String?
     /// How far a long step of a sending change got, e.g. "Prices · 40 of
     /// 175"; nil otherwise.
     var progressNote: String?

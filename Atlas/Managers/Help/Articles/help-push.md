@@ -13,4 +13,6 @@ related: submit, fix
 
 If a push stops halfway, what already landed stays on the App Store and the rest stays in Review & Push.
 
+Screenshots and art from Autopilot or a product page’s screenshots join the same list once you approve them (Approve All, or Use These Screenshots). They’re pushed from here with everything else, never from their own window.
+
 > Some changes go live at once, such as promotional text and prices. Others wait for your next version’s review. Review & Push marks which is which.

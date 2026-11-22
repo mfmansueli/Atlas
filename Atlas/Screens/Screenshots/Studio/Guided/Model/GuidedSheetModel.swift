@@ -8,7 +8,7 @@ import Observation
 
 /// What the guided Autopilot sheet shows that isn't the run's: the setup
 /// step the person is on, what the Look step previews, the plan's folds,
-/// Review & push's tab, language and device, and the push confirmation.
+/// Review & approve's tab, language and device, and Approve All's state.
 @MainActor
 @Observable
 final class GuidedSheetModel {
@@ -39,9 +39,9 @@ final class GuidedSheetModel {
     var reviewLocale: String?
     var reviewDevice: ScreenshotDisplayType = .iPhone
     /// Why Approve All couldn't put the set in Review & Push.
-    var pushError: String?
+    var approveAllError: String?
     /// Approve All, while Review & Push's plan is read.
-    var isPreparingPush = false
+    var isApprovingAll = false
 
     /// A new run starts at What to make.
     func reset() {
@@ -57,7 +57,7 @@ final class GuidedSheetModel {
         reviewPart = nil
         reviewLocale = nil
         reviewDevice = .iPhone
-        pushError = nil
-        isPreparingPush = false
+        approveAllError = nil
+        isApprovingAll = false
     }
 }

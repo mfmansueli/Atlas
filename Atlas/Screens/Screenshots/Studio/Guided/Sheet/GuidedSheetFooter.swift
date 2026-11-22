@@ -8,14 +8,14 @@ import SwiftUI
 /// The guided sheet's bottom line: what you'll get, how long it takes or
 /// what's next, and the step's buttons: Next and Back while it's set up,
 /// Start Autopilot, Cancel Run… while it runs, Use These, and Approve All,
-/// which puts the set in Review & Push and closes on it (board 57).
+/// which puts the set in Review & Push with every other change and closes
+/// Autopilot (board 57): pushing is only Review & Push's.
 struct GuidedSheetFooter: View {
     @Bindable var studio: ScreenshotStudioModel
     let run: AutopilotRun
     let step: GuidedStep
     @Environment(ClaudeCodeLauncher.self) private var launcher: ClaudeCodeLauncher?
     @Environment(PushController.self) private var push: PushController?
-    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
 
     var body: some View {
         // Looked at again each minute: a pasted run goes quiet with time.
@@ -150,7 +150,7 @@ struct GuidedSheetFooter: View {
                 .accessibilityIdentifier("autopilot.guided.useChoices")
         case .review:
             if run.stage == .watchPreview { AutopilotCancelRunButton(studio: studio, run: run) }
-            if studio.isPushingGuided { ProgressView().controlSize(.small) }
+            if studio.isApprovingAllGuided { ProgressView().controlSize(.small) }
             Button("Approve All") { approveAll() }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
@@ -182,13 +182,12 @@ struct GuidedSheetFooter: View {
         }
     }
 
-    /// Approve All: the set joins Review & Push, which opens on Screenshots
-    /// as Autopilot closes; when nothing could join, the sheet says why.
+    /// Approve All: the set joins Review & Push and Autopilot closes on
+    /// Screenshots, nothing else opening; when nothing could join, the
+    /// sheet says why.
     private func approveAll() {
         guard let push else { return }
-        Task {
-            if await studio.approveAllGuided(with: push) { studio.openReviewPush(navigator) }
-        }
+        Task { await studio.approveAllGuided(with: push) }
     }
 
     /// Use These: the look and header chosen go on to Localize.

@@ -132,6 +132,47 @@ struct ScreenshotStudioGuidedTests {
         #expect(GuidedStep.step(of: run, setup: .make) == .done)
     }
 
+    /// Approve All only hands the set over: Autopilot closes on Screenshots,
+    /// whose toast says it waits in Review & Push (its button opens the
+    /// toolbar's), and nothing opens or pushes by itself.
+    @Test func approvedSetsCloseAutopilotWithAToastForReviewAndPush() async throws {
+        let (model, center) = await screenshots(StudioDebugGuided.ready(approved: []))
+        let studio = model.studio
+        studio.openAutopilot()
+        #expect(studio.isAutopilotPresented)
+        studio.approveRemainingParts(at: StudioTestFixtures.now)
+        studio.handOverApproved()
+        #expect(!studio.isAutopilotPresented)
+        let toast = try #require(model.captionToast)
+        #expect(toast.text.hasPrefix("Approved: "))
+        #expect(toast.text.hasSuffix(" wait in Review & Push, top right."))
+        #expect(toast.actionTitle == "Review & Push")
+        #expect(!toast.canUndo)
+        let run = try #require(center.run(for: appID))
+        #expect(run.guidedReview?.isFinished == true)
+        #expect(run.guidedReview?.pushedAt == nil, "Nothing is pushed from Autopilot")
+    }
+
+    @Test func theApprovedToastSaysWhatWaits() throws {
+        let plan = StudioDebugGuided.ready(approved: []).plan
+        let what = try #require(GuidedMakeSummary.pushed(plan))
+        #expect(ScreenshotStudioModel.approvedToastText(plan) == "Approved: \(what) wait in Review & Push, top right.")
+        #expect(ScreenshotStudioModel.approvedToastText(nil) == "Approved: the new set waits in Review & Push, top right.")
+    }
+
+    /// Done's Open Review & Push… opens the app-wide one, the toolbar's,
+    /// not one narrowed to Screenshots.
+    @Test func doneOpensTheToolbarsReviewAndPush() async {
+        let (model, _) = await screenshots(StudioDebugGuided.ready(approved: GuidedReviewPart.allCases, approvedAll: true))
+        let studio = model.studio
+        studio.openAutopilot()
+        let navigator = WorkspaceNavigator()
+        studio.openReviewPush(navigator)
+        #expect(!studio.isAutopilotPresented)
+        #expect(navigator.isReviewPresented)
+        #expect(navigator.reviewSection == nil, "Not narrowed to Screenshots")
+    }
+
     @Test func looksGoodConfirmsTheShortenedCaption() async throws {
         let (model, center) = await screenshots(StudioDebugGuided.ready(approved: []))
         let studio = model.studio

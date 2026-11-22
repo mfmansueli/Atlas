@@ -25,7 +25,7 @@ import SwiftUI
 /// `ScreenshotsProposalsDebugScenes`, `ScreenshotsHandDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
-/// `ProductPagesDebugScenes`, `MenuBarDebugScenes`).
+/// `ProductPagesDebugScenes`, `AutopilotButtonDebugScenes`, `MenuBarDebugScenes`).
 struct DebugSceneView: View {
     let id: String
 
@@ -91,6 +91,7 @@ struct DebugSceneView: View {
             EventArtworkDebugScenes.view(for:),
             ProductPagesDebugScenes.view(for:),
             NavigationDebugScenes.view(for:),
+            AutopilotButtonDebugScenes.view(for:),
             MenuBarDebugScenes.view(for:),
         ]
         return areas.lazy.compactMap { $0(id) }.first

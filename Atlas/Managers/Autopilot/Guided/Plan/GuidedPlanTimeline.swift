@@ -7,7 +7,8 @@ import Foundation
 
 /// The guided plan, as a timeline: the assistant captures, the design
 /// source designs, the person chooses, Atlas localizes and checks,
-/// and the person reviews and pushes, with the stops numbered.
+/// and the person reviews and approves (Review & Push then pushes it with
+/// everything else), with the stops numbered.
 enum GuidedPlanTimeline {
     /// - Parameters:
     ///   - client: "Claude Code".
@@ -39,8 +40,12 @@ enum GuidedPlanTimeline {
         }
         rows.append(localizeRow(plan: plan, client: client))
         rows.append(GuidedTimelineRow(
-            kind: .review, who: .you, title: String(localized: "Review everything and push"),
-            detail: String(localized: "Approve each part or ask for changes. Nothing reaches the App Store before you push."), time: ""
+            kind: .review, who: .you, title: String(localized: "Review and approve everything"),
+            detail: String(localized: """
+            Approve each part or ask for changes. Approve All puts it in Review & Push; nothing reaches the App Store \
+            before you push from there.
+            """),
+            time: ""
         ))
         return numberingStops(rows)
     }

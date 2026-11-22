@@ -20,7 +20,7 @@ struct GuidedArtworkMissingTests {
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
         #expect(missing.title == "Header artwork couldn’t be made")
         #expect(missing.detail.hasPrefix("Couldn’t render the header page in English (U.S.): The page didn’t load. Make Again"), "\(missing.detail)")
-        #expect(missing.detail.hasSuffix("Approving pushes the rest without it."))
+        #expect(missing.detail.hasSuffix("Approving puts the rest in Review & Push without it."))
     }
 
     /// A run from before `artworkProblem`: the set just has none of it.

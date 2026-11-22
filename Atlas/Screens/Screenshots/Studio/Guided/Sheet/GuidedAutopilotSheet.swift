@@ -48,10 +48,10 @@ struct GuidedAutopilotSheet: View {
             studio.uploadingProblem = nil
             Task { await studio.upload(url, for: problem) }
         }
-        .alert(Text("Couldn’t put it in Review & Push"), isPresented: hasPushError) {
+        .alert(Text("Couldn’t put it in Review & Push"), isPresented: hasApproveAllError) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(studio.guided.pushError ?? "")
+            Text(studio.guided.approveAllError ?? "")
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("autopilot.guided.sheet")
@@ -87,11 +87,11 @@ struct GuidedAutopilotSheet: View {
         }
     }
 
-    private var hasPushError: Binding<Bool> {
+    private var hasApproveAllError: Binding<Bool> {
         Binding {
-            studio.guided.pushError != nil
+            studio.guided.approveAllError != nil
         } set: { isPresented in
-            if !isPresented { studio.guided.pushError = nil }
+            if !isPresented { studio.guided.approveAllError = nil }
         }
     }
 }

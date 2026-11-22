@@ -166,6 +166,19 @@ struct NextStepToolTests {
         #expect(AutopilotNextStep.done.mcpJSON(run: nil)["say"]?.stringValue?.contains("Nothing is uploaded until the person pushes") == true)
     }
 
+    /// Autopilot never pushes: done says the person approves the set, and
+    /// that Approve All only puts it in Review & Push.
+    @Test func doneSaysThePersonApprovesAndReviewAndPushPushes() throws {
+        let ready = StudioDebugGuided.ready(approved: [])
+        let waiting = try #require(AutopilotNextStep.done.mcpJSON(run: ready)["say"]?.stringValue)
+        #expect(waiting.contains("approves it, which puts it in Review & Push"))
+        #expect(waiting.contains("pushes from there"))
+        let approved = StudioDebugGuided.ready(approved: GuidedReviewPart.allCases, approvedAll: true)
+        let handed = try #require(AutopilotNextStep.done.mcpJSON(run: approved)["say"]?.stringValue)
+        #expect(handed.hasPrefix("The person approved the new set: it waits in Atlas's Review & Push"))
+        #expect(!handed.contains("Autopilot"), "Nothing is left in Autopilot")
+    }
+
     /// Board 32's note about the header and search: next_step shows each
     /// direction as it is now, which ones this note already changed, how
     /// the artwork's own look changes, and that the motion is fixed.

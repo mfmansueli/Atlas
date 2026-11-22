@@ -46,7 +46,8 @@ enum GuidedMakeSummary {
         return parts.formatted(.list(type: .and)) + (parts.count == 1 ? " " : ", ") + languages
     }
 
-    /// What Push to App Store… sends: "180 screenshots, 1 App Preview and
+    /// What Approve All puts in Review & Push (and Done says was sent):
+    /// "180 screenshots, 1 App Preview and
     /// moving header and search artwork in 18 languages"; nil when the
     /// plan makes nothing.
     static func pushed(_ plan: AutopilotPlan) -> String? {

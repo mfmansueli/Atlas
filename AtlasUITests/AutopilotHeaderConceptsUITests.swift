@@ -269,11 +269,13 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         let title = element("autopilot.guided.review.artworkMissing.title")
         XCTAssertTrue(title.waitForExistence(timeout: 10), "The header part says it wasn't made")
         XCTAssertEqual(text(of: title), "Header artwork couldn’t be made")
-        XCTAssertTrue(text(of: element("autopilot.guided.review.artworkMissing.detail")).hasSuffix("Approving pushes the rest without it."))
+        XCTAssertTrue(
+            text(of: element("autopilot.guided.review.artworkMissing.detail")).hasSuffix("Approving puts the rest in Review & Push without it.")
+        )
         XCTAssertFalse(element("autopilot.guided.review.artwork.header").exists, "No empty header thumbnail")
         let makeAgain = app.buttons["autopilot.guided.review.makeAgain"]
         XCTAssertTrue(makeAgain.exists)
-        XCTAssertTrue(element("autopilot.guided.review.approve").isEnabled, "Approving pushes the rest without it")
+        XCTAssertTrue(element("autopilot.guided.review.approve").isEnabled, "Approving puts the rest in Review & Push without it")
         attachScreenshot("Review · header not made")
 
         makeAgain.click()

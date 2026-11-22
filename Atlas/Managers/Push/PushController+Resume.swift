@@ -12,7 +12,7 @@ extension PushController {
     /// sheet closed doesn't repeat what App Store Connect already took.
     func rememberUnfinished() {
         for item in items {
-            if item.status == .done || item.sentRequestCount == 0 {
+            if item.status == .done || (item.sentRequestCount == 0 && item.mayHaveMadePage == nil) {
                 unfinished[item.id] = nil
             } else {
                 unfinished[item.id] = item
@@ -23,7 +23,10 @@ extension PushController {
     /// `change` as a new row, resuming where an earlier push of it stopped.
     func resumed(_ change: PendingChange) -> PushItem {
         var item = PushItem(change: change)
-        guard let earlier = unfinished.removeValue(forKey: change.id), Self.sentTheSameRequests(earlier, as: change) else { return item }
+        guard let earlier = unfinished.removeValue(forKey: change.id) else { return item }
+        // What Apple may have made stays true whatever was edited since.
+        item.mayHaveMadePage = earlier.mayHaveMadePage
+        guard Self.sentTheSameRequests(earlier, as: change) else { return item }
         item.sentRequestCount = earlier.sentRequestCount
         item.createdID = earlier.createdID
         item.createdIDs = earlier.createdIDs

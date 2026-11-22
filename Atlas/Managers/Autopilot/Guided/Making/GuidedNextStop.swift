@@ -25,7 +25,7 @@ enum GuidedNextStop: Hashable, Sendable {
         switch self {
         case .pick: String(localized: "pick the captures")
         case .choose: String(localized: "choose the look")
-        case .review: String(localized: "review everything and push")
+        case .review: String(localized: "review and approve everything")
         }
     }
 

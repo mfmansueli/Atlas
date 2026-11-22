@@ -7,7 +7,8 @@ import Foundation
 
 /// The strip for the guided Autopilot: Start… (or Continue Setup…) with
 /// what it makes in three steps, the run's progress while it goes on its
-/// own, "Your turn" at the two stops, and Sent once it's pushed.
+/// own, "Your turn" at the two stops, and Approved once Approve All put it
+/// in Review & Push (Sent for a run pushed from the sheet before board 57).
 extension AutopilotStripContent {
     /// - Parameters:
     ///   - assistant: The connected assistant that can run Xcode, if any.

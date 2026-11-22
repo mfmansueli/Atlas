@@ -151,11 +151,26 @@ extension AutopilotNextStep {
                 "say": "No Autopilot run is waiting. Ask the person to open Atlas → Screenshots → Run Autopilot… and press Start Autopilot.",
             ]
         }
-        // At the plan, done means the suggested screens are in.
-        let say = run?.stage == .plan
-            ? "Your suggestions are in Atlas's plan; the person adds the ones they want. Nothing else to do now."
-            : "The new set waits in Atlas's Review & Push. Nothing is uploaded until the person pushes."
-        return ["action": "done", "say": .string(say)]
+        return ["action": "done", "say": .string(Self.doneSay(run: run))]
+    }
+
+    /// At the plan, done means the suggested screens are in; after it, the
+    /// person approves the set in Autopilot (Approve All), which only puts
+    /// it in Review & Push with every other change: Autopilot never pushes.
+    static func doneSay(run: AutopilotRun?) -> String {
+        if run?.stage == .plan {
+            return "Your suggestions are in Atlas's plan; the person adds the ones they want. Nothing else to do now."
+        }
+        if run?.guidedReview?.isFinished == true {
+            return """
+            The person approved the new set: it waits in Atlas's Review & Push with their other changes. Nothing is \
+            uploaded until the person pushes from there.
+            """
+        }
+        return """
+        The new set is made. The person reviews it in Atlas's Autopilot and approves it, which puts it in Review & \
+        Push with their other changes. Nothing is uploaded until the person pushes from there.
+        """
     }
 
     /// MB Admin's run: the person pressed Retry without the change, and

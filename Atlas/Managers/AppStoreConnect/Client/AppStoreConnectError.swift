@@ -78,6 +78,14 @@ enum AppStoreConnectError: LocalizedError, Equatable {
         return code == "ENTITY_ERROR.ATTRIBUTE.INVALID.UNMODIFIABLE"
     }
 
+    /// A 5xx, e.g. 500 `UNEXPECTED_ERROR`: Apple's server failed, and the
+    /// write may still have been made. A 4xx in `.server` (400
+    /// `PARAMETER_ERROR`) was refused outright.
+    var isServerFailure: Bool {
+        guard case let .server(statusCode, _, _) = self else { return false }
+        return statusCode >= 500
+    }
+
     /// 409 `STATE_ERROR`, e.g. "Screenshot Set Already Exists!".
     var isStateError: Bool {
         guard case let .rejected(_, code, _) = self else { return false }

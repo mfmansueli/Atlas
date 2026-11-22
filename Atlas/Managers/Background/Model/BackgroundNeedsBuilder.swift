@@ -98,12 +98,20 @@ enum BackgroundNeedsBuilder {
         switch turn {
         case .pick: String(localized: "Pick the captures for \(appName)’s screenshots")
         case .choose: String(localized: "Choose the look for \(appName)’s screenshots")
-        case .review: String(localized: "Review \(appName)’s screenshots, then push")
+        case .review: String(localized: "Review and approve \(appName)’s screenshots")
         }
     }
 
+    /// The turn `run` waits on: its stage's, but none once Approve All put
+    /// the set in Review & Push, where it waits with every other change
+    /// (the toolbar's count says so, not "Needs you").
+    static func turn(for run: AutopilotRun) -> AutopilotTurn? {
+        if run.stage == .ready, run.guidedReview?.isFinished == true { return nil }
+        return turn(for: run.stage)
+    }
+
     /// The turn a run's stage waits on: the three checkpoints, and Review
-    /// & Push once everything is made.
+    /// & approve once everything is made.
     static func turn(for stage: AutopilotStage) -> AutopilotTurn? {
         switch stage {
         case .pick: .pick

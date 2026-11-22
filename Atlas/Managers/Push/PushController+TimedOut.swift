@@ -19,12 +19,20 @@ extension PushController {
     static let serverFailureText = String(localized: "It may still have gone through: refresh to see before you retry.")
 
     /// Failed with `timedOutText` for a timeout, or Apple's error and
-    /// `serverFailureText` for a server failure; nil for any other error.
+    /// `serverFailureText` for a server failure (5xx); nil for any other
+    /// error, a 400 among them: that one was refused.
     static func timedOutStatus(_ error: any Error) -> PushItemStatus? {
         if let error = error as? URLError, error.code == .timedOut { return .failed(timedOutText) }
-        if let error = error as? AppStoreConnectError, case .server = error {
+        if let error = error as? AppStoreConnectError, error.isServerFailure {
             return .failed(error.pushFailureText + " " + serverFailureText)
         }
         return nil
+    }
+
+    /// A write that failed this way may have been made anyway: Apple
+    /// didn't answer in time, or its server failed (5xx).
+    nonisolated static func mayHaveGoneThrough(_ error: any Error) -> Bool {
+        if let error = error as? URLError { return error.code == .timedOut }
+        return (error as? AppStoreConnectError)?.isServerFailure ?? false
     }
 }

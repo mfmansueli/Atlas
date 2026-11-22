@@ -73,6 +73,9 @@ enum Palette {
     static let machineTranslatedMark = dynamic(light: 0x9B4FD6, dark: 0xC48CFF, lightHC: 0x7E36B8, darkHC: 0xD4A8FF)
     static let machineTranslatedTint = dynamic(light: 0x9646D2, dark: 0xC88CFF, lightHC: 0x9646D2, darkHC: 0xC88CFF, alpha: [0.11, 0.17, 0.17, 0.24])
 
+    /// Something finished: the Autopilot button's check.
+    static let done = dynamic(light: 0x1D7A3A, dark: 0x5FD38A, lightHC: 0x0F5A26, darkHC: 0x8FE6AE)
+
     /// The count of suggestions waiting for someone: purple means only that.
     static let suggestionBadge = dynamic(light: 0x8A3CD6, dark: 0xB98CFF, lightHC: 0x5C1E91, darkHC: 0xE6C8FF)
     static let suggestionBadgeText = dynamic(light: 0xFFFFFF, dark: 0x1B0A2E, lightHC: 0xFFFFFF, darkHC: 0x000000)

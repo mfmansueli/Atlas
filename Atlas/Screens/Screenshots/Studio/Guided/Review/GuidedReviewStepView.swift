@@ -5,12 +5,13 @@
 
 import SwiftUI
 
-/// Step 6, Review & push: the person's last stop. A tab per part the run
+/// Step 6, Review & approve: the person's last stop. A tab per part the run
 /// made (✓ once approved), the look it has, a language and a device to
 /// see it in, the part itself, and its checks with Approve. While the App
 /// Preview or the header loop is still being watched, the design source
-/// can change them from here; Push to App Store… (in the footer) waits
-/// until every part is approved.
+/// can change them from here. Approve All (in the footer) approves what's
+/// left and puts the set in Review & Push, where it's pushed with every
+/// other change: nothing is pushed from here.
 struct GuidedReviewStepView: View {
     @Bindable var studio: ScreenshotStudioModel
     let run: AutopilotRun
@@ -28,7 +29,7 @@ struct GuidedReviewStepView: View {
                 HStack(alignment: .bottom, spacing: Spacing.medium) {
                     GuidedStepTitle(
                         title: String(localized: "Review everything"),
-                        subtitle: String(localized: "Approve each part, or ask for changes. Nothing reaches the App Store until you push.")
+                        subtitle: String(localized: "Approve each part, or ask for changes. Approved, it waits in Review & Push until you push it from there.")
                     )
                     if parts.count > 1, let part {
                         StudioSegmentedControl(

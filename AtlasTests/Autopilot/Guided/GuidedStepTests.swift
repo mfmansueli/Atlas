@@ -45,7 +45,7 @@ struct GuidedStepTests {
         #expect(GuidedStep.stepper.map(\.number) == [1, 2, 3, 4, 5, 6])
         #expect(GuidedStep.stepper.filter(\.isYours) == [.choose, .review])
         #expect(GuidedStep.stepper.filter(\.isSetup) == [.make, .look, .plan])
-        #expect(GuidedStep.review.title == "Review & push")
+        #expect(GuidedStep.review.title == "Review & approve", "The sheet approves; Review & Push pushes")
         #expect(GuidedStep.stepper.map(\.identifier) == ["make", "look", "plan", "making", "choose", "review"])
     }
 

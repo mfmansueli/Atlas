@@ -32,7 +32,7 @@ enum AutopilotTurn: Hashable, Sendable {
         switch self {
         case .pick: String(localized: "Autopilot needs you: pick the captures")
         case .choose: String(localized: "Autopilot needs you: choose the look")
-        case .review: String(localized: "Autopilot needs you: review everything, then push")
+        case .review: String(localized: "Autopilot needs you: review and approve everything")
         }
     }
 

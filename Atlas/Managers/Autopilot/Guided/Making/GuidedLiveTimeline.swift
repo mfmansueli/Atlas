@@ -64,7 +64,7 @@ enum GuidedLiveTimeline {
                 .upcoming
             }
         }
-        // A finished, pushed run has nothing left at all.
+        // A run approved into Review & Push has nothing left at all.
         if run.stage == .ready, run.guidedReview?.isFinished == true {
             for row in rows { states[row.kind] = .done }
         }

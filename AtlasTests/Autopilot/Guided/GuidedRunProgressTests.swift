@@ -47,6 +47,15 @@ struct GuidedRunProgressTests {
         #expect(progress.minutesLeft == 6)
     }
 
+    /// The toolbar's Autopilot button draws its bar only for steps counted,
+    /// never for the small start the Making bar shows.
+    @Test func onlyCountedProgressIsCounted() {
+        #expect(GuidedRunProgress.make(Self.halfCaptured, now: Self.start).isCounted)
+        let starting = GuidedRunProgress.make(AutopilotTestFixtures.run(.waiting), now: Self.start)
+        #expect(starting.fraction > 0)
+        #expect(!starting.isCounted)
+    }
+
     @Test func beforeAnythingArrivesThePlanSaysHowLong() {
         let run = AutopilotTestFixtures.run(.capture)
         let progress = GuidedRunProgress.make(run, now: Self.start.addingTimeInterval(60))
@@ -134,7 +143,7 @@ struct GuidedRunProgressTests {
         let progress = GuidedRunProgress.make(run, now: Self.start.addingTimeInterval(90))
         #expect(progress.line == "App Previews · 1 of 2 · about 2 min left")
         #expect(progress.minutesLeft == 2)
-        #expect(GuidedNextStop.line(for: run, progress: progress).hasPrefix("Next for you: review everything and push, in about 2 min."))
+        #expect(GuidedNextStop.line(for: run, progress: progress).hasPrefix("Next for you: review and approve everything, in about 2 min."))
 
         // Only iPhone's, none made yet: its estimate.
         run.plan.runChoice.previewDisplays = [.iPhone]

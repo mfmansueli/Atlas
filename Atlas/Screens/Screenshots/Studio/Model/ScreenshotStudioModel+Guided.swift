@@ -6,7 +6,8 @@
 import Foundation
 
 /// The guided Autopilot: which front shows, the setup steps' changes,
-/// Review & push's approvals and checks, and the push from the sheet.
+/// Review & approve's approvals and checks, and Approve All, which hands
+/// the set to the app-wide Review & Push: nothing is pushed from here.
 extension ScreenshotStudioModel {
     // MARK: - Steps
 
@@ -161,7 +162,7 @@ extension ScreenshotStudioModel {
     /// The run is ready and every part is approved or can be, with no
     /// caption proposal waiting: Approve All can go.
     var canApproveAllGuided: Bool {
-        run?.stage == .ready && !guidedParts.isEmpty && !isPushingGuided && guidedCaptionProposals.isEmpty
+        run?.stage == .ready && !guidedParts.isEmpty && !isApprovingAllGuided && guidedCaptionProposals.isEmpty
             && guidedParts.allSatisfy { isApproved($0) || canApprove($0) }
     }
 
@@ -317,33 +318,35 @@ extension ScreenshotStudioModel {
         return plan.primaryLocale
     }
 
-    // MARK: - Push
+    // MARK: - Approve All
 
-    var isPushingGuided: Bool { guided.isPreparingPush }
+    var isApprovingAllGuided: Bool { guided.isApprovingAll }
 
     /// Approve All (board 57): every part is approved and the set's
-    /// images and extras join Review & Push, where they're pushed like
-    /// everything else; Autopilot is done here. Returns whether they
-    /// joined: the footer then closes Autopilot on Review & Push, showing
-    /// Screenshots. When there's nothing to push, it says why and stays.
+    /// images and extras wait in Review & Push, top right, with every
+    /// other change, where they're pushed like the rest; Autopilot never
+    /// pushes. Returns whether they joined: Autopilot then closes on
+    /// Screenshots with a toast that says so, and nothing opens by
+    /// itself. When there's nothing to push, it says why and stays.
     @discardableResult
     func approveAllGuided(with push: PushController) async -> Bool {
         guard canApproveAllGuided else { return false }
         let controller = push.screenshots
-        guided.pushError = nil
-        guided.isPreparingPush = true
-        defer { guided.isPreparingPush = false }
+        guided.approveAllError = nil
+        guided.isApprovingAll = true
+        defer { guided.isApprovingAll = false }
         await controller.loadPlan(for: app)
         let plans = controller.plans(for: [app.id])
         let extras = controller.extras.plans(for: [app.id])
         let hasImages = plans.contains { !$0.items.isEmpty }
         let hasExtras = extras.contains { !controller.extras.checkedItems(in: $0).isEmpty }
         guard hasImages || hasExtras else {
-            guided.pushError = plans.first?.blockedReason
+            guided.approveAllError = plans.first?.blockedReason
                 ?? String(localized: "Nothing new to push: App Store Connect already has all of it.")
             return false
         }
         approveRemainingParts(at: autopilot?.now() ?? .now)
+        handOverApproved()
         return true
     }
 
@@ -360,10 +363,31 @@ extension ScreenshotStudioModel {
         }
     }
 
-    /// Open Review & Push…: what couldn't be sent, retried from there;
-    /// after Approve All, on Screenshots' changes.
+    /// After Approve All: Autopilot closes on Screenshots, whose toast says
+    /// the set waits in Review & Push (its button opens it). The toolbar's
+    /// Review & Push shows the count; nothing is pushed until it's pressed.
+    func handOverApproved() {
+        isAutopilotPresented = false
+        screenshots.captionToast = ToastMessage(
+            text: run.map { Self.approvedToastText($0.plan) } ?? Self.approvedToastText(nil),
+            actionTitle: String(localized: "Review & Push")
+        )
+    }
+
+    /// "Approved: 12 screenshots and 1 App Preview in 3 languages wait in
+    /// Review & Push, top right."
+    static func approvedToastText(_ plan: AutopilotPlan?) -> String {
+        guard let plan, let what = GuidedMakeSummary.pushed(plan) else {
+            return String(localized: "Approved: the new set waits in Review & Push, top right.")
+        }
+        return String(localized: "Approved: \(what) wait in Review & Push, top right.")
+    }
+
+    /// Open Review & Push… and Show Progress… at Done: the app-wide Review
+    /// & Push, the toolbar's, with the set among the other changes (or the
+    /// push's progress while one goes).
     func openReviewPush(_ navigator: WorkspaceNavigator?) {
         isAutopilotPresented = false
-        navigator?.review(section: .screenshots)
+        navigator?.isReviewPresented = true
     }
 }

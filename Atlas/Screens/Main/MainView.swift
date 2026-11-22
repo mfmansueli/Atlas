@@ -265,7 +265,8 @@ struct MainView: View {
                 complianceAnswers: SectionBadgeCounts.complianceCount(
                     appID: app.id, model: sectionModels.models(for: app.id).appInformation, notes: services.appInformation.notes
                 ),
-                productPages: productPages.count(for: app.id)
+                productPages: productPages.count(for: app.id),
+                needsYou: SectionBadgeCounts.needsYou(appID: app.id, repliesArePro: !pro.isFree)
             )
         )
     }

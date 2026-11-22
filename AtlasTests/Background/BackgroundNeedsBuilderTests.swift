@@ -66,6 +66,6 @@ struct BackgroundNeedsBuilderTests {
             #expect(BackgroundNeedsBuilder.turn(for: stage) == nil)
         }
         #expect(BackgroundNeedsBuilder.title(for: .pick, appName: "Alba") == "Pick the captures for Alba’s screenshots")
-        #expect(BackgroundNeedsBuilder.title(for: .review, appName: "Alba") == "Review Alba’s screenshots, then push")
+        #expect(BackgroundNeedsBuilder.title(for: .review, appName: "Alba") == "Review and approve Alba’s screenshots")
     }
 }

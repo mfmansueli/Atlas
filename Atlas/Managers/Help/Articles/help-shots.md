@@ -14,7 +14,8 @@ Each set is a template plus your app’s screens plus a caption per language. Ch
 1. Say what to make: screenshots, an App Preview, header artwork.
 2. Choose the look.
 3. Check the plan and start it. Atlas captures your app in the Simulator, designs, and writes every language.
-4. Come back twice: to choose the look, and to review and push.
+4. Come back twice: to choose the look, and to review and approve. **Approve All** puts the screenshots, App Previews and header art in Review & Push, top right, with your other changes, and Autopilot closes.
+5. Push them from **Review & Push**, like everything else. Autopilot never pushes by itself.
 
 When a device has no simulator yet but this Mac has what it needs (Xcode knows the device and its runtime is installed), Atlas makes the simulator itself, in any run, including one that redoes only some captures. Its card goes away by itself. Only what Atlas can’t do waits for you: a runtime to download (several GB, Install on its card), a helper to save again, or a simulator Xcode couldn’t make (the card says why).
 

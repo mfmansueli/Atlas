@@ -6,9 +6,11 @@
 import SwiftUI
 
 /// Done: after Approve All, "Waiting in Review & Push" with Open Review &
-/// Push…; then the push to App Store Connect as it goes (the images, then
-/// the header, search and App Preview), then "Sent to the App Store". What
-/// couldn't be sent says so, with Try Again and Open Review & Push….
+/// Push…. The push goes only from Review & Push, with the person's other
+/// changes: Done follows it in one line ("Pushing from Review & Push",
+/// then "Sent to the App Store"), and its progress, failures and Try
+/// Again stay in Review & Push, which Show Progress… and Open Review &
+/// Push… open.
 struct GuidedDoneStepView: View {
     @Bindable var studio: ScreenshotStudioModel
     let run: AutopilotRun
@@ -16,63 +18,34 @@ struct GuidedDoneStepView: View {
     @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
 
     var body: some View {
-        let images = imageRun
-        let extras = extrasRun
         let outcome = GuidedPushOutcome.make(
-            images: images.map { GuidedPushOutcome.Tally(total: $0.totalCount, done: $0.doneCount, isRunning: $0.isRunning) },
-            extras: extras.map { GuidedPushOutcome.Tally(total: $0.items.count, done: $0.doneCount, isRunning: $0.isRunning) },
-            approvedOnly: run.guidedReview?.pushedAt == nil
+            images: imageRun.map { GuidedPushOutcome.Tally(total: $0.totalCount, done: $0.doneCount, isRunning: $0.isRunning) },
+            extras: extrasRun.map { GuidedPushOutcome.Tally(total: $0.items.count, done: $0.doneCount, isRunning: $0.isRunning) },
+            pushedFromSheet: run.guidedReview?.pushedAt != nil
         )
         VStack(spacing: Spacing.medium) {
             Spacer(minLength: 0)
-            if outcome == .sending {
-                ProgressView().controlSize(.large)
-                Text("Sending to the App Store")
-                    .font(.title2.weight(.semibold))
-                    .accessibilityIdentifier("autopilot.guided.done.title")
-            } else {
-                Image(systemName: outcome.symbol)
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .background(outcome == .partly ? Palette.warningMark : Palette.accent, in: Circle())
-                    .accessibilityHidden(true)
-                Text(outcome.title)
-                    .font(.title2.weight(.semibold))
-                    .accessibilityIdentifier("autopilot.guided.done.title")
-                Text(outcome.detail ?? sentText)
-                    .font(.callout)
-                    .foregroundStyle(Palette.label2)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 520)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("autopilot.guided.done.text")
-            }
-            VStack(alignment: .leading, spacing: Spacing.small) {
-                if let images {
-                    progress(title: images.title, subtitle: images.subtitle, value: images.progress, identifier: "images")
-                }
-                if let extras {
-                    progress(
-                        title: extras.title, subtitle: extras.failures.first?.reason ?? "", value: extras.progress, identifier: "extras"
-                    )
-                }
-            }
-            .frame(maxWidth: 520)
-            if outcome == .partly || outcome == .unknown || outcome == .approved {
-                HStack(spacing: Spacing.small) {
-                    Button("Open Review & Push…") { studio.openReviewPush(navigator) }
-                        .accessibilityIdentifier("autopilot.guided.done.openReview")
-                    if outcome == .partly {
-                        Button("Try Again") {
-                            push?.screenshots.run?.retryUnsent()
-                            push?.screenshots.extras.run?.retryUnsent()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .accessibilityIdentifier("autopilot.guided.done.retry")
-                    }
-                }
-                .buttonBorderShape(.capsule)
+            Image(systemName: outcome.symbol)
+                .font(.system(size: 26, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 56, height: 56)
+                .background(outcome == .partly ? Palette.warningMark : Palette.accent, in: Circle())
+                .accessibilityHidden(true)
+            Text(outcome.title)
+                .font(.title2.weight(.semibold))
+                .accessibilityIdentifier("autopilot.guided.done.title")
+            Text(outcome.detail ?? sentText)
+                .font(.callout)
+                .foregroundStyle(Palette.label2)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 520)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("autopilot.guided.done.text")
+            if outcome.opensReviewPush {
+                Button(outcome.reviewPushTitle) { studio.openReviewPush(navigator) }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .accessibilityIdentifier("autopilot.guided.done.openReview")
             }
             Spacer(minLength: 0)
         }
@@ -103,20 +76,5 @@ struct GuidedDoneStepView: View {
             text += " " + String(localized: "Template v\(version) is saved; everything is in the set’s history.")
         }
         return text + " " + String(localized: "Apple is processing them; the live page changes within minutes.")
-    }
-
-    private func progress(title: String, subtitle: String, value: Double, identifier: String) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text(title).font(.callout.weight(.semibold))
-            ProgressView(value: value)
-            if !subtitle.isEmpty {
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(Palette.label2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("autopilot.guided.done.\(identifier)")
     }
 }

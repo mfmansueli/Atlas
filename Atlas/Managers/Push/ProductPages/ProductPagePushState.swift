@@ -41,6 +41,26 @@ final class ProductPagePushState {
         return localizationID
     }
 
+    /// Sends a page write into the page's version known in this push, and
+    /// keeps the version. After a server failure or no answer it's sent
+    /// once more, after `pause`: it reads the version and the language
+    /// again first, so nothing is made twice (a language made meanwhile is
+    /// refused as a duplicate and written into instead).
+    func send(
+        _ write: ProductPageLocaleWrite, transport: any PushTransport, pause: Duration, note: (AppStoreConnectRateLimit?) -> Void
+    ) async throws -> (versionID: String, localizationID: String?) {
+        let sent: (versionID: String, localizationID: String?, rateLimit: AppStoreConnectRateLimit?)
+        do {
+            sent = try await write.send(via: transport, knownVersionID: versions[write.pageID])
+        } catch where PushController.mayHaveGoneThrough(error) {
+            try await Task.sleep(for: pause)
+            sent = try await write.send(via: transport, knownVersionID: versions[write.pageID])
+        }
+        versions[write.pageID] = sent.versionID
+        note(sent.rateLimit)
+        return (sent.versionID, sent.localizationID)
+    }
+
     /// The page's version that takes edits, found or made once in this push.
     func version(
         pageID: String, deepLink: String?, transport: any PushTransport, note: @escaping (AppStoreConnectRateLimit?) -> Void

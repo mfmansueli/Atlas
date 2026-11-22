@@ -143,21 +143,9 @@ struct ProductPageLocaleWrite: Hashable, Sendable {
             rateLimit = response.rateLimit ?? rateLimit
         }
         guard let locale = content.locale else { return (versionID, nil, rateLimit) }
-        let localizations = try await transport.fetch(localizationsPath(versionID: versionID))
-        rateLimit = localizations.rateLimit ?? rateLimit
-        let localizationID: String
-        if let existing = Self.localizationID(for: locale, in: localizations.data) {
-            localizationID = existing
-            if let text = content.promotionalText {
-                let response = try await transport.send(updateText(localizationID: existing, to: text))
-                rateLimit = response.rateLimit ?? rateLimit
-            }
-        } else {
-            let created = try await transport.send(createLocalization(versionID: versionID, locale: locale))
-            rateLimit = created.rateLimit ?? rateLimit
-            guard let id = Self.createdID(in: created.data) else { throw AppStoreConnectError.unexpectedPayload }
-            localizationID = id
-        }
+        let language = try await localization(locale, versionID: versionID, via: transport)
+        rateLimit = language.rateLimit ?? rateLimit
+        let localizationID = language.id
         if !content.removeKeywords.isEmpty {
             let response = try await transport.send(keywords(.delete, content.removeKeywords, localizationID: localizationID))
             rateLimit = response.rateLimit ?? rateLimit
@@ -167,6 +155,35 @@ struct ProductPageLocaleWrite: Hashable, Sendable {
             rateLimit = response.rateLimit ?? rateLimit
         }
         return (versionID, localizationID, rateLimit)
+    }
+
+    /// The version's language for `locale` with this write's text: the one
+    /// there (its text updated), else a new one with the text. One refused
+    /// as a duplicate was made meanwhile (e.g. by an earlier try Apple
+    /// answered with a server error): it's that one.
+    private func localization(
+        _ locale: String, versionID: String, via transport: any PushTransport
+    ) async throws -> (id: String, rateLimit: AppStoreConnectRateLimit?) {
+        let localizations = try await transport.fetch(localizationsPath(versionID: versionID))
+        if let existing = Self.localizationID(for: locale, in: localizations.data) {
+            return try await (existing, writeText(into: existing, via: transport) ?? localizations.rateLimit)
+        }
+        do {
+            let created = try await transport.send(createLocalization(versionID: versionID, locale: locale))
+            guard let id = Self.createdID(in: created.data) else { throw AppStoreConnectError.unexpectedPayload }
+            return (id, created.rateLimit)
+        } catch let error as AppStoreConnectError where error.isDuplicate {
+            let again = try await transport.fetch(localizationsPath(versionID: versionID))
+            guard let existing = Self.localizationID(for: locale, in: again.data) else { throw error }
+            return try await (existing, writeText(into: existing, via: transport) ?? again.rateLimit)
+        }
+    }
+
+    /// Writes this write's text into the language, when it has one; returns
+    /// the rate limit.
+    private func writeText(into localizationID: String, via transport: any PushTransport) async throws -> AppStoreConnectRateLimit? {
+        guard let text = content.promotionalText else { return nil }
+        return try await transport.send(updateText(localizationID: localizationID, to: text)).rateLimit
     }
 
     /// The newest version that takes edits.

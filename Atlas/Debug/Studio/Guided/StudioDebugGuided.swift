@@ -40,7 +40,9 @@ import Foundation
 /// - `ap-review-devices`: Review & push on every device Lumen ships on,
 ///   Mac shown in Arabic; iPad and Mac were captured in 4 languages
 ///   before the run.
-/// - `ap-done`: Sent to the App Store.
+/// - `ap-done`: Done after Approve All, waiting in Review & Push.
+/// - `ap-done-sent`: Done for a run pushed from the sheet before board 57,
+///   after a relaunch.
 @MainActor
 enum StudioDebugGuided {
     nonisolated static let homeID = "ap-home"
@@ -49,6 +51,7 @@ enum StudioDebugGuided {
         homeID, "ap-make", "ap-make-some", "ap-look", "ap-look-tpl", "ap-look-tpl-de", "ap-look-art", "ap-look-proof",
         "ap-look-devices", "ap-look-mac", "ap-look-zoom", "ap-look-arcade", "ap-plan", "ap-plan-mac", "ap-plan-helper",
         "ap-run", "ap-run-des", "ap-hidden", "ap-choose", "ap-choose-tpl", "ap-review", "ap-review-art", "ap-review-devices", "ap-done",
+        "ap-done-sent",
     ]
 
     static func scene(for id: String) -> StudioDebugExtras.Scene? {
@@ -156,7 +159,17 @@ enum StudioDebugGuided {
             guided(ready(approved: [.screenshots]), setUp: { $0.reviewPart = .artwork })
         case "ap-review-devices":
             reviewEveryDevice()
+        default:
+            doneScene(for: id)
+        }
+    }
+
+    /// Done: after Approve All, or pushed from the sheet before board 57.
+    private static func doneScene(for id: String) -> StudioDebugExtras.Scene? {
+        switch id {
         case "ap-done":
+            guided(ready(approved: GuidedReviewPart.allCases, approvedAll: true))
+        case "ap-done-sent":
             guided(ready(approved: GuidedReviewPart.allCases, pushed: true))
         default:
             nil

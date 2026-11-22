@@ -26,7 +26,7 @@ struct GuidedArtworkMissing: Equatable {
             ?? String(localized: "Nothing of it was saved with the set.")
         detail = reason + " " + String(localized: """
         Make Again makes it again from your choices, without designing anything again. \
-        Approving pushes the rest without it.
+        Approving puts the rest in Review & Push without it.
         """)
     }
 }

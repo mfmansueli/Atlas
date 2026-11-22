@@ -58,13 +58,12 @@ struct AppWorkspaceView: View {
                     navigator.analyticsOrigin = nil
                 }
             }
-            // The page scrolls under the toolbar, which has no background
-            // of its own (board 57): the soft edge keeps the title readable;
-            // with Reduce Transparency, the hard edge gives it the window's
-            // color.
+            // The page doesn't show through the toolbar: the soft edge
+            // alone left a scrolled page's text behind the title (Alba's
+            // Overview), so the toolbar has the window's color.
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scrollEdgeEffectStyle(reduceTransparency ? .hard : .soft, for: .top)
+                .scrollEdgeEffectStyle(.hard, for: .top)
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
         .overlay(alignment: .bottom) {
@@ -95,6 +94,8 @@ struct AppWorkspaceView: View {
                 startAsk(.askSomethingElse, question: question)
             }
         }
+        .toolbarBackgroundVisibility(.visible, for: .windowToolbar)
+        .toolbarBackground(Palette.window, for: .windowToolbar)
         .navigationTitle(app.name)
         .navigationSubtitle(app.bundleID)
         .toolbar(removing: .title)
@@ -116,10 +117,12 @@ struct AppWorkspaceView: View {
             }
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
-            // Its own capsule: a request's token lands on it.
+            // Its own capsule, drawn by the button so the light can run
+            // along its edge: a request's token lands on it.
             ToolbarItem(placement: .primaryAction) {
                 autopilotButton
             }
+            .sharedBackgroundVisibility(.hidden)
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
@@ -129,6 +132,8 @@ struct AppWorkspaceView: View {
                 }
                 .help("Refresh from App Store Connect (⌘R)")
                 .accessibilityIdentifier("workspace.refreshButton")
+                // As tall as Autopilot and Review & Push beside them.
+                .controlSize(.large)
                 Button {
                     navigator.isActivityPresented = true
                 } label: {
@@ -136,6 +141,7 @@ struct AppWorkspaceView: View {
                 }
                 .help("Activity")
                 .accessibilityIdentifier("workspace.activityButton")
+                .controlSize(.large)
             }
             // Pro, while the person is on Free.
             if pro.isFree {
@@ -215,8 +221,17 @@ struct AppWorkspaceView: View {
             onAsk: askForSuggestions,
             onSuggestEverything: suggestEverything,
             onSetUp: { navigator.isAssistantSetupPresented = true },
-            ask: askCenter.ask(for: app.id)
+            ask: askCenter.ask(for: app.id),
+            failedRunID: failedRun?.id,
+            onForgetFailure: { if let id = failedRun?.id { launcher.dismiss(id) } }
         )
+    }
+
+    /// The app's last Claude Code run, when it stopped with a problem and
+    /// the person hasn't opened it yet.
+    private var failedRun: ClaudeCodeRun? {
+        guard let last = launcher.runs.last(where: { $0.appID == app.id }), last.failure != nil else { return nil }
+        return last
     }
 
     /// The section's actions, named for this app.
@@ -240,13 +255,14 @@ struct AppWorkspaceView: View {
             workingClient: assistants.isWorking ? assistants.workingClient : nil,
             isSuggestingEverything: suggestions.run.map { $0.isRunning && $0.appID == app.id } ?? false,
             launchedRuns: launcher.activeRuns.count { $0.appID == app.id },
-            autoReplyNeeds: autoReply.needsYouCount(for: app.id)
+            autoReplyNeeds: autoReply.needsYouCount(for: app.id),
+            failure: failedRun?.failure?.title
         )
         if let run {
             if run.stage.isRunning, run.finishedAt == nil {
                 inputs.screenshotRunWorking = GuidedRunProgress.make(run, now: .now).title
             } else {
-                inputs.screenshotRunNeeds = screenshotNeeds(run)
+                inputs.screenshotRunNeeds = WorkspaceAutopilotState.screenshotNeeds(run)
             }
         }
         let rule = autoReply.rule(for: app.id)
@@ -256,18 +272,10 @@ struct AppWorkspaceView: View {
         return WorkspaceAutopilotState(inputs)
     }
 
-    /// What the guided run waits for; a set approved into Review & Push
-    /// waits for nothing.
-    private func screenshotNeeds(_ run: AutopilotRun) -> String? {
-        guard !(run.stage.isRunning && run.finishedAt == nil), let turn = BackgroundNeedsBuilder.turn(for: run.stage),
-              !(run.stage == .ready && run.guidedReview?.isFinished == true) else { return nil }
-        return WorkspaceAutopilotState.needs(turn)
-    }
-
     /// The purple button: the guided run's step, else the reviews Reply
     /// Automatically left for the person.
     private func openNeeds() {
-        if let run = autopilot.run(for: app.id), screenshotNeeds(run) != nil || run.stage.isRunning {
+        if let run = autopilot.run(for: app.id), WorkspaceAutopilotState.screenshotNeeds(run) != nil || run.stage.isRunning {
             openRun()
         } else if autoReply.needsYouCount(for: app.id) > 0 {
             navigator.open(.reviews, appID: app.id)

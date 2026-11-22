@@ -40,6 +40,9 @@ final class PushController {
     private(set) var startedAt: Date?
     /// What the workspace banner shows; nil when there's nothing to report.
     private(set) var notice: PushNotice?
+    /// Whether the Mac has a network path; nil until it's known
+    /// (`watchConnection`), and in tests.
+    var isOnline: Bool?
     /// Set by the session: the API client, or a simulation.
     var transport: (any PushTransport)?
     /// The app names Activity records carry.
@@ -65,7 +68,10 @@ final class PushController {
     private var inAppDraftRefusals: [String: InAppDraftRefusal] = [:]
     /// Custom product pages' versions and new pages' IDs, found or made
     /// earlier in this push.
-    private let productPages = ProductPagePushState()
+    let productPages = ProductPagePushState()
+    /// How long a new page Apple failed on is looked for, and the pause
+    /// before a page write's one automatic retry (tests: `.immediate`).
+    var productPagePacing = ProductPagePushPacing.standard
     /// New versions' IDs, localizations and App Review details, for the
     /// texts that wait with them.
     let queuedVersions = QueuedVersionPushState()
@@ -80,9 +86,9 @@ final class PushController {
     /// upload names a language the push created (`EventLocalizationPlaceholder`).
     private var eventLocalizations: [String: [String: String]] = [:]
     /// Wakes the send loop when Apple takes over an upload.
-    private var wakeLoop: AsyncStream<PushLoopEvent>.Continuation?
+    private(set) var wakeLoop: AsyncStream<PushLoopEvent>.Continuation?
     /// Items uploaded and processing at Apple: they don't hold a place.
-    private var waitingOnApple: Set<Int> = []
+    private(set) var waitingOnApple: Set<Int> = []
     /// How far changes that didn't finish got, by change.
     var unfinished: [PendingChange.ID: PushItem] = [:]
     /// Requests this hour, shared with screenshot pushes.
@@ -171,6 +177,7 @@ final class PushController {
     /// Shows a banner about App Store Connect (offline, rate limited, an
     /// API error) outside a push, e.g. when a section's load hit one.
     func report(_ notice: PushNotice) {
+        if notice == .offline, !showsOfflineNotice { return }
         self.notice = notice
     }
 
@@ -271,7 +278,8 @@ final class PushController {
             queue.markRemoteConflict(id: change.id, conflict.conflict)
             return .skipped
         } catch {
-            let (status, stop) = handle(error)
+            let (handled, stop) = handle(error)
+            let status = ProductPageStepFailure.status(handled, stop: stop, error: error, item: items[index])
             items[index].status = status
             return Self.outcome(status, stop: stop)
         }
@@ -396,6 +404,11 @@ final class PushController {
         rateTracker.note(rateLimit)
     }
 
+    /// Changes the row at `index`, for the extensions that send a step.
+    func update(_ index: Int, _ change: (inout PushItem) -> Void) {
+        change(&items[index])
+    }
+
     /// The row status for an error, and why the rest stop, if they do.
     private func handle(_ error: any Error) -> (PushItemStatus, stop: String?) {
         if let status = Self.waitingStatus(error) { return (status, nil) }
@@ -416,7 +429,7 @@ final class PushController {
             }
         }
         if let error = error as? URLError, Self.offlineCodes.contains(error.code) {
-            notice = .offline
+            if showsOfflineNotice { notice = .offline }
             return (.notSent(String(localized: "Offline")), String(localized: "Offline"))
         }
         return (.failed(error.localizedDescription), nil)
@@ -463,8 +476,11 @@ extension PushController {
         let request = try await resolvingSetupPlaceholders(queued.request, at: index, transport: transport)
         defer { noteReviewDetail(madeBy: queued, at: index) }
         if try await sendSetupStep(request, at: index, transport: transport) { return }
-        try await ProductPageAlreadyMade.check(request, appID: items[index].change.appID, transport: transport) { noteRequest($0) }
         let resolved = try request.resolved(createdID: items[index].createdID) { try secrets.secret(named: $0) }
+        if let create = ProductPageCreate(resolved) {
+            try await send(create, at: index, transport: transport)
+            return
+        }
         do {
             let response = try await transport.send(resolved)
             noteRequest(response.rateLimit)
@@ -547,9 +563,7 @@ extension PushController {
             return true
         }
         if let write = ProductPageLocaleWrite(request) {
-            let sent = try await write.send(via: transport, knownVersionID: productPages.versions[write.pageID])
-            productPages.versions[write.pageID] = sent.versionID
-            noteRequest(sent.rateLimit)
+            let sent = try await productPages.send(write, transport: transport, pause: productPagePacing.retryPause) { noteRequest($0) }
             items[index].createdIDs[ProductPageLocaleWrite.versionType] = sent.versionID
             if let localizationID = sent.localizationID { items[index].createdIDs[ProductPageLocaleWrite.localizationType] = localizationID }
             return true
@@ -583,22 +597,6 @@ extension PushController {
             noteRequest(rateLimit)
         }
         return true
-    }
-
-    /// A custom product page's own screenshots of one language and device,
-    /// into the page's language (`ProductPagePushState`).
-    private func send(_ screenshots: ProductPageScreenshotsPush, at index: Int, transport: any PushTransport) async throws {
-        defer { items[index].progressNote = nil }
-        let content = screenshots.content
-        let made = items.first { $0.change.groupID == content.pageID && $0.change.appID == content.appID }?.createdIDs["appCustomProductPages"]
-        let localizationID = try await productPages.localization(for: screenshots, made: made, transport: transport) { [weak self] in
-            self?.noteRequest($0)
-        }
-        items[index].createdID = try await screenshots.send(
-            into: localizationID, via: transport, note: { noteRequest($0) }, progress: { items[index].progressNote = $0 },
-            processing: { wakeLoop?.yield(.waitingOnApple(index)) },
-            pollInterval: { PushSchedule.pollInterval(waitingOnApple: waitingOnApple.count) }
-        )
     }
 
     /// The ID of an event's language, read again when it isn't known yet:

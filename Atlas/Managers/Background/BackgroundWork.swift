@@ -136,7 +136,7 @@ final class BackgroundWork {
             return BackgroundAppFacts(
                 appID: app.id,
                 appName: app.name,
-                autopilotTurn: autopilot.run(for: app.id).flatMap { BackgroundNeedsBuilder.turn(for: $0.stage) },
+                autopilotTurn: autopilot.run(for: app.id).flatMap { BackgroundNeedsBuilder.turn(for: $0) },
                 openSuggestions: suggestions.toReview(for: app.id).count,
                 approvedVersion: snapshot?.phase == .pendingDeveloperRelease ? snapshot?.versionString : nil,
                 // The ones Reply Automatically left for the person have their own line.
