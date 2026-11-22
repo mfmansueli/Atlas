@@ -121,6 +121,7 @@ struct AppWorkspaceView: View {
             // along its edge: a request's token lands on it.
             ToolbarItem(placement: .primaryAction) {
                 autopilotButton
+                    .tourTip(.autopilot, arrowEdge: .bottom)
             }
             .sharedBackgroundVisibility(.hidden)
             ToolbarSpacer(.fixed, placement: .primaryAction)
@@ -159,6 +160,7 @@ struct AppWorkspaceView: View {
                 ) {
                     navigator.isReviewPresented = true
                 }
+                .tourTip(.reviewPush, arrowEdge: .bottom)
             }
         }
     }

@@ -5,10 +5,11 @@
 
 import SwiftUI
 
-/// The sidebar: the app being viewed (opening the app menu) at the top,
-/// its sections grouped by what the person is doing, each with its count,
-/// and the version's status at the bottom. Also the library's loading,
-/// empty and error states.
+/// The sidebar: "App" over the app being viewed (opening the app menu) at
+/// the top, its sections grouped by what the person is doing, each with
+/// its count, then Settings and Show the Tour (board 63) over the
+/// version's status at the bottom. Also the library's loading, empty and
+/// error states.
 struct AppSidebar: View {
     @Bindable var viewModel: AppListViewModel
     let summaries: AppSummaryStore
@@ -27,6 +28,9 @@ struct AppSidebar: View {
     @Environment(ChangeQueue.self) private var changes
     @Environment(PricingModeStore.self) private var pricingModes
     @Environment(FieldSuggestionStore.self) private var suggestions
+    /// Nil in previews.
+    @Environment(FirstRunTour.self) private var tour: FirstRunTour?
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         List(selection: selection) {
@@ -37,6 +41,8 @@ struct AppSidebar: View {
                             SidebarSectionRow(section: section, counts: counts, isSelected: navigator.section == section)
                                 .tag(section)
                                 .accessibilityIdentifier("sidebar.section.\(section.rawValue)")
+                                // The tour's second tip: what a section and its number are.
+                                .tourTip(section == .storePage ? .sections : nil, arrowEdge: .trailing)
                         }
                     } header: {
                         if let title = group.title {
@@ -49,21 +55,53 @@ struct AppSidebar: View {
         .listStyle(.sidebar)
         .accessibilityIdentifier("sidebar.sections")
         .safeAreaInset(edge: .top, spacing: 0) {
-            AppSwitcher(
-                viewModel: viewModel, accounts: accounts, currentAccountID: currentAccountID, indicators: indicators,
-                onSelectAccount: onSelectAccount, onAddKey: onAddKey, startsOpen: Self.opensAppMenu
-            )
+            VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+                Text("App")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Palette.label2)
+                    .padding(.horizontal, Spacing.small)
+                    .accessibilityAddTraits(.isHeader)
+                AppSwitcher(
+                    viewModel: viewModel, accounts: accounts, currentAccountID: currentAccountID, indicators: indicators,
+                    onSelectAccount: onSelectAccount, onAddKey: onAddKey, startsOpen: Self.opensAppMenu
+                )
+            }
             .padding(.horizontal, Spacing.small)
             .padding(.bottom, Spacing.xSmall)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let version, viewModel.selectedApp != nil {
-                VersionStatusFooter(summary: version, action: onVersion)
-                    .padding(.horizontal, Spacing.small)
-                    .padding(.bottom, Spacing.small)
+            VStack(spacing: Spacing.tiny) {
+                SidebarUtilityRow(title: String(localized: "Settings"), systemImage: "gearshape", shortcut: "⌘,") {
+                    openSettings()
+                }
+                .accessibilityIdentifier("sidebar.settings")
+                // The tour's last tip.
+                .tourTip(.settings, arrowEdge: .trailing)
+                if viewModel.selectedApp != nil {
+                    SidebarUtilityRow(title: String(localized: "Show the Tour"), systemImage: "questionmark", action: showTour)
+                        .accessibilityIdentifier("sidebar.showTour")
+                }
+                if let version, viewModel.selectedApp != nil {
+                    VersionStatusFooter(summary: version, action: onVersion)
+                        .padding(.top, Spacing.xxSmall)
+                }
             }
+            .padding(.horizontal, Spacing.small)
+            .padding(.top, Spacing.xxSmall)
+            .padding(.bottom, Spacing.small)
         }
         .overlay { state }
+    }
+
+    /// Show the Tour: the tips start again from the first, on Overview.
+    private func showTour() {
+        navigator.section = .overview
+        // After the click that started it, so the first tip isn't closed
+        // as if by a click elsewhere.
+        Task {
+            try? await Task.sleep(for: .milliseconds(150))
+            tour?.start()
+        }
     }
 
     /// A DEBUG scene that opens with the app menu showing.
