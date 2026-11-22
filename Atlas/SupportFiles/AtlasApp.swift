@@ -218,14 +218,8 @@ struct AtlasApp: App {
         default: return ProGate(entitlements: Entitlements(store: DebugProStore(), override: true))
         }
         #endif
-        if everyoneIsPro { return ProGate(entitlements: Entitlements(store: StoreKitProStore(), override: true)) }
         return ProGate(entitlements: Entitlements(store: StoreKitProStore()), defaults: defaults)
     }
-
-    /// TEMPORARY (2026-11-22): a TestFlight build where everyone is Pro,
-    /// without a purchase. Set back to false right after that build is
-    /// uploaded.
-    private static let everyoneIsPro = true
 
     /// DEBUG scenes (and so UI tests) and the unit tests' host keep keys and
     /// secrets in memory, so they never read or overwrite the real ones in
