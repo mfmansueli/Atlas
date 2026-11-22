@@ -12,6 +12,8 @@ struct ReviewCard: View {
     let review: AppReview
     @Bindable var viewModel: ReviewsViewModel
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         let text = viewModel.displayText(for: review)
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -34,6 +36,9 @@ struct ReviewCard: View {
             }
             below
         }
+        // A reply sent by hand takes the suggestion's place in the accept's
+        // spring (effect 5), as does Undo giving it back.
+        .animation(AcceptSettle.commitAnimation(reduceMotion: reduceMotion), value: viewModel.sentNow.contains(review.id))
         .padding(.horizontal, 14)
         .padding(.vertical, Spacing.medium)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))

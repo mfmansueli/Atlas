@@ -9,7 +9,10 @@ import SwiftUI
 /// it means, who suggested it, and Dismiss, Edit… and Send Reply. It says
 /// the reply is public before it's sent. Written by Reply Automatically
 /// (board 58), it says when it goes out by itself, with Send Now and
-/// Don't Send, or why it waits for the person.
+/// Don't Send, or why it waits for the person. Landing while the person
+/// looks it arrives (effect 2); Send Reply settles it (effect 5): the tint
+/// goes and a check draws while it sends, and the card closes as the reply
+/// takes its place. A send that fails gives the tint back.
 struct ReviewSuggestionBox: View {
     let review: AppReview
     let suggestion: ReviewReplySuggestion
@@ -21,6 +24,9 @@ struct ReviewSuggestionBox: View {
     let onSend: () -> Void
     /// Don't Send on a reply that goes out by itself.
     var onDontSend: () -> Void = {}
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -69,7 +75,7 @@ struct ReviewSuggestionBox: View {
                 }
                 Button("Edit…", action: onEdit)
                     .accessibilityIdentifier("reviews.suggestion.edit.\(review.id)")
-                Button(isScheduled ? String(localized: "Send Now") : String(localized: "Send Reply"), action: onSend)
+                Button(isScheduled ? String(localized: "Send Now") : String(localized: "Send Reply"), action: send)
                     .buttonStyle(.borderedProminent)
                     .disabled(isSending)
                     .accessibilityIdentifier("reviews.suggestion.send.\(review.id)")
@@ -79,10 +85,31 @@ struct ReviewSuggestionBox: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.machineTranslatedMark.opacity(0.35), lineWidth: 1))
+        .background(isSettling ? Palette.raised : Palette.machineTranslatedTint, in: shape)
+        .overlay(shape.strokeBorder(isSettling ? Palette.separator : Palette.machineTranslatedMark.opacity(0.35), lineWidth: isSettling ? 0.5 : 1))
+        .modifier(SuggestionArrival(key: "\(review.id)|\(suggestion.date.timeIntervalSinceReferenceDate)", arrivedAt: suggestion.date, shape: shape))
+        .modifier(AcceptSettle(isSettling: isSettling))
+        .onChange(of: isSending) { _, sending in
+            // Still here once it stopped sending: it didn't go.
+            if !sending, isSettling {
+                withAnimation(MotionTiming.acceptTint) { isSettling = false }
+            }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.suggestion.\(review.id)")
+    }
+
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
+    }
+
+    /// Send Reply: it settles at once and closes when the reply is sent
+    /// (`ReviewCard` animates that); the send doesn't wait for the check.
+    private func send() {
+        if !reduceMotion {
+            withAnimation(MotionTiming.acceptTint) { isSettling = true }
+        }
+        onSend()
     }
 
     private var isScheduled: Bool { autoReply?.state.isScheduled == true }

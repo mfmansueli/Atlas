@@ -7,7 +7,8 @@ import SwiftUI
 
 /// A proposed card or details page as the App Store shows it, small: the
 /// art with the event's badge, name and description over it. A spinner
-/// while the file is read.
+/// while the file is read. Art the assistant just made fades in (effect 2,
+/// no edge pass).
 struct InAppEventArtworkProposalPreview: View {
     let path: String
     let isVideo: Bool
@@ -18,6 +19,8 @@ struct InAppEventArtworkProposalPreview: View {
     var identifier: String?
 
     @State private var phase = ImageLoadPhase.loading
+    /// When the file was written: art made a moment ago arrives.
+    @State private var madeAt: Date?
 
     var width: CGFloat { preferredWidth ?? (kind == .card ? 240 : 135) }
 
@@ -29,6 +32,9 @@ struct InAppEventArtworkProposalPreview: View {
                 InAppEventArtworkOverlay(image: image, kind: kind, texts: texts)
                     .scaleEffect(scale, anchor: .topLeading)
                     .frame(width: width, height: full.height * scale, alignment: .topLeading)
+                    .modifier(SuggestionArrival(
+                        key: "eventArt.\(path)", arrivedAt: madeAt, shape: Rectangle(), edgePass: false, window: ArrivalLedger.imageWindow
+                    ))
                     .transition(.opacity)
             } else {
                 ImageLoadingTile(isLoading: phase.isLoading, systemImage: isVideo ? "film" : "photo")
@@ -52,6 +58,7 @@ struct InAppEventArtworkProposalPreview: View {
             phase = .loading
             let still = await InAppEventArtworkInspector.thumbnail(URL(fileURLWithPath: path), isVideo: isVideo, maxPixel: 1280)
             guard !Task.isCancelled else { return }
+            madeAt = (try? FileManager.default.attributesOfItem(atPath: path)[.modificationDate]) as? Date
             withAnimation(.easeOut(duration: 0.2)) { phase = ImageLoadPhase(finished: still) }
         }
     }

@@ -92,6 +92,9 @@ final class MCPServerController {
     /// Clients that connected since Atlas opened, so a quiet one reads
     /// "Disconnected" rather than "not connected since".
     var seenThisLaunch: Set<MCPPairedClient.ID> = []
+    /// Armed when an assistant connects for the first time, so the
+    /// Autopilot button glints once (effect 6); tests give their own.
+    @ObservationIgnored var firstConnectionGlint: FirstConnectionGlint = .shared
     /// Each session's open event stream, with a token telling a replaced
     /// stream's late close apart from the current one's.
     var streams: [String: (token: UUID, continuation: AsyncStream<String>.Continuation)] = [:]

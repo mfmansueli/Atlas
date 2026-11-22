@@ -171,6 +171,12 @@ struct GuidedMakingStepView: View {
                                 cornerFraction: capture.target.displayType == .watch ? 0.24 : 0.05
                             )
                             .frame(height: height, alignment: .bottom)
+                            // Each new capture fades in as it lands (effect 2,
+                            // no edge pass).
+                            .modifier(SuggestionArrival(
+                                key: "capture.\(capture.id)", arrivedAt: capture.receivedAt, shape: Rectangle(),
+                                edgePass: false, window: ArrivalLedger.imageWindow
+                            ))
                         }
                     }
                 }

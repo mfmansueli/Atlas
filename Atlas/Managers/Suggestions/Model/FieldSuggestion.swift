@@ -43,6 +43,13 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
         self.createdAt = createdAt
     }
 
+    /// When an assistant or the AI provider's suggestion came, for its
+    /// arrival (effect 2). Built-in checks are worked out again whenever
+    /// the page is, so they never arrive: nil.
+    var arrivedAt: Date? {
+        source == .builtIn ? nil : createdAt
+    }
+
     /// A built-in check's suggestion, with an id that stays the same as long
     /// as the check finds the same value.
     static func builtIn(appID: StoreApp.ID, target: SuggestionTarget, value: String, reason: String) -> FieldSuggestion {

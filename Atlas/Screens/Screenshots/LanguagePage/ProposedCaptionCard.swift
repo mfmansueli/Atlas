@@ -7,7 +7,8 @@ import SwiftUI
 
 /// A caption an assistant suggested, under the screenshots: "Screenshot 2 ·
 /// caption", who suggested it and why, the caption now and suggested, and
-/// Dismiss, Use and Edit, Accept.
+/// Dismiss, Use and Edit, Accept. It arrives and settles like a field's
+/// suggestion (effects 2 and 5).
 struct ProposedCaptionCard: View {
     let caption: ProposedCaption
     /// What the caption reads now; "" reads "Empty".
@@ -16,6 +17,9 @@ struct ProposedCaptionCard: View {
     let onDismiss: () -> Void
     let onUseAndEdit: () -> Void
     let onAccept: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -48,7 +52,7 @@ struct ProposedCaptionCard: View {
                     .accessibilityIdentifier("screenshots.page.caption.dismiss")
                 Button("Use and Edit", action: onUseAndEdit)
                     .accessibilityIdentifier("screenshots.page.caption.useAndEdit")
-                Button("Accept", action: onAccept)
+                Button("Accept", action: accept)
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("screenshots.page.caption.accept")
             }
@@ -56,9 +60,24 @@ struct ProposedCaptionCard: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(isSettling ? Palette.raised : Palette.machineTranslatedTint, in: shape)
+        .modifier(SuggestionArrival(key: caption.id, arrivedAt: caption.receivedAt, shape: shape))
+        .id(caption.id)
+        .modifier(AcceptSettle(isSettling: isSettling))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.page.caption.\(caption.slot)")
+    }
+
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
+    }
+
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            onAccept()
+        }
     }
 
     private func text(_ label: String, _ value: String, isEmpty: Bool = false, isSuggested: Bool = false) -> some View {

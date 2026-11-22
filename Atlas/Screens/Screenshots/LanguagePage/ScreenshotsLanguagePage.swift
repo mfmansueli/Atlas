@@ -136,7 +136,8 @@ struct ScreenshotsLanguagePage: View {
                         isRightToLeft: locale.isRTL,
                         onDismiss: { Task { await viewModel.dismissCaption(caption) } },
                         onUseAndEdit: { Task { await viewModel.useAndEditCaption(caption) } },
-                        onAccept: { Task { await viewModel.acceptCaption(caption) } }
+                        // Immediate, so the caption leaves in the accept's spring.
+                        onAccept: { Task.immediate { await viewModel.acceptCaption(caption) } }
                     )
                 }
             }

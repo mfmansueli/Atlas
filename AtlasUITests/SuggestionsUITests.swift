@@ -142,7 +142,8 @@ final class SuggestionsUITests: XCTestCase {
         let provenance = subtitle.descendants(matching: .any)["suggestion.provenanceText"]
         XCTAssertTrue(provenance.waitForExistence(timeout: 5))
         XCTAssertEqual(text(of: provenance), "Accepted Claude Code’s suggestion.")
-        XCTAssertFalse(card.exists)
+        // It settles (tint, check), then closes.
+        XCTAssertTrue(card.waitForNonExistence(timeout: 5))
 
         let toast = element("toast")
         XCTAssertTrue(toast.waitForExistence(timeout: 5))
@@ -188,10 +189,11 @@ final class SuggestionsUITests: XCTestCase {
         let copyright = element("appInformation.suggestions.copyright")
         XCTAssertTrue(copyright.waitForExistence(timeout: 5))
         copyright.buttons["suggestion.accept"].click()
+        // The card settles before the value goes in.
+        XCTAssertTrue(copyright.descendants(matching: .any)["suggestion.provenanceText"].waitForExistence(timeout: 5))
         let field = element("appInformation.general.copyright")
         XCTAssertTrue(text(of: field).hasSuffix("Northpier Studio"))
         XCTAssertFalse(text(of: field).contains("2025"))
-        XCTAssertTrue(copyright.descendants(matching: .any)["suggestion.provenanceText"].waitForExistence(timeout: 5))
         XCTAssertTrue(general.label.contains("2 suggested"), general.label)
     }
 
@@ -201,13 +203,50 @@ final class SuggestionsUITests: XCTestCase {
         XCTAssertTrue(phone.waitForExistence(timeout: 10))
         XCTAssertTrue(text(of: phone.descendants(matching: .any)["suggestion.reason"]).contains("1.3"))
         phone.buttons["suggestion.accept"].click()
-        XCTAssertEqual(text(of: element("appInformation.review.phone")), "+39 011 555 0142")
+        let field = element("appInformation.review.phone")
+        XCTAssertTrue(waitUntil { self.text(of: field) == "+39 011 555 0142" }, text(of: field))
+    }
+
+    /// Accept settles (effect 5): the card closes once its check has drawn,
+    /// the value is in, and the section's count goes down (no tick: only a
+    /// count going up moves).
+    func testAcceptingClosesTheCardAndTheSectionsCountGoesDown() {
+        app.launch(debugScene: "sp-cc")
+        let subtitle = element("storePage.field.subtitle")
+        XCTAssertTrue(subtitle.waitForExistence(timeout: 10))
+        let section = element("sidebar.section.storePage")
+        XCTAssertTrue(section.waitForExistence(timeout: 5))
+        let before = section.label
+        let card = subtitle.descendants(matching: .any)["suggestion.card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        let accept = card.buttons["suggestion.accept"]
+        accept.click()
+
+        XCTAssertTrue(card.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(subtitle.descendants(matching: .any)["suggestion.provenanceText"].exists)
+        XCTAssertTrue(waitUntil { section.label != before }, section.label)
+        XCTAssertLessThan(suggestionCount(in: section.label), suggestionCount(in: before))
     }
 
     // MARK: - Helpers
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    private func waitUntil(timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if condition() { return true }
+            RunLoop.current.run(until: .now.addingTimeInterval(0.2))
+        }
+        return condition()
+    }
+
+    /// 5 in "Store Page, 5 suggestions to review"; 0 for "Store Page".
+    private func suggestionCount(in label: String) -> Int {
+        let digits = label.split(separator: ",").dropFirst().first?.split(separator: " ").first
+        return digits.flatMap { Int($0) } ?? 0
     }
 
     private func text(of element: XCUIElement) -> String {

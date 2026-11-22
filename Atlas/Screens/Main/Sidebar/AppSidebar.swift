@@ -34,9 +34,11 @@ struct AppSidebar: View {
                 ForEach(AppWorkspaceSectionGroup.allCases) { group in
                     Section {
                         ForEach(group.sections) { section in
-                            SidebarSectionRow(section: section, counts: counts, isSelected: navigator.section == section)
-                                .tag(section)
-                                .accessibilityIdentifier("sidebar.section.\(section.rawValue)")
+                            SidebarSectionRow(
+                                section: section, counts: counts, isSelected: navigator.section == section, appID: viewModel.selectedAppID
+                            )
+                            .tag(section)
+                            .accessibilityIdentifier("sidebar.section.\(section.rawValue)")
                         }
                     } header: {
                         if let title = group.title {
