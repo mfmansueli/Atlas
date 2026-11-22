@@ -97,7 +97,8 @@ struct AutopilotToolbarButton: View {
         withEvents(withPresentations(decorated))
     }
 
-    /// The split, drawn by `AutopilotButtonFace`.
+    /// The split, drawn by `AutopilotButtonFace`. Once, after an assistant
+    /// first connects, a purple sheen crosses it (effect 6).
     private var decorated: some View {
         AutopilotButtonFace(
             look: look, title: primary?.title, isPro: primary?.isPro == true, isCompact: isCompact, doneCount: doneCount,
@@ -105,6 +106,7 @@ struct AutopilotToolbarButton: View {
         ) {
             menu
         }
+        .modifier(AutopilotGlint())
     }
 
     private func withPresentations(_ content: some View) -> some View {
