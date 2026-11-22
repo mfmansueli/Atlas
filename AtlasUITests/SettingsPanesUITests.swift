@@ -87,7 +87,7 @@ final class SettingsPanesUITests: XCTestCase {
         app.launch(debugScene: "set-assistants")
         XCTAssertTrue(app.buttons["settings.source.assistant"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["settings.source.assistant"].isSelected)
-        XCTAssertTrue(element("settings.ai.server").exists)
+        XCTAssertTrue(element("settings.ai.assistants").exists)
         attach("set-assistants")
         XCTAssertTrue(scrollTo(element("settings.ai.cannot")))
         XCTAssertTrue(element("settings.ai.allow.artwork").exists)
@@ -98,7 +98,7 @@ final class SettingsPanesUITests: XCTestCase {
         app.launch(debugScene: "set-assistants-key")
         XCTAssertTrue(app.secureTextFields["settings.apiKey"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["settings.apiKey.check"].exists)
-        XCTAssertFalse(element("settings.ai.server").exists)
+        XCTAssertFalse(element("settings.ai.assistants").exists)
         attach("set-assistants-key")
     }
 

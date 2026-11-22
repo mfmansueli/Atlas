@@ -23,7 +23,9 @@ import SwiftUI
 ///   scenes keep the server's states (pairing, waiting, paired, connected,
 ///   disconnected, the activity), `set-translation` the key (and
 ///   `set-translation-rejected` one the vendor refuses), `cc-settings`
-///   Claude Code's helper (`ClaudeCodeDebugScenes`).
+///   Claude Code's helper (`ClaudeCodeDebugScenes`); `set-assistants-new`,
+///   `-done`, `-adv` and the `set-wiz-*` connection sheet
+///   (`AssistantConnectDebugScenes`).
 enum SettingsDebugScenes {
     static let ids = [
         "set-general", "set-general-login", "set-accounts", "set-accounts-remove", "set-account",
@@ -32,7 +34,7 @@ enum SettingsDebugScenes {
         "set-ai-off", "set-ai-pair", "set-ai-waiting", "set-ai-on", "set-ai-connected", "set-ai-disc", "set-ai-log",
         "set-suggestions", "set-pricing", "set-shots", "set-notif", "set-notif-blocked", "set-pro", "set-free", "set-privacy",
         "cc-settings",
-    ]
+    ] + AssistantConnectDebugScenes.ids
 
     static let brightlineIssuerID = "5e1f0a42-8d7b-4c19-9f6e-27b3d0c8e915"
 
@@ -80,7 +82,7 @@ enum SettingsDebugScenes {
         case "set-ai-on", "set-ai-connected", "set-assistants", "cc-settings": .paired
         case "set-ai-disc": .disconnected
         case "set-ai-log": .log
-        default: nil
+        default: AssistantConnectDebugScenes.assistantsState(for: id)
         }
     }
 
@@ -146,6 +148,7 @@ enum SettingsDebugScenes {
         let id: String
         @Environment(AppSession.self) private var session
         @Environment(MCPServerController.self) private var server
+        @Environment(ClaudeCodeLauncher.self) private var launcher
         @Environment(TranslationPreferences.self) private var translation
         @Environment(AppPreferences.self) private var preferences
         @Environment(\.openSettings) private var openSettings
@@ -166,6 +169,7 @@ enum SettingsDebugScenes {
                     translation.sourceLocaleCode = "en-US"
                     if let source = SettingsDebugScenes.source(for: id) { translation.provider = source }
                     SettingsDebugScenes.assistantsState(for: id)?.apply(to: server)
+                    AssistantConnectDebugScenes.configure(id, server: server, launcher: launcher)
                     if id == "set-privacy" {
                         // "3 confirmations are turned off."
                         preferences.acceptsAllWithoutAsking = true

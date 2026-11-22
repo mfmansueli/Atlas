@@ -26,13 +26,18 @@ enum AssistantsDebugState {
     case elsewhere
     /// Claude Code works in ~/Developer/Lumen, but Lumen has no folder yet.
     case unattached
+    /// The server on, nothing connected yet (board 48's Connect).
+    case connectable
+    /// Claude Code connected a moment ago through Connect, in Lumen's
+    /// folder; nothing else.
+    case justConnected
 
     @MainActor
     func apply(to server: MCPServerController) {
         guard self != .off else { return }
         server.setEnabled(true)
         switch self {
-        case .off:
+        case .off, .connectable:
             break
         case .pairing:
             server.beginPairing(kind: .claudeCode)
@@ -54,6 +59,13 @@ enum AssistantsDebugState {
         case .unattached:
             server.restorePairings([Self.claudeCode], tokens: [:])
             server.sessions = [Self.session(lastActivity: .now.addingTimeInterval(-60))]
+        case .justConnected:
+            var client = Self.claudeCode
+            client.pairedAt = .now.addingTimeInterval(-20)
+            client.lastSeenAt = .now.addingTimeInterval(-5)
+            server.restorePairings([client], tokens: [:])
+            server.sessions = [Self.session(lastActivity: .now.addingTimeInterval(-5))]
+            Self.giveFolders(on: server)
         case .disconnected:
             var client = Self.claudeCode
             client.lastSeenAt = Self.today(10, 44)
@@ -62,9 +74,14 @@ enum AssistantsDebugState {
         case .log:
             server.restorePairings([Self.claudeCode], tokens: [:])
             server.sessions = [Self.session(lastActivity: Self.today(11, 42))]
-            for line in Self.logLines.reversed() {
-                server.record(client: line.client, tool: line.tool, target: line.target, outcome: line.outcome, reason: line.reason, at: line.date)
-            }
+            Self.writeLog(on: server)
+        }
+    }
+
+    @MainActor
+    private static func writeLog(on server: MCPServerController) {
+        for line in logLines.reversed() {
+            server.record(client: line.client, tool: line.tool, target: line.target, outcome: line.outcome, reason: line.reason, at: line.date)
         }
     }
 

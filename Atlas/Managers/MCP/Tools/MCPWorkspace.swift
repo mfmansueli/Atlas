@@ -28,6 +28,9 @@ struct MCPWorkspace {
     /// What Review & Push's push is doing now, read when a tool runs (nil
     /// without one: tests, DEBUG scenes). Read-only.
     var push: @MainActor () -> MCPPushSnapshot? = { nil }
+    /// The app open in the main window, for Settings' Connect (nil without
+    /// one).
+    var selectedApp: @MainActor () -> StoreApp? = { nil }
 
     /// The app an assistant means: its Apple ID, bundle ID, SKU or name (case
     /// and accents ignored). A name may also be the start of one, when only

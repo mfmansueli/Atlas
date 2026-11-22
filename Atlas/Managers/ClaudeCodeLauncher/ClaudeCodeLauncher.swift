@@ -41,7 +41,7 @@ final class ClaudeCodeLauncher {
     @ObservationIgnored let assistants: MCPServerController
     /// This Mac's simulators, asked through the same helper.
     @ObservationIgnored let simulators: MacSimulators
-    @ObservationIgnored private let runner: any UnixScriptRunning
+    @ObservationIgnored let runner: any UnixScriptRunning
     @ObservationIgnored let helperURL: URL?
     @ObservationIgnored private let defaults: UserDefaults?
     @ObservationIgnored let now: () -> Date
@@ -267,8 +267,10 @@ final class ClaudeCodeLauncher {
     /// Starts Claude Code for `purpose` with `prompt`, asking for the
     /// project folder the first time. Returns the run (the one already
     /// going, for the same purpose), or nil when it can't start here: no
-    /// helper, or no folder chosen. Callers copy the prompt then.
-    func start(_ purpose: ClaudeCodeRunPurpose, appID: StoreApp.ID, appName: String, prompt: String) async -> ClaudeCodeRun.ID? {
+    /// helper, or no folder chosen. Callers copy the prompt then. `folder`
+    /// starts it somewhere else than the app's project folder, e.g. Connect
+    /// without a project.
+    func start(_ purpose: ClaudeCodeRunPurpose, appID: StoreApp.ID, appName: String, prompt: String, folder chosen: String? = nil) async -> ClaudeCodeRun.ID? {
         // Asked right as Atlas opens, before or during the first
         // check.
         if helper == .unknown || helper == .checking { await refreshHelper() }
@@ -285,7 +287,7 @@ final class ClaudeCodeLauncher {
             helper = .notInstalled
             return nil
         }
-        guard let folder = projectFolder(for: appID) ?? chooseProjectFolder(for: appID, appName: appName) else { return nil }
+        guard let folder = chosen ?? projectFolder(for: appID) ?? chooseProjectFolder(for: appID, appName: appName) else { return nil }
         rememberApp(appID, name: appName)
         let run = ClaudeCodeRun(
             id: UUID(),

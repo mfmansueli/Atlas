@@ -6,7 +6,7 @@
 import XCTest
 
 /// Settings → AI Assistants, opened by the `set-ai-*` and `set-assistants`
-/// DEBUG scenes: the server switch, pairing an assistant, revoking one,
+/// DEBUG scenes: connections on and off, pairing by hand, disconnecting one,
 /// what assistants may suggest, and the activity. The scenes' server never
 /// opens a port.
 @MainActor
@@ -22,24 +22,25 @@ final class AssistantsUITests: XCTestCase {
         app.terminate()
     }
 
+    /// Connections off: the rows say so, and Turn On brings back Connect
+    /// and Advanced's Pair Assistant….
     func testTurningTheServerOnOffersPairing() {
         launch(scene: "set-ai-off")
-        let server = element("settings.ai.server")
-        XCTAssertTrue(server.waitForExistence(timeout: 10))
+        let turnOn = app.buttons["settings.ai.turnOn"]
+        XCTAssertTrue(turnOn.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("settings.ai.connectionsOff").exists)
         XCTAssertTrue(element("settings.ai.can").exists)
         XCTAssertTrue(element("settings.ai.cannot").exists)
-        XCTAssertFalse(app.buttons["settings.ai.pair"].exists)
 
-        if server.switches.firstMatch.exists {
-            server.switches.firstMatch.click()
-        } else {
-            server.click()
-        }
+        app.buttons["settings.ai.advanced"].click()
+        XCTAssertTrue(element("settings.ai.server").waitForExistence(timeout: 5))
+        turnOn.click()
 
+        XCTAssertTrue(turnOn.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["settings.ai.connect.cursor"].isEnabled)
         let pair = app.buttons["settings.ai.pair"]
         XCTAssertTrue(pair.waitForExistence(timeout: 5))
         XCTAssertTrue(pair.isEnabled)
-        XCTAssertTrue(element("settings.ai.noClients").exists)
     }
 
     func testThePairingSheetShowsASnippetPerClientAndACode() {
@@ -67,22 +68,26 @@ final class AssistantsUITests: XCTestCase {
 
         app.buttons["settings.ai.pairCancel"].click()
         XCTAssertTrue(snippet.waitForNonExistence(timeout: 5))
-        XCTAssertTrue(element("settings.ai.noClients").exists)
+        XCTAssertTrue(element("settings.ai.assistants").exists)
     }
 
-    func testRevokingAnAssistantAsksFirst() {
+    /// Disconnect… asks in the row itself, and Cancel keeps it.
+    func testDisconnectingAnAssistantAsksFirst() {
         launch(scene: "set-ai-on")
-        let cursor = element("settings.ai.client.cursor")
-        XCTAssertTrue(cursor.waitForExistence(timeout: 10))
-        XCTAssertTrue(element("settings.ai.client.claudeCode").exists)
+        let disconnect = app.buttons["settings.ai.disconnect.cursor"]
+        XCTAssertTrue(disconnect.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["settings.ai.disconnect.claudeCode"].exists)
 
-        app.buttons["settings.ai.revoke.cursor"].click()
-        let confirm = app.windows.descendants(matching: .button)["Revoke"].firstMatch
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
-        confirm.click()
+        disconnect.click()
+        let ask = element("settings.ai.disconnect.cursor.ask")
+        XCTAssertTrue(ask.waitForExistence(timeout: 5))
+        app.buttons["settings.ai.disconnect.cursor.cancel"].click()
+        XCTAssertTrue(ask.waitForNonExistence(timeout: 5))
 
-        XCTAssertTrue(cursor.waitForNonExistence(timeout: 5))
-        XCTAssertTrue(element("settings.ai.client.claudeCode").exists)
+        disconnect.click()
+        app.buttons["settings.ai.disconnect.cursor.confirm"].firstMatch.click()
+        XCTAssertTrue(app.buttons["settings.ai.connect.cursor"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["settings.ai.disconnect.claudeCode"].exists)
     }
 
     func testProposalsCanBeTurnedOffOneByOne() {
