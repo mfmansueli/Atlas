@@ -34,7 +34,7 @@ struct ResultsReportView: View {
                         .strokeBorder(Palette.separator, lineWidth: 0.5)
                 }
             Text(footnote)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(4)
                 .frame(maxWidth: 760, alignment: .leading)
@@ -80,7 +80,7 @@ struct ResultsReportView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Text(caption)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .monospacedDigit()
                 .lineLimit(1)

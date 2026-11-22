@@ -67,7 +67,7 @@ struct VersionCard: View {
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("overview.version.title")
                 Text(viewModel.cardSubtitle)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(4)
             }
@@ -91,7 +91,7 @@ struct VersionCard: View {
             }
             HStack(spacing: Spacing.small) {
                 Text("TestFlight and builds stay in Xcode and App Store Connect.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -139,7 +139,7 @@ struct VersionCard: View {
     private var rejection: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("From App Review")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             Text("""
             App Review wrote what it needs in App Store Connect. Read it there and reply there; the fix itself, such as the demo \

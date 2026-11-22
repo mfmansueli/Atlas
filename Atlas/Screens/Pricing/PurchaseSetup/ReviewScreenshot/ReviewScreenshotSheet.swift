@@ -38,7 +38,7 @@ struct ReviewScreenshotSheet: View {
                     Text("App Review")
                 } footer: {
                     Text(footer)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

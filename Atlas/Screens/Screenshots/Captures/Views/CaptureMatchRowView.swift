@@ -14,14 +14,14 @@ struct CaptureMatchRowView: View {
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Text(row.path)
-                .font(.caption.monospaced())
+                .font(.subheadline.monospaced())
                 .lineLimit(1)
                 .truncationMode(.middle)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if let issue = row.issue {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     Text(issue.message)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.warning)
                         .fixedSize(horizontal: false, vertical: true)
                     Picker(issue.message, selection: choice) {
@@ -49,7 +49,7 @@ struct CaptureMatchRowView: View {
                     .monospacedDigit()
                     .frame(width: CaptureMatchColumns.slot, alignment: .leading)
                 Image(systemName: "checkmark")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(width: CaptureMatchColumns.status)
                     .accessibilityLabel(Text("Matched"))

@@ -64,7 +64,7 @@ struct GuidedLookStepView: View {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Text("Screenshots").font(.headline).accessibilityAddTraits(.isHeader)
                 Text(studio.guidedLiveLookText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .accessibilityIdentifier("autopilot.guided.look.liveLook")

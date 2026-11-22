@@ -50,7 +50,7 @@ struct ProductPageDefaultRow: View {
                 .font(.callout.weight(.semibold))
                 .lineLimit(1)
             Text(subtitle)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(isCompact ? 2 : 1)
                 .fixedSize(horizontal: false, vertical: isCompact)
@@ -75,7 +75,7 @@ struct ProductPageDefaultRow: View {
                     .font(.callout.weight(.semibold))
                     .monospacedDigit()
                 Text("the reference")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .lineLimit(1)

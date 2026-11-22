@@ -38,7 +38,7 @@ struct ScreenshotsLanguageList: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(locale.name)
                     Text(viewModel.pageStatus(of: locale))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(count > 0 ? AnyShapeStyle(Palette.machineTranslated) : AnyShapeStyle(Palette.label2))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -46,12 +46,12 @@ struct ScreenshotsLanguageList: View {
                     SuggestionBadge(count: count)
                 } else if viewModel.pageStatus(of: locale) == String(localized: "Live") {
                     Image(systemName: "checkmark")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.increase)
                         .accessibilityHidden(true)
                 }
                 Image(systemName: "chevron.forward")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label3)
                     .accessibilityHidden(true)
             }

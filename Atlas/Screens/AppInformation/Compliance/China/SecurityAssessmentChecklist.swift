@@ -12,7 +12,7 @@ struct SecurityAssessmentChecklist: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("Upload in App Store Connect:")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
             Label {
                 Text("""
                 A screenshot from the National Internet Security Management Service Platform showing the app’s \
@@ -27,7 +27,7 @@ struct SecurityAssessmentChecklist: View {
                 Image(systemName: "doc.text")
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .foregroundStyle(Palette.label2)
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .contain)

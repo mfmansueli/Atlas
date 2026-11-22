@@ -37,7 +37,7 @@ struct CoverageLegend: View {
             )
             Spacer(minLength: 0)
         }
-        .font(.caption)
+        .font(.subheadline)
         .lineLimit(1)
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.small)

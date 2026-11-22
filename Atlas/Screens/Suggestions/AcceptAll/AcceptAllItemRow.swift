@@ -66,7 +66,7 @@ struct AcceptAllItemRow: View {
 
     private func value(_ text: String, isRightToLeft: Bool) -> some View {
         Text(text)
-            .font(.caption)
+            .font(.subheadline)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)

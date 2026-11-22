@@ -42,7 +42,7 @@ struct AppAvailabilityCard: View {
             HStack(spacing: Spacing.small) {
                 ProgressView().controlSize(.small)
                 Text("Reading where it’s sold…")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         case let .failed(message):
@@ -91,7 +91,7 @@ struct AppAvailabilityCard: View {
                     .foregroundStyle(Palette.accentText)
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .foregroundStyle(Palette.label2)
         if fillsHeight {
             Spacer(minLength: 0)

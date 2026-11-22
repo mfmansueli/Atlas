@@ -62,7 +62,7 @@ struct ChangeResultView: View {
                 title(String(localized: "Difference"))
                 Text(result.main.comparison.pointsText.isEmpty ? "—" : result.main.comparison.pointsText).font(.callout).monospacedDigit()
                 Text("90% confidence. “About the same” means the difference could be chance.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -71,7 +71,7 @@ struct ChangeResultView: View {
         case let .measuring(day, ends):
             Card(padding: Spacing.medium) {
                 MeterBar(fraction: Double(day) / Double(ResultsEvaluator.windowDays), tint: Palette.accent)
-                Text("Day \(day) of \(ResultsEvaluator.windowDays) · final on \(AnalyticsText.day(ends))").font(.caption).monospacedDigit().foregroundStyle(Palette.label2)
+                Text("Day \(day) of \(ResultsEvaluator.windowDays) · final on \(AnalyticsText.day(ends))").font(.subheadline).monospacedDigit().foregroundStyle(Palette.label2)
                 Text("An early read. The result is final on \(AnalyticsText.day(ends)), after 28 days; early numbers often move.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -139,7 +139,7 @@ struct ChangeResultView: View {
             Text(second).monospacedDigit().frame(width: 150, alignment: .leading)
             Text(third).frame(width: 150, alignment: .leading)
         }
-        .font(isHeader ? .caption.weight(.semibold) : .callout)
+        .font(isHeader ? .subheadline.weight(.semibold) : .callout)
         .foregroundStyle(isHeader ? Palette.label2 : Palette.label)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)

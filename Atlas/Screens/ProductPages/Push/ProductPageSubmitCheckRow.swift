@@ -19,7 +19,7 @@ struct ProductPageSubmitCheckRow: View {
                 Text(check.title)
                     .font(.callout.weight(.medium))
                 Text(check.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)

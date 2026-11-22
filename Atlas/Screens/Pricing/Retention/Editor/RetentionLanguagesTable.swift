@@ -24,7 +24,7 @@ struct RetentionLanguagesTable: View {
                 Text("Message").frame(width: Self.countWidth, alignment: .leading)
                 Text("Status").frame(width: Self.statusWidth, alignment: .leading)
             }
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.xSmall)
@@ -66,7 +66,7 @@ struct RetentionLanguagesTable: View {
                     .environment(\.layoutDirection, RetentionCancelStrings.isRightToLeft(locale.code) ? .rightToLeft : .leftToRight)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(text.body.isEmpty ? "—" : "\(text.bodyCount) / \(RetentionLimits.bodyLength)")
-                    .font(.caption.weight(text.isBodyTooLong ? .semibold : .regular))
+                    .font(.subheadline.weight(text.isBodyTooLong ? .semibold : .regular))
                     .foregroundStyle(text.isBodyTooLong ? Palette.danger : Palette.label2)
                     .monospacedDigit()
                     .frame(width: Self.countWidth, alignment: .leading)

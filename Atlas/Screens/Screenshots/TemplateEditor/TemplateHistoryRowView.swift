@@ -18,13 +18,13 @@ struct TemplateHistoryRowView: View {
                     .font(.callout)
                     .layoutPriority(1)
                 Text(row.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 if let assistant = row.assistant {
                     HStack(spacing: Spacing.xxSmall) {
                         MonogramTag(client: assistant)
                         Text("Proposed by \(assistant) · accepted by you")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -32,7 +32,7 @@ struct TemplateHistoryRowView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             if row.isCurrent {
                 Text("Current")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             if row.canRestore {

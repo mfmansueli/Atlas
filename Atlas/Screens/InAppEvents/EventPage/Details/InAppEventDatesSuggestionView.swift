@@ -29,7 +29,7 @@ struct InAppEventDatesSuggestionView: View {
                     SuggestionSourceTag(source: .assistant(client: client))
                 }
                 Text(alternative.note ?? String(localized: "Other dates than the ones you set."))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -45,11 +45,11 @@ struct InAppEventDatesSuggestionView: View {
                     let differs = yours[field] != suggested[field]
                     GridRow {
                         Text(field.title)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .frame(width: 74, alignment: .leading)
                         Text(format.date(yours[field]))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .strikethrough(differs, color: Palette.label3)
                             .accessibilityIdentifier("events.details.dates.alternative.\(field.rawValue).yours")
@@ -63,7 +63,7 @@ struct InAppEventDatesSuggestionView: View {
             }
             if let blocked = alternative.blockedReason {
                 InlineMessage.warning(blocked)
-                    .font(.caption)
+                    .font(.subheadline)
             }
             HStack(spacing: Spacing.xSmall) {
                 Text("Your dates stay until you pick.")

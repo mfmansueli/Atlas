@@ -62,7 +62,7 @@ struct AssistantIntroCard: View {
                 Button("What Can It Do?", action: onWhatItDoes)
                     .accessibilityIdentifier("overview.assistantIntro.whatItDoes")
                 Text("Without an assistant, built-in suggestions still work.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .controlSize(.small)
@@ -87,7 +87,7 @@ struct AssistantIntroCard: View {
                                 .font(.caption2.weight(.bold))
                         } else {
                             Text(index + 1, format: .number)
-                                .font(.caption.weight(.semibold))
+                                .font(.subheadline.weight(.semibold))
                         }
                     }
                     .frame(width: 20, height: 20)
@@ -98,7 +98,7 @@ struct AssistantIntroCard: View {
                         Text(step.title)
                             .font(.callout.weight(.semibold))
                         Text(step.detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

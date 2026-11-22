@@ -54,7 +54,7 @@ struct LocaleScopeSheet: View {
     private var footer: some View {
         HStack(spacing: Spacing.small) {
             Text(viewModel.scopeEstimate)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .accessibilityIdentifier("screenshots.scope.estimate")

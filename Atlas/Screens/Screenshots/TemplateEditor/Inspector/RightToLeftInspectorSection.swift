@@ -21,7 +21,7 @@ struct RightToLeftInspectorSection: View {
                 Text("Mirror the layout for Arabic and Hebrew")
                     .font(.callout)
                 Text("Flips device offsets, start-aligned captions and the panorama. Captures are never mirrored: they’re your real interface.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .layoutPriority(1)
             }

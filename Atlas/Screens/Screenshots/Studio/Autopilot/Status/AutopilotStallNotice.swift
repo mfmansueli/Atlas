@@ -47,7 +47,7 @@ struct AutopilotStallNotice: View {
             .buttonBorderShape(.capsule)
             .controlSize(.small)
             Text(note)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("autopilot.stall.note")

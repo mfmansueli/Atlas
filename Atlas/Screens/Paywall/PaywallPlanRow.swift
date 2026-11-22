@@ -42,7 +42,7 @@ struct PaywallPlanRow: View {
                         .font(.title3.weight(.semibold))
                         .monospacedDigit()
                     Text(offer.period)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

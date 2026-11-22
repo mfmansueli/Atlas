@@ -31,7 +31,7 @@ struct RenderStatusView: View {
                     .foregroundStyle(Palette.label2)
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .lineLimit(1)
         .accessibilityIdentifier("screenshots.status")
     }

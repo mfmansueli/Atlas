@@ -13,12 +13,12 @@ struct ScreenshotActivityDetails: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(summary.keptTitle)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("activity.kept")
             ForEach(summary.failures, id: \.self) { failure in
                 Text(failure)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.danger)
                     .textSelection(.enabled)
             }

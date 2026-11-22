@@ -60,7 +60,7 @@ struct AutoReplySettingsSheet: View {
                         ForEach(AutoReplyMode.allCases, id: \.self) { mode in
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(mode.title)
-                                Text(mode.detail).font(.caption).foregroundStyle(Palette.label2)
+                                Text(mode.detail).font(.subheadline).foregroundStyle(Palette.label2)
                             }
                             .tag(mode)
                         }
@@ -79,7 +79,7 @@ struct AutoReplySettingsSheet: View {
                         .accessibilityIdentifier("autoReply.signature")
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                         Text("Example, to a 5★ review")
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .foregroundStyle(Palette.label2)
                         Text(rule.tone.example(appName: appName, signature: rule.signature))
                             .font(.callout)
@@ -92,7 +92,7 @@ struct AutoReplySettingsSheet: View {
                     Replies never mention prices, offers, other apps or dates for new features, and never ask for a better rating. \
                     One that would isn’t sent: it waits, with the reason.
                     """)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 }

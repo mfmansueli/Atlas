@@ -25,7 +25,7 @@ struct SetsLocaleHeader: View {
                 }
             }
             Text(row.summary.text)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(row.summary.isFailing ? Palette.danger : Palette.label2)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)

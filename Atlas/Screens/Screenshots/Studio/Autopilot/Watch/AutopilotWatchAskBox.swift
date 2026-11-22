@@ -22,7 +22,7 @@ struct AutopilotWatchAskBox: View {
                 Text("Ask for changes").font(.callout.weight(.semibold))
             }
             Text("Pacing, order, captions and the end card. The recordings stay as they are; ask \(run.clientName(assistant: nil)) to record again from the plan.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             if isEditable {

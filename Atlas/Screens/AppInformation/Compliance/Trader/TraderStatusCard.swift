@@ -43,7 +43,7 @@ struct TraderStatusCard: View {
                     SuggestionSourceTag(source: .builtIn)
                 }
                 Text(report.traderReason)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,7 +56,7 @@ struct TraderStatusCard: View {
                         .foregroundStyle(Palette.label2)
                         .frame(width: 74, alignment: .leading)
                     Text("Not declared")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

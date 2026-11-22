@@ -32,7 +32,7 @@ struct AssistantSetupOptionRow: View {
                         }
                     }
                     Text(detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                     if !points.isEmpty {
@@ -40,10 +40,10 @@ struct AssistantSetupOptionRow: View {
                             ForEach(Array(points.enumerated()), id: \.offset) { _, point in
                                 HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                                     Text(point.isPlus ? "+" : "−")
-                                        .font(.caption.weight(.semibold).monospaced())
+                                        .font(.subheadline.weight(.semibold).monospaced())
                                         .foregroundStyle(point.isPlus ? Palette.positive : Palette.label2)
                                     Text(point.text)
-                                        .font(.caption)
+                                        .font(.subheadline)
                                 }
                             }
                         }

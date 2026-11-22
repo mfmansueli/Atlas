@@ -44,7 +44,7 @@ struct BreakdownTableView: View {
                 }
             }
             Text(table.footer)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 // Not fixedSize: outside a scroll view that's measured near
                 // zero wide and grows the window's minimum height.
@@ -93,7 +93,7 @@ struct BreakdownTableView: View {
                     Image(systemName: viewModel.sortAscending ? "chevron.up" : "chevron.down").imageScale(.small)
                 }
             }
-            .font(.caption.weight(isSorted ? .semibold : .medium))
+            .font(.subheadline.weight(isSorted ? .semibold : .medium))
             .foregroundStyle(isSorted ? Palette.label : Palette.label2)
             .lineLimit(1)
             .contentShape(Rectangle())

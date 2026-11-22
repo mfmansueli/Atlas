@@ -142,7 +142,7 @@ struct FindingsView: View {
                         FindingSourceMark(source: item.finding.source)
                         Text(item.finding.title).font(.callout).lineLimit(2)
                         Spacer(minLength: Spacing.small)
-                        Text("Dismissed \(AnalyticsText.day(item.date))").font(.caption).foregroundStyle(Palette.label2)
+                        Text("Dismissed \(AnalyticsText.day(item.date))").font(.subheadline).foregroundStyle(Palette.label2)
                         Button("Restore") { viewModel.restore(item.id) }
                             .controlSize(.small)
                             .accessibilityIdentifier("analytics.findings.restore")
@@ -155,7 +155,7 @@ struct FindingsView: View {
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5) }
             Text("A dismissed finding comes back only if its numbers change a lot.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }

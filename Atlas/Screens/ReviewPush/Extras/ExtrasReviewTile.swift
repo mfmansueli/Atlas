@@ -25,11 +25,11 @@ struct ExtrasReviewTile: View {
                     .accessibilityLabel(Text("Include \(item.title)"))
                     .accessibilityIdentifier("review.extras.check.\(item.id)")
                 Text(item.localeName)
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                     .truncationMode(.tail)
                 if case let .appPreview(display, _) = item.content {
-                    Text(display.shortTitle).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                    Text(display.shortTitle).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                 }
             }
             Button(action: onOpen) {

@@ -61,7 +61,7 @@ struct GuidedThisMacCard: View {
             }
             if let failure = simulators.failure {
                 Text(failure)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("autopilot.mac.failure")

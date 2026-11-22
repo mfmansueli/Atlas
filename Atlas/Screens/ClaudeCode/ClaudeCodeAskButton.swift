@@ -153,7 +153,7 @@ struct ClaudeCodeAskButton: View {
                     .accessibilityIdentifier(identifier + ".prompt")
                 HStack(spacing: Spacing.small) {
                     Text("Copied to the clipboard.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Copy Again", action: copy)

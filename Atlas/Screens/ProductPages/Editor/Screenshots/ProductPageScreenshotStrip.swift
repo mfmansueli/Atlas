@@ -30,12 +30,12 @@ struct ProductPageScreenshotStrip: View {
                 .accessibilityLabel(Text("Reading the screenshots"))
             case let .failed(message):
                 InlineMessage.warning(message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
             case let .loaded(shots):
                 if shots.isEmpty {
                     Text("No screenshots for \(device.title) in this language.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(height: limit == nil ? height : nil)
                 } else if limit == nil {

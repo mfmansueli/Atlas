@@ -43,7 +43,7 @@ struct ReviewPushToolbarButton: View {
                 }
                 if let badge {
                     Text(badge)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                         .padding(.horizontal, 6)
                         .padding(.vertical, 1)

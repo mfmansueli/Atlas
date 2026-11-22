@@ -56,7 +56,7 @@ struct AppInformationPreviewPane: View {
                     }
                 }
             }
-            .font(.caption)
+            .font(.subheadline)
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Palette.content, in: RoundedRectangle(cornerRadius: 16, style: .continuous))

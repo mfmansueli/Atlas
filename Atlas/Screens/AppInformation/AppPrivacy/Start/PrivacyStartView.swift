@@ -13,7 +13,7 @@ struct PrivacyStartView: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             PrivacyScanCard(viewModel: viewModel)
             Text("Or start another way")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)

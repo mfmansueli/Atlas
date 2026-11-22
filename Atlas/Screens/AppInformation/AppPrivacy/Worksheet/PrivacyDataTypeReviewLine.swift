@@ -33,7 +33,7 @@ struct PrivacyDataTypeReviewLine: View {
             }
             if let question = viewModel.worksheet.openQuestion(about: type) {
                 Label(String(localized: "Open question"), systemImage: "questionmark.circle")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warning)
                     .help(question.question)
             }

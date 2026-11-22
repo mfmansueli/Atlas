@@ -52,7 +52,7 @@ struct RetentionView: View {
                 Text("Save rate").font(.subheadline.weight(.semibold)).foregroundStyle(Palette.label2)
                 RateLabel(rate: report.rate, font: .title3.weight(.semibold))
                 Text(report.comparison.map { "\($0.pointsText) \($0.outcome.title)" } ?? report.rate.detail())
-                    .font(.caption).foregroundStyle(Palette.label2).monospacedDigit().lineLimit(2)
+                    .font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit().lineLimit(2)
             }
             .accessibilityIdentifier("analytics.retention.saveRate")
         }
@@ -80,7 +80,7 @@ struct RetentionView: View {
             }
         }
         Text("Save rate = 1 − cancels ÷ people who opened the cancel screen. Apple completes each day up to 4 days later, so this ends \(AnalyticsText.day(report.period.last.date)). Retention Messaging counts every subscriber, not a sample.")
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .lineLimit(3)
     }

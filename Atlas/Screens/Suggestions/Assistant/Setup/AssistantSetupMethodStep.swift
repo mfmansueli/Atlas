@@ -37,7 +37,7 @@ struct AssistantSetupMethodStep: View {
                     systemImage: "info.circle",
                     tint: Palette.label2
                 )
-                .font(.caption)
+                .font(.subheadline)
             } else {
                 Text("Which assistant?")
                     .font(.headline)

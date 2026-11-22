@@ -50,7 +50,7 @@ struct CaptionFields: View {
             if !issues.isEmpty {
                 // A warning, not a block: the person may know better.
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("screenshots.captions.editor.guideline")
             }

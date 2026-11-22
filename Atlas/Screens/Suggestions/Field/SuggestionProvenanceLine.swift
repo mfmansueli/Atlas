@@ -27,7 +27,7 @@ struct SuggestionProvenanceLine: View {
                 .buttonStyle(.link)
                 .accessibilityIdentifier("suggestion.undo")
         }
-        .font(.caption)
+        .font(.subheadline)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("suggestion.provenance")
     }

@@ -28,7 +28,7 @@ struct RadioRow<Leading: View>: View {
                         .font(.callout)
                     if let detail {
                         Text(detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }

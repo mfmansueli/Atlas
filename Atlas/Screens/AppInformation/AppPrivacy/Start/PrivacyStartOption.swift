@@ -19,7 +19,7 @@ struct PrivacyStartOption: View {
                     .font(.callout.weight(.semibold))
                     .foregroundStyle(Palette.label)
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .multilineTextAlignment(.leading)

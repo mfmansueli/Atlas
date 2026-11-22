@@ -39,7 +39,7 @@ struct SuggestionPopover: View {
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("What It’s Based On")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)
                 ForEach(recommendation.basis, id: \.self) { line in
@@ -52,7 +52,7 @@ struct SuggestionPopover: View {
             }
             if let confidence = recommendation.confidence {
                 Text(confidence.note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -92,7 +92,7 @@ struct SuggestionPopover: View {
     private func priceCard(title: String, price: Decimal, feelsLike: String, ratio: String, delta: Int?) -> some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
             HStack(spacing: Spacing.xSmall) {
@@ -102,7 +102,7 @@ struct SuggestionPopover: View {
                 if let delta, delta != 0 { DeltaPill(percent: delta) }
             }
             Text("feels like \(feelsLike) · \(ratio) the \(baseName)")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .padding(Spacing.small)

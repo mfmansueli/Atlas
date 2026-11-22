@@ -47,7 +47,7 @@ struct DeviceInspectorSection: View {
                     DeviceAngleInspectorRows(model: model)
                 } else {
                     Text("The capture fills the canvas. Captures must match the display type’s size, or the check fails.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .layoutPriority(1)
                 }

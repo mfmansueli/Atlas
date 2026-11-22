@@ -76,7 +76,7 @@ struct ProductPageSubmitSheet: View {
                     Text("Make the page visible when it’s approved")
                         .font(.callout)
                     Text("Off: it’s approved and stays hidden until you turn Visible on. That needs no review.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -92,7 +92,7 @@ struct ProductPageSubmitSheet: View {
     private var footer: some View {
         HStack(spacing: Spacing.medium) {
             Text("App Review usually answers within a day.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.isSubmitting {

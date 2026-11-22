@@ -43,7 +43,7 @@ struct CompareSourcesView: View {
                 .accessibilityElement(children: .contain)
             }
             Text("“Use this” sets the territory by hand; it then shows as Edited manually.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

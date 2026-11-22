@@ -24,7 +24,7 @@ struct ScreenshotRestoreLocaleRow: View {
                         .font(.callout)
                         .lineLimit(1)
                     Text(choice.note)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

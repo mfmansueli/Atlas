@@ -58,7 +58,7 @@ struct GuidedDesignCards: View {
                         studio.openDirection(direction, at: slot)
                     }
                 } else {
-                    Text(direction.rationale).font(.caption).foregroundStyle(Palette.label2).lineLimit(3)
+                    Text(direction.rationale).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
                 }
             case .designing:
                 HStack(spacing: Spacing.xSmall) {

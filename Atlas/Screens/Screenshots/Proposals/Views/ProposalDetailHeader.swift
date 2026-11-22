@@ -19,7 +19,7 @@ struct ProposalDetailHeader: View {
                     .font(.title3.weight(.semibold))
                     .accessibilityIdentifier("proposals.detail.title")
                 Text(meta)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {

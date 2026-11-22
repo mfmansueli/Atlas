@@ -19,7 +19,7 @@ struct PrivacyAssistantStatusLine: View {
                 .frame(width: 7, height: 7)
                 .accessibilityHidden(true)
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if session == nil {

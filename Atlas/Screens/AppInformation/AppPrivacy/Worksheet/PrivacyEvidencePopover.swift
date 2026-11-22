@@ -29,12 +29,12 @@ struct PrivacyEvidencePopover: View {
                 .fixedSize(horizontal: false, vertical: true)
             if let rationale = suggestion?.rationale, !rationale.isEmpty {
                 Text(rationale)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Text("Evidence")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)
@@ -49,7 +49,7 @@ struct PrivacyEvidencePopover: View {
             .fixedSize(horizontal: false, vertical: true)
             if let question = viewModel.worksheet.openQuestion(about: type) {
                 Text("Open question: \(question.question)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warning)
                     .fixedSize(horizontal: false, vertical: true)
             }

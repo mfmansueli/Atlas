@@ -34,7 +34,7 @@ struct InspectorSection<Trailing: View, Content: View>: View {
                 Button(action: toggle) {
                     HStack {
                         Text(title)
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .textCase(.uppercase)
                             .foregroundStyle(Palette.label2)
                         Spacer(minLength: Spacing.small)
@@ -49,7 +49,7 @@ struct InspectorSection<Trailing: View, Content: View>: View {
                 trailing()
                 Button(action: toggle) {
                     Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(width: 16, height: 16)
                         .contentShape(Rectangle())

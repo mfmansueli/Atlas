@@ -26,7 +26,7 @@ struct AutopilotPlanChangeView: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Label(change.client, systemImage: "sparkles")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslatedMark)
                 Text(change.reason ?? String(localized: "Changes for this plan"))
                     .font(.callout.weight(.semibold))
@@ -44,7 +44,7 @@ struct AutopilotPlanChangeView: View {
             }
             if let evidence = change.evidence {
                 Text(evidence)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -58,10 +58,10 @@ struct AutopilotPlanChangeView: View {
 
     private func lineView(_ line: Line) -> some View {
         VStack(alignment: .leading, spacing: 1) {
-            Text(line.title).font(.caption.weight(.semibold))
+            Text(line.title).font(.subheadline.weight(.semibold))
             if let now = line.now {
                 Text("Now: \(now)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .strikethrough()
                     .fixedSize(horizontal: false, vertical: true)

@@ -33,7 +33,7 @@ struct AssistantSetupLaunchStep: View {
                         Text(launcher.helper.title)
                             .font(.callout.weight(.semibold))
                         Text(launcher.helper.detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -49,7 +49,7 @@ struct AssistantSetupLaunchStep: View {
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier("assistantSetup.launch.install")
                     Text("Opens a Save panel in the right folder. Just click Save.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 } else {
                     Button("Check Again") { Task { await launcher.refreshHelper() } }
@@ -58,10 +58,10 @@ struct AssistantSetupLaunchStep: View {
             }
             if let error = launcher.installError {
                 InlineMessage.error(error)
-                    .font(.caption)
+                    .font(.subheadline)
             }
             Text("macOS runs the helper outside Atlas’s sandbox, and only when you start something here. Delete it from the folder any time.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -81,11 +81,11 @@ struct AssistantSetupLaunchStep: View {
                     Text("Helper installed")
                         .font(.callout.weight(.semibold))
                     Text(installation.title)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 Text(installation.displayPath())
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -127,7 +127,7 @@ struct AssistantSetupLaunchStep: View {
             .padding(.vertical, 10)
             .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             Text("Claude Code starts here, so it can read the code and git history. It never writes to the project, and it can’t push to App Store Connect.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

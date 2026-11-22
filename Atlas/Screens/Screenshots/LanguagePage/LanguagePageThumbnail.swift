@@ -141,7 +141,7 @@ struct LanguagePageThumbnail: View {
         .overlay {
             if item.isDeleted {
                 Text("Will be deleted")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, Spacing.xSmall)
                     .padding(.vertical, 2)

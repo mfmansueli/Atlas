@@ -118,7 +118,7 @@ struct PricingProductsView: View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(product.name).font(.headline)
-                Text(product.productID).font(.caption).foregroundStyle(Palette.label2)
+                Text(product.productID).font(.subheadline).foregroundStyle(Palette.label2)
             }
             Spacer()
             ProgressView().controlSize(.small)
@@ -134,7 +134,7 @@ struct PricingProductsView: View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(product.name).font(.headline)
-                Text(message).font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
+                Text(message).font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             if viewModel.unreadProductIDs.contains(product.id) {

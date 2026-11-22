@@ -33,7 +33,7 @@ struct GuidedTemplateFocus: View {
             HStack(alignment: .top, spacing: Spacing.large) {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     FlowLayout(spacing: Spacing.xSmall) {
-                        Text("Previewing").font(.caption).foregroundStyle(Palette.label2)
+                        Text("Previewing").font(.subheadline).foregroundStyle(Palette.label2)
                         Text(starter.title)
                             .font(.title3.weight(.semibold))
                             .accessibilityIdentifier("autopilot.guided.look.template.focusName")
@@ -172,7 +172,7 @@ struct GuidedTemplateFocus: View {
     /// "iPad 13″ · 2752 × 2064 · click a screenshot to see it larger".
     private func sizeLine(_ device: ScreenshotDisplayType) -> some View {
         Text("\(previewKey?.device == device ? preview?.sizeTitle ?? "" : GuidedTemplatePreviewDevices.sizeTitle(device)) · click a screenshot to see it larger")
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .lineLimit(1)
             .fixedSize()

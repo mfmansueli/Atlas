@@ -19,7 +19,7 @@ struct RatingsCard: View {
                         .font(.system(size: 34, weight: .semibold, design: .rounded))
                         .monospacedDigit()
                     Text(ReviewText.stars(Int((summary.average ?? 0).rounded())))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.sectionReviews)
                         .accessibilityHidden(true)
                 }
@@ -42,7 +42,7 @@ struct RatingsCard: View {
                 }
             }
             Text(summary.countText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("reviews.ratings.count")
@@ -62,11 +62,11 @@ struct RatingsCard: View {
                     .font(.headline)
                     .monospacedDigit()
                 Text(comparison.sinceText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             Text(mark(comparison.outcome) + comparison.againstText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }

@@ -38,7 +38,7 @@ struct TemplateProposalDetailView: View {
                             .font(.callout)
                             .foregroundStyle(Palette.label2)
                         Image(systemName: "arrow.right")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label3)
                             .accessibilityLabel(Text("to"))
                         Text(Self.valueText(row.change.newText))
@@ -63,7 +63,7 @@ struct TemplateProposalDetailView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .textCase(.uppercase)
             .foregroundStyle(Palette.label2)
     }

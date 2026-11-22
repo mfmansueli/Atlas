@@ -85,13 +85,16 @@ struct BillingView: View {
                 .font(.callout).foregroundStyle(Palette.label2)
         }
         Text("From Apple’s subscription event and state reports: every subscriber. Apple retries a failed charge for up to 60 days.")
-            .font(.caption).foregroundStyle(Palette.label2).lineLimit(2)
+            .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(2)
     }
 
     private var confirmation: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Text("Turn On Billing Grace Period for \(appName)?").font(.title3.weight(.semibold))
-            Text("People whose renewal fails keep their subscription while Apple retries the charge. It applies to every subscription of the app, in production, from the next failed renewal. You can turn it off in App Store Connect.")
+            Text("""
+            People whose renewal fails keep their subscription while Apple retries the charge. \
+            It applies to every subscription of the app, in production, from the next failed renewal. You can turn it off in App Store Connect.
+            """)
                 .lineLimit(5)
             Picker("Grace period", selection: $duration) {
                 ForEach(GracePeriodSetting.Duration.allCases) { Text($0.title).tag($0) }

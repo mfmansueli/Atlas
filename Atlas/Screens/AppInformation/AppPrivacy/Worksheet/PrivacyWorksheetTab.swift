@@ -19,7 +19,7 @@ struct PrivacyWorksheetTab: View {
                         if worksheet.hasContent {
                             PrivacyWorksheetContent(viewModel: viewModel)
                             Text("Suggestions aren’t legal advice. You’re responsible for these answers, including what third-party SDKs in \(viewModel.appShortName) collect. “Collect” means data leaves the device and is kept longer than it takes to serve the request.")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .accessibilityIdentifier("appInformation.appPrivacy.disclaimer")

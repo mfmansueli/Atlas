@@ -41,13 +41,13 @@ struct GuidedLookRow: View {
                 }
                 if let origin = GuidedLookOrigin.text(for: direction, plan: run.plan, brand: studio.shotStyleBrand) {
                     Text(origin)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("autopilot.guided.choose.look.origin")
                 }
                 Text(direction.rationale)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)

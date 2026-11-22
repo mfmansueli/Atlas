@@ -29,7 +29,7 @@ struct ExcludedSection: View {
                     Excluded territories stay at Apple’s equalized price. Useful for Japan, where a weak yen makes the \
                     Big Mac Index suggest a deep cut in a market that already pays well for apps.
                     """)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 }

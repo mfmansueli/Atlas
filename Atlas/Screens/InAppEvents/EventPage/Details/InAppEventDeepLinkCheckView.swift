@@ -39,7 +39,7 @@ struct InAppEventDeepLinkCheckView: View {
                 }
                 ForEach(report.problems, id: \.self) { problem in
                     Label(problem, systemImage: "minus")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             } else {
@@ -49,7 +49,7 @@ struct InAppEventDeepLinkCheckView: View {
             }
             if report == nil || claim.blocksSubmit, let message = claim.message(appName: viewModel.app.name) {
                 Text(message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(claim.blocksSubmit ? Palette.warning : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.deepLink.claim")
@@ -77,7 +77,7 @@ struct InAppEventDeepLinkCheckView: View {
             }
             .controlSize(.small)
         }
-        .font(.caption)
+        .font(.subheadline)
         .task(id: launcher.projectFolderRevision) { await viewModel.linkClaims.refresh(viewModel.app, launcher: launcher) }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("events.deepLink.check.area")
@@ -85,7 +85,7 @@ struct InAppEventDeepLinkCheckView: View {
 
     private func detailLine(_ text: String) -> some View {
         Text(text)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
     }

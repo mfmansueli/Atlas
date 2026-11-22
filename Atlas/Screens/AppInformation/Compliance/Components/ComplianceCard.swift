@@ -23,7 +23,7 @@ struct ComplianceCard<Content: View>: View {
                 ComplianceStatePill(state: state)
             }
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).detail")

@@ -21,7 +21,7 @@ struct GuidedTemplateBrowser: View {
                 TemplateStyleFilter(style: $studio.guided.templateStyle)
                 Spacer(minLength: Spacing.small)
                 Text("Click one to see it with \(studio.app.name)’s screens")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }

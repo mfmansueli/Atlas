@@ -26,7 +26,7 @@ struct CaptionProposalRowView: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 HStack(spacing: Spacing.xSmall) {
                     Text(row.title)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                     if let decision = row.item.decision {
                         let accepted = decision == .accepted
@@ -63,7 +63,7 @@ struct CaptionProposalRowView: View {
                 Capsule().fill(Palette.fill2).frame(height: 4)
             }
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(fit.map { !$0.fits } == true ? Palette.danger : Palette.label2)
                 .lineLimit(1)
         }

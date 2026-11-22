@@ -19,7 +19,7 @@ struct TerritoryTab: View {
                     Text(row.territory.name).font(.headline)
                     Spacer()
                     Text(verbatim: "\(row.territory.currencyCode) · \(row.territory.region.title)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .padding(Spacing.large)
@@ -48,7 +48,7 @@ struct TerritoryTab: View {
                     .disabled(row.isBase)
                     .accessibilityIdentifier("pricing.territory.exclude")
                     Text("Keeps Apple’s equalized price here.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .padding(Spacing.large)
@@ -73,7 +73,7 @@ struct TerritoryTab: View {
     private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
                 .accessibilityAddTraits(.isHeader)

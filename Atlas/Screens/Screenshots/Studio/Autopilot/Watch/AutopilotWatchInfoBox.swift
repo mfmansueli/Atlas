@@ -30,7 +30,7 @@ struct AutopilotWatchInfoBox: View {
                 VStack(alignment: .leading, spacing: 2) {
                     music
                     Text("Required · always on")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

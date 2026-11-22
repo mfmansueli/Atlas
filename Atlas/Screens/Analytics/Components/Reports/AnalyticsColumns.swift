@@ -33,7 +33,7 @@ struct AnalyticsColumns: View {
                 }
             }
         }
-        .font(isHeader ? .caption.weight(.semibold) : .callout)
+        .font(isHeader ? .subheadline.weight(.semibold) : .callout)
         .foregroundStyle(isHeader ? Palette.label2 : Palette.label)
         .monospacedDigit()
         .lineLimit(1)

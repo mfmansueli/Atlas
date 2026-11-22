@@ -14,7 +14,7 @@ struct RetentionMessagesBox: View {
     var body: some View {
         RetentionBox(title: String(localized: "Messages")) {
             Text("\(model.messages.count) of \(RetentionLimits.messagesPerApp)")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .monospacedDigit()
         } content: {
@@ -42,7 +42,7 @@ struct RetentionMessagesBox: View {
                     Pill(text: status.title, style: status.pillStyle)
                 }
                 Text(model.listDetail(of: message))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                 if let saveRates, !message.isNew {

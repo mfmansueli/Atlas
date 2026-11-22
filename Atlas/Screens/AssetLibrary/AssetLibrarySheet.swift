@@ -124,7 +124,7 @@ struct AssetLibrarySheet: View {
                 Text(model.summaryTitle).foregroundStyle(Palette.label2)
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .monospacedDigit()
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("assetLibrary.status")

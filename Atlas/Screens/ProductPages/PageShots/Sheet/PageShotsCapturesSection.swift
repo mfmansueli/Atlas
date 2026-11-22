@@ -33,7 +33,7 @@ struct PageShotsCapturesSection: View {
                 \(assistant) runs the app in the Simulator and captures the screens that should show something else for this \
                 page. It takes longer. The default page’s captures don’t change.
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -52,7 +52,7 @@ struct PageShotsCapturesSection: View {
                 Text(recapture.captures.isEmpty
                     ? String(localized: "\(assistant) is capturing screens in the Simulator.")
                     : String(localized: "\(assistant) is capturing · \(recapture.slots.count) screens so far"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .accessibilityElement(children: .combine)
@@ -77,11 +77,11 @@ struct PageShotsCapturesSection: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text("\(slot + 1) · \(source.slotName(slot))").font(.callout)
                 Text("\(languages) · \(devices)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 if let notes = captures.last?.notes, !notes.isEmpty {
                     Text(notes)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(2)
                 }

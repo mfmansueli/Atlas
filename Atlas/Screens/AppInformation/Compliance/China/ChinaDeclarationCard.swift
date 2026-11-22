@@ -54,7 +54,7 @@ struct ChinaDeclarationCard: View {
     private var footer: some View {
         HStack(spacing: Spacing.xSmall) {
             Text("Apple’s API can’t take or show this one.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             ExternalLinkButton(title: String(localized: "Open App Store Connect"), url: viewModel.appStoreConnectComplianceURL)

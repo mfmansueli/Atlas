@@ -29,7 +29,7 @@ struct AppInformationPageBar: View {
                     }
                     acceptAll
                     Text(model.restText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                     moreMenu
@@ -53,14 +53,14 @@ struct AppInformationPageBar: View {
                     Pill(text: String(localized: "Accepts right away"), style: .accent)
                         .fixedSize()
                     Text("Accept All Pages doesn’t ask first.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Button("Ask First") {
                         preferences.acceptsAllWithoutAsking = false
                         viewModel.suggestionToast = ToastMessage(text: String(localized: "Accept All will show you the suggestions first again."))
                     }
                     .buttonStyle(.link)
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("appInformation.askFirst")
                 }
                 .padding(.leading, Spacing.xxSmall)
@@ -89,7 +89,7 @@ struct AppInformationPageBar: View {
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
             Text(page.whereShown(appName: viewModel.app.name))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
         }

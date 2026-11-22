@@ -58,7 +58,7 @@ struct PriceHistogramView: View {
             ForEach(histogram.buckets) { bucket in
                 VStack(spacing: Spacing.xxSmall) {
                     Text(bucket.count, format: .number)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .monospacedDigit()
                     UnevenRoundedRectangle(topLeadingRadius: 4, topTrailingRadius: 4, style: .continuous)
@@ -83,7 +83,7 @@ struct PriceHistogramView: View {
         HStack(spacing: Spacing.xSmall) {
             ForEach(histogram.buckets) { bucket in
                 Text(bucket.label)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .frame(maxWidth: .infinity)

@@ -37,7 +37,7 @@ struct AnalyticsOffView: View {
             .disabled(isAsking)
             .accessibilityIdentifier("analytics.askButton")
             Text("This asks App Store Connect to start making analytics reports for \(appName). It’s the only thing Analytics changes there: your app and store page stay as they are. You can stop in Analytics settings.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 520)
@@ -59,7 +59,7 @@ struct AnalyticsOffView: View {
     private func question(_ title: String, _ detail: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(.callout.weight(.semibold))
-            Text(detail).font(.caption).foregroundStyle(Palette.label2)
+            Text(detail).font(.subheadline).foregroundStyle(Palette.label2)
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity, alignment: .leading)

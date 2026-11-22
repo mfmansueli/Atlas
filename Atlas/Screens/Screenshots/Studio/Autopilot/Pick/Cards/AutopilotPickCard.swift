@@ -45,10 +45,10 @@ struct AutopilotPickCard: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(Palette.fill1)
                     .frame(width: Self.pickWidth, height: Self.pickWidth * 2.17)
-                    .overlay(Text("No capture").font(.caption).foregroundStyle(Palette.label2))
+                    .overlay(Text("No capture").font(.subheadline).foregroundStyle(Palette.label2))
             }
             Text(studio.pickReason(run, screenID: screen.id))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("autopilot.pick.reason.\(index)")

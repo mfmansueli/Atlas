@@ -89,7 +89,7 @@ struct AutopilotPlanTable: View {
 
     private func heading(_ title: String, identifier: String) -> some View {
         Text(title)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Spacing.medium)

@@ -33,7 +33,7 @@ struct AppSwitcherRow: View {
                             .lineLimit(1)
                     }
                     Text(app.bundleID)
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)

@@ -17,7 +17,7 @@ struct AutopilotOptionRow: View {
                 Text(title)
                 if let detail {
                     Text(detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

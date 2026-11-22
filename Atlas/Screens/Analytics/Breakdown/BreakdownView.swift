@@ -89,7 +89,7 @@ struct BreakdownView: View {
                 ConfidenceMeter(bars: 2)
                 Text("how sure · “3 of 40” too few to tell")
             }
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .lineLimit(1)
             .accessibilityElement(children: .combine)

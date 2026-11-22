@@ -26,7 +26,7 @@ struct ProductPageKeywordChip: View {
                     .font(.callout)
                 if let owner {
                     Text("· \(owner)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }

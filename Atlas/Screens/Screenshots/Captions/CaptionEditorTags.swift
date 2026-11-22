@@ -27,7 +27,7 @@ struct CaptionEditorTags: View {
                 HStack(spacing: Spacing.xxSmall) {
                     MonogramTag(client: note.client)
                     Text(note.text)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .accessibilityElement(children: .combine)

@@ -50,7 +50,7 @@ struct GuidedDesignerNote: View {
                                 .opacity(0.7)
                                 .accessibilityLabel(Text("Remove \(reference.name)"))
                         }
-                        .font(.caption.weight(.medium))
+                        .font(.subheadline.weight(.medium))
                         .foregroundStyle(Palette.accentText)
                         .padding(.horizontal, Spacing.xSmall)
                         .padding(.vertical, 1)
@@ -64,7 +64,7 @@ struct GuidedDesignerNote: View {
                     .accessibilityIdentifier("autopilot.guided.look.note.addReference")
             }
             if let error = studio.referenceError {
-                Text(error).font(.caption).foregroundStyle(Palette.danger)
+                Text(error).font(.subheadline).foregroundStyle(Palette.danger)
             }
         }
         .modifier(GuidedSelectableCard())

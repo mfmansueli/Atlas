@@ -49,7 +49,7 @@ struct AgeRatingQuestionRow: View {
                     Text(question.title)
                     if let why = viewModel.evidence(for: question)?.why {
                         Text(why)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

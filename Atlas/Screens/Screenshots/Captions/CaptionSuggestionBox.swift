@@ -26,7 +26,7 @@ struct CaptionSuggestionBox: View {
             FitMeter(value: FitMeterValue(fit: suggestion.fit))
                 .padding(.vertical, 2)
             Text(suggestion.fit.label)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(suggestion.fit.tone == .overflows ? Palette.danger : Palette.label2)
             HStack(spacing: Spacing.xSmall) {

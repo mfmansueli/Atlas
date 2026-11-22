@@ -64,7 +64,7 @@ struct PricePointStepper: View {
             .accessibilityIdentifier("pricing.stepper.up.\(territoryID)")
         }
         .buttonStyle(.plain)
-        .font(.caption.weight(.bold))
+        .font(.subheadline.weight(.bold))
         .disabled(isDisabled)
         .accessibilityElement(children: .contain)
     }

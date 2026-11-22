@@ -25,10 +25,10 @@ struct ClaudeCodeLauncherSection: View {
                 ForEach([ClaudeCodePermissions.readProject, .autopilot], id: \.title) { permissions in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.medium) {
                         Text(permissions.title)
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .frame(width: 210, alignment: .leading)
                         Text(permissions.detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -61,13 +61,13 @@ struct ClaudeCodeLauncherSection: View {
                     .accessibilityIdentifier("settings.ai.launch.helper")
                 if !launcher.helper.detail.isEmpty {
                     Text(launcher.helper.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if let error = launcher.installError {
                     Text(error)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.danger)
                 }
             }

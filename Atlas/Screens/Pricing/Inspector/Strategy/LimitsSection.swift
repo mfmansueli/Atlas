@@ -26,7 +26,7 @@ struct LimitsSection: View {
                         Spacer()
                         Text("100% · full index")
                     }
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -38,7 +38,7 @@ struct LimitsSection: View {
                 }
                 if strategy.discountOnly {
                     Text("Ceiling: not needed while “Discount only” is on.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 } else {
                     VStack(alignment: .leading, spacing: 2) {
@@ -65,7 +65,7 @@ struct LimitsSection: View {
                     .toggleStyle(.switch)
                     .accessibilityIdentifier("pricing.discountOnly")
                     Text("Never above the equalized price, even where the factor is above 1 (Switzerland, Norway). Turn off to allow premiums.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

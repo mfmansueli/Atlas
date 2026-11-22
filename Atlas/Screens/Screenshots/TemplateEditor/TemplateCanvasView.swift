@@ -23,7 +23,7 @@ struct TemplateCanvasView: View {
                 .accessibilityLabel(Text("\(model.locale.name), slot \(model.slot + 1)"))
                 .accessibilityIdentifier("screenshots.template.canvas")
                 Text(fitLine(preview))
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(preview.firstFailure == nil ? Palette.label2 : Palette.danger)
                     .multilineTextAlignment(.center)

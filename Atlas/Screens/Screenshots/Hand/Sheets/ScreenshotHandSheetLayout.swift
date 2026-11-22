@@ -24,7 +24,7 @@ struct ScreenshotHandSheetLayout<Content: View>: View {
                 Text(title)
                     .font(.title2.weight(.semibold))
                 Text(subtitle)
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
             }
@@ -41,7 +41,7 @@ struct ScreenshotHandSheetLayout<Content: View>: View {
             Divider()
             HStack(spacing: Spacing.small) {
                 Text(footer)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Cancel") { viewModel.handSheet = nil }

@@ -35,11 +35,11 @@ struct StoreProductPreviewCard: View {
     private var header: some View {
         HStack(spacing: Spacing.small) {
             Text("APP STORE PREVIEW")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .tracking(0.6)
                 .foregroundStyle(Palette.label2)
             Text(preview.note)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .accessibilityIdentifier("studio.store.note")

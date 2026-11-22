@@ -60,7 +60,7 @@ struct AssistantConnectedCard<Popover: View>: View {
                         Text(title)
                             .font(.headline)
                         Text(detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .lineLimit(2)
                             .truncationMode(.middle)
@@ -90,11 +90,11 @@ struct AssistantConnectedCard<Popover: View>: View {
             if status.isReady {
                 HStack(spacing: Spacing.xSmall) {
                     Text("Age Rating, Accessibility, App Review and categories need an assistant that reads the code.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Button("Add One…", action: onAddAssistant)
                         .buttonStyle(.link)
-                        .font(.caption)
+                        .font(.subheadline)
                         .accessibilityIdentifier("overview.assistantConnected.addOne")
                 }
                 .padding(.horizontal, Spacing.medium)

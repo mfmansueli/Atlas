@@ -45,7 +45,7 @@ struct CaptionInspectorSection: View {
                 }
                 Button("Upload Font…") { isImporting = true }
                     .buttonStyle(.link)
-                    .font(.caption)
+                    .font(.subheadline)
                     .padding(.leading, 100)
                     .accessibilityIdentifier("screenshots.template.uploadFont")
                 TemplateInspectorSlider(label: String(localized: "Size"), value: caption.headline.size, range: 72...140, step: 2, unit: " u") {
@@ -59,7 +59,7 @@ struct CaptionInspectorSection: View {
                 }
                 CaptionLookInspectorRows(model: model)
                 Text(Self.note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .layoutPriority(1)
             }

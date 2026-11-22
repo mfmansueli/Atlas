@@ -27,7 +27,7 @@ struct RegionalTiersSection: View {
                     .accessibilityValue(multiplier.fixed(2))
                 }
                 Text("Each region’s equalized prices are multiplied by its factor, then snapped to Apple’s price points.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

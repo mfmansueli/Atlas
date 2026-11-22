@@ -29,7 +29,7 @@ struct SubmitEventRow: View {
                     Text("In-App Event “\(ReleaseViewModel.displayName(of: event))”")
                         .font(.callout)
                     Text(detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,7 +94,7 @@ struct SubmitEventRow: View {
                 }
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .controlSize(.small)
         .fixedSize(horizontal: false, vertical: true)
     }

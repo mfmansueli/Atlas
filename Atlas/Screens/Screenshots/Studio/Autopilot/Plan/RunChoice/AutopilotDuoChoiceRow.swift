@@ -35,7 +35,7 @@ struct AutopilotDuoChoiceRow: View {
                     }
                 }
                 Text(ScreenshotStudioModel.duoNote(plan))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("autopilot.plan.duoNote")

@@ -46,7 +46,7 @@ struct AppPreviewPlayer: View {
                 }
                 if !musicLine.isEmpty {
                     Text(musicLine)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("appPreview.music")

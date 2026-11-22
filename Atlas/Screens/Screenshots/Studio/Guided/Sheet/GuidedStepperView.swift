@@ -21,7 +21,7 @@ struct GuidedStepperView: View {
                 HStack(spacing: Spacing.xSmall) {
                     dot(step, state: state)
                     Text(step.title)
-                        .font(.caption.weight(state == .current ? .semibold : .regular))
+                        .font(.subheadline.weight(state == .current ? .semibold : .regular))
                         .foregroundStyle(state == .upcoming ? Palette.label2 : Palette.label)
                         .lineLimit(1)
                         // The lines between the steps shrink, never the names.

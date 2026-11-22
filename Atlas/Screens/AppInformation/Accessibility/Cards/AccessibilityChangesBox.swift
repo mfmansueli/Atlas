@@ -39,7 +39,7 @@ struct AccessibilityChangesBox: View {
                 .frame(width: 8)
             Text(name)
         }
-        .font(.caption)
+        .font(.subheadline)
         .accessibilityElement(children: .ignore)
     }
 }

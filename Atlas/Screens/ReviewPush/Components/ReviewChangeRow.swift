@@ -44,7 +44,7 @@ struct ReviewChangeRow: View {
                 SourceTag(source: change.source)
                 Button(action: onDiscard) {
                     Image(systemName: "xmark")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.borderless)
                 .help("Discard this change")
@@ -57,13 +57,13 @@ struct ReviewChangeRow: View {
                 AlternativeConflictView(yours: change.newValue, alternative: alternative, onPick: onPickAlternative)
             } else if let reason = change.blockedReason {
                 Label(reason, systemImage: "exclamationmark.octagon.fill")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .padding(.leading, 26)
             } else if let note = change.awaitingAcceptance {
                 HStack(spacing: Spacing.small) {
                     Label(note, systemImage: "hand.raised")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Button("Accept", action: onAccept)
                         .controlSize(.small)
@@ -76,7 +76,7 @@ struct ReviewChangeRow: View {
             if !issues.isEmpty {
                 // A warning, not a block: the person may know better.
                 Label(issues.map(\.message).joined(separator: "\n"), systemImage: "exclamationmark.triangle.fill")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warning)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.leading, 26)

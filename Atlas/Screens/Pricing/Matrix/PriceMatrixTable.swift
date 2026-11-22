@@ -33,7 +33,7 @@ struct PriceMatrixTable: View {
                     .width(min: 80, ideal: 110)
                     .customizationID(PriceColumn.region.customizationID)
                 TableColumn("Currency", value: \PricingRow.territory.currencyCode) { row in
-                    Text(row.territory.currencyCode).font(.caption.monospaced()).foregroundStyle(Palette.label2)
+                    Text(row.territory.currencyCode).font(.subheadline.monospaced()).foregroundStyle(Palette.label2)
                 }
                 .width(min: 56, ideal: 64)
                 .customizationID(PriceColumn.currency.customizationID)

@@ -47,20 +47,20 @@ struct BackgroundInspectorSection: View {
                 }
                 if background.kind == .panorama {
                     Text("One background spans all \(model.slotCount) slots, so it continues when people swipe. Right-to-left locales get it reversed.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .layoutPriority(1)
                 }
                 if model.hasOwnBackground {
                     HStack(spacing: Spacing.small) {
                         Text("Slot \(model.slot + 1) has its own background; these colors edit it.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .layoutPriority(1)
                         Button("Use Template’s") { model.useTemplateBackground() }
                             .buttonStyle(.link)
-                            .font(.caption)
+                            .font(.subheadline)
                             .accessibilityIdentifier("screenshots.template.useTemplateBackground")
                     }
                 } else if model.canGiveOwnBackground {

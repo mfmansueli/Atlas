@@ -20,7 +20,7 @@ struct GlossaryTermChip: View {
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Remove \(term)"))
         }
-        .font(.caption)
+        .font(.subheadline)
         .padding(.horizontal, Spacing.small)
         .frame(height: 20)
         .background(Palette.fill2, in: Capsule())

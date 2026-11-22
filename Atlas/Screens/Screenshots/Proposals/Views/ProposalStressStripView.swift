@@ -23,7 +23,7 @@ struct ProposalStressStripView: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack {
                 Text("Before and after · stress strip")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)
                 Spacer()
@@ -42,7 +42,7 @@ struct ProposalStressStripView: View {
                     Color.clear.frame(width: Self.labelWidth, height: 1)
                     ForEach(columns) { column in
                         Text(column.title)
-                            .font(.caption.weight(.medium))
+                            .font(.subheadline.weight(.medium))
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                             .frame(minWidth: Self.previewWidth, maxWidth: Self.columnWidth, alignment: .leading)
@@ -61,7 +61,7 @@ struct ProposalStressStripView: View {
     private func row(title: String, previews: [SlotPreview?]) -> some View {
         GridRow {
             Text(title)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(width: Self.labelWidth, alignment: .leading)
                 .gridCellAnchor(.leading)
@@ -70,7 +70,7 @@ struct ProposalStressStripView: View {
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                         SlotPreviewImage(preview: preview, capture: image(for: preview), width: Self.previewWidth)
                         Text(preview.fit.label)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(preview.hasCaptionProblem ? Palette.danger : Palette.label2)
                             .lineLimit(1)
                             .minimumScaleFactor(0.85)
@@ -79,7 +79,7 @@ struct ProposalStressStripView: View {
                     .accessibilityElement(children: .combine)
                 } else {
                     Text("Can’t apply")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

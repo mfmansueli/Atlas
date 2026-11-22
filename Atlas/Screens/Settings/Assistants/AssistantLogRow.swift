@@ -20,15 +20,15 @@ struct AssistantLogRow: View {
                 // Above what it was about: tool names run long
                 // ("propose_accessibility_declaration").
                 Text(entry.tool)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                 if !entry.target.isEmpty {
                     Text(entry.target)
-                        .font(.caption)
+                        .font(.subheadline)
                         .lineLimit(1)
                 }
                 if let reason = entry.reason {
                     Text(reason)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.warning)
                         .fixedSize(horizontal: false, vertical: true)
                 }

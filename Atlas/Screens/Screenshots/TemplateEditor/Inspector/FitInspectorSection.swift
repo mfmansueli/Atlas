@@ -41,12 +41,12 @@ struct FitInspectorSection: View {
                             .controlSize(.mini)
                             .accessibilityIdentifier("screenshots.template.hyphenate")
                         Text("Long words only")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
                 Text(model.captionBoxText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .layoutPriority(1)

@@ -20,7 +20,7 @@ struct FindReplaceSheet: View {
                 Text("Find and replace across locales")
                     .font(.title2.weight(.semibold))
                 Text(scopeDescription)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .padding([.horizontal, .top], Spacing.xLarge)
@@ -41,7 +41,7 @@ struct FindReplaceSheet: View {
             Divider()
             HStack(spacing: Spacing.small) {
                 Text(matches.count == 1 ? "1 match" : "\(matches.count) matches")
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("storePage.find.count")
@@ -75,7 +75,7 @@ struct FindReplaceSheet: View {
     private func labeledField(_ title: LocalizedStringKey, text: Binding<String>, identifier: String) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
             TextField(title, text: text)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()

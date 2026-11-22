@@ -29,7 +29,7 @@ struct SectionBarTitle: View {
                     .lineLimit(1)
                 if let subtitle {
                     Text(subtitle)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)

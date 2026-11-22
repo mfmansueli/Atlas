@@ -27,7 +27,7 @@ struct CaptureMatchingView: View {
                         if let more = captures.moreMatchedText {
                             Button(more) { captures.showsAllMatched = true }
                                 .buttonStyle(.link)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, Spacing.medium)
@@ -52,7 +52,7 @@ struct CaptureMatchingView: View {
                 .font(.title3.weight(.semibold))
                 .accessibilityIdentifier("captures.matching.title")
             Text(session.location)
-                .font(.caption.monospaced())
+                .font(.subheadline.monospaced())
                 .foregroundStyle(Palette.label2)
                 .textSelection(.enabled)
             HStack(spacing: Spacing.xSmall) {
@@ -77,7 +77,7 @@ struct CaptureMatchingView: View {
     private var footer: some View {
         HStack(spacing: Spacing.small) {
             Text("Nothing is uploaded at this step. Captures stay on this Mac until you push renders.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             Spacer(minLength: Spacing.large)
             Button("Cancel") { captures.cancel() }
@@ -101,7 +101,7 @@ struct CaptureMatchingView: View {
 
         var body: some View {
             Label(text, systemImage: "exclamationmark.triangle.fill")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.warning)
                 .accessibilityIdentifier("captures.matching.warning")
         }

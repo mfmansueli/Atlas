@@ -32,7 +32,7 @@ struct AutopilotDuoPickCard: View {
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .fill(Palette.fill1)
                             .frame(width: 168, height: Self.height)
-                            .overlay(Text("No capture").font(.caption).foregroundStyle(Palette.label2))
+                            .overlay(Text("No capture").font(.subheadline).foregroundStyle(Palette.label2))
                     }
                 }
             }

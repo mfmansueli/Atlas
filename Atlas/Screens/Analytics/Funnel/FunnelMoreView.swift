@@ -37,7 +37,7 @@ struct FunnelMoreView: View {
                     }
                     .padding(.horizontal, Spacing.medium)
                     Text("From people who share analytics with developers.")
-                        .font(.caption).foregroundStyle(Palette.label2)
+                        .font(.subheadline).foregroundStyle(Palette.label2)
                         .padding(.horizontal, Spacing.medium)
                 }
                 .accessibilityIdentifier("analytics.funnel.afterDownload")
@@ -47,7 +47,7 @@ struct FunnelMoreView: View {
 
     private func figure(_ label: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+            Text(label).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
             Text(value).font(.title3.weight(.semibold)).monospacedDigit()
         }
         .accessibilityElement(children: .combine)

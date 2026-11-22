@@ -17,7 +17,7 @@ struct ShareBarRow: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(name).font(.callout)
                 if !detail.isEmpty {
-                    Text(detail).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                    Text(detail).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                 }
                 Spacer(minLength: Spacing.small)
                 Text("\(AnalyticsText.count(count)) · \(AnalyticsText.wholePercent(share))").font(.callout).monospacedDigit()

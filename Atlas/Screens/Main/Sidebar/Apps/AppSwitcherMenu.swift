@@ -25,7 +25,7 @@ struct AppSwitcherMenu: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(header)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .padding(.horizontal, Spacing.medium)
@@ -116,7 +116,7 @@ struct AppSwitcherMenu: View {
             // "synced 2 min. ago" moves on as time passes.
             TimelineView(.everyMinute) { context in
                 Text(footerText(now: context.date))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }

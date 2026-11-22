@@ -39,13 +39,13 @@ struct RetentionEditorFooter: View {
             .accessibilityIdentifier("retention.queue")
             if let notice = model.notice {
                 Text(notice)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("retention.notice")
             }
             Text("After you push, Apple reviews the message and the offers before subscribers see them. Test it by canceling a sandbox subscription.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

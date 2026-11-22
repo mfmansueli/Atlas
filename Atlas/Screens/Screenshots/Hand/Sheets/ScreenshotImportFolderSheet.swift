@@ -88,7 +88,7 @@ struct ScreenshotImportFolderSheet: View {
                 if isReading {
                     ProgressView().controlSize(.small)
                     Text("Reading the folder…")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }
@@ -103,7 +103,7 @@ struct ScreenshotImportFolderSheet: View {
                 Text("FILES")
                 Text("WHAT HAPPENS")
             }
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
             ForEach(rows) { row in
                 Divider()

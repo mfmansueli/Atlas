@@ -27,7 +27,7 @@ struct ConnectableAssistantRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(assistant.title)
                     Text(statusText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(isConnected && server.isEnabled ? Palette.done : Palette.label2)
                         .accessibilityIdentifier("settings.ai.assistant.\(assistant.rawValue).status")
                 }
@@ -85,7 +85,7 @@ struct ConnectableAssistantRow: View {
         if isConnected {
             HStack(spacing: Spacing.small) {
                 Label("Connected", systemImage: "checkmark")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.done)
                     .labelStyle(.titleAndIcon)
                 Button("Disconnect…") { isAskingToDisconnect = true }
@@ -110,7 +110,7 @@ struct ConnectableAssistantRow: View {
         let test = connector.tests[assistant]
         return HStack(spacing: Spacing.medium) {
             Text(tryText(fresh, test: test))
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("settings.ai.try.\(assistant.rawValue).text")
@@ -158,7 +158,7 @@ struct ConnectableAssistantRow: View {
     private var askToDisconnect: some View {
         HStack(spacing: Spacing.medium) {
             Text("\(assistant.title) stops suggesting. What it already suggested stays in Atlas.")
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel") { isAskingToDisconnect = false }

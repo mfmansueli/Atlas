@@ -66,7 +66,7 @@ struct AccessibilitySuggestionsSection: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(feature.name)
                         Text(feature.meaning)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

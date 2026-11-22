@@ -25,14 +25,14 @@ struct GenerateSuggestionsPopover: View {
                 sends(plan)
                 ForEach(plan.notes, id: \.self) { note in
                     Label(note, systemImage: "exclamationmark.triangle")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
             if let totalText = model.totalText {
                 Text(totalText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("generate.total")
@@ -59,7 +59,7 @@ struct GenerateSuggestionsPopover: View {
                         .monospacedDigit()
                         .foregroundStyle(Palette.label2)
                 }
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(Text("\(item.title), about \(KeyAssistantTokens.formatted(item.tokens)) tokens"))
             }
@@ -82,7 +82,7 @@ struct GenerateSuggestionsPopover: View {
         case .ready, .failed:
             if case let .failed(reason) = model.phase {
                 Label(reason, systemImage: "exclamationmark.octagon")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("generate.error")
@@ -107,7 +107,7 @@ struct GenerateSuggestionsPopover: View {
             ProgressView()
                 .controlSize(.small)
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel", action: onCancel)
                 .controlSize(.small)

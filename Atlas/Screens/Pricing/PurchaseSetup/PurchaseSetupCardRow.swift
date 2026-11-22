@@ -18,7 +18,7 @@ struct PurchaseSetupCardRow: View {
             screenshotStatus(extras?.reviewScreenshot)
             if let offer = extras?.introductorySummary {
                 Text("Intro: \(offer)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .accessibilityIdentifier("pricing.card.introductoryOffer")
@@ -41,12 +41,12 @@ struct PurchaseSetupCardRow: View {
     private func screenshotStatus(_ state: PurchaseReviewScreenshotState?) -> some View {
         if viewModel.hasQueuedReviewScreenshot(for: product) {
             Label("Review screenshot not pushed", systemImage: "photo")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.accent)
                 .accessibilityIdentifier("pricing.card.reviewScreenshot.state")
         } else if let state {
             Label(state.title, systemImage: state.isUploaded ? "checkmark.circle" : "exclamationmark.triangle")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(state.isUploaded ? Palette.label2 : Palette.warning)
                 .lineLimit(1)
                 .accessibilityIdentifier("pricing.card.reviewScreenshot.state")

@@ -32,7 +32,7 @@ struct AccountsSalesSection: View {
             Find the vendor number in App Store Connect → Payments and Financial Reports, under your team name. Removing a key \
             removes its apps from Atlas. Nothing changes in App Store Connect.
             """)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
         }

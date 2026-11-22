@@ -27,7 +27,7 @@ struct AutopilotLoopReviewBox: View {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Text("Header and search loop").font(.callout.weight(.semibold)).accessibilityAddTraits(.isHeader)
                 Text(subtitle)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("autopilot.loop.subtitle")
             }
@@ -36,7 +36,7 @@ struct AutopilotLoopReviewBox: View {
             Made from the header you chose. \(kind.designer) animated it; Atlas checked that the first and last \
             frames match and that the name never moves.
             """))
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
             if let warnings = review?.motionWarnings, !warnings.isEmpty {
@@ -46,7 +46,7 @@ struct AutopilotLoopReviewBox: View {
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warning)
                 }
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityIdentifier("autopilot.loop.warnings")
             }
             if isEditable, run.reviser != nil {
@@ -160,7 +160,7 @@ struct AutopilotLoopReviewBox: View {
                     .accessibilityLabel(Text(progress.title))
                     .accessibilityValue(Text("\(Int((fraction * 100).rounded())) percent"))
                 Text(progress.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

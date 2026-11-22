@@ -74,7 +74,7 @@ struct ProductPageLinkCard: View {
                 Text("Visible on the App Store")
                     .font(.callout.weight(.medium))
                 Text(visibleDetail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -136,20 +136,20 @@ struct ProductPageLinkCard: View {
         switch result {
         case .empty:
             Text("Optional. People who already have \(viewModel.app.name) tap Open and land on this part of the app.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         case let .fine(message):
             InlineMessage(text: message, systemImage: "checkmark.circle.fill", tint: Palette.decrease)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .incomplete(message):
             InlineMessage(text: message, systemImage: "exclamationmark.octagon.fill", tint: Palette.danger)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .unfamiliar(message):
             InlineMessage.warning(message)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

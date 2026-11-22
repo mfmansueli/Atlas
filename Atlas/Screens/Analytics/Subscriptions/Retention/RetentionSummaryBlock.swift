@@ -18,7 +18,7 @@ struct RetentionSummaryBlock: View {
                     Text("Save rate").font(.subheadline.weight(.semibold)).foregroundStyle(Palette.label2)
                     RateLabel(rate: report.rate, font: .title2.weight(.semibold))
                     Text("\(AnalyticsText.count(report.stayed)) of \(AnalyticsText.count(report.opened)) stayed · \(report.rate.detail())")
-                        .font(.caption).foregroundStyle(Palette.label2).lineLimit(2).monospacedDigit()
+                        .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(2).monospacedDigit()
                 }
                 VStack(alignment: .leading, spacing: Spacing.xSmall) {
                     Text("With a message, or without").font(.subheadline.weight(.semibold)).foregroundStyle(Palette.label2)

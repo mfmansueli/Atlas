@@ -38,7 +38,7 @@ struct FunnelChartView: View {
                 marks
             }
             Text("Click a rate in the funnel to chart it. Click a change to see its result.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityIdentifier("analytics.funnel.chart")
@@ -100,7 +100,7 @@ struct FunnelChartView: View {
                         onSelectChange(mark)
                     } label: {
                         Text("\(AnalyticsText.day(mark.date)) · \(mark.shortTitle)")
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                     }
                     .buttonStyle(.bordered)
@@ -116,7 +116,7 @@ struct FunnelChartView: View {
     private func legend(_ title: String, @ViewBuilder swatch: () -> some View) -> some View {
         HStack(spacing: 5) {
             swatch().frame(width: 12, height: 8)
-            Text(title).font(.caption).foregroundStyle(Palette.label2)
+            Text(title).font(.subheadline).foregroundStyle(Palette.label2)
         }
         .accessibilityElement(children: .combine)
     }

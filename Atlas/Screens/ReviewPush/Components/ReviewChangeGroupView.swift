@@ -20,7 +20,7 @@ struct ReviewChangeGroupView: View {
                     .font(.headline)
                 Spacer()
                 Text(group.countText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .padding(.horizontal, Spacing.medium)
@@ -33,7 +33,7 @@ struct ReviewChangeGroupView: View {
                         .foregroundStyle(Palette.label2)
                         .accessibilityHidden(true)
                     Text(note)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Spacer()
                     if let onEditSchedule {

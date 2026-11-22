@@ -16,7 +16,7 @@ struct AutopilotScreenSuggestionsBox: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Label(suggestions.client, systemImage: "sparkles")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslatedMark)
                 Text(studio.suggestionsTitle(suggestions))
                     .font(.callout.weight(.semibold))

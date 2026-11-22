@@ -41,7 +41,7 @@ struct ProductPagesEmptyView: View {
                 )
             }
             Text("Up to 70 pages. Each one goes to App Review by itself, with no new version of the app.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {

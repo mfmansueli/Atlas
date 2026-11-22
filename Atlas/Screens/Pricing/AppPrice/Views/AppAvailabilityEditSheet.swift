@@ -44,7 +44,7 @@ struct AppAvailabilityEditSheet: View {
                 AppTerritoryChecklist(territories: territories, selection: $selection)
                 if availability.availableInNewTerritories != nil {
                     Text("Whether new countries and regions get it is set in App Store Connect: Apple’s API can’t change it.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

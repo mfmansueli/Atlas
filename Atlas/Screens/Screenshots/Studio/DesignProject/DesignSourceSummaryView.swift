@@ -18,7 +18,7 @@ struct DesignSourceSummaryView: View {
                 Spacer()
                 if let updated = summary.updated {
                     Text("Updated \(updated.formatted(.dateTime.month(.abbreviated).day()))")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

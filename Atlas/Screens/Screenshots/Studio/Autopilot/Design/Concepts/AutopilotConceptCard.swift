@@ -42,7 +42,7 @@ struct AutopilotConceptCard: View {
                             .accessibilityIdentifier("autopilot.choose.concept.pick")
                     }
                 }
-                Text(concept.sourceTitle).font(.caption).foregroundStyle(Palette.label2)
+                Text(concept.sourceTitle).font(.subheadline).foregroundStyle(Palette.label2)
             }
             Text(concept.metaphor)
                 .font(.callout)
@@ -50,13 +50,13 @@ struct AutopilotConceptCard: View {
                 .fixedSize(horizontal: false, vertical: true)
             if !concept.fitsBecause.isEmpty {
                 Text(concept.fitsBecause)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             if run.plan.alsoMakes.makesMotion, let loop = concept.loopLine {
                 Text(loop)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -124,7 +124,7 @@ struct AutopilotConceptCard: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Ask for changes to \(concept.name)").font(.headline)
             Text("Only this concept goes back to \(run.designKind.designer); the others stay as they are.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             TextField(String(localized: "e.g. “warmer sky, smaller moon”"), text: $note)

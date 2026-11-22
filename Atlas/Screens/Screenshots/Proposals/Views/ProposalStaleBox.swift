@@ -19,13 +19,13 @@ struct ProposalStaleBox: View {
                 .font(.callout.weight(.semibold))
             ForEach(review.versionsSince, id: \.number) { version in
                 Text("Since then · \(viewModel.sinceText(version))")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             ForEach(review.conflicts) { row in
                 VStack(alignment: .leading, spacing: Spacing.xSmall) {
                     Text("\(Text(row.change.title).fontWeight(.semibold)) changed in both. Pick one to rebase:")
-                        .font(.caption)
+                        .font(.subheadline)
                     HStack(spacing: Spacing.xSmall) {
                         choiceButton(String(localized: "Keep yours · \(row.currentText)"), choice: .keepYours, row: row)
                             .accessibilityIdentifier("proposals.keepYours")
@@ -61,7 +61,7 @@ struct ProposalStaleBox: View {
             viewModel.setChoice(choice, for: row.change.path, in: proposal)
         } label: {
             Text(title)
-                .font(.caption)
+                .font(.subheadline)
                 .padding(.horizontal, Spacing.small)
                 .padding(.vertical, 3)
                 .foregroundStyle(isChosen ? Palette.accentText : Palette.label)

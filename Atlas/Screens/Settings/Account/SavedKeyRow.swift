@@ -34,7 +34,7 @@ struct SavedKeyRow: View {
                     Text(verbatim: "Issuer \(credentials.issuerID)")
                     Text("Key \(credentials.keyID) · \(account.role)")
                 }
-                .font(.caption.monospaced())
+                .font(.subheadline.monospaced())
                 .foregroundStyle(Palette.label2)
                 .textSelection(.enabled)
                 status
@@ -66,7 +66,7 @@ struct SavedKeyRow: View {
                     .controlSize(.mini)
                 Text("Testing the connection…")
             }
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
         } else if let failure {
             statusLine(failure.title, systemImage: "xmark.circle", tint: Palette.danger)
@@ -84,7 +84,7 @@ struct SavedKeyRow: View {
             }
         } else {
             Text("Not checked yet. Test Connection shows what this key can do.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }
@@ -98,6 +98,6 @@ struct SavedKeyRow: View {
             Image(systemName: systemImage)
                 .foregroundStyle(tint)
         }
-        .font(.caption)
+        .font(.subheadline)
     }
 }

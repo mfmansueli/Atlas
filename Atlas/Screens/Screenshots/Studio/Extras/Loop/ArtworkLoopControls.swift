@@ -20,7 +20,7 @@ struct ArtworkLoopControls: View {
                 toggle: clock.toggle, seek: clock.seek(to:), scrubbing: clock.scrub
             ) {
                 Text("Plays muted on repeat on the App Store")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }

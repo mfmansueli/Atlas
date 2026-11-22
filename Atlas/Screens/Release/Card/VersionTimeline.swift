@@ -26,10 +26,10 @@ struct VersionTimeline: View {
                     }
                     .frame(height: 20)
                     Text(step.title)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                     Text(step.detail.isEmpty ? " " : step.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }

@@ -16,7 +16,7 @@ struct AgeRatingPreviewCard: View {
     var body: some View {
         Card {
             Text("RATING PREVIEW")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             HStack(alignment: .top, spacing: Spacing.medium) {
                 Text(preview.effective.title)
@@ -31,7 +31,7 @@ struct AgeRatingPreviewCard: View {
                     Text("In App Store Connect now: \(currentRating ?? String(localized: "not rated"))")
                         .foregroundStyle(Palette.label2)
                 }
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
             }
             if changesWithPush {
@@ -65,7 +65,7 @@ struct AgeRatingPreviewCard: View {
                     .fontWeight(.semibold)
                     .monospacedDigit()
             }
-            .font(.caption)
+            .font(.subheadline)
             .padding(.vertical, Spacing.xxSmall + 1)
         }
         .accessibilityElement(children: .combine)

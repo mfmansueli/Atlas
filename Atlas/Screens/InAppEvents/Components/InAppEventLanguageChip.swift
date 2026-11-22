@@ -19,7 +19,7 @@ struct InAppEventLanguageChip: View {
                 FlagTile(regionCode: language.locale?.regionCode ?? "", size: 12)
                     .frame(width: 20)
                 Text(language.shortName)
-                    .font(.caption)
+                    .font(.subheadline)
                     .lineLimit(1)
                 switch language.state {
                 case .suggested, .revision:

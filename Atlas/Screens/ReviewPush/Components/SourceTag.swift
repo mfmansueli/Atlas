@@ -16,7 +16,7 @@ struct SourceTag: View {
             HStack(spacing: Spacing.xxSmall) {
                 AssistantMonogram(letters: monogram)
                 Text(source.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .lineLimit(1)
             }
             .padding(.leading, 3)

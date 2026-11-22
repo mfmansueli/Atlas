@@ -27,7 +27,7 @@ struct TranslateCaptionsSheet: View {
                 Text("Translate missing captions")
                     .font(.title2.weight(.semibold))
                 Text("\(translation.selectedPlan.summary) Uses the source from Settings → AI Assistants, and the glossary and tone from Settings → Suggestions.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("screenshots.captions.translateSheet.summary")

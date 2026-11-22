@@ -65,7 +65,7 @@ struct AutopilotAddScreensFooter: View {
             }
             .controlSize(.small)
             Text(studio.addScreensNote(on: display))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier(identifier("autopilot.plan.addScreensNote"))
@@ -103,7 +103,7 @@ struct AutopilotAddScreensFooter: View {
                     .accessibilityIdentifier("autopilot.plan.suggestions.busyText")
                 if studio.didCopySuggestPrompt {
                     Text("The prompt is copied: paste it into \(client).")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

@@ -66,12 +66,12 @@ struct AssistantConnectProgressStep: View {
                 The sandbox doesn’t let Atlas start programs itself. Install Helper… opens a Save panel in the right folder: just \
                 click Save, and Connect goes on.
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 if let error = launcher.installError {
                     InlineMessage.error(error)
-                        .font(.caption)
+                        .font(.subheadline)
                 }
             }
             Spacer(minLength: Spacing.small)

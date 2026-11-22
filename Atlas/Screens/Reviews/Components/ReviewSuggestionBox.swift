@@ -32,7 +32,7 @@ struct ReviewSuggestionBox: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Text(label)
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(Palette.machineTranslated)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SuggestionSourceTag(source: .assistant(client: suggestion.source))
@@ -45,7 +45,7 @@ struct ReviewSuggestionBox: View {
                 .accessibilityIdentifier("reviews.suggestion.text.\(review.id)")
             if !suggestion.meaning.isEmpty {
                 Text("In \(ReviewLanguage.appLanguageName): \(suggestion.meaning)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -54,7 +54,7 @@ struct ReviewSuggestionBox: View {
                 TimelineView(.periodic(from: .now, by: 30)) { context in
                     if let line = autoLine(now: context.date) {
                         Label(line.text, systemImage: line.icon)
-                            .font(.caption.weight(.medium))
+                            .font(.subheadline.weight(.medium))
                             .foregroundStyle(line.isWarning ? Palette.warningMark : Palette.label2)
                             .accessibilityIdentifier("reviews.suggestion.auto.\(review.id)")
                     }
@@ -62,7 +62,7 @@ struct ReviewSuggestionBox: View {
             }
             HStack(spacing: Spacing.small) {
                 Text("Public on the App Store. You can edit or delete it later.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)

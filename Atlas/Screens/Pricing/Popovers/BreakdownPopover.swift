@@ -25,14 +25,14 @@ struct BreakdownPopover: View {
                     .font(.headline)
                 Spacer(minLength: Spacing.medium)
                 Text(provenance)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }
             PriceBreakdownSteps(summary: summary, steps: steps)
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("Nearby Price Points")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)
                 NearbyPriceChips(territoryID: row.id, points: nearby, current: row.shownPrice, currency: row.currency, onPick: onPick)

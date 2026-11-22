@@ -32,7 +32,7 @@ struct HelpSearchResultsView: View {
                             Text(article.title)
                                 .font(.body.weight(.semibold))
                             Text(article.group.title)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                         }
                         Text(article.summary)

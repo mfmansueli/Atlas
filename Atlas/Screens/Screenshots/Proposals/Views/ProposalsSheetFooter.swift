@@ -16,7 +16,7 @@ struct ProposalsSheetFooter: View {
         HStack(spacing: Spacing.small) {
             if let message = viewModel.errorMessage {
                 Text(message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .lineLimit(2)
             }

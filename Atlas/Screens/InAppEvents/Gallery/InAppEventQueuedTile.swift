@@ -22,7 +22,7 @@ struct InAppEventQueuedTile: View {
                             .font(.system(size: 22, weight: .medium))
                             .foregroundStyle(Palette.label3)
                         Text("Created when you push")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }

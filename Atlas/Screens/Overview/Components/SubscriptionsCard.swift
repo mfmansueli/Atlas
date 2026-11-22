@@ -24,7 +24,7 @@ struct SubscriptionsCard: View {
                                 Text(product.name)
                                     .lineLimit(1)
                                 Text("\(product.productID) · \(product.duration)")
-                                    .font(.caption.monospaced())
+                                    .font(.subheadline.monospaced())
                                     .foregroundStyle(Palette.label2)
                                     .lineLimit(1)
                             }

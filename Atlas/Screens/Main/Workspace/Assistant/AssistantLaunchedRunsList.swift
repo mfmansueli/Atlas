@@ -48,7 +48,7 @@ struct AssistantLaunchedRunsList: View {
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text("\(run.purpose.title) · \(run.appName)")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                 TimelineView(.periodic(from: run.startedAt, by: 1)) { context in
                     Text(detail(run, at: context.date))

@@ -24,7 +24,7 @@ struct RetentionSaveRatesBox: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("No Message").font(.body.weight(.medium))
                     Text("Apple’s plain screen, where no message applies: the reference")
-                        .font(.caption).foregroundStyle(Palette.label2).lineLimit(2)
+                        .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(2)
                     RetentionSaveRateLine(measured: none)
                 }
                 .padding(.horizontal, Spacing.medium)

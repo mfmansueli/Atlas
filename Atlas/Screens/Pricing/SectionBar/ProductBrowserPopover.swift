@@ -22,7 +22,7 @@ struct ProductBrowserPopover: View {
                 ForEach(catalog.groups) { group in
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                         Text(group.title)
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .foregroundStyle(Palette.label2)
                             .padding(.horizontal, Spacing.small)
                         ForEach(group.products) { product in
@@ -46,7 +46,7 @@ struct ProductBrowserPopover: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             if !queuedNewSubscriptions.isEmpty {
                 Text("Waiting in Review & Push")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .padding(.horizontal, Spacing.small)
                 ForEach(queuedNewSubscriptions) { change in
@@ -92,7 +92,7 @@ struct ProductBrowserPopover: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(product.name).font(.body.weight(.medium))
                     Text([product.productID, product.durationText, product.reviewState].joined(separator: " · "))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }

@@ -39,7 +39,7 @@ struct AppPriceCard: View {
             HStack(spacing: Spacing.small) {
                 ProgressView().controlSize(.small)
                 Text("Reading the price…")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         case let .failed(message):
@@ -83,17 +83,17 @@ struct AppPriceCard: View {
                 Text(point.customerPrice == 0
                     ? String(localized: "Free in every country or region.")
                     : String(localized: "\(AppPriceText.proceeds(point.proceeds, currencyCode: current.currencyCode)) · Apple equalizes it everywhere else."))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             if !current.otherManualTerritoryIDs.isEmpty {
                 Text("Set by hand in \(current.otherManualTerritoryIDs.count) other countries or regions.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             if current.laterChangeCount > 0 {
                 Text("\(current.laterChangeCount) price changes scheduled.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

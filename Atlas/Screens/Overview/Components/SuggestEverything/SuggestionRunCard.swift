@@ -66,14 +66,14 @@ struct SuggestionRunCard: View {
                         .font(.callout.weight(.semibold))
                         .frame(width: 120, alignment: .leading)
                     Text(row.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     if run.isOver {
                         Text(row.countText)
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                             .frame(width: 150, alignment: .leading)
                     } else {
@@ -81,7 +81,7 @@ struct SuggestionRunCard: View {
                             .frame(width: 56)
                             .accessibilityHidden(true)
                         Text(row.progressText)
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                             .frame(width: 80, alignment: .leading)
                     }
@@ -106,7 +106,7 @@ struct SuggestionRunCard: View {
     private var footer: some View {
         HStack(spacing: Spacing.small) {
             Text(footerText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

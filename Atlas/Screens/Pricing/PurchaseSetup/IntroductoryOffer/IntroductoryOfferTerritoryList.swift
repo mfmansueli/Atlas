@@ -26,7 +26,7 @@ struct IntroductoryOfferTerritoryList: View {
                     .textFieldStyle(.roundedBorder)
                     .accessibilityIdentifier("pricing.introductoryOffer.search")
                 Text("\(chosen.count) chosen")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
             }

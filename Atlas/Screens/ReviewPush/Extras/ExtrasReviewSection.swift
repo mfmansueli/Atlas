@@ -40,7 +40,7 @@ struct ExtrasReviewSection: View {
                 discardedNote(discarded)
             }
             if let error = extras.recordError {
-                Text(error).font(.caption).foregroundStyle(Palette.danger).padding(.horizontal, Spacing.small)
+                Text(error).font(.subheadline).foregroundStyle(Palette.danger).padding(.horizontal, Spacing.small)
             }
         }
         .accessibilityElement(children: .contain)
@@ -50,7 +50,7 @@ struct ExtrasReviewSection: View {
     private var heading: some View {
         HStack(spacing: Spacing.small) {
             Text(String(localized: "\(plan.appName) · Header, search and App Preview").uppercased())
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .accessibilityAddTraits(.isHeader)
             Spacer(minLength: Spacing.small)
@@ -61,7 +61,7 @@ struct ExtrasReviewSection: View {
                     .accessibilityIdentifier("review.extras.library.\(plan.appID)")
             }
             if !plan.items.isEmpty {
-                Text(plan.countTitle).font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
+                Text(plan.countTitle).font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit()
                 let count = extras.checkedItems(in: plan).count
                 Button(count == 1 ? String(localized: "Push 1 Extra") : String(localized: "Push \(count) Extras")) {
                     viewModel.pushExtras(plan)
@@ -91,7 +91,7 @@ struct ExtrasReviewSection: View {
                 Text(plan.discardedCount > 0
                     ? String(localized: "Nothing waiting: discarded or already on App Store Connect.")
                     : String(localized: "On App Store Connect in every language."))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .padding(.horizontal, Spacing.medium)
                     .padding(.vertical, Spacing.small)
@@ -152,7 +152,7 @@ struct ExtrasReviewSection: View {
             .buttonStyle(.link)
             .accessibilityIdentifier("review.extras.undo.\(plan.appID)")
         }
-        .font(.caption)
+        .font(.subheadline)
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.small)
     }
@@ -174,7 +174,7 @@ struct ExtrasReviewSection: View {
                         .foregroundStyle(Palette.label2)
                 }
             }
-            .font(.caption)
+            .font(.subheadline)
             .labelStyle(.titleAndIcon)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, Spacing.medium)

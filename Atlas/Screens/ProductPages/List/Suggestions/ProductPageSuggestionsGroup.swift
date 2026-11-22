@@ -53,7 +53,7 @@ struct ProductPageSuggestionsGroup: View {
             }
             Divider().overlay(Palette.machineTranslatedMark.opacity(0.25))
             Text("Accepting makes a draft page in Atlas. You still push it and submit it to App Review yourself.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Spacing.medium)

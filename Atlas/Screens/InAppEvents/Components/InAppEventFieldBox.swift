@@ -64,7 +64,7 @@ struct InAppEventFieldBox: View {
             let issues = StoreTextGuidelineCheck.issues(in: text, for: .eventText)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.field.\(field.rawValue).guideline")
             }

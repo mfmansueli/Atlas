@@ -27,7 +27,7 @@ struct PushProgressFooter: View {
         HStack(spacing: Spacing.small) {
             if summary.isRunning {
                 Text("Minimize to keep working: Review & Push in the toolbar shows how far it got.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Spacer()
                 Button("Cancel Remaining", action: onCancelRemaining)
@@ -40,7 +40,7 @@ struct PushProgressFooter: View {
                     .accessibilityIdentifier("push.minimize")
             } else {
                 Text(doneNote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Spacer()
                 if summary.failedCount > 0 {

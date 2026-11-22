@@ -83,7 +83,7 @@ struct SubmitForReviewSheet: View {
                     ProgressView()
                         .controlSize(.small)
                     Text("Checking for new builds…")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .accessibilityElement(children: .combine)
@@ -117,7 +117,7 @@ struct SubmitForReviewSheet: View {
                 .accessibilityIdentifier("submit.build.\(build.number)")
             }
             Text("Atlas checks every minute while this is open. A new upload shows a few minutes after Xcode finishes it.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -145,7 +145,7 @@ struct SubmitForReviewSheet: View {
     private var whatsNewSection: some View {
         SubmitSection(title: viewModel.whatsNewTitle) {
             Text("Edited in Store Page")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         } content: {
             let rows = viewModel.whatsNewRows
@@ -220,7 +220,7 @@ struct SubmitForReviewSheet: View {
             Text(title)
                 .font(.callout)
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -243,7 +243,7 @@ struct SubmitForReviewSheet: View {
                 .accessibilityIdentifier("submit.encryption.\(answer.rawValue)")
             }
             Text("Saved to App Information → Export Compliance, so the next version asks only if something changed.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }

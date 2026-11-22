@@ -19,7 +19,7 @@ struct KeyAssistantCodeNote: View {
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Add an MCP Assistant…", action: onAddAssistant)

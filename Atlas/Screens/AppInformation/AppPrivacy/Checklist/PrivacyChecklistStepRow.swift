@@ -32,7 +32,7 @@ struct PrivacyChecklistStepRow: View {
                 }
                 .font(.callout)
                 Text(step.body)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)

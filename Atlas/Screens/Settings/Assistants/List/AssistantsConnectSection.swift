@@ -27,9 +27,9 @@ struct AssistantsConnectSection: View {
             Atlas adds itself to the assistant for you: nothing to copy or type. Assistants read and suggest. They never see your \
             .p8 key and can’t push.
             """)
-                .font(.caption)
-                .foregroundStyle(Palette.label2)
-                .fixedSize(horizontal: false, vertical: true)
+            .font(.subheadline)
+            .foregroundStyle(Palette.label2)
+            .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityIdentifier("settings.ai.assistants")
     }
@@ -47,7 +47,7 @@ struct AssistantsConnectSection: View {
                 Text("Connections are turned off")
                     .font(.callout.weight(.semibold))
                 Text("Your assistants stay in the list, and can’t reach Atlas until you turn this on.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

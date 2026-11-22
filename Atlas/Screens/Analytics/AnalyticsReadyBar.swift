@@ -24,16 +24,16 @@ struct AnalyticsReadyBar: View {
                 )
                 HStack(spacing: Spacing.small) {
                     Text(funnel.rangeText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .monospacedDigit()
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                     if viewModel.activity.isLoading {
                         ProgressView().controlSize(.small)
-                        Text("Checking…").font(.caption).foregroundStyle(Palette.label2)
+                        Text("Checking…").font(.subheadline).foregroundStyle(Palette.label2)
                     } else if let checked = viewModel.lastChecked {
                         Text("Checked \(AnalyticsText.moment(checked, now: viewModel.store.now()))")
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)

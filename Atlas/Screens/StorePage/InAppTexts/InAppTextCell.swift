@@ -43,7 +43,7 @@ struct InAppTextCell: View {
                             .environment(\.layoutDirection, locale.isRTL ? .rightToLeft : .leftToRight)
                         if !issues.isEmpty {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.warning)
                                 .help(issues.map(\.message).joined(separator: "\n"))
                                 .accessibilityIdentifier("storePage.inAppGuideline.\(locale.code).\(column.id)")
@@ -52,7 +52,7 @@ struct InAppTextCell: View {
                             Pill(text: "\(counter.count)/\(counter.limit.maximum)", style: .danger)
                         } else {
                             Text(verbatim: "\(counter.count)/\(counter.limit.maximum)")
-                                .font(.caption.monospaced())
+                                .font(.subheadline.monospaced())
                                 .foregroundStyle(Palette.label2)
                         }
                     }
@@ -86,17 +86,17 @@ struct InAppTextCell: View {
             HStack {
                 if let message = ListingFieldValidator.validate(model.value(column, in: locale), for: column.field).message {
                     InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
-                        .font(.caption)
+                        .font(.subheadline)
                 }
                 Spacer()
                 Text(counter.text)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(counter.isOverLimit ? Palette.danger : Palette.label2)
             }
             let issues = model.guidelineIssues(column, in: locale)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("storePage.inAppEditorGuideline")
             }

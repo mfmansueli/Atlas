@@ -44,7 +44,7 @@ struct ProSettingsPane: View {
                 }
                 if let restoreMessage {
                     Text(restoreMessage)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("settings.pro.restoreMessage")
                 }
@@ -53,7 +53,7 @@ struct ProSettingsPane: View {
                 AI runs on your own assistant or API key, so Pro’s price never includes AI usage. If Pro ends, everything you made \
                 stays and stays editable.
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             }

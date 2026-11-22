@@ -34,7 +34,7 @@ struct NoCapturesView: View {
             }
             .padding(.top, Spacing.xxSmall)
             Text("Folders, fastlane snapshot output and Xcode test results all work.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)
         }

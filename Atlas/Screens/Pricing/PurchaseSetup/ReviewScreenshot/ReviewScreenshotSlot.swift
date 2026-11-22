@@ -44,7 +44,7 @@ struct ReviewScreenshotSlot: View {
             }
             if let problem {
                 Text(problem)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.reviewScreenshot.problem")

@@ -57,7 +57,7 @@ struct ClaudeCodeRunOutputSheet: View {
                 Spacer(minLength: 0)
             }
             Text(summary(run))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .truncationMode(.middle)
@@ -110,7 +110,7 @@ struct ClaudeCodeRunOutputSheet: View {
                             ProgressView()
                                 .controlSize(.small)
                             Text(run.statusTitle)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                         }
                         .padding(.vertical, Spacing.small)
@@ -150,12 +150,12 @@ struct ClaudeCodeRunOutputSheet: View {
     private func row(_ item: ClaudeCodeActivity) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: item.systemImage)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(item.kind == .problem ? Palette.warning : item.kind == .atlas ? Palette.accent : Palette.label2)
                 .frame(width: 16)
                 .accessibilityHidden(true)
             Text(item.text)
-                .font(item.kind == .command ? .caption.monospaced() : .caption)
+                .font(item.kind == .command ? .subheadline.monospaced() : .subheadline)
                 .foregroundStyle(item.kind == .said ? Palette.label2 : Palette.label)
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
@@ -171,7 +171,7 @@ struct ClaudeCodeRunOutputSheet: View {
     private func prompt(_ run: ClaudeCodeRun) -> some View {
         DisclosureGroup(isExpanded: $showsPrompt) {
             Text(run.prompt)
-                .font(.caption.monospaced())
+                .font(.subheadline.monospaced())
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(Spacing.small)
@@ -198,7 +198,7 @@ struct ClaudeCodeRunOutputSheet: View {
                 .help(command)
                 .accessibilityIdentifier("claudeCode.output.resume")
                 Text("claude --resume in \(run.displayDirectory)")
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .truncationMode(.middle)

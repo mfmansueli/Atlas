@@ -41,7 +41,7 @@ struct AppInformationPageRow: View {
                 SuggestionBadge(count: suggestionCount)
             } else if isUpToDate {
                 Image(systemName: "checkmark")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.increase)
                     .accessibilityHidden(true)
             }

@@ -16,7 +16,7 @@ struct TraderPreviewBlock: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Divider()
                 Text("In the EU")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 content
             }
@@ -60,7 +60,7 @@ struct TraderPreviewBlock: View {
         TraderPreviewBlock(preview: .details("Northpier Studio Ltd · 14 Harbour Road, Dublin 2 · +353 1 555 0142", isSuggested: true))
         TraderPreviewBlock(preview: .nonTrader)
     }
-    .font(.caption)
+    .font(.subheadline)
     .padding()
     .frame(width: 236)
 }

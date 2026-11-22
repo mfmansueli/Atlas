@@ -31,8 +31,8 @@ struct SidebarUtilityRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if let shortcut {
                     Text(shortcut)
-                        .font(.caption)
-                        .foregroundStyle(Palette.label3)
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
                         .padding(.trailing, Spacing.xxSmall)
                         .accessibilityHidden(true)
                 }

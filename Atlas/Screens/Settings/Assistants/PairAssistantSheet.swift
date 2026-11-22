@@ -88,7 +88,7 @@ struct PairAssistantSheet: View {
                 .textSelection(.enabled)
                 .accessibilityLabel(Text("Pairing code \(pairing.code.digits.map(String.init).joined(separator: " "))"))
             Text("Pairing code, if the assistant asks for one instead. It expires in 10 minutes if no one uses it.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

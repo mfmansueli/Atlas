@@ -37,7 +37,7 @@ struct OverviewHeader: View {
                         .accessibilityIdentifier("overview.header.where")
                 }
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
@@ -81,10 +81,10 @@ struct OverviewHeader: View {
     }
 
     private var detail: AttributedString {
-        var text = AttributedString(app.bundleID, attributes: AttributeContainer().font(.caption.monospaced()))
+        var text = AttributedString(app.bundleID, attributes: AttributeContainer().font(.subheadline.monospaced()))
         if let sku = app.sku {
             text.append(AttributedString(" · " + String(localized: "SKU ")))
-            text.append(AttributedString(sku, attributes: AttributeContainer().font(.caption.monospaced())))
+            text.append(AttributedString(sku, attributes: AttributeContainer().font(.subheadline.monospaced())))
         }
         return text
     }

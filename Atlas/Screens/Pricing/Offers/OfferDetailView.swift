@@ -26,7 +26,7 @@ struct OfferDetailView: View {
                 facts
                 table
                 Text(footnote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

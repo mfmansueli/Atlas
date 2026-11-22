@@ -81,7 +81,7 @@ struct AutopilotRecapturePickView: View {
                         .strokeBorder(isChosen ? Palette.accent : Palette.separator, lineWidth: isChosen ? 2 : 0.5)
                 }
                 Text(label)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(isChosen ? Palette.label : Palette.label3)
             }
         }

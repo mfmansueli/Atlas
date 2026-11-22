@@ -30,13 +30,13 @@ struct EditorFieldRow: View {
             }
             if let message = validation.message {
                 InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("storePage.fieldError.\(field.rawValue)")
             }
             let issues = viewModel.guidelineIssues(field, in: locale)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("storePage.fieldGuideline.\(field.rawValue)")
             }
             if field == .keywords, !viewModel.value(.keywords, in: locale).isEmpty {
@@ -115,7 +115,7 @@ struct EditorFieldRow: View {
                     viewModel.markReviewed(field, in: locale)
                 }
                 .buttonStyle(.link)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize()
                 .accessibilityIdentifier("storePage.markReviewed.\(field.rawValue)")
             }
@@ -131,7 +131,7 @@ struct EditorFieldRow: View {
                     UnsavedDot(size: 6)
                     Text("Not pushed")
                 }
-                .font(.caption.weight(.medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(Palette.accentText)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 1)

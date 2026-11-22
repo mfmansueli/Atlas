@@ -27,7 +27,7 @@ struct NewLanguageSheetRow: View {
                     Text(row.locale.name)
                         .font(.callout.weight(.semibold))
                     Text(row.locale.code)
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)
                     if row.isAdded {
                         Pill(text: String(localized: "Added"), style: .accent)
@@ -36,11 +36,11 @@ struct NewLanguageSheetRow: View {
                 }
                 if !row.evidence.isEmpty {
                     Text(row.evidence)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 Text(row.drafted)
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("storePage.languagesSheet.drafted.\(row.locale.code)")
             }
             .frame(maxWidth: .infinity, alignment: .leading)

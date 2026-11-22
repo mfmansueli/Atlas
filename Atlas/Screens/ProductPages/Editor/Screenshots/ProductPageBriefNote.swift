@@ -18,7 +18,7 @@ struct ProductPageBriefNote: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("Brief from \(brief.source)")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .accessibilityAddTraits(.isHeader)
             if !brief.audience.isEmpty {
@@ -33,7 +33,7 @@ struct ProductPageBriefNote: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pages.brief.screens")
             Text(page.isDraft ? Self.draftText : Self.pushedText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             if !page.isDraft {

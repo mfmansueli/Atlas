@@ -21,7 +21,7 @@ struct ReviewReplyBox: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             if wasJustSent {
                 Text("Your reply")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
             } else {
                 header
@@ -37,7 +37,7 @@ struct ReviewReplyBox: View {
                         .foregroundStyle(Palette.label2)
                         .accessibilityHidden(true)
                     Text(statusText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     editButton
@@ -54,7 +54,7 @@ struct ReviewReplyBox: View {
     private var header: some View {
         HStack(spacing: Spacing.small) {
             Text(statusText)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             editButton

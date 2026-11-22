@@ -21,7 +21,7 @@ struct ScreenshotHandAddTile: View {
                 Image(systemName: "plus")
                     .font(.title2)
                 Text("Add Screenshots")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                 Text("Drop PNG or JPEG files here, or click")
                     .font(.caption2)
                     .foregroundStyle(Palette.label2)

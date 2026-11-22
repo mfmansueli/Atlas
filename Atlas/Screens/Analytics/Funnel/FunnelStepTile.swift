@@ -13,7 +13,7 @@ struct FunnelStepTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(step.stage.title)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -25,12 +25,12 @@ struct FunnelStepTile: View {
                 .foregroundStyle(step.gap == nil ? Palette.label : Palette.label3)
             if let gap = step.gap {
                 Text(gap.text)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warning)
                     .fixedSize(horizontal: false, vertical: true)
             } else if let change = step.change {
                 Text("\(change) vs before")
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)

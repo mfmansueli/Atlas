@@ -21,7 +21,7 @@ struct PageShotsChecks: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(check.title).font(.callout)
                         Text(check.detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

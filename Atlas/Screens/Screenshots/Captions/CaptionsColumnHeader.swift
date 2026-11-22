@@ -48,7 +48,7 @@ struct CaptionsColumnHeader: View {
                     .accessibilityIdentifier("screenshots.captions.column.text.\(index)")
             }
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.medium)
         .frame(height: Metrics.tableHeaderHeight)

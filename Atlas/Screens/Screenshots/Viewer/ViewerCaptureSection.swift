@@ -15,18 +15,18 @@ struct ViewerCaptureSection: View {
         ViewerSection(title: String(localized: "Capture")) {
             if let resolved = cell.capture {
                 Text(resolved.capture.fileName)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .textSelection(.enabled)
                     .lineLimit(2)
                 Text(details(resolved))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             } else if let live = cell.live {
                 Text("Live in App Store Connect")
                     .font(.callout)
                 Text(verbatim: live.fileName)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
             } else {
                 Text("No capture for this slot yet.")

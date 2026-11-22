@@ -14,7 +14,7 @@ struct SuggestionSourceTag: View {
         HStack(spacing: Spacing.xxSmall) {
             AssistantMonogram(letters: source.monogram)
             Text(source.title)
-                .font(.caption.weight(.medium))
+                .font(.subheadline.weight(.medium))
                 .lineLimit(1)
         }
         .padding(.leading, 2)

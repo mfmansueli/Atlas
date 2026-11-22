@@ -38,26 +38,26 @@ struct ReviewReplyEditor: View {
                 .accessibilityIdentifier("reviews.editor.text.\(review.id)")
             if let meaning {
                 Text("In \(ReviewLanguage.appLanguageName): \(meaning)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             let issues = StoreTextGuidelineCheck.issues(in: text, for: .reviewReply)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("reviews.editor.guideline.\(review.id)")
             }
             if let error {
                 InlineMessage.error(error)
-                    .font(.caption)
+                    .font(.subheadline)
             }
             HStack(spacing: Spacing.small) {
                 Text(ReviewText.replyCounter(text))
                     .font(.caption2.monospacedDigit())
                     .foregroundStyle(isOverLimit ? Palette.danger : Palette.label2)
                 Text("Public on the App Store.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Cancel", action: onCancel)

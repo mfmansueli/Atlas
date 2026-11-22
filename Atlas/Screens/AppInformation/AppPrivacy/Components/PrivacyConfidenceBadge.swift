@@ -20,7 +20,7 @@ struct PrivacyConfidenceBadge: View {
                 }
             }
             Text(confidence.title)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .help(String(localized: "\(confidence.title) confidence · \(confidence.meaning)"))

@@ -36,7 +36,7 @@ struct AcceptAllSheet: View {
                 .font(.title3.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             Text(selection.subtitle)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -51,7 +51,7 @@ struct AcceptAllSheet: View {
             VStack(alignment: .leading, spacing: Spacing.tiny) {
                 HStack(spacing: Spacing.tiny) {
                     Text(selection.kind.groupsTitle)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("All") { selection.selectAll() }
@@ -60,7 +60,7 @@ struct AcceptAllSheet: View {
                         .accessibilityIdentifier("acceptAll.none")
                 }
                 .buttonStyle(.link)
-                .font(.caption)
+                .font(.subheadline)
                 .padding(.leading, Spacing.small)
                 .padding(.trailing, Spacing.xxSmall)
                 .padding(.bottom, Spacing.xSmall)
@@ -130,7 +130,7 @@ struct AcceptAllSheet: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(selection.focusedCountText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .monospacedDigit()
                         .foregroundStyle(Palette.label2)
                     Button(selection.focusedToggleTitle) { selection.toggleFocusedGroup() }
@@ -168,7 +168,7 @@ struct AcceptAllSheet: View {
             Toggle(isOn: $selection.dontAskAgain) {
                 VStack(alignment: .leading, spacing: Spacing.tiny) {
                     Text(selection.kind.dontAskTitle)
-                        .font(.caption)
+                        .font(.subheadline)
                     Text("You can still undo right after, and turn this back on next to the button or in Settings → Suggestions.")
                         .font(.caption2)
                         .foregroundStyle(Palette.label2)
@@ -179,7 +179,7 @@ struct AcceptAllSheet: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityIdentifier("acceptAll.dontAsk")
             Text(selection.summary)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
                 .fixedSize()

@@ -27,7 +27,7 @@ struct ReviewChangeOptionView: View {
             .accessibilityIdentifier("review.option.\(changeID)")
             VStack(alignment: .leading, spacing: 1) {
                 Text(option.title)
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(option.isEnabled ? Palette.label : Palette.label2)
                 Text(option.note)
                     .font(.caption2)

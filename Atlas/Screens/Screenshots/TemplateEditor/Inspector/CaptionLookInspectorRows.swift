@@ -19,7 +19,7 @@ struct CaptionLookInspectorRows: View {
                     .controlSize(.mini)
                     .accessibilityIdentifier("screenshots.template.uppercase")
                 Text("Uses each language’s own rules")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

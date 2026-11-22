@@ -78,7 +78,7 @@ struct ProductPageTestSheet: View {
             ExtrasFileThumbnail(url: url, pixelSize: model.kind.pixelSize, width: 300)
             Text("\(name) · \(role)").font(.callout.weight(.semibold))
             Text(meaning.prefix(1).uppercased() + meaning.dropFirst())
-                .font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
+                .font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -110,7 +110,7 @@ struct ProductPageTestSheet: View {
                         ExtrasFileThumbnail(url: row.treatment, pixelSize: model.kind.pixelSize, width: 120)
                         if row.checks.isEmpty {
                             Text(row.treatment == nil ? String(localized: "Not rendered") : String(localized: "Passes every check"))
-                                .font(.caption).foregroundStyle(Palette.label2)
+                                .font(.subheadline).foregroundStyle(Palette.label2)
                         } else {
                             ArtworkCheckPills(checks: row.checks)
                         }
@@ -134,9 +134,9 @@ struct ProductPageTestSheet: View {
             }
             ForEach(model.rows) { row in
                 HStack {
-                    Text(row.name).font(.caption)
+                    Text(row.name).font(.subheadline)
                     Spacer()
-                    Text(model.run?.status(of: row.locale).title ?? "").font(.caption).foregroundStyle(Palette.label2)
+                    Text(model.run?.status(of: row.locale).title ?? "").font(.subheadline).foregroundStyle(Palette.label2)
                 }
             }
         }

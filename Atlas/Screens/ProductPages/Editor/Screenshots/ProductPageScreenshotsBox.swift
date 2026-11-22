@@ -47,7 +47,7 @@ struct ProductPageScreenshotsBox: View {
             }
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Text(note(queued: queued))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -58,7 +58,7 @@ struct ProductPageScreenshotsBox: View {
             }
             if let previews = viewModel.queuedAppPreviews(of: page, locale: locale, device: viewModel.device) {
                 Label(previewsNote(previews), systemImage: "play.rectangle")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("pages.screenshots.previewsNote")
             }
@@ -106,7 +106,7 @@ struct ProductPageScreenshotsBox: View {
 
     private func segment(_ title: String, isOn: Bool) -> some View {
         Text(title)
-            .font(.caption.weight(isOn ? .semibold : .regular))
+            .font(.subheadline.weight(isOn ? .semibold : .regular))
             .foregroundStyle(isOn ? Palette.label : Palette.label2)
             .padding(.horizontal, Spacing.small)
             .frame(height: 20)

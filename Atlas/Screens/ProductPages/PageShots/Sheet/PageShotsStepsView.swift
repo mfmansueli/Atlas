@@ -25,7 +25,7 @@ struct PageShotsStepsView: View {
                     .foregroundStyle(step.rawValue > current.rawValue ? Palette.label2 : Color.white)
                     .accessibilityHidden(true)
                     Text(step.title)
-                        .font(.caption.weight(step == current ? .semibold : .regular))
+                        .font(.subheadline.weight(step == current ? .semibold : .regular))
                         .foregroundStyle(step.rawValue > current.rawValue ? Palette.label2 : Palette.label)
                         .fixedSize()
                 }

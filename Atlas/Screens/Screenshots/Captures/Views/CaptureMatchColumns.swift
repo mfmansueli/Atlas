@@ -20,7 +20,7 @@ struct CaptureMatchColumns: View {
             Text("Slot").frame(width: Self.slot, alignment: .leading)
             Color.clear.frame(width: Self.status, height: 1)
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.xSmall)

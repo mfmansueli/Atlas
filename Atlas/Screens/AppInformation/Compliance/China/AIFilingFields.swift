@@ -46,12 +46,12 @@ struct AIFilingFields: View {
                 filing number, you as the authorized party, and the owner as in the Cyberspace Administration of \
                 China’s registry.
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             }
             Text("Only the Cyberspace Administration of China approves a filing. Atlas keeps it here: Apple’s API doesn’t take it.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

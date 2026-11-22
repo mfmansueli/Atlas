@@ -17,7 +17,7 @@ struct TemplateInspectorSection<Accessory: View, Content: View>: View {
             HStack {
                 Text(title)
                     .textCase(.uppercase)
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 Spacer(minLength: Spacing.small)
                 accessory()

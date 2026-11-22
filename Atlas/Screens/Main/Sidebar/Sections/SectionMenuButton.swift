@@ -44,7 +44,7 @@ struct SectionMenuButton: View {
             ForEach(AppWorkspaceSectionGroup.allCases) { group in
                 if let title = group.title {
                     Text(title)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .padding(.horizontal, Spacing.small)
                         .padding(.top, Spacing.small)

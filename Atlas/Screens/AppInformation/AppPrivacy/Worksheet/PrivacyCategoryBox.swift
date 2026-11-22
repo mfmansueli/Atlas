@@ -21,7 +21,7 @@ struct PrivacyCategoryBox: View {
                     .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: Spacing.small)
                 Text(viewModel.collectedSummary(for: category))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .padding(.horizontal, Spacing.medium)
@@ -38,7 +38,7 @@ struct PrivacyCategoryBox: View {
                     viewModel.showsAllTypes = true
                 }
                 .buttonStyle(.link)
-                .font(.caption)
+                .font(.subheadline)
                 .padding(.horizontal, Spacing.medium)
                 .padding(.vertical, Spacing.xSmall)
                 .accessibilityIdentifier("appInformation.appPrivacy.category.\(category.rawValue).more")

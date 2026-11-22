@@ -28,11 +28,11 @@ struct PriceIndexCard: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(source.name).font(.body.weight(.semibold))
                         Text(subtitle)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                         if let index {
                             Text(index.coverageLabel(of: territoryCount))
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                         }
                     }
@@ -46,7 +46,7 @@ struct PriceIndexCard: View {
             .accessibilityAddTraits(isSelected ? [.isSelected] : [])
             .accessibilityIdentifier("pricing.index.\(source.rawValue)")
             Text(source.summary)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.leading, 22)
             badges
@@ -81,7 +81,7 @@ struct PriceIndexCard: View {
                 Link(destination: url) {
                     Text("Source ↗")
                 }
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityLabel(String(localized: "\(source.name) source, opens in your browser"))
             }
             if source == .custom {

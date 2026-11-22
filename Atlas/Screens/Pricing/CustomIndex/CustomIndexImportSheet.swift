@@ -20,7 +20,7 @@ struct CustomIndexImportSheet: View {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     Text("Import a custom index").font(.title3.weight(.semibold))
                     Text(subtitle)
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)
                 }
                 rowsTable(result)
@@ -91,7 +91,7 @@ struct CustomIndexImportSheet: View {
             if result.rows.count > visible.count {
                 Divider()
                 Text("+ \(result.rows.count - visible.count) more matched rows")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Spacing.small)

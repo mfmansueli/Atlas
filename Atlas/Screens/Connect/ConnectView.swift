@@ -162,7 +162,7 @@ struct ConnectView: View {
             } label: {
                 HStack(spacing: Spacing.small) {
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .rotationEffect(.degrees(isShowingHelp ? 90 : 0))
                         .accessibilityHidden(true)

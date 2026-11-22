@@ -108,7 +108,7 @@ struct AccountsSettingsPane: View {
                 .accessibilityIdentifier("settings.addKey")
                 if pro?.isFree == true {
                     Text("More than one account is part of Atlas Pro.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("settings.addKey.pro")
                 }

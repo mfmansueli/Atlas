@@ -14,7 +14,7 @@ struct CaptionTranslationLocaleList: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("Locales in scope")
                 .textCase(.uppercase)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             let plan = translation.plan
             VStack(spacing: 0) {
@@ -29,7 +29,7 @@ struct CaptionTranslationLocaleList: View {
                                 .font(.callout)
                             Spacer()
                             Text(captionCount(plan.itemCount(in: locale)))
-                                .font(.caption)
+                                .font(.subheadline)
                                 .monospacedDigit()
                                 .foregroundStyle(Palette.label2)
                         }

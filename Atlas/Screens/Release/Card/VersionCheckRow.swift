@@ -19,7 +19,7 @@ struct VersionCheckRow: View {
                     .font(.callout)
                     .lineLimit(1)
                 Text(check.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
             }

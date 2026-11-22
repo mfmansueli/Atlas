@@ -21,7 +21,7 @@ struct ProposalCardView: View {
                     SourceTag(source: proposal.source)
                         .fixedSize()
                     Text(proposal.timeText())
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: Spacing.xSmall)
@@ -33,7 +33,7 @@ struct ProposalCardView: View {
                     .foregroundStyle(Palette.label)
                     .multilineTextAlignment(.leading)
                 Text(subtitle)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

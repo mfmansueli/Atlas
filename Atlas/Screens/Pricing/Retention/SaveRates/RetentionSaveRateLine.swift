@@ -24,7 +24,7 @@ struct RetentionSaveRateLine: View {
                 Text("— · No one has opened Cancel Subscription yet").foregroundStyle(Palette.label2)
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .monospacedDigit()
         .lineLimit(1)
         .accessibilityElement(children: .combine)

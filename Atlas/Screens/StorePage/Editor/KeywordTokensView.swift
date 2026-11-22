@@ -28,7 +28,7 @@ struct KeywordTokensView: View {
             .accessibilityIdentifier("storePage.keywordTokens")
             HStack(spacing: Spacing.small) {
                 Text(analysis.summary)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("storePage.keywordSummary")
                 Spacer(minLength: Spacing.small)

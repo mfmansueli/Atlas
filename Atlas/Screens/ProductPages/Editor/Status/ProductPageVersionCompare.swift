@@ -74,7 +74,7 @@ struct ProductPageVersionCompare: View {
     private func value(_ label: String, _ text: String, isChanged: Bool) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             HStack(spacing: Spacing.xxSmall) {
-                Text(label).font(.caption).foregroundStyle(Palette.label2)
+                Text(label).font(.subheadline).foregroundStyle(Palette.label2)
                 if isChanged {
                     Pill(text: String(localized: "Changed"), style: .accent)
                         .fixedSize()

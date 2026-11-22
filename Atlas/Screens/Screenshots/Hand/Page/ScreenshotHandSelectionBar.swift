@@ -19,7 +19,7 @@ struct ScreenshotHandSelectionBar: View {
                     .font(.headline)
                     .lineLimit(1)
                 Text(viewModel.handOrigin(of: item.cell))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .truncationMode(.middle)

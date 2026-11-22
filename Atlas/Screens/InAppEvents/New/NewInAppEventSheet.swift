@@ -79,7 +79,7 @@ struct NewInAppEventSheet: View {
                     in the app: it’s needed before you submit the event, and can be added later on the event’s page. Say it \
                     needs a purchase only when the event costs extra.
                     """)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 }
                 Section {
@@ -92,14 +92,14 @@ struct NewInAppEventSheet: View {
                         In every country and region, each in its own time zone. An event lasts up to 31 days, and its card can show \
                         up to 14 days before it starts.
                         """)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         // Read again every minute: a date can come within App Review's time while the sheet is open.
                         TimelineView(.everyMinute) { _ in
                             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                                 ForEach(warnings(event), id: \.self) { warning in
                                     InlineMessage.warning(warning)
-                                        .font(.caption)
+                                        .font(.subheadline)
                                         .accessibilityIdentifier("events.new.warning")
                                 }
                             }
@@ -112,7 +112,7 @@ struct NewInAppEventSheet: View {
             Divider()
             HStack(spacing: Spacing.small) {
                 Text(showsProblem ? currentProblem ?? "" : footerNote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(showsProblem && currentProblem != nil ? Palette.danger : Palette.label2)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)

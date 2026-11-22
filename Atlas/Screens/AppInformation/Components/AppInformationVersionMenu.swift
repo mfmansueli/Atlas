@@ -31,7 +31,7 @@ struct AppInformationVersionMenu: View {
             }
         } label: {
             Text(selected.pickerTitle(among: versions))
-                .font(.caption)
+                .font(.subheadline)
         }
         .menuStyle(.button)
         .buttonStyle(.borderless)

@@ -19,7 +19,7 @@ struct FormulaSection: View {
                 Text(limitsLine(strategy))
                 Text("price = nearest price point, \(strategy.rounding.title) endings")
             }
-            .font(.caption.monospaced())
+            .font(.subheadline.monospaced())
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
             .padding(Spacing.small)

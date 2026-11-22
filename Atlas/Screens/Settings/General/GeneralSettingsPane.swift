@@ -40,7 +40,7 @@ struct GeneralSettingsPane: View {
                 Text("Checking App Store Connect")
             } footer: {
                 Text("Apple publishes analytics once a day, so reports are read each morning whatever you choose here.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             pushingSection

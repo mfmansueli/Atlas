@@ -57,7 +57,7 @@ struct RetentionOfferSheet: View {
                         .accessibilityIdentifier("retention.offerSheet.summary")
                 }
                 Text("Up to \(RetentionLimits.offersPerSubscription) retention offers per subscription. They appear in transactions as offer type 5, so you can see how many people stayed.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -79,7 +79,7 @@ struct RetentionOfferSheet: View {
                     .frame(width: 260)
                     .accessibilityIdentifier("retention.offerSheet.name")
                 Text("Only you see it")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             Divider()
@@ -118,7 +118,7 @@ struct RetentionOfferSheet: View {
                         .frame(width: 90)
                         .accessibilityIdentifier("retention.offerSheet.price")
                     Text(subscription.map(draft.priceNote(for:)) ?? "")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }
@@ -145,7 +145,7 @@ struct RetentionOfferSheet: View {
         return HStack(spacing: Spacing.small) {
             if let problem {
                 Text(problem.message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("retention.offerSheet.problem")

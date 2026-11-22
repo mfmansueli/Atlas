@@ -48,7 +48,7 @@ struct AutopilotScreenForm: View {
             .textFieldStyle(.roundedBorder)
             HStack {
                 Text(captureNote(display))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("autopilot.plan.form.note")
                 Spacer()

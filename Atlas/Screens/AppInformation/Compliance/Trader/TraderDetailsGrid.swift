@@ -17,7 +17,7 @@ struct TraderDetailsGrid: View {
             ForEach(TraderDetailField.allCases) { field in
                 GridRow {
                     Text(field.title)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(width: 60, alignment: .leading)
                     value(field)

@@ -46,12 +46,12 @@ struct PrivacyActivitySheet: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(line.title)
                             Text(line.detail)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                         }
                         Spacer()
                         Text(line.date.formatted(date: .abbreviated, time: .shortened))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                     .accessibilityElement(children: .combine)

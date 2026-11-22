@@ -43,7 +43,7 @@ struct EventArtworkBriefStep: View {
                 .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator))
                 .accessibilityIdentifier("events.art.brief.text")
             Text("Written from the event’s name and descriptions. Change anything, or leave it.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }
@@ -70,7 +70,7 @@ struct EventArtworkBriefStep: View {
                     Text("A capture of \(flow.app.name)")
                         .font(.callout)
                     Text("Claude looks at \(flow.app.name)’s captures in Screenshots and takes the screen the event is about as reference.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -84,7 +84,7 @@ struct EventArtworkBriefStep: View {
     private func getsRow(isOn: Bool, title: String, detail: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: isOn ? "checkmark" : "minus")
-                .font(.caption.weight(.bold))
+                .font(.subheadline.weight(.bold))
                 .foregroundStyle(isOn ? Palette.positive : Palette.label3)
                 .frame(width: 14)
                 .accessibilityHidden(true)
@@ -92,7 +92,7 @@ struct EventArtworkBriefStep: View {
                 Text(title)
                     .font(.callout)
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -127,7 +127,7 @@ struct EventArtworkBriefStep: View {
                 Text(title)
                     .font(.callout)
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("\(identifier).detail")
@@ -176,7 +176,7 @@ struct EventArtworkBriefStep: View {
                 tile(String(localized: "Event details"), size: "1080 × 1920", width: 34, height: 60, isKept: false)
             }
             Text(EventArtworkBrief.result(style: run.style, wordsInArt: run.wordsInArt, makesMotion: run.makesMotion, languages: run.locales.count))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("events.art.result")
@@ -190,7 +190,7 @@ struct EventArtworkBriefStep: View {
                 .overlay(RoundedRectangle(cornerRadius: Radius.badge, style: .continuous).strokeBorder(Palette.separator))
                 .frame(width: width, height: height)
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
             Text(isKept ? String(localized: "Kept") : size)
                 .font(.caption2)
                 .foregroundStyle(Palette.label2)

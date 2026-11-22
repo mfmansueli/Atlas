@@ -77,12 +77,12 @@ struct AssistantSetupSnippetStep: View {
                 }
                 .accessibilityIdentifier("assistantSetup.copy")
                 Text("Includes a new token just for \(viewModel.kind.title).")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .controlSize(.small)
             InlineMessage(text: viewModel.kind.setupNote, systemImage: "info.circle", tint: Palette.label2)
-                .font(.caption)
+                .font(.subheadline)
         }
     }
 }

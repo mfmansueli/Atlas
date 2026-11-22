@@ -27,7 +27,7 @@ struct DeviceAngleInspectorRows: View {
         }
         .accessibilityIdentifier("screenshots.template.tilt.lean")
         Text("Right-to-left locales get the angle mirrored. The capture itself is never redrawn.")
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .layoutPriority(1)
     }

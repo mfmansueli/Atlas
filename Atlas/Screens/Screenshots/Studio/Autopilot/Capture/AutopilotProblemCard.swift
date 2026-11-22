@@ -47,7 +47,7 @@ struct AutopilotProblemCard: View {
             if let progress = installProgress {
                 HStack(spacing: Spacing.small) {
                     ProgressView().controlSize(.small)
-                    Text(progress).font(.caption).foregroundStyle(Palette.label2)
+                    Text(progress).font(.subheadline).foregroundStyle(Palette.label2)
                 }
                 .accessibilityIdentifier("autopilot.problem.progress")
             }
@@ -55,7 +55,7 @@ struct AutopilotProblemCard: View {
             buttons
             if let note {
                 Text(note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier(group.wasRefused ? "autopilot.problem.refusedNote" : "autopilot.problem.note")

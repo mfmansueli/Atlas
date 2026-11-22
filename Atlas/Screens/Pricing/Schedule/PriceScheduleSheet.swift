@@ -95,7 +95,7 @@ struct PriceScheduleSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("As soon as Apple processes it")
                     Text("Usually within an hour.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .tag(false)
@@ -122,7 +122,7 @@ struct PriceScheduleSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Keep the current price for existing subscribers")
                     Text("Only new subscribers get increases. Decreases reach everyone.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

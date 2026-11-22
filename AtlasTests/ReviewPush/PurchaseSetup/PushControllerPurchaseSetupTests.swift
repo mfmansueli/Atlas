@@ -139,9 +139,13 @@ struct PushControllerPurchaseSetupTests {
         #expect(offers.allSatisfy { PushPagedRead.relationshipID("subscription", of: data($0)) == sub })
         #expect(offers.allSatisfy { PushPagedRead.relationshipID("subscriptionPricePoint", of: data($0)) == nil })
         #expect(offers.allSatisfy { PushPagedRead.body(of: $0)?["atlas"] == nil })
-        // After the subscription's own prices.
+        // After the subscription's own prices: a PATCH of the subscription
+        // with inline price creates, or POSTs when that's refused.
         let paths = transport.sent.map(\.path)
-        #expect(paths.lastIndex(of: "/v1/subscriptionPrices").map { $0 < (paths.firstIndex(of: IntroductoryOfferEverywhere.path) ?? 0) } == true)
+        let lastPrice = transport.sent.lastIndex {
+            $0.path == "/v1/subscriptionPrices" || ($0.method == .patch && $0.path == "/v1/subscriptions/\(sub)")
+        }
+        #expect(lastPrice.map { $0 < (paths.firstIndex(of: IntroductoryOfferEverywhere.path) ?? 0) } == true)
     }
 
     @Test func aPaidOfferOnAnExistingSubscriptionUsesEachTerritorysEqualizedPoint() async {

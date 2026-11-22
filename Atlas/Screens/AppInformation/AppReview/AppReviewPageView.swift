@@ -103,7 +103,7 @@ struct AppReviewPageView: View {
         return VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack {
                 Text(AppReviewField.notes.title.uppercased())
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
@@ -128,7 +128,7 @@ struct AppReviewPageView: View {
                 .accessibilityIdentifier("appInformation.review.notes")
             if isOver {
                 Text("App Store Connect takes up to \(AppReviewField.notesLimit.formatted()) characters. Shorten the notes to push them.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
             }
             AppInformationFieldSuggestions(viewModel: viewModel, field: .notes)

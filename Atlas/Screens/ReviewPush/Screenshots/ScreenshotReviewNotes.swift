@@ -40,7 +40,7 @@ struct ScreenshotReviewNotes: View {
                     .buttonStyle(.link)
                     .accessibilityIdentifier("review.shots.undo")
                 }
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .padding(.horizontal, Spacing.small)
                 .padding(.vertical, Spacing.xxSmall)

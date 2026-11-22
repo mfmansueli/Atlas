@@ -25,14 +25,14 @@ struct ArtworkCheckPills: View {
                 }
                 ForEach(Array(checks.prefix(lineCount).enumerated()), id: \.offset) { _, check in
                     Text(check.text)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(check.isError ? Palette.danger : Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if checks.count > lineCount {
                     let more = checks.count - lineCount
                     Text(more == 1 ? String(localized: "1 more finding") : String(localized: "\(more) more findings"))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

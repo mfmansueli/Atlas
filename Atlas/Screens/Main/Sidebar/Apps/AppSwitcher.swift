@@ -74,7 +74,7 @@ struct AppSwitcher: View {
                         .font(.headline)
                         .lineLimit(1)
                     Text(teamLine)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }
@@ -105,7 +105,7 @@ struct AppSwitcher: View {
         let others = Text(summary.othersText).foregroundStyle(Palette.label2)
         let suggestions = Text(summary.suggestionsText).foregroundStyle(Palette.machineTranslated).fontWeight(.semibold)
         return Text("\(others)\(suggestions)")
-            .font(.caption)
+            .font(.subheadline)
             .lineLimit(1)
             .truncationMode(.tail)
             .frame(maxWidth: .infinity, alignment: .leading)

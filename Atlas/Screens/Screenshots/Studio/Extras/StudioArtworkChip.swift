@@ -12,7 +12,7 @@ struct StudioArtworkChip: View {
 
     var body: some View {
         Text(text)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(.black)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, 2)

@@ -29,7 +29,7 @@ struct CaptionTranslationGlossarySummary: View {
                     FlowLayout(spacing: Spacing.xxSmall) {
                         ForEach(glossary.terms, id: \.self) { term in
                             Text(term)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .padding(.horizontal, Spacing.small)
                                 .frame(height: 20)
                                 .background(Palette.fill2, in: Capsule())
@@ -47,7 +47,7 @@ struct CaptionTranslationGlossarySummary: View {
     private func title(_ text: LocalizedStringKey) -> some View {
         Text(text)
             .textCase(.uppercase)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
     }
 }

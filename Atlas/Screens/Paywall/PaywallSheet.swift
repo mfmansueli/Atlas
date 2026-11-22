@@ -66,7 +66,7 @@ struct PaywallSheet: View {
             planList
             HStack(alignment: .top, spacing: Spacing.small) {
                 Image(systemName: "checkmark")
-                    .font(.caption.weight(.bold))
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(Palette.positive)
                     .accessibilityHidden(true)
                 Text("""

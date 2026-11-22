@@ -50,7 +50,7 @@ struct AssistantConnectSheet: View {
                     .accessibilityAddTraits(.isHeader)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("Step \(model.stepIndex + 1) of \(model.stepTitles.count)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("settings.connect.stepCount")
             }
@@ -69,7 +69,7 @@ struct AssistantConnectSheet: View {
         return HStack(spacing: 7) {
             ConnectStepMark(number: index + 1, state: state)
             Text(title)
-                .font(.caption.weight(state == .now ? .semibold : .regular))
+                .font(.subheadline.weight(state == .now ? .semibold : .regular))
                 .foregroundStyle(state == .later ? Palette.label2 : Palette.label)
                 .lineLimit(1)
         }
@@ -110,7 +110,7 @@ struct AssistantConnectSheet: View {
                     .accessibilityIdentifier("settings.connect.connect")
             case .connecting:
                 Text("Keep this window open.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Spacer()
             case .failed:

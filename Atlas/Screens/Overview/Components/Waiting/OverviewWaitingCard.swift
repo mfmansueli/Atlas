@@ -71,7 +71,7 @@ struct OverviewWaitingCard: View {
                     Text(row.title)
                         .font(.headline)
                     Text(row.what(appName: appName))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }

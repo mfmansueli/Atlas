@@ -12,7 +12,7 @@ struct AccessibilityStateBadge: View {
 
     var body: some View {
         Text(state.title)
-            .font(.caption.weight(.medium))
+            .font(.subheadline.weight(.medium))
             .lineLimit(1)
             .foregroundStyle(foreground)
             .padding(.horizontal, 6)

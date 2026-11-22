@@ -41,7 +41,7 @@ struct AlternativeConflictView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if let note, !note.isEmpty {
                     Text(note)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)

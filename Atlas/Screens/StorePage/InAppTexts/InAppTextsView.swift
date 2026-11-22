@@ -27,7 +27,7 @@ struct InAppTextsView: View {
             Shown on the purchase sheet and in Settings → Subscriptions. Display name 30 characters; \
             description 55 for a subscription, 45 for an in-app purchase. Click a cell to edit.
             """)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Spacing.large)

@@ -95,7 +95,7 @@ struct ProductPageRow: View {
                     .lineLimit(1)
             }
             Text(viewModel.subtitle(of: page))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(isCompact ? 2 : 1)
                 .fixedSize(horizontal: false, vertical: isCompact)
@@ -114,7 +114,7 @@ struct ProductPageRow: View {
             }
             if let visibility = viewModel.visibilityText(of: page) {
                 Text(visibility)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(viewModel.isVisible(page) && page.state.isApproved ? Palette.label2 : Palette.label3)
                     .lineLimit(1)
             }
@@ -132,7 +132,7 @@ struct ProductPageRow: View {
                     .foregroundStyle(comparison?.isTooFew == true ? Palette.label3 : Palette.label)
                 if let comparison {
                     Text(comparison.text)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Self.color(comparison))
                         .lineLimit(1)
                         .accessibilityLabel(Text(comparison.spoken))

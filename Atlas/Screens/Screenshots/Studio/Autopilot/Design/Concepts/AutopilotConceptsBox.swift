@@ -60,21 +60,21 @@ struct AutopilotConceptsBox: View {
             .accessibilityLabel(Text(concept.map { "View \($0.name) larger" } ?? ""))
             VStack(alignment: .leading, spacing: 2) {
                 if let concept {
-                    Text("\(Text(concept.name).fontWeight(.semibold)) \(Text(concept.sourceTitle).font(.caption).foregroundStyle(Palette.label2))")
+                    Text("\(Text(concept.name).fontWeight(.semibold)) \(Text(concept.sourceTitle).font(.subheadline).foregroundStyle(Palette.label2))")
                         .font(.callout)
                     Text([concept.metaphor, concept.fitsBecause].filter { !$0.isEmpty }.joined(separator: " "))
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                     if run.plan.alsoMakes.makesMotion, let loop = concept.loopLine {
-                        Text(loop).font(.caption).foregroundStyle(Palette.label2)
+                        Text(loop).font(.subheadline).foregroundStyle(Palette.label2)
                     }
                     if run.conceptsToAnimate.contains(where: { $0.id == concept.id }) {
                         HStack(spacing: Spacing.xSmall) {
                             if studio.assistantIsWorking { ProgressView().controlSize(.mini) }
                             Text("\(run.designKind.designer) is animating its \(AutopilotArtworkMotion.loopSeconds)-second loop…")
                         }
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("autopilot.design.concept.animating")
                     }

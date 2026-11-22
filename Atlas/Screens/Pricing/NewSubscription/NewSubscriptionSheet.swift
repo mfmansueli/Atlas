@@ -229,7 +229,7 @@ struct NewSubscriptionSheet: View {
             Text(draft.reviewScreenshot == nil
                 ? "Add its review screenshot here or later, before you submit it."
                 : "The push uploads its review screenshot too.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -289,7 +289,7 @@ struct NewSubscriptionSheet: View {
             let issues = StoreTextGuidelineCheck.issues(in: text, for: inAppField)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.newSubscription.\(field.rawValue).guideline")
             }
@@ -300,7 +300,7 @@ struct NewSubscriptionSheet: View {
     private func problemText(for field: NewSubscriptionField) -> some View {
         if let problem = currentProblems.first(where: { $0.field == field && (showsMissing || !Self.isMissing($0)) }) {
             Text(problem.message)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.danger)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pricing.newSubscription.\(field.rawValue).problem")
@@ -309,7 +309,7 @@ struct NewSubscriptionSheet: View {
 
     private func note(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
     }

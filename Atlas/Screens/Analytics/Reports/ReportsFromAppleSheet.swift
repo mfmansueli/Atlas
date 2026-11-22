@@ -24,7 +24,7 @@ struct ReportsFromAppleSheet: View {
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(row.title).font(.callout.weight(.medium))
-                            Text(row.adds).font(.caption).foregroundStyle(Palette.label2).lineLimit(2)
+                            Text(row.adds).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(2)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Text(row.status)
@@ -45,7 +45,7 @@ struct ReportsFromAppleSheet: View {
             HStack {
                 if viewModel.activity.isLoading {
                     ProgressView().controlSize(.small)
-                    Text("Checking…").font(.caption).foregroundStyle(Palette.label2)
+                    Text("Checking…").font(.subheadline).foregroundStyle(Palette.label2)
                 }
                 Spacer()
                 Button("Check Now") { Task { await viewModel.refresh(force: true) } }

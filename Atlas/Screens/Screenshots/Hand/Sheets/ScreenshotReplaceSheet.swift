@@ -124,7 +124,7 @@ struct ScreenshotReplaceSheet: View {
                         .foregroundStyle(Palette.danger)
                         .accessibilityIdentifier("screenshots.hand.replace.problem")
                     Text("Atlas never scales a screenshot for you: App Review rejects stretched ones.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             } else {

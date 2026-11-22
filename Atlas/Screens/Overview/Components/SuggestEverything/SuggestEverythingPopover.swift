@@ -88,9 +88,9 @@ struct SuggestEverythingPopover: View {
             HStack(alignment: .top, spacing: Spacing.small) {
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Copied to the clipboard. Shortcut in \(run.client):")
-                        .font(.caption)
+                        .font(.subheadline)
                     Text(MCPPrompt.suggestAll.slashCommand)
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .textSelection(.enabled)
                 }
                 .foregroundStyle(Palette.label2)
@@ -109,7 +109,7 @@ struct SuggestEverythingPopover: View {
             ProgressView()
                 .controlSize(.small)
             Text("Waiting for \(run.client) to start…")
-                .font(.caption)
+                .font(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel", action: onCancel)
                 .controlSize(.small)
@@ -149,12 +149,12 @@ struct SuggestEverythingPopover: View {
                 .font(.callout.weight(.semibold))
                 .frame(width: 110, alignment: .leading)
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if isLocked {
                 Image(systemName: "lock")
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityHidden(true)
             }
         }

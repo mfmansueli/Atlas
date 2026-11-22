@@ -47,7 +47,7 @@ struct MenuBarGlyphGallery: View {
                             .renderingMode(.template)
                             .foregroundStyle(Palette.label)
                         Text("\(frame + 1)")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }

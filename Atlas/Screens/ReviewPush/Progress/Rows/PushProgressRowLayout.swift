@@ -42,7 +42,7 @@ struct PushProgressRowLayout<Thumbnail: View>: View {
                         .truncationMode(.middle)
                     if let detail {
                         Text(detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(state.failureReason != nil ? Palette.danger : Palette.label2)
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true)
@@ -51,7 +51,7 @@ struct PushProgressRowLayout<Thumbnail: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .trailing, spacing: 3) {
                     Text(trailing)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .monospacedDigit()
                         .lineLimit(1)

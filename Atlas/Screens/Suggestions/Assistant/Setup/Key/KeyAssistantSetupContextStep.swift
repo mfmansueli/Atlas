@@ -23,7 +23,7 @@ struct KeyAssistantSetupContextStep: View {
                     String(localized: "The fields you ask about in every language, with their limits and the last version’s values.")
                 ) {
                     Text("Always")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 Divider()
@@ -55,7 +55,7 @@ struct KeyAssistantSetupContextStep: View {
                 systemImage: "info.circle",
                 tint: Palette.label2
             )
-            .font(.caption)
+            .font(.subheadline)
         }
     }
 
@@ -65,13 +65,13 @@ struct KeyAssistantSetupContextStep: View {
                 Text(title)
                     .font(.callout.weight(.semibold))
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 if path {
                     HStack(spacing: Spacing.small) {
                         Text(viewModel.projectFolderPath ?? String(localized: "No folder chosen"))
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .foregroundStyle(viewModel.projectFolder == nil ? Palette.label3 : Palette.label)
                             .accessibilityIdentifier("keySetup.folderPath")
                         Button("Choose…", action: chooseFolder)

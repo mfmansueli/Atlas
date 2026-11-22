@@ -34,14 +34,14 @@ struct PrivacyDataTypeRow: View {
                 PrivacyPurposeToggles(answer: answer) { viewModel.togglePurpose($0, for: type) }
                 if answer.isMissingPurpose {
                     InlineMessage.warning(String(localized: "Pick at least one purpose."))
-                        .font(.caption)
+                        .font(.subheadline)
                         .accessibilityIdentifier("appInformation.appPrivacy.type.\(type.rawValue).noPurpose")
                 }
                 PrivacyLinkageLine(type: type, answer: answer, viewModel: viewModel)
             }
             if let entry, entry.status.isAssistants, let rationale = entry.suggestion?.rationale {
                 Text(rationale)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -86,7 +86,7 @@ struct PrivacyDataTypeRow: View {
             AssistantChip(name: client)
         } else {
             Text("You")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }

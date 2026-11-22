@@ -18,7 +18,7 @@ struct ProposalsSheetHeader: View {
                     Text("Proposals · \(viewModel.app.name)")
                         .font(.title3.weight(.semibold))
                     Text("Nothing an assistant sends changes your screenshots until you accept it here. Accepted renders still go through Review & Push.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -54,7 +54,7 @@ struct ProposalsSheetHeader: View {
         HStack(spacing: Spacing.xxSmall) {
             AssistantMonogram(letters: ChangeSource.assistant(client: client).monogram ?? "AI")
             Text(connectionText(client))
-                .font(.caption)
+                .font(.subheadline)
         }
         .padding(.leading, 3)
         .padding(.trailing, Spacing.xSmall)

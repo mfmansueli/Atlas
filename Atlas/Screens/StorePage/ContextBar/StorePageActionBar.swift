@@ -29,7 +29,7 @@ struct StorePageActionBar: View {
             }
             Spacer(minLength: Spacing.small)
             Text(summaryLine)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)

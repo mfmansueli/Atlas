@@ -22,7 +22,7 @@ struct PriceLimitsEditor: View {
             .disabled(strategy.discountOnly)
             if strategy.discountOnly {
                 Text("Turn off Discount only to allow prices above the base.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

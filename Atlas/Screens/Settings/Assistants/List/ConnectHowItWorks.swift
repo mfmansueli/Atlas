@@ -20,7 +20,7 @@ struct ConnectHowItWorks: View {
                 HStack(spacing: Spacing.small) {
                     ConnectStepMark(number: index + 1, state: .now, size: 20)
                     Text(step)
-                        .font(.caption)
+                        .font(.subheadline)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, 10)

@@ -34,7 +34,7 @@ struct SuggestionSourceRow<Content: View>: View {
                             }
                         }
                         Text(provider.sourceDetail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

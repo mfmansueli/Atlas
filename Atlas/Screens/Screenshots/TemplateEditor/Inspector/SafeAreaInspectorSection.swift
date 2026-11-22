@@ -23,7 +23,7 @@ struct SafeAreaInspectorSection: View {
                     model.set("safe.side", to: .double($0 / 100))
                 }
                 Text("Captions stay inside these margins. The App Store rounds screenshot corners.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .layoutPriority(1)
             }

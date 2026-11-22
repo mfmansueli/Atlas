@@ -66,7 +66,7 @@ struct SuggestionsSettingsPane: View {
                 Text("Never accepted for you")
             } footer: {
                 Text("These have legal or money consequences. Atlas suggests, and you accept each one.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .accessibilityElement(children: .contain)

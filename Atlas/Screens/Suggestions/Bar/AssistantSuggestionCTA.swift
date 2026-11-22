@@ -24,7 +24,7 @@ struct AssistantSuggestionCTA: View {
                 Text(title)
                     .font(.callout.weight(.semibold))
                 Text(message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -151,7 +151,7 @@ struct AppSidebar: View {
                 }
                 // The app menu's footer says it too, but nothing opens it yet.
                 Text("Syncing with App Store Connect…")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .padding(.top, Spacing.xSmall)
             }

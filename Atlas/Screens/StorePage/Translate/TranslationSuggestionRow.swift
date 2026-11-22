@@ -20,14 +20,14 @@ struct TranslationSuggestionRow: View {
                 Text(suggestion.key.locale.name)
                     .font(.callout.weight(.semibold))
                 Text(suggestion.key.field.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .frame(width: 170, alignment: .leading)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 if !suggestion.currentText.isEmpty {
                     Text(suggestion.currentText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .strikethrough()
                         .foregroundStyle(Palette.label2)
                 }
@@ -38,7 +38,7 @@ struct TranslationSuggestionRow: View {
                     .environment(\.layoutDirection, suggestion.isRightToLeft ? .rightToLeft : .leftToRight)
                 if let message = suggestion.validation.message {
                     InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
-                        .font(.caption)
+                        .font(.subheadline)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

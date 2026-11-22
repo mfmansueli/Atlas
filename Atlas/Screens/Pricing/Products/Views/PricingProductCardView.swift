@@ -33,7 +33,7 @@ struct PricingProductCardView: View {
                         }
                     }
                     Text("\(card.kindText) · \(card.product.productID)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -54,7 +54,7 @@ struct PricingProductCardView: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 PricingPriceBar(card: card)
                 Text(card.legend)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -62,7 +62,7 @@ struct PricingProductCardView: View {
                 suggestionBox(suggestion)
             } else if card.isSettingStartingPrices {
                 Label(PricingProductCard.settingStartingPricesText, systemImage: "clock")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.card.settingStartingPrices")
@@ -102,7 +102,7 @@ struct PricingProductCardView: View {
                     .foregroundStyle(Palette.machineTranslated)
                     .accessibilityHidden(true)
                 Text("Suggested")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslated)
                 SuggestionSourceTag(source: .builtIn)
             }
@@ -111,7 +111,7 @@ struct PricingProductCardView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pricing.card.suggestion")
             Text(suggestion.reason)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {

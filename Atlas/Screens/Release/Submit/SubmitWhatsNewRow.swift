@@ -23,7 +23,7 @@ struct SubmitWhatsNewRow: View {
                     .lineLimit(1)
                     .frame(width: 150, alignment: .leading)
                 Text(row.text.replacingOccurrences(of: "\n", with: " "))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -57,7 +57,7 @@ struct SubmitWhatsNewRow: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Text("SUGGESTED · \(row.locale.name)")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslated)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SuggestionSourceTag(source: suggestion.source)

@@ -94,12 +94,12 @@ struct NewVersionSheet: View {
     private var note: some View {
         if let problem {
             InlineMessage.warning(problem.message)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("storePage.newVersion.problem")
         } else if let latest = viewModel.latestVersion(on: draft.platform) {
             Text("The latest is \(latest.versionString), \(latest.state.title).")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("storePage.newVersion.latest")
         }

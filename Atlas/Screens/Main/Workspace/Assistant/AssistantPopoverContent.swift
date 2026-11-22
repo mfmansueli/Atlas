@@ -92,7 +92,7 @@ struct AssistantPopoverContent: View {
             HStack(spacing: Spacing.xxSmall) {
                 AssistantStatusDot(status: status, tone: connection?.tone)
                 Text(connection?.statusTitle ?? status.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .accessibilityElement(children: .combine)
@@ -117,18 +117,18 @@ struct AssistantPopoverContent: View {
                 HStack(spacing: Spacing.xSmall) {
                     AssistantChip(name: client.name, monogram: client.monogram)
                     Text(editsDrafts ? String(localized: "suggests and edits drafts") : String(localized: "suggests only"))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 if let connection {
                     Text(connection.detail())
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("assistant.client.connection")
                 } else if let directory = client.workingDirectory {
                     Text("Project \(directory)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -140,7 +140,7 @@ struct AssistantPopoverContent: View {
                     ForEach(recentCalls) { call in
                         HStack(spacing: Spacing.small) {
                             Text([call.tool, call.target].filter { !$0.isEmpty }.joined(separator: " · "))
-                                .font(.caption.monospaced())
+                                .font(.subheadline.monospaced())
                                 .lineLimit(1)
                                 .truncationMode(.tail)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -168,7 +168,7 @@ struct AssistantPopoverContent: View {
                 Text("\(key.vendor.apiName) · \(key.model.name)")
                     .font(.callout.weight(.semibold))
                 Text(Self.keyPlace(key))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .truncationMode(.middle)
@@ -180,7 +180,7 @@ struct AssistantPopoverContent: View {
                 ForEach(recentRequests) { request in
                     HStack(spacing: Spacing.small) {
                         Text(request.title)
-                            .font(.caption)
+                            .font(.subheadline)
                             .lineLimit(1)
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -218,7 +218,7 @@ struct AssistantPopoverContent: View {
     private var proposals: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("Waiting for you")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
             if activity.rows.isEmpty {
@@ -233,7 +233,7 @@ struct AssistantPopoverContent: View {
                         .lineLimit(1)
                     Spacer(minLength: Spacing.large)
                     Text(AssistantActivity.proposalsText(entry.count))
-                        .font(.caption)
+                        .font(.subheadline)
                         .monospacedDigit()
                         .foregroundStyle(entry.count == 0 ? Palette.label3 : Palette.label2)
                 }
@@ -261,10 +261,10 @@ struct AssistantPopoverContent: View {
                 ForEach(Self.capabilities(withKey: status.isReady), id: \.title) { item in
                     GridRow {
                         Text(item.title)
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .frame(width: 110, alignment: .leading)
                         Text(item.detail)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                     .accessibilityElement(children: .combine)

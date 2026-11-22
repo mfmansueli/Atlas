@@ -25,7 +25,7 @@ struct InAppEventSuggestionCard: View {
             }
             if let fallbackNote {
                 Text(fallbackNote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             if !suggestion.why.isEmpty {
@@ -36,7 +36,7 @@ struct InAppEventSuggestionCard: View {
             }
             if let over = suggestion.overLimit {
                 InlineMessage.warning(String(localized: "\(over.field.title) is \(over.count) characters; the limit is \(over.field.limit). Accept it and shorten it."))
-                    .font(.caption)
+                    .font(.subheadline)
             }
             HStack(spacing: Spacing.small) {
                 Spacer(minLength: 0)

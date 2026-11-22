@@ -23,7 +23,7 @@ struct TemplateInspectorColorWell: View {
             .accessibilityLabel(Text(label))
             if showsHex {
                 Text((TemplateColor(color) ?? .white).hexString)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
             }
         }

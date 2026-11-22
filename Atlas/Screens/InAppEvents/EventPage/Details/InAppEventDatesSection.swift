@@ -59,19 +59,19 @@ struct InAppEventDatesSection: View {
             }
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("Times in your time zone, \(format.zoneName).")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("events.details.dates.zone")
                 if let editProblem {
                     Text(editProblem)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("events.details.dates.cantChange")
                 }
                 ForEach(viewModel.dateProblems(of: event), id: \.self) { problem in
                     InlineMessage.error(problem)
-                        .font(.caption)
+                        .font(.subheadline)
                         .accessibilityIdentifier("events.details.dates.problem")
                 }
                 if let suggestion = viewModel.suggestedPublishStart(of: event) {
@@ -99,11 +99,11 @@ struct InAppEventDatesSection: View {
             if change.awaitingAcceptance != nil {
                 // The badge's purple: its text color is for text on the badge.
                 Text("Suggested by \(change.source.title)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.suggestionBadge)
             } else {
                 Text("Not pushed")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.unsaved)
                     .accessibilityIdentifier("events.details.dates.\(field.rawValue).pending")
                 Button {
@@ -126,7 +126,7 @@ struct InAppEventDatesSection: View {
             HStack(spacing: Spacing.small) {
                 if let note = change.groupNote, !note.isEmpty {
                     Text(note)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

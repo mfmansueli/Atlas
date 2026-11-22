@@ -14,7 +14,7 @@ struct FindingSourceMark: View {
         HStack(spacing: 4) {
             AssistantMonogram(letters: source.mark)
             Text(source.title)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
         }

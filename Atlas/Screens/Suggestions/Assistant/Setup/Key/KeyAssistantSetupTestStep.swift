@@ -23,7 +23,7 @@ struct KeyAssistantSetupTestStep: View {
                         Text("Sending a test request to \(viewModel.vendor.title)…")
                             .font(.callout)
                         Text("About 400 tokens.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -37,7 +37,7 @@ struct KeyAssistantSetupTestStep: View {
                         Text("Works")
                             .font(.callout.weight(.semibold))
                         Text(text)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

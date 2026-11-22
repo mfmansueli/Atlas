@@ -15,14 +15,14 @@ struct CaptionsGroupHeader<Accessory: View>: View {
         HStack(spacing: Spacing.small) {
             Text(title)
                 .textCase(.uppercase)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             Text("\(count)")
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
             accessory()
-                .font(.caption)
+                .font(.subheadline)
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.top, Spacing.medium)

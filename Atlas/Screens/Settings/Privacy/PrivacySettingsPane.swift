@@ -108,7 +108,7 @@ struct PrivacySettingsPane: View {
             Text(title)
                 .font(.body.weight(.medium))
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

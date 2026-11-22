@@ -92,7 +92,7 @@ struct RetentionImageSheet: View {
                     }
                 }
                 Text(image.problems.first?.message ?? image.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(image.fits ? Palette.label2 : Palette.danger)
                     .lineLimit(2)
             }

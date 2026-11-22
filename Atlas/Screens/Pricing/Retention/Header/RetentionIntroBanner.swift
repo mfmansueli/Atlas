@@ -22,7 +22,7 @@ struct RetentionIntroBanner: View {
             if let url = Self.guideURL {
                 Link(destination: url) {
                     Text("Apple’s guide \(Image(systemName: "arrow.up.right"))")
-                        .font(.caption)
+                        .font(.subheadline)
                 }
                 .accessibilityIdentifier("retention.guide")
             }

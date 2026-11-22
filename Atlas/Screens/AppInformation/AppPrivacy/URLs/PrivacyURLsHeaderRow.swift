@@ -16,7 +16,7 @@ struct PrivacyURLsHeaderRow: View {
             Text("User Privacy Choices URL · optional")
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .lineLimit(1)
         .padding(.horizontal, Spacing.large)

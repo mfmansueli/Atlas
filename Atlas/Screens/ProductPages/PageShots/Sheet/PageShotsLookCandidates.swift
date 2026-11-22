@@ -38,7 +38,7 @@ struct PageShotsLookCandidates: View {
             HStack(spacing: Spacing.small) {
                 ProgressView().controlSize(.small)
                 Text("\(assistant) is drawing · \(count) of \(total) ready")
-                    .font(.caption)
+                    .font(.subheadline)
             }
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("pages.shots.looks.drawing")
@@ -47,7 +47,7 @@ struct PageShotsLookCandidates: View {
                 .accessibilityIdentifier("pages.shots.looks.problem")
         } else if count > 0 {
             Text(design?.chosen == nil ? "Choose one to start." : "The set is made with the one outlined.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         if design?.claudeRunID == nil, count < total {
@@ -68,7 +68,7 @@ struct PageShotsLookCandidates: View {
                     displayType: .iPhone, height: 150
                 )
                 Text(candidate.name)
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                 Text(candidate.rationale)
                     .font(.caption2)

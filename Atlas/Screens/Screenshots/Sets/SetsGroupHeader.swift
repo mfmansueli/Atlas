@@ -18,7 +18,7 @@ struct SetsGroupHeader: View {
             HStack(spacing: Spacing.xSmall) {
                 Text(group.title)
                     .textCase(.uppercase)
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 Text(verbatim: "\(group.count)")
                     .font(.caption.monospacedDigit())
@@ -26,14 +26,14 @@ struct SetsGroupHeader: View {
                 if let onToggle {
                     Button(isExpanded ? String(localized: "Hide") : String(localized: "Show All"), action: onToggle)
                         .buttonStyle(.link)
-                        .font(.caption)
+                        .font(.subheadline)
                         .accessibilityIdentifier("screenshots.sets.toggleFallback")
                 }
             }
             .accessibilityElement(children: .contain)
             if let note = group.note {
                 Text(note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

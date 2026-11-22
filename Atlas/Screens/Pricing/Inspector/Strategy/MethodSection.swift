@@ -26,7 +26,7 @@ struct MethodSection: View {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(method.title).font(.body.weight(.medium))
                                 Text(method.summary)
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .foregroundStyle(Palette.label2)
                                     .fixedSize(horizontal: false, vertical: true)
                             }

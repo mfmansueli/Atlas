@@ -71,9 +71,9 @@ struct GuidedHeaderBrowser: View {
                                 .padding(3)
                         }
                     }
-                Text(template.name).font(.caption.weight(.semibold)).lineLimit(1)
+                Text(template.name).font(.subheadline.weight(.semibold)).lineLimit(1)
                 if isRecommended {
-                    Text("Recommended").font(.caption).foregroundStyle(Palette.accentText)
+                    Text("Recommended").font(.subheadline).foregroundStyle(Palette.accentText)
                 }
             }
             .padding(5)
@@ -101,14 +101,14 @@ struct GuidedHeaderBrowser: View {
                         ArtworkSketch(kind: .search, shows: plan.alsoMakes.artworkShows, width: 170)
                     }
                     Text("Header above, search result left. A sketch of the scene type in \(studio.app.name)’s colors; \(studio.headerDesignerName) makes the real one.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: 280, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text("Previewing").font(.caption).foregroundStyle(Palette.label2)
+                Text("Previewing").font(.subheadline).foregroundStyle(Palette.label2)
                 Text(template.name)
                     .font(.title3.weight(.semibold))
                     .accessibilityIdentifier("autopilot.guided.look.scene.focusName")

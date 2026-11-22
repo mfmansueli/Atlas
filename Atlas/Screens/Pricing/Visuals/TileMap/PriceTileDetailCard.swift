@@ -30,7 +30,7 @@ struct PriceTileDetailCard: View {
                 Text(detail.dollars)
                 Text(detail.feelsLike)
             }
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .monospacedDigit()
         }

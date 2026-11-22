@@ -22,7 +22,7 @@ struct TileMapLegend: View {
                 .accessibilityHidden(true)
             Text(highLabel)
         }
-        .font(.caption)
+        .font(.subheadline)
         .foregroundStyle(Palette.label2)
         .monospacedDigit()
         .accessibilityElement(children: .ignore)

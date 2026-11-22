@@ -20,7 +20,7 @@ struct PrivacyOpenQuestionRow: View {
                     .foregroundStyle(question.isOpen ? Palette.label : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

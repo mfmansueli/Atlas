@@ -27,7 +27,7 @@ struct RetentionOffersBox: View {
                 Divider()
             }
             Text("A new offer type for people about to cancel. Up to \(RetentionLimits.offersPerSubscription) per subscription; Apple decides who’s eligible and shows the best one.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Spacing.medium)
@@ -47,7 +47,7 @@ struct RetentionOffersBox: View {
                 Pill(text: status?.title ?? String(localized: "Ready"), style: status?.pillStyle ?? .neutral)
             }
             Text(model.detail(of: offer))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

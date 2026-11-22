@@ -45,7 +45,7 @@ struct ScreenshotReviewContent: View {
                     ProgressView()
                         .controlSize(.small)
                     Text("Checking screenshots against App Store Connect…")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 .padding(.horizontal, Spacing.small)

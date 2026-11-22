@@ -18,7 +18,7 @@ struct ScreenshotReviewItemCard: View {
             HStack(spacing: Spacing.xSmall) {
                 Toggle(isOn: Binding(get: { viewModel.isChecked(item) }, set: { _ in viewModel.toggle(item) })) {
                     Text(item.slotTitle)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                         .lineLimit(1)
                 }
@@ -43,7 +43,7 @@ struct ScreenshotReviewItemCard: View {
             }
             if item.content == .reorder {
                 Text("Puts the set in the order you left it.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(width: max(width * 2 + 20, 90), alignment: .leading)

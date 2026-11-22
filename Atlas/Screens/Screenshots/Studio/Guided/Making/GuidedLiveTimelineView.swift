@@ -37,7 +37,7 @@ struct GuidedLiveTimelineView: View {
                     .foregroundStyle(state == .upcoming ? Palette.label2 : Palette.label)
                     .lineLimit(2)
                 Text(row.who.name)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,17 +90,17 @@ struct GuidedLiveTimelineView: View {
         switch state {
         case .running:
             Text("Now")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.accentText)
         case .current:
             Text(row.isYours ? String(localized: "Your turn") : String(localized: "Needs you"))
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.accentText)
         case .done:
             EmptyView()
         case .upcoming:
             Text(row.time)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
         }

@@ -151,7 +151,7 @@ struct AppPriceSheet: View {
         }
         if let point = selectedPoint, point.customerPrice > 0 {
             Text("A paid price needs the Paid Applications agreement to be active in App Store Connect → Business.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

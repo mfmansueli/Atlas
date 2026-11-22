@@ -29,7 +29,7 @@ struct PairedClientRow: View {
                     }
                     if let directory = client.workingDirectory {
                         Text(directory)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -51,7 +51,7 @@ struct PairedClientRow: View {
     private var ask: some View {
         HStack(spacing: Spacing.medium) {
             Text("\(client.name) stops suggesting and its token stops working. What it already suggested stays in Atlas.")
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel") { isAsking = false }

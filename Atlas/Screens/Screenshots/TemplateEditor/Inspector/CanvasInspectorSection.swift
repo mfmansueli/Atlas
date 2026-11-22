@@ -30,7 +30,7 @@ struct CanvasInspectorSection: View {
             // Mac's screenshots are always landscape.
             .disabled(model.screenshots.displayType.isAlwaysLandscape)
             Text(model.outputText)
-                .font(.caption.monospaced())
+                .font(.subheadline.monospaced())
                 .foregroundStyle(Palette.label2)
                 .textSelection(.enabled)
         }

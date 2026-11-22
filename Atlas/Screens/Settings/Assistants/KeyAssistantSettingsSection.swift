@@ -39,7 +39,7 @@ struct KeyAssistantSettingsSection: View {
         } footer: {
             if let errorText {
                 Text(errorText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
             }
         }
@@ -101,7 +101,7 @@ struct KeyAssistantSettingsSection: View {
             Text(server.assistantStatus.isConnected
                 ? String(localized: "While an MCP assistant is connected, it suggests instead of the key.")
                 : String(localized: "The key goes only to \(configuration.vendor.title), with requests you confirm."))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             Spacer()
             Button("Set Up Again…") { isSettingUp = true }

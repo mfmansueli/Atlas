@@ -49,7 +49,7 @@ struct AutopilotRecordingPlayer: View {
                     length: recording?.seconds ?? player.duration
                 ) { player.seek(to: $0) }
                 Text("No captions or music yet. Blue: moments in the App Preview. Click the bar to jump.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -69,7 +69,7 @@ struct AutopilotRecordingPlayer: View {
                 if player.canPlay {
                     AppPreviewVideoSurface(player: player.player).allowsHitTesting(false)
                 } else {
-                    Palette.fill2.overlay(Text("The file isn’t on this Mac").font(.caption).foregroundStyle(Palette.label2))
+                    Palette.fill2.overlay(Text("The file isn’t on this Mac").font(.subheadline).foregroundStyle(Palette.label2))
                 }
             }
             .frame(width: width, height: height)

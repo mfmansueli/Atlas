@@ -31,7 +31,7 @@ struct TranslateMissingSheet: View {
                 Text(translation.isSendingWhatsNew ? "Send What’s New to every locale" : "Translate missing fields")
                     .font(.title2.weight(.semibold))
                 Text(translation.selectedPlan.summary)
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
             }
@@ -243,7 +243,7 @@ struct TranslateMissingSheet: View {
                                 .font(.callout)
                             Spacer()
                             Text(fieldCount(plan.itemCount(in: locale)))
-                                .font(.caption)
+                                .font(.subheadline)
                                 .monospacedDigit()
                                 .foregroundStyle(Palette.label2)
                         }
@@ -332,7 +332,7 @@ struct TranslateMissingSheet: View {
     private func sectionTitle(_ title: LocalizedStringKey) -> some View {
         Text(title)
             .textCase(.uppercase)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
     }
 }

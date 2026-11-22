@@ -48,7 +48,7 @@ struct ScreenshotsSettingsPane: View {
                 Text("Artwork")
             } footer: {
                 Text("These are the defaults. Each event can still choose.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

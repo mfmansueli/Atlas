@@ -36,7 +36,7 @@ struct CaptionFitSection: View {
                     .accessibilityIdentifier("screenshots.captions.editor.fitLabel")
             }
             Text(model.fitDetail)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("screenshots.captions.editor.fitDetail")

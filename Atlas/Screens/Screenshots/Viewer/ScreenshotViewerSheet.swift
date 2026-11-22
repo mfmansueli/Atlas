@@ -38,7 +38,7 @@ struct ScreenshotViewerSheet: View {
                     .font(.title3.weight(.semibold))
                     .accessibilityIdentifier("screenshots.viewer.title")
                 Text(viewModel.viewerSubtitle)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             Spacer()

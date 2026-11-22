@@ -22,7 +22,7 @@ struct AccessibilityEditorSheet: View {
                     checklist
                     ForEach(draft.family.unavailableFeatures) { feature in
                         Text(feature.unavailableReason(on: draft.family))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .accessibilityIdentifier("appInformation.accessibility.editor.hidden")
                     }
@@ -42,7 +42,7 @@ struct AccessibilityEditorSheet: View {
                 }
                 if let message = viewModel.editorMessage {
                     Label(message, systemImage: "checkmark.circle")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("appInformation.accessibility.editor.message")
@@ -117,7 +117,7 @@ struct AccessibilityEditorSheet: View {
                     .accessibilityIdentifier("appInformation.accessibility.editor.copy")
             }
             Text("Saved here as a pending change. Publishing happens from Review & Push.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: Spacing.medium)

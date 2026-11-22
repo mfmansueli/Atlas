@@ -47,7 +47,7 @@ struct AppTerritoryChecklist: View {
             .background(Palette.content, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
             Text("\(territories.count { selection.contains($0.id) }) of \(territories.count) selected")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("pricing.territories.count")
         }

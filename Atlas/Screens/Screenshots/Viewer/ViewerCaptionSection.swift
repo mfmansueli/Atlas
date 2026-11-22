@@ -19,7 +19,7 @@ struct ViewerCaptionSection: View {
                         .font(.callout)
                     if let subhead = caption.visibleSubhead {
                         Text(subhead)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -31,12 +31,12 @@ struct ViewerCaptionSection: View {
                     FitMeter(value: FitMeterValue(fit: fit))
                         .padding(.top, Spacing.xxSmall)
                     Text(fit.label)
-                        .font(.caption.weight(fit.fits ? .regular : .medium))
+                        .font(.subheadline.weight(fit.fits ? .regular : .medium))
                         .foregroundStyle(fit.fits ? Palette.label2 : Palette.danger)
                         .accessibilityIdentifier("screenshots.viewer.fit")
                 }
                 Text(caption.provenance.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             } else {
                 Text("No caption for this slot yet.")

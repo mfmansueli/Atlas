@@ -76,7 +76,7 @@ struct PageShotsResultStep: View {
                 }
             }
             Text("DEFAULT PAGE")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             ProductPageScreenshotStrip(
                 viewModel: viewModel, state: defaultSet(locale, display == .iPad ? .iPad : .iPhone),
@@ -84,7 +84,7 @@ struct PageShotsResultStep: View {
             )
             .opacity(0.75)
             Text("“\(flow.page.name.uppercased())” · NEW")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.accent)
                 .padding(.top, Spacing.xxSmall)
             newSet
@@ -138,7 +138,7 @@ struct PageShotsResultStep: View {
                 }
             }
             Text("Untick a language or a device to keep the default page’s screenshots there.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -149,7 +149,7 @@ struct PageShotsResultStep: View {
     private var footer: some View {
         HStack(spacing: Spacing.medium) {
             Text(summary)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("pages.shots.useSummary")
@@ -174,7 +174,7 @@ struct PageShotsResultStep: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("What should change?").font(.headline)
             Text("Say it in a sentence. Only this page’s set is redone.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             TextField("Open with search, and make the second caption shorter", text: $request, axis: .vertical)
                 .lineLimit(3...5)

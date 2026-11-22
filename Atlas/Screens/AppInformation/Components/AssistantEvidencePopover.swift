@@ -56,7 +56,7 @@ struct AssistantEvidencePopover: View {
             ForEach(evidence.evidence, id: \.self) { line in
                 Divider()
                 Text(line)
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.vertical, Spacing.xSmall)

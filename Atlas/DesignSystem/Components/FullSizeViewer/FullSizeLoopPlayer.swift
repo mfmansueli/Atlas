@@ -49,7 +49,7 @@ struct FullSizeLoopPlayer<Overlay: View>: View {
                 scrubbing: model.scrub
             ) {
                 Text(note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }

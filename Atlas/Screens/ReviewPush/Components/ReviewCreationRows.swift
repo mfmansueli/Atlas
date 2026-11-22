@@ -42,7 +42,7 @@ struct ReviewCreationRows: View {
                         .fontWeight(.semibold)
                         .accessibilityIdentifier("review.creation.\(creation.id).title")
                     Text(creation.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("review.creation.\(creation.id).detail")
                 }
@@ -50,7 +50,7 @@ struct ReviewCreationRows: View {
                 SourceTag(source: creation.source)
                 Button(action: onDiscard) {
                     Image(systemName: "xmark")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.borderless)
                 .help("Don’t create it, or push its fields")
@@ -59,7 +59,7 @@ struct ReviewCreationRows: View {
             }
             if let message = creation.blockingMessage {
                 Label(message, systemImage: "exclamationmark.octagon.fill")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .padding(.leading, 26)
             }
@@ -92,7 +92,7 @@ struct ReviewCreationRows: View {
                     Text(field.newValue.isEmpty ? String(localized: "Empty") : field.newValue)
                 }
                 .lineLimit(1)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             }
             Spacer(minLength: Spacing.small)

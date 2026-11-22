@@ -170,7 +170,7 @@ struct NewInAppPurchaseSheet: View {
     private var footer: some View {
         HStack(spacing: Spacing.small) {
             Text("Submit it for App Review with the app’s next version.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -221,7 +221,7 @@ struct NewInAppPurchaseSheet: View {
                 let issues = StoreTextGuidelineCheck.issues(in: text.wrappedValue, for: inAppField)
                 if !issues.isEmpty {
                     InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                        .font(.caption)
+                        .font(.subheadline)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("pricing.newInAppPurchase.\(field.rawValue).guideline")
                 }
@@ -234,7 +234,7 @@ struct NewInAppPurchaseSheet: View {
     private func problemText(for field: NewSubscriptionField) -> some View {
         if let problem = currentProblems.first(where: { $0.field == field && (showsMissing || !Self.isMissing($0)) }) {
             Text(problem.message)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.danger)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pricing.newInAppPurchase.\(field.rawValue).problem")
@@ -243,7 +243,7 @@ struct NewInAppPurchaseSheet: View {
 
     private func note(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
     }

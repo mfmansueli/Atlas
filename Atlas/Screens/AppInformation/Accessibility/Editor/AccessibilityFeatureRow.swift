@@ -37,7 +37,7 @@ struct AccessibilityFeatureRow: View {
                     }
                 }
                 Text(feature.meaning)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let suggestion {
@@ -50,7 +50,7 @@ struct AccessibilityFeatureRow: View {
             .accessibilityElement(children: .combine)
             Spacer(minLength: Spacing.small)
             ExternalLinkButton(title: String(localized: "Criteria"), url: feature.criteriaURL, isLink: true)
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityLabel(Text("\(feature.name) criteria"))
         }
         .padding(.horizontal, Spacing.medium + 2)

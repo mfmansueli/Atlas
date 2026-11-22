@@ -19,7 +19,7 @@ struct AccessibilityLoadErrorView: View {
             Image(systemName: "exclamationmark.circle")
                 .foregroundStyle(Palette.danger)
                 .accessibilityHidden(true)
-            Text("\(Text(message).fontWeight(.semibold))\(Text(requestLine.map { "  \($0)" } ?? "").font(.caption.monospaced()).foregroundStyle(Palette.label2))")
+            Text("\(Text(message).fontWeight(.semibold))\(Text(requestLine.map { "  \($0)" } ?? "").font(.subheadline.monospaced()).foregroundStyle(Palette.label2))")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)

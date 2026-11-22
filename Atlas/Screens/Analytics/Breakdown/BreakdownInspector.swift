@@ -30,7 +30,7 @@ struct BreakdownInspector: View {
                         .accessibilityIdentifier("analytics.breakdown.inspector.close")
                 }
                 Text(table.period.text)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                 group {
@@ -46,7 +46,7 @@ struct BreakdownInspector: View {
                     group {
                         ForEach(facts, id: \.label) { fact in
                             VStack(alignment: .leading, spacing: 1) {
-                                Text(fact.label).font(.caption).foregroundStyle(Palette.label2)
+                                Text(fact.label).font(.subheadline).foregroundStyle(Palette.label2)
                                 Text(fact.value)
                                     .font(.callout)
                                     .foregroundStyle(fact.isWarning ? Palette.warning : Palette.label)
@@ -146,10 +146,10 @@ struct BreakdownInspector: View {
 
     private func number(_ label: String, _ value: String?, note: String? = nil) -> some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(label).font(.caption).foregroundStyle(Palette.label2)
+            Text(label).font(.subheadline).foregroundStyle(Palette.label2)
             Spacer(minLength: Spacing.small)
             if let note, note != "—" {
-                Text(note).font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
+                Text(note).font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit()
             }
             Text(value ?? "—").font(.callout.weight(.semibold)).monospacedDigit()
         }

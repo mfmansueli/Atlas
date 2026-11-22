@@ -23,7 +23,7 @@ struct CompliancePassRow: View {
                     .font(.headline)
                     .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).title")
                 Text(report.detail(for: rule))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).detail")

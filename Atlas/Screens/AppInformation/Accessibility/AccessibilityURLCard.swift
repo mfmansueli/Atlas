@@ -15,7 +15,7 @@ struct AccessibilityURLCard: View {
     var body: some View {
         Card(padding: Spacing.medium + 2) {
             Text("\(Text("Accessibility URL").fontWeight(.semibold))\(Text(" · optional · one for the app, not localized").foregroundStyle(Palette.label2))")
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityHidden(true)
             TextField(String(localized: "Accessibility URL"), text: Binding(get: { url }, set: { onChange($0) }), prompt: Text(verbatim: "https://example.com/accessibility"))
                 .textFieldStyle(.roundedBorder)
@@ -30,7 +30,7 @@ struct AccessibilityURLCard: View {
                 .accessibilityIdentifier("appInformation.accessibility.url")
             if let problem {
                 Text(problem)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .accessibilityIdentifier("appInformation.accessibility.urlProblem")
             }

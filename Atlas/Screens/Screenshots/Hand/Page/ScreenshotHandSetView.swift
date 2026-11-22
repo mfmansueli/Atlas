@@ -26,7 +26,7 @@ struct ScreenshotHandSetView: View {
                 ScreenshotHandSelectionBar(viewModel: viewModel, item: selected, count: items.count)
             } else {
                 Text(viewModel.handDeviceLine(locale: locale.code, displayType: display))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(minHeight: 20)
                     .accessibilityIdentifier("screenshots.hand.deviceLine")
@@ -60,7 +60,7 @@ struct ScreenshotHandSetView: View {
                         Text("No \(display.title) screenshots in \(locale.name) yet.")
                             .font(.callout)
                         Text("Add your own, or Start Autopilot… makes them from the app.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                     .accessibilityElement(children: .combine)

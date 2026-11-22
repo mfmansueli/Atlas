@@ -18,7 +18,7 @@ struct PrivacyImportSheet: View {
                         .font(.title2.weight(.semibold))
                     if let path = viewModel.importFilePath {
                         Text(path)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -30,7 +30,7 @@ struct PrivacyImportSheet: View {
                 } else if let preview = viewModel.importPreview {
                     rows(preview)
                     Text("Imported answers are tagged as yours. Run a scan afterwards to check them against the code.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -79,7 +79,7 @@ struct PrivacyImportSheet: View {
                 .font(.callout)
             Spacer(minLength: Spacing.small)
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .padding(.horizontal, Spacing.medium)

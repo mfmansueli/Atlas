@@ -62,7 +62,7 @@ struct TemplateGalleryCard: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxHeight: .infinity, alignment: .top)
             Text(fontNote)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             button

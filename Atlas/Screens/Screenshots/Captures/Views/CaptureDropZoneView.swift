@@ -33,7 +33,7 @@ struct CaptureDropZoneView: View {
                     ) { captures.useLiveScreenshots() }
                 }
                 Text("App Review guideline 2.3 asks that screenshots show the app in use, so a capture must be a real screenshot. Take them in each language for the best result; a locale without its own uses \(captures.screenshots.context.primaryLocale.name) and is flagged “UI not localized”.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)

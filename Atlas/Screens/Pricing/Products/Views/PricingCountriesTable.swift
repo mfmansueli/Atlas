@@ -43,7 +43,7 @@ struct PricingCountriesTable: View {
                 Text(suggestion.moreCount == 1
                     ? String(localized: "and 1 more country or region")
                     : String(localized: "and \(suggestion.moreCount) more countries and regions"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

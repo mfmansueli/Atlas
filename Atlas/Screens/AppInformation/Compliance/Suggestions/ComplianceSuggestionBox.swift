@@ -31,7 +31,7 @@ struct ComplianceSuggestionBox: View {
             }
             if !suggestion.evidence.why.isEmpty {
                 Text(suggestion.evidence.why)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("\(identifier).why")
@@ -40,7 +40,7 @@ struct ComplianceSuggestionBox: View {
                 if hasEvidence {
                     Button(String(localized: "Evidence…")) { showsEvidence = true }
                         .buttonStyle(.link)
-                        .font(.caption)
+                        .font(.subheadline)
                         .popover(isPresented: $showsEvidence, arrowEdge: .bottom) { popover }
                         .accessibilityIdentifier("\(identifier).evidence")
                 }

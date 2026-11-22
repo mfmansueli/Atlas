@@ -15,7 +15,7 @@ struct SlotInspectorSection: View {
             if model.hasSlotOverrides {
                 Button("Reset Slot") { model.resetSlot() }
                     .buttonStyle(.link)
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("screenshots.template.resetSlot")
             }
         } content: {
@@ -35,10 +35,10 @@ struct SlotInspectorSection: View {
             ForEach(model.slotOverrides) { change in
                 HStack(spacing: Spacing.xSmall) {
                     Text("\(TemplateSchema.title(for: change.fieldPath)): \(change.newText)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .monospacedDigit()
                     Text("template \(change.oldText)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Spacer(minLength: 0)
                     Button {
@@ -57,7 +57,7 @@ struct SlotInspectorSection: View {
                 .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field))
             }
             Text(model.slotNote)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .layoutPriority(1)
         }

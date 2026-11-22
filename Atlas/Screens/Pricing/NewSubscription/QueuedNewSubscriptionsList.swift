@@ -36,11 +36,11 @@ struct QueuedNewSubscriptionsList: View {
                 Text(change.title)
                     .fontWeight(.medium)
                 Text(productID(of: change))
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
                 if let blocked = change.blockedReason {
                     Text(blocked)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.danger)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -50,7 +50,7 @@ struct QueuedNewSubscriptionsList: View {
                 Text(change.newValue)
                     .monospacedDigit()
                 Text(change.source.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             setupMenu(change)

@@ -13,7 +13,7 @@ struct FontsInspectorSection: View {
     var body: some View {
         TemplateInspectorSection(title: String(localized: "Fonts by script")) {
             Text(model.displayCoverageText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .layoutPriority(1)
             ForEach(model.fontRows) { row in

@@ -19,7 +19,7 @@ struct AnalyticsBox<Content: View>: View {
                     Text(title).font(.headline)
                     Spacer(minLength: Spacing.small)
                     if let trailing {
-                        Text(trailing).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                        Text(trailing).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                     }
                 }
                 .padding(.horizontal, Spacing.medium)

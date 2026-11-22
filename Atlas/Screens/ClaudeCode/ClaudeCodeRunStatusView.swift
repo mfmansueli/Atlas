@@ -57,7 +57,7 @@ struct ClaudeCodeRunStatusView: View {
                         .accessibilityIdentifier("claudeCode.run.status")
                     if let step = run.latestStep {
                         Text(step)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -107,7 +107,7 @@ struct ClaudeCodeRunStatusView: View {
             }
             if let text = run.result?.text, !text.isEmpty, run.phase == .finished {
                 Text(text)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
@@ -143,11 +143,11 @@ struct ClaudeCodeRunStatusView: View {
                         // "Edit Info.plist" names its tool already.
                         if !denial.summary.hasPrefix(denial.toolName) {
                             Text(denial.toolName)
-                                .font(.caption.weight(.semibold))
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(Palette.label2)
                         }
                         Text(denial.summary)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .lineLimit(1)
                             .truncationMode(.middle)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -161,7 +161,7 @@ struct ClaudeCodeRunStatusView: View {
             .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
             .accessibilityIdentifier("claudeCode.run.denials")
             Text("Runs from Atlas only read the project and use Atlas’s tools. To allow more, continue the same run in Terminal.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {
@@ -186,7 +186,7 @@ struct ClaudeCodeRunStatusView: View {
                         .font(.callout.weight(.semibold))
                         .accessibilityIdentifier("claudeCode.run.status")
                     Text(failure.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)

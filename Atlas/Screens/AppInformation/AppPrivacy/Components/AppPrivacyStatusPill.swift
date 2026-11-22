@@ -16,7 +16,7 @@ struct AppPrivacyStatusPill: View {
         Group {
             if case .published = status {
                 Text(title)
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .lineLimit(1)
                     .foregroundStyle(Palette.positive)
                     .padding(.horizontal, 6)

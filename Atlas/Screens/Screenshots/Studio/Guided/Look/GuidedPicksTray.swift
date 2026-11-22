@@ -46,7 +46,7 @@ struct GuidedPicksTray<Item: Hashable, Thumbnail: View>: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text("Preview \(name(item))"))
             VStack(alignment: .leading, spacing: Spacing.tiny) {
-                Text("Pick \(number)").font(.caption).foregroundStyle(Palette.label2)
+                Text("Pick \(number)").font(.subheadline).foregroundStyle(Palette.label2)
                 Text(name(item)).font(.callout.weight(.semibold)).lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

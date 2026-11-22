@@ -32,7 +32,7 @@ struct SubscriptionsView: View {
                         title(String(localized: "Trial → paid"))
                         RateLabel(rate: report.trialToPaid, font: .title3.weight(.semibold))
                         Text(report.trialToPaidComparison.map { "\($0.pointsText) \($0.outcome.title)" } ?? String(localized: "Of trials that ended in the period"))
-                            .font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
+                            .font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit()
                     }
                     card(
                         String(localized: "Proceeds, \(report.period.length) days"), AnalyticsText.dollars(report.proceeds),
@@ -55,7 +55,7 @@ struct SubscriptionsView: View {
                     territories
                 }
                 Text("Trial → paid counts trials that ended in this period. Rates with ▲ ▼ ≈ compare with \(appName)’s rate across all trials. Days follow Apple’s sales reports (Pacific Time).")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -108,7 +108,7 @@ struct SubscriptionsView: View {
             HStack {
                 Text("Cancellations · \(AnalyticsText.count(report.cancellations))").font(.headline)
                 Spacer()
-                Text("Apple’s reasons").font(.caption).foregroundStyle(Palette.label2)
+                Text("Apple’s reasons").font(.subheadline).foregroundStyle(Palette.label2)
             }
             .padding(.horizontal, Spacing.medium)
             .padding(.top, Spacing.small)
@@ -116,7 +116,7 @@ struct SubscriptionsView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(alignment: .firstTextBaseline) {
                         Text(reason.name).font(.callout)
-                        Text(reason.detail).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                        Text(reason.detail).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                         Spacer(minLength: Spacing.small)
                         Text("\(AnalyticsText.count(reason.count)) · \(AnalyticsText.wholePercent(reason.share))").font(.callout).monospacedDigit()
                     }
@@ -182,7 +182,7 @@ struct SubscriptionsView: View {
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(Palette.accentText)
-                        .font(.caption)
+                        .font(.subheadline)
                     }
                     Spacer(minLength: 0)
                     Text(row.trialToPaid.isTooFew ? "" : "\(row.paid) of \(row.ended)")
@@ -200,7 +200,7 @@ struct SubscriptionsView: View {
         Card(padding: Spacing.medium) {
             title(label)
             Text(value).font(.title3.weight(.semibold)).monospacedDigit()
-            Text(note).font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
+            Text(note).font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit()
         }
     }
 
@@ -215,7 +215,7 @@ struct SubscriptionsView: View {
                     .frame(width: index == 0 ? nil : (titles.count == 4 && index != 2 ? 75 : 100), alignment: .trailing)
             }
         }
-        .font(.caption.weight(.semibold))
+        .font(.subheadline.weight(.semibold))
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)

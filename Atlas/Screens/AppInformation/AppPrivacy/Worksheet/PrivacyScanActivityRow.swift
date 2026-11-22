@@ -29,7 +29,7 @@ struct PrivacyScanActivityRow: View {
                         .font(.callout)
                         .lineLimit(1)
                     Text(viewModel.metaText(of: scan))
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }

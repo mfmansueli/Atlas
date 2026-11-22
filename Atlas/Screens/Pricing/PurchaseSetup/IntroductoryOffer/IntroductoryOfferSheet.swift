@@ -168,7 +168,7 @@ struct IntroductoryOfferSheet: View {
         Section {
             ForEach(currentProblems, id: \.self) { problem in
                 Text(problem.message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -179,7 +179,7 @@ struct IntroductoryOfferSheet: View {
     private var footer: some View {
         HStack(spacing: Spacing.small) {
             Text("Customers get one introductory offer per subscription group.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -198,7 +198,7 @@ struct IntroductoryOfferSheet: View {
 
     private func note(_ text: String) -> some View {
         Text(text)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
     }

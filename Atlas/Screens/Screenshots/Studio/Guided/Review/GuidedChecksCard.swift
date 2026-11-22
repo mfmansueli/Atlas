@@ -68,7 +68,7 @@ struct GuidedChecksCard: View {
     private var approveNote: some View {
         if part == .screenshots, !studio.guidedCaptionProposals.isEmpty {
             Text("Accept or reject the proposal above first: it changes these screenshots.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -77,7 +77,7 @@ struct GuidedChecksCard: View {
         } else if !studio.canApprove(part), let progress = AutopilotLoopProgress.make(run, now: .now) {
             TimelineView(.periodic(from: .now, by: 30)) { context in
                 Text((AutopilotLoopProgress.make(run, now: context.date) ?? progress).approveNote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -103,7 +103,7 @@ struct GuidedChecksCard: View {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     ForEach(check.details, id: \.self) { line in
                         Text(line)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -128,7 +128,7 @@ struct GuidedChecksCard: View {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     ForEach(check.changes, id: \.self) { change in
                         Text(change)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                     }

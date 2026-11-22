@@ -20,7 +20,7 @@ struct StudioShotView: View {
             if showsLabel {
                 HStack(spacing: Spacing.xSmall) {
                     Text(shot.label)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                     Spacer(minLength: 0)

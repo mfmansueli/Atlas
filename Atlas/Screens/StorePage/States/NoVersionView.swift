@@ -36,7 +36,7 @@ struct NoVersionView: View {
             .frame(maxWidth: 460)
             .accessibilityIdentifier("storePage.noVersion.message")
             Text("Name, Subtitle and Privacy Policy URL are app-level and stay editable.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             HStack(spacing: Spacing.small) {
                 if queued == nil, viewModel.canCreateVersion {

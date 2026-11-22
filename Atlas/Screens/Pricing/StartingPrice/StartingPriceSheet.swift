@@ -51,7 +51,7 @@ struct StartingPriceSheet: View {
                 }
                 if showsProblem, price == nil {
                     Text(NewSubscriptionProblem.invalidPrice.message)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.danger)
                 }
             }

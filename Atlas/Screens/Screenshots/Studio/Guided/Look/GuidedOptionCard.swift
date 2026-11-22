@@ -32,7 +32,7 @@ struct GuidedOptionCard<Preview: View>: View {
                     }
                 }
                 Text(text)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)

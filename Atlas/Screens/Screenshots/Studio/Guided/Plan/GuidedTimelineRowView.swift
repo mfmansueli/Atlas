@@ -21,7 +21,7 @@ struct GuidedTimelineRowView<Accessory: View>: View {
                     .font(.callout.weight(.semibold))
                     .accessibilityIdentifier("autopilot.guided.plan.row.\(row.kind.rawValue).title")
                 Text(row.detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("autopilot.guided.plan.row.\(row.kind.rawValue).detail")
@@ -29,7 +29,7 @@ struct GuidedTimelineRowView<Accessory: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Text(row.time)
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("autopilot.guided.plan.row.\(row.kind.rawValue).time")
@@ -55,7 +55,7 @@ struct GuidedTimelineRowView<Accessory: View>: View {
                     .background(Palette.fill2, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
                     .accessibilityHidden(true)
                 Text(row.who.name)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
             }

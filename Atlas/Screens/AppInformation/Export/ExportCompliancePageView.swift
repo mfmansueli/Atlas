@@ -41,7 +41,7 @@ struct ExportCompliancePageView: View {
                 }
                 if let declaration = viewModel.queuedDeclaration {
                     Text("\(declaration.title): \(declaration.newValue), waiting in Review & Push.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("appInformation.export.declaration")
                 }
@@ -49,7 +49,7 @@ struct ExportCompliancePageView: View {
                     (usesNonExempt
                         ? Text("Build \(build) is told it uses non-exempt encryption, so it needs an encryption declaration.")
                         : Text("Build \(build) is told it uses no non-exempt encryption, so it needs no documents."))
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 InfoPlistKeyCard()

@@ -60,7 +60,7 @@ struct CaptureViewerSheet: View {
                 ) { captures.stepViewedLocale(by: $0) }
             }
             Text(coverage?.viewerSubtitle(of: target, display: viewModel.displayType) ?? "")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .truncationMode(.middle)

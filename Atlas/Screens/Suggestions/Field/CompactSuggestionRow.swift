@@ -26,7 +26,7 @@ struct CompactSuggestionRow: View {
                     .foregroundStyle(Palette.machineTranslated)
                     .accessibilityHidden(true)
                 Text("Suggested: \(suggested)")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslated)
                     .accessibilityIdentifier("suggestion.value")
                 SuggestionSourceTag(source: suggestion.source)
@@ -39,7 +39,7 @@ struct CompactSuggestionRow: View {
             }
             .controlSize(.small)
             Text(suggestion.reason)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("suggestion.reason")

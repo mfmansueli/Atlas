@@ -25,13 +25,13 @@ struct ScreenshotReviewFooter: View {
             Spacer()
             ForEach(viewModel.optionFootnotes, id: \.self) { footnote in
                 Text(footnote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("review.optionFootnote")
             }
             if viewModel.allPushCount > 0 {
                 Text(viewModel.imagesEstimateText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .lineLimit(1)

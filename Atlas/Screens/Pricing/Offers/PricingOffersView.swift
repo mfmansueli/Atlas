@@ -85,7 +85,7 @@ struct PricingOffersView: View {
                                     .fontWeight(.semibold)
                                     .lineLimit(1)
                                 Text(offer.eligibility)
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .foregroundStyle(Palette.label2)
                                     .lineLimit(1)
                             }

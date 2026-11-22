@@ -102,7 +102,7 @@ struct PrivateKeyDropZone: View {
                     .font(.callout.monospaced().weight(.semibold))
                     .accessibilityIdentifier("connect.importedKeyName")
                 Label("Stays in this Mac’s Keychain", systemImage: "lock")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             Spacer(minLength: Spacing.medium)

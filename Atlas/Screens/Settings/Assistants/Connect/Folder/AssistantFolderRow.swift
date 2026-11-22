@@ -26,13 +26,13 @@ struct AssistantFolderRow<Action: View>: View {
                 title
                     .font(.callout)
                 Text(ProjectFolderPath.abbreviated(path))
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .truncationMode(.middle)
                 if let detail {
                     Text(detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }

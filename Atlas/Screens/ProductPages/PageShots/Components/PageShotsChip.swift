@@ -24,7 +24,7 @@ struct PageShotsChip: View {
                         .frame(width: 20)
                 }
                 Text(title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .lineLimit(1)
             }
             .padding(.leading, regionCode == nil ? 10 : 3)

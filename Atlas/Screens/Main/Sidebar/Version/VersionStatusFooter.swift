@@ -25,7 +25,7 @@ struct VersionStatusFooter: View {
                         .lineLimit(1)
                     if !summary.text.isEmpty {
                         Text(summary.text)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                     }
@@ -33,7 +33,7 @@ struct VersionStatusFooter: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if let title = summary.actionTitle {
                     Text(title)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 9)
                         .frame(height: 22)

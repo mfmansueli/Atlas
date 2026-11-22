@@ -14,7 +14,7 @@ struct ViewerSection<Content: View>: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text(title)
                 .textCase(.uppercase)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .accessibilityAddTraits(.isHeader)
             content()

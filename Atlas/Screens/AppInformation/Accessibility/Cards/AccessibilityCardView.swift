@@ -18,7 +18,7 @@ struct AccessibilityCardView: View {
             answer
             if let note = card.note {
                 Label(note, systemImage: "info.circle")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("\(prefix).note")

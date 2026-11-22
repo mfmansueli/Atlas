@@ -18,7 +18,7 @@ struct ImportPreviewSheet: View {
                     .font(.title2.weight(.semibold))
                 if let preview = viewModel.importPreview {
                     Text(preview.summary)
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("storePage.import.summary")
                 }

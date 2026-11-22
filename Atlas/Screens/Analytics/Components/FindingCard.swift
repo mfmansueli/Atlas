@@ -38,10 +38,10 @@ struct FindingCard: View {
                 FlowLayout(spacing: Spacing.small) {
                     ForEach(finding.numbers, id: \.self) { number in
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(number.label).font(.caption).foregroundStyle(Palette.label2)
+                            Text(number.label).font(.subheadline).foregroundStyle(Palette.label2)
                             Text(number.value).font(.callout.weight(.semibold)).monospacedDigit()
                             if let note = number.note, !note.isEmpty {
-                                Text(note).font(.caption).foregroundStyle(Palette.label2).monospacedDigit()
+                                Text(note).font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit()
                             }
                         }
                         .padding(.horizontal, 10)
@@ -52,12 +52,12 @@ struct FindingCard: View {
                 }
             }
             Text("How sure: \(finding.surenessDetail)")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             if let read = finding.read, !read.isEmpty {
                 Text("Read: \(read.joined(separator: " · "))")
-                    .font(.caption.monospaced())
+                    .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .accessibilityIdentifier("analytics.finding.read.\(finding.id)")

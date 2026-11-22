@@ -42,7 +42,7 @@ struct InAppEventRevisionCard: View {
             }
             if let over = revision.overLimit {
                 InlineMessage.warning(String(localized: "\(over.field.title) is \(over.count) characters; the limit is \(over.field.limit)."))
-                    .font(.caption)
+                    .font(.subheadline)
             }
             HStack(spacing: Spacing.xSmall) {
                 Text(keptText)
@@ -80,12 +80,12 @@ struct InAppEventRevisionCard: View {
         let diff = TextWordDiff(from: current(field), to: revision.text(field))
         return VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(field.title)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
                     label(String(localized: "NOW"), color: Palette.label2)
                     MarkedDiffText(diff: diff, side: .now)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)

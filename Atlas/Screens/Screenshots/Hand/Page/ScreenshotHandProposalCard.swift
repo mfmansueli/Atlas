@@ -34,7 +34,7 @@ struct ScreenshotHandProposalCard: View {
                         .fixedSize()
                     AssistantChip(name: proposal.client)
                     Text(proposal.file.fileName)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)

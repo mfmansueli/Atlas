@@ -37,7 +37,7 @@ struct AnalyticsLoadingView: View {
                     .accessibilityElement(children: .combine)
                 }
                 Text("The first download includes earlier data, so it takes a minute.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .frame(width: 420)

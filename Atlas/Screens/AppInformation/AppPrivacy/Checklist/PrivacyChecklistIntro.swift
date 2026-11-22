@@ -30,7 +30,7 @@ struct PrivacyChecklistIntro: View {
                 MeterBar(fraction: viewModel.progress, tint: Palette.accent)
                     .accessibilityHidden(true)
                 Text(viewModel.progressText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("appInformation.appPrivacy.checklist.progress")

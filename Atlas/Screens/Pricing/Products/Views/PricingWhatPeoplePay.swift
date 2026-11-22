@@ -53,7 +53,7 @@ struct PricingWhatPeoplePay: View {
                 }
                 if rows.isEmpty {
                     Text("Prices are loading…")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }
@@ -62,7 +62,7 @@ struct PricingWhatPeoplePay: View {
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
             Text("Prices as the App Store shows them, with tax. Apple adjusts equalized prices when exchange rates move; prices you set stay as set.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -83,7 +83,7 @@ struct PricingWhatPeoplePay: View {
             viewModel.payTerritoryID = territory.id
         } label: {
             Text(territory.alpha2 == "US" ? String(localized: "U.S.") : territory.name)
-                .font(.caption)
+                .font(.subheadline)
                 .padding(.horizontal, Spacing.small)
                 .padding(.vertical, 3)
                 .foregroundStyle(isSelected ? Color.white : Palette.label)

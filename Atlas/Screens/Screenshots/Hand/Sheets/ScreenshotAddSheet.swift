@@ -107,7 +107,7 @@ struct ScreenshotAddSheet: View {
                             .lineLimit(1)
                             .truncationMode(.middle)
                         Text(file.pixelSize?.title ?? String(localized: "Not an image"))
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                             .foregroundStyle(Palette.label2)
                     }

@@ -67,7 +67,7 @@ struct KeyAssistantSetupKeyStep: View {
                 ForEach(viewModel.keyFacts, id: \.text) { fact in
                     Label {
                         Text(fact.text)
-                            .font(.caption)
+                            .font(.subheadline)
                             .fixedSize(horizontal: false, vertical: true)
                     } icon: {
                         Image(systemName: fact.systemImage)
@@ -100,7 +100,7 @@ struct KeyAssistantSetupKeyStep: View {
                     .foregroundStyle(Palette.danger)
             }
         }
-        .font(.caption)
+        .font(.subheadline)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("keySetup.status")
     }

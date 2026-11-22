@@ -80,7 +80,7 @@ struct EventArtworkPanel: View {
                         text: String(localized: "Atlas couldn’t start Claude Code here, so its prompt is copied. Paste it into Claude Code: the concepts arrive here."),
                         systemImage: "doc.on.clipboard", tint: Palette.label2
                     )
-                    .font(.caption)
+                    .font(.subheadline)
                     Button("Copy Again", action: onCopyAgain)
                         .controlSize(.small)
                         .accessibilityIdentifier("events.art.copyPrompt")
@@ -89,7 +89,7 @@ struct EventArtworkPanel: View {
             }
             if let problem {
                 InlineMessage.error(problem)
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("events.art.problem")
             }
             Spacer(minLength: 0)

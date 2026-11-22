@@ -24,7 +24,7 @@ struct InAppEventResultsCard: View {
                     number(results.downloads, String(localized: "Downloads from the event"))
                 }
                 Text(results.note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             } else {
                 Text("Apple counts an event’s page views, opens and downloads in App Store Connect’s App Analytics. Atlas doesn’t read them yet.")
@@ -43,7 +43,7 @@ struct InAppEventResultsCard: View {
                 .font(.title2.weight(.semibold))
                 .monospacedDigit()
             Text(title)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

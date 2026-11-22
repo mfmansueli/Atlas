@@ -36,7 +36,7 @@ struct StudioArtworkDetailsCard: View {
                 }
             }
             Text(StudioArtworkDetails.shownOn)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityElement(children: .contain)
@@ -49,7 +49,7 @@ struct StudioArtworkDetailsCard: View {
                 Text(row.title)
                     .fontWeight(.semibold)
                 Text(row.format)
-                    .font(.caption)
+                    .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

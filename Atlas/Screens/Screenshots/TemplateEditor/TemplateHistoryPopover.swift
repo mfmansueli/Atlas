@@ -14,7 +14,7 @@ struct TemplateHistoryPopover: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("Template history")
                 .textCase(.uppercase)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.horizontal, Spacing.small)
                 .padding(.bottom, Spacing.xxSmall)
@@ -30,7 +30,7 @@ struct TemplateHistoryPopover: View {
             .frame(maxHeight: 360)
             .fixedSize(horizontal: false, vertical: true)
             Text("Restoring makes a new version from the old one, so nothing is lost.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .padding(.horizontal, Spacing.small)
                 .padding(.top, Spacing.xxSmall)

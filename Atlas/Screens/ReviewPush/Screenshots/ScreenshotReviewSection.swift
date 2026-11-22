@@ -14,7 +14,7 @@ struct ScreenshotReviewSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text(plan.heading.uppercased())
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)
                 .padding(.horizontal, Spacing.small)

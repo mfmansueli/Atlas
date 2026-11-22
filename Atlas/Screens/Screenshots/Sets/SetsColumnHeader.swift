@@ -30,7 +30,7 @@ struct SetsColumnHeader: View {
             }
             Spacer(minLength: 0)
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .frame(height: 30)
         .background(Palette.content)

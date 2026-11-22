@@ -62,11 +62,11 @@ struct InAppEventDetailsCard: View {
                 if detail == .deepLink {
                     if let problem = viewModel.deepLinkProblem(deepLinkText) {
                         InlineMessage.error(problem)
-                            .font(.caption)
+                            .font(.subheadline)
                             .accessibilityIdentifier("events.details.deepLink.problem")
                     } else if isEditable, deepLinkText.trimmingCharacters(in: .whitespaces).isEmpty {
                         Text("Needed before App Review. \(InAppEventDeepLink.example(appName: viewModel.app.name))")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("events.details.deepLink.note")
@@ -88,7 +88,7 @@ struct InAppEventDetailsCard: View {
             if change.awaitingAcceptance != nil {
                 // The badge's purple: its text color is for text on the badge.
                 Text("Suggested by \(change.source.title)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.suggestionBadge)
                 Button("Accept") { viewModel.acceptDetail(detail, of: event) }
                     .controlSize(.small)
@@ -98,7 +98,7 @@ struct InAppEventDetailsCard: View {
                     .accessibilityIdentifier("events.details.\(detail.rawValue).dismiss")
             } else {
                 Text("Not pushed")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.unsaved)
                     .accessibilityIdentifier("events.details.\(detail.rawValue).pending")
                 Button {

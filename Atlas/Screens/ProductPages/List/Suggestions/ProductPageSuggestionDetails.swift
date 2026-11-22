@@ -70,13 +70,13 @@ struct ProductPageSuggestionDetails: View {
                 Text(texts.count == 1
                     ? "This text wasn’t offered, so accepting leaves that language with the default page’s."
                     : "These texts weren’t offered, so accepting leaves those languages with the default page’s.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 ForEach(texts) { text in
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                         Text(ProductPageChangeBuilder.localeName(text.locale))
-                            .font(.caption.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
                             .foregroundStyle(Palette.label2)
                         ProductPageRefusedTextCard(
                             app: viewModel.app, suggestion: text, pageName: suggestion.name,
@@ -99,7 +99,7 @@ struct ProductPageSuggestionDetails: View {
                 pills(suggestion.keywords[primary] ?? [])
                 if locales.count > 1 {
                     Text("Chosen in \(locales.count) languages.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
             }
@@ -108,7 +108,7 @@ struct ProductPageSuggestionDetails: View {
                 ForEach(locales, id: \.self) { locale in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         Text(ProductPageChangeBuilder.localeName(locale))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize()
                         pills(suggestion.keywords[locale] ?? [])
@@ -129,7 +129,7 @@ struct ProductPageSuggestionDetails: View {
 
     private func label(_ title: LocalizedStringKey) -> some View {
         Text(title)
-            .font(.caption.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
             .frame(width: 112, alignment: .leading)
     }

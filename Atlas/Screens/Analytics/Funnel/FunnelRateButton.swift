@@ -28,12 +28,12 @@ struct FunnelRateButton: View {
                 if let comparison = step.comparison {
                     if !comparison.pointsText.isEmpty {
                         Text(comparison.pointsText)
-                            .font(.caption)
+                            .font(.subheadline)
                             .monospacedDigit()
                             .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
                     }
                     Text(comparison.outcome.title)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)

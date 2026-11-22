@@ -18,7 +18,7 @@ struct EventArtworkFooter: View {
                 AssistantChip(name: DesignProjectKind.claude, monogram: "C")
                     .fixedSize()
                 Text(flow.summary)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
                     .accessibilityIdentifier("events.art.summary")

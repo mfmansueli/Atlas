@@ -25,7 +25,7 @@ struct AssistantFolderDropArea: View {
                 .font(.callout.weight(.semibold))
             if !model.isDragOver {
                 Text("from Finder, or from the title of the Xcode window")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Button("Choose Folder…", action: model.chooseFolder)
                     .controlSize(.small)

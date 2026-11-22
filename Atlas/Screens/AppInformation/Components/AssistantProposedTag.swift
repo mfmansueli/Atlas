@@ -19,7 +19,7 @@ struct AssistantProposedTag: View {
                 .frame(width: 16, height: 16)
                 .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .lineLimit(1)
         }
         .padding(.leading, 3)

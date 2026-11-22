@@ -34,7 +34,7 @@ struct AutoReplyStrip: View {
                         .font(.callout.weight(.semibold))
                         .accessibilityIdentifier("autoReply.strip.title")
                     Text(detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("autoReply.strip.detail")
@@ -59,7 +59,7 @@ struct AutoReplyStrip: View {
             }
             ForEach([hold, writeProblem].compactMap(\.self), id: \.self) { line in
                 Label(line, systemImage: "exclamationmark.circle")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warningMark)
                     .padding(.leading, 16)
             }

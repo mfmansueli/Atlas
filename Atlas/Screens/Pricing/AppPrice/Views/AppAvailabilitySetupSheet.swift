@@ -124,7 +124,7 @@ struct AppAvailabilitySetupSheet: View {
                 People can order it now and download it on its release date. Only for an app that isn’t released yet; \
                 App Review approves it first.
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             }

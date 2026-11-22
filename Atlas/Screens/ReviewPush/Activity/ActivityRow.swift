@@ -23,7 +23,7 @@ struct ActivityRow: View {
                 Text(record.title)
                     .font(.headline)
                 Text(details)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 if let screenshots = record.screenshots {
                     ScreenshotActivityDetails(summary: screenshots)
@@ -37,7 +37,7 @@ struct ActivityRow: View {
                 }
                 ForEach(record.failedChanges) { change in
                     Text("\(change.title): \(record.failures[change.id] ?? "")")
-                        .font(.caption.monospaced())
+                        .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.danger)
                         .textSelection(.enabled)
                 }

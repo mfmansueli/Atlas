@@ -23,7 +23,7 @@ struct GuidedReviewPreview: View {
                         AutopilotWatchAskBox(studio: studio, run: run, isEditable: true)
                     } else {
                         Text("Plays with sound here; muted on repeat on the App Store.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }

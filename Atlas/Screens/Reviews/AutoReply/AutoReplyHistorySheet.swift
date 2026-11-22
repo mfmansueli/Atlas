@@ -30,7 +30,7 @@ struct AutoReplyHistorySheet: View {
             Divider()
             HStack {
                 Text("Undo takes a reply off the App Store; its draft stays under the review.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Spacer()
                 Button("Done") { dismiss() }
@@ -52,11 +52,11 @@ struct AutoReplyHistorySheet: View {
                     .font(.callout)
                     .lineLimit(3)
                 Text(caption(entry))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 if let error = errors[entry.id] {
                     Text(error)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.warningMark)
                 }
             }

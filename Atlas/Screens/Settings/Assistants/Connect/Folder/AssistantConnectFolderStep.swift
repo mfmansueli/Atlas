@@ -38,7 +38,7 @@ struct AssistantConnectFolderStep: View {
                 }
             }
             Text("Your other apps can get their folders later, in Settings → AI Assistants.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }

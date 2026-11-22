@@ -132,7 +132,7 @@ struct AssistantSetupSheet: View {
             .keyboardShortcut(.cancelAction)
             .accessibilityIdentifier("assistantSetup.cancel")
             Text(viewModel.footnote)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.canGoBack {
@@ -191,7 +191,7 @@ struct AssistantSetupSheet: View {
                         Text("Local MCP server")
                             .font(.callout.weight(.semibold))
                         Text("Lets assistants on this Mac talk to Atlas.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -233,7 +233,7 @@ struct AssistantSetupSheet: View {
                 .accessibilityIdentifier("assistantSetup.editDrafts")
             }
             Text("Either way, nothing reaches App Store Connect until you push it in Review & Push.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }
@@ -241,7 +241,7 @@ struct AssistantSetupSheet: View {
     private func fact(_ systemImage: String, _ text: String) -> some View {
         Label {
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         } icon: {
             Image(systemName: systemImage)

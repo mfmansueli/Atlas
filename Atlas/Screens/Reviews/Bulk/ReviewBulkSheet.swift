@@ -60,7 +60,7 @@ struct ReviewBulkSheet: View {
         HStack(spacing: Spacing.small) {
             SuggestionSourceTag(source: .assistant(client: plan.theme.source))
             Text(leftOutText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)

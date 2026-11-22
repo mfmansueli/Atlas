@@ -38,7 +38,7 @@ struct LanguageBar<Trailing: View>: View {
                 arrows
                 if !model.restText.isEmpty {
                     Text(model.restText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .accessibilityIdentifier("languageBar.rest")
@@ -217,12 +217,12 @@ struct LanguageBar<Trailing: View>: View {
             Pill(text: String(localized: "Accepts right away"), style: .accent)
                 .fixedSize()
             Text("Accept All Languages doesn’t show the suggestions first. You can undo each time.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
             Button("Ask First", action: onAskFirst)
                 .buttonStyle(.link)
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityIdentifier("languageBar.askFirst")
         }
         .padding(.leading, Spacing.xxSmall)

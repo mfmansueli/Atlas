@@ -16,7 +16,7 @@ struct SettingsRowLabel: View {
             Text(title)
             if let caption {
                 Text(caption)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -25,7 +25,7 @@ struct ProductPagesTable: View {
             }
             Divider()
             Text(footer)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,7 +52,7 @@ struct ProductPagesTable: View {
             }
             Color.clear.frame(width: ProductPageRow.copyWidth, height: 1)
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .lineLimit(1)
         .padding(.horizontal, Spacing.medium)

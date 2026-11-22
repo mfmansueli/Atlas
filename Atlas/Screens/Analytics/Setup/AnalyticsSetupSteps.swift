@@ -20,7 +20,7 @@ struct AnalyticsSetupSteps: View {
                         case .current, .upcoming: Text("\(index + 1)")
                         }
                     }
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
                     .foregroundStyle(step.state == .current ? Color.white : Palette.label2)
                     .frame(width: 20, height: 20)

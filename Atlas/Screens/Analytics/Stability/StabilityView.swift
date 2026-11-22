@@ -47,7 +47,10 @@ struct StabilityView: View {
                     )
                 }
                 if report.days.count > 1 {
-                    AnalyticsBox(title: String(localized: "Crashes per 1,000 sessions, by day"), trailing: [report.latest.version, report.previous?.version].compactMap(\.self).joined(separator: " · ")) {
+                    AnalyticsBox(
+                        title: String(localized: "Crashes per 1,000 sessions, by day"),
+                        trailing: [report.latest.version, report.previous?.version].compactMap(\.self).joined(separator: " · ")
+                    ) {
                         StabilityDaysChart(days: report.days)
                             .frame(height: 160)
                             .padding(.horizontal, Spacing.medium)
@@ -75,8 +78,11 @@ struct StabilityView: View {
                         )
                     }
                 }
-                Text("Crashes and sessions come from people who share analytics with developers, and Apple completes each day up to 5 days later. Both versions are compared on the days both had sessions.")
-                    .font(.caption).foregroundStyle(Palette.label2).lineLimit(3)
+                Text("""
+                Crashes and sessions come from people who share analytics with developers, and Apple completes each day up to 5 days later. \
+                Both versions are compared on the days both had sessions.
+                """)
+                    .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
             }
             .padding(.bottom, Spacing.xLarge)
         }

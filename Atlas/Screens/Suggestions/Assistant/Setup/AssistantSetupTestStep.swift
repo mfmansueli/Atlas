@@ -53,7 +53,7 @@ struct AssistantSetupTestStep: View {
                         Text("Waiting for \(viewModel.clientName)’s first call…")
                             .font(.callout)
                         Text("If \(viewModel.clientName) was already open, restart it so it loads the new server.")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -116,7 +116,7 @@ struct AssistantSetupTestStep: View {
             Ask, Suggest Everything, Autopilot, translations and the privacy scan start Claude Code from here. Copy Prompt \
             stays in each one’s menu.
             """)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -149,7 +149,7 @@ struct AssistantSetupTestStep: View {
                 Text("Connected")
                     .font(.callout.weight(.semibold))
                 Text(viewModel.connectedText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

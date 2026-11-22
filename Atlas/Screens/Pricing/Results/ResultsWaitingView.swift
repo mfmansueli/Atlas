@@ -29,7 +29,7 @@ struct ResultsWaitingView: View {
                 MeterBar(fraction: Double(day) / Double(ResultsEvaluator.windowDays), tint: Palette.accent)
                     .accessibilityLabel(String(localized: "Days until results"))
                 Text("Day \(day) of \(ResultsEvaluator.windowDays)")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
             }

@@ -25,7 +25,7 @@ struct RoundingSection: View {
                 Always the nearest of Apple’s price points, about 800 per currency. Auto uses each currency’s usual \
                 ending (,90 in Brazil, round yen and won).
                 """)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 Toggle(isOn: viewModel.strategyBinding(\.neverRaise)) {
@@ -33,7 +33,7 @@ struct RoundingSection: View {
                 }
                 .toggleStyle(.switch)
                 Text("Keeps today’s price wherever the strategy would go higher.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

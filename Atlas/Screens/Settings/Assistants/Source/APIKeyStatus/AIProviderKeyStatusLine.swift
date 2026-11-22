@@ -29,7 +29,7 @@ struct AIProviderKeyStatusLine: View {
                         .accessibilityIdentifier("settings.apiKeyCheckAgain")
                 }
             }
-            .font(.caption)
+            .font(.subheadline)
             .help(Text(status.detail ?? ""))
             .accessibilityElement(children: .contain)
             .task(id: status) {

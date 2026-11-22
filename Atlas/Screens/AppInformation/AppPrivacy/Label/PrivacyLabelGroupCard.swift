@@ -15,15 +15,15 @@ struct PrivacyLabelGroupCard: View {
             Label(group.kind.title, systemImage: group.kind.systemImage)
                 .font(.callout.weight(.semibold))
             Text(group.kind.subtitle)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             ForEach(group.lines) { line in
                 VStack(alignment: .leading, spacing: 0) {
                     Text(line.category.name)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                     Text(line.typeNames)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

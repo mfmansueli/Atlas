@@ -50,12 +50,12 @@ struct ICPFilingCard: View {
                 .accessibilityIdentifier("appInformation.compliance.icp.number")
             if report.answers.hasMalformedICPNumber {
                 InlineMessage.warning(String(localized: "That doesn’t look like an ICP Filing Number. It reads like \(ICPFilingNumber.example)."))
-                    .font(.caption)
+                    .font(.subheadline)
                     .accessibilityIdentifier("appInformation.compliance.icp.malformed")
             }
             if report.answers.hasValidICPNumber {
                 Text("Format checked. Apple’s API doesn’t take the number: paste it in App Store Connect, under App Compliance.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("appInformation.compliance.icp.checked")
@@ -73,7 +73,7 @@ struct ICPFilingCard: View {
 
     private var stopSelling: some View {
         Text("China mainland comes off \(viewModel.app.name)’s availability when you push.")
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.leading, 34)

@@ -28,7 +28,7 @@ struct AppSaleQueuedBox: View {
             .accessibilityIdentifier("\(identifier).text")
             if let problem {
                 InlineMessage.error(problem)
-                    .font(.caption)
+                    .font(.subheadline)
             }
             HStack(spacing: Spacing.small) {
                 Button("Review & Push…", action: onReview)

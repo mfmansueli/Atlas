@@ -15,7 +15,7 @@ struct PrivacyLabelPreviewColumn: View {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Text("Product page preview")
                     .textCase(.uppercase)
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(Palette.label2)
                 Text("App Privacy")
                     .font(.headline)
@@ -33,7 +33,7 @@ struct PrivacyLabelPreviewColumn: View {
                     }
                 }
                 Text("Updates as you answer. Unreviewed suggestions aren’t included.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, Spacing.xxSmall)
@@ -51,7 +51,7 @@ struct PrivacyLabelPreviewColumn: View {
             Text("Data Not Collected")
                 .font(.callout.weight(.semibold))
             Text("The developer does not collect any data from this app.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

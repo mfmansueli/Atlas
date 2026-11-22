@@ -71,7 +71,7 @@ struct PrivacyScanCard: View {
                 Spacer(minLength: 0)
             }
             Text(launchNote)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

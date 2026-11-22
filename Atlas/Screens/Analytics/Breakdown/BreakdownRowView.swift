@@ -27,7 +27,7 @@ struct BreakdownRowView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(row.name).font(.callout).lineLimit(1)
                         if let detail = row.detail {
-                            Text(detail).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                            Text(detail).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                         }
                     }
                 }

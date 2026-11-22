@@ -31,9 +31,9 @@ struct InAppEventReviewList: View {
                         Text(item.text)
                             .fixedSize(horizontal: false, vertical: true)
                         if let state = item.stateText {
-                            Text(state).font(.caption).foregroundStyle(Palette.label2)
+                            Text(state).font(.subheadline).foregroundStyle(Palette.label2)
                         } else if let detail = item.detail {
-                            Text(detail).font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
+                            Text(detail).font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,7 +53,7 @@ struct InAppEventReviewList: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("events.review.warning.\(warning.id).text")
                         if let detail = warning.detail {
-                            Text(detail).font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
+                            Text(detail).font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

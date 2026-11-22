@@ -23,7 +23,7 @@ struct ClaudeCodeLaunchHint: View {
                         .foregroundStyle(Palette.accent)
                         .accessibilityHidden(true)
                     Text("Skip the paste: let Atlas start Claude Code.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Set Up…") { Task { await launcher.installHelper() } }
                         .controlSize(.small)

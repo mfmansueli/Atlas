@@ -91,7 +91,7 @@ struct AssistantsAdvancedSection: View {
             Text(server.isRunning
                 ? String(localized: "Copy makes the token for that assistant alone. It’s paired under its own name when it first connects.")
                 : String(localized: "Turn on connections to copy the line with its token."))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

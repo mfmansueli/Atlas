@@ -20,7 +20,7 @@ struct CaptureSourceCard: View {
                     .font(.callout.weight(.semibold))
                     .foregroundStyle(Palette.label)
                 Text(message)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)

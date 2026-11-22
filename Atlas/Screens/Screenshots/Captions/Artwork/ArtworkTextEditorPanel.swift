@@ -93,7 +93,7 @@ struct ArtworkTextEditorPanel: View {
             }
             if let detail = editor.countDetail {
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(editor.count?.isTooLong == true ? Palette.warning : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("screenshots.captions.artworkEditor.count")

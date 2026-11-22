@@ -37,7 +37,7 @@ struct PushProgressHeader: View {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     if let time = summary.timeTitle(now: context.date) {
                         Text(time)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .monospacedDigit()
                             .help(Text("From how fast they’ve gone so far: several go at once, and uploads overlap Apple’s processing."))
@@ -47,7 +47,7 @@ struct PushProgressHeader: View {
             }
             ForEach(notes) { note in
                 Label(note.text, systemImage: note.systemImage)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(color(note.tone))
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier(note.identifier)

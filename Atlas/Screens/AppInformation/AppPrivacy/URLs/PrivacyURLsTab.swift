@@ -42,7 +42,7 @@ struct PrivacyURLsTab: View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: Spacing.small) {
                 Text(String(localized: "\(viewModel.urlsCoverageText ?? "") · app-level fields, sent through Review & Push"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .layoutPriority(1)
                     .frame(maxWidth: .infinity, alignment: .leading)

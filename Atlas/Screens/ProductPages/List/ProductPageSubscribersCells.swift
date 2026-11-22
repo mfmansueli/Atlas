@@ -17,7 +17,7 @@ struct ProductPageSubscribersCells: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(AnalyticsText.count(subscribers.paid)).font(.callout.weight(.semibold)).monospacedDigit()
                 Text("\(AnalyticsText.count(subscribers.trialConverted)) of \(AnalyticsText.count(subscribers.trialsEnded)) trials")
-                    .font(.caption).foregroundStyle(Palette.label2).monospacedDigit().lineLimit(1)
+                    .font(.subheadline).foregroundStyle(Palette.label2).monospacedDigit().lineLimit(1)
             }
             .frame(width: widths.subscribers, alignment: .leading)
             .accessibilityElement(children: .combine)

@@ -23,7 +23,7 @@ struct AutopilotScreenSuggestionRow: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if let evidence = suggestion.evidence {
                     Text(evidence)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -32,7 +32,7 @@ struct AutopilotScreenSuggestionRow: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 if !suggestion.caption.isEmpty {
-                    Text("Caption: “\(suggestion.caption)”").font(.caption)
+                    Text("Caption: “\(suggestion.caption)”").font(.subheadline)
                 }
             }
             .font(.callout)

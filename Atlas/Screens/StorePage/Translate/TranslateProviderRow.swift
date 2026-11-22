@@ -28,7 +28,7 @@ struct TranslateProviderRow: View {
                     Text(title ?? provider.title)
                         .font(.callout.weight(.semibold))
                     Text(detail ?? provider.detail)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
                 Spacer(minLength: 0)

@@ -61,7 +61,7 @@ struct AssistantConnectHelloStep: View {
             if let text = model.hello?.text {
                 VStack(alignment: .leading, spacing: 7) {
                     Text(sender)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                     ArrivingText(text)
                         .font(.callout)
@@ -112,12 +112,12 @@ struct AssistantConnectHelloStep: View {
     private var thingsToAsk: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("Things you can ask \(name), in your own words")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             FlowLayout(spacing: Spacing.xSmall) {
                 ForEach(AssistantConnectPrompts.thingsToAsk, id: \.self) { prompt in
                     Text(prompt)
-                        .font(.caption)
+                        .font(.subheadline)
                         .padding(.horizontal, 10)
                         .frame(height: 26)
                         .background(Palette.fill1, in: Capsule())
@@ -125,7 +125,7 @@ struct AssistantConnectHelloStep: View {
                 }
             }
             Text("Or use the purple Autopilot button at the top of any section: it asks for you.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityElement(children: .contain)

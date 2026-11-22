@@ -40,7 +40,7 @@ struct RetentionTextFields: View {
             let issues = StoreTextGuidelineCheck.issues(in: "\(text.header)\n\(text.body)", for: .retentionMessage)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("retention.guideline")
             }
@@ -54,7 +54,7 @@ struct RetentionTextFields: View {
                 .font(.callout.weight(.medium))
             Spacer()
             Text("\(count) / \(limit)")
-                .font(.caption.weight(count > limit ? .bold : .regular))
+                .font(.subheadline.weight(count > limit ? .bold : .regular))
                 .foregroundStyle(count > limit ? Palette.danger : Palette.label2)
                 .monospacedDigit()
                 .accessibilityLabel(Text("\(count) of \(limit) characters"))

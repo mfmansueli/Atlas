@@ -43,7 +43,7 @@ struct PushProgressFailures: View {
                         .accessibilityValue(Text(group.itemsTitle))
                     }
                 }
-                .font(.caption)
+                .font(.subheadline)
             }
             .scrollBounceBehavior(.basedOnSize)
             // As tall as the reasons, up to the most it takes.

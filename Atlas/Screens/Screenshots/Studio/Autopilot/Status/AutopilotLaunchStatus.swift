@@ -20,7 +20,7 @@ struct AutopilotLaunchStatus: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             ClaudeCodeRunStatusView(run: run, onShowOutput: { showsOutput = true }, onRetried: { studio.launchedRunID = $0 })
             Text(note)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

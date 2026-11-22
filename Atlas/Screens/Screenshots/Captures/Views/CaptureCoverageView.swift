@@ -91,7 +91,7 @@ struct CaptureCoverageView: View {
                 .controlSize(.small)
                 .accessibilityIdentifier("captures.importMore")
             Text(coverage.summary)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -100,7 +100,7 @@ struct CaptureCoverageView: View {
             HStack(spacing: Spacing.xSmall) {
                 InterfaceChip()
                 Text(coverage.legend)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }
@@ -126,7 +126,7 @@ struct CaptureCoverageView: View {
                 .accessibilityIdentifier("captures.coverage.column.\(index + 1)")
             }
         }
-        .font(.caption.weight(.medium))
+        .font(.subheadline.weight(.medium))
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.small)
@@ -142,7 +142,7 @@ struct CaptureCoverageView: View {
             Text(verbatim: "\(group.rows.count)")
                 .foregroundStyle(Palette.label2)
         }
-        .font(.caption.weight(.semibold))
+        .font(.subheadline.weight(.semibold))
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.large)
         .padding(.top, Spacing.medium)

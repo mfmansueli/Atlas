@@ -63,7 +63,7 @@ struct AskAssistantPopover: View {
                         .font(.callout.weight(.medium))
                     if !showsPrompt {
                         Text(request.prompt)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .foregroundStyle(Palette.label2)
                             .lineLimit(1)
                     }
@@ -74,7 +74,7 @@ struct AskAssistantPopover: View {
             if run.isActive {
                 HStack(spacing: Spacing.small) {
                     Text("Closing this doesn’t stop it.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button(copiedPrompt ? String(localized: "Copied") : String(localized: "Copy Prompt")) {
@@ -111,7 +111,7 @@ struct AskAssistantPopover: View {
                 .accessibilityIdentifier("ask.prompt")
             HStack(spacing: Spacing.small) {
                 Text("Copied to the clipboard.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Copy Again", action: onCopyAgain)
@@ -127,7 +127,7 @@ struct AskAssistantPopover: View {
                 ProgressView()
                     .controlSize(.small)
                 Text("Waiting for \(request.client)…")
-                    .font(.caption)
+                    .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Cancel", action: onCancel)
                     .controlSize(.small)

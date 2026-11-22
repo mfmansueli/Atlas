@@ -21,7 +21,7 @@ struct ComplianceDeclarationCard: View {
             }
             HStack(spacing: Spacing.xSmall) {
                 Text("Apple’s API can’t take or show this one.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if hasAnswer {

@@ -25,7 +25,7 @@ struct ProductPagePromoBox: View {
                 Text("Promotional Text")
                     .font(.headline)
                 Text("Above the description. The only words a page can change.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -50,7 +50,7 @@ struct ProductPagePromoBox: View {
             .accessibilityIdentifier("pages.promo")
             if text.isEmpty, suggestion == nil {
                 Text("\(ProductPageChangeBuilder.localeName(locale)) uses the default page’s promotional text. Write one here to change it for this page only.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pages.promo.empty")
@@ -58,7 +58,7 @@ struct ProductPagePromoBox: View {
             let issues = StoreTextGuidelineCheck.issues(in: text, for: ListingField.promotionalText)
             if !issues.isEmpty {
                 InlineMessage.warning(issues.map(\.message).joined(separator: "\n"))
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pages.promo.guideline")
             }

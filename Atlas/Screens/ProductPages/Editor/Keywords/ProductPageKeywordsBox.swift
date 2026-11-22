@@ -31,7 +31,7 @@ struct ProductPageKeywordsBox: View {
                 }
             }
             Text("People who search these words in \(languageName) see this page, once it’s approved and visible.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             content(available: available, chosen: chosen)
@@ -104,7 +104,7 @@ struct ProductPageKeywordsBox: View {
             Chosen from version \(versionString)’s \(languageName) keywords, the last version Apple approved. New words can’t be \
             typed here.
             """)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
         }

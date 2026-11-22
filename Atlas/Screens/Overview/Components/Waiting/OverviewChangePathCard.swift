@@ -69,7 +69,7 @@ struct OverviewChangePathCard: View {
             Text(title)
                 .font(.headline)
             Text(text)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             action()

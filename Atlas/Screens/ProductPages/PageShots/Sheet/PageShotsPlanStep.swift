@@ -86,13 +86,13 @@ struct PageShotsPlanStep: View {
             }
             if let note = run?.note, !note.isEmpty {
                 Text("Written from the page’s note: “\(note)” Change it, or leave it.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             if let reason = plan?.reason, !reason.isEmpty {
                 Text(reason)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pages.shots.reason")
@@ -144,7 +144,7 @@ struct PageShotsPlanStep: View {
                                     displayType: .iPhone, height: 186
                                 )
                                 Text("\(position + 1) · \(source.slotName(screen.slot))")
-                                    .font(.caption.weight(.medium))
+                                    .font(.subheadline.weight(.medium))
                                     .lineLimit(1)
                                 if screen.slot != position {
                                     Text("was \(screen.slot + 1)")
@@ -167,7 +167,7 @@ struct PageShotsPlanStep: View {
                 .environment(\.layoutDirection, .leftToRight)
                 .accessibilityIdentifier("pages.shots.order")
                 Text(orderNote(plan))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -235,7 +235,7 @@ struct PageShotsPlanStep: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(title).font(.callout)
                 Text(detail)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -250,7 +250,7 @@ struct PageShotsPlanStep: View {
     private var footer: some View {
         HStack(spacing: Spacing.medium) {
             Text(summary)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("pages.shots.summary")

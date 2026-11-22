@@ -16,7 +16,7 @@ struct PrivacyLinkageLine: View {
             menu(String(localized: "Linked to the user"), isTracking: false)
             menu(String(localized: "Used for tracking"), isTracking: true)
         }
-        .font(.caption)
+        .font(.subheadline)
     }
 
     private func menu(_ title: String, isTracking: Bool) -> some View {

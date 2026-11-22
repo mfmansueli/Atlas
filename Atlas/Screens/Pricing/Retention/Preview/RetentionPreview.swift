@@ -25,7 +25,7 @@ struct RetentionPreview: View {
             )
             phone
             Text(note)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

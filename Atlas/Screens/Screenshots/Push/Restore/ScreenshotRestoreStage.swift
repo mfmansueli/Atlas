@@ -25,12 +25,12 @@ struct ScreenshotRestoreStage: View {
             .fixedSize()
             .accessibilityIdentifier("restore.displayType")
             Text("KEPT ON THIS MAC · \(backupDate.formatted(.dateTime.month(.abbreviated).day().year()))")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             stage
             if choice.hasImages {
                 Text("Restoring takes \(choice.locale.name) out of re-rendering until you choose Use Template Again, so the next push doesn’t replace these again.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

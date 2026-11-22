@@ -26,8 +26,11 @@ struct OffersView: View {
                         )
                     }
                     table(report)
-                    Text("Paid afterwards = people whose first charge at the regular price came after the offer. An offer shows a rate once its first people reach the regular price. From Apple’s subscription event report: every subscriber.")
-                        .font(.caption).foregroundStyle(Palette.label2).lineLimit(3)
+                    Text("""
+                    Paid afterwards = people whose first charge at the regular price came after the offer. \
+                    An offer shows a rate once its first people reach the regular price. From Apple’s subscription event report: every subscriber.
+                    """)
+                        .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
                 } else {
                     ContentUnavailableView(
                         "No offers in this period", systemImage: "gift",
@@ -72,7 +75,7 @@ struct OffersView: View {
     @ViewBuilder
     private func rate(_ offer: LifecycleReport.Offer) -> some View {
         if let renewal = offer.firstRenewal {
-            Text("first renewals from \(AnalyticsText.day(renewal.date))").font(.caption).foregroundStyle(Palette.label2)
+            Text("first renewals from \(AnalyticsText.day(renewal.date))").font(.subheadline).foregroundStyle(Palette.label2)
         } else {
             RateLabel(rate: offer.rate)
         }

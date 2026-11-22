@@ -33,7 +33,7 @@ struct ClaudeCodeLaunchPanel: View {
                     .fixedSize(horizontal: false, vertical: true)
                 ClaudeCodeRunStatusView(run: run, onShowOutput: { showsOutput = true }, onRetried: onRetried)
                 Text("Closing this doesn’t stop it.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             } else {
                 Label {
@@ -48,7 +48,7 @@ struct ClaudeCodeLaunchPanel: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 Text(folderText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

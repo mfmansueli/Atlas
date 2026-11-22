@@ -21,7 +21,7 @@ struct GuidedReviewShots: View {
         VStack(spacing: 0) {
             strip(shots)
             Text(GuidedReviewDeviceNote.line(device, size: shots.first?.pixelSize, app: studio.app.name, count: shots.count))
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -47,7 +47,7 @@ struct GuidedReviewShots: View {
                         VStack(spacing: Spacing.xxSmall) {
                             GuidedShotImage(studio: studio, shot: shot, width: width)
                             Text(shot.label)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .lineLimit(1)
                                 .truncationMode(.tail)

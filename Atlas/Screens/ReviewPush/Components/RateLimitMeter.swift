@@ -13,11 +13,11 @@ struct RateLimitMeter: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             Text("Requests this hour")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             MeterBar(fraction: rateLimit.fractionUsed, tint: tint, height: 4)
             Text("\(rateLimit.used.formatted()) of \(rateLimit.limit.formatted())")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .monospacedDigit()
                 .fixedSize()

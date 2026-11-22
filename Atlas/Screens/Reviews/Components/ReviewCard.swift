@@ -55,7 +55,7 @@ struct ReviewCard: View {
                 FlagTile(regionCode: review.territory)
             }
             Text(metaText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
             Spacer(minLength: Spacing.small)
@@ -83,11 +83,11 @@ struct ReviewCard: View {
     private func translationLine(_ note: String, toggle: String?) -> some View {
         HStack(spacing: Spacing.xSmall) {
             Image(systemName: "globe")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label3)
                 .accessibilityHidden(true)
             Text(note)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             if let toggle {
                 Button(toggle) { viewModel.toggleTranslation(review) }
@@ -142,7 +142,7 @@ struct ReviewCard: View {
     private var failure: some View {
         if let error = viewModel.replyErrors[review.id] {
             InlineMessage.error(error)
-                .font(.caption)
+                .font(.subheadline)
                 .accessibilityIdentifier("reviews.card.error.\(review.id)")
         }
     }
@@ -151,7 +151,7 @@ struct ReviewCard: View {
     private var writeRow: some View {
         HStack(spacing: Spacing.small) {
             Text(writeText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.isDismissed(review) {

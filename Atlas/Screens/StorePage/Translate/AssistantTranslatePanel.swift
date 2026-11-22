@@ -56,7 +56,7 @@ struct AssistantTranslatePanel: View {
             code(slashCommand)
                 .accessibilityIdentifier("\(identifierPrefix).slashCommand")
             Text("Or, in any MCP client:")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             code(request)
                 .accessibilityIdentifier("\(identifierPrefix).prompt")

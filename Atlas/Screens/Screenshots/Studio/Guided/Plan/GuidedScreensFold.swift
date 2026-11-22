@@ -20,7 +20,7 @@ struct GuidedScreensFold: View {
                 studio.guided.showsScreens.toggle()
             }
             .buttonStyle(.link)
-            .font(.caption)
+            .font(.subheadline)
             .accessibilityValue(Text(studio.guided.showsScreens ? "Shown" : "Hidden"))
             .accessibilityIdentifier("autopilot.guided.plan.screens.toggle")
             if studio.guided.showsScreens {

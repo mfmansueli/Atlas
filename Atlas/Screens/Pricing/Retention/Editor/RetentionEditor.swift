@@ -27,7 +27,7 @@ struct RetentionEditor: View {
                 RetentionTooLongBanner(model: model, message: message)
                 if let note = model.sourceNote {
                     Text(note)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("retention.sourceNote")
                 }

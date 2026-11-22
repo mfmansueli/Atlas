@@ -18,7 +18,7 @@ struct ReadOnlyVersionNote: View {
         } icon: {
             Image(systemName: "lock")
         }
-        .font(.caption)
+        .font(.subheadline)
         .foregroundStyle(Palette.label2)
         .padding(.horizontal, Spacing.medium + 2)
         .padding(.vertical, Spacing.small)

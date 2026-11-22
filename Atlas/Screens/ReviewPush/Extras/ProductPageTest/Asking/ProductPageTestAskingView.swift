@@ -80,7 +80,7 @@ struct ProductPageTestAskingView: View {
                             .foregroundStyle(step.state == .upcoming ? Palette.label2 : Palette.label)
                         if let detail = step.detail {
                             Text(detail)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -129,17 +129,17 @@ struct ProductPageTestAskingView: View {
         if !steps.isEmpty {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Before that")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 ForEach(Array(steps)) { step in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                         Image(systemName: step.systemImage)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .frame(width: 14)
                             .accessibilityHidden(true)
                         Text(step.kind == .atlas ? String(localized: "Atlas · \(step.text)") : step.text)
-                            .font(.caption.monospaced())
+                            .font(.subheadline.monospaced())
                             .lineLimit(1)
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)

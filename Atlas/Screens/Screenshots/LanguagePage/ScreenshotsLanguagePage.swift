@@ -83,7 +83,7 @@ struct ScreenshotsLanguagePage: View {
             }
             if let line = viewModel.templateLine {
                 Text(line)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }

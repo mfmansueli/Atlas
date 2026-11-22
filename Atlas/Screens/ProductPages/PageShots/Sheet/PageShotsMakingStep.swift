@@ -36,7 +36,7 @@ struct PageShotsMakingStep: View {
                 tiles
                 Spacer(minLength: 0)
                 Text("Close this window whenever you like. Autopilot keeps going, and the page shows it.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             .padding(.horizontal, Spacing.xLarge)
@@ -92,7 +92,7 @@ struct PageShotsMakingStep: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
                         }
                         Text(image == nil ? String(localized: "Laying out…") : ProductPageChangeBuilder.localeName(locale))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }
                     .accessibilityElement(children: .combine)

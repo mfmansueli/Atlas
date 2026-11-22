@@ -132,7 +132,7 @@ struct PricingSettingsPane: View {
             }
             if snapshot?.isApproximate == true {
                 Text("The bundled values are approximate sample data, not the publishers’ figures. New editions arrive with app updates.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

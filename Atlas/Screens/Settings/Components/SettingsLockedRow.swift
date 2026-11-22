@@ -15,7 +15,7 @@ struct SettingsLockedRow: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             Image(systemName: "lock.fill")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label3)
                 .frame(width: 14)
                 .accessibilityHidden(true)

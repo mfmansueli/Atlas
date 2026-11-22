@@ -41,7 +41,7 @@ struct CaptureCoverageRowView: View {
             .accessibilityIdentifier("captures.coverage.\(row.locale.code).select")
             .frame(width: CaptureCoverageView.localeWidth, alignment: .leading)
             Text(row.sourceText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .frame(width: CaptureCoverageView.sourceWidth, alignment: .leading)
@@ -91,14 +91,14 @@ struct CaptureCoverageRowView: View {
             }
             if cell.stale != nil {
                 Text("Out of date")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.warning)
                     .lineLimit(1)
                     .fixedSize()
                     .accessibilityIdentifier("captures.coverage.\(row.locale.code).\(cell.slot + 1).stale")
             } else {
                 Text(cell.label.title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(labelColor(cell.label))
                     .lineLimit(1)
                     .fixedSize()

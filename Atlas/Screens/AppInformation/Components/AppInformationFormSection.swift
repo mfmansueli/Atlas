@@ -17,7 +17,7 @@ struct AppInformationFormSection<Content: View, Trailing: View>: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Text(title.uppercased())
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: 0)

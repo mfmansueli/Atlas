@@ -32,13 +32,13 @@ struct ProposedCaptionCard: View {
                     .foregroundStyle(Palette.machineTranslated)
                     .accessibilityHidden(true)
                 Text("Suggested")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.machineTranslated)
                 SuggestionSourceTag(source: caption.source)
             }
             if !caption.reason.isEmpty {
                 Text(caption.reason)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -24,14 +24,14 @@ struct ReviewFooter: View {
             Spacer()
             ForEach(viewModel.optionFootnotes, id: \.self) { footnote in
                 Text(footnote)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .accessibilityIdentifier("review.optionFootnote")
             }
             if !viewModel.pushableChanges.isEmpty {
                 Text(viewModel.estimate.text)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
             }

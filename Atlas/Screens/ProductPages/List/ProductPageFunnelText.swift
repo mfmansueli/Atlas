@@ -22,7 +22,7 @@ struct ProductPageFunnelText: View {
                 // Where the page's link is used.
                 if let arrivals = ProductPageNumbersText.arrivals(numbers.arrivals) {
                     Text(arrivals)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .help(Text(numbers.arrivals.prefix(5).map(\.title).joined(separator: "\n")))
@@ -31,7 +31,7 @@ struct ProductPageFunnelText: View {
             }
         } else {
             Text(emptyText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)

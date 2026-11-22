@@ -25,7 +25,7 @@ struct TiersSection: View {
             content: {
                 VStack(alignment: .leading, spacing: Spacing.xSmall) {
                     Text("Bucket territories by factor so similar markets get the same discount.")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                     if strategy.tiersEnabled {
@@ -38,7 +38,7 @@ struct TiersSection: View {
                                 Text(verbatim: strategy.tiers.share(forTier: index).percentText + "%")
                                     .font(.callout.monospacedDigit())
                                 Text("\(count) territories")
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .foregroundStyle(Palette.label2)
                             }
                             .accessibilityElement(children: .combine)

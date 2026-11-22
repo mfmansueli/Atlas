@@ -20,7 +20,7 @@ struct TranslationSuggestionsView: View {
             Divider()
             if let failure = translation.failureSummary {
                 InlineMessage.warning(failure)
-                    .font(.caption)
+                    .font(.subheadline)
                     .padding(.horizontal, Spacing.large)
                     .padding(.vertical, Spacing.xSmall)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,7 +53,7 @@ struct TranslationSuggestionsView: View {
                 : "\(count) suggestions from \(translation.runProvider.shortTitle)")
                 .font(.headline)
             Text(translation.review?.statusLine ?? "")
-                .font(.caption)
+                .font(.subheadline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("storePage.suggestions.status")

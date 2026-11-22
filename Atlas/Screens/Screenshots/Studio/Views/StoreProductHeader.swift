@@ -30,7 +30,7 @@ struct StoreProductHeader: View {
                         .accessibilityIdentifier(compact ? "studio.search.subtitle" : "studio.store.subtitle")
                 }
                 if let stats = preview.statsLine, !compact {
-                    Text(stats).font(.caption).foregroundStyle(.secondary)
+                    Text(stats).font(.subheadline).foregroundStyle(.secondary)
                 }
             }
             Spacer(minLength: Spacing.small)

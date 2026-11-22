@@ -40,7 +40,7 @@ struct ChangesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Pushed from Atlas")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .padding(.horizontal, Spacing.medium)
                     .padding(.vertical, Spacing.small)
@@ -51,13 +51,13 @@ struct ChangesView: View {
                     } label: {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                                Text(AnalyticsText.day(change.date)).font(.caption).monospacedDigit().foregroundStyle(Palette.label2)
+                                Text(AnalyticsText.day(change.date)).font(.subheadline).monospacedDigit().foregroundStyle(Palette.label2)
                                 Text(change.title).font(.callout).lineLimit(1)
                             }
                             HStack(spacing: Spacing.small) {
-                                Text(change.kind.area.title).font(.caption).foregroundStyle(Palette.label2)
+                                Text(change.kind.area.title).font(.subheadline).foregroundStyle(Palette.label2)
                                 Spacer(minLength: 0)
-                                Text(status(change)).font(.caption).foregroundStyle(Palette.label2).lineLimit(1)
+                                Text(status(change)).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                             }
                         }
                         .padding(.horizontal, Spacing.medium)

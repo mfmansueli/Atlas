@@ -18,7 +18,7 @@ struct ProductPageLanguageChip: View {
                 FlagTile(regionCode: ProductPageChangeBuilder.region(language.code) ?? "", size: 12)
                     .frame(width: 20)
                 Text(shortName)
-                    .font(.caption)
+                    .font(.subheadline)
                     .lineLimit(1)
                 switch language.state {
                 case .suggested:

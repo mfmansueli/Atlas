@@ -19,7 +19,7 @@ struct IndexDataSection: View {
                             Text(source.name).font(.callout)
                             Spacer(minLength: Spacing.xSmall)
                             Text(index.edition.label)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .lineLimit(1)
                             if index.edition.isStale(asOf: .now) {
@@ -30,7 +30,7 @@ struct IndexDataSection: View {
                     }
                 }
                 Text(snapshotLine(model.snapshot))
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 Button("Update Index Data") { model.updateIndexData() }
@@ -39,7 +39,7 @@ struct IndexDataSection: View {
                     .accessibilityIdentifier("pricing.updateIndexData")
                 if let message = model.updateMessage {
                     Text(message)
-                        .font(.caption)
+                        .font(.subheadline)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

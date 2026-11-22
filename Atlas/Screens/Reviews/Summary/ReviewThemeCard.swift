@@ -24,7 +24,7 @@ struct ReviewThemeCard: View {
             }
             if !whereText.isEmpty {
                 Text(whereText)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

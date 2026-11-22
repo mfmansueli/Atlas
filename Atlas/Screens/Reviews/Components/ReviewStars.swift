@@ -11,7 +11,7 @@ struct ReviewStars: View {
 
     var body: some View {
         Text(ReviewText.stars(rating))
-            .font(.caption)
+            .font(.subheadline)
             .tracking(1)
             .foregroundStyle(rating <= 2 ? Palette.danger : Palette.sectionReviews)
             .accessibilityLabel(Text(ReviewText.starsSpoken(rating)))

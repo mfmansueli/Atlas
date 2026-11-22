@@ -108,7 +108,7 @@ struct AnalyticsSettingsSheet: View {
                         VStack(alignment: .leading, spacing: 1) {
                             Text(app.name)
                             if let history = history(for: app.id) {
-                                Text(history).font(.caption).monospacedDigit().foregroundStyle(Palette.label2)
+                                Text(history).font(.subheadline).monospacedDigit().foregroundStyle(Palette.label2)
                             }
                         }
                         Spacer()

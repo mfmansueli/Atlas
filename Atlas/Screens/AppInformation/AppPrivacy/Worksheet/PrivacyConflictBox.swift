@@ -16,7 +16,7 @@ struct PrivacyConflictBox: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("**\(theirs.client)’s answer differs from yours.** Pick one.")
-                .font(.caption)
+                .font(.subheadline)
             FlowLayout(spacing: Spacing.xSmall) {
                 Button(String(localized: "Keep yours · \(yours.summary)"), action: onKeepYours)
                     .accessibilityIdentifier("appInformation.appPrivacy.conflict.keepYours")

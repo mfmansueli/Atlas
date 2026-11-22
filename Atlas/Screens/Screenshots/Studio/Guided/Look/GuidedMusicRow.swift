@@ -32,12 +32,12 @@ struct GuidedMusicRow: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 if plan.alsoMakes.music == nil, let pick = plan.alsoMakes.suggestedMusic, !pick.reason.isEmpty {
                     Text("Picked for this app: \(pick.reason)")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("autopilot.guided.look.musicPick")
                 }
                 Text(Self.note)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

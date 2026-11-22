@@ -49,7 +49,7 @@ struct ScreenshotReviewGroupView: View {
                 .font(.callout.weight(.semibold))
                 .lineLimit(1)
             Text("· \(group.displayType.title)")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
             if let date = group.restoredFrom {
@@ -62,12 +62,12 @@ struct ScreenshotReviewGroupView: View {
             Spacer(minLength: Spacing.small)
             if let previews = group.previews {
                 Label(previewsTitle(previews), systemImage: "lock")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .help(String(localized: "App Previews stay as they are; pushing screenshots never uploads or deletes them."))
             }
             Text(group.countTitle)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .monospacedDigit()
         }
@@ -89,7 +89,7 @@ struct ScreenshotReviewGroupView: View {
         HStack(spacing: Spacing.xxSmall) {
             AssistantMonogram(letters: ChangeSource.assistant(client: client).monogram ?? "AI")
             Text("Includes \(client)’s proposals")
-                .font(.caption)
+                .font(.subheadline)
                 .lineLimit(1)
         }
         .padding(.leading, 3)

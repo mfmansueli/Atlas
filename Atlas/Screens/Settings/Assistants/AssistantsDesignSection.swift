@@ -22,7 +22,7 @@ struct AssistantsDesignSection: View {
                 Text("Claude")
             } footer: {
                 Text("Claude draws screenshots, headers and event artwork in each app’s own brand.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
         }

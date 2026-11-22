@@ -64,7 +64,7 @@ struct PrivacyURLsRow: View {
                 .accessibilityIdentifier("appInformation.appPrivacy.urls.\(locale.code).\(id)")
             if let problem {
                 Text(problem)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.danger)
             }
         }

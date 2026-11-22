@@ -47,7 +47,7 @@ struct ProductPageSuggestionRow: View {
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             Text(suggestion.reason)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             FlowLayout(spacing: Spacing.small, lineSpacing: Spacing.xxSmall) {
@@ -78,7 +78,7 @@ struct ProductPageSuggestionRow: View {
             : String(localized: "\(count) languages")
         return HStack(spacing: Spacing.xxSmall) {
             Text(languages)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             Pill(text: String(localized: "Not offered"), style: .warning)
         }

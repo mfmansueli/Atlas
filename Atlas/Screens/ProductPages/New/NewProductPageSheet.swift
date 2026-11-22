@@ -55,7 +55,7 @@ struct NewProductPageSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.new.name")
             Text("Only you see this. It names the page in App Store Connect and in Analytics.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }
@@ -107,7 +107,7 @@ struct NewProductPageSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.new.note")
             Text("A note for your assistant. It uses it to suggest keywords, text and screenshots. It isn’t sent to Apple.")
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -137,7 +137,7 @@ struct NewProductPageSheet: View {
             The page exists in all \(allLocales.count) languages. The ones you leave out show the default page’s content, and \
             you can add them later.
             """)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -147,12 +147,12 @@ struct NewProductPageSheet: View {
         HStack(alignment: .center, spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(summary) Nothing is in App Store Connect until you push.")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let problem, !page.trimmedName.isEmpty {
                     Text(problem)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(Palette.danger)
                         .accessibilityIdentifier("pages.new.problem")
                 }
