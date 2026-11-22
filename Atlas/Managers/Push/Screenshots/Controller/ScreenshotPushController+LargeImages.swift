@@ -19,6 +19,12 @@ extension ScreenshotPushController {
             guard let data = try? workspace?.pushing?.backups.data(for: image, appID: item.appID) else { return nil }
             let longSide = Self.longSide(of: image.pixelSize, width: pixelWidth)
             return await Task.detached(priority: .userInitiated) { ScreenshotThumbnailer.thumbnail(data, maxPixelSize: longSide) }.value
+        case let .file(file):
+            guard let folder = workspace?.screenshots.handFiles else { return nil }
+            let appID = item.appID
+            return await Task.detached(priority: .userInitiated) { folder.image(for: file, appID: appID, pixelWidth: pixelWidth) }.value
+        case .delete, .reorder:
+            return nil
         }
     }
 

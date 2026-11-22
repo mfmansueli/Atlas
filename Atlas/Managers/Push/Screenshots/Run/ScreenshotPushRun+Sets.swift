@@ -53,6 +53,8 @@ extension ScreenshotPushRun {
                 items[index].status = halt
                 continue
             }
+            // Deletes and the new order wait for the set's uploads.
+            guard !items[index].plan.content.isSetChange else { continue }
             await sendImage(index)
         }
         return true
@@ -92,6 +94,10 @@ extension ScreenshotPushRun {
     func finishSet(_ groupID: String) async {
         await confirmDelivery(groupID)
         await deleteReplaced(groupID)
+        if sets[groupID]?.group.isHand == true {
+            await finishHandSet(groupID)
+            return
+        }
         let committed = items.indices.filter { items[$0].groupID == groupID && items[$0].isCommitted }
         guard !committed.isEmpty, let group = sets[groupID]?.group else { return }
         for extra in group.extraLive where sets[groupID]?.order.contains(extra.id) == true {

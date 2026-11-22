@@ -7,7 +7,9 @@ import SwiftUI
 
 /// What Review & Push tells an open Screenshots view: reload when a push,
 /// a discard or a restore saved the app's document (so the view never
-/// saves over it), and open Captions for Show in Captions.
+/// saves over it), and open Captions for Show in Captions. And the other
+/// way: a change made by hand re-plans the app, so it waits in Review &
+/// Push and the toolbar's "N not pushed" counts it.
 struct ScreenshotPushHooks: ViewModifier {
     let viewModel: ScreenshotsViewModel
 
@@ -17,6 +19,10 @@ struct ScreenshotPushHooks: ViewModifier {
         content
             .task(id: push.screenshots.revisions[viewModel.app.id] ?? 0) {
                 await reloadIfSavedElsewhere()
+            }
+            .task(id: viewModel.handRevision) {
+                guard viewModel.handRevision > 0 else { return }
+                await push.screenshots.loadPlan(for: viewModel.app)
             }
             .onChange(of: push.screenshots.captionsRequest, initial: true) {
                 openCaptions()

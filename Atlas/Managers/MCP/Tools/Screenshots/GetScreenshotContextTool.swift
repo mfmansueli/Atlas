@@ -18,7 +18,8 @@ struct GetScreenshotContextTool: MCPTool {
         names, the locales in scope (each gets its own screenshots), the primary locale's captions, the \
         listing's name and subtitle, and the template version. Captions are short marketing headlines drawn \
         above or below a real screenshot of the app; they must fit the template, so check them with \
-        measure_caption before proposing.
+        measure_caption before proposing. fileUploadURL and fileSizes are for propose_screenshot_file (a file for \
+        one screenshot, never scaled); setsChangedByHand lists the sets the person changed by hand.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -52,6 +53,25 @@ struct GetScreenshotContextTool: MCPTool {
             "templateVersion": document.history.map { .int($0.currentNumber) } ?? .null,
             "hasCaptures": .bool(!document.captures.isEmpty),
         ]
+        // Screenshots by hand: where to send a file for propose_screenshot_file,
+        // the sizes each device takes, and the sets the person changed.
+        result["fileUploadURL"] = .string(MCPEndpoint.screenshotFileUploadURL(
+            port: context.port, token: ScreenshotHandUploads.shared.token, appID: draft.app.id
+        ))
+        result["fileSizes"] = .object(Dictionary(uniqueKeysWithValues: ScreenshotDisplayType.studio.map { display in
+            (display.mcpValue, JSONValue.array(ScreenshotHandSizes.accepted(on: display).map { .string($0.title) }))
+        }))
+        if let sets = document.handSets, !sets.isEmpty {
+            result["setsChangedByHand"] = .array(sets.map { set in
+                [
+                    "locale": .string(set.locale), "displayType": .string(set.displayType.mcpValue), "screenshots": .int(set.keptCount),
+                    "deletedOnPush": .int(set.slots.count { $0.isDeleted }),
+                    "files": .array(set.kept.enumerated().compactMap { index, slot in
+                        slot.file.map { ["position": .int(index + 1), "fileName": .string($0.fileName)] }
+                    }),
+                ]
+            })
+        }
         if let listing {
             result["version"] = listing.versionJSON
             result["listing"] = [

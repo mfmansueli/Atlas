@@ -26,6 +26,12 @@ enum ScreenshotCellState: Hashable, Sendable {
     case restored
     /// There's no template yet and nothing live.
     case empty
+    /// Added by hand, not pushed yet.
+    case handNew
+    /// Its image replaced by hand, not pushed yet.
+    case handReplaced
+    /// Deleted by hand: goes when the person pushes.
+    case willBeDeleted
 
     /// The badge text.
     var title: String {
@@ -39,6 +45,9 @@ enum ScreenshotCellState: Hashable, Sendable {
         case .uploadedByHand: String(localized: "Uploaded by hand")
         case .restored: String(localized: "Restored")
         case .empty: String(localized: "Nothing yet")
+        case .handNew: String(localized: "New · not pushed")
+        case .handReplaced: String(localized: "Replaced · not pushed")
+        case .willBeDeleted: String(localized: "Will be deleted")
         }
     }
 
@@ -47,6 +56,6 @@ enum ScreenshotCellState: Hashable, Sendable {
         return false
     }
 
-    /// Rendered and waiting for Review & Push.
-    var isPending: Bool { self == .notPushed }
+    /// Rendered, or changed by hand, and waiting for Review & Push.
+    var isPending: Bool { [.notPushed, .handNew, .handReplaced, .willBeDeleted].contains(self) }
 }

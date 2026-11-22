@@ -31,6 +31,13 @@ struct ScreenshotsDocument: Codable, Hashable, Sendable {
     /// The header and search artwork and App Previews Autopilot made; nil
     /// when it made none (and in documents from before them).
     var extras: ScreenshotExtras?
+    /// Sets changed by hand (added, replaced, moved or deleted
+    /// screenshots), per language and device; nil when none was (and in
+    /// documents from before them).
+    var handSets: [ScreenshotHandSet]?
+    /// Files assistants suggested for a screenshot, decided or not; nil
+    /// when none was.
+    var handProposals: [ScreenshotHandProposal]?
 
     init(
         history: TemplateHistory? = nil,

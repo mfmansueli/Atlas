@@ -16,6 +16,11 @@ extension ScreenshotPushController {
                 switch item.content {
                 case let .render(job): state.kept[item.cell] = job.key
                 case let .restore(image): state.keptRestores.insert(image.id)
+                case .file, .delete, .reorder:
+                    guard let fingerprint = item.handFingerprint else { continue }
+                    var kept = state.keptHand ?? [:]
+                    kept[item.id] = fingerprint
+                    state.keptHand = kept
                 }
             }
             try? pushing.state.save(state, appID: appID)
@@ -41,6 +46,7 @@ extension ScreenshotPushController {
                 switch item.content {
                 case .render: state.kept[item.cell] = nil
                 case let .restore(image): state.keptRestores.remove(image.id)
+                case .file, .delete, .reorder: state.keptHand?[item.id] = nil
                 }
             }
             try? pushing.state.save(state, appID: appID)

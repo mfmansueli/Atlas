@@ -44,7 +44,7 @@ struct ScreenshotsLanguageList: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if count > 0 {
                     SuggestionBadge(count: count)
-                } else {
+                } else if viewModel.pageStatus(of: locale) == String(localized: "Live") {
                     Image(systemName: "checkmark")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Palette.increase)

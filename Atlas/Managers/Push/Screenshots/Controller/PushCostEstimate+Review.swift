@@ -16,7 +16,8 @@ extension PushCostEstimate {
         for group in groups {
             let included = group.items.filter(isIncluded)
             guard !included.isEmpty else { continue }
-            images += included.count
+            // Deletes and the new order upload nothing.
+            images += included.count { !$0.content.isSetChange }
             deletes += included.count { $0.old != nil } + group.extraLive.count
             sets += 1
         }

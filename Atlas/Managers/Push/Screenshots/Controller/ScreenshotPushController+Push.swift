@@ -65,6 +65,10 @@ extension ScreenshotPushController {
             return data
         case let .restore(image):
             return try pushing.backups.data(for: image, appID: item.appID)
+        case let .file(file):
+            return try workspace.screenshots.handFiles.data(for: file, appID: item.appID)
+        case .delete, .reorder:
+            throw ScreenshotPushFailure.image
         }
     }
 
@@ -112,7 +116,9 @@ extension ScreenshotPushController {
                 document.pushed.removeAll { $0.cell == item.plan.cell }
                 document.pushed.append(PushedRender(cell: item.plan.cell, renderKey: key, checksum: checksum, date: date))
             }
+            settleHandSets(&document, done: done)
             try await workspace.screenshots.saveDocument(document, for: app)
+            workspace.screenshots.handFiles.prune(appID: appID, keeping: document.handFileIDs)
         } catch {
             notice = String(localized: "The push went through, but this Mac couldn’t note it: \(error.localizedDescription)")
         }
@@ -128,6 +134,19 @@ extension ScreenshotPushController {
         try? pushing.state.save(state, appID: appID)
         invalidateLive(for: appID)
         bumpRevision(for: appID)
+    }
+
+    /// Deleted places whose screenshots went are forgotten, and a set that's
+    /// the template's again is no longer one changed by hand.
+    private func settleHandSets(_ document: inout ScreenshotsDocument, done: [ScreenshotUploadItem]) {
+        let gone = Set(done.filter { $0.plan.content == .delete }.compactMap(\.plan.handSlotID))
+        guard !gone.isEmpty else { return }
+        for var set in document.handSets ?? [] {
+            set.dropDeleted(gone)
+            let bases = document.rendersByTemplate(locale: set.locale, displayType: set.displayType)
+                ? document.startingHandBases(locale: set.locale, displayType: set.displayType, live: LiveScreenshots()) : nil
+            document.setHandSet(bases.map(set.isUnchanged(from:)) == true ? nil : set, locale: set.locale, displayType: set.displayType)
+        }
     }
 
     private func summary(of items: [ScreenshotUploadItem], backupID: String) -> ScreenshotPushSummary {

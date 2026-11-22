@@ -22,7 +22,7 @@ import SwiftUI
 /// `SettingsDebugScenes`, `ReviewPushDebugScenes`, `PricingDebugScenes`, `RetentionDebugScenes`,
 /// `StorePageDebugScenes`, `AppInformationDebugScenes`,
 /// `ScreenshotsDebugScenes`, `ScreenshotsPushDebugScenes`, `ExtrasPushDebugScenes`,
-/// `ScreenshotsProposalsDebugScenes`, `AssistantDebugScenes`,
+/// `ScreenshotsProposalsDebugScenes`, `ScreenshotsHandDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
 /// `ProductPagesDebugScenes`, `MenuBarDebugScenes`).
@@ -71,6 +71,7 @@ struct DebugSceneView: View {
             ScreenshotsPushDebugScenes.view(for:),
             ExtrasPushDebugScenes.view(for:),
             ScreenshotsProposalsDebugScenes.view(for:),
+            ScreenshotsHandDebugScenes.view(for:),
             AssistantDebugScenes.view(for:),
             SuggestionsDebugScenes.view(for:),
             AssistDebugScenes.view(for:),

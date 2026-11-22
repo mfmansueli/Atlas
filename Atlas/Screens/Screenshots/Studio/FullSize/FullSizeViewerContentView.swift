@@ -161,6 +161,7 @@ struct FullSizeViewerContentView: View {
         switch shot.image {
         case let .render(job): return await studio.renderQueue.largeImage(for: job, pixelWidth: pixels)
         case let .live(live): return await studio.screenshots.services.liveImage(live, pixelWidth: pixels)
+        case let .hand(file): return await studio.screenshots.renderQueue.largeHandImage(file, pixelWidth: pixels)
         case .none: return nil
         }
     }

@@ -22,6 +22,16 @@ struct ScreenshotMatrix: Hashable, Sendable {
     var ownSlotCounts: [ScreenshotDisplayType: Int] = [:]
     /// The set has Mac screenshots (it has Mac captures).
     var hasMac = false
+    /// Rows whose length isn't the set's slot count: sets changed by hand,
+    /// and live sets longer than the template, by `ScreenshotHandSet.key`.
+    var rowCounts: [String: Int] = [:]
+    /// The rows of sets changed by hand as the language page draws them:
+    /// every place in order, the ones that will be deleted too.
+    var handRows: [String: [ScreenshotCell]] = [:]
+    /// Devices Atlas doesn't render that have live screenshots or sets
+    /// changed by hand (Mac without captures, Apple Watch, Apple Vision
+    /// Pro): the language page shows and edits them.
+    var handDisplays: [ScreenshotDisplayType] = []
 
     static let empty = ScreenshotMatrix(
         slotCount: 0, cells: [:], localizedLocales: [], restoredLocales: [], fallbackLocales: [], hasTemplate: false, hasCaptures: false
@@ -32,7 +42,19 @@ struct ScreenshotMatrix: Hashable, Sendable {
     }
 
     func row(locale: String, displayType: ScreenshotDisplayType) -> [ScreenshotCell] {
-        (0..<slotCount(on: displayType)).compactMap { cell(locale: locale, displayType: displayType, slot: $0) }
+        let count = rowCounts[ScreenshotHandSet.key(locale: locale, displayType: displayType)] ?? slotCount(on: displayType)
+        return (0..<count).compactMap { cell(locale: locale, displayType: displayType, slot: $0) }
+    }
+
+    /// A row as the language page draws it: with a set changed by hand,
+    /// every place, the ones that will be deleted too.
+    func pageRow(locale: String, displayType: ScreenshotDisplayType) -> [ScreenshotCell] {
+        handRows[ScreenshotHandSet.key(locale: locale, displayType: displayType)] ?? row(locale: locale, displayType: displayType)
+    }
+
+    /// Whether the row's set was changed by hand.
+    func isHandRow(locale: String, displayType: ScreenshotDisplayType) -> Bool {
+        handRows[ScreenshotHandSet.key(locale: locale, displayType: displayType)] != nil
     }
 
     /// The set's slots on iPhone and iPad; Apple Watch's and Apple Vision

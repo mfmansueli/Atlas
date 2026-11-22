@@ -15,8 +15,18 @@ extension ScreenshotsViewModel {
     // MARK: - Languages
 
     /// The languages with their own screenshots, primary first.
+    /// The languages on the store page, those Atlas makes screenshots for
+    /// first (primary first), then the ones on the version that are
+    /// restored or use the primary language's: any of them can get
+    /// screenshots by hand.
     var pageLocales: [StoreLocale] {
-        let codes = matrix.localizedLocales.isEmpty ? [context.primaryLocale.code] : matrix.localizedLocales
+        var codes = matrix.localizedLocales.isEmpty ? [context.primaryLocale.code] : matrix.localizedLocales
+        let onVersion = Set(context.localizations.keys.map(\.code))
+        let handLocales = Set((document?.handSets ?? []).map(\.locale))
+        for code in matrix.restoredLocales + matrix.fallbackLocales + handLocales.sorted() where !codes.contains(code) {
+            guard onVersion.contains(code) || handLocales.contains(code) || live.hasOwnSet(locale: code) else { continue }
+            codes.append(code)
+        }
         return codes.compactMap { code in locales.first { $0.code == code } ?? StoreLocaleCatalog.locale(code: code) }
     }
 
@@ -51,7 +61,8 @@ extension ScreenshotsViewModel {
     /// iPhone, iPad, Mac and the devices with screens of their own, as the
     /// set has them.
     var pageDisplays: [ScreenshotDisplayType] {
-        let displays = matrix.displays.filter { matrix.slotCount(on: $0) > 0 }
+        let rendered = matrix.displays.filter { matrix.slotCount(on: $0) > 0 }
+        let displays = ScreenshotDisplayType.studio.filter { rendered.contains($0) || matrix.handDisplays.contains($0) }
         return displays.isEmpty ? [.iPhone] : displays
     }
 
@@ -65,7 +76,8 @@ extension ScreenshotsViewModel {
 
     /// "Caption suggested", "Not pushed" or "Live" under a screenshot.
     func pageStatus(of cell: ScreenshotCell) -> (title: String, isSuggested: Bool) {
-        if proposedCaption(locale: cell.key.locale, slot: cell.key.slot) != nil {
+        if cell.state == .willBeDeleted { return (cell.state.title, false) }
+        if cell.image.renderJob != nil, cell.hand?.isChanged != true, proposedCaption(locale: cell.key.locale, slot: cell.key.slot) != nil {
             return (String(localized: "Caption suggested"), true)
         }
         if cell.state.isPending { return (cell.state.title, false) }
@@ -78,8 +90,13 @@ extension ScreenshotsViewModel {
         let count = proposedCaptions(in: locale).count
         if count == 1 { return String(localized: "1 caption suggested") }
         if count > 1 { return String(localized: "\(count) captions suggested") }
-        let pending = matrix.row(locale: locale.code, displayType: displayType).count { $0.state.isPending }
-        return pending > 0 ? String(localized: "\(pending) not pushed") : String(localized: "Live")
+        let items = handPageItems(locale: locale.code, displayType: displayType)
+        let pending = items.count { $0.cell.state.isPending }
+        if pending > 0 { return String(localized: "\(pending) not pushed") }
+        if items.isEmpty, locale.code != context.primaryLocale.code {
+            return String(localized: "Uses \(context.primaryLocale.name)")
+        }
+        return String(localized: "Live")
     }
 
     // MARK: - Previews

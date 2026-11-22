@@ -99,6 +99,10 @@ protocol ScreenshotsServices {
     /// made in. By default a temporary one.
     func extrasFolder(for app: StoreApp) -> URL
 
+    /// Where screenshots given by hand are kept. By default the app's
+    /// folder (a temporary one in DEBUG scenes and tests).
+    var handFiles: ScreenshotHandFilesFolder { get }
+
     /// The text in a capture, read in `locale`'s language and the ones an
     /// app falls back to (`primary`, English). By default nothing is read.
     func readText(of capture: ScreenshotCapture, for app: StoreApp, locale: StoreLocale, primary: StoreLocale) async -> CaptureTextReading?

@@ -12,6 +12,8 @@ extension ScreenshotPushController {
         switch item.content {
         case let .render(job): renderQueue(appID: item.appID, displayType: item.cell.displayType)?.images[job.key]
         case let .restore(image): backupThumbnails[image.id]
+        case let .file(file): handThumbnails[file.id]
+        case .delete, .reorder: nil
         }
     }
 
@@ -22,6 +24,8 @@ extension ScreenshotPushController {
     }
 
     func isRendering(_ item: ScreenshotPlanItem) -> Bool {
+        if let file = item.content.handFile { return handThumbnails[file.id] == nil }
+        if item.content.isSetChange { return false }
         guard item.content.renderJob != nil else { return backupThumbnails[item.content.backupImage?.id ?? ""] == nil }
         return renderQueue(appID: item.appID, displayType: item.cell.displayType)?.isRendering ?? false
     }
@@ -49,6 +53,19 @@ extension ScreenshotPushController {
             queue.loadLive(shown.compactMap(\.old), pixelWidth: width)
         }
         loadBackupThumbnails(items.compactMap(\.content.backupImage), appID: app.id)
+        loadHandThumbnails(items.compactMap(\.content.handFile), app: app)
+    }
+
+    /// Decodes files given by hand small, off the main actor.
+    func loadHandThumbnails(_ files: [ScreenshotHandFile], app: StoreApp) {
+        guard let folder = workspace?.screenshots.handFiles else { return }
+        for file in files where handThumbnails[file.id] == nil {
+            let size = ThumbnailSize.renderPixelWidth(for: .iPhone)
+            Task { [weak self] in
+                let thumbnail = await Task.detached(priority: .userInitiated) { folder.image(for: file, appID: app.id, pixelWidth: size) }.value
+                self?.handThumbnails[file.id] = thumbnail
+            }
+        }
     }
 
     /// Decodes kept screenshots small, off the main actor.

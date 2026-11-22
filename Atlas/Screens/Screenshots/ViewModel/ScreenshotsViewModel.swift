@@ -85,6 +85,13 @@ final class ScreenshotsViewModel {
     var isAcceptAllCaptionsPresented = false
     /// After accepting or dismissing captions on the language page.
     var captionToast: ToastMessage?
+    /// The screenshot picked on the language page.
+    var handSelection: ScreenshotHandSelection?
+    /// Replace, Delete, Delete All, Add or Import a Folder.
+    var handSheet: ScreenshotHandSheet?
+    /// Goes up with every change made by hand, so Review & Push re-reads
+    /// the plan and the toolbar's "N not pushed" follows.
+    var handRevision = 0
     @ObservationIgnored var captionUndo: (() async -> Void)?
     var displayType: ScreenshotDisplayType = .iPhone {
         didSet { if displayType != oldValue { renderVisibleCells() } }
@@ -107,7 +114,11 @@ final class ScreenshotsViewModel {
             cache: ScreenshotRenderCache(directory: services.renderCacheDirectory),
             holdCount: services.renderHoldCount,
             captureImage: { [services, app] capture, width in await services.captureImage(capture, for: app, pixelWidth: width) },
-            liveImage: { [services] screenshot, width in await services.liveImage(screenshot, pixelWidth: width) }
+            liveImage: { [services] screenshot, width in await services.liveImage(screenshot, pixelWidth: width) },
+            handImage: { [services, app] file, width in
+                let folder = services.handFiles
+                return await Task.detached(priority: .userInitiated) { folder.image(for: file, appID: app.id, pixelWidth: width) }.value
+            }
         )
         captureImages = CaptureImageStore { [services, app] capture, width in
             await services.captureImage(capture, for: app, pixelWidth: width)
@@ -242,6 +253,21 @@ final class ScreenshotsViewModel {
             return shot
         }
         renderQueue.loadLive(liveShots, pixelWidth: ThumbnailSize.renderPixelWidth(for: displayType))
+        let handFiles = (matrix.cells.values.map(\.image) + matrix.handRows.values.flatMap { $0.map(\.image) }).compactMap { image -> ScreenshotHandFile? in
+            if case let .hand(file) = image { return file }
+            return nil
+        }
+        renderQueue.loadHand(handFiles, pixelWidth: ThumbnailSize.renderPixelWidth(for: .iPhone))
+        let ghostLive = matrix.handRows.values.flatMap(\.self).compactMap { cell -> LiveScreenshot? in
+            guard cell.key.displayType == displayType, case let .live(shot) = cell.image else { return nil }
+            return shot
+        }
+        renderQueue.loadLive(ghostLive, pixelWidth: ThumbnailSize.renderPixelWidth(for: displayType))
+        let ghostJobs = matrix.handRows.values.flatMap(\.self).filter { $0.state == .willBeDeleted }.compactMap(\.image.renderJob)
+        let shownGhostJobs = ghostJobs.filter { $0.layout.canvas.display == displayType }
+        if !shownGhostJobs.isEmpty {
+            renderQueue.render(jobs + shownGhostJobs, pixelWidth: ThumbnailSize.renderPixelWidth(for: displayType))
+        }
     }
 
     // MARK: - Bar

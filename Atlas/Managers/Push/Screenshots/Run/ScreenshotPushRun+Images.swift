@@ -68,7 +68,7 @@ extension ScreenshotPushRun {
     /// the push's backup, once. One with no image in App Store Connect has
     /// nothing to keep, so it's replaced without a copy; one still
     /// processing isn't replaced yet.
-    private func keepCopy(_ index: Int) async throws {
+    func keepCopy(_ index: Int) async throws {
         let item = items[index]
         guard let old = item.plan.old, item.backup == nil, let group = sets[item.groupID]?.group else { return }
         items[index].status = .keepingCopy
@@ -110,6 +110,8 @@ extension ScreenshotPushRun {
     private func makeRoom(_ index: Int) async throws {
         let groupID = items[index].groupID
         guard let order = sets[groupID]?.order, order.count >= Self.setCapacity else { return }
+        // A set changed by hand that's full loses one it deletes anyway.
+        if await deleteOneForRoom(groupID) { return }
         if let old = items[index].plan.old, order.contains(old.id) {
             _ = try await send(ScreenshotUploadRequests.delete(screenshotID: old.id))
             sets[groupID]?.order.removeAll { $0 == old.id }

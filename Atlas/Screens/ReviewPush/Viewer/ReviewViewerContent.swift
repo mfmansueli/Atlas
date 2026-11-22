@@ -51,6 +51,7 @@ enum ReviewViewerContent: Hashable {
         switch self {
         case let .screenshot(item):
             side == .live ? item.old?.pixelSize : item.content.renderJob?.layout.canvas.pixelSize ?? item.content.backupImage?.pixelSize
+                ?? item.content.handFile?.pixelSize
         case let .artwork(item): item.pixelSize
         case let .appPreview(_, file, _): file.pixelSize
         case let .file(file): file.pixelSize

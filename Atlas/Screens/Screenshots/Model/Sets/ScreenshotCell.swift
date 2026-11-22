@@ -19,6 +19,9 @@ struct ScreenshotCell: Hashable, Sendable, Identifiable {
     var proposal: ChangeSource?
     /// What's live in this position now.
     var live: LiveScreenshot?
+    /// The place in a set changed by hand this cell shows; nil when the
+    /// set wasn't changed by hand.
+    var hand: ScreenshotHandCellInfo?
 
     var id: ScreenshotCellKey { key }
 

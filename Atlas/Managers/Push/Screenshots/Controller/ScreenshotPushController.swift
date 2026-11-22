@@ -33,6 +33,8 @@ final class ScreenshotPushController {
     var notice: String?
     /// Kept screenshots' thumbnails by backup image ID.
     var backupThumbnails: [String: CGImage] = [:]
+    /// Files given by hand, small, by file ID.
+    var handThumbnails: [String: CGImage] = [:]
     /// Restore Previous Screenshots… for Activity to open when it appears
     /// (DEBUG scenes).
     var pendingRestore: ScreenshotRestorePresentation?
@@ -154,7 +156,7 @@ final class ScreenshotPushController {
             if state.pruneRestores(keeping: { document.scope.isPinned($0) }) { try? pushing.state.save(state, appID: app.id) }
             // A run that makes only extras leaves the set as it is, so an
             // app without one can still have extras waiting.
-            let hasSet = document.template != nil || !state.restores.isEmpty
+            let hasSet = document.template != nil || !state.restores.isEmpty || document.hasHandSets
             guard hasSet || document.extras != nil else {
                 plans[app.id] = nil
                 extras.setPlan(nil, for: app.id)

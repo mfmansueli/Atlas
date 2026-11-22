@@ -41,28 +41,14 @@ struct ScreenshotReviewItemCard: View {
                 .accessibilityLabel(Text("Discard \(accessibilityTitle)"))
                 .accessibilityIdentifier("review.shots.discard.\(Self.identifier(item))")
             }
-            HStack(spacing: Spacing.xxSmall) {
-                let old = ScreenshotThumbnail(
-                    image: viewModel.screenshots.oldImage(for: item), width: width, aspect: aspect,
-                    placeholder: oldPlaceholder, isLoading: item.old != nil
-                )
-                if item.old != nil {
-                    openButton(.live) { old }
-                        .accessibilityLabel(Text("Live now"))
-                } else {
-                    old.accessibilityLabel(Text("Live now"))
-                }
-                Image(systemName: "arrow.right")
-                    .font(.caption2)
-                    .foregroundStyle(Palette.label3)
-                    .accessibilityLabel(Text("becomes"))
-                openButton(.new) {
-                    ScreenshotThumbnail(
-                        image: viewModel.screenshots.newImage(for: item), width: width, aspect: aspect,
-                        isLoading: viewModel.screenshots.isRendering(item)
-                    )
-                }
-                .accessibilityLabel(Text("New"))
+            if item.content == .reorder {
+                Text("Puts the set in the order you left it.")
+                    .font(.caption)
+                    .foregroundStyle(Palette.label2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(width: max(width * 2 + 20, 90), alignment: .leading)
+            } else {
+                images
             }
         }
         .padding(Spacing.xSmall)
@@ -73,6 +59,38 @@ struct ScreenshotReviewItemCard: View {
         .opacity(viewModel.isChecked(item) ? 1 : 0.55)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("review.shots.item.\(Self.identifier(item))")
+    }
+
+    /// The live screenshot → the new one; for a delete, → "Deleted".
+    private var images: some View {
+        HStack(spacing: Spacing.xxSmall) {
+            let old = ScreenshotThumbnail(
+                image: viewModel.screenshots.oldImage(for: item), width: width, aspect: aspect,
+                placeholder: oldPlaceholder, isLoading: item.old != nil
+            )
+            if item.old != nil {
+                openButton(.live) { old }
+                    .accessibilityLabel(Text("Live now"))
+            } else {
+                old.accessibilityLabel(Text("Live now"))
+            }
+            Image(systemName: "arrow.right")
+                .font(.caption2)
+                .foregroundStyle(Palette.label3)
+                .accessibilityLabel(Text("becomes"))
+            if item.content == .delete {
+                ScreenshotThumbnail(image: nil, width: width, aspect: aspect, placeholder: String(localized: "Deleted"), isLoading: false)
+                    .accessibilityLabel(Text("Deleted"))
+            } else {
+                openButton(.new) {
+                    ScreenshotThumbnail(
+                        image: viewModel.screenshots.newImage(for: item), width: width, aspect: aspect,
+                        isLoading: viewModel.screenshots.isRendering(item)
+                    )
+                }
+                .accessibilityLabel(Text("New"))
+            }
+        }
     }
 
     /// A thumbnail that opens the set's slots large on `side`.
@@ -101,8 +119,14 @@ struct ScreenshotReviewItemCard: View {
         item.title(localeName: group.locale.name)
     }
 
-    /// `ar-SA.iPhone.1`, for UI tests.
+    /// `ar-SA.iPhone.1`, for UI tests; a delete ends in `.delete`, the new
+    /// order is `….order`.
     static func identifier(_ item: ScreenshotPlanItem) -> String {
-        "\(item.cell.locale).\(item.cell.displayType.shortTitle).\(item.cell.slot + 1)"
+        let base = "\(item.cell.locale).\(item.cell.displayType.shortTitle)"
+        switch item.content {
+        case .reorder: return "\(base).order"
+        case .delete: return "\(base).\(item.cell.slot + 1).delete"
+        case .render, .restore, .file: return "\(base).\(item.cell.slot + 1)"
+        }
     }
 }

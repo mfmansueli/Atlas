@@ -37,4 +37,19 @@ struct ScreenshotSetProgress: Hashable, Sendable {
         }
         return desired + order.filter { !desired.contains($0) }
     }
+
+    /// The order a set changed by hand ends in: each place's screenshot,
+    /// kept or uploaded (`uploaded` gives an item's new screenshot), then
+    /// whatever else is still in the set.
+    static func handOrder(_ arrangement: [ScreenshotHandTarget], order: [String], uploaded: (ScreenshotPlanItem.ID) -> String?) -> [String] {
+        var desired: [String] = []
+        for target in arrangement {
+            switch target {
+            case let .keep(id) where order.contains(id): desired.append(id)
+            case let .upload(itemID): if let id = uploaded(itemID), order.contains(id) { desired.append(id) }
+            case .keep: continue
+            }
+        }
+        return desired + order.filter { !desired.contains($0) }
+    }
 }

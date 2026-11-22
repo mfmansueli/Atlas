@@ -29,11 +29,12 @@ extension MCPServerController {
     }
 
     /// The upload links (Autopilot's captures, event art, a page's screens
-    /// captured again); nil for any other path.
+    /// captured again, screenshot files); nil for any other path.
     private func receiveUpload(_ request: HTTPRequest) async -> HTTPResponse? {
         if request.path.hasPrefix(MCPEndpoint.autopilotPath) { return await receiveAutopilotUpload(request) }
         if request.path.hasPrefix(MCPEndpoint.eventArtworkPath) { return await receiveEventArtworkUpload(request) }
         if request.path.hasPrefix(MCPEndpoint.pageShotsPath) { return await receivePageShotsUpload(request) }
+        if request.path.hasPrefix(MCPEndpoint.screenshotFilePath) { return await receiveScreenshotFileUpload(request) }
         return nil
     }
 

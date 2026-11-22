@@ -16,8 +16,19 @@ struct ScreenshotPushState: Codable, Hashable, Sendable {
     /// Kept screenshots discarded from a queued restore, by backup image
     /// ID: they stay out of the push until Undo.
     var keptRestores: Set<String> = []
+    /// Changes made by hand discarded in review, by plan item ID: what
+    /// each was (its file's checksum, the screenshot it deletes, the
+    /// order). They stay out of the push until they change or Undo. Nil in
+    /// states from before them.
+    var keptHand: [String: String]?
 
-    var isEmpty: Bool { kept.isEmpty && restores.isEmpty && keptRestores.isEmpty }
+    var isEmpty: Bool { kept.isEmpty && restores.isEmpty && keptRestores.isEmpty && (keptHand ?? [:]).isEmpty }
+
+    /// Whether a change made by hand was discarded as it is now.
+    func isKept(_ item: ScreenshotPlanItem) -> Bool {
+        guard let fingerprint = item.handFingerprint else { return false }
+        return keptHand?[item.id] == fingerprint
+    }
 
     func restore(for locale: String) -> ScreenshotRestoreRequest? {
         restores.first { $0.locale == locale }

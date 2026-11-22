@@ -57,6 +57,7 @@ extension ScreenshotsViewModel {
         switch cell.image {
         case let .render(job): renderQueue.images[job.key]
         case let .live(shot): renderQueue.liveImages[shot.id]
+        case let .hand(file): renderQueue.handImages[file.id]
         case .none: nil
         }
     }

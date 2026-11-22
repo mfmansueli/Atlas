@@ -39,8 +39,10 @@ struct RenderStateBadge: View {
         switch state {
         case .live, .uploadedByHand:
             Image(systemName: "checkmark").imageScale(.small)
-        case .notPushed:
+        case .notPushed, .handNew, .handReplaced:
             Circle().fill(Palette.unsaved).frame(width: 6, height: 6)
+        case .willBeDeleted:
+            Image(systemName: "trash").imageScale(.small)
         case .failed:
             Image(systemName: "exclamationmark.triangle.fill").imageScale(.small)
         case .fallback:
@@ -55,8 +57,8 @@ struct RenderStateBadge: View {
     private var foreground: Color {
         if isRendering { return Palette.label2 }
         return switch state {
-        case .notPushed: Palette.accentText
-        case .failed: Palette.danger
+        case .notPushed, .handNew, .handReplaced: Palette.accentText
+        case .failed, .willBeDeleted: Palette.danger
         case .noCaption, .noCapture, .fallback, .empty: Palette.label3
         default: Palette.label2
         }
@@ -65,8 +67,8 @@ struct RenderStateBadge: View {
     private var background: Color {
         if isRendering { return .clear }
         return switch state {
-        case .notPushed: Palette.accentTint
-        case .failed: Palette.dangerTint
+        case .notPushed, .handNew, .handReplaced: Palette.accentTint
+        case .failed, .willBeDeleted: Palette.dangerTint
         case .restored: Palette.fill2
         default: .clear
         }

@@ -45,6 +45,15 @@ enum MCPEndpoint {
         "http://\(host):\(port)\(eventArtworkPath)\(token)/\(appID)"
     }
 
+    /// Where a screenshot file for a set is uploaded (screenshots by hand):
+    /// `POST /screenshot-file/<token>/<app ID>?name=<file name>` with the
+    /// PNG or JPEG as the body.
+    static let screenshotFilePath = "/screenshot-file/"
+
+    static func screenshotFileUploadURL(port: UInt16, token: String, appID: String) -> String {
+        "http://\(host):\(port)\(screenshotFilePath)\(token)/\(appID)"
+    }
+
     static func url(port: UInt16) -> String {
         "http://\(host):\(port)\(path)"
     }

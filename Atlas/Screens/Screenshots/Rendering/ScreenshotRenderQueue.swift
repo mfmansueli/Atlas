@@ -18,6 +18,8 @@ final class ScreenshotRenderQueue {
     private(set) var images: [RenderKey: CGImage] = [:]
     /// Live screenshots' images by live screenshot ID.
     private(set) var liveImages: [String: CGImage] = [:]
+    /// Files given by hand, by file ID.
+    private(set) var handImages: [String: CGImage] = [:]
     /// Nil when nothing is rendering.
     private(set) var progress: ScreenshotRenderProgress?
 
@@ -26,6 +28,7 @@ final class ScreenshotRenderQueue {
     @ObservationIgnored var holdCount: Int?
     @ObservationIgnored private let captureImage: (ScreenshotCapture, Int) async -> CGImage?
     @ObservationIgnored private let liveImage: (LiveScreenshot, Int) async -> CGImage?
+    @ObservationIgnored private let handImage: (ScreenshotHandFile, Int) async -> CGImage?
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var batch: [RenderKey: CGImage] = [:]
 
@@ -35,12 +38,14 @@ final class ScreenshotRenderQueue {
         cache: ScreenshotRenderCache,
         holdCount: Int? = nil,
         captureImage: @escaping (ScreenshotCapture, Int) async -> CGImage?,
-        liveImage: @escaping (LiveScreenshot, Int) async -> CGImage?
+        liveImage: @escaping (LiveScreenshot, Int) async -> CGImage?,
+        handImage: @escaping (ScreenshotHandFile, Int) async -> CGImage? = { _, _ in nil }
     ) {
         self.cache = cache
         self.holdCount = holdCount
         self.captureImage = captureImage
         self.liveImage = liveImage
+        self.handImage = handImage
     }
 
     var isRendering: Bool { progress != nil }
@@ -70,6 +75,23 @@ final class ScreenshotRenderQueue {
                 liveImages[screenshot.id] = image
             }
         }
+    }
+
+    /// Loads the images of files given by hand that aren't loaded yet.
+    func loadHand(_ files: [ScreenshotHandFile], pixelWidth: Int) {
+        let missing = files.filter { handImages[$0.id] == nil }
+        guard !missing.isEmpty else { return }
+        Task { [weak self] in
+            for file in missing {
+                guard let self, let image = await handImage(file, pixelWidth) else { continue }
+                handImages[file.id] = image
+            }
+        }
+    }
+
+    /// A file given by hand at a larger size, for a viewer.
+    func largeHandImage(_ file: ScreenshotHandFile, pixelWidth: Int) async -> CGImage? {
+        await handImage(file, pixelWidth)
     }
 
     /// One render at a larger size, for the viewer; cached like the rest.

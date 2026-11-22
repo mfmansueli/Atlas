@@ -7,6 +7,8 @@ macOS app (SwiftUI, macOS 27+) for localizing apps faster through the App Store 
 - **Store page:** the App Store listing's text in every locale, with import, Find and Replace, and translation by Apple
   Translation, an AI provider (Anthropic or OpenAI, with your own API key) or your assistant.
 - **Screenshots (⌘3):** an App Store preview of the live set or the new one, per device, language and appearance;
+  each language's set can be changed by hand on its page (replace with your own files, delete, add, reorder, Import a
+  Folder in fastlane's layout), every change waiting in Review & Push;
   one template, captions per locale, imported captures (the Captures tab lists each locale's; a click shows one large,
   ← → step through its screens and ↑ ↓ through the locales), and renders checked for fit before they're pushed. The
   template gallery (Templates…) offers 12 templates in four styles (Simple, Bold, Elegant, Playful): angled and leaning
@@ -199,7 +201,10 @@ App Store Connect or the Keychain, and the MCP server in a scene never opens a p
   `tpl-market-de`, `tpl-poster-ja` and `tpl-swoosh-deco`; Captions, `cap*`
   (`ScreenshotsDebugScenes`). Captures, `capt*` (`capt-view`: one shown large), and assistants' proposals, `prop-*`
   (`ScreenshotsProposalsDebugScenes`). Pushing them, `shots-review`, `shots-push`, `shots-push-partial`, and
-  restoring them from Activity, `shots-act` and `shots-act-restore` (`ScreenshotsPushDebugScenes`).
+  restoring them from Activity, `shots-act` and `shots-act-restore` (`ScreenshotsPushDebugScenes`). Screenshots by
+  hand on German's language page (`ScreenshotsHandDebugScenes`): `hand-page`, one selected `hand-select`, changed
+  `hand-changed`, a language using the primary's `hand-fallback`, the sheets `hand-replace`, `hand-replace-wrong`,
+  `hand-delete`, `hand-delete-all`, `hand-add`, `hand-import`, and an assistant's file `hand-proposal`.
 - **Claude Code started by Atlas:** through a pretend helper (`DebugUnixScriptRunner`), so nothing runs:
   setup's step 3 before and after the helper is saved, `cc-setup` and `cc-setup-installed`, and its test run
   connecting, `cc-setup-test`; Ask working, `cc-ask`; Suggest Everything working, `cc-everything`; Show Output,
@@ -619,6 +624,15 @@ call.
     `propose_captions` and `list_proposals`. `get_capture` and `render_preview` return PNG images. Slots are
     numbered from 1. Screenshot proposals wait in their own Proposals sheet, opened from the toolbar's assistant
     indicator, rather than in Review & Push.
+  - **Screenshots by hand** (`Screens/Screenshots/Hand/`, `Screens/Screenshots/Model/Hand/`,
+    `Managers/Push/Plan/Hand/`): a language's set on a device edited on its language page (replace, delete, add,
+    move, Undo Change, Import a Folder) is kept as a `ScreenshotHandSet` in the document, its files in
+    Application Support/Atlas/Screenshots/ByHand. `ScreenshotMatrixBuilder+Hand` builds its row (and the page's
+    row with the places that will be deleted); `ScreenshotHandPlanner` plans uploads, deletes and the new order,
+    and the run uploads first, deletes only when every upload went (with a backup copy each), then reorders.
+    `propose_screenshot_file` takes a file sent to `get_screenshot_context`'s `fileUploadURL`
+    (`/screenshot-file/<token>/<appID>?name=`), checked like one the person adds; it waits on the language page.
+    Assistants never delete screenshots.
   - **Redoing some captures** (`Managers/Autopilot/Recapture/`, `Managers/MCP/Tools/Autopilot/Recapture/`): a
     capture-only run isn't a new run. The app's finished run is opened again in place with `run.recapture`
     (`AutopilotRecapture`: the plan's targets and App Preview moments redone, why, and what Cancel gives back), so the

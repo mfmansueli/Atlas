@@ -47,6 +47,7 @@ struct MCPToolbox {
             RenderPreviewTool(),
             ProposeTemplateTool(),
             ProposeCaptionsTool(),
+            ProposeScreenshotFileTool(),
             ListProposalsTool(),
             GetStorePageTool(),
             GetAppInformationTool(),

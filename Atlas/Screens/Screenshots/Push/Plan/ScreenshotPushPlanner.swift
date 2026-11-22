@@ -23,8 +23,8 @@ struct ScreenshotPushPlanner {
             let version = input.context.version.versionString
             plan.blockedReason = String(localized: "Version \(version) is live. Screenshots can only change with a version that’s being prepared.")
         }
-        var groups: [String: ScreenshotPlanGroup] = [:]
-        for cell in matrix.localizedCells {
+        var groups = handGroups(input, matrix: matrix, snapshot: snapshot, plan: &plan)
+        for cell in matrix.localizedCells where !matrix.isHandRow(locale: cell.key.locale, displayType: cell.key.displayType) {
             guard let locale = snapshot.locale(code: cell.key.locale) else { continue }
             if case let .failed(reason) = cell.state {
                 plan.excluded.append(ScreenshotPlanExclusion(appID: input.appID, cell: cell.key, localeName: locale.name, failedCheck: reason))
@@ -51,6 +51,16 @@ struct ScreenshotPushPlanner {
         if plan.blockedReason == nil { exclude(fromBlockedVersions: &groups, plan: &plan, input: input) }
         plan.groups = groups.values.sorted { order($0, primary: input.context.primaryLocale.code) < order($1, primary: input.context.primaryLocale.code) }
         return plan
+    }
+
+    /// Sets changed by hand, planned place by place.
+    private func handGroups(
+        _ input: ScreenshotPlanInput, matrix: ScreenshotMatrix, snapshot: ScreenshotsSnapshot, plan: inout ScreenshotPushPlan
+    ) -> [String: ScreenshotPlanGroup] {
+        let hand = ScreenshotHandPlanner().plan(input, matrix: matrix, snapshot: snapshot)
+        plan.excluded += hand.excluded
+        plan.kept += hand.kept
+        return Dictionary(hand.groups.map { ($0.id, $0) }) { first, _ in first }
     }
 
     /// A device whose version can't change while another's can: its images
@@ -119,9 +129,7 @@ struct ScreenshotPushPlanner {
     /// Who made the image's change: an assistant whose caption proposal was
     /// accepted, machine translation, or you.
     private func source(of caption: ScreenshotCaption?) -> ChangeSource {
-        guard let caption else { return .you }
-        if let assistant = caption.provenance.assistant { return assistant }
-        return caption.provenance.isMachineTranslated ? .machineTranslation : .you
+        ScreenshotHandPlanner.source(of: caption)
     }
 
     /// A live screenshot Atlas pushed is "from the template".

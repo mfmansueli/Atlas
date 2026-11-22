@@ -41,11 +41,12 @@ struct ScreenshotMatrixBuilder {
                 }
             }
         }
+        addLiveAndHandRows(to: &matrix, snapshot: snapshot, engine: engine)
         return matrix
     }
 
     /// A cell rendered from the template.
-    private func managedCell(_ key: ScreenshotCellKey, locale: StoreLocale, snapshot: ScreenshotsSnapshot, engine: ScreenshotLayoutEngine) -> ScreenshotCell {
+    func managedCell(_ key: ScreenshotCellKey, locale: StoreLocale, snapshot: ScreenshotsSnapshot, engine: ScreenshotLayoutEngine) -> ScreenshotCell {
         let document = snapshot.document
         let live = snapshot.live.screenshot(locale: key.locale, displayType: key.displayType, slot: key.slot)
         var cell = ScreenshotCell(
@@ -104,7 +105,7 @@ struct ScreenshotMatrixBuilder {
 
     /// A restored row's or an out-of-scope row's cell: what's live there,
     /// else the primary locale's render, dimmed.
-    private func otherCell(_ key: ScreenshotCellKey, isPinned: Bool, primary: ScreenshotCell?, live: LiveScreenshots) -> ScreenshotCell {
+    func otherCell(_ key: ScreenshotCellKey, isPinned: Bool, primary: ScreenshotCell?, live: LiveScreenshots) -> ScreenshotCell {
         let shot = live.screenshot(locale: key.locale, displayType: key.displayType, slot: key.slot)
         var cell = ScreenshotCell(
             key: key, state: .fallback, image: primary?.image ?? .none, caption: nil, capture: nil, checks: [],

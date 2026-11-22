@@ -29,21 +29,32 @@ struct ScreenshotPlanGroup: Identifiable, Hashable, Sendable {
     /// The App Previews in this locale and display type. They're listed
     /// read-only; nothing here uploads or deletes them.
     var previews: LiveAppPreviewSet?
+    /// A set changed by hand: what goes in each place, in order. The push
+    /// leaves the set in this order; nil for the template's sets.
+    var arrangement: [ScreenshotHandTarget]?
 
     var id: String { "\(appID)|\(locale.code)|\(displayType.rawValue)" }
 
     var isRestore: Bool { restoredFrom != nil }
 
     /// Live screenshots the push replaces or removes.
-    var deleteCount: Int { items.count { $0.old != nil } + extraLive.count }
+    var deleteCount: Int { items.count { $0.old != nil && $0.content != .reorder } + extraLive.count }
+
+    var isHand: Bool { arrangement != nil }
 
     /// The assistant whose accepted proposals some of the images carry.
     var assistant: ChangeSource? {
         items.first { $0.source.isAssistant }?.source
     }
 
-    /// "5 images".
+    /// "5 images", or for a set changed by hand "2 images, 1 delete".
     var countTitle: String {
-        items.count == 1 ? String(localized: "1 image") : String(localized: "\(items.count) images")
+        let uploads = items.count { !$0.content.isSetChange }
+        let deletes = items.count { $0.content == .delete }
+        var parts: [String] = []
+        if uploads > 0 || deletes == 0 { parts.append(uploads == 1 ? String(localized: "1 image") : String(localized: "\(uploads) images")) }
+        if deletes > 0 { parts.append(deletes == 1 ? String(localized: "1 delete") : String(localized: "\(deletes) deletes")) }
+        if items.contains(where: { $0.content == .reorder }) { parts.append(String(localized: "new order")) }
+        return parts.joined(separator: ", ")
     }
 }

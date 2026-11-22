@@ -52,6 +52,8 @@ struct ViewerStage: View {
             return await viewModel.renderQueue.largeImage(for: job, pixelWidth: viewModel.viewerPixelWidth)
         case let .live(shot):
             return await viewModel.services.liveImage(shot, pixelWidth: viewModel.viewerPixelWidth)
+        case let .hand(file):
+            return await viewModel.renderQueue.largeHandImage(file, pixelWidth: viewModel.viewerPixelWidth)
         case .none:
             return nil
         }

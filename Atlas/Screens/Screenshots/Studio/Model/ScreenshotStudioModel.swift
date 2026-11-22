@@ -222,6 +222,7 @@ final class ScreenshotStudioModel {
         switch shot.image {
         case let .render(job): renderQueue.images[job.key] ?? screenshots.renderQueue.images[job.key]
         case let .live(live): renderQueue.liveImages[live.id] ?? screenshots.renderQueue.liveImages[live.id]
+        case let .hand(file): screenshots.renderQueue.handImages[file.id]
         case .none: nil
         }
     }
