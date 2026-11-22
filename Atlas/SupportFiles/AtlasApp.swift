@@ -129,6 +129,9 @@ struct AtlasApp: App {
                 .task { await launcher.refreshHelper() }
         }
         .defaultSize(width: 1200, height: 780)
+        // The window never gets smaller than RootView's minimum frame, even
+        // from a size saved before the minimum grew.
+        .windowResizability(.contentMinSize)
         .commands {
             WorkspaceCommands()
             AccountCommands(session: session)
@@ -218,8 +221,14 @@ struct AtlasApp: App {
         default: return ProGate(entitlements: Entitlements(store: DebugProStore(), override: true))
         }
         #endif
+        if everyoneIsPro { return ProGate(entitlements: Entitlements(store: StoreKitProStore(), override: true)) }
         return ProGate(entitlements: Entitlements(store: StoreKitProStore()), defaults: defaults)
     }
+
+    /// TEMPORARY (2026-11-22): a TestFlight build where everyone is Pro,
+    /// without a purchase. Set back to false (or remove) before a build
+    /// that should sell Pro.
+    private static let everyoneIsPro = true
 
     /// DEBUG scenes (and so UI tests) and the unit tests' host keep keys and
     /// secrets in memory, so they never read or overwrite the real ones in

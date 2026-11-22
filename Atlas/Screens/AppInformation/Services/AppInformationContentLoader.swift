@@ -43,7 +43,9 @@ struct AppInformationContentLoader: Sendable {
                 usesNonExemptEncryption: build?.attributes.usesNonExemptEncryption
             )
         }
-        export.declaredAnswers = try await Self.declaredAnswers(encryptionDeclarations(appID: app.id))
+        let declarations = try await encryptionDeclarations(appID: app.id)
+        export.declaredAnswers = Self.declaredAnswers(declarations)
+        export.declarations = Self.declarations(declarations)
 
         return AppInformationContent(
             versions: versions,
@@ -129,7 +131,28 @@ struct AppInformationContentLoader: Sendable {
     /// The newest declaration's answers, when there's one.
     static func declaredAnswers(_ declarations: [AppStoreConnectResource<AppEncryptionDeclarationAttributes>]) -> ExportComplianceAnswers? {
         let newest = declarations.max { ($0.attributes.createdDate ?? "") < ($1.attributes.createdDate ?? "") }
-        guard let attributes = newest?.attributes else { return nil }
+        return newest.map { answers(of: $0.attributes) }
+    }
+
+    /// Every declaration, newest first, for `get_export_compliance` and a
+    /// build's link to one.
+    static func declarations(_ resources: [AppStoreConnectResource<AppEncryptionDeclarationAttributes>]) -> [ExportEncryptionDeclaration] {
+        resources
+            .sorted { ($0.attributes.createdDate ?? "") > ($1.attributes.createdDate ?? "") }
+            .map { resource in
+                let attributes = resource.attributes
+                return ExportEncryptionDeclaration(
+                    id: resource.id,
+                    state: attributes.appEncryptionDeclarationState,
+                    codeValue: attributes.codeValue,
+                    createdDate: attributes.createdDate,
+                    appDescription: attributes.appDescription,
+                    answers: answers(of: attributes)
+                )
+            }
+    }
+
+    private static func answers(of attributes: AppEncryptionDeclarationAttributes) -> ExportComplianceAnswers {
         let pairs: [(ExportComplianceQuestion, Bool?)] = [
             (.usesEncryption, attributes.usesEncryption),
             (.isExempt, attributes.exempt),

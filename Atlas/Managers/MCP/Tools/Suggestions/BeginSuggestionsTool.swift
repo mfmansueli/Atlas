@@ -23,7 +23,10 @@ struct BeginSuggestionsTool: MCPTool {
         already_suggested (your suggestion still waits for the person), unknown_field, unknown_locale, \
         not_permitted or invalid_value. Don't send the skipped ones. Suggestions sent with the run outside the \
         plan are added to the total. Call end_suggestions when you're done; the run also ends at the plan's \
-        last item.
+        last item. App Compliance and Export Compliance are part of the plan too: {area: info, page: \
+        appCompliance, field: <rule>} per regulation get_compliance lists as proposable, and {area: info, page: \
+        exportCompliance, field: encryption}; propose_compliance_answers and propose_export_compliance with the \
+        run settle them.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -39,7 +42,7 @@ struct BeginSuggestionsTool: MCPTool {
         [
             "area": MCPToolDefinition.string("store or info."),
             "locale": MCPToolDefinition.string("For store: an App Store Connect locale code, e.g. en-US."),
-            "page": MCPToolDefinition.string("For info: general, ageRating, accessibility or review."),
+            "page": MCPToolDefinition.string("For info: general, ageRating, accessibility, review, appCompliance or exportCompliance."),
             "device": MCPToolDefinition.string("For accessibility: iphone, ipad, watch, vision, mac or tv."),
             "field": MCPToolDefinition.string("The field, question or feature, e.g. whatsNew, notes, wellness or voiceOver."),
         ],
@@ -59,12 +62,14 @@ struct BeginSuggestionsTool: MCPTool {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
         let session = try await MCPSuggestionSession(app: app, items: items, store: store, context: context, applies: false)
         try session.check(version: arguments.optionalString("version"))
+        let compliance = MCPComplianceRunTarget.plansCompliance(items) ? try? await MCPComplianceState.load(app, in: context) : nil
 
         let source = SuggestionSource.assistant(client: context.clientName)
         var plan: [SuggestionTarget] = []
         var skipped: [JSONValue] = []
         for item in items {
-            switch session.planned(item).flatMap({ Self.leftToOthers($0, store: store, appID: app.id, source: source) }) {
+            let planned = MCPComplianceRunTarget.planned(item, report: compliance?.report) ?? session.planned(item)
+            switch planned.flatMap({ Self.leftToOthers($0, store: store, appID: app.id, source: source) }) {
             case let .success(target): plan.append(target)
             case let .failure(skip): skipped.append(Self.json(item, skip))
             }

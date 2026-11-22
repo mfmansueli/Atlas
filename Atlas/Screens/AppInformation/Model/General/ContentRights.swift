@@ -17,4 +17,19 @@ enum ContentRights: String, CaseIterable, Hashable, Sendable {
         case .doesNotUseThirdPartyContent: String(localized: "No")
         }
     }
+
+    /// An answer by id or name, Yes or No, or true or false, ignoring case
+    /// and surrounding spaces; nil when it's none of them.
+    static func matching(_ text: String) -> ContentRights? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let match = allCases.first { rights in
+            [rights.rawValue, rights.title, rights.englishAnswer].contains { $0.caseInsensitiveCompare(trimmed) == .orderedSame }
+        }
+        return match ?? ["true": .usesThirdPartyContent, "false": .doesNotUseThirdPartyContent][trimmed.lowercased()]
+    }
+
+    /// Yes or No as an assistant may write it, whatever language Atlas is in.
+    private var englishAnswer: String {
+        self == .usesThirdPartyContent ? "yes" : "no"
+    }
 }

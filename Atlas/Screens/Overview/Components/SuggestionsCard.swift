@@ -39,7 +39,7 @@ struct SuggestionsCard: View {
                 .accessibilityIdentifier("overview.suggestionsCard.count")
             }
             VStack(spacing: 0) {
-                ForEach(SuggestionPage.allCases) { page in
+                ForEach(SuggestionPage.fieldPages) { page in
                     let coming = run?.comingCount(on: page) ?? 0
                     OverviewRow {
                         Text(page.title).foregroundStyle(Palette.label2)

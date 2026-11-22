@@ -28,6 +28,8 @@ extension AppInformationViewModel {
     func hasPendingChanges(on page: AppInformationPage) -> Bool {
         let builder = builder
         if changes.contains(where: { builder.page(of: $0) == page }) { return true }
+        // Stopping sales in China mainland shares Pricing's id.
+        if page == .appCompliance, builder.stopsSelling(in: ComplianceRegion.chinaMainland, with: queue.changes(for: app.id)) { return true }
         guard page == .appPrivacy else { return false }
         let prefix = "storePage.\(app.id).appInfo."
         let suffix = ".\(ListingField.privacyPolicyURL.rawValue)"

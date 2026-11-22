@@ -6,7 +6,9 @@
 import Foundation
 
 // Export Compliance: the five answers are kept on this Mac; what they add
-// up to goes to the version's build through Review & Push.
+// up to goes to the version's build through Review & Push, with the
+// encryption declaration an assistant proposed when it isn't exempt
+// (`propose_export_compliance`).
 extension AppInformationViewModel {
     /// Your answers, else the newest declaration's, else what the build's
     /// flag implies.
@@ -27,6 +29,13 @@ extension AppInformationViewModel {
         answers[question] = answer
         notes.exportAnswers = answers
         apply(builder.encryptionChange(content.export, to: answers), id: builder.encryptionChangeID)
+        // A declaration only goes with encryption that isn't exempt.
+        if answers.usesNonExemptEncryption != true { queue.discard(id: builder.declarationChangeID) }
+    }
+
+    /// The encryption declaration waiting in Review & Push, if one does.
+    var queuedDeclaration: PendingChange? {
+        queue.change(id: builder.declarationChangeID)
     }
 
     /// Confirm in the evidence popover: the assistant's answers stay, the
@@ -42,6 +51,6 @@ extension AppInformationViewModel {
         notes.exportEvidence = nil
         notes.exportAnswers = nil
         showsExportEvidence = false
-        queue.discard(id: builder.encryptionChangeID)
+        queue.discard(ids: [builder.encryptionChangeID, builder.declarationChangeID])
     }
 }

@@ -19,7 +19,8 @@ struct GetAppVersionsTool: MCPTool {
         version already waiting in Review & Push. Each version has its `builds` uploaded for that number and platform, \
         newest first (id, buildNumber, processingState PROCESSING/VALID/FAILED/INVALID, uploaded, expired, attached, \
         usesNonExemptEncryption), and `attachedBuild`, the one App Store Connect has attached to it (null when none); \
-        `buildsError` when they couldn't be read. Propose a version with propose_app_version; attaching a build and \
+        `buildsError` when they couldn't be read. An attached build's encryption answer is \
+        get_export_compliance's and propose_export_compliance's. Propose a version with propose_app_version; attaching a build and \
         submitting are the person's. A version in `queued` counts as the one being prepared: pass its number as \
         `version` to get_listing, get_app_information, propose_listing_text and suggest_fields to write its texts \
         before the person pushes it.

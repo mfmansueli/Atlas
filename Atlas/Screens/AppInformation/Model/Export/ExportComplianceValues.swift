@@ -16,4 +16,6 @@ struct ExportComplianceValues: Hashable, Sendable {
     /// The newest encryption declaration's answers, when one was made in
     /// App Store Connect.
     var declaredAnswers: ExportComplianceAnswers?
+    /// The app's encryption declarations, newest first.
+    var declarations: [ExportEncryptionDeclaration] = []
 }

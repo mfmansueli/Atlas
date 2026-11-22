@@ -194,6 +194,78 @@ struct ComplianceToolsTests {
         #expect(changes.changes.isEmpty)
     }
 
+    // MARK: - Pushed or kept in Atlas
+
+    @Test func eachResultSaysWhetherAcceptingPushesIt() async throws {
+        let results = try await propose([
+            ["rule": "icpFilingNumber", "answer": "stopSelling", "why": "No ICP filing in the project."],
+            ["rule": "traderStatus", "answer": "nonTrader"],
+        ])
+        #expect(results[0]["pushedWhenAccepted"] == true)
+        #expect(results[0]["changeId"] == .string("appAvailability.\(lumen).CHN"))
+        #expect(results[1]["pushedWhenAccepted"] == false)
+        #expect(results[1]["whenAccepted"]?.stringValue?.contains("marks it as declared") == true)
+        // Nothing reaches Review & Push until the person accepts.
+        #expect(changes.changes(for: lumen).isEmpty)
+
+        let outcome = try await GetComplianceTool().call(MCPToolArguments(["appId": "Lumen"]), in: context())
+        let regulations = try #require(outcome.result["regulations"]?.arrayValue)
+        #expect(regulations.first { $0["rule"] == "icpFilingNumber" }?["pushedAnswers"] == ["stopSelling"])
+        #expect(regulations.first { $0["rule"] == "traderStatus" }?["pushedAnswers"] == [])
+    }
+
+    /// Accepting the assistant's stopSelling queues the change under
+    /// Pricing's id, so propose_availability's makeUnavailable CHN is the
+    /// same change.
+    @Test func acceptingStopSellingQueuesTheSameChangeAsPricing() async throws {
+        let results = try await propose([["rule": "icpFilingNumber", "answer": "stopSelling"]])
+        let changeID = try #require(results.first?["changeId"]?.stringValue)
+        let app = StoreApp(id: lumen, name: "Lumen Journal", bundleID: "dev.example.lumen", sku: nil, primaryLocale: "en-US")
+        let viewModel = AppInformationViewModel(app: app, services: services, queue: changes)
+        await viewModel.load()
+        viewModel.acceptComplianceSuggestion(for: .icpFilingNumber)
+        let change = try #require(changes.change(id: changeID))
+        #expect(change.source == .assistant(client: "Claude Code"))
+        #expect(change.requests.first?.path == "/v1/territoryAvailabilities/lumen-availability-CHN")
+    }
+
+    /// Pricing already queued taking China mainland off sale: the answer is
+    /// given.
+    @Test func stoppingSalesQueuedFromPricingIsUnchanged() async throws {
+        let request = AppInformationChangeBuilder.patch("territoryAvailabilities", id: "lumen-availability-CHN", attributes: ["available": .bool(false)])
+        changes.upsert(PendingChange(
+            id: "appAvailability.\(lumen).CHN",
+            appID: lumen,
+            section: .subscriptionPricing,
+            group: "Pricing · Availability",
+            title: "Availability · China mainland",
+            oldValue: "Available",
+            newValue: "Not available",
+            source: .assistant(client: "Claude Code"),
+            requests: [request]
+        ))
+        let results = try await propose([["rule": "icpFilingNumber", "answer": "stopSelling"]])
+        #expect(results.first?["status"] == "unchanged")
+        #expect(suggestions.isEmpty)
+    }
+
+    @Test func aRunCountsEachSettledRegulation() async throws {
+        let store = FieldSuggestionStore()
+        var workspace = MCPTestFixtures.workspace(changes: changes, appInformation: services)
+        workspace.suggestions = store
+        let context = MCPToolContext(workspace: workspace, clientName: "Claude Code")
+        let plan = [MCPComplianceRunTarget.target(for: .traderStatus), MCPComplianceRunTarget.target(for: .medicalDevice)]
+        let run = store.startRun(appID: lumen, client: "Claude Code", plan: plan)
+        let arguments: [String: JSONValue] = [
+            "appId": "Lumen", "run": .string(run.id),
+            "answers": [["rule": "traderStatus", "answer": "nonTrader"], ["rule": "vietnamGameLicense", "answer": "declared"]],
+        ]
+        _ = try await ProposeComplianceAnswersTool().call(MCPToolArguments(arguments), in: context)
+        #expect(store.run?.arrived == [MCPComplianceRunTarget.target(for: .traderStatus)])
+        #expect(store.run?.rows.first?.page == .appCompliance)
+        #expect(store.run?.rows.first?.detail == "Digital Services Act, Regulated Medical Devices")
+    }
+
     @Test func aFilingKindThatIsntOneIsRefused() async throws {
         let results = try await propose([["rule": "aiGeneratedContent", "answer": "offersAI", "aiFiling": ["kind": "model"]]])
         #expect(results.first?["status"] == "refused")

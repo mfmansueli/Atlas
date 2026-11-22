@@ -22,7 +22,9 @@ struct GetComplianceTool: MCPTool {
         propose_compliance_answers (empty when it takes none, with why), an open suggestion if there is one, and \
         the trader details Atlas prepared from the team's name and App Review's contact. Apple's API takes none of \
         these answers: the person enters them in App Store Connect, except stopping sales in China mainland, which \
-        is pushed.
+        is pushed. Each regulation's pushedAnswers lists the answers that become a change in Review & Push once \
+        accepted (stopSelling); every other answer is kept in Atlas until the person enters it in App Store Connect \
+        and marks it as declared. Export compliance (encryption) is get_export_compliance.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
@@ -42,8 +44,8 @@ struct GetComplianceTool: MCPTool {
             "preparedTraderDetails": Self.json(state.preparedTraderDetails),
             "note": """
             Every answer you propose waits on its card until the person accepts it; Accept All never takes them. \
-            The person then enters it in App Store Connect. Never make up an address, a phone number or an ICP \
-            Filing Number.
+            Accepting stopSelling queues a change in Review & Push; the person enters every other answer in App \
+            Store Connect. Never make up an address, a phone number or an ICP Filing Number.
             """,
         ]
         return .read(result, target: String(localized: "\(app.name) · App Compliance"))
@@ -64,6 +66,7 @@ struct GetComplianceTool: MCPTool {
         } else {
             object["proposable"] = .array(ComplianceSuggestedAnswer.names(for: rule).map { .string($0) })
         }
+        object["pushedAnswers"] = rule == .icpFilingNumber ? ["stopSelling"] : []
         if let suggestion = state.suggestion(for: rule) {
             object["openSuggestion"] = [
                 "answer": .string(suggestion.answer.mcpName),

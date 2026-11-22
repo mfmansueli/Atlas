@@ -110,6 +110,12 @@ struct MCPSuggestionSession {
         """)
     }
 
+    /// An applied Yes to third-party content: only the person can say they
+    /// have the rights.
+    static var rightsNote: String {
+        String(localized: "It waits in Review & Push until the person confirms in Atlas that they have the rights to the third-party content.")
+    }
+
     // MARK: - Store Page
 
     private mutating func suggestStoreText(_ item: MCPSuggestionItem) throws(MCPSuggestionRefusal) -> [String: JSONValue] {
@@ -185,6 +191,7 @@ struct MCPSuggestionSession {
             result["status"] = "applied"
             result["changeId"] = .string(written.id)
             if let queued = draft.queuedVersion, Self.waits(written.change, in: draft) { result["note"] = .string(Self.waitsNote(queued)) }
+            if slot == .field(.contentRights), written.change?.blockedReason != nil { result["note"] = .string(Self.rightsNote) }
             noteSettled(slot.target)
         } else {
             result.merge(add(value, for: slot.target, item: item)) { _, new in new }

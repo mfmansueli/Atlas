@@ -16,7 +16,7 @@ import Testing
 struct ComplianceSuggestionTests {
     private let queue = ChangeQueue()
     private let app = StoreApp(id: DebugFixtures.AppID.lumen, name: "Lumen Journal", bundleID: "dev.example.lumen", sku: nil, primaryLocale: "en-US")
-    private var stopSellingID: String { "appInformation.\(app.id).appCompliance.availability.CHN" }
+    private var stopSellingID: String { "appAvailability.\(app.id).CHN" }
 
     private func loaded(with suggestions: [ComplianceSuggestion] = DebugAppInformationContent.complianceSuggestions) async -> AppInformationViewModel {
         let viewModel = AppInformationViewModel(app: app, services: DebugAppInformationServices(), queue: queue)

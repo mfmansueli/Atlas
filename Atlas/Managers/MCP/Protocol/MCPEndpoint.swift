@@ -131,7 +131,10 @@ enum MCPEndpoint {
     and propose the difference with propose_prices, propose_subscription, propose_app_price or \
     propose_availability, with file and line as evidence. App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
-    and propose_compliance_answers; the person accepts each and enters it in App Store Connect. Submitting a version or an event for App Review and \
+    and propose_compliance_answers; the person accepts each and enters it in App Store Connect. \
+    Only stopping sales in China mainland becomes a change in Review & Push. Export compliance comes from the code's \
+    use of encryption: get_export_compliance, then propose_export_compliance queues the build's answer and any \
+    encryption declaration in Review & Push. Submitting a version or an event for App Review and \
     releasing it are the person's: there is no tool for either, and the tools only ever queue changes. Always tell \
     the person what you couldn't see.
     """

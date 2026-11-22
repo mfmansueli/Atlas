@@ -140,7 +140,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         return """
         Suggest \(what) for \(appPhrase) in Atlas. Call list_apps to get its appId, then get_store_page \
         (each language's texts, the limits in characters or bytes, and the suggestions already open, so you don't \
-        repeat them) and get_app_information (copyright, categories, release and App Review contact and notes). \
+        repeat them) and get_app_information (copyright, categories, content rights, release and App Review contact and notes). \
         Read the project: git log since the last release tag for What’s New, the README and the app's strings for \
         promotional text and subtitles, and the code for App Review notes such as sign-in, demo data and hidden \
         features. If App Review's contact (first name, last name, phone, email) is empty, suggest it from what \
@@ -186,7 +186,8 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             """
             Answer the age rating questionnaire of \(appPhrase) from this project, with Atlas. Call \
             get_age_rating for the questions, the answers each takes and the current answers. Look for user-generated \
-            content, chat, web access, advertising, gambling, contests, medical or wellness topics, and mature themes \
+            content, chat, social media (and whether it's restricted by age), dating and relationships, shared \
+            location, web access, advertising, gambling, contests, medical or wellness topics, and mature themes \
             in the code and the bundled content. Call propose_age_rating with an answer, why, and evidence (file and \
             line) for each question, and say in could_not_see what you couldn't check. The person confirms every \
             answer in Atlas before it's pushed.
@@ -203,7 +204,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             medical condition. Call propose_compliance_answers with an answer, why and evidence (file and line) for \
             each regulation you can back up, and say in could_not_see what the project can't show. Never make up an \
             address, a phone number, an ICP Filing Number or a filing number. The person accepts every answer in \
-            Atlas and enters it in App Store Connect.
+            Atlas and enters it in App Store Connect; only stopSelling becomes a change in Review & Push instead.
             """
         case .whatsNewFromGit:
             """
@@ -238,9 +239,14 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         field for as new pages (they stay suggestions until the person adds the page). Read the \
         project: git log since the last release tag, CHANGELOG.md, the README and the app's strings for \
         the Store Page, and the code for categories, App Review notes (sign-in, demo data, hidden features), \
-        Age Rating's questions (user-generated content, web access, messaging, purchases) and each device's \
+        Age Rating's questions (user-generated content, web access, messaging, dating and \
+        relationships, shared location, social media and whether it's age-restricted, purchases) and each device's \
         Accessibility features (VoiceOver labels, Dynamic Type, Dark Mode, Reduce Motion, captions), \
-        answering only what the code shows. If App Review's contact (first name, last name, phone, email) is \
+        answering only what the code shows. For General's contentRights, third-party content is anything the \
+        developer doesn't own: fonts, images, sounds or music bundled under a license, or content from other \
+        services or other people the app shows; suggest USES_THIRD_PARTY_CONTENT (Yes, and I have the necessary \
+        rights) when there's any and it's licensed, naming it in the reason, else DOES_NOT_USE_THIRD_PARTY_CONTENT. \
+        If App Review's contact (first name, last name, phone, email) is \
         empty, suggest it from what the project shows, such as a support or contact email in the app or its \
         docs, or the git author (git config user.name and user.email), with that as evidence; leave out what \
         you can't find, and never make up a phone number. Then call begin_suggestions with your plan, one \
@@ -255,41 +261,11 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         limit and send them with propose_in_app_texts (they're queued for review, not part of the plan); \
         \(StoreTextRules.inAppSummary) \
         \(pricingStep) \
+        \(complianceStep) \
         \(privacyStep) \
         Nothing changes until the person accepts each suggestion in Atlas.
         """
     }
-
-    /// `suggest_all`'s App Privacy: the worksheet drafted from the project,
-    /// as `fill_privacy_from_code` does. Apple has no API for App Privacy, so
-    /// the worksheet stays on this Mac and the person enters the label in
-    /// App Store Connect.
-    static let privacyStep = """
-    Then draft App Privacy. Call get_privacy_questionnaire for Apple's definitions, the data type and purpose ids \
-    and the answers already in the worksheet, and answer the open questions it lists. Read PrivacyInfo.xcprivacy, \
-    Package.resolved and the privacy manifests of third-party SDKs, and the code that sends data off the device \
-    (analytics, crash reporting, sign-in, purchases, networking). Call propose_privacy_answers with collects, each \
-    data type with its purposes, whether it's linked to the person and used for tracking, and file:line evidence; \
-    leave alone what the person already reviewed. App Store Connect has no API for App Privacy: the worksheet \
-    stays in Atlas, and the person enters the finished label in App Store Connect.
-    """
-
-    /// `suggest_all`'s prices: what App Store Connect charges beside what the
-    /// project sells and shows, the differences proposed (outside the run's
-    /// plan, which covers store and info fields only).
-    static let pricingStep = """
-    Then check prices against the project. Call get_app_price_and_availability (the app's own price and where \
-    it's sold), get_subscriptions and get_prices (every subscription and in-app purchase price, with \
-    get_price_points for a product's points in a territory). Read what the project sells and shows: StoreKit \
-    product IDs and purchase calls in the code, a .storekit configuration's products, durations and prices, the \
-    paywall's code and copy, and price constants. Propose only what differs or is missing, each with a \
-    one-sentence reason and evidence (file:line): a price that differs with propose_prices (one of Apple's price \
-    points), a subscription the code buys that App Store Connect lacks with propose_subscription, the app's own \
-    price (0 for Free) with propose_app_price and where it's sold with propose_availability when they aren't set \
-    up or differ from what the project says. A .storekit price is a local test value: propose it only when the \
-    paywall or the project's docs show it too. Leave what already matches, never push, and say which products \
-    you couldn't compare (an in-app purchase App Store Connect lacks can't be proposed yet).
-    """
 
     /// `run_screenshots`: drive the Autopilot run the person started.
     private static func runScreenshotsInstructions(appPhrase: String) -> String {

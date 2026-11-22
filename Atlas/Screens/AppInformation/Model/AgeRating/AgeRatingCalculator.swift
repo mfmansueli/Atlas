@@ -20,7 +20,9 @@ import Foundation
 ///   medical 13+ / 16+, simulated gambling 13+ / 18+, contests 4+ / 9+.
 ///   Health or wellness topics (Yes/No in the API) is 9+.
 /// - Social media is 13+, unrestricted web access 16+, loot boxes 9+,
-///   real-money gambling 18+. The other capabilities don't change it.
+///   real-money gambling 18+. The other capabilities (dating and
+///   relationships, shared location and age-restricted social media
+///   among them) don't change it.
 /// - Australia: at least 16+ with social media or loot boxes, and R 18+
 ///   with any simulated gambling. Brazil (self-rated): L (A6 with
 ///   user-generated content), A10, A14, A16, A18. Korea: All, All, 12+,

@@ -7,9 +7,20 @@ import Foundation
 
 // App Compliance: the one answer Apple's API takes is where the app is
 // sold. "Stop selling in China mainland" is a `PATCH` of that country's
-// `territoryAvailabilities`.
+// `territoryAvailabilities`, under the same change id as Pricing's
+// availability (`propose_availability`, `AppAvailabilityChangeBuilder`):
+// `appAvailability.<appID>.<territoryID>`. Whichever queues it, there's
+// one change, and each page reads it back from either section.
 extension AppInformationChangeBuilder {
+    /// `appAvailability.<appID>.<territoryID>`, as Pricing names a country's
+    /// availability change.
     func stopSellingChangeID(_ territoryID: String) -> String {
+        "appAvailability.\(appID).\(territoryID)"
+    }
+
+    /// The id App Compliance gave the change before it shared Pricing's,
+    /// for changes queued then.
+    func legacyStopSellingChangeID(_ territoryID: String) -> String {
         changeID(.appCompliance, "availability.\(territoryID)")
     }
 
@@ -36,8 +47,18 @@ extension AppInformationChangeBuilder {
         )
     }
 
-    /// Whether taking `territoryID` off sale is queued.
+    /// The queued changes that take `territoryID` off sale: App
+    /// Compliance's or Pricing's, never one that puts it on sale.
+    func stopSellingChangeIDs(_ territoryID: String, in changes: [PendingChange]) -> [PendingChange.ID] {
+        [stopSellingChangeID(territoryID), legacyStopSellingChangeID(territoryID)].filter { id in
+            guard let change = Self.change(id, in: changes) else { return false }
+            return Self.document(of: change)?.attribute("available")?.boolValue == false
+        }
+    }
+
+    /// Whether taking `territoryID` off sale is queued. `changes` are all
+    /// the app's, since Pricing's availability changes are in its section.
     func stopsSelling(in territoryID: String, with changes: [PendingChange]) -> Bool {
-        Self.change(stopSellingChangeID(territoryID), in: changes) != nil
+        !stopSellingChangeIDs(territoryID, in: changes).isEmpty
     }
 }

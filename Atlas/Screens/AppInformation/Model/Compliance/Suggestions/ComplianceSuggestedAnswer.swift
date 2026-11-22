@@ -58,6 +58,13 @@ enum ComplianceSuggestedAnswer: Hashable, Codable, Sendable {
         }
     }
 
+    /// Whether accepting it queues an App Store Connect change in Review &
+    /// Push: only stopping sales in China mainland. The rest are kept in
+    /// Atlas for the person to enter in App Store Connect.
+    var isPushable: Bool {
+        self == .stopSellingInChina
+    }
+
     /// The person already gave this answer.
     func isGiven(in report: ComplianceReport) -> Bool {
         let answers = report.answers

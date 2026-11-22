@@ -34,7 +34,7 @@ struct SuggestionsSummaryTests {
         ])
         #expect(summary.total == 6)
         #expect(summary.pillText == "6 to review")
-        #expect(SuggestionPage.allCases.map(summary.count(on:)) == [3, 1, 1, 1, 0])
+        #expect(SuggestionPage.fieldPages.map(summary.count(on:)) == [3, 1, 1, 1, 0])
         #expect(summary.text(on: .storePage) == "3")
         #expect(summary.text(on: .appReview) == "None")
         #expect(summary.sourcesText(assistant: nil) == "Built-in 2 · Cursor 3 · AI provider 1")

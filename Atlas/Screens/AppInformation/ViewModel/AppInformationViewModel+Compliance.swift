@@ -23,7 +23,7 @@ extension AppInformationViewModel {
             general: general,
             ageRating: ageRating.answers,
             answers: notes.compliance,
-            stopsSellingInChina: builder.stopsSelling(in: ComplianceRegion.chinaMainland, with: changes),
+            stopsSellingInChina: builder.stopsSelling(in: ComplianceRegion.chinaMainland, with: queue.changes(for: app.id)),
             sellsInApp: sellsInApp
         )
     }
@@ -102,7 +102,7 @@ extension AppInformationViewModel {
         guard icpChoice != choice else { return }
         switch choice {
         case .addNumber:
-            queue.discard(id: builder.stopSellingChangeID(ComplianceRegion.chinaMainland))
+            keepSellingInChina()
             notes.compliance.addsICPNumber = true
         case .stopSelling:
             stopSellingInChina(source: .you)

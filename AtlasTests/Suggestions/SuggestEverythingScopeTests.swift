@@ -50,7 +50,7 @@ struct SuggestEverythingScopeTests {
         #expect(scope.rows.map(\.page) == [.storePage, .general, .ageRating, .accessibility, .appReview])
         #expect(scope.rows.map(\.isLocked) == [false, false, false, false, false])
         #expect(scope.rows[0].detail == "Every field in English (U.S.) and German")
-        #expect(scope.rows[1].detail == "Copyright, categories, release")
+        #expect(scope.rows[1].detail == "Copyright, categories, content rights, release")
         #expect(scope.rows[2].detail == "7 questions not answered, and a check of the rest")
         #expect(scope.rows[3].detail.hasSuffix(", every feature"))
         #expect(scope.rows[4].detail == "Contact and notes")
@@ -68,12 +68,13 @@ struct SuggestEverythingScopeTests {
         // Accessibility couldn't be read, so it isn't listed.
         #expect(scope.rows.map(\.page) == [.storePage, .general, .ageRating, .appReview])
         #expect(scope.rows[0].detail == "Name, Subtitle, and Privacy Policy URL only, in 2 languages. The rest is locked while 1.4 is in review.")
-        #expect(scope.rows[1].detail == "Categories only. The rest is locked while 1.4 is in review.")
+        #expect(scope.rows[1].detail == "Categories and content rights only. The rest is locked while 1.4 is in review.")
         #expect(scope.rows[3].detail == "Locked while 1.4 is in review")
         #expect(scope.rows[3].isLocked)
         #expect(scope.prompt == """
         Suggest everything Atlas can still change for Lumen Journal 1.4 while it’s in review: Name, Subtitle, \
-        and Privacy Policy URL in every language, categories, and Age Rating. Read the project first. Skip fields I’ve already changed.
+        and Privacy Policy URL in every language, categories and content rights, and Age Rating. Read the project first. Skip fields I’ve \
+        already changed.
         """)
     }
 

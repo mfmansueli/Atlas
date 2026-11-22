@@ -6,7 +6,8 @@
 import Foundation
 
 /// `get_app_information`: what `suggest_fields` works on for App
-/// Information: General's copyright, categories and release, Age Rating's
+/// Information: General's copyright, categories, content rights and
+/// release, Age Rating's
 /// questions, Accessibility's features per device, and App Review's contact
 /// and notes, with App Store Connect's values where they differ, the
 /// choices of picked fields and answers, and the open suggestions.
@@ -16,19 +17,27 @@ struct GetAppInformationTool: MCPTool {
         title: "Get App Information for suggestions",
         description: """
         Reads an app's App Information in Atlas for suggestions, for the newest editable version (else \
-        the live one): page general (copyright, primaryCategory, secondaryCategory, release), page ageRating \
+        the live one): page general (copyright, primaryCategory, secondaryCategory, contentRights, release), page ageRating \
         (one entry per question, with its answers), page accessibility (per device, one entry per feature with \
         Apple's meaning, answered Yes or No) and page review (contactFirstName, contactLastName, contactPhone, \
         contactEmail, notes). Each field has its current value, App Store Connect's (`live`) where it differs, \
         its limit, and whether it's locked (the version is in review or live); an unanswered question or \
-        feature has value null. Categories and release are picked from `choices`, by id. `suggestions` lists \
+        feature has value null. Categories, contentRights and release are picked from `choices`, by id. \
+        contentRights is Apple's "\(ContentRights.appleQuestion)" (its `question`), for the whole app: \
+        third-party content is anything the developer doesn't own, such as fonts, images, sounds or music \
+        bundled under a license, or content from other services or other people that the app shows or \
+        reaches. Suggest USES_THIRD_PARTY_CONTENT (Apple's "Yes, … and I have the necessary rights") when \
+        the project has any and it's licensed or permitted, saying in the reason what it is; the person then \
+        confirms the rights in Atlas (`rightsConfirmed`). Suggest DOES_NOT_USE_THIRD_PARTY_CONTENT only when \
+        everything the app shows is the developer's own. `suggestions` lists \
         the ones already open with their source. App Store Connect won't create review details without a \
         contact email: when the review contact is empty, suggest it from what the project shows (a support or \
         contact email in the app or its docs, or the git author's name and email), and never make up a phone \
         number. Send suggestions with suggest_fields. Pass `version` with a new version queued with \
         propose_app_version to read it before it's in App Store Connect: its copyright, release and App Review \
         fields start from the version before it and aren't locked, and what suggest_fields sends for them with the \
-        same `version` waits with it in Review & Push.
+        same `version` waits with it in Review & Push. contentRights belongs to the app, not to a version: it's \
+        never locked, and with `version` it's suggested for the app as without, not queued with the new version.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -61,6 +70,7 @@ struct GetAppInformationTool: MCPTool {
             "choices": [
                 "categories": .array(AppCategory.all.map { ["id": .string($0.id), "name": .string($0.name)] }),
                 "release": .array(ReleaseOption.allCases.map { ["id": .string($0.rawValue), "name": .string($0.title)] }),
+                "contentRights": .array(ContentRights.allCases.map(\.mcpChoice)),
             ],
             "suggestions": .array(open.map(\.mcpJSON)),
         ]
@@ -77,6 +87,10 @@ struct GetAppInformationTool: MCPTool {
         if field.isPicked, !value.isEmpty { entry["name"] = .string(field.displayValue(value)) }
         let live = draft.liveValue(field)
         if live != value { entry["live"] = .string(live) }
+        if field == .contentRights {
+            entry["question"] = .string(ContentRights.appleQuestion)
+            if value == ContentRights.usesThirdPartyContent.rawValue { entry["rightsConfirmed"] = .bool(draft.general.rightsConfirmed) }
+        }
         return .object(entry)
     }
 

@@ -37,6 +37,11 @@ struct SuggestEverythingScope: Hashable, Sendable {
     /// subscription and in-app purchase texts"; nil when the app sells
     /// nothing (or they couldn't be read). Not locked by the version.
     private(set) var inAppTextsDetail: String?
+    /// What It Covers' App Compliance line, e.g. "Digital Services Act and
+    /// ICP Filing Number"; nil when it wasn't read or asks nothing.
+    private(set) var complianceDetail: String?
+    /// The build's export compliance is part of it.
+    private(set) var coversExportCompliance = false
 
     /// Before anything is read: the prompt asks for everything.
     init(appName: String, versionString: String?) {
@@ -51,7 +56,8 @@ struct SuggestEverythingScope: Hashable, Sendable {
         listing: StoreListing?,
         information: AppInformationSlotValues?,
         newLanguages: [StoreLocale] = [],
-        inAppTextsMissing: Int? = nil
+        inAppTextsMissing: Int? = nil,
+        compliance: ComplianceReport? = nil
     ) {
         let version = listing?.version.versionString ?? information?.content.version?.versionString
         self.init(appName: appName, versionString: version)
@@ -64,6 +70,7 @@ struct SuggestEverythingScope: Hashable, Sendable {
         if let listing { addStorePage(listing, locked: locked, newLanguages: newLanguages) }
         if let information { addAppInformation(information, locked: locked) }
         if let inAppTextsMissing { addInAppTexts(missing: inAppTextsMissing) }
+        if let compliance { addCompliance(compliance, export: information?.content.export) }
     }
 
     /// Reads the app as an assistant would.
@@ -72,12 +79,14 @@ struct SuggestEverythingScope: Hashable, Sendable {
         let listing = try? await MCPListingDraft.load(app: app.id, in: workspace)
         let information = try? await MCPAppInformationDraft.load(app: app.id, in: workspace)
         let inAppTexts = try? await MCPInAppTextsDraft.load(app: app.id, in: workspace)
+        let compliance = try? await MCPComplianceState.load(app, workspace: workspace)
         return SuggestEverythingScope(
             appName: app.name,
             listing: listing?.listing,
             information: information?.slots,
             newLanguages: listing?.newLanguageLocales ?? [],
-            inAppTextsMissing: inAppTexts.flatMap { $0.content.isEmpty ? nil : $0.missingCount }
+            inAppTextsMissing: inAppTexts.flatMap { $0.content.isEmpty ? nil : $0.missingCount },
+            compliance: compliance?.report
         )
     }
 
@@ -90,8 +99,8 @@ struct SuggestEverythingScope: Hashable, Sendable {
             language, including languages the app supports that aren’t on the App Store yet, and App Information: General, Age \
             Rating, Accessibility for each device, and App Review. Skip fields I’ve already changed.
             """)
-            guard inAppTextsDetail != nil else { return everything }
-            return everything + " " + Self.inAppTextsRequest
+            let withInAppTexts = inAppTextsDetail == nil ? everything : everything + " " + Self.inAppTextsRequest
+            return complianceDetail == nil && !coversExportCompliance ? withInAppTexts : withInAppTexts + " " + Self.complianceRequest
         }
         let parts = openParts.formatted(.list(type: .and))
         return String(localized: """
@@ -109,7 +118,36 @@ struct SuggestEverythingScope: Hashable, Sendable {
         """)
     }
 
+    /// The App Compliance and Export Compliance part of the prompt: answers
+    /// that wait on their pages, part of the run's plan.
+    static var complianceRequest: String {
+        String(localized: """
+        Also answer App Compliance (get_compliance, then propose_compliance_answers) and Export Compliance from the \
+        code's use of encryption (get_export_compliance, then propose_export_compliance), as part of the run.
+        """)
+    }
+
     // MARK: - Pages
+
+    /// App Compliance's regulations an assistant may answer, and Export
+    /// Compliance when the build could be read. Neither is locked by the
+    /// version.
+    private mutating func addCompliance(_ report: ComplianceReport, export: ExportComplianceValues?) {
+        let open = ComplianceRule.allCases.filter { !ComplianceSuggestedAnswer.names(for: $0).isEmpty && report.refusal(for: $0) == nil }
+        if !open.isEmpty {
+            let detail = open.map(\.name).formatted(.list(type: .and))
+            complianceDetail = detail
+            rows.append(Row(page: .appCompliance, detail: String(localized: "\(detail). You accept each answer.")))
+        }
+        if let export {
+            let detail = export.buildNumber.map { String(localized: "Encryption, for build \($0)") }
+                ?? String(localized: "Encryption, for the build you attach")
+            rows.append(Row(page: .exportCompliance, detail: detail))
+            coversExportCompliance = true
+        }
+        guard complianceDetail != nil || coversExportCompliance else { return }
+        openParts.append(String(localized: "App Compliance and Export Compliance"))
+    }
 
     private mutating func addInAppTexts(missing: Int) {
         inAppTextsDetail = missing == 0
@@ -176,13 +214,14 @@ struct SuggestEverythingScope: Hashable, Sendable {
         }
     }
 
-    /// Copyright, the categories and the release; the categories stay open
-    /// while the version is in review.
+    /// Copyright, the categories, content rights and the release; the
+    /// categories and content rights, the app's, stay open while the
+    /// version is in review.
     private mutating func addGeneral(_ slots: AppInformationSlotValues, locked: String) {
-        let fields: [AppInformationSuggestionField] = [.copyright, .primaryCategory, .secondaryCategory, .release]
+        let fields: [AppInformationSuggestionField] = [.copyright, .primaryCategory, .secondaryCategory, .contentRights, .release]
         let open = fields.filter { slots.canSuggest(.field($0)) }
         if open.count == fields.count {
-            rows.append(Row(page: .general, detail: String(localized: "Copyright, categories, release")))
+            rows.append(Row(page: .general, detail: String(localized: "Copyright, categories, content rights, release")))
             openParts.append(String(localized: "General"))
             return
         }
@@ -195,6 +234,7 @@ struct SuggestEverythingScope: Hashable, Sendable {
         for field in open {
             let name = switch field {
             case .primaryCategory, .secondaryCategory: String(localized: "categories")
+            case .contentRights: String(localized: "content rights")
             case .release: String(localized: "release")
             default: String(localized: "copyright")
             }

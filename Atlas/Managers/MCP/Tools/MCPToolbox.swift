@@ -40,6 +40,8 @@ struct MCPToolbox {
             ProposeAgeRatingTool(),
             GetComplianceTool(),
             ProposeComplianceAnswersTool(),
+            GetExportComplianceTool(),
+            ProposeExportComplianceTool(),
             GetScreenshotContextTool(),
             ListCapturesTool(),
             MarkCapturesStaleTool(),

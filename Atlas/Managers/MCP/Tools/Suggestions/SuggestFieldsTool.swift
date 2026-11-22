@@ -20,7 +20,8 @@ struct SuggestFieldsTool: MCPTool {
         Suggests values for an app's fields in Atlas; each one shows under its field until the person \
         accepts, edits or dismisses it. Items are {area, locale | page, device, field, value, reason, evidence}: \
         area store with a locale code and a Store Page field (\(ListingField.mcpNames.joined(separator: ", "))), \
-        or area info with page general (copyright, primaryCategory, secondaryCategory, release), page review \
+        or area info with page general (copyright, primaryCategory, secondaryCategory, contentRights, release; \
+        contentRights is USES_THIRD_PARTY_CONTENT or DOES_NOT_USE_THIRD_PARTY_CONTENT, or yes or no), page review \
         (contactFirstName, contactLastName, contactPhone, contactEmail, notes), page ageRating (field is a \
         question, value one of its answers) or page accessibility with a device (iphone, ipad, watch, vision, \
         mac, tv; field is a feature, value yes or no). Give a one-sentence reason and \
@@ -46,7 +47,7 @@ struct SuggestFieldsTool: MCPTool {
         name, subtitle, privacy URLs, categories and age rating, which go into the app info App Store Connect \
         makes with it) are then queued with it in Review & Push (status applied, with a note) instead of shown as \
         suggestions, since it has no page in Atlas yet; they go into it right after Atlas creates it, and are \
-        discarded with it.
+        discarded with it. contentRights belongs to the app, so with version it's handled as without.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -71,7 +72,7 @@ struct SuggestFieldsTool: MCPTool {
             "device": MCPToolDefinition.string("For accessibility: iphone, ipad, watch, vision, mac or tv."),
             "field": MCPToolDefinition.string("The field, question or feature, e.g. whatsNew, notes, wellness or voiceOver."),
             "value": MCPToolDefinition.string(
-                "The suggested value, within the field's limit. Categories and release by id; an answer by name, e.g. Yes or Infrequent."
+                "The suggested value, within the field's limit. Categories, contentRights and release by id; an answer by name, e.g. Yes or Infrequent."
             ),
             "reason": MCPToolDefinition.string("One sentence: why this value."),
             "evidence": ["type": "array", "items": evidenceSchema],

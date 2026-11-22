@@ -19,11 +19,14 @@ enum AppInformationSuggestionWriter {
         var builder: AppInformationChangeBuilder
     }
 
-    /// The change for `field` set to `value` (as stored: a category or
-    /// release option by id) and the id it's queued under. The change is
-    /// nil when the field is back at App Store Connect's value; the whole
-    /// result is nil when the field can't take it (the version is locked, or
-    /// "On a date" without a date).
+    /// The change for `field` set to `value` (as stored: a category,
+    /// release option or content rights answer by id) and the id it's
+    /// queued under. The change is nil when the field is back at App Store
+    /// Connect's value; the whole result is nil when the field can't take
+    /// it (the version is locked, or "On a date" without a date). A Yes to
+    /// third-party content waits for the person's "I have the rights to use
+    /// it", as on the page, unless App Store Connect or the person said so
+    /// already.
     static func change(
         _ field: AppInformationSuggestionField,
         to value: String,
@@ -40,6 +43,8 @@ enum AppInformationSuggestionWriter {
             let key = field == .primaryCategory ? Key.primaryCategory : Key.secondaryCategory
             let old = field == .primaryCategory ? content.general.primaryCategory : content.general.secondaryCategory
             return (builder.categoryChange(key, from: old, to: value.isEmpty ? nil : value, source: source), builder.changeID(.general, key))
+        case .contentRights:
+            return contentRightsChange(to: value, in: values, source: source)
         case .release:
             guard let option = ReleaseOption(rawValue: value) else { return nil }
             let date = general.earliestReleaseDate
@@ -55,5 +60,15 @@ enum AppInformationSuggestionWriter {
             }
             return (builder.reviewFieldChange(reviewField, from: content.review, to: edited, source: source), builder.reviewChangeID(reviewField))
         }
+    }
+
+    /// Yes or No to third-party content, as the page's picker: a Yes is
+    /// confirmed when App Store Connect or the person already said Yes.
+    private static func contentRightsChange(to value: String, in values: Values, source: ChangeSource) -> (change: PendingChange?, id: String)? {
+        guard let rights = ContentRights(rawValue: value) else { return nil }
+        let old = values.content.general.contentRights
+        let confirmed = rights == .usesThirdPartyContent && (old == rights || values.general.rightsConfirmed)
+        let change = values.builder.contentRightsChange(from: old, to: rights, rightsConfirmed: confirmed, source: source)
+        return (change, values.builder.changeID(.general, AppInformationChangeBuilder.GeneralKey.contentRights))
     }
 }

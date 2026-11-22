@@ -17,7 +17,7 @@ import Testing
 struct AppComplianceViewModelTests {
     private let queue = ChangeQueue()
     private let app = StoreApp(id: DebugFixtures.AppID.lumen, name: "Lumen Journal", bundleID: "dev.example.lumen", sku: nil, primaryLocale: "en-US")
-    private var stopSellingID: String { "appInformation.\(app.id).appCompliance.availability.CHN" }
+    private var stopSellingID: String { "appAvailability.\(app.id).CHN" }
 
     private func loaded(_ services: DebugAppInformationServices = DebugAppInformationServices(), app: StoreApp? = nil) async -> AppInformationViewModel {
         let viewModel = AppInformationViewModel(app: app ?? self.app, services: services, queue: queue)

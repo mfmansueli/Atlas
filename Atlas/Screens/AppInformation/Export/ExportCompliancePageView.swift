@@ -39,6 +39,12 @@ struct ExportCompliancePageView: View {
                         }
                     }
                 }
+                if let declaration = viewModel.queuedDeclaration {
+                    Text("\(declaration.title): \(declaration.newValue), waiting in Review & Push.")
+                        .font(.caption)
+                        .foregroundStyle(Palette.label2)
+                        .accessibilityIdentifier("appInformation.export.declaration")
+                }
                 if let build = viewModel.content?.export.buildNumber {
                     Text("Sent to build \(build) as “uses non-exempt encryption”. The answers themselves are kept on this Mac.")
                         .font(.caption)

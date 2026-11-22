@@ -16,13 +16,22 @@ struct MCPComplianceState {
     let notes: AppInformationNotes
     /// The team's name and App Review's contact, as the page prepares them.
     let preparedTraderDetails: TraderDetails
+    /// The App Information builder, for the ids of the changes an answer
+    /// becomes.
+    let builder: AppInformationChangeBuilder
 
     static func load(_ app: StoreApp, in context: MCPToolContext) async throws -> MCPComplianceState {
-        let services = context.workspace.services.appInformation
+        try await load(app, workspace: context.workspace)
+    }
+
+    /// `stopsSellingInChina` reads every section's changes: Pricing's
+    /// `propose_availability` queues the same change.
+    static func load(_ app: StoreApp, workspace: MCPWorkspace) async throws -> MCPComplianceState {
+        let services = workspace.services.appInformation
         let content = try await services.content(for: app, versionID: nil)
         let compliance = try await services.compliance(for: app)
         let builder = AppInformationChangeBuilder(appID: app.id, ids: content.ids, versionString: content.version?.versionString)
-        let changes = context.workspace.changes.changes(for: app.id, section: .appInformation)
+        let changes = workspace.changes.changes(for: app.id, section: .appInformation)
         let notes = services.notes.notes(for: app.id)
         let report = ComplianceReport(
             appName: app.name,
@@ -30,14 +39,14 @@ struct MCPComplianceState {
             general: builder.general(content.general, with: changes),
             ageRating: builder.ageRating(content.ageRating, with: changes).answers,
             answers: notes.compliance,
-            stopsSellingInChina: builder.stopsSelling(in: ComplianceRegion.chinaMainland, with: changes)
+            stopsSellingInChina: builder.stopsSelling(in: ComplianceRegion.chinaMainland, with: workspace.changes.changes(for: app.id))
         )
         let prepared = notes.compliance.traderDetails ?? TraderDetails(
-            name: context.workspace.teamName,
+            name: workspace.teamName,
             phone: content.review.phone,
             email: content.review.email
         )
-        return MCPComplianceState(app: app, report: report, notes: notes, preparedTraderDetails: prepared)
+        return MCPComplianceState(app: app, report: report, notes: notes, preparedTraderDetails: prepared, builder: builder)
     }
 
     /// The open suggestion for `rule`, if an assistant left one.

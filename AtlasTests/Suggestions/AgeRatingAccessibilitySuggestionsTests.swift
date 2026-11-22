@@ -114,7 +114,7 @@ struct AgeRatingAccessibilitySuggestionsTests {
         #expect(vm.codeOnlyAnswerCount(in: .appInformation(.ageRating)) == unanswered)
         suggest(.ageRating(.wellness), "affirmative")
         #expect(vm.codeOnlyAnswerCount(in: .appInformation(.ageRating)) == unanswered - 1)
-        #expect(vm.codeOnlyAnswerCount(in: .appInformation(.general)) == 2)
+        #expect(vm.codeOnlyAnswerCount(in: .appInformation(.general)) == 3)
         #expect(vm.codeOnlyAnswerCount(in: .appInformation(.appReview)) == 1)
         #expect(vm.codeOnlyAnswerCount(in: .accessibility(.iPhone)) == 0)
         #expect(vm.codeOnlyAnswerCount(in: .accessibility(.appleWatch)) == DeviceFamily.appleWatch.features.count)

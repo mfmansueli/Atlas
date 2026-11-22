@@ -8,11 +8,12 @@ import Foundation
 /// The App Information fields that take suggestions, on General and App
 /// Review. Raw values are the names MCP uses (`suggest_fields`). A picked
 /// value is kept as App Store Connect's id (`PRODUCTIVITY`,
-/// `AFTER_APPROVAL`) and shown by name.
+/// `AFTER_APPROVAL`, `USES_THIRD_PARTY_CONTENT`) and shown by name.
 enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable, Sendable {
     case copyright
     case primaryCategory
     case secondaryCategory
+    case contentRights
     case release
     case contactFirstName
     case contactLastName
@@ -24,7 +25,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
 
     var page: AppInformationPage {
         switch self {
-        case .copyright, .primaryCategory, .secondaryCategory, .release: .general
+        case .copyright, .primaryCategory, .secondaryCategory, .contentRights, .release: .general
         case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .notes: .appReview
         }
     }
@@ -34,6 +35,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .copyright: String(localized: "Copyright")
         case .primaryCategory: String(localized: "Primary Category")
         case .secondaryCategory: String(localized: "Secondary Category")
+        case .contentRights: String(localized: "Third-Party Content")
         case .release: String(localized: "Version Release")
         case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .notes: reviewField?.title ?? rawValue
         }
@@ -47,19 +49,20 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .contactPhone: .phone
         case .contactEmail: .email
         case .notes: .notes
-        case .copyright, .primaryCategory, .secondaryCategory, .release: nil
+        case .copyright, .primaryCategory, .secondaryCategory, .contentRights, .release: nil
         }
     }
 
     /// Set per version (copyright, release, App Review), so a version in
-    /// review or live is locked; the categories belong to the app.
+    /// review or live is locked; the categories and content rights belong
+    /// to the app.
     var isVersionLevel: Bool {
-        self != .primaryCategory && self != .secondaryCategory
+        ![.primaryCategory, .secondaryCategory, .contentRights].contains(self)
     }
 
     /// Picked from a list rather than typed.
     var isPicked: Bool {
-        self == .primaryCategory || self == .secondaryCategory || self == .release
+        [.primaryCategory, .secondaryCategory, .contentRights, .release].contains(self)
     }
 
     var limit: Int? {
@@ -81,18 +84,20 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
     /// The pages that take suggestions.
     static let pages: [AppInformationPage] = [.general, .appReview]
 
-    /// What the person reads for a stored value: a category's or release
-    /// option's name, the text otherwise.
+    /// What the person reads for a stored value: a category's, release
+    /// option's or content rights answer's name, the text otherwise.
     func displayValue(_ value: String) -> String {
         switch self {
         case .primaryCategory, .secondaryCategory: AppCategory.name(for: value.isEmpty ? nil : value)
+        case .contentRights: ContentRights(rawValue: value)?.title ?? value
         case .release: ReleaseOption(rawValue: value)?.title ?? value
         default: value
         }
     }
 
-    /// An assistant's value as it's stored: a category or release option
-    /// by id or name, ignoring case; nil when it's none of them.
+    /// An assistant's value as it's stored: a category, release option or
+    /// content rights answer by id or name (Yes or No, or true or false, for
+    /// content rights), ignoring case; nil when it's none of them.
     func normalized(_ value: String) -> String? {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         switch self {
@@ -102,6 +107,8 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .release:
             let match = ReleaseOption.allCases.first { [$0.rawValue, $0.title].contains { $0.caseInsensitiveCompare(trimmed) == .orderedSame } }
             return match?.rawValue
+        case .contentRights:
+            return ContentRights.matching(trimmed)?.rawValue
         case .notes:
             return value
         default:
@@ -115,6 +122,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .copyright: general?.copyright ?? ""
         case .primaryCategory: general?.primaryCategory ?? ""
         case .secondaryCategory: general?.secondaryCategory ?? ""
+        case .contentRights: general?.contentRights?.rawValue ?? ""
         case .release: general?.release?.rawValue ?? ""
         case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .notes: reviewField.map { review?.text($0) ?? "" } ?? ""
         }

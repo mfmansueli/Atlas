@@ -101,7 +101,7 @@ final class AppComplianceUITests: XCTestCase {
         XCTAssertTrue(pageRowSays("not pushed"), rowLabel)
 
         app.buttons["workspace.reviewPushButton"].click()
-        XCTAssertTrue(element("review.row.appInformation.\(lumen).appCompliance.availability.CHN").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("review.row.appAvailability.\(lumen).CHN").waitForExistence(timeout: 5))
     }
 
     func testEverythingAnsweredLeavesWhatIsForAppStoreConnect() {

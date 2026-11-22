@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// "Pro" in the toolbar while the person is on Free: opens the plans. As
-/// tall as the toolbar's other buttons (`AutopilotButtonFace.height`).
+/// tall as the toolbar's other buttons (`AutopilotButtonFace.height`), and
+/// glass like them.
 struct ProToolbarButton: View {
     let action: () -> Void
 
@@ -18,10 +19,13 @@ struct ProToolbarButton: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, Spacing.medium)
                 .frame(height: AutopilotButtonFace<EmptyView>.height)
-                .background(PaywallStyle.gradient, in: Capsule())
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .contentShape(Capsule())
+        // Liquid Glass like the toolbar's other buttons, tinted with the
+        // paywall's violet as Review & Push's prominent glass is with the
+        // accent color.
+        .glassEffect(.regular.tint(PaywallStyle.violet).interactive(), in: Capsule())
         .help("Upgrade to Atlas Pro")
         .accessibilityLabel(Text("Upgrade to Atlas Pro"))
         .accessibilityIdentifier("workspace.proButton")

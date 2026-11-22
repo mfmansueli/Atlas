@@ -23,7 +23,7 @@ struct GeneralPageView: View {
                 if showsCategories {
                     categorySection(general)
                 }
-                if !viewModel.showsOnlySuggestedFields {
+                if viewModel.showsField(.contentRights) {
                     contentRightsSection(general)
                 }
                 if let version = content.version, showsVersion {
@@ -101,6 +101,7 @@ struct GeneralPageView: View {
                 }
                 .accessibilityIdentifier("appInformation.general.thirdPartyContent")
             }
+            AppInformationFieldSuggestions(viewModel: viewModel, field: .contentRights)
             if general.contentRights == .usesThirdPartyContent {
                 Divider()
                 AppInformationFormRow(label: String(localized: "I have the rights to use it, or it’s otherwise permitted")) {

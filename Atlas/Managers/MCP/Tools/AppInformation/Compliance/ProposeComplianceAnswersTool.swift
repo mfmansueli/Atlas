@@ -10,7 +10,10 @@ import Foundation
 /// regulation's card until the person accepts or dismisses it, replacing
 /// an earlier suggestion for the same regulation. Accept All never takes
 /// them, and Apple's API takes none of them except stopping sales in China
-/// mainland, which becomes a change in Review & Push once accepted.
+/// mainland, which becomes a change in Review & Push once accepted (the
+/// same change as Pricing's `propose_availability`). Each result says which
+/// it is (`pushedWhenAccepted`). Sent with a Suggest Everything run, each
+/// settled regulation counts toward it.
 struct ProposeComplianceAnswersTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "propose_compliance_answers",
@@ -27,7 +30,12 @@ struct ProposeComplianceAnswersTool: MCPTool {
         Never make up a filing number. Evidence is \
         "file:line — finding" strings; could_not_see says what the project can't show. Each answer waits in Atlas \
         (status "queued") until the person accepts it; "unchanged" means it's already their answer or your open \
-        suggestion; "refused" says why.
+        suggestion; "refused" says why. What accepting does (each result's pushedWhenAccepted): stopSelling \
+        becomes a change in Review & Push that takes the app off sale in China mainland when the person pushes \
+        (changeId, the same change propose_availability's makeUnavailable CHN queues, so they never double up). \
+        Apple's API takes no other answer: trader or nonTrader, icpNumber, needsAssessment or noAssessment, offersAI \
+        or noAI, regulated or notRegulated stay in Atlas, and the person enters them in App Store Connect and marks \
+        them as declared. Pass run (from begin_suggestions) during Suggest Everything.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -60,6 +68,7 @@ struct ProposeComplianceAnswersTool: MCPTool {
                     ),
                 ],
                 "could_not_see": MCPToolDefinition.string("What the project can't show, e.g. whether you sell as a business."),
+                "run": MCPToolDefinition.string("The Suggest Everything run begin_suggestions returned, if this is part of one."),
             ],
             required: ["appId", "answers"]
         ),
@@ -70,6 +79,10 @@ struct ProposeComplianceAnswersTool: MCPTool {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
         let items = try arguments.array("answers")
         let couldNotSee = try arguments.optionalString("could_not_see")
+        let runID = try arguments.optionalString("run")
+        if let stopped = MCPComplianceRunTarget.stoppedRun(runID, context: context) {
+            return MCPToolOutcome(result: .object(stopped.json), isError: false, logLines: [.init(target: app.name, outcome: .refused, reason: stopped.reason)])
+        }
         let state = try await MCPComplianceState.load(app, in: context)
         var notes = state.notes
         var results: [JSONValue] = []
@@ -99,8 +112,9 @@ struct ProposeComplianceAnswersTool: MCPTool {
             }
             let isOpen = notes.complianceSuggestions.contains { $0.answer == answer && $0.isOpen(in: state.report) }
             if answer.isGiven(in: state.report) || isOpen {
-                results.append(["rule": .string(rule.rawValue), "status": "unchanged"])
+                results.append(.object(["rule": .string(rule.rawValue), "status": "unchanged"].merging(push(answer, in: state)) { _, new in new }))
                 logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .read))
+                MCPComplianceRunTarget.noteArrival(of: MCPComplianceRunTarget.target(for: rule), appID: app.id, runID: runID, context: context)
                 continue
             }
             let evidence = AssistantEvidence(
@@ -112,17 +126,36 @@ struct ProposeComplianceAnswersTool: MCPTool {
             )
             notes.complianceSuggestions.removeAll { $0.rule == rule }
             notes.complianceSuggestions.append(ComplianceSuggestion(answer: answer, evidence: evidence))
-            results.append(["rule": .string(rule.rawValue), "status": "queued", "answer": .string(answer.mcpName)])
+            let queued: [String: JSONValue] = ["rule": .string(rule.rawValue), "status": "queued", "answer": .string(answer.mcpName)]
+            results.append(.object(queued.merging(push(answer, in: state)) { _, new in new }))
             logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .proposed))
+            MCPComplianceRunTarget.noteArrival(of: MCPComplianceRunTarget.target(for: rule), appID: app.id, runID: runID, context: context)
         }
         context.workspace.services.appInformation.notes.setNotes(notes, for: app.id)
         let summary: JSONValue = [
             "results": .array(results),
             "note": """
-            Each answer waits on its card in App Compliance until the person accepts it. They enter it in App Store \
-            Connect themselves: Apple's API doesn't take it.
+            Each answer waits on its card in App Compliance until the person accepts it. Accepting stopSelling queues \
+            a change in Review & Push that the person pushes; every other answer stays in Atlas, and the person \
+            enters it in App Store Connect and marks it as declared, since Apple's API doesn't take it.
             """,
         ]
         return MCPToolOutcome(result: summary, isError: false, logLines: logLines)
+    }
+
+    /// What accepting `answer` does: a change in Review & Push (with its
+    /// id) or an answer kept in Atlas for App Store Connect.
+    private func push(_ answer: ComplianceSuggestedAnswer, in state: MCPComplianceState) -> [String: JSONValue] {
+        guard answer.isPushable else {
+            return [
+                "pushedWhenAccepted": false,
+                "whenAccepted": "Kept in Atlas. The person enters it in App Store Connect and marks it as declared: Apple's API doesn't take it.",
+            ]
+        }
+        return [
+            "pushedWhenAccepted": true,
+            "changeId": .string(state.builder.stopSellingChangeID(ComplianceRegion.chinaMainland)),
+            "whenAccepted": "Queued in Review & Push: the push takes the app off sale in China mainland (PATCH /v1/territoryAvailabilities).",
+        ]
     }
 }

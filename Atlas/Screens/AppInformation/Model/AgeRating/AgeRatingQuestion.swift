@@ -11,6 +11,10 @@ import Foundation
 /// Health or wellness topics is a Yes/No question here: the API stores
 /// `healthOrWellnessTopics` as a boolean, though the design drew None /
 /// Infrequent / Frequent.
+///
+/// Dating and relationships, shared location and age-restricted social
+/// media came later (in the 4.6 spec): Yes/No capabilities that don't move
+/// the calculated rating here, since Apple doesn't say how they count.
 enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, Sendable {
     case cartoonViolence
     case realisticViolence
@@ -27,6 +31,9 @@ enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, S
     case messaging
     case userGeneratedContent
     case socialMedia
+    case socialMediaAgeRestricted
+    case datingAndRelationships
+    case sharedLocation
     case advertising
     case webAccess
     case parentalControls
@@ -55,6 +62,9 @@ enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, S
         case .messaging: String(localized: "Messaging and chat")
         case .userGeneratedContent: String(localized: "User-generated content")
         case .socialMedia: String(localized: "Social media")
+        case .socialMediaAgeRestricted: String(localized: "Social media restricted by age")
+        case .datingAndRelationships: String(localized: "Dating and relationships")
+        case .sharedLocation: String(localized: "Shared location")
         case .advertising: String(localized: "Advertising")
         case .webAccess: String(localized: "Unrestricted web access")
         case .parentalControls: String(localized: "Parental controls")
@@ -84,6 +94,9 @@ enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, S
         case .messaging: "messagingAndChat"
         case .userGeneratedContent: "userGeneratedContent"
         case .socialMedia: "socialMedia"
+        case .socialMediaAgeRestricted: "socialMediaAgeRestricted"
+        case .datingAndRelationships: "datingAndRelationships"
+        case .sharedLocation: "sharedLocation"
         case .advertising: "advertising"
         case .webAccess: "unrestrictedWebAccess"
         case .parentalControls: "parentalControls"
@@ -100,7 +113,8 @@ enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, S
         case .cartoonViolence, .realisticViolence, .graphicViolence, .sexualContent, .graphicSexualContent, .profanity, .horror,
              .matureThemes, .substances, .weapons, .medical, .wellness:
             .content
-        case .messaging, .userGeneratedContent, .socialMedia, .advertising, .webAccess, .parentalControls, .ageAssurance:
+        case .messaging, .userGeneratedContent, .socialMedia, .socialMediaAgeRestricted, .datingAndRelationships, .sharedLocation,
+             .advertising, .webAccess, .parentalControls, .ageAssurance:
             .capabilities
         case .simulatedGambling, .contests, .lootBoxes, .gambling:
             .gambling
@@ -113,8 +127,8 @@ enum AgeRatingQuestion: String, CaseIterable, Identifiable, Hashable, Codable, S
     /// The answers it takes, in the picker's order.
     var answers: [AgeRatingAnswer] {
         switch self {
-        case .wellness, .messaging, .userGeneratedContent, .socialMedia, .advertising, .webAccess, .parentalControls, .ageAssurance,
-             .lootBoxes, .gambling:
+        case .wellness, .messaging, .userGeneratedContent, .socialMedia, .socialMediaAgeRestricted, .datingAndRelationships,
+             .sharedLocation, .advertising, .webAccess, .parentalControls, .ageAssurance, .lootBoxes, .gambling:
             [.negative, .affirmative]
         default:
             [.none, .infrequent, .frequent]

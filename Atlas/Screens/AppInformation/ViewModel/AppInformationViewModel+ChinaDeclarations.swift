@@ -40,7 +40,7 @@ extension AppInformationViewModel {
             return
         case .yes, .no:
             // Answering keeps the app on sale in China mainland.
-            queue.discard(id: builder.stopSellingChangeID(ComplianceRegion.chinaMainland))
+            keepSellingInChina()
         }
         let offers = choice == .yes
         switch rule {
@@ -72,6 +72,14 @@ extension AppInformationViewModel {
     func stopSellingInChina(source: ChangeSource) {
         guard let china = compliance.value?.territory(ComplianceRegion.chinaMainland) else { return }
         notes.compliance.addsICPNumber = false
+        queue.discard(id: builder.legacyStopSellingChangeID(ComplianceRegion.chinaMainland))
         apply(builder.stopSellingChange(china, source: source), id: builder.stopSellingChangeID(ComplianceRegion.chinaMainland))
+    }
+
+    /// Discards a queued "stop selling in China mainland", App
+    /// Compliance's or Pricing's (`propose_availability`), and nothing that
+    /// puts it on sale.
+    func keepSellingInChina() {
+        queue.discard(ids: builder.stopSellingChangeIDs(ComplianceRegion.chinaMainland, in: queue.changes(for: app.id)))
     }
 }
