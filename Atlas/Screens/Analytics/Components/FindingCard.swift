@@ -55,6 +55,13 @@ struct FindingCard: View {
                 .font(.caption)
                 .foregroundStyle(Palette.label3)
                 .fixedSize(horizontal: false, vertical: true)
+            if let read = finding.read, !read.isEmpty {
+                Text("Read: \(read.joined(separator: " · "))")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Palette.label3)
+                    .lineLimit(2)
+                    .accessibilityIdentifier("analytics.finding.read.\(finding.id)")
+            }
             if let state {
                 HStack(spacing: Spacing.small) {
                     Text(state).font(.callout)

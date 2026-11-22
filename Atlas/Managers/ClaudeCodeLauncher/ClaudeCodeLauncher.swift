@@ -44,7 +44,7 @@ final class ClaudeCodeLauncher {
     @ObservationIgnored private let runner: any UnixScriptRunning
     @ObservationIgnored let helperURL: URL?
     @ObservationIgnored private let defaults: UserDefaults?
-    @ObservationIgnored private let now: () -> Date
+    @ObservationIgnored let now: () -> Date
     /// Asks the person for an app's project folder: an Open panel, canned
     /// in tests and DEBUG scenes.
     @ObservationIgnored var folderChooser: @MainActor (_ appName: String, _ suggestion: String?) -> String?
@@ -73,6 +73,11 @@ final class ClaudeCodeLauncher {
     /// to stop: a helper that never ends must not keep a run "working",
     /// which holds back Continue and Retry.
     @ObservationIgnored var resultGrace: Duration = .seconds(60)
+
+    /// Who this Atlas and the one on disk are signed as: macOS runs the
+    /// helper only for the one on disk, so a build written over a running
+    /// Atlas stops every helper call until Atlas is opened again.
+    @ObservationIgnored var codeIdentity: @Sendable () -> AtlasCodeIdentity = { AtlasCodeIdentity.current() }
 
     init(
         assistants: MCPServerController,
@@ -140,6 +145,10 @@ final class ClaudeCodeLauncher {
     func refreshHelper() async {
         guard let helperURL, runner.exists(helperURL) else {
             helper = .notInstalled
+            return
+        }
+        if let onDisk = replacedAtlas() {
+            helper = .atlasReplaced(onDisk: onDisk)
             return
         }
         helper = .checking
@@ -263,12 +272,19 @@ final class ClaudeCodeLauncher {
         // Asked right as Atlas opens, before or during the first
         // check.
         if helper == .unknown || helper == .checking { await refreshHelper() }
+        if let active = latestRun(appID: appID, purpose: purpose), active.isActive { return active.id }
+        // The helper can't run for this Atlas any more: a run that says
+        // why, instead of macOS's "you don't have permission" or a silent
+        // copy.
+        if helper.isInstalled, let onDisk = replacedAtlas() {
+            helper = .atlasReplaced(onDisk: onDisk)
+            return failedRun(purpose, appID: appID, appName: appName, prompt: prompt, failure: .atlasReplaced(onDisk: onDisk))
+        }
         guard canStart, let helperURL else { return nil }
         guard runner.exists(helperURL) else {
             helper = .notInstalled
             return nil
         }
-        if let active = latestRun(appID: appID, purpose: purpose), active.isActive { return active.id }
         guard let folder = projectFolder(for: appID) ?? chooseProjectFolder(for: appID, appName: appName) else { return nil }
         rememberApp(appID, name: appName)
         let run = ClaudeCodeRun(
@@ -433,11 +449,18 @@ final class ClaudeCodeLauncher {
             end(id, as: .failed(.serverNotConnected))
         } else {
             let started = run.sessionID != nil
-            end(id, as: .failed(.classify(status: status, result: run.result, exit: exit, folder: run.workingDirectory, started: started)))
+            var failure = ClaudeCodeRunFailure.classify(status: status, result: run.result, exit: exit, folder: run.workingDirectory, started: started)
+            // Atlas was replaced on disk after the run's check: macOS's
+            // "you don't have permission to view it" means this.
+            if case .couldNotStart = failure, let onDisk = replacedAtlas() {
+                helper = .atlasReplaced(onDisk: onDisk)
+                failure = .atlasReplaced(onDisk: onDisk)
+            }
+            end(id, as: .failed(failure))
         }
     }
 
-    private func end(_ id: ClaudeCodeRun.ID, as phase: ClaudeCodeRun.Phase) {
+    func end(_ id: ClaudeCodeRun.ID, as phase: ClaudeCodeRun.Phase) {
         update(id) { run in
             run.phase = phase
             run.endedAt = now()
@@ -445,7 +468,7 @@ final class ClaudeCodeLauncher {
         if let ended = run(id) { onRunEnded?(ended) }
     }
 
-    private func append(_ run: ClaudeCodeRun) {
+    func append(_ run: ClaudeCodeRun) {
         runs.append(run)
         while runs.count > Self.runLimit, let oldest = runs.firstIndex(where: { !$0.isActive }) {
             runs.remove(at: oldest)

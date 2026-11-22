@@ -23,6 +23,13 @@ struct PricingScreen: View {
         @Bindable var strategy = viewModel.strategy
         VStack(spacing: 0) {
             if let catalog = viewModel.catalog, catalog.isEmpty {
+                // A new app has no price or availability either: they come
+                // first, as on App Store Connect's Pricing and Availability.
+                if let appPriceAvailability = viewModel.appPriceAvailability {
+                    AppPriceAvailabilityCards(model: appPriceAvailability)
+                        .padding(.horizontal, Spacing.xLarge)
+                        .padding(.top, Spacing.large)
+                }
                 NoSubscriptionsView(viewModel: viewModel)
             } else if let message = viewModel.catalogState.errorMessage {
                 failure(message)

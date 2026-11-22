@@ -53,6 +53,15 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
     var suggestion: Suggestion?
     /// By alpha-3.
     var prices: [String: TerritoryPrice]
+    /// Its starting prices are still being pushed (or stopped partway), so
+    /// it suggests nothing yet (`PricingViewModel.isSettingStartingPrices`).
+    var isSettingStartingPrices = false
+
+    /// What the card says instead of a suggestion while its starting
+    /// prices are being set.
+    static let settingStartingPricesText = String(localized: """
+    Its starting prices aren’t all in App Store Connect yet. Suggestions show once Review & Push has set them in every country and region.
+    """)
 
     var id: String { product.id }
 

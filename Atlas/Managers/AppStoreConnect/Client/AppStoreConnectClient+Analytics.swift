@@ -31,11 +31,13 @@ extension AppStoreConnectClient {
         _ = try await send(PushRequest(method: .delete, path: "/v1/analyticsReportRequests/\(id)", body: nil))
     }
 
-    func analyticsReports(requestID: String, category: String) async throws -> [AppStoreConnectResource<AnalyticsReportAttributes>] {
-        try await allPages(of: "/v1/analyticsReportRequests/\(requestID)/reports", query: [
-            URLQueryItem(name: "filter[category]", value: category),
-            URLQueryItem(name: "limit", value: "200"),
-        ])
+    /// The request's reports, of one category, or every one when it's nil
+    /// (the newer reports are matched by name, whatever Apple files them
+    /// under).
+    func analyticsReports(requestID: String, category: String?) async throws -> [AppStoreConnectResource<AnalyticsReportAttributes>] {
+        var query = [URLQueryItem(name: "limit", value: "200")]
+        if let category { query.insert(URLQueryItem(name: "filter[category]", value: category), at: 0) }
+        return try await allPages(of: "/v1/analyticsReportRequests/\(requestID)/reports", query: query)
     }
 
     func analyticsReportInstances(

@@ -13,11 +13,19 @@ struct SubscriptionsView: View {
     let appName: String
     /// Live retention messages; nil when not read.
     let liveRetentionMessages: Int?
+    var retention: RetentionReport?
+    var lifecycle: LifecycleReport?
+    var gracePeriod: GracePeriodSetting?
+    /// Apple's subscription rows name product pages: Break It Down can split them.
+    var hasPageRows = false
+    var onShow: (SubscriptionsPane) -> Void = { _ in }
+    var onBreakDown: () -> Void = {}
     let onAct: (FindingAction, String) -> Void
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.medium) {
+                notices
                 AdaptiveGridLayout(minimumWidth: 180, spacing: Spacing.medium) {
                     card(String(localized: "Active subscribers"), report.active.map(AnalyticsText.count) ?? "—", report.activeChange.map { String(localized: "\($0) vs a period earlier") } ?? "")
                     Card(padding: Spacing.medium) {
@@ -35,6 +43,9 @@ struct SubscriptionsView: View {
                         report.charges > 0 ? String(localized: "\(AnalyticsText.percent(Double(report.refunds) / Double(report.charges))) of \(AnalyticsText.count(report.charges)) charges") : ""
                     )
                 }
+                if let retention, !retention.isEmpty {
+                    RetentionSummaryBlock(report: retention) { onShow(.retention) }
+                }
                 AdaptiveGridLayout(minimumWidth: 340, spacing: Spacing.medium) {
                     renewals
                     cancellations
@@ -51,6 +62,26 @@ struct SubscriptionsView: View {
             .padding(.bottom, Spacing.xLarge)
         }
         .accessibilityIdentifier("analytics.subscriptions")
+    }
+
+    @ViewBuilder
+    private var notices: some View {
+        if let lifecycle, gracePeriod?.isOn == false, lifecycle.lost > 0 {
+            AnalyticsNotice(
+                tone: .warning,
+                text: String(localized: "\(AnalyticsText.count(lifecycle.lost)) subscribers left in \(lifecycle.period.length) days because Apple couldn’t charge them. Billing Grace Period is off for \(appName)."),
+                primary: (String(localized: "See Billing and Plans"), { onShow(.billing) }),
+                identifier: "analytics.subscriptions.billingNotice"
+            )
+        }
+        if hasPageRows {
+            AnalyticsNotice(
+                tone: .info,
+                text: String(localized: "Apple now says which product page, campaign and source each subscriber came from."),
+                primary: (String(localized: "Break It Down by Page"), onBreakDown),
+                identifier: "analytics.subscriptions.originNotice"
+            )
+        }
     }
 
     private var renewals: some View {

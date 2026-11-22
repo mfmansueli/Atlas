@@ -17,14 +17,15 @@ enum FindingRules {
     static let territoryLimit = 3
 
     static func findings(_ dataset: AnalyticsDataset, context: AnalyticsContext, now: Date = .now) -> [AnalyticsFinding] {
-        guard let period = dataset.period(length: 28), dataset.dayCount >= 28 else { return [] }
+        let fromReports = reportFindings(dataset, now: now)
+        guard let period = dataset.period(length: 28), dataset.dayCount >= 28 else { return fromReports }
         let totals = dataset.totals(in: period)
         var findings: [AnalyticsFinding] = []
         findings += steps(dataset, now: now)
         findings += territories(dataset, period: period, totals: totals, context: context, now: now)
         findings += trialPrices(dataset, period: period, context: context, now: now)
         if let early = earlyCancellations(dataset, period: period, context: context, now: now) { findings.append(early) }
-        return findings
+        return findings + fromReports
     }
 
     /// A step that fell against the previous 28 days.
@@ -39,6 +40,9 @@ enum FindingRules {
         case .inAppTexts: .inAppTexts
         case .pricing: .pricing(territory: nil)
         case .retention: .retention
+        case .productPages: .productPage(name: nil)
+        case .stability: .stability
+        case .billing: .billing
         }
         return [AnalyticsFinding(
             id: "step.\(worst.stage.rawValue)", source: .builtIn,

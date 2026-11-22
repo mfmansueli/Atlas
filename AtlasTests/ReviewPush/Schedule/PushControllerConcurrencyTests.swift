@@ -53,6 +53,24 @@ struct PushControllerConcurrencyTests {
         #expect(transport.overlapped("/v1/subscriptionPrices/BRA", "/v1/appStoreVersionLocalizations/de"))
     }
 
+    /// Prices as `PriceChangeFactory` writes them, one per territory, go
+    /// several at once like the texts.
+    @Test func pricesInManyTerritoriesGoSeveralAtATime() async throws {
+        let transport = SlowPushTransport()
+        let prices = try (1...12).map { index in
+            let body = SubscriptionPriceCreateRequest(subscriptionID: "annual", territoryID: "T\(index)", pricePointID: "pp\(index)")
+            return try PendingChange(
+                id: "price.annual.T\(index)", appID: "lumen", section: .subscriptionPricing, group: "Subscription Pricing", title: "T\(index)",
+                oldValue: "old", newValue: "new", requests: [PushRequest.json(.post, "/v1/subscriptionPrices", body)]
+            )
+        }
+        let controller = await push(prices, via: transport)
+
+        #expect(transport.mostInFlight == PushSchedule.concurrentChanges)
+        #expect(controller.doneCount == prices.count)
+        #expect(queue.changes.isEmpty)
+    }
+
     @Test func cancellingLetsTheOnesInFlightFinishAndLeavesTheRest() async {
         let transport = SlowPushTransport(delay: .milliseconds(80))
         let controller = PushController(queue: queue, history: PushHistory(), transport: transport)

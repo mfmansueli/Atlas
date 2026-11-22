@@ -14,15 +14,17 @@ import Foundation
 /// - Unreviewed suggestions don't count anywhere: not in the label
 ///   preview, the checklist, the export or the published snapshot.
 /// - Open questions block "done"; answering one applies its effect to the
-///   types it affects.
+///   types it affects as the person's answer, so it counts at once, and
+///   turns the first question to Yes when one becomes collected.
 /// - A rejected suggestion becomes "not collected", the person's, so the
 ///   cross-check can still catch a manifest that disagrees.
 /// - Out of date: after Mark as Published, the reviewed answers differ from
 ///   the snapshot, or something new waits for review.
 ///
 /// The edits are in `PrivacyWorksheet+Review.swift`, the assistants'
-/// suggestions in `+Proposals.swift`, what it adds up to in `+Status.swift`
-/// and the checklist in `+Checklist.swift`.
+/// suggestions in `+Proposals.swift`, answering open questions in
+/// `Questions/PrivacyWorksheet+Questions.swift`, what it adds up to in
+/// `+Status.swift` and the checklist in `+Checklist.swift`.
 struct PrivacyWorksheet: Hashable, Codable, Sendable {
     /// "Do you or your third-party partners collect data from this app?"
     var collects: PrivacyCollectsAnswer?

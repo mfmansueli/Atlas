@@ -132,6 +132,42 @@ struct ProposePrivacyAnswersToolTests {
         #expect(worksheet.questions.isEmpty)
     }
 
+    @Test func aQuestionWhoseAnswerSetsCollectedNeedsTheTypesItAffects() async throws {
+        let outcome = try await call(["open_questions": [[
+            "id": "q3",
+            "question": "Do you keep purchase records on a server of your own?",
+            "if_yes": ["summary": "Purchase History is collected.", "collected": true, "purposes": ["APP_FUNCTIONALITY"]],
+        ]]])
+        let refusal: JSONValue = [
+            "id": "q3", "status": "refused",
+            "reason": "An answer that sets collected needs the types it applies to in affects, ids from get_privacy_questionnaire.",
+        ]
+        #expect(outcome.result["openQuestions"] == [refusal])
+        #expect(worksheet.questions.isEmpty)
+
+        let summaryOnly = try await call(["open_questions": [["id": "q4", "question": "Anything else?", "if_yes": ["summary": "Tell me more."]]]])
+        #expect(summaryOnly.result["openQuestions"] == "queued")
+    }
+
+    @Test func answeringAQuestionFillsInItsTypesAndTheFirstQuestion() async throws {
+        _ = try await call([
+            "collects": false,
+            "answers": [["type": "purchases", "collected": false, "confidence": "high"]],
+            "open_questions": [[
+                "id": "q3",
+                "question": "Do you tie purchases to users with the App Store Server API?",
+                "affects": ["purchases"],
+                "if_yes": ["summary": "Purchase History is collected, linked, for App Functionality.", "collected": true,
+                           "purposes": ["APP_FUNCTIONALITY"], "linked": true],
+                "if_no": ["summary": "Purchase History stays not collected."],
+            ]],
+        ])
+        services.privacy.update(lumen) { $0.answerQuestion("q3", with: true) }
+        #expect(worksheet.reviewedAnswers.collected[.purchases] == PrivacyAnswer(collected: true, purposes: [.appFunctionality], linked: true))
+        #expect(worksheet.collects?.countedValue == true)
+        #expect(worksheet.questionnaireJSON["answeredQuestions"]?.arrayValue?.first?["changed"] == ["purchases"])
+    }
+
     @Test func itIsGatedByTheAppInformationSwitch() {
         #expect(ProposePrivacyAnswersTool().definition.proposalKind == .appInformation)
     }

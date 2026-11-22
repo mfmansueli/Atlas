@@ -24,6 +24,9 @@ struct AnalyticsDebugLaunch {
     /// The Korean keywords change rather than the English subtitle.
     var picksLastChange = false
     var opensSettings = false
+    var pane = SubscriptionsPane.summary
+    var columnGroup = BreakdownColumnGroup.funnel
+    var opensReports = false
     var settingsFocus: AnalyticsSettingsFocus?
 
     @MainActor
@@ -38,8 +41,11 @@ struct AnalyticsDebugLaunch {
             let matching = model.changes.filter { $0.kind == change }
             model.selectedChangeID = (picksLastChange ? matching.last : matching.first)?.id
         }
+        model.subscriptionsPane = pane
+        model.columnGroup = columnGroup
         model.tab = tab
         if opensSettings { model.openSettings(focus: settingsFocus) }
+        if opensReports { model.isReportsPresented = true }
     }
 }
 #endif

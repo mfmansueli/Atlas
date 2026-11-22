@@ -16,6 +16,9 @@ struct AppStoreConnectClient: Sendable {
     var now: @Sendable () -> Date = { Date() }
     /// Where every read notes the hourly quota left.
     var quota: AppStoreConnectQuota = .shared
+    /// How Pricing's reads are asked again after Apple's server failed
+    /// (tests: `.immediate` or `.never`).
+    var readRetry: AppStoreConnectReadRetry = .standard
 
     /// Every resource of a collection endpoint, following `links.next` until
     /// the last page.

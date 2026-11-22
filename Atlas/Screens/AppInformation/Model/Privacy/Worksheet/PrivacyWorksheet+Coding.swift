@@ -6,7 +6,8 @@
 import Foundation
 
 // Every field is optional when decoding, so a worksheet saved before a
-// field existed still loads.
+// field existed still loads. Questions answered before answers counted are
+// settled as the worksheet loads.
 extension PrivacyWorksheet {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -21,5 +22,6 @@ extension PrivacyWorksheet {
         checkedSteps = try container.decodeIfPresent(Set<String>.self, forKey: .checkedSteps) ?? []
         publication = try container.decodeIfPresent(PrivacyPublication.self, forKey: .publication)
         isStarted = try container.decodeIfPresent(Bool.self, forKey: .isStarted) ?? false
+        settleAnswersSavedWithoutBaseline()
     }
 }

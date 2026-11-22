@@ -49,6 +49,9 @@ struct FunnelView: View {
                 if let chart = viewModel.chart {
                     FunnelChartView(chart: chart) { viewModel.show($0.id) }
                 }
+                if viewModel.afterDownload != nil || viewModel.webPreview != nil {
+                    FunnelMoreView(afterDownload: viewModel.afterDownload, webPreview: viewModel.webPreview)
+                }
                 findings
             }
             .padding(.bottom, Spacing.xLarge)

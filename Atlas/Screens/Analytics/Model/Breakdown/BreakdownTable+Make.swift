@@ -55,7 +55,9 @@ extension BreakdownTable {
             }
         }
         rows.sort { ($0.totals.impressions ?? 0, $1.name) > ($1.totals.impressions ?? 0, $0.name) }
-        return BreakdownTable(dimension: dimension, period: period, totals: totals, rows: rows, footer: footer(dimension, hasSales: dataset.hasSales))
+        var table = BreakdownTable(dimension: dimension, period: period, totals: totals, rows: rows, footer: footer(dimension, hasSales: dataset.hasSales))
+        table.addReports(dataset.reports)
+        return table
     }
 
     /// The Detailed facts by product page, referrer or campaign, each with

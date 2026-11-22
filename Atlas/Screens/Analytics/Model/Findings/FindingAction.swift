@@ -12,6 +12,21 @@ enum FindingAction: Hashable, Sendable, Codable {
     case pricing(territory: String?)
     case retention
     case inAppTexts
+    /// A custom product page, by name; nil opens the list.
+    case productPage(name: String?)
+    /// Analytics → Stability.
+    case stability
+    /// Analytics → Subscriptions → Billing and Plans, where Billing Grace
+    /// Period is turned on.
+    case billing
+
+    /// Whether it stays inside Analytics.
+    var isInsideAnalytics: Bool {
+        switch self {
+        case .stability, .billing: true
+        default: false
+        }
+    }
 
     var area: AnalyticsArea {
         switch self {
@@ -20,6 +35,9 @@ enum FindingAction: Hashable, Sendable, Codable {
         case .pricing: .pricing
         case .retention: .retention
         case .inAppTexts: .inAppTexts
+        case .productPage: .productPages
+        case .stability: .stability
+        case .billing: .billing
         }
     }
 
@@ -36,6 +54,11 @@ enum FindingAction: Hashable, Sendable, Codable {
             return String(localized: "Open Pricing")
         case .retention: return String(localized: "Open Retention")
         case .inAppTexts: return String(localized: "Open In-App Texts")
+        case let .productPage(name):
+            if let name { return String(localized: "Open \(name)") }
+            return String(localized: "Open Product Pages")
+        case .stability: return String(localized: "Open Stability")
+        case .billing: return String(localized: "Turn On Billing Grace Period…")
         }
     }
 }

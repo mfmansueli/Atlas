@@ -12,6 +12,10 @@ struct BreakdownTable: Hashable, Sendable {
     /// The whole app in the period: the averages rows are compared with.
     var totals: FunnelTotals
     var rows: [BreakdownRow]
+    /// The whole app's subscribers and after-download numbers, when Apple's
+    /// newer reports split this dimension.
+    var subscribers: SubscriberCounts?
+    var afterDownload: AfterDownloadNumbers?
     /// What's said once under the table: Apple's privacy threshold, how
     /// languages are derived, what isn't split this way.
     var footer: String

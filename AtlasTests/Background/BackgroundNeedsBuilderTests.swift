@@ -68,4 +68,11 @@ struct BackgroundNeedsBuilderTests {
         #expect(BackgroundNeedsBuilder.title(for: .pick, appName: "Alba") == "Pick the captures for Alba’s screenshots")
         #expect(BackgroundNeedsBuilder.title(for: .review, appName: "Alba") == "Review and approve Alba’s screenshots")
     }
+
+    @Test func aVersionThatCrashesMoreSendsThePersonToTheOverview() throws {
+        let facts = BackgroundAppFacts(appID: "1", appName: "Lumen Journal", crashHeadline: "Version 1.4 crashes 3.2× as often as 1.3.")
+        let need = try #require(BackgroundNeedsBuilder.needs(for: [facts], namesApps: true).first { $0.id == "stability-1" })
+        #expect(need.title == "Version 1.4 crashes 3.2× as often as 1.3.")
+        #expect(need.destination == .section(.overview, appID: "1"))
+    }
 }

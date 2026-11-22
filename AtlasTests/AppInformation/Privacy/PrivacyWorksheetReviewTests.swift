@@ -8,8 +8,8 @@ import Testing
 @testable import Atlas
 
 /// The person's edits: accepting, rejecting and editing suggestions,
-/// Accept All High-Confidence, conflicts, open questions and the
-/// cross-check's two ways out.
+/// Accept All High-Confidence, conflicts and the cross-check's two ways
+/// out. Open questions are in `PrivacyWorksheetQuestionTests`.
 @Suite("PrivacyWorksheet review")
 struct PrivacyWorksheetReviewTests {
     private typealias Support = PrivacyTestSupport
@@ -79,20 +79,6 @@ struct PrivacyWorksheetReviewTests {
         #expect(worksheet.conflictTypes.isEmpty)
         #expect(worksheet[.deviceId]?.answer.linked == false)
         #expect(worksheet[.deviceId]?.status == .accepted)
-    }
-
-    @Test func answeringAQuestionAppliesItsEffect() {
-        var worksheet = Support.proposed([(.email, Support.suggestion(.notCollected, confidence: .low))])
-        worksheet.edit(.support, to: .notCollected)
-        worksheet.ask(Support.question(affects: [.email, .support]), at: Support.date)
-        worksheet.answerQuestion("q1", with: true)
-        #expect(worksheet.openQuestions.isEmpty)
-        // Unreviewed stays unreviewed, with the new answer.
-        #expect(worksheet[.email]?.status == .unreviewed)
-        #expect(worksheet[.email]?.answer == Support.collected(linked: true))
-        // Anything else becomes the person's.
-        #expect(worksheet[.support]?.answer == Support.collected(linked: true))
-        #expect(worksheet[.support]?.status == .yours)
     }
 
     @Test func markCollectedUsesTheAssistantsPurposesAndExplainingSilencesTheCrossCheck() {

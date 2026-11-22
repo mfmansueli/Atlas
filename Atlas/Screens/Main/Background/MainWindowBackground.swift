@@ -51,6 +51,10 @@ struct MainWindowBackground {
             for app in library.apps where analytics.isDue(app.id) {
                 await analytics.refresh(app.id, services: services.analytics)
             }
+            for app in library.apps {
+                guard let report = StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())), report.isWorse else { continue }
+                AtlasNotifications.stability(report, appName: app.name, appID: app.id)
+            }
             for appID in analytics.consumeArrivals() {
                 navigator.toast = .reportsArrived(appID: appID, appName: library.apps.first { $0.id == appID }?.name ?? appID)
             }

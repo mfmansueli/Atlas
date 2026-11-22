@@ -62,6 +62,7 @@ struct OverviewSectionView: View {
                             .accessibilityIdentifier("overview.error")
                     }
                     assistantCard
+                    stabilityAlert
                     OverviewPageAndWaiting(
                         app: app, services: services, content: shownContent, width: width, storePage: storePage, newLanguages: newLanguages,
                         release: release
@@ -256,6 +257,18 @@ struct OverviewSectionView: View {
             }
             PendingChangesCard(count: changes.count(for: app.id))
             LastPushCard(record: history.lastRecord(for: app.id)) { navigator.isActivityPresented = true }
+        }
+    }
+
+    /// The newest version crashes clearly more than the one before.
+    @ViewBuilder
+    private var stabilityAlert: some View {
+        if let report = StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())), report.isWorse {
+            StabilityAlertCard(
+                report: report, phase: release?.phase, isPausing: release?.busyAction == .pause,
+                onOpenStability: { navigator.openAnalytics(.stability, appID: app.id) },
+                onPause: { Task { await release?.perform(.pause) } }
+            )
         }
     }
 

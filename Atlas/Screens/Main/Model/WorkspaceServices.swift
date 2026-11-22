@@ -16,6 +16,9 @@ struct WorkspaceServices {
     var appInformation: any AppInformationServices
     /// Pricing → Retention: retention messages and offers.
     var retention: any RetentionServices
+    /// Pricing's App Price and Availability: the app's own price schedule
+    /// and the countries and regions it's sold in.
+    var appPriceAvailability: any AppPriceAvailabilityServices
     /// Analytics: Apple's analytics reports and Sales and Trends.
     var analytics: any AnalyticsServices
     /// Reviews: App Store reviews, the replies and the ratings.
@@ -39,6 +42,7 @@ struct WorkspaceServices {
             storePage: LiveStorePageServices(client: client),
             appInformation: LiveAppInformationServices(client: client),
             retention: LiveRetentionServices(client: client),
+            appPriceAvailability: LiveAppPriceAvailabilityServices(client: client),
             analytics: LiveAnalyticsServices(client: client),
             reviews: LiveReviewsServices(client: client),
             release: LiveReleaseServices(client: client),

@@ -23,6 +23,11 @@ import SwiftUI
 /// - After Changes: `an-chg`, `an-chg-wait`, `an-chg-few`, `an-chg-price`.
 /// - `an-sub`, settings: `an-set`, `an-set-vendor`, and the overview's
 ///   card with the gray count on the section picker: `an-overview`.
+/// - Apple's newer reports (boards 59–62): `an-sub-ret`, `an-sub-ret-few`
+///   (Quiet Timer, 3 of 14), `an-sub-ret-none` (Parcel Pal, sent empty),
+///   `an-sub-offers`, `an-sub-billing`, `an-stab`, `an-bd-page-sub`,
+///   `an-bd-camp`, `an-reports`, `an-preparing` (Tempo), and elsewhere
+///   `an-reviews-crash`, `an-pages-sub`.
 enum AnalyticsDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugAnalyticsData
@@ -139,6 +144,18 @@ enum AnalyticsDebugScenes {
         case "an-chg-few": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .searchText, picksLastChange: true))
         case "an-chg-price": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .prices))
         case "an-sub": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions))
+        case "an-sub-ret": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .retention))
+        case "an-sub-ret-few": scene(app: AppIDs.quiet, launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .retention))
+        case "an-sub-ret-none": scene(app: AppIDs.parcel, launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .retention))
+        case "an-sub-offers": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .offers))
+        case "an-sub-billing": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .billing))
+        case "an-stab": scene(launch: AnalyticsDebugLaunch(tab: .stability))
+        case "an-bd-page-sub": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .productPage, columnGroup: .afterDownload))
+        case "an-bd-camp": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .campaign, columnGroup: .afterDownload))
+        case "an-reports": scene(launch: AnalyticsDebugLaunch(opensReports: true))
+        case "an-preparing": scene(app: AppIDs.tempo)
+        case "an-reviews-crash": scene(section: .reviews)
+        case "an-pages-sub": scene(section: .productPages)
         case "an-overview": scene(section: .overview)
         case "an-set": scene(launch: AnalyticsDebugLaunch(opensSettings: true))
         case "an-set-vendor":

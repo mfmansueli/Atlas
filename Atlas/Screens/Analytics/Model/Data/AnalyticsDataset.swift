@@ -15,6 +15,10 @@ struct AnalyticsDataset: Hashable, Sendable {
     var events: [SubscriptionEventFact] = []
     var subscribers: [SubscriberFact] = []
     var active: [ActiveSubscriptionsFact] = []
+    /// The newer reports: retention, subscribers by page, crashes, deletions…
+    var reports = ReportsArchive()
+    /// Billing Grace Period; nil until read.
+    var gracePeriod: GracePeriodSetting?
     var engagementState: EngagementState = .ready
     var salesState: SalesState = .ready
     /// Whether the app sells a subscription; without one the funnel ends

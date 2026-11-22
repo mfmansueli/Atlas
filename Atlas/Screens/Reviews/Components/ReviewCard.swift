@@ -54,6 +54,11 @@ struct ReviewCard: View {
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
             Spacer(minLength: Spacing.small)
+            if ReviewCrashMentions.mentionsCrash(review) {
+                Pill(text: String(localized: "Mentions a crash"), style: .warning)
+                    .fixedSize()
+                    .accessibilityIdentifier("reviews.mentionsCrash.\(review.id)")
+            }
             if let theme = viewModel.theme(of: review), viewModel.isPro {
                 Pill(text: theme.title, style: .outline)
                     .fixedSize()

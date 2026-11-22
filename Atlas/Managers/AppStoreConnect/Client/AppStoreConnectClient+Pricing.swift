@@ -69,12 +69,14 @@ extension AppStoreConnectClient {
         ])
     }
 
-    /// Follows `links.next`, keeping `included` from every page.
+    /// Follows `links.next`, keeping `included` from every page. A page
+    /// Apple's server fails on is asked for again (`readRetry`), so one 500
+    /// doesn't fail the whole section.
     func pricingPages<Attributes>(of path: String, query: [URLQueryItem]) async throws -> PricingAPIDocument<Attributes> {
         var next: URL? = url(path, query: query)
         var merged = PricingAPIDocument<Attributes>(data: [], included: [])
         while let pageURL = next {
-            let page: PricingAPIDocument<Attributes> = try await get(pageURL)
+            let page: PricingAPIDocument<Attributes> = try await readRetry.run { try await get(pageURL) }
             merged.data += page.data
             merged.included = (merged.included ?? []) + (page.included ?? [])
             next = page.links?.next

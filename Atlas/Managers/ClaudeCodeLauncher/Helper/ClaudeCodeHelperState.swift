@@ -22,6 +22,10 @@ enum ClaudeCodeHelperState: Hashable, Sendable {
     case claudeMissing
     /// The helper couldn't run, e.g. it isn't executable.
     case failed(String)
+    /// Saved, but the Atlas on disk is another build than this one, which
+    /// macOS won't run it for (`AtlasCodeIdentity`): opening Atlas again
+    /// fixes it, saving the helper doesn't.
+    case atlasReplaced(onDisk: String?)
 
     var isReady: Bool {
         if case .ready = self { return true }
@@ -44,7 +48,7 @@ enum ClaudeCodeHelperState: Hashable, Sendable {
     var isInstalled: Bool {
         switch self {
         case .unknown, .notInstalled: false
-        case .checking, .ready, .outdated, .claudeMissing, .failed: true
+        case .checking, .ready, .outdated, .claudeMissing, .failed, .atlasReplaced: true
         }
     }
 
@@ -58,6 +62,7 @@ enum ClaudeCodeHelperState: Hashable, Sendable {
         case .outdated: String(localized: "Helper needs updating")
         case .claudeMissing: String(localized: "Claude Code not found")
         case .failed: String(localized: "The helper couldn’t run")
+        case .atlasReplaced: String(localized: "Open Atlas again to start Claude Code")
         }
     }
 
@@ -78,6 +83,8 @@ enum ClaudeCodeHelperState: Hashable, Sendable {
             String(localized: "The helper is installed, but it found no claude command. Install Claude Code, then check again.")
         case let .failed(message):
             message
+        case let .atlasReplaced(onDisk):
+            ClaudeCodeRunFailure.replacedDetail(onDisk: onDisk)
         }
     }
 
@@ -87,7 +94,7 @@ enum ClaudeCodeHelperState: Hashable, Sendable {
         case .notInstalled, .unknown: String(localized: "Install Helper…")
         case .outdated, .failed: String(localized: "Save the Helper Again…")
         case .ready where isOlder: String(localized: "Save the Helper Again…")
-        case .checking, .ready, .claudeMissing: nil
+        case .checking, .ready, .claudeMissing, .atlasReplaced: nil
         }
     }
 }

@@ -36,8 +36,14 @@ final class AnalyticsStore {
     /// What went wrong reading sales that isn't the key's role, e.g. a
     /// vendor number Apple doesn't know.
     private(set) var salesError: String?
+    /// What went wrong reading the newer reports; the funnel still shows.
+    var reportsError: String?
+
+    /// The app's Billing Grace Period, read with the reports; nil until read.
+    private(set) var gracePeriods: [StoreApp.ID: GracePeriodSetting] = [:]
 
     private var archives: [StoreApp.ID: EngagementArchive] = [:]
+    private var reportArchives: [StoreApp.ID: ReportsArchive] = [:]
     @ObservationIgnored private let directory: URL?
     @ObservationIgnored var now: () -> Date = { .now }
 
@@ -61,12 +67,20 @@ final class AnalyticsStore {
         return archive
     }
 
+    /// The newer reports (retention, subscribers by page, crashes…).
+    func reports(for appID: StoreApp.ID) -> ReportsArchive {
+        if let archive = reportArchives[appID] { return archive }
+        let archive = directory.flatMap { Self.read(ReportsArchive.self, at: $0.appending(path: "reports-\(appID).json")) } ?? ReportsArchive()
+        reportArchives[appID] = archive
+        return archive
+    }
+
     func setup(for appID: StoreApp.ID) -> AnalyticsSetup {
         let record = record(for: appID)
         if record.keyCannotAsk { return .keyCannotAsk }
         guard let asked = record.askedOn else { return .off }
         let hasSales = sales.events.contains { $0.appID == appID }
-        return archive(for: appID).isEmpty && !hasSales ? .waiting(asked: asked) : .ready
+        return archive(for: appID).isEmpty && !hasSales && reports(for: appID).isEmpty ? .waiting(asked: asked) : .ready
     }
 
     var salesState: SalesState {
@@ -86,6 +100,8 @@ final class AnalyticsStore {
             events: sales.events.filter { $0.appID == app.id },
             subscribers: sales.subscribers.filter { $0.appID == app.id },
             active: sales.active.filter { $0.appID == app.id },
+            reports: reports(for: app.id),
+            gracePeriod: gracePeriods[app.id],
             engagementState: archive.isEmpty ? .waiting(asked: record(for: app.id).askedOn) : .ready,
             salesState: salesState,
             sellsSubscriptions: sellsSubscriptions
@@ -192,6 +208,18 @@ final class AnalyticsStore {
         }
     }
 
+    func apply(_ download: ReportsDownload, to appID: StoreApp.ID) {
+        var archive = reports(for: appID)
+        archive.apply(download, now: now())
+        guard archive != reportArchives[appID] else { return }
+        reportArchives[appID] = archive
+        if let directory { Self.write(archive, to: directory.appending(path: "reports-\(appID).json")) }
+    }
+
+    func setGracePeriod(_ setting: GracePeriodSetting?, for appID: StoreApp.ID) {
+        gracePeriods[appID] = setting
+    }
+
     func apply(_ download: SalesDownload) {
         sales.apply(download)
         saveSales()
@@ -216,11 +244,14 @@ final class AnalyticsStore {
     /// DEBUG scenes and tests: an app's whole state at once.
     func load(
         appID: StoreApp.ID, record: AnalyticsAppRecord, archive: EngagementArchive = EngagementArchive(),
-        findings: AnalyticsFindingsState = AnalyticsFindingsState()
+        findings: AnalyticsFindingsState = AnalyticsFindingsState(), reports: ReportsArchive = ReportsArchive(),
+        gracePeriod: GracePeriodSetting? = nil
     ) {
         settings.records[appID] = record
         settings.findings[appID] = findings
         archives[appID] = archive
+        reportArchives[appID] = reports
+        gracePeriods[appID] = gracePeriod
     }
 
     func load(sales: SalesArchive, vendorNumber: String, keyCannotReadSales: Bool = false) {

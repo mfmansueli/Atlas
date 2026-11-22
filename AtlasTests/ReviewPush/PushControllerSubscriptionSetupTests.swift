@@ -81,6 +81,16 @@ struct PushControllerSubscriptionSetupTests {
         return data?.compactMap { $0["id"] as? String } ?? []
     }
 
+    /// A batched starting prices `PATCH`'s inline prices' `relationship` IDs.
+    private func includedIDs(_ request: PushRequest, _ relationship: String) -> [String] {
+        let object = request.body.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
+        let included = object?["included"] as? [[String: Any]] ?? []
+        return included.compactMap { price in
+            let relationships = price["relationships"] as? [String: Any]
+            return ((relationships?[relationship] as? [String: Any])?["data"] as? [String: Any])?["id"] as? String
+        }
+    }
+
     private func relationshipID(_ request: PushRequest, _ name: String) -> String? {
         let object = request.body.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
         let relationships = (object?["data"] as? [String: Any])?["relationships"] as? [String: Any]
@@ -101,8 +111,7 @@ struct PushControllerSubscriptionSetupTests {
             "/v2/subscriptionGroupLocalizations",
             "/v2/subscriptionLocalizations",
             "/v1/subscriptionAvailabilities",
-            "/v1/subscriptionPrices",
-            "/v1/subscriptionPrices",
+            "/v1/subscriptions/sub9",
         ])
         let sent = transport.sent
         #expect(relationshipID(sent[1], "group") == "grp9")
@@ -112,9 +121,10 @@ struct PushControllerSubscriptionSetupTests {
         #expect(relationshipID(sent[5], "subscription") == "sub9")
         // Available in the territories App Store Connect has, not the app's own table.
         #expect(relationshipIDs(sent[5], "availableTerritories") == ["USA", "BRA", "GBR"])
-        // The US at $9.99 and Brazil at its equalized point; the UK keeps its price.
-        #expect(sent[6...].map { relationshipID($0, "territory") } == ["USA", "BRA"])
-        #expect(sent[6...].map { relationshipID($0, "subscriptionPricePoint") } == ["p2", "e1"])
+        // The US at $9.99 and Brazil at its equalized point in one write; the UK keeps its price.
+        #expect(sent[6].method == .patch)
+        #expect(includedIDs(sent[6], "territory") == ["USA", "BRA"])
+        #expect(includedIDs(sent[6], "subscriptionPricePoint") == ["p2", "e1"])
         // Every placeholder was filled in before it went.
         let texts = sent.map { $0.path + (String(data: $0.body ?? Data(), encoding: .utf8) ?? "") }
         for placeholder in ["{createdID", "{subscriptionGroup:", "{inAppDraft:", "{startingPrice:", "{everyTerritory}"] {
@@ -167,8 +177,7 @@ struct PushControllerSubscriptionSetupTests {
             "PATCH /v2/subscriptionGroupLocalizations/gl1",
             "PATCH /v2/subscriptionLocalizations/sl1",
             "POST /v1/subscriptionAvailabilities",
-            "POST /v1/subscriptionPrices",
-            "POST /v1/subscriptionPrices",
+            "PATCH /v1/subscriptions/sub9",
         ])
         #expect(transport.fetched.contains(Self.subscriptionLookup))
         let sent = transport.sent
@@ -176,8 +185,8 @@ struct PushControllerSubscriptionSetupTests {
         #expect(relationshipID(sent[3], "subscription") == "sub9")
         #expect(relationshipIDs(sent[3], "availableTerritories") == ["USA", "BRA", "GBR"])
         // The US at its point and Brazil equalized; the UK keeps the price it has.
-        #expect(sent[4...].map { relationshipID($0, "subscription") } == ["sub9", "sub9"])
-        #expect(sent[4...].map { relationshipID($0, "territory") } == ["USA", "BRA"])
+        #expect(includedIDs(sent[4], "subscription") == ["sub9", "sub9"])
+        #expect(includedIDs(sent[4], "territory") == ["USA", "BRA"])
     }
 
     @Test func aRefusedSubscriptionTheGroupDoesntHaveFails() async throws {
@@ -268,7 +277,23 @@ struct PushControllerSubscriptionSetupTests {
         let controller = await push([builder.startingPriceChange(for: product, price: Decimal(string: "9.99") ?? 0)], via: transport)
 
         #expect(controller.doneCount == 1)
-        #expect(transport.sent.map { relationshipID($0, "territory") } == ["USA", "BRA"])
+        #expect(transport.sent.map { "\($0.method.rawValue) \($0.path)" } == ["PATCH /v1/subscriptions/sub9"])
+        #expect(transport.sent.flatMap { includedIDs($0, "territory") } == ["USA", "BRA"])
+    }
+
+    /// App Store Connect refused the batched write: the prices go one
+    /// territory at a time instead, and the change is done.
+    @Test func aRefusedBatchOfPricesGoesOneTerritoryAtATime() async {
+        let refusal = AppStoreConnectError.rejected(statusCode: 409, code: "ENTITY_ERROR.INCLUDED.INVALID", detail: "Not allowed.")
+        let transport = Self.transport(failures: ["/v1/subscriptions/sub9": refusal])
+        let controller = await push([builder.change(for: NewSubscriptionChangeBuilderTests.monthly())], via: transport)
+
+        #expect(controller.doneCount == 1)
+        #expect(queue.changes.isEmpty)
+        #expect(transport.sent.count { $0.method == .patch && $0.path == "/v1/subscriptions/sub9" } == 1)
+        let posts = transport.sent.filter { $0.path == "/v1/subscriptionPrices" }
+        #expect(Set(posts.compactMap { relationshipID($0, "territory") }) == ["USA", "BRA"])
+        #expect(posts.allSatisfy { relationshipID($0, "subscription") == "sub9" })
     }
 
     // MARK: - Placeholders

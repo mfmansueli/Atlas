@@ -19,6 +19,9 @@ final class Entitlements {
     /// answers.
     private(set) var offers: [ProOffer] = []
     private(set) var isLoadingOffers = false
+    /// The last try to read the plans couldn't reach the App Store (rather
+    /// than reaching it and finding no plans).
+    private(set) var offersUnreachable = false
 
     @ObservationIgnored private let store: any ProStore
     @ObservationIgnored private var updates: Task<Void, Never>?
@@ -57,7 +60,13 @@ final class Entitlements {
     func loadOffers() async {
         guard offers.isEmpty, !isLoadingOffers else { return }
         isLoadingOffers = true
-        offers = await store.offers()
+        do {
+            offers = try await store.offers()
+            offersUnreachable = false
+        } catch {
+            offers = []
+            offersUnreachable = true
+        }
         isLoadingOffers = false
     }
 

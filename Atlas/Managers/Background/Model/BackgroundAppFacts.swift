@@ -27,6 +27,9 @@ struct BackgroundAppFacts: Hashable, Sendable {
     var newFindings = 0
     /// The first of them, for the line's detail.
     var firstFindingTitle: String?
+    /// "Version 1.4 crashes 3.2× as often as 1.3…" while the newest version
+    /// crashes clearly more (Analytics → Stability).
+    var crashHeadline: String?
     /// Events whose artwork concepts are ready behind a hidden sheet.
     var readyArtwork: [ReadyArtwork] = []
 

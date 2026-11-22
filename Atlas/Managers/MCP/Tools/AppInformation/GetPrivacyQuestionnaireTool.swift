@@ -16,7 +16,8 @@ struct GetPrivacyQuestionnaireTool: MCPTool {
         description: """
         Returns Apple's App Privacy questionnaire for an app: the definitions of collect, linked to the user and \
         tracking, every data type with its id, category, fastlane key and privacy-manifest key, the six purposes, \
-        the confidence levels, and the answers already in the app's worksheet (with who gave them). App Store \
+        the confidence levels, the answers already in the app's worksheet (with who gave them), the open questions \
+        and the person's answers to earlier ones (answeredQuestions, with the types each answer changed). App Store \
         Connect has no API for App Privacy: answers you propose with propose_privacy_answers go into Atlas's \
         worksheet, where the person reviews each one and enters them in App Store Connect themselves. Calling this \
         shows the person that a scan has started.

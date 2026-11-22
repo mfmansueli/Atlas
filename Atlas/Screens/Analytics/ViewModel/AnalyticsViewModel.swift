@@ -28,6 +28,16 @@ final class AnalyticsViewModel {
         }
     }
 
+    var subscriptionsPane = SubscriptionsPane.summary
+    /// Reports from Apple: which newer reports are ready, empty or asked.
+    var isReportsPresented = false
+    var columnGroup = BreakdownColumnGroup.funnel {
+        didSet {
+            guard columnGroup != oldValue else { return }
+            if !sortColumn.isShown(in: columnGroup) { sortColumn = .downloads }
+        }
+    }
+
     var sortColumn = BreakdownColumn.impressions
     var sortAscending = false
     var selectedRowID: BreakdownRow.ID?
@@ -47,6 +57,11 @@ final class AnalyticsViewModel {
     private(set) var table: BreakdownTable?
     private(set) var subscriptions: SubscriptionsReport?
     private(set) var results: [MeasuredChange.ID: ChangeResult] = [:]
+    private(set) var retention: RetentionReport?
+    private(set) var lifecycle: LifecycleReport?
+    private(set) var stability: StabilityReport?
+    private(set) var afterDownload: AfterDownloadNumbers?
+    private(set) var webPreview: WebPreviewReport?
 
     init(app: StoreApp, store: AnalyticsStore, services: any AnalyticsServices) {
         self.app = app
@@ -69,10 +84,34 @@ final class AnalyticsViewModel {
     var isLoadingFirstData: Bool { activity.isLoading && funnel == nil && setup == .ready }
 
     var tabs: [AnalyticsTab] {
-        AnalyticsTab.allCases.filter { $0 != .subscriptions || sellsSubscriptions }
+        AnalyticsTab.allCases.filter { tab in
+            switch tab {
+            case .subscriptions: sellsSubscriptions
+            case .stability: stability != nil
+            default: true
+            }
+        }
     }
 
-    var period: AnalyticsPeriod? { funnel?.period }
+    var period: AnalyticsPeriod? { funnel?.period ?? reportsPeriod }
+
+    /// The newer reports for this app.
+    var reports: ReportsArchive { dataset.reports }
+
+    /// The period the newer reports cover when the funnel has none yet.
+    private var reportsPeriod: AnalyticsPeriod? {
+        let last = AppleReportKind.allCases.compactMap { dataset.reports.lastDay($0) }.max()
+        return last.map { AnalyticsPeriod(ending: $0, length: days) }
+    }
+
+    /// Apple is still making some of the newer reports for an app that has
+    /// the funnel: the first-read banner.
+    var preparingReports: [AppleReportKind] {
+        guard setup == .ready, dataset.reports.firstChecked != nil else { return [] }
+        return dataset.reports.pending
+    }
+
+    var gracePeriod: GracePeriodSetting? { dataset.gracePeriod }
     var staleDays: Int? { store.staleDays(through: dataset.through) }
 
     var sortedRows: [BreakdownRow] {
@@ -135,6 +174,11 @@ final class AnalyticsViewModel {
         tab = .changes
     }
 
+    func show(_ pane: SubscriptionsPane) {
+        subscriptionsPane = pane
+        tab = .subscriptions
+    }
+
     func breakDown(by dimension: BreakdownDimension) {
         self.dimension = dimension
         tab = .breakdown
@@ -157,6 +201,12 @@ final class AnalyticsViewModel {
     func refresh(force: Bool = false) async {
         guard setup != .off, setup != .keyCannotAsk || force, force || store.isDue(app.id) else { return }
         await store.refresh(app.id, services: services)
+        recompute()
+    }
+
+    /// Turns on Billing Grace Period, once the person confirmed it.
+    func turnOnGracePeriod(_ duration: GracePeriodSetting.Duration) async throws {
+        try await store.turnOnGracePeriod(for: app.id, duration: duration, services: services)
         recompute()
     }
 
@@ -196,11 +246,18 @@ final class AnalyticsViewModel {
         recomputeChart()
         recomputeTable()
         subscriptions = funnel.flatMap { SubscriptionsReport.make(dataset, period: $0.period) }
+        let period = period
+        retention = RetentionReport.make(dataset.reports, days: days)
+        lifecycle = period.flatMap { LifecycleReport.make(dataset.reports, period: $0) }
+        stability = StabilityReport.make(dataset.reports, now: AnalyticsDay(store.now()))
+        afterDownload = period.map { AfterDownloadNumbers.make(dataset.reports, period: $0) }.flatMap { $0.isEmpty ? nil : $0 }
+        webPreview = period.flatMap { WebPreviewReport.make(dataset.reports, period: $0) }
+        if !tabs.contains(tab) { tab = .funnel }
         results = Dictionary(
             changes.compactMap { change in ChangeResult.make(change, dataset: dataset, context: context).map { (change.id, $0) } },
             uniquingKeysWith: { first, _ in first }
         )
-        guard setup == .ready, dataset.through != nil else { return }
+        guard setup == .ready, dataset.through != nil || !dataset.reports.isEmpty else { return }
         let fresh = FindingRules.findings(dataset, context: context, now: store.now())
         store.updateFindings({ $0.update(builtIn: fresh) }, for: app.id)
     }

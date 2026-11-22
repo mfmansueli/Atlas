@@ -76,17 +76,34 @@ struct ReviewAndExportChangeTests {
         #expect(builder.newReviewDetailChange(AppReviewValues()) == nil)
     }
 
-    /// Apple: "You must provide a value for the attribute 'contactEmail'".
-    @Test func newReviewDetailsWaitForAContactEmail() throws {
+    /// Apple: "You must provide a value for the attribute 'contactEmail'",
+    /// and then 'contactPhone': a new version's review details wait for the
+    /// whole contact.
+    @Test(arguments: AppInformationChangeBuilder.requiredContactFields)
+    func newReviewDetailsWaitForTheWholeContact(_ field: AppReviewField) throws {
         var ids = Support.ids
         ids.reviewDetailID = nil
         let builder = AppInformationChangeBuilder(appID: Support.appID, ids: ids, versionString: "1.0")
         var values = saved
-        values.email = " "
+        values.setText(" ", for: field)
         let blocked = try #require(builder.newReviewDetailChange(values))
-        #expect(blocked.blockedReason == "Add a contact email: App Store Connect needs one to create the review details.")
+        let reason = try #require(blocked.blockedReason)
+        #expect(reason.contains(field.title.lowercased()))
         #expect(blocked.isBlocked)
         #expect(try #require(builder.newReviewDetailChange(saved)).blockedReason == nil)
+    }
+
+    @Test func newReviewDetailsNameEveryMissingContactField() throws {
+        var ids = Support.ids
+        ids.reviewDetailID = nil
+        let builder = AppInformationChangeBuilder(appID: Support.appID, ids: ids, versionString: "1.0")
+        var values = saved
+        values.phone = ""
+        values.email = ""
+        let reason = try #require(builder.newReviewDetailChange(values)?.blockedReason)
+        #expect(reason.contains("phone"))
+        #expect(reason.contains("email"))
+        #expect(!reason.contains("first name and"))
     }
 
     @Test func reviewIsCompleteWithContactAndADemoAccountWhenNeeded() {

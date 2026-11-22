@@ -8,6 +8,8 @@ import Foundation
 /// One item of `propose_privacy_answers`' `open_questions`: something the
 /// code can't answer, the types it affects, and what Yes and No would mean
 /// for them. Read into a `PrivacyOpenQuestion`, or refused with the reason.
+/// When the person answers, that answer's `collected`, `purposes`, `linked`
+/// and `tracking` become the affected types' answer, the person's.
 struct MCPPrivacyQuestion {
     var question: PrivacyOpenQuestion?
     var refusal: String?
@@ -30,14 +32,13 @@ struct MCPPrivacyQuestion {
             }
             affects.append(type)
         }
-        question = PrivacyOpenQuestion(
-            id: id,
-            question: text,
-            affects: affects,
-            ifYes: object["if_yes"]?.objectValue.map(Self.effect),
-            ifNo: object["if_no"]?.objectValue.map(Self.effect),
-            client: client
-        )
+        let ifYes = object["if_yes"]?.objectValue.map(Self.effect)
+        let ifNo = object["if_no"]?.objectValue.map(Self.effect)
+        guard !affects.isEmpty || (ifYes?.answer == nil && ifNo?.answer == nil) else {
+            refusal = String(localized: "An answer that sets collected needs the types it applies to in affects, ids from get_privacy_questionnaire.")
+            return
+        }
+        question = PrivacyOpenQuestion(id: id, question: text, affects: affects, ifYes: ifYes, ifNo: ifNo, client: client)
     }
 
     /// `{summary, collected?, purposes?, linked?, tracking?}`: what an

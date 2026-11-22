@@ -212,7 +212,7 @@ struct ProductPagesSectionView: View {
 
     /// The last 28 days by page, from what Analytics has on this Mac.
     private func setNumbers(_ model: ProductPagesViewModel) {
-        model.setNumbers(from: analytics.archive(for: app.id).pageFacts)
+        model.setNumbers(from: analytics.archive(for: app.id).pageFacts, reports: analytics.reports(for: app.id))
     }
 
     /// Analytics' Open Page, or the Overview's card; the toolbar's Suggest

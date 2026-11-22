@@ -12,6 +12,10 @@ import SwiftUI
 struct RetentionScreen: View {
     let model: RetentionModel
     @Bindable var pricing: PricingViewModel
+    /// Analytics' last 28 complete days of Retention Messaging; nil before
+    /// Apple's report arrives.
+    var saveRates: RetentionReport?
+    var onOpenAnalytics: () -> Void = {}
 
     var body: some View {
         @Bindable var model = model
@@ -19,6 +23,9 @@ struct RetentionScreen: View {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 RetentionHeader(model: model, page: $pricing.page)
                 RetentionIntroBanner()
+                if let saveRates {
+                    RetentionSaveRatesBanner(report: saveRates, onOpen: onOpenAnalytics)
+                }
                 content
             }
             .padding(.horizontal, Spacing.xLarge)
@@ -67,7 +74,10 @@ struct RetentionScreen: View {
             if let message = model.selectedMessage {
                 RetentionColumnsLayout {
                     VStack(alignment: .leading, spacing: Spacing.medium) {
-                        RetentionMessagesBox(model: model)
+                        RetentionMessagesBox(model: model, saveRates: saveRates)
+                        if let saveRates, !saveRates.isEmpty {
+                            RetentionSaveRatesBox(report: saveRates)
+                        }
                         RetentionOffersBox(model: model)
                         RetentionServerBox(model: model)
                     }

@@ -8,7 +8,8 @@ import Foundation
 /// Something the code can't answer, asked by the assistant, e.g. "Does
 /// your support backend keep the email address after it replies?". It
 /// names the data types it affects and what each answer changes. The
-/// worksheet isn't done while one is open.
+/// worksheet isn't done while one is open; answering it applies the
+/// answer's effect (`PrivacyWorksheet+Questions.swift`).
 struct PrivacyOpenQuestion: Identifiable, Hashable, Codable, Sendable {
     /// The assistant's id, e.g. "q1"; asking again with the same id
     /// replaces the question.
@@ -20,6 +21,10 @@ struct PrivacyOpenQuestion: Identifiable, Hashable, Codable, Sendable {
     var client: String
     /// Nil while it's open.
     var answer: Bool?
+    /// The affected types and the first question as they were before the
+    /// person first answered, so a changed answer starts from there. Nil
+    /// while it's open.
+    var baseline: PrivacyQuestionBaseline?
 
     var isOpen: Bool { answer == nil }
 

@@ -25,6 +25,9 @@ struct AnalyticsFinding: Hashable, Sendable, Identifiable, Codable {
     var date: Date = .now
     /// The number it rests on, to tell when a dismissed one "changed a lot".
     var signal: Double?
+    /// For an assistant's finding: what it read for it (tools, reports,
+    /// files), shown under the finding.
+    var read: [String]?
 
     var area: AnalyticsArea { action.area }
 }

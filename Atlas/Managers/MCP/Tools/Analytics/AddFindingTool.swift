@@ -17,10 +17,11 @@ struct AddFindingTool: MCPTool {
         description: """
         Adds a finding to an app's Analytics → What to Try, marked as yours: one thing the numbers say is worth changing. \
         Give `title` (what you saw, one sentence, ≤140 characters), `why` (the likely cause and why the fix helps, ≤400), \
-        `area` (storePage, screenshots, pricing, retention or inAppTexts: the section where the fix is made), `howSure` (the \
-        counts and range behind it, from the get_analytics_ tools; say when a number is small) and up to three `numbers` \
-        ({label, value, note}). Optional `locale` or `territory` (alpha-2) opens that section on the right language or \
-        country. Only say what the numbers support, and don't repeat a finding get_analytics_funnel already lists. `id` \
+        `area` (storePage, screenshots, pricing, retention, inAppTexts, productPages, stability or billing: the section \
+        where the fix is made), `howSure` (the counts and range behind it, from the get_analytics_ tools; say when a number \
+        is small), `read` (what you read for it: the tools, reports or files, shown under the finding) and up to three \
+        `numbers` ({label, value, note}). Optional `locale` or `territory` (alpha-2) opens that section on the right \
+        language or country, and `page` a custom product page by name. Only say what the numbers support, and don't repeat a finding get_analytics_funnel already lists. `id` \
         replaces a finding you added before. A finding changes nothing on the App Store: send the fix itself with the \
         propose_ and suggest_ tools.
         """,
@@ -29,7 +30,12 @@ struct AddFindingTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "title": MCPToolDefinition.string("What you saw, in one sentence."),
                 "why": MCPToolDefinition.string("The likely cause, and why the fix should help."),
-                "area": MCPToolDefinition.string("storePage, screenshots, pricing, retention or inAppTexts."),
+                "area": MCPToolDefinition.string("storePage, screenshots, pricing, retention, inAppTexts, productPages, stability or billing."),
+                "read": [
+                    "type": "array", "description": "What you read for it, e.g. get_analytics_retention, Retention Messaging, PaywallView.swift.",
+                    "items": ["type": "string"],
+                ],
+                "page": MCPToolDefinition.string("A custom product page's name, for productPages."),
                 "howSure": MCPToolDefinition.string("The counts and the range behind it."),
                 "sureness": MCPToolDefinition.string("sure, fairlySure or rough. Leave it out for fairlySure."),
                 "numbers": ["type": "array", "description": "Up to three {label, value, note} objects.", "items": ["type": "object"]],
@@ -53,11 +59,14 @@ struct AddFindingTool: MCPTool {
             return .refused(reason, target: target)
         }
         let id = try arguments.optionalString("id") ?? "assistant.\(UUID().uuidString.prefix(8).lowercased())"
+        var action = try Self.action(area: arguments.string("area"), locale: locale, territory: territory)
+        if case .productPage = action, let page = try arguments.optionalString("page") { action = .productPage(name: page) }
+        let read = try arguments.optionalStrings("read")
         try store.add(
             AnalyticsFinding(
                 id: id, source: .assistant(context.clientName), title: title, why: why, numbers: Self.numbers(arguments),
                 sureness: Self.sureness(arguments), surenessDetail: howSure,
-                action: Self.action(area: arguments.string("area"), locale: locale, territory: territory), date: store.now()
+                action: action, date: store.now(), read: read.map { Array($0.prefix(8)) }
             ),
             for: app.id
         )
@@ -94,7 +103,13 @@ struct AddFindingTool: MCPTool {
         case "pricing": .pricing(territory: territory)
         case "retention": .retention
         case "inAppTexts": .inAppTexts
-        default: throw MCPToolError.invalidArgument(name: "area", expected: "storePage, screenshots, pricing, retention or inAppTexts")
+        case "productPages": .productPage(name: nil)
+        case "stability": .stability
+        case "billing": .billing
+        default:
+            throw MCPToolError.invalidArgument(
+                name: "area", expected: "storePage, screenshots, pricing, retention, inAppTexts, productPages, stability or billing"
+            )
         }
     }
 

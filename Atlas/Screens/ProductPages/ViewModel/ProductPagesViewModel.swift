@@ -125,14 +125,32 @@ final class ProductPagesViewModel {
     }
 
     /// The numbers Analytics has for the last 28 days.
-    func setNumbers(from facts: [EngagementFact]) {
+    func setNumbers(from facts: [EngagementFact], reports: ReportsArchive = ReportsArchive()) {
         guard let made = ProductPageNumbers.make(from: facts) else {
             numbers = [:]
             numbersThrough = nil
             return
         }
-        numbers = made.byPage
+        var byPage = made.byPage
+        ProductPageNumbers.addSubscribers(reports, to: &byPage, through: made.through)
+        numbers = byPage
         numbersThrough = made.through.date
+    }
+
+    /// Apple's subscription rows name the pages: the list shows subscribers.
+    var hasSubscriberNumbers: Bool { numbers.values.contains { $0.subscribers != nil } }
+
+    /// A page's subscribers; nil for a draft or before Apple's report.
+    func subscribers(of page: ProductPage) -> SubscriberCounts? {
+        guard !page.isDraft else { return nil }
+        return numbers[page.name]?.subscribers
+    }
+
+    /// Trial → paid of every page together: what a page is compared with.
+    var averageTrialToPaid: Double? {
+        let all = numbers.values.compactMap(\.subscribers)
+        let ended = all.reduce(0) { $0 + $1.trialsEnded }
+        return ended > 0 ? Double(all.reduce(0) { $0 + $1.trialConverted }) / Double(ended) : nil
     }
 
     var snapshot: ProductPagesSnapshot? { state.value }

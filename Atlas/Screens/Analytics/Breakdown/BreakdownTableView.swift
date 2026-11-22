@@ -110,7 +110,7 @@ struct BreakdownTableView: View {
                 .lineLimit(1)
                 .frame(minWidth: BreakdownColumnLayout.nameMinimum, maxWidth: .infinity, alignment: .leading)
             ForEach(layout.columns) { column in
-                Text(Self.totalText(column, table.totals))
+                Text(Self.text(column, totals: table.totals, subscribers: table.subscribers, after: table.afterDownload))
                     .font(.callout.weight(.medium))
                     .monospacedDigit()
                     .lineLimit(1)
@@ -120,6 +120,18 @@ struct BreakdownTableView: View {
         .padding(.horizontal, Spacing.medium)
         .frame(height: 30)
         .accessibilityElement(children: .combine)
+    }
+
+    /// A cell's text, the funnel's or the newer reports'.
+    static func text(_ column: BreakdownColumn, totals: FunnelTotals, subscribers: SubscriberCounts?, after: AfterDownloadNumbers?) -> String {
+        switch column {
+        case .trials: subscribers.map { AnalyticsText.count($0.trials) } ?? "—"
+        case .paid: subscribers.map { AnalyticsText.count($0.paid) } ?? "—"
+        case .trialToPaid: subscribers?.trialToPaidFraction.map(AnalyticsText.percent) ?? "—"
+        case .deleted30: after?.deletedWithin30.fraction.map(AnalyticsText.percent) ?? "—"
+        case .sessionsPerWeek: after?.sessionsPerWeek.map { $0.formatted(.number.precision(.fractionLength(1))) } ?? "—"
+        default: totalText(column, totals)
+        }
     }
 
     static func totalText(_ column: BreakdownColumn, _ totals: FunnelTotals) -> String {
@@ -133,6 +145,7 @@ struct BreakdownTableView: View {
         case .starts: totals.starts.map(AnalyticsText.count) ?? "—"
         case .startRate: totals.startFraction.map(AnalyticsText.percent) ?? "—"
         case .proceeds: totals.proceeds.map(AnalyticsText.dollars) ?? "—"
+        case .trials, .paid, .trialToPaid, .deleted30, .sessionsPerWeek: "—"
         }
     }
 }

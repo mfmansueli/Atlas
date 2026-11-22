@@ -62,7 +62,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .shortenOverflowingCaptions: String(localized: "Propose shorter versions of captions that overflow")
         case .reviseTemplate: String(localized: "Propose a template revision that keeps every locale fitting")
         case .suggest: String(localized: "Suggest Store Page or App Information values for the person to accept")
-        case .suggestAll: String(localized: "Suggest every Store Page and App Information field the code can answer")
+        case .suggestAll: String(localized: "Suggest every Store Page and App Information field, prices and App Privacy the code can answer")
         case .runScreenshots: String(localized: "Capture the app in Simulator for the screenshot run the person started, step by step")
         }
     }
@@ -177,7 +177,9 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             off the device. Call propose_privacy_answers with collects, each data type with its purposes, whether \
             it's linked to the person and used for tracking, a confidence and the evidence (SDK manifest entry, or \
             file and line), and the scan details. Ask in open_questions what the code can't show, such as what a \
-            server keeps, with what Yes and No would mean. If an answer is refused, fix it and send it again. \
+            server keeps, with the types it affects and what Yes and No would mean (if_yes and if_no with collected, \
+            purposes and linked), so the person's answer fills those types in. If an answer is refused, fix it and \
+            send it again. \
             Nothing is submitted: the person reviews every answer in Atlas and enters them in App Store Connect.
             """
         case .fillAgeRating:
@@ -252,9 +254,42 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         subscription or in-app purchase display name and description, write it in that language within the \
         limit and send them with propose_in_app_texts (they're queued for review, not part of the plan); \
         \(StoreTextRules.inAppSummary) \
+        \(pricingStep) \
+        \(privacyStep) \
         Nothing changes until the person accepts each suggestion in Atlas.
         """
     }
+
+    /// `suggest_all`'s App Privacy: the worksheet drafted from the project,
+    /// as `fill_privacy_from_code` does. Apple has no API for App Privacy, so
+    /// the worksheet stays on this Mac and the person enters the label in
+    /// App Store Connect.
+    static let privacyStep = """
+    Then draft App Privacy. Call get_privacy_questionnaire for Apple's definitions, the data type and purpose ids \
+    and the answers already in the worksheet, and answer the open questions it lists. Read PrivacyInfo.xcprivacy, \
+    Package.resolved and the privacy manifests of third-party SDKs, and the code that sends data off the device \
+    (analytics, crash reporting, sign-in, purchases, networking). Call propose_privacy_answers with collects, each \
+    data type with its purposes, whether it's linked to the person and used for tracking, and file:line evidence; \
+    leave alone what the person already reviewed. App Store Connect has no API for App Privacy: the worksheet \
+    stays in Atlas, and the person enters the finished label in App Store Connect.
+    """
+
+    /// `suggest_all`'s prices: what App Store Connect charges beside what the
+    /// project sells and shows, the differences proposed (outside the run's
+    /// plan, which covers store and info fields only).
+    static let pricingStep = """
+    Then check prices against the project. Call get_app_price_and_availability (the app's own price and where \
+    it's sold), get_subscriptions and get_prices (every subscription and in-app purchase price, with \
+    get_price_points for a product's points in a territory). Read what the project sells and shows: StoreKit \
+    product IDs and purchase calls in the code, a .storekit configuration's products, durations and prices, the \
+    paywall's code and copy, and price constants. Propose only what differs or is missing, each with a \
+    one-sentence reason and evidence (file:line): a price that differs with propose_prices (one of Apple's price \
+    points), a subscription the code buys that App Store Connect lacks with propose_subscription, the app's own \
+    price (0 for Free) with propose_app_price and where it's sold with propose_availability when they aren't set \
+    up or differ from what the project says. A .storekit price is a local test value: propose it only when the \
+    paywall or the project's docs show it too. Leave what already matches, never push, and say which products \
+    you couldn't compare (an in-app purchase App Store Connect lacks can't be proposed yet).
+    """
 
     /// `run_screenshots`: drive the Autopilot run the person started.
     private static func runScreenshotsInstructions(appPhrase: String) -> String {

@@ -20,8 +20,12 @@ struct ProposePrivacyAnswersTool: MCPTool {
         Send collects (the first question), answers: [{type, collected, purposes, linked, tracking, confidence, \
         rationale, evidence: [{kind, sdk, version, entry, path, line, excerpt}]}] with ids from \
         get_privacy_questionnaire, open_questions: [{id, question, affects, if_yes: {summary, collected, purposes, \
-        linked}, if_no: {...}}] for what the code can't show (such as what a server keeps), and scan: {repository, \
-        commit, sdks, manifests_read, tracking_signals, could_not_see}. Each answer is "queued" (waits for review), \
+        linked, tracking}, if_no: {...}}] for what the code can't show (such as what a server keeps), and scan: \
+        {repository, commit, sdks, manifests_read, tracking_signals, could_not_see}. When the person answers a \
+        question, that answer's collected, purposes, linked and tracking become the answer of every type in affects, \
+        as the person's own, and collects turns Yes when one becomes collected; an if_yes or if_no with only a \
+        summary changes nothing, so give collected whenever an answer changes the types. get_privacy_questionnaire \
+        returns the answers in answeredQuestions. Each answer is "queued" (waits for review), \
         "conflict" (the person answered differently; they pick), "unchanged" or "refused" with the reason: fix it \
         and send it again. Set final: false while more calls follow; the scan ends with the last call.
         """,

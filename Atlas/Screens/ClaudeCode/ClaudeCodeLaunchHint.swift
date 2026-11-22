@@ -45,7 +45,7 @@ struct ClaudeCodeLaunchHint: View {
         guard client == MCPClientKind.claudeCode.title, launcher.helperURL != nil else { return false }
         return switch launcher.helper {
         case .notInstalled, .outdated, .failed: true
-        case .unknown, .checking, .ready, .claudeMissing: false
+        case .unknown, .checking, .ready, .claudeMissing, .atlasReplaced: false
         }
     }
 }

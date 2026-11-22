@@ -65,6 +65,22 @@ enum AtlasNotifications {
         notifier.post(.newReviews, title: String(localized: "New review for \(appName)"), body: body, identifier: "reviews.\(appID)")
     }
 
+    /// The newest version crashes clearly more than the one before: once
+    /// per app and version, however many checks see it.
+    static func stability(
+        _ report: StabilityReport, appName: String, appID: StoreApp.ID, defaults: UserDefaults = .standard, notifier: AtlasNotifier = .shared
+    ) {
+        guard let headline = report.headline else { return }
+        let key = "stabilityAlerted.\(appID)"
+        guard defaults.string(forKey: key) != report.latest.version else { return }
+        defaults.set(report.latest.version, forKey: key)
+        notifier.post(
+            .analytics, title: String(localized: "\(appName) \(report.latest.version) crashes more"),
+            body: headline + " " + String(localized: "Atlas never pauses a release by itself: open the Overview to decide."),
+            identifier: "stability.\(appID)"
+        )
+    }
+
     /// Analytics' new findings, once a week at most.
     static func analyticsFindings(
         _ count: Int, now: Date, preferences: NotificationPreferences = .shared, notifier: AtlasNotifier = .shared

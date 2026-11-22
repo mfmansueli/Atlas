@@ -126,7 +126,10 @@ enum MCPEndpoint {
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
     App Store Connect creates it when the person pushes. When a release changes what a subscription or in-app \
     purchase unlocks, update its Review Notes for App Review in the same task: get_in_app_review_notes, then \
-    propose_in_app_review_note. App Compliance answers (trader status, ICP Filing Number, \
+    propose_in_app_review_note. When the project's prices change (StoreKit product IDs, a .storekit file, the \
+    paywall, a price constant), compare them with get_app_price_and_availability, get_subscriptions and get_prices \
+    and propose the difference with propose_prices, propose_subscription, propose_app_price or \
+    propose_availability, with file and line as evidence. App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. Submitting a version or an event for App Review and \
     releasing it are the person's: there is no tool for either, and the tools only ever queue changes. Always tell \

@@ -29,6 +29,14 @@ struct BreakdownView: View {
                     selection: $viewModel.dimension,
                     identifier: "analytics.breakdown.dimension"
                 )
+                if table.subscribers != nil || table.afterDownload != nil {
+                    AnalyticsSegments(
+                        label: String(localized: "Columns"),
+                        plain: BreakdownColumnGroup.allCases.map { ($0, $0.title) },
+                        selection: $viewModel.columnGroup,
+                        identifier: "analytics.breakdown.columns"
+                    )
+                }
                 Spacer(minLength: 0)
                 legend
             }
@@ -60,7 +68,10 @@ struct BreakdownView: View {
     }
 
     private var layout: BreakdownColumnLayout {
-        BreakdownColumnLayout(isCompact: viewModel.selectedRow != nil || width < Self.compactWidth, hasSales: table.dimension.hasSales)
+        BreakdownColumnLayout(
+            isCompact: viewModel.selectedRow != nil || width < Self.compactWidth, hasSales: table.dimension.hasSales,
+            group: table.subscribers != nil || table.afterDownload != nil ? viewModel.columnGroup : .funnel
+        )
     }
 
     /// What the marks mean, once, above the table.

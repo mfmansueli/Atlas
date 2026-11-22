@@ -23,6 +23,9 @@ struct AnalyticsScreen: View {
         .padding(.top, Spacing.small)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.content)
+        .sheet(isPresented: $viewModel.isReportsPresented) {
+            ReportsFromAppleSheet(viewModel: viewModel)
+        }
     }
 
     private var header: some View {
@@ -125,6 +128,11 @@ struct AnalyticsScreen: View {
         if let failure {
             InlineMessage.error(failure)
         }
+        if !viewModel.preparingReports.isEmpty, viewModel.tab == .funnel {
+            PreparingReportsNotice(appName: viewModel.app.name, kinds: viewModel.preparingReports, asked: viewModel.reports.firstChecked) {
+                viewModel.isReportsPresented = true
+            }
+        }
         switch viewModel.tab {
         case .funnel:
             FunnelView(viewModel: viewModel, report: funnel) { finding, action in
@@ -145,11 +153,7 @@ struct AnalyticsScreen: View {
                 onAct(.pricing(territory: nil), String(localized: "Price results are in Pricing → Results, per territory."))
             }
         case .subscriptions:
-            if let report = viewModel.subscriptions {
-                SubscriptionsView(
-                    report: report, appName: viewModel.app.name, liveRetentionMessages: viewModel.context.liveRetentionMessages, onAct: onAct
-                )
-            } else {
+            SubscriptionsPaneView(viewModel: viewModel, onAct: onAct) {
                 centered {
                     ContentUnavailableView {
                         Label("No subscription numbers", systemImage: "arrow.triangle.2.circlepath")
@@ -163,6 +167,10 @@ struct AnalyticsScreen: View {
                         }
                     }
                 }
+            }
+        case .stability:
+            if let report = viewModel.stability {
+                StabilityView(report: report, onAct: onAct)
             }
         }
     }

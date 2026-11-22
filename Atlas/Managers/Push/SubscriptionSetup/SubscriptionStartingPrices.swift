@@ -12,6 +12,12 @@ import Foundation
 /// Apple's equalized price everywhere else, like App Store Connect's
 /// "Set Starting Price". A territory that has a price by then keeps it, so
 /// a retry picks up where it stopped.
+///
+/// The prices go in a few `PATCH /v1/subscriptions/{id}` with up to
+/// `batchSize` inline price creates each (`SubscriptionUpdateRequest`'s
+/// `included` `SubscriptionPriceInlineCreate`s, API 4.6.1). When App Store
+/// Connect refuses that, the rest go one `POST /v1/subscriptionPrices` per
+/// territory, `PushSchedule.concurrentRequests` at once.
 struct SubscriptionStartingPrices: Hashable, Sendable {
     var subscriptionID: String
     /// The base territory, `USA`.
@@ -49,6 +55,19 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
         territoryID = parts[0]
         customerPrice = price
     }
+
+    /// One territory's price to set.
+    struct TerritoryPrice: Hashable, Sendable {
+        var territoryID: String
+        var pricePointID: String
+    }
+
+    /// Inline price creates per `PATCH`.
+    static let batchSize = 50
+
+    /// What the per-territory `POST`s of every subscription of a push share
+    /// (`PushSlots`).
+    static let slotKey = "subscriptionPrices"
 
     // MARK: - Reads
 
@@ -99,36 +118,111 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
         return (try? PushRequest.json(.post, Self.path, body)) ?? PushRequest(method: .post, path: Self.path)
     }
 
+    /// `PATCH` the subscription with `prices` as inline creates
+    /// (`${price1}`, …), each starting at once for everyone.
+    func batch(_ prices: [TerritoryPrice]) -> PushRequest {
+        let localIDs = prices.indices.map { "${price\($0 + 1)}" }
+        let included: [[String: Any]] = zip(localIDs, prices).map { localID, price in
+            [
+                "type": "subscriptionPrices",
+                "id": localID,
+                "attributes": ["preserveCurrentPrice": false],
+                "relationships": [
+                    "subscription": ["data": ["type": "subscriptions", "id": subscriptionID]],
+                    "territory": ["data": ["type": "territories", "id": price.territoryID]],
+                    "subscriptionPricePoint": ["data": ["type": "subscriptionPricePoints", "id": price.pricePointID]],
+                ],
+            ]
+        }
+        let body: [String: Any] = [
+            "data": [
+                "type": "subscriptions",
+                "id": subscriptionID,
+                "relationships": ["prices": ["data": localIDs.map { ["type": "subscriptionPrices", "id": $0] }]],
+            ],
+            "included": included,
+        ]
+        let data = (try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys, .withoutEscapingSlashes])) ?? Data()
+        return PushRequest(method: .patch, path: "/v1/subscriptions/\(subscriptionID)", body: data)
+    }
+
+    /// Apple said no to the batched write itself (409, 422 or another
+    /// 4xx), so one `POST` per territory may still go: not a rate limit,
+    /// a key problem, an outage or a timeout, which stop it as any request.
+    static func isBatchRefusal(_ error: any Error) -> Bool {
+        switch error as? AppStoreConnectError {
+        case .rejected: true
+        case let .server(statusCode, _, _): (400..<500).contains(statusCode)
+        default: false
+        }
+    }
+
     // MARK: - Sending
 
-    /// Reads the points and sets every price that's missing. `progress`
-    /// gets (set, total) after each one and `note` each response's rate
-    /// limit. Throws `SubscriptionStartingPriceError` when Apple has no
-    /// point at that price. On the main actor, like the push that reports
-    /// the progress.
+    /// Reads the points and sets every price that's missing: in batched
+    /// `PATCH`es when `batches`, and one territory at a time (a few at
+    /// once, `slots`) for those left when App Store Connect refuses one or
+    /// when not `batches`. `progress` gets (set, total) as they go through
+    /// and `note` each response's rate limit. Returns the batched write's
+    /// refusal, if there was one. Throws `SubscriptionStartingPriceError`
+    /// when Apple has no point at that price. On the main actor, like the
+    /// push that reports the progress.
     @MainActor
+    @discardableResult
     func send(
         via transport: any PushTransport,
+        slots: PushSlots,
+        batches: Bool = true,
         progress: (Int, Int) -> Void,
         note: (AppStoreConnectRateLimit?) -> Void
-    ) async throws {
+    ) async throws -> AppStoreConnectError? {
+        let missing = try await missingPrices(via: transport, note: note)
+        guard !missing.isEmpty else { return nil }
+        var set = 0
+        var left = missing[...]
+        var refusal: AppStoreConnectError?
+        while batches, !left.isEmpty {
+            let chunk = Array(left.prefix(Self.batchSize))
+            do {
+                let response = try await transport.send(batch(chunk))
+                note(response.rateLimit)
+            } catch let error where Self.isBatchRefusal(error) {
+                // Refused whole: nothing of it was set.
+                refusal = error as? AppStoreConnectError
+                break
+            }
+            left.removeFirst(chunk.count)
+            set += chunk.count
+            progress(set, missing.count)
+        }
+        try await slots.forEach(Array(left), key: Self.slotKey) { [self] price in
+            try await transport.send(self.price(territoryID: price.territoryID, pricePointID: price.pricePointID))
+        } finished: { _, response in
+            note(response.rateLimit)
+            set += 1
+            progress(set, missing.count)
+        }
+        return refusal
+    }
+
+    /// The base territory's price and the equalized ones, for the
+    /// territories that don't have a price yet.
+    @MainActor
+    func missingPrices(via transport: any PushTransport, note: (AppStoreConnectRateLimit?) -> Void) async throws -> [TerritoryPrice] {
         let points = try await Self.resources(at: pricePointsPath, via: transport, note: note)
         guard let baseID = pricePointID(in: points) else {
             throw SubscriptionStartingPriceError.noPricePoint(price: customerPrice, territoryID: territoryID, nearest: nearest(in: points))
         }
         let equalized = try await Self.resources(at: equalizationsPath(pricePointID: baseID), via: transport, note: note)
         let priced = try await Set(Self.resources(at: pricesPath, via: transport, note: note).compactMap(Self.territoryID(of:)))
-        var wanted = [(territoryID, baseID)]
+        var wanted = [TerritoryPrice(territoryID: territoryID, pricePointID: baseID)]
+        var seen: Set<String> = [territoryID]
         for point in equalized {
-            guard let territory = Self.territoryID(of: point), let id = point["id"] as? String, territory != territoryID else { continue }
-            wanted.append((territory, id))
+            guard let territory = Self.territoryID(of: point), let id = point["id"] as? String, !seen.contains(territory) else { continue }
+            seen.insert(territory)
+            wanted.append(TerritoryPrice(territoryID: territory, pricePointID: id))
         }
-        let missing = wanted.filter { !priced.contains($0.0) }
-        for (index, entry) in missing.enumerated() {
-            let response = try await transport.send(price(territoryID: entry.0, pricePointID: entry.1))
-            note(response.rateLimit)
-            progress(index + 1, missing.count)
-        }
+        return wanted.filter { !priced.contains($0.territoryID) }
     }
 
     /// Every page's `data`, following `links.next`.

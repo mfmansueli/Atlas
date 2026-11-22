@@ -75,13 +75,12 @@ final class PushController {
     /// New versions' IDs, localizations and App Review details, for the
     /// texts that wait with them.
     let queuedVersions = QueuedVersionPushState()
-    /// Subscription groups found or made during this push, by
-    /// `SubscriptionGroupPlaceholder.token`, so new subscriptions in the
-    /// same new group share one.
-    private var subscriptionGroups: [String: String] = [:]
-    /// Every territory App Store Connect has, read once per push for new
-    /// subscriptions' availability (`SubscriptionAvailabilityEverywhere`).
-    private var territoryIDs: [String]?
+    /// Steps side-by-side changes share, one at a time (a group, a draft,
+    /// the territories), and requests a change fans out to, a few at once.
+    let slots: PushSlots
+    /// New subscriptions' groups, App Store Connect's territories and
+    /// starting prices, shared by the push's changes.
+    let subscriptionSetup: SubscriptionSetupPushState
     /// Each event's languages in App Store Connect by locale, read when an
     /// upload names a language the push created (`EventLocalizationPlaceholder`).
     private var eventLocalizations: [String: [String: String]] = [:]
@@ -108,6 +107,9 @@ final class PushController {
         self.transport = transport
         self.secrets = secrets
         self.now = now
+        let slots = PushSlots()
+        self.slots = slots
+        subscriptionSetup = SubscriptionSetupPushState(slots: slots)
         let rateTracker = RequestRateTracker(now: now)
         self.rateTracker = rateTracker
         screenshots = ScreenshotPushController(history: history, rate: rateTracker, now: now)
@@ -133,8 +135,7 @@ final class PushController {
         inAppDraftRefusals = [:]
         productPages.reset()
         queuedVersions.reset()
-        subscriptionGroups = [:]
-        territoryIDs = nil
+        subscriptionSetup.reset()
         eventLocalizations = [:]
         guard !items.isEmpty else { return }
         run()
@@ -516,16 +517,7 @@ extension PushController {
             request = try await event.request(territoryIDs: everyTerritory(transport: transport))
         }
         while let group = SubscriptionGroupPlaceholder(in: request) {
-            let id: String
-            if let known = subscriptionGroups[group.token] {
-                id = known
-            } else {
-                let found = try await group.send(via: transport)
-                noteRequest(found.rateLimit)
-                id = found.id
-                subscriptionGroups[group.token] = id
-            }
-            request = request.replacing(group.token, with: id)
+            request = try await request.replacing(group.token, with: subscriptionSetup.groupID(group, via: transport) { noteRequest($0) })
         }
         while let language = EventLocalizationPlaceholder(in: request) {
             request = try await request.replacing(language.token, with: eventLocalizationID(language, transport: transport))
@@ -535,17 +527,29 @@ extension PushController {
         return try retention.request.resolvingCreatedIDs(items[index].createdIDs)
     }
 
+    /// Sends the app's price schedule or first availability; false for any
+    /// other request.
+    private func sendAppSaleStep(_ request: PushRequest, transport: any PushTransport) async throws -> Bool {
+        guard let write = AppPriceAvailabilityWrite(request) else { return false }
+        let response = try await write.send(via: transport)
+        noteRequest(response.rateLimit)
+        return true
+    }
+
     /// Sends a request that's more than one write: a new subscription or
     /// App Store version (found when a push before created it), an In-App Texts write into a
     /// version, an event's card or details page upload, availability
-    /// everywhere, or a subscription's starting prices, or a retention
-    /// step. False for any other request.
+    /// everywhere, or a subscription's starting prices, a retention step,
+    /// or the app's price or first availability. False for any other
+    /// request.
     private func sendSetupStep(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws -> Bool {
         let retention = try await RetentionPushSteps.sendSetupStep(request, via: transport) { noteRequest($0) } created: { type, id in
             items[index].createdID = id
             items[index].createdIDs[type] = id
         }
-        if retention { return true }
+        // The app's price or first availability: one POST, its refusal explained.
+        let appSale = try await sendAppSaleStep(request, transport: transport)
+        if retention || appSale { return true }
         if let create = NewSubscriptionCreate(request) {
             let id = try await create.send(via: transport) { noteRequest($0) }
             items[index].createdID = id
@@ -591,7 +595,7 @@ extension PushController {
         }
         guard let prices = SubscriptionStartingPrices(request) else { return false }
         defer { items[index].progressNote = nil }
-        try await prices.send(via: transport) { set, total in
+        try await subscriptionSetup.send(prices, via: transport) { set, total in
             items[index].progressNote = String(localized: "Prices · \(set) of \(total)")
         } note: { rateLimit in
             noteRequest(rateLimit)
@@ -611,16 +615,31 @@ extension PushController {
 
     /// Every territory App Store Connect has, read on first use in a push.
     private func everyTerritory(transport: any PushTransport) async throws -> [String] {
-        if let territoryIDs { return territoryIDs }
-        let ids = try await SubscriptionAvailabilityEverywhere.territoryIDs(via: transport) { noteRequest($0) }
-        territoryIDs = ids
-        return ids
+        try await subscriptionSetup.everyTerritory(via: transport) { noteRequest($0) }
     }
 
     /// An In-App Texts write into the owner's editable version, the one
     /// found or made earlier in this push when there is one. Returns the
-    /// localization's ID.
+    /// localization's ID. Writes going side by side take turns per locale,
+    /// and while the owner's draft isn't known the first finds or makes it
+    /// and the others wait for it.
     private func send(_ write: InAppDraftWrite, transport: any PushTransport) async throws -> String? {
+        try await slots.run("inAppText:\(write.ownerKey):\(write.locale)") {
+            if inAppDrafts[write.ownerKey] == nil {
+                var sent: String?
+                var wrote = false
+                try await slots.run("inAppDraft:\(write.ownerKey)") {
+                    guard inAppDrafts[write.ownerKey] == nil else { return }
+                    sent = try await sendNow(write, transport: transport)
+                    wrote = true
+                }
+                if wrote { return sent }
+            }
+            return try await sendNow(write, transport: transport)
+        }
+    }
+
+    private func sendNow(_ write: InAppDraftWrite, transport: any PushTransport) async throws -> String? {
         if let refusal = inAppDraftRefusals[write.ownerKey] { throw refusal }
         let sent: (versionID: String, localizationID: String?, rateLimit: AppStoreConnectRateLimit?)
         do {

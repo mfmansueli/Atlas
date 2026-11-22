@@ -22,6 +22,9 @@ struct ProductPageNumbers: Hashable, Sendable {
     /// Where its visitors came from, the most first: campaign links and
     /// the apps and websites that link to it.
     var arrivals: [ProductPageArrival] = []
+    /// Trials and paid subscribers who downloaded from this page, from
+    /// Apple's subscription event report; nil before it arrives.
+    var subscribers: SubscriberCounts?
 
     /// Downloads out of page views, 0–100; nil without views.
     var downloadRate: Double? {
@@ -44,5 +47,16 @@ struct ProductPageNumbers: Hashable, Sendable {
             byPage[page]?.arrivals = ProductPageArrival.make(from: pageFacts)
         }
         return (byPage, last)
+    }
+
+    /// Adds each page's subscribers over the same 28 days.
+    static func addSubscribers(_ reports: ReportsArchive, to byPage: inout [String: ProductPageNumbers], through: AnalyticsDay) {
+        guard reports.hasRows(.subscriptionEvents) else { return }
+        let period = AnalyticsPeriod(ending: through, length: days)
+        let events = reports.records(.subscriptionEvents).within(period)
+        let byName = Dictionary(grouping: events) { ReportsArchive.pageName($0, defaultName: defaultPageName) ?? "" }
+        for (name, records) in byName where !name.isEmpty {
+            byPage[name, default: ProductPageNumbers()].subscribers = LifecycleReport.subscribers(records)
+        }
     }
 }

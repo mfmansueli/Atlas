@@ -23,6 +23,16 @@ enum AnalyticsText {
         fraction.formatted(.percent.precision(.fractionLength(0)))
     }
 
+    /// "3.2×".
+    static func times(_ value: Double) -> String {
+        "\(value.formatted(.number.precision(.fractionLength(1))))×"
+    }
+
+    /// "4.1", a rate per 1,000.
+    static func perThousand(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1)))
+    }
+
     /// "+0.4 pt" or "−1.2 pt".
     static func points(_ points: Double) -> String {
         let sign = points >= 0 ? "+" : "−"

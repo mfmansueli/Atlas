@@ -6,7 +6,8 @@
 import Foundation
 
 // The person's edits: answering by hand, accepting or rejecting a
-// suggestion, settling a conflict and answering an open question.
+// suggestion and settling a conflict. Answering an open question is in
+// `Questions/PrivacyWorksheet+Questions.swift`.
 extension PrivacyWorksheet {
     /// "Start from scratch": an empty worksheet the person fills in.
     mutating func start() {
@@ -94,24 +95,6 @@ extension PrivacyWorksheet {
     mutating func useAssistants(_ type: PrivacyDataType) {
         guard let conflict = entries[type]?.conflict else { return }
         entries[type] = PrivacyTypeEntry(answer: conflict.answer, status: .accepted, suggestion: conflict)
-    }
-
-    // MARK: - Open questions
-
-    /// Answers an open question and applies what the assistant said that
-    /// answer means to the types it affects. Unreviewed suggestions stay
-    /// unreviewed, with the new answer; anything else becomes the person's.
-    mutating func answerQuestion(_ id: String, with answer: Bool) {
-        guard let index = questions.firstIndex(where: { $0.id == id }) else { return }
-        questions[index].answer = answer
-        guard let effect = questions[index].effect(of: answer)?.answer else { return }
-        for type in questions[index].affects {
-            if entries[type]?.status == .unreviewed {
-                entries[type]?.answer = effect
-            } else {
-                edit(type, to: effect)
-            }
-        }
     }
 
     // MARK: - Cross-check

@@ -40,10 +40,16 @@ struct AnalyticsReadyBar: View {
                             .help(checkedHelp)
                             .accessibilityIdentifier("analytics.lastChecked")
                     }
-                    Pill(
-                        text: String(localized: "Data through \(AnalyticsText.day(funnel.period.last.date))"),
-                        style: viewModel.staleDays == nil ? .outline : .warning
-                    )
+                    Button {
+                        viewModel.isReportsPresented = true
+                    } label: {
+                        Pill(
+                            text: String(localized: "Data through \(AnalyticsText.day(funnel.period.last.date))"),
+                            style: viewModel.staleDays == nil ? .outline : .warning
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .help("Reports from Apple: what each one adds, and where it stands")
                     .accessibilityIdentifier("analytics.dataThrough")
                 }
             }

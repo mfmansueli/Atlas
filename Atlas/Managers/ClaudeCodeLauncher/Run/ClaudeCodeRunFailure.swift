@@ -21,6 +21,10 @@ enum ClaudeCodeRunFailure: Hashable, Sendable {
     case serverNotConnected
     /// macOS couldn't run the helper.
     case couldNotStart(String)
+    /// The Atlas on disk was replaced while this one was open, by a build
+    /// signed as `onDisk`, so macOS won't run the helper for it until
+    /// Atlas is opened again (`AtlasCodeIdentity`).
+    case atlasReplaced(onDisk: String?)
     /// Claude Code ended with an error, with what it said.
     case claudeError(String)
     /// The helper ended without a result, with its status and last error.
@@ -42,6 +46,7 @@ enum ClaudeCodeRunFailure: Hashable, Sendable {
         case .serverUnavailable: String(localized: "Atlas’s server couldn’t start")
         case .serverNotConnected: String(localized: "Claude Code couldn’t reach Atlas")
         case .couldNotStart: String(localized: "Claude Code couldn’t start")
+        case .atlasReplaced: String(localized: "Open Atlas again to start Claude Code")
         case .claudeError: String(localized: "Claude Code stopped with an error")
         case .exited: String(localized: "Claude Code ended early")
         }
@@ -64,6 +69,8 @@ enum ClaudeCodeRunFailure: Hashable, Sendable {
             String(localized: "Its connection to Atlas failed. Make sure Atlas’s server is on, then try again.")
         case let .couldNotStart(message):
             String(localized: "macOS said: \(message)")
+        case let .atlasReplaced(onDisk):
+            Self.replacedDetail(onDisk: onDisk)
         case let .claudeError(message):
             message.isEmpty ? String(localized: "Show Output has what it did before it stopped.") : message
         case let .exited(status?, message):
@@ -79,8 +86,26 @@ enum ClaudeCodeRunFailure: Hashable, Sendable {
     var suggestsTerminal: Bool {
         switch self {
         case .notLoggedIn, .claudeError, .exited, .serverNotConnected: true
-        case .helperMissing, .claudeMissing, .folderMissing, .serverUnavailable, .couldNotStart: false
+        case .helperMissing, .claudeMissing, .folderMissing, .serverUnavailable, .couldNotStart, .atlasReplaced: false
         }
+    }
+
+    /// Try Again can help: not while the Atlas on disk isn't this one,
+    /// which only opening Atlas again changes.
+    var canRetry: Bool {
+        if case .atlasReplaced = self { return false }
+        return true
+    }
+
+    /// Why the helper won't run for an Atlas replaced on disk, and what to
+    /// do; Settings says it too.
+    static func replacedDetail(onDisk: String?) -> String {
+        let build = onDisk.map { String(localized: "a build signed as “\($0)”") } ?? String(localized: "another build")
+        return String(localized: """
+        Atlas was replaced on disk by \(build) while it was open, and macOS only runs the helper for the Atlas on \
+        disk. Saving the helper again won’t help: quit Atlas and open a signed build again (Run in Xcode). Until \
+        then, copy the prompt.
+        """)
     }
 
     /// Choose Folder… is the way out.

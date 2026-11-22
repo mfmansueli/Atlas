@@ -128,6 +128,10 @@ struct AnalyticsSectionView: View {
     private func takeRequestedTab() {
         guard let tab = navigator.requestedAnalyticsTab, let viewModel else { return }
         navigator.requestedAnalyticsTab = nil
+        if let pane = navigator.requestedSubscriptionsPane {
+            navigator.requestedSubscriptionsPane = nil
+            viewModel.subscriptionsPane = pane
+        }
         if viewModel.tabs.contains(tab) { viewModel.tab = tab }
     }
 

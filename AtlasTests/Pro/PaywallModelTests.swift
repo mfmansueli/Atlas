@@ -130,13 +130,21 @@ struct PaywallModelTests {
 
     @Test func withoutTheAppStoreItSaysSoAndCantBuy() async {
         let store = FakeProStore()
-        store.offersOnSale = []
+        store.isUnreachable = true
         let model = await make(store: store)
         #expect(model.offersProblem?.hasPrefix("The App Store didn’t answer") == true)
         #expect(!model.canBuy)
         #expect(model.callToAction == "Loading Prices…")
         await model.buy()
         #expect(store.purchases.isEmpty)
+    }
+
+    @Test func plansNotOnSaleYetAreNotBlamedOnTheConnection() async {
+        let store = FakeProStore()
+        store.offersOnSale = []
+        let model = await make(store: store)
+        #expect(model.offersProblem?.hasPrefix("The App Store answered without Atlas Pro’s plans") == true)
+        #expect(!model.canBuy)
     }
 
     @Test func theComparisonHasEveryRowOfTheSplit() {

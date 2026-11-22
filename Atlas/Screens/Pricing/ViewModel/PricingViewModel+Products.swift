@@ -24,26 +24,55 @@ extension PricingViewModel {
         guard let catalog else { return }
         let ids = Set(catalog.products.map(\.id))
         productMatrices = productMatrices.filter { ids.contains($0.key) }
+        unreadProductIDs.formIntersection(ids)
         for product in catalog.products {
             guard !Task.isCancelled else { return }
-            if let matrix, matrix.product.id == product.id {
+            // The selected product's prices, unless that read just failed:
+            // then they're read again here.
+            if let matrix, matrix.product.id == product.id, sheetError == nil {
                 productMatrices[product.id] = makeMatrix(product: product, sheet: matrix.sheet)
                 productErrors[product.id] = nil
+                unreadProductIDs.remove(product.id)
                 continue
             }
-            do {
-                let sheet = try await services.priceSheet(for: product, commission: strategy.commission)
-                guard !Task.isCancelled else { return }
-                productMatrices[product.id] = makeMatrix(product: product, sheet: sheet)
-                productErrors[product.id] = nil
-            } catch let error as PricingSheetError {
-                productErrors[product.id] = error.cardText
-            } catch {
-                guard !Task.isCancelled else { return }
-                productErrors[product.id] = error.localizedDescription
-            }
+            await loadCard(of: product)
+            guard !Task.isCancelled else { return }
         }
         areProductsLoaded = true
+    }
+
+    /// A card's Try Again, after Apple's server failed on its prices: reads
+    /// that product alone again.
+    func retryProduct(productID: String) async {
+        guard let product = catalog?.product(id: productID) else { return }
+        productErrors[productID] = nil
+        await loadCard(of: product)
+    }
+
+    /// Reads one product's prices for its card. A failure stays on its card
+    /// (Apple's server failing offers Try Again); the selected product's
+    /// prices take a read that worked after theirs failed.
+    private func loadCard(of product: PricingProduct) async {
+        do {
+            let sheet = try await services.priceSheet(for: product, commission: strategy.commission)
+            guard !Task.isCancelled else { return }
+            productMatrices[product.id] = makeMatrix(product: product, sheet: sheet)
+            productErrors[product.id] = nil
+            unreadProductIDs.remove(product.id)
+            recoverSelectedPrices(of: product, sheet: sheet)
+        } catch let error as PricingSheetError {
+            productErrors[product.id] = error.cardText
+            unreadProductIDs.remove(product.id)
+        } catch {
+            guard !Task.isCancelled else { return }
+            if PricingReadFailure.isProductFailure(error) {
+                productErrors[product.id] = PricingReadFailure.text(productName: product.name)
+                unreadProductIDs.insert(product.id)
+            } else {
+                productErrors[product.id] = error.localizedDescription
+                unreadProductIDs.remove(product.id)
+            }
+        }
     }
 
     /// The queue changed: the cards read it again.
@@ -60,12 +89,29 @@ extension PricingViewModel {
 
     func card(for product: PricingProduct) -> PricingProductCard? {
         guard let matrix = productMatrices[product.id] else { return nil }
-        return PricingProductCard.make(
+        let isSettingStartingPrices = isSettingStartingPrices(of: product)
+        var card = PricingProductCard.make(
             product: product,
             rows: matrix.rows,
-            showsSuggestions: matrix.showsSuggestions,
+            showsSuggestions: matrix.showsSuggestions && !isSettingStartingPrices,
             isDismissed: modes.isPriceSuggestionDismissed(productID: product.id, appID: app.id)
         )
+        card.isSettingStartingPrices = isSettingStartingPrices
+        return card
+    }
+
+    /// The product's starting prices are still waiting in Review & Push:
+    /// its new subscription (or Set Starting Price) is being pushed, or
+    /// stopped partway (`Prices · 14 of 175`). The countries it has a price
+    /// in so far aren't its prices yet, so it suggests none until the push
+    /// has set them all and Pricing reads them again.
+    func isSettingStartingPrices(of product: PricingProduct) -> Bool {
+        guard !product.isInAppPurchase else { return false }
+        let ids = [
+            NewSubscriptionChangeBuilder.changeID(appID: app.id, productID: product.productID),
+            NewSubscriptionChangeBuilder.startingPriceChangeID(appID: app.id, productID: product.productID),
+        ]
+        return ids.contains { queue.change(id: $0) != nil }
     }
 
     /// Products with an open price suggestion: the Prices badge and Accept

@@ -102,6 +102,66 @@ struct LiveAnalyticsServices: AnalyticsServices {
         }
     }
 
+    func downloadReports(appID: StoreApp.ID, known: Set<String>) async throws -> ReportsDownload {
+        let client = client
+        let requests = try await client.analyticsReportRequests(appID: appID).filter { $0.attributes.stoppedDueToInactivity != true }
+        var listed: [AppleReportKind: Int] = [:]
+        var pending: [PendingReport] = []
+        for request in requests {
+            let reports = try await client.analyticsReports(requestID: request.id, category: nil)
+            // The Detailed report has every column the Standard one has, and
+            // the page and campaign: read only it when Apple makes both.
+            let matched = reports.compactMap { report -> (String, AppleReportKind, Bool)? in
+                guard let name = report.attributes.name, let kind = AppleReportKind.kind(reportName: name) else { return nil }
+                return (report.id, kind, name.lowercased().contains("detailed"))
+            }
+            let detailedKinds = Set(matched.filter(\.2).map(\.1))
+            for (reportID, kind, isDetailed) in matched where isDetailed || !detailedKinds.contains(kind) {
+                let instances = try await client.analyticsReportInstances(reportID: reportID)
+                listed[kind, default: 0] += instances.count
+                for instance in instances where !known.contains(instance.id) {
+                    guard let processing = instance.attributes.processingDate.flatMap(AnalyticsDay.init(iso:)) else { continue }
+                    pending.append(PendingReport(id: instance.id, kind: kind, processing: processing))
+                }
+            }
+        }
+        let batches = try await withThrowingTaskGroup(of: ReportBatch.self) { group in
+            var batches: [ReportBatch] = []
+            var iterator = pending.makeIterator()
+            var running = 0
+            while running < Self.width, let instance = iterator.next() {
+                group.addTask { try await Self.read(instance, appID: appID, client: client) }
+                running += 1
+            }
+            while let batch = try await group.next() {
+                batches.append(batch)
+                if let instance = iterator.next() {
+                    group.addTask { try await Self.read(instance, appID: appID, client: client) }
+                }
+            }
+            return batches
+        }
+        return ReportsDownload(batches: batches, listed: listed)
+    }
+
+    func gracePeriod(appID: StoreApp.ID) async throws -> GracePeriodSetting? {
+        guard let resource = try await client.subscriptionGracePeriod(appID: appID) else { return nil }
+        return GracePeriodSetting(
+            id: resource.id, isOn: resource.attributes.optIn == true,
+            duration: resource.attributes.duration.flatMap(GracePeriodSetting.Duration.init(rawValue:))
+        )
+    }
+
+    func turnOnGracePeriod(_ setting: GracePeriodSetting, duration: GracePeriodSetting.Duration) async throws {
+        try await client.turnOnSubscriptionGracePeriod(id: setting.id, duration: duration.rawValue)
+    }
+
+    private struct PendingReport: Sendable {
+        var id: String
+        var kind: AppleReportKind
+        var processing: AnalyticsDay
+    }
+
     private struct PendingInstance: Sendable {
         var id: String
         var kind: EngagementReportKind
@@ -131,6 +191,19 @@ struct LiveAnalyticsServices: AnalyticsServices {
             instanceID: instance.id, kind: instance.kind, isDetailed: instance.isDetailed, processing: instance.processing,
             facts: EngagementFact.merged(facts)
         )
+    }
+
+    /// Every segment of one newer report's instance, read into facts.
+    private static func read(_ instance: PendingReport, appID: String, client: AppStoreConnectClient) async throws -> ReportBatch {
+        var facts: [ReportFact] = []
+        for segment in try await client.analyticsReportSegments(instanceID: instance.id) {
+            guard let url = segment.attributes.url else { continue }
+            guard let table = try await DelimitedTable(data: client.downloadAnalyticsSegment(url)) else {
+                throw AppStoreConnectError.unexpectedPayload
+            }
+            facts += AppleReportParser.facts(table, kind: instance.kind, appID: appID)
+        }
+        return ReportBatch(instanceID: instance.id, kind: instance.kind, processing: instance.processing, facts: ReportFact.merged(facts))
     }
 
     private static func read(_ job: SalesJob, vendorNumber: String, client: AppStoreConnectClient) async throws -> SalesDownload {

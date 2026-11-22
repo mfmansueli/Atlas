@@ -13,6 +13,11 @@ enum AnalyticsArea: String, Hashable, Sendable, Codable, CaseIterable {
     case retention
     /// The paywall's text, in Store Page → In-App Texts.
     case inAppTexts
+    case productPages
+    /// Crashes, in Analytics → Stability.
+    case stability
+    /// Billing Grace Period, in Analytics → Billing and Plans.
+    case billing
 
     var title: String {
         switch self {
@@ -21,6 +26,9 @@ enum AnalyticsArea: String, Hashable, Sendable, Codable, CaseIterable {
         case .pricing: String(localized: "Pricing")
         case .retention: String(localized: "Retention")
         case .inAppTexts: String(localized: "In-App Texts")
+        case .productPages: String(localized: "Product Pages")
+        case .stability: String(localized: "Stability")
+        case .billing: String(localized: "Billing")
         }
     }
 
@@ -29,6 +37,8 @@ enum AnalyticsArea: String, Hashable, Sendable, Codable, CaseIterable {
         case .storePage, .inAppTexts: .storePage
         case .screenshots: .screenshots
         case .pricing, .retention: .subscriptionPricing
+        case .productPages: .productPages
+        case .stability, .billing: .analytics
         }
     }
 }

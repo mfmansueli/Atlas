@@ -60,6 +60,8 @@ final class WorkspaceNavigator {
     var analyticsOrigin: AnalyticsOrigin?
     /// The Analytics view Back to Analytics returns to; Analytics clears it.
     var requestedAnalyticsTab: AnalyticsTab?
+    /// With `requestedAnalyticsTab` `.subscriptions`: the pane to show.
+    var requestedSubscriptionsPane: SubscriptionsPane?
     /// The toast the whole window shows, over any section.
     var toast: WorkspaceToast?
     /// Submit for Review, from the Overview's version card or the sidebar's
@@ -95,6 +97,10 @@ final class WorkspaceNavigator {
 
     /// Follows an Analytics finding to the section where the fix is made.
     func follow(_ action: FindingAction, origin: AnalyticsOrigin) {
+        if action.isInsideAnalytics {
+            openAnalytics(action == .billing ? .subscriptions : .stability, pane: action == .billing ? .billing : nil, appID: origin.appID)
+            return
+        }
         analyticsOrigin = origin
         switch action {
         case let .storePage(locale): open(.storePage, intent: locale.map(WorkspaceIntent.showLanguage), appID: origin.appID)
@@ -102,7 +108,18 @@ final class WorkspaceNavigator {
         case let .pricing(territory): open(.subscriptionPricing, intent: territory.map(WorkspaceIntent.showTerritoryPrice), appID: origin.appID)
         case .retention: open(.subscriptionPricing, intent: .showRetention, appID: origin.appID)
         case .inAppTexts: open(.storePage, appID: origin.appID)
+        case let .productPage(name): open(.productPages, intent: .showProductPage(name: name), appID: origin.appID)
+        case .stability, .billing: break
         }
+    }
+
+    /// Analytics on `tab` (and, in Subscriptions, `pane`): from a finding
+    /// that stays inside Analytics, the Overview's stability alert or the
+    /// Pricing → Retention banner.
+    func openAnalytics(_ tab: AnalyticsTab, pane: SubscriptionsPane? = nil, appID: StoreApp.ID?) {
+        requestedAnalyticsTab = tab
+        requestedSubscriptionsPane = pane
+        open(.analytics, appID: appID)
     }
 
     /// Back to Analytics, on the view the person left.

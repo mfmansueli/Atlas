@@ -46,6 +46,10 @@ struct ProductPagesTable: View {
             Text("Status").frame(width: ProductPageRow.statusWidth, alignment: .leading)
             Text("Impressions → views → downloads").frame(width: ProductPageRow.funnelWidth, alignment: .leading)
             Text("Download rate").frame(width: ProductPageRow.rateWidth, alignment: .leading)
+            if viewModel.hasSubscriberNumbers {
+                Text("Paid subscribers").frame(width: ProductPageRow.subscribersWidth, alignment: .leading)
+                Text("Trial → paid").frame(width: ProductPageRow.trialToPaidWidth, alignment: .leading)
+            }
             Color.clear.frame(width: ProductPageRow.copyWidth, height: 1)
         }
         .font(.caption.weight(.medium))

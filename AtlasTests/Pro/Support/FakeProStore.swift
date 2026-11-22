@@ -19,6 +19,7 @@ final class FakeProStore: ProStore, @unchecked Sendable {
         var restored = ProStatus.free
         var purchases: [ProPlan] = []
         var offerCalls = 0
+        var unreachable = false
     }
 
     static let trialEnd = Date(timeIntervalSince1970: 1_794_873_600)
@@ -28,6 +29,12 @@ final class FakeProStore: ProStore, @unchecked Sendable {
         ProOffer(plan: .monthly, displayPrice: "$9.99", price: 9.99),
         ProOffer(plan: .lifetime, displayPrice: "$149.99", price: 149.99),
     ]
+
+    /// Reading the plans throws, as StoreKit does offline.
+    var isUnreachable: Bool {
+        get { state.withLock { $0.unreachable } }
+        set { state.withLock { $0.unreachable = newValue } }
+    }
 
     var offersOnSale: [ProOffer] {
         get { state.withLock { $0.offers } }
@@ -54,11 +61,13 @@ final class FakeProStore: ProStore, @unchecked Sendable {
     var purchases: [ProPlan] { state.withLock { $0.purchases } }
     var offerCalls: Int { state.withLock { $0.offerCalls } }
 
-    func offers() async -> [ProOffer] {
-        state.withLock {
+    func offers() async throws -> [ProOffer] {
+        let (offers, unreachable) = state.withLock {
             $0.offerCalls += 1
-            return $0.offers
+            return ($0.offers, $0.unreachable)
         }
+        if unreachable { throw URLError(.notConnectedToInternet) }
+        return offers
     }
 
     func status() async -> ProStatus { owned }

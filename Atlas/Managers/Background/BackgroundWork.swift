@@ -144,6 +144,7 @@ final class BackgroundWork {
                 autoReplyNeeds: isFree() ? 0 : autoReply.needsYouCount(for: app.id),
                 newFindings: newFindings,
                 firstFindingTitle: newFindings > 0 ? findings.open.first(where: findings.isNew)?.title : nil,
+                crashHeadline: StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())).flatMap(\.headline),
                 readyArtwork: artwork.readyRuns.filter { $0.appID == app.id }.map { run in
                     BackgroundAppFacts.ReadyArtwork(eventID: run.eventID, eventName: run.eventName, count: run.concepts.count)
                 }

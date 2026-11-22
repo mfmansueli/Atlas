@@ -25,7 +25,7 @@ enum ClaudeCodeTestFixtures {
         chosenFolder: String? = lumenFolder,
         asked: FolderRequests = FolderRequests()
     ) -> ClaudeCodeLauncher {
-        ClaudeCodeLauncher(
+        let launcher = ClaudeCodeLauncher(
             assistants: assistants,
             runner: runner,
             helperURL: helperURL,
@@ -36,7 +36,15 @@ enum ClaudeCodeTestFixtures {
                 return chosenFolder
             }
         )
+        // Not the test host's own signature, which a build can change.
+        launcher.codeIdentity = { signedAtlas }
+        return launcher
     }
+
+    /// The Atlas that's running is the one on disk.
+    static let signedAtlas = AtlasCodeIdentity(running: "com.lima.atlas", onDisk: "com.lima.atlas")
+    /// A `CODE_SIGNING_ALLOWED=NO` build written over the running Atlas.
+    static let replacedAtlas = AtlasCodeIdentity(running: "com.lima.atlas", onDisk: "Atlas")
 
     /// What the Open panel was asked: the app's name and the suggested
     /// folder.

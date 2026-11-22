@@ -19,12 +19,21 @@ struct BreakdownRow: Hashable, Sendable, Identifiable {
     var viewRate: AnalyticsRate
     var downloadRate: AnalyticsRate
     var startRate: AnalyticsRate
+    /// From Apple's subscription event report; nil when it doesn't split
+    /// this way.
+    var subscribers: SubscriberCounts?
+    /// From the installs, sessions and widget reports (a sample).
+    var afterDownload: AfterDownloadNumbers?
+    var trialToPaid = AnalyticsRate.missing
+    var deleted30 = AnalyticsRate.missing
 
     func rate(_ column: BreakdownColumn) -> AnalyticsRate? {
         switch column {
         case .viewRate: viewRate
         case .downloadRate: downloadRate
         case .startRate: startRate
+        case .trialToPaid: subscribers == nil ? nil : trialToPaid
+        case .deleted30: afterDownload == nil ? nil : deleted30
         default: nil
         }
     }
@@ -41,6 +50,11 @@ struct BreakdownRow: Hashable, Sendable, Identifiable {
         case .starts: totals.starts.map(Double.init)
         case .startRate: startRate.fraction
         case .proceeds: totals.proceeds.map { NSDecimalNumber(decimal: $0).doubleValue }
+        case .trials: subscribers.map { Double($0.trials) }
+        case .paid: subscribers.map { Double($0.paid) }
+        case .trialToPaid: trialToPaid.fraction
+        case .deleted30: deleted30.fraction
+        case .sessionsPerWeek: afterDownload?.sessionsPerWeek
         }
     }
 }

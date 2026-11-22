@@ -8,9 +8,10 @@ import Foundation
 /// Where Atlas Pro is sold and checked: the App Store through
 /// StoreKit (`StoreKitProStore`), or a fake in tests and DEBUG scenes.
 protocol ProStore: Sendable {
-    /// The plans on sale, with this person's prices. Empty when the App
-    /// Store can't be reached.
-    func offers() async -> [ProOffer]
+    /// The plans on sale, with this person's prices. Throws when the App
+    /// Store can't be reached; empty when it answers without them (products
+    /// still Missing Metadata, or not yet out to the App Store).
+    func offers() async throws -> [ProOffer]
     /// What the person owns now.
     func status() async -> ProStatus
     func purchase(_ plan: ProPlan) async -> ProPurchaseOutcome

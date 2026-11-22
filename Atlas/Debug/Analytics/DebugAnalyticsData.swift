@@ -277,13 +277,22 @@ enum DebugAnalyticsData {
         let asked = AnalyticsAppRecord(askedOn: date(month: 5, day: 10), lastChecked: today, announcedArrival: true)
         var findings = AnalyticsFindingsState()
         findings.fromAssistants = [assistantFinding]
-        store.load(appID: AppIDs.lumen, record: asked, archive: lumenArchive, findings: findings)
-        store.load(appID: AppIDs.tempo, record: asked, archive: archive(days: 120, impressions: 800, views: 57.5, downloads: 7.6, seed: 3))
+        store.load(
+            appID: AppIDs.lumen, record: asked, archive: lumenArchive, findings: findings, reports: DebugReportsData.lumen,
+            gracePeriod: DebugReportsData.lumenGracePeriod
+        )
+        store.load(
+            appID: AppIDs.tempo, record: asked, archive: archive(days: 120, impressions: 800, views: 57.5, downloads: 7.6, seed: 3),
+            reports: DebugReportsData.tempo
+        )
         store.load(
             appID: AppIDs.parcel, record: AnalyticsAppRecord(askedOn: date(month: 10, day: 30), lastChecked: today, announcedArrival: true),
-            archive: archive(days: 9, impressions: 344, views: 26.6, downloads: 6.8, seed: 5)
+            archive: archive(days: 9, impressions: 344, views: 26.6, downloads: 6.8, seed: 5), reports: DebugReportsData.parcel
         )
-        store.load(appID: AppIDs.quiet, record: asked, archive: archive(days: 120, impressions: 13.6, views: 0.75, downloads: 0.14, seed: 9))
+        store.load(
+            appID: AppIDs.quiet, record: asked, archive: archive(days: 120, impressions: 13.6, views: 0.75, downloads: 0.14, seed: 9),
+            reports: DebugReportsData.quiet
+        )
         store.load(appID: AppIDs.habitat, record: AnalyticsAppRecord(askedOn: date(month: 11, day: 10), lastChecked: today))
         store.load(sales: hasSales ? sales : SalesArchive(), vendorNumber: vendorNumber, keyCannotReadSales: keyCannotReadSales)
         return store

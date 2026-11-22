@@ -12,11 +12,12 @@ extension AppStoreConnectClient {
     /// `GET /v2/inAppPurchases/{id}/iapPriceSchedule` with its base
     /// territory; nil when the purchase has never had a price (404).
     func inAppPurchasePriceSchedule(purchaseID: String) async throws -> InAppPurchasePriceScheduleDocument? {
+        let scheduleURL = url("/v2/inAppPurchases/\(purchaseID)/iapPriceSchedule", query: [
+            URLQueryItem(name: "include", value: "baseTerritory"),
+            URLQueryItem(name: "fields[territories]", value: "currency"),
+        ])
         do {
-            return try await get(url("/v2/inAppPurchases/\(purchaseID)/iapPriceSchedule", query: [
-                URLQueryItem(name: "include", value: "baseTerritory"),
-                URLQueryItem(name: "fields[territories]", value: "currency"),
-            ]))
+            return try await readRetry.run { try await get(scheduleURL) }
         } catch AppStoreConnectError.notFound {
             return nil
         }

@@ -79,12 +79,19 @@ extension AppInformationChangeBuilder {
         )
     }
 
-    /// App Store Connect won't create review details without a contact
-    /// email ("ENTITY_ERROR.ATTRIBUTE.REQUIRED — You must provide a value
-    /// for the attribute 'contactEmail'").
+    /// The contact App Store Connect asks for before it creates review
+    /// details. Its spec marks them optional, but a `POST` without one fails
+    /// ("ENTITY_ERROR.ATTRIBUTE.REQUIRED — You must provide a value for the
+    /// attribute 'contactEmail'", then 'contactPhone'), and its own form
+    /// requires all four.
+    static let requiredContactFields: [AppReviewField] = [.firstName, .lastName, .phone, .email]
+
+    /// What's missing for App Store Connect to create review details.
     static func newReviewDetailProblem(_ values: AppReviewValues) -> String? {
-        guard values.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
-        return String(localized: "Add a contact email: App Store Connect needs one to create the review details.")
+        let missing = requiredContactFields.filter { values.text($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        guard !missing.isEmpty else { return nil }
+        let names = missing.map { $0.title.lowercased() }.formatted(.list(type: .and))
+        return String(localized: "Add the contact’s \(names): App Store Connect needs a first name, last name, phone and email to create the review details.")
     }
 
     // MARK: - Reading

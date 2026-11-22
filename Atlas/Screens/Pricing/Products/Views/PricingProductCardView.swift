@@ -58,6 +58,12 @@ struct PricingProductCardView: View {
             }
             if let suggestion = card.suggestion {
                 suggestionBox(suggestion)
+            } else if card.isSettingStartingPrices {
+                Label(PricingProductCard.settingStartingPricesText, systemImage: "clock")
+                    .font(.caption)
+                    .foregroundStyle(Palette.label2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("pricing.card.settingStartingPrices")
             }
             HStack {
                 Spacer()

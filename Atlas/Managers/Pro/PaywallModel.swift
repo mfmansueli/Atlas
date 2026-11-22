@@ -54,7 +54,10 @@ final class PaywallModel: Identifiable {
     /// The plans couldn't be read: say so instead of an empty list.
     var offersProblem: String? {
         guard offers.isEmpty, !entitlements.isLoadingOffers else { return nil }
-        return String(localized: "The App Store didn’t answer, so the plans aren’t shown. Check the connection and try again.")
+        if entitlements.offersUnreachable {
+            return String(localized: "The App Store didn’t answer, so the plans aren’t shown. Check the connection and try again.")
+        }
+        return String(localized: "The App Store answered without Atlas Pro’s plans: they aren’t on sale yet. Try again later.")
     }
 
     func load() async {

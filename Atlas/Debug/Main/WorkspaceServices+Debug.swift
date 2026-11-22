@@ -16,6 +16,7 @@ extension WorkspaceServices {
             storePage: DebugStorePageServices(),
             appInformation: DebugAppInformationServices(),
             retention: DebugRetentionServices(),
+            appPriceAvailability: DebugAppPriceAvailabilityServices(),
             analytics: DebugAnalyticsServices(),
             reviews: DebugReviewsServices(),
             release: DebugReleaseServices(),

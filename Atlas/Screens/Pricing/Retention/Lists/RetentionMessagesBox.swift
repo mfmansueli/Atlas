@@ -9,6 +9,7 @@ import SwiftUI
 /// languages it has. Click one to edit it.
 struct RetentionMessagesBox: View {
     let model: RetentionModel
+    var saveRates: RetentionReport?
 
     var body: some View {
         RetentionBox(title: String(localized: "Messages")) {
@@ -44,6 +45,9 @@ struct RetentionMessagesBox: View {
                     .font(.caption)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
+                if let saveRates, !message.isNew {
+                    RetentionSaveRateLine(measured: saveRates.message(id: message.remote?.messageID ?? message.id, name: message.referenceName))
+                }
             }
             .padding(.horizontal, Spacing.medium)
             .padding(.vertical, Spacing.small + 2)

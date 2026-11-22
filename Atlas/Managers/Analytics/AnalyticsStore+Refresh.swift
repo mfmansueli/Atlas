@@ -57,6 +57,17 @@ extension AnalyticsStore {
                 update(appID) { $0.keyCannotAsk = false }
                 let batches = try await services.downloadEngagement(appID: appID, known: archive(for: appID).instanceIDs)
                 apply(batches, to: appID)
+                // The newer reports come with the same request. One that
+                // fails doesn't keep the funnel from showing.
+                do {
+                    let reports = try await services.downloadReports(appID: appID, known: reports(for: appID).instanceIDs)
+                    apply(reports, to: appID)
+                } catch is CancellationError {
+                    throw CancellationError()
+                } catch {
+                    reportsError = error.localizedDescription
+                }
+                if let setting = try? await services.gracePeriod(appID: appID) { setGracePeriod(setting, for: appID) }
             } else if record(for: appID).askedOn != nil {
                 // Apple stops requests nobody reads for a long time.
                 turnOff(appID)
@@ -68,6 +79,14 @@ extension AnalyticsStore {
         } catch {
             setActivity(.failed(error.localizedDescription), for: appID)
         }
+    }
+
+    /// "Turn On Billing Grace Period…", once the person confirmed it.
+    func turnOnGracePeriod(for appID: StoreApp.ID, duration: GracePeriodSetting.Duration, services: any AnalyticsServices) async throws {
+        let setting: GracePeriodSetting? = if let known = gracePeriods[appID] { known } else { try await services.gracePeriod(appID: appID) }
+        guard let setting else { throw AnalyticsActionError.noGracePeriodSetting }
+        try await services.turnOnGracePeriod(setting, duration: duration)
+        setGracePeriod(GracePeriodSetting(id: setting.id, isOn: true, duration: duration), for: appID)
     }
 
     /// Reads the days of Sales and Trends this Mac doesn't have yet.

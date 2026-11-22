@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// "Pro" in the toolbar while the person is on Free: opens the plans.
+/// "Pro" in the toolbar while the person is on Free: opens the plans. As
+/// tall as the toolbar's other buttons (`AutopilotButtonFace.height`).
 struct ProToolbarButton: View {
     let action: () -> Void
 
@@ -13,13 +14,14 @@ struct ProToolbarButton: View {
         Button(action: action) {
             Label("Pro", systemImage: "sparkles")
                 .labelStyle(.titleAndIcon)
-                .font(.callout.weight(.semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
-                .padding(.horizontal, Spacing.small)
-                .frame(height: 24)
+                .padding(.horizontal, Spacing.medium)
+                .frame(height: AutopilotButtonFace<EmptyView>.height)
                 .background(PaywallStyle.gradient, in: Capsule())
         }
         .buttonStyle(.plain)
+        .contentShape(Capsule())
         .help("Upgrade to Atlas Pro")
         .accessibilityLabel(Text("Upgrade to Atlas Pro"))
         .accessibilityIdentifier("workspace.proButton")

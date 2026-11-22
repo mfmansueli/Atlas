@@ -21,6 +21,10 @@ import Foundation
 ///   texts written for it (`PendingChange.dependsOn`) wait only for it and
 ///   for earlier writes to the same resource (one language's localization,
 ///   its App Review details), so its languages go side by side.
+/// - Many similar creates (`PushSideBySideKey`: a price per territory, a
+///   new language, a new subscription) go side by side with each other:
+///   each waits for the app's earlier ordered changes and for an earlier
+///   one with its key, and the ordered changes after them wait for them.
 /// - Everything else (new languages, subscriptions, retention,
 ///   prices, In-App Texts, merged age rating answers…) keeps the queue's
 ///   order within its app, as when changes went one at a time.
@@ -29,6 +33,11 @@ enum PushSchedule {
     /// once (the hourly budget still paces the push), and uploads side by
     /// side cut a long push to a fraction.
     static let concurrentChanges = 8
+
+    /// Requests one change fans out to at once (a subscription's price in
+    /// every territory, `PushSlots.forEach`), shared by every change of the
+    /// push that fans out the same way.
+    static let concurrentRequests = concurrentChanges
 
     /// Uploads Apple may be processing at once beside them: a change Apple
     /// processes gives its place to the next and only checks back.
@@ -55,8 +64,12 @@ enum PushSchedule {
             changes.indices.prefix(index).filter { earlier in
                 if !keys[index].isDisjoint(with: keys[earlier]) { return true }
                 if let version = changes[index].dependsOn { return changes[earlier].id == version }
-                guard kinds[index] != .newVersion, changes[earlier].appID == changes[index].appID, kinds[earlier] == .ordered else { return false }
-                return kinds[index] == .ordered || kinds[index] == .artForANewLanguage || kinds[index] == .pageScreenshots
+                guard kinds[index] != .newVersion, changes[earlier].appID == changes[index].appID else { return false }
+                switch kinds[index] {
+                case .ordered, .artForANewLanguage, .pageScreenshots: return kinds[earlier] == .ordered || kinds[earlier] == .sideBySide
+                case .sideBySide: return kinds[earlier] == .ordered
+                case .independent, .art, .newVersion: return false
+                }
             }
         }
     }
@@ -68,6 +81,8 @@ enum PushSchedule {
         case pageScreenshots
         /// "Create version 1.2": `POST /v1/appStoreVersions`.
         case newVersion
+        /// One of many similar creates (`PushSideBySideKey`).
+        case sideBySide
         case ordered
 
         init(_ change: PendingChange) {
@@ -78,6 +93,8 @@ enum PushSchedule {
                 self = .pageScreenshots
             } else if let first = requests.first, InAppEventArtworkPush(first) != nil {
                 self = InAppEventPushOrder.waitsForANewLanguage(change) ? .artForANewLanguage : .art
+            } else if PushSideBySideKey.of(change) != nil {
+                self = .sideBySide
             } else if change.mergeKey == nil, PushSchedule.independentSections.contains(change.section), !requests.isEmpty,
                       requests.allSatisfy({ $0.method == .patch && !PushSchedule.hasPlaceholder($0) })
             {
@@ -92,10 +109,11 @@ enum PushSchedule {
     /// version made on refusal, no group or page found once per push.
     private static let independentSections: Set<AppWorkspaceSection> = [.storePage, .appInformation, .inAppEvents]
 
-    /// The resources a change writes: its requests' paths, or an event
-    /// image's language.
+    /// The resources a change writes: what a side-by-side create makes, its
+    /// requests' paths, or an event image's language.
     private static func resourceKeys(_ change: PendingChange) -> Set<String> {
-        Set(change.pushRequests.map { request in
+        if let key = PushSideBySideKey.of(change) { return [key] }
+        return Set(change.pushRequests.map { request in
             InAppEventArtworkPush(request).map { "eventArtwork:\($0.localizationID)" }
                 ?? ProductPageScreenshotsPush(request)?.resourceKey
                 ?? request.path
@@ -104,7 +122,7 @@ enum PushSchedule {
 
     /// A `{…}` Atlas fills in while pushing (`{createdID}`, `{secret:…}`,
     /// `{eventLocalization:…}`…): a path segment or a whole JSON string.
-    private static func hasPlaceholder(_ request: PushRequest) -> Bool {
+    static func hasPlaceholder(_ request: PushRequest) -> Bool {
         guard !request.path.contains("{") else { return true }
         guard let body = request.body else { return false }
         return String(bytes: body, encoding: .utf8)?.contains("\"{") == true

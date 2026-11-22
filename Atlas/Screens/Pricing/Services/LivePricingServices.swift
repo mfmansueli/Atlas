@@ -51,7 +51,7 @@ struct LivePricingServices: PricingServices {
                     result.groups[groupIndex].products[productIndex].basePrice = base.price
                     result.groups[groupIndex].products[productIndex].baseCurrencyCode = base.currencyCode
                 } else {
-                    result.groups[groupIndex].products[productIndex].basePrice = try await basePrice(of: product)
+                    result.groups[groupIndex].products[productIndex].basePrice = try await basePriceUnlessServerFails(of: product)
                 }
             }
         }
@@ -140,6 +140,18 @@ struct LivePricingServices: PricingServices {
     }
 
     // MARK: - Private
+
+    /// A subscription's base price, or nil when Apple's server still fails
+    /// on it after the retries: its card shows the price its own read finds
+    /// (or says that read failed), and the other products still show.
+    /// Offline and the hourly limit still fail the list.
+    private func basePriceUnlessServerFails(of product: PricingProduct) async throws -> Decimal? {
+        do {
+            return try await basePrice(of: product)
+        } catch let error as AppStoreConnectError where error.isServerFailure {
+            return nil
+        }
+    }
 
     private func basePrice(of product: PricingProduct) async throws -> Decimal? {
         let prices = try await client.subscriptionPrices(subscriptionID: product.id, territoryID: baseTerritoryID)

@@ -10,8 +10,8 @@ import StoreKit
 /// prices, buying one, and what the person owns
 /// (`Transaction.currentEntitlements`, then `Transaction.updates`).
 struct StoreKitProStore: ProStore {
-    func offers() async -> [ProOffer] {
-        guard let products = try? await Product.products(for: ProPlan.allCases.map(\.productID)) else { return [] }
+    func offers() async throws -> [ProOffer] {
+        let products = try await Product.products(for: ProPlan.allCases.map(\.productID))
         var offers: [ProOffer] = []
         for plan in ProPlan.allCases {
             guard let product = products.first(where: { $0.id == plan.productID }) else { continue }

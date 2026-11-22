@@ -20,6 +20,8 @@ struct ProductPageRow: View {
     static let funnelWidth: CGFloat = 180
     static let rateWidth: CGFloat = 140
     static let copyWidth: CGFloat = 90
+    static let subscribersWidth: CGFloat = 120
+    static let trialToPaidWidth: CGFloat = 110
 
     var body: some View {
         HStack(alignment: isCompact ? .top : .center, spacing: Spacing.medium) {
@@ -53,6 +55,12 @@ struct ProductPageRow: View {
             ProductPageFunnelText(numbers: viewModel.numbers(of: page), emptyText: ProductPageNumbersText.noNumbers(for: page))
                 .frame(width: Self.funnelWidth, alignment: .leading)
             rate.frame(width: Self.rateWidth, alignment: .leading)
+            if viewModel.hasSubscriberNumbers {
+                ProductPageSubscribersCells(
+                    subscribers: viewModel.subscribers(of: page), average: viewModel.averageTrialToPaid,
+                    widths: (Self.subscribersWidth, Self.trialToPaidWidth)
+                )
+            }
         }
         .padding(.vertical, Spacing.small)
     }

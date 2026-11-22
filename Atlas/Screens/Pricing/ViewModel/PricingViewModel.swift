@@ -65,6 +65,9 @@ final class PricingViewModel {
     var productMatrices: [String: PriceMatrixModel] = [:]
     /// Products whose prices couldn't load, with why.
     var productErrors: [String: String] = [:]
+    /// Products whose prices Apple's server failed to send: their card
+    /// offers Try Again (`PricingReadFailure`).
+    var unreadProductIDs: Set<String> = []
     /// Every product's prices have been read (or failed).
     var areProductsLoaded = false
     /// The card whose countries are shown.
@@ -77,6 +80,9 @@ final class PricingViewModel {
     var toast: ToastMessage?
     @ObservationIgnored var toastUndo: (() -> Void)?
     @ObservationIgnored var productsTask: Task<Void, Never>?
+    /// The app's own price and availability, the cards above the products;
+    /// nil where the section has no services for them (tests).
+    var appPriceAvailability: AppPriceAvailabilityModel?
 
     /// Today, for Results' 28 days; DEBUG scenes pin it.
     var today: () -> Date = { .now }
@@ -92,6 +98,9 @@ final class PricingViewModel {
     @ObservationIgnored let services: any PricingServices
     @ObservationIgnored let modes: PricingModeStore
     @ObservationIgnored var followedProductIDs: Set<String> = []
+    /// Counts `load()`s, so one that answers after a newer one started
+    /// (Apple took 12 s to fail it) doesn't replace what the newer read.
+    @ObservationIgnored private var loadGeneration = 0
     @ObservationIgnored var siblingSheets: [String: ProductPriceSheet] = [:]
 
     init(app: StoreApp, services: any PricingServices, queue: ChangeQueue, modes: PricingModeStore, commission: Commission) {
@@ -126,7 +135,14 @@ final class PricingViewModel {
     /// Price changes waiting in Review & Push; new subscriptions and
     /// retention aren't.
     var pendingPriceChangeCount: Int {
-        queue.changes(for: app.id, section: .subscriptionPricing).count { !NewSubscriptionChangeBuilder.owns($0) && !RetentionChangeBuilder.owns($0) }
+        queue.changes(for: app.id, section: .subscriptionPricing).count { Self.isPriceChange($0) }
+    }
+
+    /// A subscription or in-app purchase price change: not a new
+    /// subscription, retention, or the app's own price and availability.
+    static func isPriceChange(_ change: PendingChange) -> Bool {
+        !NewSubscriptionChangeBuilder.owns(change) && !RetentionChangeBuilder.owns(change)
+            && !AppPriceChangeBuilder.owns(change) && !AppAvailabilityChangeBuilder.owns(change)
     }
 
     // MARK: - Loading
@@ -135,14 +151,18 @@ final class PricingViewModel {
     /// mode the first time.
     func load() async {
         if modes.chosenMode(for: app.id) == nil { isModeSheetPresented = true }
+        loadGeneration += 1
+        let generation = loadGeneration
         catalogState = .loading
         do {
             let catalog = try await services.catalog(for: app)
+            guard generation == loadGeneration else { return }
             catalogState = .loaded(catalog)
             let productID = selectedProductID.flatMap { catalog.product(id: $0)?.id } ?? catalog.defaultProduct?.id
             if let productID { await select(productID: productID, force: true) }
             startLoadingProducts()
         } catch {
+            guard generation == loadGeneration else { return }
             catalogState = .failed(error.localizedDescription)
             reportLoadError(error)
         }
@@ -183,11 +203,28 @@ final class PricingViewModel {
             self.matrix = matrix
         } catch {
             guard selectedProductID == productID else { return }
-            sheetError = error.localizedDescription
+            // Apple's server failing on this product is said on it, not in
+            // a banner: the other products' prices are fine.
+            let isProductFailure = PricingReadFailure.isProductFailure(error)
+            sheetError = isProductFailure ? PricingReadFailure.text(productName: product.name) : error.localizedDescription
             needsStartingPrice = (error as? PricingSheetError)?.offersStartingPrice == true
             hasNoPrice = error is PricingSheetError && !needsStartingPrice
-            if !(error is PricingSheetError) { reportLoadError(error) }
+            if !(error is PricingSheetError), !isProductFailure { reportLoadError(error) }
         }
+    }
+
+    /// The selected product's own read failed and its card's read (made
+    /// after it) worked: its prices show that read.
+    func recoverSelectedPrices(of product: PricingProduct, sheet: ProductPriceSheet) {
+        guard selectedProductID == product.id, sheetError != nil, !needsStartingPrice, !hasNoPrice, !isLoadingSheet else { return }
+        let recovered = makeMatrix(product: product, sheet: sheet)
+        if let previous = matrix, previous.product.id == product.id {
+            recovered.filter = previous.filter
+            recovered.sortOrder = previous.sortOrder
+            recovered.selection = previous.selection
+        }
+        matrix = recovered
+        sheetError = nil
     }
 
     /// A matrix for `product` with the current strategy, mode and queue.
@@ -252,7 +289,7 @@ final class PricingViewModel {
     /// subscriptions and retention stay).
     func confirmKeepPrices() {
         queue.discardAll {
-            $0.appID == app.id && $0.section == .subscriptionPricing && !NewSubscriptionChangeBuilder.owns($0) && !RetentionChangeBuilder.owns($0)
+            $0.appID == app.id && $0.section == .subscriptionPricing && Self.isPriceChange($0)
         }
         apply(mode: .keepPrices)
         matrix?.queueDidChange()

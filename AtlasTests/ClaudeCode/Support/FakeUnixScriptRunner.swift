@@ -30,6 +30,8 @@ final class FakeUnixScriptRunner: UnixScriptRunning, @unchecked Sendable {
     /// A mode's status call by call, the last one repeating; over
     /// `statuses` when set.
     var statusSequences: [String: [Int32]] = [:]
+    /// Told each call's arguments as it starts, before it answers.
+    var onRun: (@Sendable ([String]) -> Void)?
     private let calls = Mutex<[[String]]>([])
     private let answered = Mutex<[String: Int]>([:])
 
@@ -58,6 +60,7 @@ final class FakeUnixScriptRunner: UnixScriptRunning, @unchecked Sendable {
 
     func run(_: URL, arguments: [String], onLine: @escaping @Sendable (String) -> Void) async -> UnixScriptExit {
         calls.withLock { $0.append(arguments) }
+        onRun?(arguments)
         if let mode = arguments.first, let modeAnswers = answers[mode], !modeAnswers.isEmpty {
             let index = answered.withLock { counts in
                 defer { counts[mode, default: 0] += 1 }

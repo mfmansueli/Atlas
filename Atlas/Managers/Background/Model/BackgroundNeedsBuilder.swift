@@ -47,6 +47,14 @@ enum BackgroundNeedsBuilder {
                     destination: .version(appID: facts.appID)
                 ))
             }
+            if let crash = facts.crashHeadline {
+                approved.append(BackgroundNeed(
+                    id: "stability-\(facts.appID)",
+                    title: crash,
+                    detail: prefix + String(localized: "See the Overview to pause the phased release"),
+                    destination: .section(.overview, appID: facts.appID)
+                ))
+            }
             if facts.autoReplyNeeds > 0 {
                 reviews.append(BackgroundNeed(
                     id: "autoreply-\(facts.appID)",

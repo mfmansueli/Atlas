@@ -16,6 +16,8 @@ struct ReviewsScreen: View {
     @State private var width: CGFloat = 0
     /// For Reply Automatically's next check; nil in previews.
     @Environment(BackgroundWork.self) private var background: BackgroundWork?
+    @Environment(AnalyticsStore.self) private var analytics: AnalyticsStore?
+    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -87,6 +89,16 @@ struct ReviewsScreen: View {
             }
             .accessibilityIdentifier("reviews.error")
         }
+        if let summary = versionSummary {
+            AnalyticsNotice(
+                tone: .warning,
+                text: [stability?.headline, summary.text].compactMap(\.self).joined(separator: " "),
+                primary: stability == nil ? nil : (String(localized: "Open Stability"), {
+                    navigator?.openAnalytics(.stability, appID: viewModel.app.id)
+                }),
+                identifier: "reviews.stability"
+            )
+        }
         if let text = viewModel.downloadText {
             Banner(kind: .info, title: text, isInline: true) {
                 ReviewLanguageDownloadButton(languages: viewModel.languagesToDownload) {
@@ -95,6 +107,19 @@ struct ReviewsScreen: View {
             }
             .accessibilityIdentifier("reviews.download")
         }
+    }
+
+    /// Analytics says the newest version crashes more.
+    private var stability: StabilityReport? {
+        guard let analytics else { return nil }
+        return StabilityReport.make(analytics.reports(for: viewModel.app.id), now: AnalyticsDay(analytics.now())).flatMap { $0.isWorse ? $0 : nil }
+    }
+
+    /// The version's reviews, while it crashes more or they mention crashes.
+    private var versionSummary: VersionReviewsSummary? {
+        let crashing = stability
+        guard let summary = VersionReviewsSummary.make(viewModel.reviews, newest: crashing?.latest.version) else { return nil }
+        return crashing != nil || summary.crashMentions >= 2 ? summary : nil
     }
 
     private var list: some View {

@@ -13,6 +13,8 @@ struct PricingSectionView: View {
     let app: StoreApp
     let services: any PricingServices
     let retention: any RetentionServices
+    /// The app's own price and where it's sold.
+    let appPriceAvailability: any AppPriceAvailabilityServices
 
     @State private var viewModel: PricingViewModel?
     @State private var retentionModel: RetentionModel?
@@ -25,11 +27,17 @@ struct PricingSectionView: View {
     @Environment(PushController.self) private var push
     @Environment(PushHistory.self) private var history
     @Environment(AppSummaryStore.self) private var summaries
+    @Environment(AnalyticsStore.self) private var analytics: AnalyticsStore?
 
     var body: some View {
         Group {
             if let viewModel = shownModel, viewModel.page == .retention, let retentionModel = shownRetention {
-                RetentionScreen(model: retentionModel, pricing: viewModel)
+                RetentionScreen(
+                    model: retentionModel, pricing: viewModel,
+                    saveRates: analytics.flatMap { RetentionReport.make($0.reports(for: retentionModel.app.id), days: 28) }
+                ) {
+                    navigator.openAnalytics(.subscriptions, pane: .retention, appID: retentionModel.app.id)
+                }
             } else if let viewModel = shownModel {
                 PricingScreen(viewModel: viewModel, defaultMode: preferences.defaultPricingMode)
             } else {
@@ -89,6 +97,7 @@ struct PricingSectionView: View {
         // prices are there when the person comes back.
         if let model = kept?.pricing, let retentionModel = kept?.retention, model.catalog != nil {
             self.retentionModel = retentionModel
+            Self.attachAppPriceAvailability(to: model, services: appPriceAvailability, queue: changes, navigator: navigator)
             viewModel = model
             // What changed while another section showed.
             queueDidChange()
@@ -107,6 +116,7 @@ struct PricingSectionView: View {
         )
         let retentionModel = RetentionModel(app: app, services: retention, queue: changes)
         Self.connect(model, retention: retentionModel, push: push, navigator: navigator, history: history)
+        Self.attachAppPriceAvailability(to: model, services: appPriceAvailability, queue: changes, navigator: navigator)
         #if DEBUG
         model.applyDebugOpening(from: services)
         #endif
@@ -118,6 +128,7 @@ struct PricingSectionView: View {
         #if DEBUG
         await model.applyDebugLaunch(from: services)
         await retentionModel.applyDebugLaunch(from: retention, pricing: model)
+        model.appPriceAvailability?.applyDebugLaunch(from: appPriceAvailability)
         #endif
         await handlePendingIntent()
     }
@@ -146,6 +157,22 @@ struct PricingSectionView: View {
         retention.onOpenReview = { [navigator] in navigator.isReviewPresented = true }
     }
 
+    /// Gives a model made without them (read ahead, or kept from before)
+    /// the app's price and availability cards, connected to Review & Push.
+    static func attachAppPriceAvailability(
+        to model: PricingViewModel,
+        services: any AppPriceAvailabilityServices,
+        queue: ChangeQueue,
+        navigator: WorkspaceNavigator
+    ) {
+        guard model.appPriceAvailability == nil else { return }
+        let appModel = AppPriceAvailabilityModel(app: model.app, services: services, queue: queue)
+        appModel.onOpenReview = { [navigator] in navigator.isReviewPresented = true }
+        model.appPriceAvailability = appModel
+        // Kept prices were read without them.
+        if model.catalog != nil { Task { await appModel.load() } }
+    }
+
     /// Reads the catalog and the default product's prices: the first time
     /// (`retention` nil, Retention reads itself when it shows), or again
     /// with Retention's messages and offers. Stamps `kept` once the catalog
@@ -158,6 +185,7 @@ struct PricingSectionView: View {
         } else {
             await model.load()
         }
+        await model.appPriceAvailability?.load()
         guard !Task.isCancelled, model.catalog != nil else { return }
         kept?.didLoad(.subscriptionPricing, refreshCount: refreshCount)
     }

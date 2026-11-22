@@ -127,6 +127,7 @@ struct WorkspaceSectionWarmer: SectionWarming {
         )
         let retention = RetentionModel(app: app, services: services.retention, queue: queue)
         PricingSectionView.connect(model, retention: retention, push: push, navigator: navigator, history: history)
+        PricingSectionView.attachAppPriceAvailability(to: model, services: services.appPriceAvailability, queue: queue, navigator: navigator)
         kept.pricing = model
         kept.retention = retention
         await PricingSectionView.read(model, retention: nil, into: kept, refreshCount: refreshCount)

@@ -83,7 +83,7 @@ struct BreakdownRowView: View {
     }
 
     private func text(_ column: BreakdownColumn) -> String {
-        BreakdownTableView.totalText(column, row.totals)
+        BreakdownTableView.text(column, totals: row.totals, subscribers: row.subscribers, after: row.afterDownload)
     }
 
     private var accessibilityValue: String {

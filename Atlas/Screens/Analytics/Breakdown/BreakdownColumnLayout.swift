@@ -11,10 +11,11 @@ import SwiftUI
 struct BreakdownColumnLayout: Equatable {
     var isCompact: Bool
     var hasSales: Bool
+    var group = BreakdownColumnGroup.funnel
 
     var columns: [BreakdownColumn] {
         BreakdownColumn.allCases.filter { column in
-            if column == .name { return false }
+            if column == .name || !column.isShown(in: group) { return false }
             if isCompact, column.isCount { return false }
             return true
         }
@@ -30,6 +31,9 @@ struct BreakdownColumnLayout: Equatable {
         case .starts: 60
         case .viewRate, .downloadRate, .startRate: isCompact ? 92 : 104
         case .proceeds: 78
+        case .trials, .paid: 64
+        case .trialToPaid, .deleted30: isCompact ? 92 : 110
+        case .sessionsPerWeek: 92
         }
     }
 }

@@ -5,9 +5,10 @@
 
 import SwiftUI
 
-/// Pricing's Prices page: the header, the price suggestions with Accept
-/// All n, a card per product, and "What people pay" beside them (under them
-/// when the window is narrow).
+/// Pricing's Prices page: the header, the app's own price and
+/// availability, the price suggestions with Accept All n, a card per
+/// product, and "What people pay" beside them (under them when the window
+/// is narrow).
 struct PricingProductsView: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -19,6 +20,9 @@ struct PricingProductsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 PricingHeader(viewModel: viewModel)
+                if let appPriceAvailability = viewModel.appPriceAvailability {
+                    AppPriceAvailabilityCards(model: appPriceAvailability)
+                }
                 if viewModel.openPriceSuggestionCount > 0 {
                     banner
                 }
@@ -124,9 +128,17 @@ struct PricingProductsView: View {
                 Text(message).font(.caption).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            Button(product.isInAppPurchase ? "See Prices…" : "Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
-                .buttonStyle(.link)
-                .controlSize(.small)
+            if viewModel.unreadProductIDs.contains(product.id) {
+                // Apple's server failed on this product's prices alone.
+                Button("Try Again") { Task { await viewModel.retryProduct(productID: product.id) } }
+                    .controlSize(.small)
+                    .accessibilityLabel(Text("Read \(product.name)’s prices again"))
+                    .accessibilityIdentifier("pricing.card.tryAgain")
+            } else {
+                Button(product.isInAppPurchase ? "See Prices…" : "Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
+                    .buttonStyle(.link)
+                    .controlSize(.small)
+            }
         }
         .padding(14)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))

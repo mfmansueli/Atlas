@@ -52,10 +52,16 @@ enum AnalyticsStatistics {
 
     /// A period's rate against an earlier period's (pooled two-proportion
     /// z-test): "sure" beyond 99%, "fairly sure" beyond 90%.
-    static func compare(count: Int?, total: Int?, previousCount: Int?, previousTotal: Int?) -> PeriodComparison {
+    /// Two groups seen at the same time (a message against No Message, a
+    /// version against the one before) use `minimumTotal` 30 and
+    /// `minimumCount` 3, as a single rate does.
+    static func compare(
+        count: Int?, total: Int?, previousCount: Int?, previousTotal: Int?,
+        minimumTotal: Int = minimumComparedTotal, minimumCount: Int = minimumComparedCount
+    ) -> PeriodComparison {
         guard let count, let total, let previousCount, let previousTotal,
-              total >= minimumComparedTotal, previousTotal >= minimumComparedTotal,
-              count >= minimumComparedCount, previousCount >= minimumComparedCount
+              total >= minimumTotal, previousTotal >= minimumTotal,
+              count >= minimumCount, previousCount >= minimumCount
         else { return .tooFew }
         let now = Double(count) / Double(total)
         let before = Double(previousCount) / Double(previousTotal)

@@ -200,8 +200,10 @@ struct ClaudeCodeRunStatusView: View {
                     Button("Open in Terminal") { terminalUnavailable = !launcher.openInTerminal(run.id) }
                         .accessibilityIdentifier("claudeCode.run.terminal")
                 }
-                Button(failure.needsFolder ? String(localized: "Choose Folder…") : String(localized: "Try Again"), action: retry)
-                    .accessibilityIdentifier("claudeCode.run.retry")
+                if failure.canRetry {
+                    Button(failure.needsFolder ? String(localized: "Choose Folder…") : String(localized: "Try Again"), action: retry)
+                        .accessibilityIdentifier("claudeCode.run.retry")
+                }
                 Button(copied == .prompt ? String(localized: "Copied") : String(localized: "Copy Prompt")) { copy(run.prompt, as: .prompt) }
                     .accessibilityIdentifier("claudeCode.run.copyPrompt")
                 Spacer(minLength: 0)
