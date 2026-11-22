@@ -34,6 +34,7 @@ extension ScreenshotStudioModel {
         }
         guard let launcher, launcher.canStart else {
             copyPrompt()
+            prepareSimulators()
             return
         }
         let prompt = prompt
@@ -74,6 +75,8 @@ extension ScreenshotStudioModel {
     private func launch(_ prompt: String, with launcher: ClaudeCodeLauncher) async {
         // Marked first: the session can end before `start` returns.
         autopilot?.update(app.id) { $0.startsClaudeCode = true }
+        // The simulators the run lacks and Atlas can make are made first.
+        if let autopilot { await autopilot.prepareSimulators(appID: app.id, simulators: launcher.simulators) }
         if let id = await launcher.start(.autopilot, appID: app.id, appName: app.name, prompt: prompt) {
             launchedRunID = id
             return
@@ -121,6 +124,7 @@ extension ScreenshotStudioModel {
             let prompt = run.map { AutopilotPrompt.continuing($0, appName: app.name) } ?? AutopilotPrompt.continuing(appName: app.name, appID: app.id)
             NSPasteboard.general.setString(prompt, forType: .string)
             didCopyPrompt = true
+            prepareSimulators()
             return
         }
         let (appID, name) = (app.id, app.name)

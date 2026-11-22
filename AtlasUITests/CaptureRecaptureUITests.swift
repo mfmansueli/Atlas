@@ -59,6 +59,37 @@ final class CaptureRecaptureUITests: XCTestCase {
         attachScreenshot("Making it · capture-only run from the set's captures")
     }
 
+    /// Alba's pr-40a1e4a1: the pretend Mac has the iOS 27.2 runtime but no
+    /// iPhone Duo simulator. Accept opens the run, Atlas makes the
+    /// simulator itself, and no problem card waits for the person.
+    func testAcceptingMakesTheMissingDuoSimulatorAndTheRunGoesOn() {
+        app.launch(debugScene: "ap-recapture-make-duo")
+        let banner = element("screenshots.recaptureRequest")
+        XCTAssertTrue(banner.waitForExistence(timeout: 20))
+        attachScreenshot("Screenshots · request for iPhone Duo's captures")
+
+        element("screenshots.recaptureRequest.accept").click()
+        XCTAssertTrue(banner.waitForNonExistence(timeout: 5))
+        let title = element("autopilot.guided.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 10), "The Autopilot sheet opens on the run")
+        XCTAssertTrue(text(of: title).hasPrefix("Redoing"), text(of: title))
+
+        let details = element("autopilot.guided.making.details")
+        XCTAssertTrue(details.waitForExistence(timeout: 10), "The run's log has entries")
+        details.click()
+        let log = element("autopilot.log")
+        XCTAssertTrue(log.waitForExistence(timeout: 5))
+        let made = "iPhone Duo: simulator made on iOS 27.2"
+        let deadline = Date.now.addingTimeInterval(15)
+        while !text(of: log).contains(made), Date.now < deadline {
+            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
+        }
+        XCTAssertTrue(text(of: log).contains(made), text(of: log))
+        XCTAssertFalse(element("autopilot.problem").exists, "Nothing for the person: Atlas made the simulator")
+        XCTAssertFalse(app.staticTexts.matching(Self.says("report_capture_problem")).firstMatch.exists)
+        attachScreenshot("Making it · iPhone Duo's simulator made by Atlas")
+    }
+
     func testDecliningDropsTheRequest() {
         app.launch(debugScene: "ap-recapture-request")
         let decline = element("screenshots.recaptureRequest.decline")

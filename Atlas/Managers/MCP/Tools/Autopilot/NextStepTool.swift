@@ -13,10 +13,11 @@ struct NextStepTool: MCPTool {
         title: "Ask Autopilot what's next",
         description: """
         Says what the app's Screenshot Autopilot run wants from you now: capture (with the targets left and \
-        problems to retry with their fix), wait (the person is picking or choosing; ask again after \
-        retryAfterSeconds), design (get_design_brief then propose_direction; with prompts, the header and search \
-        concepts with propose_artwork_concept, and with Motion loop each concept's motion prompt, its animated pages \
-        with revise_artwork_concept), revise_direction or revise (the person's note; revise_artwork_concept \
+        problems to retry with their fix), wait (the person is picking or choosing, or Atlas is making a \
+        simulator this Mac lacks: don't report that one; ask again after retryAfterSeconds), design \
+        (get_design_brief then propose_direction; with prompts, the header and search concepts with \
+        propose_artwork_concept, and with Motion loop each concept's motion prompt, its animated pages with \
+        revise_artwork_concept), revise_direction or revise (the person's note; revise_artwork_concept \
         for concepts), animate_header and revise_loop (the chosen header's loop, with revise_artwork_concept), \
         write_captions (missing or too long, then propose_captions with run), revise_app_preview (the \
         person's note on the App Preview, then revise_app_preview), answer_app_questions (what Atlas wants to \
@@ -56,6 +57,24 @@ struct NextStepTool: MCPTool {
         return .object(json)
     }
 
+    /// `wait` while Atlas makes a simulator the run's devices lack (only
+    /// the simulator was missing: the device type and its runtime are
+    /// installed); nil when none is being made. A "no simulator" problem
+    /// whose device has one now is solved meanwhile, so its screens come
+    /// back. Alba's capture-only run had the runtime, and next_step told
+    /// the assistant to report iPhone Duo.
+    private static func makingSimulators(app: StoreApp, center: AutopilotCenter, in context: MCPToolContext) async -> MCPToolOutcome? {
+        guard let simulators = context.simulators, let run = center.run(for: app.id) else { return nil }
+        let devices = await center.makeMissingSimulators(appID: app.id, simulators: simulators)
+        guard let step = AutopilotCenter.makingStep(devices) else { return nil }
+        if run.stage == .waiting { center.pickUp(appID: app.id, client: context.clientName, environment: nil) }
+        var result = step.mcpJSON(run: center.run(for: app.id)).objectValue ?? [:]
+        result["making"] = .array(devices.map { .string($0.mcpValue) })
+        result["run"] = .string(run.id)
+        result["stage"] = .string((center.run(for: app.id) ?? run).stage.rawValue)
+        return .read(.object(result), target: String(localized: "\(app.name) · Autopilot"))
+    }
+
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
         guard let center = context.workspace.services.screenshots.autopilot else {
@@ -68,6 +87,9 @@ struct NextStepTool: MCPTool {
         if let run = center.run(for: app.id) {
             center.resumeInterruptedWork(app.id, context: MCPAutopilotSession.context(app: app, run: run, in: context))
         }
+        // A device with no simulator yet, on a Mac that can make it: Atlas
+        // makes it, and the assistant waits instead of reporting it.
+        if let making = await Self.makingSimulators(app: app, center: center, in: context) { return making }
         // Folded before its closed screens are given, whatever it was left as.
         let duo = await NextStepDuoPose.prepare(app: app, center: center, in: context)
         let step = await center.nextStep(appID: app.id, client: context.clientName)

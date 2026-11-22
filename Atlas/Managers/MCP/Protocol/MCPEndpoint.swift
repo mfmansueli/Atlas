@@ -69,7 +69,9 @@ enum MCPEndpoint {
     refused, the reason says how to fix it. Read only what you need: whole answers can outgrow what you take in at \
     once, so get_listing takes locales and fields (e.g. fields: ["whatsNew"]) and get_in_app_events takes eventId \
     and include. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
-    starts one, call get_capture_plan, then next_step after each step until it says done. When the app's \
+    starts one, call get_capture_plan, then next_step after each step until it says done. A simulator this Mac \
+    lacks while its runtime is installed, Atlas makes itself (next_step waits meanwhile): report a device with \
+    affectsDevice only when its runtime is missing. When the app's \
     screens change outside a run, send new ones with propose_screens and new steps, sample data or setup \
     commands with update_capture_plan: they wait for the person in the next plan. When only some captures no \
     longer show the app as it is (texts rewritten in a language, a redesigned screen), don't send the person back \

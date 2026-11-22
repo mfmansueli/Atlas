@@ -37,9 +37,9 @@ struct CapturePlanToolsTests {
             "caption": .string(StudioDebugRuns.plan.screens[0].caption),
         ])
         #expect(plan["devices"] == [
-            ["displayType": "iphone", "simulator": "iPhone 17 Pro Max", "pixelSize": "1320 × 2868", "orientation": "portrait"],
+            ["displayType": "iphone", "simulatorName": "iPhone 17 Pro Max", "pixelSize": "1320 × 2868", "orientation": "portrait"],
             [
-                "displayType": "ipad", "simulator": "iPad Pro 13-inch (M5)",
+                "displayType": "ipad", "simulatorName": "iPad Pro 13-inch (M5)",
                 "pixelSize": "2752 × 2064 (landscape) or 2064 × 2752 (portrait)",
                 "orientation": "landscape, or portrait when the UI tests can't rotate",
                 "how": .string(AutopilotRun.howToCapture(.iPad) ?? ""),
@@ -122,7 +122,7 @@ struct CapturePlanToolsTests {
         let duo = try #require(devices.first { $0["displayType"] == .string(ScreenshotDisplayType.iPhoneDuo.mcpValue) })
         #expect(duo["simulatorId"] == "00000000-0000-0000-0000-000000000004")
         #expect(duo["runtime"] == "iOS 27.2")
-        #expect(devices.allSatisfy { $0["simulator"] != nil })
+        #expect(devices.allSatisfy { $0["simulatorName"] != nil })
     }
 
     @Test func thePlanSaysToFindTheSampleDataSwitchAndLeavesOutWhatsOff() async throws {

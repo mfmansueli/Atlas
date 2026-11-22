@@ -60,6 +60,14 @@ struct StartDisplayRecordingTool: MCPTool {
         }
         let center = session.center
         let appID = session.app.id
+        // No simulator yet, on a Mac with its runtime: Atlas makes it.
+        let making = await center.makeMissingSimulators(appID: appID, simulators: simulators)
+        if making.contains(.iPhoneDuo) {
+            return .refused(String(localized: """
+            Atlas is making the iPhone Duo simulator (its runtime is installed): don’t report it. Call next_step in a few \
+            seconds, then this again.
+            """), target: session.target)
+        }
         let state = await simulators.duo.makeOpen(within: .seconds(120)) { event in
             center.update(appID) { $0.appendLog(event.logText, kind: .event, at: center.now()) }
         }

@@ -637,7 +637,7 @@ call.
     turns on the page's Capture Screens Again (`PageShotsStudio.openRecapture`, making the page's run at Plan when it
     has none). `mark_captures_stale` sets `ScreenshotCapture.stale` (`CaptureStaleness`), labelled Out of date in the
     grid and viewer and returned by `list_captures` with `capturedAt`. DEBUG scenes `ap-recapture-request`,
-    `ap-recapture-run`, `ap-recapture-pick`, `ap-captures-stale`, `ap-recapture-no-run`. With no saved run (none, or a
+    `ap-recapture-run`, `ap-recapture-pick`, `ap-captures-stale`, `ap-recapture-no-run`, `ap-recapture-make-duo`. With no saved run (none, or a
     new plan never started) the run is made from the set's captures (`AutopilotRecapturePlanFromCaptures`: a screen a
     slot named by the set or its capture files, the devices, languages and sizes of the captures, iPhone Duo's pose
     slot by slot in `AutopilotRunChoice.duoSlotPoses`, the open plan's steps and the queued `update_capture_plan`
@@ -842,7 +842,18 @@ no new entitlement is needed (`Managers/ClaudeCodeLauncher/`).
   Duo needs iOS 27.1 or later; Xcode 27.2 may come with only iOS 27.0), or a newer Xcode. "Install the iOS
   Simulator" downloads the platform, then makes the simulator (`MacSimulators`). Starting with a device still
   missing reports it as one problem for the device (`AutopilotCenter.reportMissingSimulators`), and so does looking
-  at a run that's capturing, or continuing it. Retrying a device this Mac still can't run brings its problem back
+  at a run that's capturing, or continuing it. A simulator that's only missing (`.canMake`: the device type and a
+  runtime that runs it are installed) is made by Atlas itself in any run (`Managers/Simulators/RunPreparation/`):
+  `AutopilotCenter.prepareSimulators` before the run goes to the assistant (Start, Continue, a capture-only run
+  accepted or opened by `request_recapture`; `request_page_recapture` makes the page's device's), and
+  `makeMissingSimulators` mid-run, where `next_step` answers `wait` ("Atlas is making the iPhone Duo simulator")
+  instead of telling the assistant to report it. `SimulatorMaker` (`MacSimulators.maker`) makes one per device at
+  a time and doesn't retry one that failed (that's a device-wide problem with `create-simulator`'s message). An
+  open device-wide "no simulator" problem (`AutopilotProblem.isAboutMissingSimulator`) on a device that has its
+  simulator now, or can make it, is resolved `.solvedByAtlas` and its targets go back to `next_step`.
+  `get_capture_plan`'s `devices[].simulator` is `ready`, `making` or `needsRuntime` (the name is `simulatorName`);
+  only `needsRuntime` is reported with `affectsDevice`. Debug scene `ap-recapture-make-duo`
+  (`DebugSimulators.runWithDuoToMake`). Retrying a device this Mac still can't run brings its problem back
   without starting Claude Code: a retry waits while its device has an open device-wide problem. iPhone Duo's
   simulator starts closed (only the outer 1398 × 2034 display shows the app; a UI test's `XCUIScreen.main` is that
   cover display even once it's open) and nothing public opens it: not `simctl`, `devicectl` or XCTest; Xcode 27.2's

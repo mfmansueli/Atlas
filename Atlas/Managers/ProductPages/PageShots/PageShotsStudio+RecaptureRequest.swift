@@ -35,4 +35,15 @@ extension PageShotsStudio {
         }
         return key
     }
+
+    /// Before the assistant captures `target`'s screens: its device's
+    /// simulator is made when only the simulator is missing. A make that
+    /// failed is the page's problem, with what `create-simulator` said; a
+    /// runtime to download stays the assistant's to report.
+    func makeSimulator(for target: PageRecaptureTarget, key: PageShotsRun.Key, simulators: MacSimulators?) async {
+        guard let simulators, case let .failed(reason) = await simulators.maker.makeIfMissing(target.displayType) else { return }
+        update(key) { run in
+            run.recapture?.problem = String(localized: "Atlas couldn’t make the \(target.displayType.deviceName) simulator: \(reason)")
+        }
+    }
 }

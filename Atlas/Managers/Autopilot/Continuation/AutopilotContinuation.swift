@@ -107,9 +107,10 @@ enum AutopilotContinuation {
     @discardableResult
     static func start(appID: StoreApp.ID, appName: String, center: AutopilotCenter, launcher: ClaudeCodeLauncher) async -> ClaudeCodeRun.ID? {
         guard let run = center.run(for: appID), run.assistantHasWork else { return nil }
-        if run.stage == .capture {
-            await launcher.simulators.check()
-            center.reportMissingSimulators(appID: appID, simulators: launcher.simulators)
+        // A capture-only run opens waiting: the simulators it lacks and
+        // can make are made first, so Claude Code finds them there.
+        if run.stage == .capture || run.stage == .waiting {
+            await center.prepareSimulators(appID: appID, simulators: launcher.simulators)
         }
         guard let current = center.run(for: appID), current.assistantHasWork else { return nil }
         let prompt = AutopilotPrompt.continuing(current, appName: appName)

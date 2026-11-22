@@ -21,9 +21,11 @@ struct ReportCaptureProblemTool: MCPTool {
         true, with the file and line in proposedFix, and report it once: Atlas holds the same screen on \
         that device in the other languages, and the person answers for all of them. When the fix is a step for the \
         person that isn't a command (install something, sign in), pass changesProject: false. When no screen on \
-        the device can be captured in any language (this Mac has no simulator for it, e.g. iPhone Duo without an \
-        iOS 27.1 runtime), report it once with affectsDevice: true and go on with the other devices; don't download \
-        simulator runtimes yourself: Atlas offers the person to install them. Don't stop: capture the \
+        the device can be captured in any language because this Mac lacks the runtime its simulator needs (e.g. \
+        iPhone Duo without an iOS 27.1 runtime; get_capture_plan's simulator says needsRuntime), report it once with \
+        affectsDevice: true and go on with the other devices; don't download simulator runtimes yourself: Atlas \
+        offers the person to install them. When the runtime is installed and only the simulator is missing, Atlas \
+        makes it itself (simulator making, next_step waits): don't report that. Don't stop: capture the \
         other screens. The person retries with the fix (next_step then lists it under retryWithFix), reuses the \
         primary language's capture, keeps the capture already sent, or uploads one by hand.
         """,
@@ -44,7 +46,10 @@ struct ReportCaptureProblemTool: MCPTool {
                 ],
                 "affectsDevice": [
                     "type": "boolean",
-                    "description": "True when no screen on this device can be captured in any language, e.g. this Mac has no simulator for it.",
+                    "description": """
+                    True when no screen on this device can be captured in any language, e.g. this Mac lacks its \
+                    simulator's runtime (not when only the simulator is missing: Atlas makes that).
+                    """,
                 ],
             ],
             required: ["appId", "run", "screen", "displayType", "locale", "what"]

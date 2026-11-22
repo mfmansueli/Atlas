@@ -210,7 +210,9 @@ extension AutopilotNextStep {
             up (sample data, select the first item) and capture it again. When a screen can't be \
             reached, call report_capture_problem and go on with the others. When the fix is a change to the \
             project, report it once with changesProject: true: Atlas holds that screen on that device in \
-            the other languages. When this Mac can't run a device at all, report it once with affectsDevice: true. \
+            the other languages. When this Mac can't run a device at all because its runtime isn't installed, report it \
+            once with affectsDevice: true; a simulator that's only missing Atlas makes itself (next_step waits \
+            meanwhile), so don't report that. \
             Don't stop while next_step says capture: report what you can't capture, then ask next_step again, \
             and it gives you the rest.
             """,

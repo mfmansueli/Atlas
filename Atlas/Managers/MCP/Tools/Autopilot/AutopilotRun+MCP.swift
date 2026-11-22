@@ -14,7 +14,7 @@ extension AutopilotRun {
         let devices: [JSONValue] = mcpDisplays.map { display in
             var device: [String: JSONValue] = [
                 "displayType": .string(display.mcpValue),
-                "simulator": .string(display == .mac ? String(localized: "This Mac (no simulator)") : display.deviceName),
+                "simulatorName": .string(display == .mac ? String(localized: "This Mac (no simulator)") : display.deviceName),
                 "pixelSize": .string(Self.capturePixelSize(display)),
                 "orientation": .string(Self.orientation(display)),
             ]
@@ -221,8 +221,11 @@ extension AutopilotRun {
             """
         case .iPhoneDuo:
             """
-            Use the iPhone Duo simulator (Xcode 27.1 or later). Its set has open and closed screenshots (poses; each iPhone \
-            Duo target says which), and next_step gives the closed ones first. Closed: next_step folds the Duo first (it \
+            Use the iPhone Duo simulator (Xcode 27.1 or later). When this Mac has its runtime but no simulator yet, Atlas \
+            makes it itself (simulator says making, and next_step waits meanwhile): don't report it, make it or boot it \
+            yourself. Report it once with affectsDevice: true only when the runtime is missing (simulator needsRuntime). \
+            Its set has open and closed screenshots (poses; each iPhone Duo target says which), and next_step gives the \
+            closed ones first. Closed: next_step folds the Duo first (it \
             restarts an open one; its iPhoneDuo line says so), with the app on its 1398 × 2034 cover display, and a UI \
             test's own screenshot (XCUIScreen.main) is that display, so capture the closed ones like iPhone's, from the UI \
             tests' attachments or xcrun simctl io <udid> screenshot of the cover display. \

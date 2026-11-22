@@ -20,4 +20,7 @@ enum AutopilotProblemResolution: String, Codable, Hashable, Sendable {
     /// The person kept the capture the screen already had: MB Admin's
     /// portrait iPad capture, reported because the UI tests can't rotate.
     case keptCapture
+    /// Atlas solved it by itself: the device had no simulator, and now
+    /// has one (it made it, or the person did), so its screens go on.
+    case solvedByAtlas
 }

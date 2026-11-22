@@ -27,7 +27,7 @@ struct CapturePlanDevicesToolsTests {
         #expect(devices.map { $0["displayType"] } == ["iphone", "ipad", "watch", "vision"])
 
         let watch = try #require(devices.first { $0["displayType"] == "watch" })
-        #expect(watch["simulator"] == "Apple Watch Ultra 3 (49mm)")
+        #expect(watch["simulatorName"] == "Apple Watch Ultra 3 (49mm)")
         #expect(watch["pixelSize"] == "422 × 514 (or 410 × 502)")
         #expect(watch["how"]?.stringValue?.contains("xcrun simctl pair") == true)
         #expect(watch["screens"]?.arrayValue?.map { $0["name"] } == ["Mood check-in", "Today’s prompt", "Week", "Watch face"])

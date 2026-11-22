@@ -45,6 +45,15 @@ extension ScreenshotStudioModel {
         }
     }
 
+    /// A run the assistant gets from a pasted prompt: the simulators it
+    /// lacks that Atlas can make are made meanwhile (with Claude Code,
+    /// `AutopilotContinuation.start` makes them before it starts).
+    func prepareSimulators() {
+        guard let autopilot, let simulators else { return }
+        let appID = app.id
+        Task { await autopilot.prepareSimulators(appID: appID, simulators: simulators) }
+    }
+
     /// Leave a device that can't be captured out of this run.
     func leaveOut(_ display: ScreenshotDisplayType) {
         guard let autopilot else { return }
@@ -109,7 +118,16 @@ extension ScreenshotStudioModel {
     /// device's problem too, and the rest goes on.
     func checkDevicesDuringRun(on simulators: MacSimulators) async {
         guard let run, run.stage == .capture, let autopilot else { return }
+        let appID = app.id
+        let goOn = goingOn()
+        let open = run.openProblems.count
         if simulators.inventory == nil { await simulators.check() }
-        autopilot.reportMissingSimulators(appID: app.id, simulators: simulators)
+        // A simulator only missing is made, and its "no simulator" problem
+        // solved: Claude Code goes on with its screens, no Retry.
+        for display in await autopilot.makeMissingSimulators(appID: appID, simulators: simulators) {
+            await simulators.maker.wait(for: display)
+        }
+        autopilot.reportMissingSimulators(appID: appID, simulators: simulators)
+        if (autopilot.run(for: appID)?.openProblems.count ?? open) < open { await goOn() }
     }
 }

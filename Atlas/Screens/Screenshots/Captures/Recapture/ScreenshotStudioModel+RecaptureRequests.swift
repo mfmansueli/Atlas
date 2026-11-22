@@ -62,6 +62,7 @@ extension ScreenshotStudioModel {
         let studio = PageShotsStudio.shared
         let key = studio.openRecapture(page, reason: request.reason, app: app, source: source)
         autopilot?.removeRecaptureRequest(request.id, appID: app.id)
+        await studio.makeSimulator(for: page, key: key, simulators: simulators)
         let prompt = PageShotsPrompt.captures(app: app.name, appID: app.id, page: page.pageName)
         if let launcher, launcher.canStart,
            let id = await launcher.start(PageShotsPrompt.capturesPurpose(pageName: page.pageName), appID: app.id, appName: app.name, prompt: prompt)

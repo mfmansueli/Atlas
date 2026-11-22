@@ -15,7 +15,10 @@ struct GetCapturePlanTool: MCPTool {
         description: """
         Reads the Screenshot Autopilot run the person started in Atlas and picks it up: the screens \
         (id, name, the steps to reach each and the caption it goes with), the devices with their simulator \
-        and pixel size, the locales with their launch arguments, the simulator setup commands, and the upload \
+        (simulatorName; simulator is ready, making: Atlas is making it, as only the simulator was missing, so \
+        don't report it, or needsRuntime: this Mac lacks its runtime, so report it once with report_capture_problem \
+        and affectsDevice: true, or couldntMake: Atlas reported why already) and pixel size, the locales with \
+        their launch arguments, the simulator setup commands, and the upload \
         URL for captures. A device with simulatorId is captured on that simulator (boot it and pass its id in \
         place of booted), the one Plan showed the person. thisMac says how many simulators this Mac can run at \
         once: go device by device and shut each simulator down when its captures are in, never all of them up \
@@ -57,10 +60,16 @@ struct GetCapturePlanTool: MCPTool {
         var session = try await MCPAutopilotSession.load(arguments, in: context)
         let environment = try Self.environment(arguments)
         session.center.pickUp(appID: session.app.id, client: context.clientName, environment: environment)
+        // A device with no simulator yet, on a Mac that can make it: Atlas
+        // starts making it now, and the plan says so.
+        if let simulators = context.simulators {
+            await session.center.makeMissingSimulators(appID: session.app.id, simulators: simulators)
+        }
         session.refresh()
         var plan = session.run.mcpPlan(appName: session.app.name, bundleID: session.app.bundleID, port: context.port)
         Self.addAppLook(&plan, appID: session.app.id, in: context)
         Self.addSimulatorIDs(&plan, inventory: context.simulators?.inventory)
+        Self.addSimulatorReadiness(&plan, simulators: context.simulators)
         if case var .object(json) = plan {
             if let queued = session.center.planProposals(for: session.app.id).mcpJSON { json["queuedForNextPlan"] = queued }
             if let recapture = session.run.recaptureJSON { json["recapture"] = recapture }
@@ -82,6 +91,26 @@ struct GetCapturePlanTool: MCPTool {
                   let simulator = inventory.simulator(for: display) else { return device }
             item["simulatorId"] = .string(simulator.udid)
             if let runtime = inventory.runtime(of: simulator) { item["runtime"] = .string(runtime.name) }
+            return .object(item)
+        })
+        plan = .object(json)
+    }
+
+    /// Each device's `simulator`: ready, making (Atlas makes it: only the
+    /// simulator was missing; don't report it) or needsRuntime (this Mac
+    /// lacks the runtime: report it once with affectsDevice), or
+    /// couldntMake (its problem says why). Left out
+    /// while this Mac's simulators aren't known; Mac's captures need none.
+    static func addSimulatorReadiness(_ plan: inout JSONValue, simulators: MacSimulators?) {
+        guard case var .object(json) = plan, case let .array(devices) = json["devices"] else { return }
+        json["devices"] = .array(devices.map { device in
+            guard case var .object(item) = device,
+                  let display = item["displayType"]?.stringValue.flatMap(ScreenshotDisplayType.init(mcpValue:)) else { return device }
+            let readiness: SimulatorReadiness? = display == .mac
+                ? .ready
+                : simulators.flatMap { SimulatorReadiness($0.status(for: display), display: display, maker: $0.maker) }
+            guard let readiness else { return device }
+            item["simulator"] = .string(readiness.rawValue)
             return .object(item)
         })
         plan = .object(json)

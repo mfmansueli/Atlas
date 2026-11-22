@@ -18,10 +18,16 @@ import Foundation
 /// - `ap-recapture-no-run`: Claude Code's request with no saved Autopilot
 ///   run (Alba's case): the capture-only run Accept opens is made from the
 ///   set's captures (`AutopilotRecapturePlanFromCaptures`).
+/// - `ap-recapture-make-duo`: a request for a language's iPhone Duo
+///   captures on a pretend Mac with the iOS 27.2 runtime but no Duo
+///   simulator (Alba's pr-40a1e4a1): Accept opens the run, Atlas makes the
+///   simulator itself ("iPhone Duo: simulator made on iOS 27.2" in its
+///   details) and the run goes on with no problem card.
 @MainActor
 enum StudioDebugRecapture {
     nonisolated static let noRunID = "ap-recapture-no-run"
-    nonisolated static let ids = ["ap-recapture-request", "ap-recapture-run", "ap-recapture-pick", "ap-captures-stale", noRunID]
+    nonisolated static let makeDuoID = "ap-recapture-make-duo"
+    nonisolated static let ids = ["ap-recapture-request", "ap-recapture-run", "ap-recapture-pick", "ap-captures-stale", noRunID, makeDuoID]
 
     nonisolated static let requestID = "rr-debug01"
     static let reason = "the phrases were rewritten"
@@ -43,6 +49,17 @@ enum StudioDebugRecapture {
                 model.studio.autopilot?.queueRecapture(AutopilotRecaptureRequest(
                     id: requestID, client: StudioDebugRuns.client, receivedAt: StudioDebugRuns.date(day: 21, month: 11, hour: 10),
                     targets: targets, reason: requestReason, evidence: evidence
+                ), appID: appID)
+            })
+        case makeDuoID:
+            DebugSimulators.runWithDuoToMake()
+            let run = withDuo(StudioDebugGuided.ready(approved: [], pushed: true))
+            let targets = targets(in: run).filter { $0.displayType == .iPhoneDuo }
+            let appID = run.appID
+            return StudioDebugExtras.Scene(run: run, sheet: false, setUp: { model in
+                model.studio.autopilot?.queueRecapture(AutopilotRecaptureRequest(
+                    id: requestID, client: StudioDebugRuns.client, receivedAt: StudioDebugRuns.date(day: 21, month: 11, hour: 10),
+                    targets: targets, reason: reason, evidence: evidence
                 ), appID: appID)
             })
         case "ap-recapture-run":
@@ -81,6 +98,15 @@ enum StudioDebugRecapture {
             id: requestID, client: StudioDebugRuns.client, receivedAt: StudioDebugRuns.date(day: 21, month: 11, hour: 10),
             targets: targets, reason: reason, evidence: evidence, fromCaptures: fromCaptures
         ), appID: model.studio.app.id)
+    }
+
+    /// `run` with iPhone Duo planned and captured, open and closed.
+    static func withDuo(_ run: AutopilotRun) -> AutopilotRun {
+        var run = run
+        run.plan.setPlans(.iPhoneDuo, true)
+        run.captures = StudioDebugRuns.captures(of: run.plan, count: run.plan.targets.count)
+        run.pickBest()
+        return run
     }
 
     /// The language redone: the first after the primary.

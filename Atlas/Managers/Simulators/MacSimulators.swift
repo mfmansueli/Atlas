@@ -48,6 +48,9 @@ final class MacSimulators {
     @ObservationIgnored private(set) lazy var recorder = DisplayRecorder(simulators: self)
     /// Restarts what the simulators stand on when none will start.
     @ObservationIgnored private(set) lazy var repair = SimulatorRepair(simulators: self)
+    /// Makes a missing simulator by itself during any run, when only the
+    /// simulator is missing.
+    @ObservationIgnored private(set) lazy var maker = SimulatorMaker(simulators: self)
 
     init(runner: any UnixScriptRunning, helperURL: URL?) {
         self.runner = runner
@@ -146,7 +149,8 @@ final class MacSimulators {
         failure = nil
         let answer = await run(["create-simulator", type, typeID, runtimeID])
         if answer.status != 0 {
-            failure = answer.exit.lastErrorLine ?? String(localized: "The \(type) simulator couldn’t be made.")
+            let said = answer.lines.last { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+            failure = answer.exit.lastErrorLine ?? said ?? String(localized: "The \(type) simulator couldn’t be made.")
         }
         await check()
         working = nil

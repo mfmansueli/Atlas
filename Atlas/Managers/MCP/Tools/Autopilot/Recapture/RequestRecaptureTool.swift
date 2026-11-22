@@ -110,6 +110,9 @@ struct RequestRecaptureTool: MCPTool {
                     appID: app.id, targets: request.targets, momentIDs: request.momentIDs, reason: reason, evidence: evidence,
                     client: context.clientName, fromCaptures: fromCaptures
                 )
+                // The simulators it lacks and Atlas can make are made
+                // before the assistant gets it.
+                if let simulators = context.simulators { await center.prepareSimulators(appID: app.id, simulators: simulators) }
                 details["status"] = "opened"
                 details["run"] = .string(opened.id)
                 details["say"] = .string(Self.openedSay)

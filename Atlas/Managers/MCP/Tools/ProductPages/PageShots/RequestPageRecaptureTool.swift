@@ -74,7 +74,8 @@ struct RequestPageRecaptureTool: MCPTool {
             return opened(target: target, status: "on")
         }
         if center.opensCaptureRuns() {
-            studio.openRecapture(request, reason: reason, app: app, source: source)
+            let key = studio.openRecapture(request, reason: reason, app: app, source: source)
+            await studio.makeSimulator(for: request, key: key, simulators: context.simulators)
             return opened(target: target, status: "opened")
         }
         let queued = try center.queueRecapture(AutopilotRecaptureRequest(

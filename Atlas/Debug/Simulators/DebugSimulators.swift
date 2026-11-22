@@ -80,6 +80,20 @@ enum DebugSimulators {
         }
     }
 
+    /// A Mac with the iOS 27.2 runtime, which runs iPhone Duo, but no Duo
+    /// simulator made yet: Atlas makes it by itself in any run
+    /// (`SimulatorMaker`), as on the user's Mac for Alba's capture-only
+    /// run. Once: a scene's view is built more than once, and the made
+    /// simulator must stay made.
+    static func runWithDuoToMake() {
+        mac.withLock { mac in
+            guard !mac.duoIsSetUp else { return }
+            mac.duoIsSetUp = true
+            mac.hasNewRuntime = true
+            mac.hasDuo = false
+        }
+    }
+
     /// A helper saved before it could list simulators (version 2).
     static func runOldHelper() {
         mac.withLock { $0.helperVersion = 2 }
