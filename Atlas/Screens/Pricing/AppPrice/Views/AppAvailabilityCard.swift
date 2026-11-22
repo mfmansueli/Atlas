@@ -11,6 +11,8 @@ import SwiftUI
 /// app will be available" with Set Up Availability….
 struct AppAvailabilityCard: View {
     @Bindable var model: AppPriceAvailabilityModel
+    /// As tall as App Price beside it, the link at the bottom.
+    var fillsHeight = false
 
     var body: some View {
         AppSaleCard(
@@ -19,6 +21,7 @@ struct AppAvailabilityCard: View {
             figure: figure,
             figureCaption: figure == nil ? nil : String(localized: "countries or regions"),
             isQueued: model.queuedSetup != nil || model.queuedTerritoryCount > 0,
+            fillsHeight: fillsHeight,
             identifier: "pricing.availability"
         ) {
             content
@@ -90,8 +93,9 @@ struct AppAvailabilityCard: View {
         }
         .font(.caption)
         .foregroundStyle(Palette.label2)
-        // At the bottom when the card is as tall as App Price.
-        Spacer(minLength: 0)
+        if fillsHeight {
+            Spacer(minLength: 0)
+        }
         HStack {
             if model.queuedTerritoryCount > 0 {
                 Button("Review & Push…", action: model.onOpenReview)

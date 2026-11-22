@@ -14,6 +14,9 @@ struct AppSaleCard<Content: View>: View {
     var figure: String?
     var figureCaption: String?
     var isQueued = false
+    /// Fills the height its row gives it (`EqualHeightRow`); otherwise
+    /// as tall as its content.
+    var fillsHeight = false
     let identifier: String
     @ViewBuilder var content: () -> Content
 
@@ -54,7 +57,7 @@ struct AppSaleCard<Content: View>: View {
             content()
         }
         .padding(14)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: fillsHeight ? .infinity : nil, alignment: .topLeading)
         .background(Palette.raised, in: shape)
         .overlay(shape.strokeBorder(isQueued ? Palette.accentTint : Palette.separator, lineWidth: isQueued ? 1 : 0.5))
         .accessibilityElement(children: .contain)

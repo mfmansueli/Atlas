@@ -11,6 +11,8 @@ import SwiftUI
 /// Pricing…. A price waiting in Review & Push shows what it sets.
 struct AppPriceCard: View {
     @Bindable var model: AppPriceAvailabilityModel
+    /// As tall as Availability beside it, the link at the bottom.
+    var fillsHeight = false
 
     var body: some View {
         AppSaleCard(
@@ -19,6 +21,7 @@ struct AppPriceCard: View {
             figure: current?.formattedPrice,
             figureCaption: current.map { String(localized: "\(AppTerritory.name(of: $0.baseTerritoryID)) · base") },
             isQueued: model.queuedPrice != nil,
+            fillsHeight: fillsHeight,
             identifier: "pricing.appPrice"
         ) {
             content
@@ -94,8 +97,9 @@ struct AppPriceCard: View {
                     .foregroundStyle(Palette.label2)
             }
         }
-        // At the bottom when the card is as tall as Availability.
-        Spacer(minLength: 0)
+        if fillsHeight {
+            Spacer(minLength: 0)
+        }
         HStack {
             Spacer()
             Button("Change Price…") { model.isPriceSheetPresented = true }

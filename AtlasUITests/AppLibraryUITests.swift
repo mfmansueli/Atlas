@@ -81,6 +81,27 @@ final class AppLibraryUITests: XCTestCase {
         XCTAssertFalse((switcher.value as? String ?? "").contains("App Store Connect team"))
     }
 
+    /// The app menu and the first sections stay reachable after the last
+    /// section is opened and another app is chosen: the list starts at its
+    /// top again and never scrolls the app menu away.
+    func testTheSidebarKeepsTheAppMenuAndTopSectionsAfterSwitchingApps() {
+        launch(scene: "apps")
+        let analytics = element("sidebar.section.analytics")
+        XCTAssertTrue(analytics.waitForExistence(timeout: 10))
+        analytics.click()
+        openAppMenu()
+        let habitat = element("sidebar.app.\(AppID.habitat)")
+        XCTAssertTrue(habitat.waitForExistence(timeout: 5))
+        habitat.click()
+        let switcher = element("sidebar.appSwitcher")
+        let overview = element("sidebar.section.overview")
+        XCTAssertTrue(overview.waitForExistence(timeout: 10))
+        XCTAssertTrue(switcher.isHittable)
+        XCTAssertTrue(overview.isHittable)
+        overview.click()
+        XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 5))
+    }
+
     func testSectionsWithSuggestionsSayTheirCountAndStayClickable() {
         launch(scene: "apps-badges")
         let storePage = element("sidebar.section.storePage")

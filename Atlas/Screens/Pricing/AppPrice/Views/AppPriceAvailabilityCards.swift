@@ -15,18 +15,20 @@ struct AppPriceAvailabilityCards: View {
         ViewThatFits(in: .horizontal) {
             // Side by side, both as tall as the taller one, their links
             // on the same line at the bottom.
-            HStack(alignment: .top, spacing: Spacing.medium) {
-                AppPriceCard(model: model)
-                    .frame(minWidth: 280, maxHeight: .infinity)
-                AppAvailabilityCard(model: model)
-                    .frame(minWidth: 280, maxHeight: .infinity)
+            EqualHeightRow(spacing: Spacing.medium, minColumnWidth: 280) {
+                AppPriceCard(model: model, fillsHeight: true)
+                AppAvailabilityCard(model: model, fillsHeight: true)
             }
-            .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 AppPriceCard(model: model)
                 AppAvailabilityCard(model: model)
             }
         }
+        // Never measured narrower than one card: at a width near zero their
+        // wrapping texts asked for thousands of points of height, the page's
+        // minimum grew past the window, and the window's whole content was
+        // centered and cut off at the top (sidebar included).
+        .frame(minWidth: 280)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.appSale")
         .sheet(isPresented: $model.isPriceSheetPresented) {
