@@ -31,7 +31,7 @@ enum FunnelStage: String, Hashable, Sendable, CaseIterable, Identifiable, Codabl
     /// What the count means, for the tooltip.
     var hint: String {
         switch self {
-        case .impressions: String(localized: "Times the app showed in search, browse or a link preview")
+        case .impressions: String(localized: "Times shown in search, browse or link previews")
         case .pageViews: String(localized: "Opened the product page")
         case .downloads: String(localized: "Not redownloads")
         case .trials: String(localized: "Free trials and other introductory offers started")

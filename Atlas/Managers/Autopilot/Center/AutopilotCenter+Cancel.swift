@@ -27,7 +27,7 @@ extension AutopilotCenter {
         update(appID) { run in
             let stage = run.stage
             Self.resetForPlan(&run)
-            run.appendLog(String(localized: "Run cancelled at \(stage.title); the captures stay for the next start"), kind: .event, at: now())
+            run.appendLog(String(localized: "Cancelled at \(stage.title); captures stay for the next run"), kind: .event, at: now())
         }
     }
 

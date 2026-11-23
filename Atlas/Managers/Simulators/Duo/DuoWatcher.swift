@@ -36,19 +36,19 @@ final class DuoWatcher {
         var logText: String {
             switch self {
             case .started:
-                String(localized: "iPhone Duo wasn’t running: Atlas started it (it starts closed)")
+                String(localized: "Started iPhone Duo (it starts closed)")
             case .restarted(.springBoardCrashed):
-                String(localized: "iPhone Duo was stuck, its SpringBoard crashed: Atlas restarted it")
+                String(localized: "Restarted iPhone Duo: its SpringBoard crashed")
             case .restarted(.spinner):
-                String(localized: "iPhone Duo was stuck on a spinner: Atlas restarted it")
+                String(localized: "Restarted iPhone Duo: stuck on a spinner")
             case .pressedOpen:
-                String(localized: "iPhone Duo was closed: Atlas opened it in Device Hub")
+                String(localized: "Opened iPhone Duo in Device Hub")
             case .askedForAccessibility:
-                String(localized: "Atlas needs Accessibility to open iPhone Duo: macOS asked for it")
+                String(localized: "Requested Accessibility to open iPhone Duo")
             case .opened:
                 String(localized: "iPhone Duo is open: its screens are captured next")
             case .closed:
-                String(localized: "iPhone Duo was open and its closed screenshots are next: Atlas restarted it, which closes it")
+                String(localized: "Restarted iPhone Duo to close it for the closed screenshots")
             }
         }
     }

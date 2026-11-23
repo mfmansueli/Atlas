@@ -35,7 +35,7 @@ extension ScreenshotPushController {
             planExtras(for: app, document: document, context: context)
             bumpRevision(for: appID)
         } catch {
-            extras.recordError = String(localized: "Couldn’t change \(app.name)’s proposed test: \(error.localizedDescription)")
+            extras.recordError = String(localized: "Couldn’t change \(app.name)’s suggested test: \(error.localizedDescription)")
         }
     }
 }

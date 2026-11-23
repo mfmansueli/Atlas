@@ -43,7 +43,7 @@ struct AutopilotCancelRunTests {
         #expect(run.shortenings.isEmpty)
         #expect(run.openProblems.isEmpty)
         #expect(run.keptCaptureCount == run.keptTargetCount)
-        #expect(run.log.last?.text == "Run cancelled at \(stage.title); the captures stay for the next start")
+        #expect(run.log.last?.text == "Cancelled at \(stage.title); captures stay for the next run")
     }
 
     @Test(arguments: [AutopilotStage.plan, .waiting, .capture, .ready])

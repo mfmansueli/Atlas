@@ -64,8 +64,7 @@ struct ScreenshotPushRunTests {
 
         #expect(run.doneCount == 2)
         #expect(transport.log.contains("delete live-de-DE-0"))
-        #expect(run.items.first?.note == "The live screenshot had no image in App Store Connect (its upload never finished or Apple "
-            + "couldn’t process it), so there was nothing to keep.")
+        #expect(run.items.first?.note == "Nothing to keep: the live screenshot had no image in App Store Connect.")
         #expect(run.items.last?.note == nil)
         let backup = try #require(backups.backup(id: run.backupID, appID: Fixtures.app.id))
         #expect(backup.images.map(\.liveID) == ["live-de-DE-1"])
@@ -83,7 +82,7 @@ struct ScreenshotPushRunTests {
 
         #expect(run.doneCount == 1)
         let failed = try #require(run.items.first { $0.status.isFailure })
-        #expect(failed.status.failureText == "The live screenshot is still processing in App Store Connect, so it wasn’t replaced. Try again in a few minutes.")
+        #expect(failed.status.failureText == "Not replaced: the live screenshot is still processing. Try again in a few minutes.")
         #expect(!transport.log.contains("reserve de-DE_iPhone_2_Week.png set-de-DE"))
         #expect(!transport.log.contains("delete live-de-DE-1"))
     }
@@ -134,7 +133,7 @@ struct ScreenshotPushRunTests {
         #expect(run.failedCount == 2)
         let text = try #require(run.items.first?.status.failureText)
         #expect(text.hasPrefix(
-            "App Store Connect already has iPhone Duo screenshots for Arabic that this push hasn’t seen. Refresh, review them and push again."
+            "App Store Connect has new iPhone Duo screenshots for Arabic. Refresh, review and push again."
         ))
         #expect(!transport.log.contains { $0.hasPrefix("reserve") })
     }
@@ -165,7 +164,7 @@ struct ScreenshotPushRunTests {
 
         #expect(run.doneCount == 1)
         let failed = try #require(run.items.first { $0.status.isFailure })
-        #expect(failed.status.failureText == "Upload timed out on part 2 of 2. Nothing was replaced; the live screenshot stays.")
+        #expect(failed.status.failureText == "Part 2 of 2 timed out. Nothing was replaced; the live screenshot stays.")
         #expect(transport.log.contains("delete shot-2"))
         #expect(!transport.log.contains("delete live-de-DE-1"))
         #expect(transport.log.last == "reorder set-de-DE shot-1,live-de-DE-1,live-de-DE-2")

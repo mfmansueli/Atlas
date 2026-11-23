@@ -28,15 +28,13 @@ struct ProductPageNotConfirmed: LocalizedError, Equatable {
         let apple = appleText.map { ($0.hasSuffix(".") ? $0 : $0 + ".") + " " } ?? ""
         if pageSeen {
             return apple + String(localized: """
-            “\(name)” is in App Store Connect, but Apple hasn’t finished its first version yet. Retry in a few minutes: \
-            Atlas goes on with that page instead of making another.
+            Apple is still making “\(name)”. Retry in a few minutes; Atlas continues with that page, not a new one.
             """)
         }
         let time = looked.formatted(.units(allowed: [.minutes, .seconds], width: .wide))
         return apple + String(localized: """
-        Atlas looked for “\(name)” in App Store Connect for \(time) and it isn’t there, but Apple may still be making it. \
-        Wait a few minutes before you retry: Atlas looks for the page first and, if Apple made it, goes on with that page \
-        instead of making another.
+        “\(name)” isn’t in App Store Connect after \(time); Apple may still be making it. Retry in a few minutes. \
+        Atlas won’t make a duplicate.
         """)
     }
 

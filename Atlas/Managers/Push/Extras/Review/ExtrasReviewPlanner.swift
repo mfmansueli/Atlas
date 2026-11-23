@@ -63,7 +63,7 @@ struct ExtrasReviewPlanner {
     private static func blockedReason(_ context: ScreenshotsContext) -> String? {
         guard !context.version.isEditable else { return nil }
         let version = context.version.versionString
-        return String(localized: "Version \(version) is live. The header, search artwork and App Previews can only change with a version that’s being prepared.")
+        return String(localized: "Version \(version) is live. Header, search artwork and App Previews need a new version to change.")
     }
 
     static func name(of code: String) -> String {

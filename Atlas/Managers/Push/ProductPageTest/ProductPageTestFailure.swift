@@ -28,9 +28,9 @@ enum ProductPageTestFailure: Error, Hashable, Sendable {
         case let .processing(state, details):
             String(localized: "Apple couldn’t process the variant (\(details ?? state)).")
         case .processingTimedOut:
-            String(localized: "Apple was still processing the variant when Atlas stopped waiting.")
+            String(localized: "Apple is still processing the variant. Try again later.")
         case let .upload(detail):
-            String(localized: "The variant didn’t upload (\(detail)).")
+            String(localized: "Couldn’t push the variant (\(detail)).")
         }
     }
 }

@@ -96,7 +96,7 @@ struct DuoWatcherTests {
         #expect(duo.state == .open)
         #expect(await duo.look(mayStart: true) == nil)
         #expect(Self.calls("open-duo", in: runner) == 1)
-        #expect(DuoWatcher.Event.pressedOpen.logText == "iPhone Duo was closed: Atlas opened it in Device Hub")
+        #expect(DuoWatcher.Event.pressedOpen.logText == "Opened iPhone Duo in Device Hub")
     }
 
     @Test func onceItsOpenedItSaysSoOnce() async {

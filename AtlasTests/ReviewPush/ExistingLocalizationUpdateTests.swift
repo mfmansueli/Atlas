@@ -66,8 +66,8 @@ struct ExistingLocalizationUpdateTests {
         let data = Data(#"{"data":[{"id":"vl-ja","attributes":{"locale":"ja","description":"別の説明","keywords":"日記,気分"}}]}"#.utf8)
         #expect(update.existing(in: data)?.overwritten == ["description", "keywords"])
         #expect(update.otherText(in: ["description", "keywords"]).errorDescription
-            == "Japanese is already in App Store Connect with its own Description and Keywords, so nothing was overwritten. "
-            + "Open the Store Page to review these as edits of what’s there.")
+            == "Japanese already has its own Description and Keywords in App Store Connect. Nothing was overwritten. "
+            + "Review them as edits in Store Page.")
     }
 
     @Test func aLocaleThatIsntThereIsNotFound() throws {

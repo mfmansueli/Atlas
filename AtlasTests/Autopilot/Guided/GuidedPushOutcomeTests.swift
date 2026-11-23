@@ -35,7 +35,7 @@ struct GuidedPushOutcomeTests {
         let outcome = GuidedPushOutcome.make(images: running, extras: finished)
         #expect(outcome == .sending)
         #expect(outcome.title == "Pushing from Review & Push")
-        #expect(outcome.detail == "Its progress is in Review & Push, top right.")
+        #expect(outcome.detail == "Its progress is in Review & Push.")
         #expect(outcome.opensReviewPush)
         #expect(outcome.reviewPushTitle == "Show Progress…")
     }

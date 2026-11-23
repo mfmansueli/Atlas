@@ -21,7 +21,7 @@ struct RetentionView: View {
                     ContentUnavailableView {
                         Label("No one has opened Cancel Subscription yet", systemImage: "hand.raised")
                     } description: {
-                        Text("Apple’s Retention Messaging report counts people who reach the cancel screen of \(appName)’s subscriptions. It shows here from the first one, up to 4 days later.")
+                        Text("Shows here once someone reaches \(appName)’s cancel screen, up to 4 days later.")
                     } actions: {
                         Button("Open Retention") { onAct(.retention, String(localized: "No one has opened Cancel Subscription yet.")) }
                     }
@@ -40,7 +40,7 @@ struct RetentionView: View {
         if let arriving = report.arriving {
             AnalyticsNotice(
                 tone: .info,
-                text: String(localized: "\(AnalyticsText.day(arriving.first.date)) to \(AnalyticsText.day(arriving.last.date)) are still arriving: Apple completes each day up to 4 days later, so these numbers end \(AnalyticsText.day(report.period.last.date))."),
+                text: String(localized: "\(AnalyticsText.day(arriving.first.date)) to \(AnalyticsText.day(arriving.last.date)) are still arriving (Apple takes up to 4 days), so these numbers end \(AnalyticsText.day(report.period.last.date))."),
                 identifier: "analytics.retention.arriving"
             )
         }
@@ -82,7 +82,7 @@ struct RetentionView: View {
                 Spacer(minLength: Spacing.xSmall).frame(height: Spacing.xSmall)
             }
         }
-        Text("Save rate = 1 − cancels ÷ people who opened the cancel screen. Apple completes each day up to 4 days later, so this ends \(AnalyticsText.day(report.period.last.date)). Retention Messaging counts every subscriber, not a sample.")
+        Text("Save rate = 1 − cancels ÷ people who opened the cancel screen. Every subscriber, through \(AnalyticsText.day(report.period.last.date)).")
             .font(.subheadline)
             .foregroundStyle(Palette.label2)
             .lineLimit(3)

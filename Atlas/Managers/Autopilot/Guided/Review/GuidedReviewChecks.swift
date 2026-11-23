@@ -85,8 +85,8 @@ enum GuidedReviewChecks {
             let name = StoreLocaleCatalog.locale(code: locale)?.shortName ?? locale
             let client = shortenings.first?.client ?? run.client ?? String(localized: "the assistant")
             let text = shortenings.count == 1
-                ? String(localized: "\(name): 1 caption was shortened by \(client)")
-                : String(localized: "\(name): \(shortenings.count) captions were shortened by \(client)")
+                ? String(localized: "\(name): \(client) shortened 1 caption")
+                : String(localized: "\(name): \(client) shortened \(shortenings.count) captions")
             let confirmed = shortenings.allSatisfy { run.guidedReview?.isConfirmed($0) == true }
             checks.append(GuidedCheck(id: "short-\(locale)", text: text, state: confirmed ? .passed : .toConfirm, shortenings: shortenings))
         }
@@ -110,7 +110,7 @@ enum GuidedReviewChecks {
         let devices = GuidedTemplatePreviewDevices.order.filter(plan.displayTypes.contains)
             .map(GuidedTemplatePreviewDevices.title).formatted(.list(type: .and))
         let text = allChecked && plan.displayTypes.count > 1 && plan.localeCodes.count > 1
-            ? String(localized: "Every device in the run: \(devices), each checked in every language")
+            ? String(localized: "Every device, checked in every language: \(devices)")
             : String(localized: "Every device in the run: \(devices)")
         return GuidedCheck(id: "devices", text: text, state: allChecked ? .passed : .attention)
     }
@@ -276,8 +276,8 @@ enum GuidedReviewChecks {
         let text = switch (errors, warnings) {
         case (1, _): String(localized: "1 error keeps that image out of the push")
         case (2..., _): String(localized: "\(errors) errors keep those images out of the push")
-        case (_, 1): String(localized: "1 warning to look at; it doesn’t keep anything out of the push")
-        default: String(localized: "\(warnings) warnings to look at; none keeps anything out of the push")
+        case (_, 1): String(localized: "1 warning to look at; it doesn’t block the push")
+        default: String(localized: "\(warnings) warnings to look at; none blocks the push")
         }
         // Errors first, as the checks come.
         return GuidedCheck(id: "findings", text: text, state: .attention, details: limited(found.map(\.text)))

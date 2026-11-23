@@ -21,10 +21,10 @@ struct AutopilotStallWordingTests {
         let left = run.capturesLeft
         #expect(AutopilotStall.ended(lastWords: nil).headline(of: run, now: Self.now) == "Claude Code stopped with \(left) captures left.")
         #expect(AutopilotStall.ended(lastWords: nil).footer(of: run)
-            == "Claude Code isn’t working on this run, with \(left) captures left. Continue picks it up where it stopped.")
+            == "Claude Code isn’t working on this run, with \(left) captures left. Continue resumes it.")
         AutopilotTestFixtures.captureAll(&run, except: [AutopilotTestFixtures.target("week")])
         #expect(AutopilotStall.workLeft(in: run) == "1 capture left")
-        #expect(AutopilotStall.continueNote(for: run).contains("what’s captured stays"))
+        #expect(AutopilotStall.continueNote(for: run).contains("Captures stay"))
     }
 
     /// The paused Design of the screenshot: one direction in, two to go.
@@ -32,10 +32,10 @@ struct AutopilotStallWordingTests {
         var run = StudioDebugRuns.run(.design)
         #expect(AutopilotStall.notRunning.headline(of: run, now: Self.now) == "Paused when Atlas closed, with 2 directions still to design.")
         #expect(AutopilotStall.notRunning.footer(of: run)
-            == "Paused when Atlas closed, with 2 directions still to design. Continue picks it up where it is.")
+            == "Paused when Atlas closed, with 2 directions still to design. Continue resumes it.")
         #expect(AutopilotStall.ended(lastWords: nil).headline(of: run, now: Self.now) == "Claude Code stopped with 2 directions still to design.")
         #expect(AutopilotStall.handedBack.headline(of: run, now: Self.now) == "It’s Claude Code’s turn again, with 2 directions still to design.")
-        #expect(AutopilotStall.continueNote(for: run) == "Continue starts Claude Code again where the run is: the directions that arrived stay.")
+        #expect(AutopilotStall.continueNote(for: run) == "Continue restarts Claude Code here; directions already in stay.")
 
         run.directions = Array(StudioDebugRuns.directions(design: true, of: run).prefix(2))
         #expect(AutopilotStall.workLeft(in: run) == "1 direction still to design")
@@ -46,7 +46,7 @@ struct AutopilotStallWordingTests {
     @Test func localizeCountsTheCaptionsLeft() {
         let run = StudioDebugRuns.writingCaptions
         #expect(AutopilotStall.notRunning.headline(of: run, now: Self.now) == "Paused when Atlas closed, with 11 captions still to write.")
-        #expect(AutopilotStall.continueNote(for: run).hasSuffix("it writes the captions that are missing or too long."))
+        #expect(AutopilotStall.continueNote(for: run).hasSuffix("to write missing or too-long captions."))
     }
 
     @Test func aSilenceCountsItsMinutes() {

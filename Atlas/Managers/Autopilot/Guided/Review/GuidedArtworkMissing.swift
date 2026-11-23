@@ -23,10 +23,9 @@ struct GuidedArtworkMissing: Equatable {
         title = String(localized: "\(size.artworkTitle) couldn’t be made")
         let reason = run.extrasProgress?.artworkProblem
             .map { $0.hasSuffix(".") ? $0 : $0 + "." }
-            ?? String(localized: "Nothing of it was saved with the set.")
+            ?? String(localized: "None of it was saved with the set.")
         detail = reason + " " + String(localized: """
-        Make Again makes it again from your choices, without designing anything again. \
-        Approving puts the rest in Review & Push without it.
+        Make Again rebuilds it from your choices, no new design. Or approve the rest without it.
         """)
     }
 }

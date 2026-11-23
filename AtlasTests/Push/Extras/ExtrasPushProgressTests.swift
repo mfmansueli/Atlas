@@ -42,7 +42,7 @@ struct ExtrasPushProgressTests {
         let sequential = await Fixtures.push(
             [header, preview], environment: Fixtures.environment(oneByOne, processingTimeout: .seconds(5), processingWindow: 1)
         )
-        #expect(sequential.status(of: header) == .failed("Apple was still processing the file. It’s uploaded; Retry Failed places it once it’s ready."))
+        #expect(sequential.status(of: header) == .failed("The file is with Apple but still processing. Retry Failed places it once ready."))
     }
 
     @Test func itDefaultsToTenFilesWithAppleAtOnce() {
@@ -79,7 +79,7 @@ struct ExtrasPushProgressTests {
         }
         #expect(run.roomTitle == nil)
         run.waitsForRoom = true
-        #expect(run.roomTitle == "2 files are with Apple; the next uploads as soon as one is placed.")
+        #expect(run.roomTitle == "2 files with Apple. The next goes when one is placed.")
         run.pausedUntil = clock.now.addingTimeInterval(60)
         #expect(run.roomTitle == nil, "The pause says why instead")
     }
@@ -130,11 +130,11 @@ struct ExtrasPushProgressTests {
             itemID: header.id, startedAt: now, stepStartedAt: now.addingTimeInterval(-42), sentBytes: 0, totalBytes: 0, checks: 3
         )
         run.statuses[header.id] = .processing
-        #expect(run.stepDetail(of: header, now: now) == "Apple is processing it · 0:42 · checked 3 times")
+        #expect(run.stepDetail(of: header, now: now) == "Apple is processing · 0:42 · 3 checks")
         run.statuses[header.id] = .placing
         #expect(run.stepDetail(of: header, now: now) == "Placing it on the product page header")
         run.statuses[header.id] = .preparing
-        #expect(run.stepDetail(of: header, now: now) == "Getting ready: reading Apple’s sizes and the app’s asset library")
+        #expect(run.stepDetail(of: header, now: now) == "Reading Apple’s sizes and asset library…")
 
         run.activities[preview.id] = ExtrasPushActivity(itemID: preview.id, startedAt: now, stepStartedAt: now)
         run.statuses[preview.id] = .placing
@@ -168,7 +168,7 @@ struct ExtrasPushProgressTests {
 
         run.pausedUntil = clock.now.addingTimeInterval(3600)
         #expect(run.timeTitle(now: now) == "1:00 so far", "No estimate while it's paused")
-        #expect(run.pauseTitle?.hasPrefix("Paused until ") == true)
+        #expect(run.pauseTitle?.hasPrefix("Hourly request limit reached. Resumes by itself at ") == true)
         #expect(run.pauseTitle?.hasSuffix("App Store Connect’s hourly request limit is used up. It goes on by itself.") == true)
     }
 
@@ -184,7 +184,7 @@ struct ExtrasPushProgressTests {
         for item in items.prefix(2) {
             run.activities[item.id] = ExtrasPushActivity(itemID: item.id, startedAt: clock.now, stepStartedAt: clock.now)
         }
-        #expect(run.cancellingTitle == "Cancelling: the 2 items in flight finish, the rest won’t go.")
+        #expect(run.cancellingTitle == "Cancelling after the 2 current items.")
         #expect(run.queueTitle(of: items[2]) == nil, "It won't go")
     }
 

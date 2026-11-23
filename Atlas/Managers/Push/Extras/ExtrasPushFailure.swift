@@ -31,30 +31,30 @@ enum ExtrasPushFailure: Error, Hashable, Sendable {
     var text: String {
         switch self {
         case let .file(detail):
-            return String(localized: "The file couldn’t be read (\(detail)). Nothing was uploaded.")
+            return String(localized: "Couldn’t read the file (\(detail)). Nothing was pushed.")
         case let .noLibrary(detail):
-            return String(localized: "App Store Connect has no asset library for this app (\(detail)). Nothing was uploaded.")
+            return String(localized: "App Store Connect has no asset library for this app (\(detail)). Nothing was pushed.")
         case let .noMatchingGroup(placementType, pixelSize, isVideo, accepted):
             let place = ExtrasPushKind.name(ofPlacementType: placementType)
             let file = isVideo ? String(localized: "a \(pixelSize.title) video") : String(localized: "a \(pixelSize.title) image")
-            guard !accepted.isEmpty else { return String(localized: "App Store Connect doesn’t take \(file) for \(place). Nothing was uploaded.") }
+            guard !accepted.isEmpty else { return String(localized: "App Store Connect doesn’t take \(file) for \(place). Nothing was pushed.") }
             let sizes = accepted.map(\.title).formatted(.list(type: .or))
-            return String(localized: "App Store Connect doesn’t take \(file) for \(place); it takes \(sizes). Nothing was uploaded.")
+            return String(localized: "\(place) takes \(sizes), not \(file). Nothing was pushed.")
         case let .part(part, count, timedOut, detail):
-            if timedOut { return String(localized: "Upload timed out on part \(part) of \(count). Nothing was placed.") }
-            return String(localized: "Upload failed on part \(part) of \(count) (\(detail)). Nothing was placed.")
+            if timedOut { return String(localized: "Part \(part) of \(count) timed out. Nothing was placed. Try again.") }
+            return String(localized: "Part \(part) of \(count) failed (\(detail)). Nothing was placed. Try again.")
         case let .processing(state, details):
             let reason = details ?? state
             return String(localized: "Apple couldn’t process the file (\(reason)). Nothing was placed.")
         case .processingTimedOut:
-            return String(localized: "Apple was still processing the file. It’s uploaded; Retry Failed places it once it’s ready.")
+            return String(localized: "The file is with Apple but still processing. Retry Failed places it once ready.")
         case let .previewsFull(group, limit):
             return String(
-                localized: "\(group) already has \(limit) App Previews, the most it holds, and this one replaces none of them. Nothing was uploaded."
+                localized: "\(group) is full at \(limit) App Previews. Nothing was pushed."
             )
         case let .placing(detail, restored):
-            if restored { return String(localized: "Couldn’t place it (\(detail)). What was there before was put back.") }
-            return String(localized: "Couldn’t place it (\(detail)). What was there before was taken off and couldn’t be put back.")
+            if restored { return String(localized: "Couldn’t place it (\(detail)). The old one was restored.") }
+            return String(localized: "Couldn’t place it (\(detail)). The old one was removed and couldn’t be restored.")
         }
     }
 }

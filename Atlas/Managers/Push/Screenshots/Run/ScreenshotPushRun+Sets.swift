@@ -82,8 +82,8 @@ extension ScreenshotPushRun {
         guard let existing = try ScreenshotUploadRequests.existingSet(in: response.data, displayType: group.displayType) else { throw refusal }
         guard existing.screenshotCount == 0 else {
             throw ScreenshotPushFailure.request(detail: String(localized: """
-            App Store Connect already has \(group.displayType.title) screenshots for \(group.locale.name) that this push hasn’t seen. \
-            Refresh, review them and push again.
+            App Store Connect has new \(group.displayType.title) screenshots for \(group.locale.name). Refresh, review \
+            and push again.
             """))
         }
         sets[groupID]?.setID = existing.id
@@ -119,7 +119,7 @@ extension ScreenshotPushRun {
         let committed = items.indices.filter { items[$0].groupID == groupID && items[$0].isCommitted }
         for index in committed where !items[index].isOldDeleted {
             guard let old = items[index].plan.old, sets[groupID]?.order.contains(old.id) == true else { continue }
-            let processing = String(localized: "Apple is still processing this image, so the old screenshot stays beside it for now.")
+            let processing = String(localized: "Still processing. The old screenshot stays beside it for now.")
             guard items[index].isDeliveryConfirmed else {
                 items[index].note = processing
                 continue
@@ -149,7 +149,7 @@ extension ScreenshotPushRun {
             _ = try await send(ScreenshotUploadRequests.reorder(setID: setID, screenshotIDs: desired))
             sets[groupID]?.order = desired
         } catch {
-            sets[groupID]?.note = String(localized: "The set couldn’t be put in order: \(Self.describe(error))")
+            sets[groupID]?.note = String(localized: "Couldn’t reorder the set: \(Self.describe(error)) Push again to retry.")
         }
     }
 

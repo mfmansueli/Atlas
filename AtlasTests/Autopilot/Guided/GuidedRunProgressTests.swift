@@ -249,7 +249,7 @@ struct GuidedRunProgressTests {
         #expect(progress.minutesLeft == nil)
         // The next stop is now, and the strip stops saying it's running.
         let next = GuidedNextStop.line(for: run, progress: progress)
-        #expect(next.hasPrefix("Next for you: what’s above, now."))
+        #expect(next.hasPrefix("Your turn: retry or leave out each part above."))
         #expect(!next.contains("min"))
         let strip = AutopilotStripContent.guided(
             run: run, appName: "Lumen Journal", assistant: "Claude Code", designProject: nil, hasNewSet: false,

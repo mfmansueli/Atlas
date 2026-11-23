@@ -229,12 +229,12 @@ extension AutopilotCenter {
     private func watchStep(_ run: AutopilotRun) -> AutopilotNextStep {
         if let review = run.loopReview, review.approvedAt == nil {
             if review.isRemaking {
-                return .wait(reason: String(localized: "Atlas is making the header loop again."), seconds: 10)
+                return .wait(reason: String(localized: "Atlas is remaking the header loop."), seconds: 10)
             }
             if let request = review.request, run.designsArtwork { return .reviseLoop(note: request.note) }
         }
         if let review = run.previewReview, review.remake != nil {
-            return .wait(reason: String(localized: "Atlas is making the App Preview again."), seconds: 10)
+            return .wait(reason: String(localized: "Atlas is remaking the App Preview."), seconds: 10)
         }
         if let review = run.previewReview, let request = review.request, run.reviser != nil {
             return .revisePreview(note: request.note, review: review)
@@ -253,7 +253,7 @@ extension AutopilotCenter {
             return .animateHeader(conceptID: review.conceptID)
         }
         if let extras = run.extrasProgress, !extras.isFinished {
-            return .wait(reason: String(localized: "Atlas is making the header and search artwork and the App Preview."), seconds: 10)
+            return .wait(reason: String(localized: "Atlas is making artwork and the App Preview."), seconds: 10)
         }
         return .wait(reason: String(localized: "Atlas is rendering and checking every screenshot."), seconds: 5)
     }
@@ -363,8 +363,8 @@ extension AutopilotCenter {
         case .mac:
             guard !CaptureSizeRules.isMacScreen(size) else { return }
             throw AutopilotError(String(localized: """
-            A \(size.title) capture isn’t a Mac’s whole screen. Capture all of this Mac’s screen, menu bar included, with the \
-            app’s window in front: landscape, about 16:10 (2880 × 1800, or a MacBook’s 3024 × 1964), at least 1280 × 800.
+            A \(size.title) capture isn’t a full Mac screen. Capture the whole screen with menu bar, app window in \
+            front: landscape, about 16:10 (2880 × 1800, or a MacBook’s 3024 × 1964), at least 1280 × 800.
             """))
         case .iPhoneDuo:
             guard try checkDuoSize(size, pose: duoPose) else { return }
@@ -385,15 +385,15 @@ extension AutopilotCenter {
             guard !isCover else { return false }
             let cover = CaptureSizeRules.duoOuterSize
             throw AutopilotError(String(localized: """
-            A \(size.title) capture isn’t iPhone Duo’s cover display. This screen is one of its closed screenshots: capture it \
-            closed, on the \(cover.title) cover display (a UI test’s own screenshot is that display).
+            A \(size.title) capture isn’t iPhone Duo’s cover display. This closed screenshot needs the \(cover.title) \
+            cover display (a UI test’s own screenshot is that).
             """))
         }
         guard isCover else { return true }
         let inner = ScreenshotDisplayType.iPhoneDuo.portraitPixelSize
         throw AutopilotError(String(localized: """
-        A \(size.title) capture is iPhone Duo’s cover display. This screen is one of its open screenshots: capture the \
-        inner display, \(inner.title) or \(inner.rotated.title), with the Duo open.
+        A \(size.title) capture is iPhone Duo’s cover display. This open screenshot needs the inner display, \
+        \(inner.title) or \(inner.rotated.title), Duo open.
         """))
     }
 }

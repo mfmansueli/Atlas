@@ -51,10 +51,10 @@ extension FindingRules {
             let textRate = AnalyticsStatistics.rate(count: textCounts.stayed, total: textCounts.opened)
             findings.append(AnalyticsFinding(
                 id: "retention.offerMessage", source: .builtIn,
-                title: String(localized: "Messages with an offer keep \(offerRate.text) of people at the cancel screen; text alone keeps \(textRate.text)."),
+                title: String(localized: "Offer messages keep \(offerRate.text); text alone \(textRate.text)"),
                 why: String(localized: """
-                An offer gives people a reason to stay that words alone don’t. \
-                Try an offer in the text-only messages, starting with the subscription most people cancel.
+                Offers give a reason to stay. Add one to text-only messages, starting with the most-canceled \
+                subscription.
                 """),
                 numbers: [
                     FindingNumber(label: String(localized: "With an offer"), value: offerRate.text),
@@ -68,8 +68,8 @@ extension FindingRules {
         if report.noMessageOpened > 0, case let .higher(confidence) = report.withAgainstWithout {
             findings.append(AnalyticsFinding(
                 id: "retention.noMessage", source: .builtIn,
-                title: String(localized: "People who see Apple’s plain cancel screen stay less: \(report.noMessage.text) against \(report.withMessage.text) with a message."),
-                why: String(localized: "\(AnalyticsText.count(report.noMessageOpened)) people reached the cancel screen where no message applies: a subscription or a country your messages don’t cover. A message there could keep some of them."),
+                title: String(localized: "No message keeps \(report.noMessage.text); a message keeps \(report.withMessage.text)"),
+                why: String(localized: "\(AnalyticsText.count(report.noMessageOpened)) people hit a cancel screen your messages don’t cover. A message there could keep some."),
                 numbers: [
                     FindingNumber(label: String(localized: "No Message"), value: report.noMessage.text),
                     FindingNumber(label: String(localized: "With a message"), value: report.withMessage.text),
@@ -89,10 +89,9 @@ extension FindingRules {
         guard let gracePeriod, !gracePeriod.isOn, report.lostPerMonth >= lostToBillingPerMonth else { return nil }
         return AnalyticsFinding(
             id: "billing.gracePeriod", source: .builtIn,
-            title: String(localized: "\(AnalyticsText.count(report.lost)) subscribers left in 28 days because Apple couldn’t charge them."),
+            title: String(localized: "\(AnalyticsText.count(report.lost)) lost to failed charges in 28 days"),
             why: String(localized: """
-            Billing Grace Period is off. With it on, people keep their subscription for 3, 16 or 28 days while Apple retries the charge, \
-            and more of them pay before they’d lose access.
+            Billing Grace Period is off. With it, people keep access 3, 16 or 28 days while Apple retries; more pay.
             """),
             numbers: [
                 FindingNumber(label: String(localized: "Couldn’t be charged"), value: AnalyticsText.count(report.couldNotCharge)),
@@ -113,8 +112,8 @@ extension FindingRules {
             guard offer.standing == .worse, let measured = offer.rate.measured else { return nil }
             return AnalyticsFinding(
                 id: "offer.\(offer.name)", source: .builtIn,
-                title: String(localized: "\(offer.name) brought \(AnalyticsText.count(offer.started)) people and \(AnalyticsText.count(offer.paidAfterwards)) stayed at full price."),
-                why: String(localized: "That’s \(AnalyticsText.percent(measured.value)) against \(AnalyticsText.percent(average)) for your offers together. Check who it reaches and whether its length or price lets people leave before they see the app’s value."),
+                title: String(localized: "\(offer.name): \(AnalyticsText.count(offer.paidAfterwards)) of \(AnalyticsText.count(offer.started)) stayed at full price"),
+                why: String(localized: "That’s \(AnalyticsText.percent(measured.value)) against \(AnalyticsText.percent(average)) for all your offers. Check its audience, length and price."),
                 numbers: [
                     FindingNumber(label: String(localized: "Paid afterwards"), value: AnalyticsText.percent(measured.value)),
                     FindingNumber(label: String(localized: "Every offer"), value: AnalyticsText.percent(average)),
@@ -147,10 +146,9 @@ extension FindingRules {
             let base = reference.deletedWithin30
             return AnalyticsFinding(
                 id: "page.deletes.\(page)", source: .builtIn,
-                title: String(localized: "People who came through “\(page)” delete the app more: \(rate.text) within 30 days, against \(base.text) from the default page."),
+                title: String(localized: "People from “\(page)” delete more within 30 days: \(rate.text) against \(base.text)"),
                 why: String(localized: """
-                The page may promise something the app’s first minutes don’t show. \
-                Compare its screenshots and text with what people see when they open the app.
+                The page may promise what the app’s first minutes don’t show. Compare the two.
                 """),
                 numbers: [
                     FindingNumber(label: String(localized: "Deleted in 30 days"), value: rate.text),
@@ -172,8 +170,8 @@ extension FindingRules {
         return AnalyticsFinding(
             id: "stability.crashes.\(report.latest.version)", source: .builtIn,
             title: headline,
-            why: report.mostAffected.map { String(localized: "Most of the difference is on \($0.device). If the version is rolling out in phases, pausing keeps it from reaching more people while you fix it.") }
-                ?? String(localized: "If the version is rolling out in phases, pausing keeps it from reaching more people while you fix it."),
+            why: report.mostAffected.map { String(localized: "Most of it is on \($0.device). In a phased release, pausing stops it reaching more people.") }
+                ?? String(localized: "In a phased release, pause it while you fix it."),
             numbers: [
                 FindingNumber(label: String(localized: "Crashes per 1,000 sessions · \(report.latest.version)"), value: new),
                 FindingNumber(label: previous.version, value: old),
@@ -200,10 +198,9 @@ extension FindingRules {
         let oldRate = Double(old.deletions) * 1000 / Double(old.deviceDays)
         return AnalyticsFinding(
             id: "stability.deletions.\(stability.latest.version)", source: .builtIn,
-            title: String(localized: "People delete version \(stability.latest.version) more often than \(previous.version), and it doesn’t crash more."),
+            title: String(localized: "\(stability.latest.version) deleted more than \(previous.version), not from crashes"),
             why: String(localized: """
-            Something in what changed may put people off: a new screen, a paywall moved earlier, a feature removed. \
-            Look at the version’s reviews and what’s new.
+            Something new may put people off, like a new screen or earlier paywall. Check its reviews and What’s New.
             """),
             numbers: [
                 FindingNumber(label: String(localized: "Deletions per 1,000 active devices · \(stability.latest.version)"), value: AnalyticsText.perThousand(newRate)),

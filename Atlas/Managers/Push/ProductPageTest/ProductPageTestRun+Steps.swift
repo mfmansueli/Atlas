@@ -10,7 +10,7 @@ extension ProductPageTestRun {
     func makeTest() async -> ProductPageTestOutcome {
         guard environment.placesThroughAPI else {
             let place = ExtrasPushKind.name(ofPlacementType: request.placement.placementType)
-            return export(because: String(localized: "App Store Connect’s API can’t put \(place) on a test’s treatment."))
+            return export(because: String(localized: "Apple’s API can’t add \(place) to a treatment."))
         }
         let tester = environment.tester
         let request = request
@@ -73,7 +73,7 @@ extension ProductPageTestRun {
             }
             guard !placed.isEmpty else {
                 let removal = await removeDraft(experiment)
-                return .failed(String(localized: "No language’s variant went on the treatment.") + " " + removal)
+                return .failed(String(localized: "No variant went on the treatment.") + " " + removal)
             }
             var created = ProductPageTestCreated(
                 experimentID: experiment.id, treatmentID: treatment.id, name: experiment.name ?? request.testName,
@@ -134,7 +134,7 @@ extension ProductPageTestRun {
             return String(localized: "The unfinished draft was deleted.")
         } catch {
             let name = experiment.name ?? request.testName
-            return String(localized: "The unfinished draft “\(name)” couldn’t be deleted (\(Self.describe(error))): delete it in App Store Connect before making another test.")
+            return String(localized: "Couldn’t delete draft “\(name)” (\(Self.describe(error))). Delete it in App Store Connect before a new test.")
         }
     }
 

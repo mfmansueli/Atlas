@@ -26,7 +26,7 @@ struct BillingView: View {
                 } else {
                     ContentUnavailableView(
                         "No billing numbers yet", systemImage: "creditcard",
-                        description: Text("They come from Apple’s subscription event report, which Apple is still preparing for \(appName).")
+                        description: Text("Apple is still preparing the subscription event report for \(appName).")
                     )
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, Spacing.xLarge)
@@ -43,7 +43,7 @@ struct BillingView: View {
         if gracePeriod?.isOn == false, report.lost > 0 {
             AnalyticsNotice(
                 tone: .warning,
-                text: String(localized: "\(AnalyticsText.count(report.lost)) subscribers left in \(report.period.length) days because Apple couldn’t charge them. Billing Grace Period is off: with it on, they keep access while Apple retries, and more of them pay."),
+                text: String(localized: "\(AnalyticsText.count(report.lost)) subscribers left in \(report.period.length) days over failed charges. Billing Grace Period, now off, keeps them while Apple retries."),
                 primary: (String(localized: "Turn On Billing Grace Period…"), { isConfirming = true }),
                 identifier: "analytics.billing.gracePeriodNotice"
             )
@@ -92,8 +92,8 @@ struct BillingView: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Text("Turn On Billing Grace Period for \(appName)?").font(.title3.weight(.semibold))
             Text("""
-            People whose renewal fails keep their subscription while Apple retries the charge. \
-            It applies to every subscription of the app, in production, from the next failed renewal. You can turn it off in App Store Connect.
+            Subscribers keep access while Apple retries failed renewals, for every subscription in production, from \
+            the next failed renewal. Turn it off in App Store Connect.
             """)
             .lineLimit(5)
             Picker("Grace period", selection: $duration) {

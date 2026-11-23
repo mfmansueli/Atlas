@@ -99,7 +99,7 @@ extension BreakdownTable {
 
     private static func sourceDetail(_ source: String) -> String? {
         switch source {
-        case "App Store Search": String(localized: "People who searched and saw the app in the results")
+        case "App Store Search": String(localized: "People who saw the app in search results")
         case "App Store Browse": String(localized: "Today, categories and charts")
         case "App Referrer": String(localized: "Links from other apps")
         case "Web Referrer": String(localized: "Links from websites")
@@ -111,31 +111,30 @@ extension BreakdownTable {
 
     private static func footer(_ dimension: BreakdownDimension, hasSales _: Bool) -> String {
         let privacy = String(
-            localized: "Apple leaves out rows with fewer than five people and adds a little noise, so rows can add up to less than the total."
+            localized: "Apple hides rows under five people and adds noise, so rows may total less."
         )
         switch dimension {
         case .territory, .device:
             return privacy
         case .language:
-            return String(localized: "Apple reports by territory. A language adds up the territories whose App Store shows that page.") + " " + privacy
+            return String(localized: "A language sums the territories whose App Store shows that page.") + " " + privacy
         case .source:
-            return String(localized: "Apple doesn’t link subscriptions to a source, so starts and proceeds aren’t split here.") + " " + privacy
+            return String(localized: "Apple doesn’t split starts and proceeds by source.") + " " + privacy
         case .productPage:
             return String(
                 localized: """
-                From Apple’s detailed reports. Subscriptions aren’t linked to a page, and Apple’s result for a product page test \
-                isn’t in its reports: see it in App Store Connect.
+                Subscriptions aren’t linked to a page. Product page test results are in App Store Connect.
                 """
             ) + " " + privacy
         case .referrer:
             return String(
-                localized: "From Apple’s detailed reports: the app or website people came from, when Apple knows it. Subscriptions aren’t linked to it."
+                localized: "The app or website people came from, when Apple knows it. Subscriptions aren’t linked."
             ) + " " + privacy
         case .campaign:
             return String(
                 localized: """
-                From Apple’s detailed reports: people who came through a campaign link (its ct token), on whichever page it opens. \
-                Make links in App Store Connect → App Analytics → Campaigns.
+                People who came through a campaign link (its ct token). Make links in App Store Connect → App \
+                Analytics → Campaigns.
                 """
             ) + " " + privacy
         }

@@ -107,7 +107,7 @@ struct GuidedPlanTimelineTests {
         let kept = plan.targets.count - 4
         let capture = Self.rows(plan, kept: kept).first
         #expect(capture?.title == "Reuses \(kept) captures, captures 4 more in Simulator")
-        #expect(capture?.detail.hasPrefix("The captures and picks of the last run, and new ones on ") == true, "\(capture?.detail ?? "")")
+        #expect(capture?.detail.hasPrefix("Last run’s captures and picks, plus new ones on ") == true, "\(capture?.detail ?? "")")
         #expect(capture?.time != "a moment")
     }
 

@@ -223,7 +223,7 @@ struct AutopilotCenterDesignTests {
         clock.advance(by: 30)
         center.noteBriefRead(appID: appID, by: "Claude Code")
         #expect(run?.briefReadAt == clock.now)
-        #expect(run?.log.last?.text == "Claude Code read the brief and is designing 3 directions")
+        #expect(run?.log.last?.text == "Claude Code is designing 3 directions")
         let lines = run?.log.count
         clock.advance(by: 60)
         center.noteBriefRead(appID: appID, by: "Claude Code")

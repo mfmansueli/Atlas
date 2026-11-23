@@ -36,7 +36,7 @@ extension AutopilotCenter {
         update(appID) { run in
             guard run.variantRequest != nil, run.variantRequest?.readAt == nil else { return }
             run.variantRequest?.readAt = now()
-            run.appendLog(String(localized: "\(client) read what to change for the test and is designing the variant"), kind: .event, at: now())
+            run.appendLog(String(localized: "\(client) is designing the test variant"), kind: .event, at: now())
         }
     }
 
@@ -93,7 +93,7 @@ extension AutopilotCenter {
         update(appID) { run in
             run.variantRequest = nil
             run.appendLog(
-                String(localized: "\(client) sent the \(request.variantIdea) \(request.role.title.lowercased()) image: \(change). Rendered and checked in \(files.count) languages"),
+                String(localized: "\(client) sent the \(request.variantIdea) \(request.role.title.lowercased()) image: \(change). Checked in \(files.count) languages"),
                 kind: .event, at: now()
             )
             if let line = Self.checksLogLine(checks) { run.appendLog(line, kind: checks.contains(where: \.isError) ? .problem : .event, at: now()) }

@@ -113,7 +113,7 @@ struct PurchaseReviewScreenshotPush: Hashable, Sendable {
         note(reserved.rateLimit)
         let (id, operations) = try Self.reservation(in: reserved.data)
         for (index, operation) in operations.enumerated() {
-            progress(String(localized: "Uploading the review screenshot · part \(index + 1) of \(operations.count)"))
+            progress(String(localized: "Pushing the review screenshot · part \(index + 1) of \(operations.count)"))
             try await uploads.upload(operation, data: data) { _ in }
         }
         try await note(transport.send(step.commit(id: id)).rateLimit)

@@ -82,7 +82,7 @@ struct ExistingLocalizationUpdate: Hashable, Sendable {
             let language = StoreLocaleCatalog.locale(code: locale)?.name ?? locale
             let titles = fields.map { ListingField(rawValue: $0)?.title ?? $0 }.formatted(.list(type: .and))
             return String(
-                localized: "\(language) is already in App Store Connect with its own \(titles), so nothing was overwritten. Open the Store Page to review these as edits of what’s there."
+                localized: "\(language) already has its own \(titles) in App Store Connect. Nothing was overwritten. Review them as edits in Store Page."
             )
         }
     }

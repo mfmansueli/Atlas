@@ -49,7 +49,7 @@ struct ScreenshotPushDeliveryTests {
 
         #expect(transport.log.filter { $0 == "status shot-1" }.count == 4)
         #expect(!transport.log.contains("delete live-de-DE-0"))
-        #expect(run.items.first?.note == "Apple is still processing this image, so the old screenshot stays beside it for now.")
+        #expect(run.items.first?.note == "Still processing. The old screenshot stays beside it for now.")
     }
 
     @Test func aFullSetThatFailsSaysTheOldOneWasRemoved() async throws {

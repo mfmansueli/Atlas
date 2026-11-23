@@ -42,7 +42,7 @@ enum AppPreviewError: LocalizedError, Equatable {
         case .noVideoTrack:
             String(localized: "The Simulator recording has no video in it. Record it again.")
         case .noUsableMark:
-            String(localized: "None of the planned screens was marked inside the recording, so there's nothing to cut. Mark each screen as it shows up.")
+            String(localized: "No screens are marked in the recording. Mark each planned screen as it appears.")
         case let .noSpec(display):
             String(localized: "App Store Connect takes no App Preview for \(display.title).")
         case let .readerFailed(reason):

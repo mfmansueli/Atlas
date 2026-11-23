@@ -20,7 +20,7 @@ struct GuidedArtworkMissingTests {
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
         #expect(missing.title == "Header artwork couldn’t be made")
         #expect(missing.detail.hasPrefix("Couldn’t render the header page in English (U.S.): The page didn’t load. Make Again"), "\(missing.detail)")
-        #expect(missing.detail.hasSuffix("Approving puts the rest in Review & Push without it."))
+        #expect(missing.detail.hasSuffix("Or approve the rest without it."))
     }
 
     /// A run from before `artworkProblem`: the set just has none of it.
@@ -28,7 +28,7 @@ struct GuidedArtworkMissingTests {
         var run = StudioDebugHeaderStyle.headerNotMade
         run.extrasProgress?.artworkProblem = nil
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
-        #expect(missing.detail.hasPrefix("Nothing of it was saved with the set. Make Again"), "\(missing.detail)")
+        #expect(missing.detail.hasPrefix("None of it was saved with the set. Make Again"), "\(missing.detail)")
     }
 
     @Test func aReasonEndingInAFullStopKeepsOne() throws {
