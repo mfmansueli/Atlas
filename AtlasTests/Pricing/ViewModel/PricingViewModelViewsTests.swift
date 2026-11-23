@@ -51,14 +51,38 @@ struct PricingViewModelViewsTests {
         #expect(trialIsFree)
     }
 
-    @Test func anInAppPurchaseLeavesTheOffersTab() async {
+    @Test func anInAppPurchaseKeepsTheOffersTabForItsOfferCodes() async throws {
         let model = await PricingModelFixtures.viewModel()
         model.tab = .offers
         await model.loadOffers()
         await model.select(productID: DebugPricingCatalog.lumenLifetimeID)
-        #expect(model.tab == .prices)
+        #expect(model.tab == .offers)
         #expect(model.offers.value == nil)
         #expect(model.selectedOfferID == nil)
+        model.setup.reader = DebugSubscriptionOffersReader()
+        await model.loadOffers()
+        let code = InAppPurchaseOfferCodesSampleData.offerCode
+        #expect(model.offers.value?.map(\.id) == [ExistingInAppPurchaseOfferCode.offerID(code.id)])
+        #expect(model.selectedOfferID == ExistingInAppPurchaseOfferCode.offerID(code.id))
+        #expect(try model.canAddInAppPurchaseOfferCodes(to: #require(model.selectedProduct)))
+    }
+
+    @Test func anInAppPurchasesOfferCodesQueueFromPricing() async throws {
+        let queue = ChangeQueue()
+        let model = await PricingModelFixtures.viewModel(queue: queue)
+        model.setup.reader = DebugSubscriptionOffersReader()
+        await model.select(productID: DebugPricingCatalog.lumenLifetimeID)
+        model.tab = .offers
+        await model.loadOffers()
+        let purchase = try #require(model.selectedProduct)
+        let code = InAppPurchaseOfferCodesSampleData.offerCode
+        // The name Lumen Lifetime has is taken; another one goes.
+        #expect(model.problems(for: NewInAppPurchaseOfferCode(name: code.name, terms: .init(price: 0)), purchase: purchase)
+            == [.inAppPurchaseOfferCodeNameTaken(code.name)])
+        model.queueInAppPurchaseOfferCode(NewInAppPurchaseOfferCode(name: "Press", terms: .init(price: 0)), for: purchase)
+        model.deactivate(.offerCode, in: code, of: purchase)
+        #expect(model.queuedInAppPurchaseOfferCodes.count == 2)
+        #expect(model.setup.inAppPurchaseOfferRoute == nil)
     }
 
     @Test func savingAScheduleRewritesTheQueue() async {

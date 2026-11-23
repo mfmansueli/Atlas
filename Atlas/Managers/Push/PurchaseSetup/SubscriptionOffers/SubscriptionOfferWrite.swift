@@ -67,18 +67,12 @@ struct SubscriptionOfferWrite: Hashable, Sendable {
     func request(prices: [OfferPriceReader.Price]) -> PushRequest {
         guard var object = PushPagedRead.body(of: request), var data = object["data"] as? [String: Any] else { return request }
         object[OfferPricesPlan.metaKey] = nil
-        let localIDs = prices.indices.map { "${price\($0 + 1)}" }
+        let inline = plan.owner.inlinePrices(prices, type: resource.priceType)
         var relationships = data["relationships"] as? [String: Any] ?? [:]
-        relationships["prices"] = ["data": localIDs.map { ["type": resource.priceType, "id": $0] }]
+        relationships["prices"] = ["data": inline.data]
         data["relationships"] = relationships
         object["data"] = data
-        object["included"] = zip(localIDs, prices).map { localID, price in
-            var related: [String: Any] = ["territory": ["data": ["type": "territories", "id": price.territoryID]]]
-            if let point = price.pricePointID {
-                related["subscriptionPricePoint"] = ["data": ["type": "subscriptionPricePoints", "id": point]]
-            }
-            return ["type": resource.priceType, "id": localID, "relationships": related] as [String: Any]
-        }
+        object["included"] = inline.included
         return PushPagedRead.request(request.method, request.path, object)
     }
 

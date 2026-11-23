@@ -150,7 +150,8 @@ enum MCPEndpoint {
     get_subscriptions' promotionalOffers, winBackOffers and offerCodes and proposed with \
     propose_promotional_offer, propose_win_back_offer and propose_offer_code (also to change a promotional \
     offer's prices, a win-back offer's eligibility, dates or priority, or to delete or deactivate one); a new \
-    subscription still queued by propose_subscription takes them too, pushed after it. \
+    subscription still queued by propose_subscription takes them too, pushed after it; an in-app purchase's \
+    offer codes, in get_subscriptions' inAppPurchases, with propose_in_app_purchase_offer_code. \
     App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. \

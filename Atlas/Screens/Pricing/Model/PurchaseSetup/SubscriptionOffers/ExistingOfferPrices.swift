@@ -35,8 +35,10 @@ struct ExistingOfferPrices: Hashable, Sendable {
         self.pricedApart = pricedApart
     }
 
-    /// From one read's `data` (the prices) and `included` (their points).
-    init(data: [[String: Any]], included: [[String: Any]]) {
+    /// From one read's `data` (the prices) and `included` (their points),
+    /// each price naming its point by `pricePointRelationship`
+    /// (`OfferPriceOwner.pricePointRelationship`).
+    init(data: [[String: Any]], included: [[String: Any]], pricePointRelationship: String = "subscriptionPricePoint") {
         let points = Dictionary(included.compactMap { point in
             (point["id"] as? String).flatMap { id in PushPagedRead.customerPrice(of: point).map { (id, $0) } }
         }, uniquingKeysWith: { first, _ in first })
@@ -45,7 +47,7 @@ struct ExistingOfferPrices: Hashable, Sendable {
         for price in data {
             guard let territory = PushPagedRead.relationshipID("territory", of: price) else { continue }
             territories.insert(territory)
-            if let point = PushPagedRead.relationshipID("subscriptionPricePoint", of: price), let amount = points[point] {
+            if let point = PushPagedRead.relationshipID(pricePointRelationship, of: price), let amount = points[point] {
                 prices[territory] = amount
                 if territory == NewSubscription.baseTerritoryID { usPricePointID = point }
             }

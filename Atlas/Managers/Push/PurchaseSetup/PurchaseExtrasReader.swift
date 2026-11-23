@@ -10,7 +10,9 @@ import Foundation
 /// (the API client): `GET /v1/subscriptions/{id}/introductoryOffers` with
 /// their territories and price points, the other offers with their prices
 /// (and an offer code's custom and one-time codes,
-/// `SubscriptionOffersReader`), and the product's `appStoreReviewScreenshot`.
+/// `SubscriptionOffersReader`), an in-app purchase's offer codes
+/// (`InAppPurchaseOfferCodesReader`), and the product's
+/// `appStoreReviewScreenshot`.
 /// Pricing's own services don't read any of them.
 struct PurchaseExtrasReader: PurchaseExtrasReading {
     let transport: any PushTransport
@@ -35,6 +37,9 @@ struct PurchaseExtrasReader: PurchaseExtrasReading {
                 extras.offerCodes = offers.codes
                 extras.offersRead = true
             }
+        } else if let codes = try? await InAppPurchaseOfferCodesReader(transport: transport).offerCodes(purchaseID: product.id) {
+            extras.inAppPurchaseOfferCodes = codes
+            extras.offersRead = true
         }
         let owner: PurchaseReviewScreenshotOwner = product.isInAppPurchase ? .inAppPurchase : .subscription
         do {

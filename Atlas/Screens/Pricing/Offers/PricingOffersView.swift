@@ -9,12 +9,21 @@ import SwiftUI
 /// changes waiting in Review & Push, and the selected one's actions
 /// (`SubscriptionOfferActions`) and prices, which follow each territory's
 /// subscription price. New Offer adds a promotional offer, win-back offer
-/// or offer code; Add Introductory Offer… an introductory offer.
+/// or offer code; Add Introductory Offer… an introductory offer. An in-app
+/// purchase's tab lists its offer codes (`InAppPurchaseOffersView`).
 struct PricingOffersView: View {
     @Bindable var viewModel: PricingViewModel
     let matrix: PriceMatrixModel
 
     var body: some View {
+        if matrix.product.isInAppPurchase {
+            InAppPurchaseOffersView(viewModel: viewModel, matrix: matrix)
+        } else {
+            subscriptionOffers
+        }
+    }
+
+    private var subscriptionOffers: some View {
         Group {
             switch viewModel.offers {
             case .idle, .loading:

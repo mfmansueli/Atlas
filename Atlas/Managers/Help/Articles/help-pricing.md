@@ -23,6 +23,8 @@ A subscription’s **Offers** tab lists its offers in App Store Connect and the 
 
 A new subscription waiting in Review & Push takes offers too, from its **…** menu: each waits for the subscription, goes out after it when you push, and is discarded with it.
 
+An in-app purchase’s **Offers** tab lists its offer codes. **New Offer Code…** makes one: who can redeem it (people who never bought, buy now or stopped buying), a free or lower price, and where. It can come with a custom code and one-time codes. **Add Custom Code…**, **Add One-Time Codes…**, **Save Codes…** and **Deactivate…** work as they do for a subscription.
+
 Your assistant can propose all of these too, and you review them in Review & Push. Nothing reaches App Store Connect until you push.
 
 ## Review screenshots

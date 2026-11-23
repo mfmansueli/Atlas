@@ -84,13 +84,12 @@ struct PricingSectionBar: View {
         return PricingSegmentedControl(
             label: String(localized: "View"),
             segments: PricingTab.allCases.map { tab in
-                let hasNoOffers = tab == .offers && isPurchase
-                return PricingSegmentedControl<PricingTab>.Segment(
+                PricingSegmentedControl<PricingTab>.Segment(
                     value: tab,
                     title: tab.title,
                     label: tab.title,
-                    isEnabled: !hasNoOffers,
-                    help: hasNoOffers ? String(localized: "In-app purchases have no offers") : nil
+                    isEnabled: true,
+                    help: tab == .offers && isPurchase ? String(localized: "The in-app purchase’s offer codes") : nil
                 )
             },
             selection: $viewModel.tab,

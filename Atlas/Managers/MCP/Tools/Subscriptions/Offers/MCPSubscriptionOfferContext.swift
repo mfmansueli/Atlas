@@ -33,8 +33,11 @@ struct MCPSubscriptionOfferContext {
         let app = catalog.app
         let identifier = try arguments.string("productId")
         let queue = context.workspace.changes
-        guard let target = PurchaseSetupTarget.find(identifier, appID: app.id, catalog: catalog.catalog, queue: queue), target.isSubscription else {
-            let reason = String(localized: "\(app.name) has no subscription “\(identifier)”, in App Store Connect or Review & Push.")
+        let found = PurchaseSetupTarget.find(identifier, appID: app.id, catalog: catalog.catalog, queue: queue)
+        guard let target = found, target.isSubscription else {
+            let reason = found == nil
+                ? String(localized: "\(app.name) has no subscription “\(identifier)”, in App Store Connect or Review & Push.")
+                : String(localized: "“\(identifier)” is an in-app purchase: propose its offer codes with propose_in_app_purchase_offer_code.")
             return .refused(refused([reason], productID: identifier, target: app.name))
         }
         guard let subscription = target.offerSubscription else {

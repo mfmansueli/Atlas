@@ -69,6 +69,7 @@ extension PushController {
             }
             return true
         }
+        if try await sendInAppPurchaseOfferCodeStep(request, at: index, transport: transport) { return true }
         guard let screenshot = PurchaseReviewScreenshotPush(request) else { return false }
         defer { update(index) { $0.progressNote = nil } }
         try await screenshot.send(

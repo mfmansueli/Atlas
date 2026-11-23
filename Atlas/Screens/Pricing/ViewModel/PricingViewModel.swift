@@ -249,16 +249,15 @@ final class PricingViewModel {
         return matrix
     }
 
-    /// Offers, results and subscribers belong to one product; a product
-    /// without offers can't stay on that tab.
-    private func resetProductViews(for product: PricingProduct) {
+    /// Offers, results and subscribers belong to one product (an in-app
+    /// purchase's offers are its offer codes).
+    private func resetProductViews(for _: PricingProduct) {
         offers = .idle
         selectedOfferID = nil
         results = nil
         subscribers = nil
         subscribersProductID = nil
         hoveredTerritoryID = nil
-        if product.isInAppPurchase, tab == .offers { tab = .prices }
     }
 
     func setCommission(_ commission: Commission) async {
@@ -381,10 +380,18 @@ final class PricingViewModel {
     // MARK: - Offers and Results
 
     /// Reads the selected subscription's offers once, selecting the first
-    /// promotional offer (else the first).
+    /// promotional offer (else the first); an in-app purchase's, its offer
+    /// codes.
     func loadOffers() async {
-        guard let product = selectedProduct, !product.isInAppPurchase, !offers.isLoading, offers.value == nil else { return }
+        guard let product = selectedProduct, !offers.isLoading, offers.value == nil else { return }
         offers = .loading
+        if product.isInAppPurchase {
+            let list = await readInAppPurchaseOffers(for: product)
+            guard selectedProductID == product.id else { return }
+            offers = .loaded(list)
+            if selectedOfferID == nil { selectedOfferID = list.first?.id }
+            return
+        }
         do {
             var list = try await services.offers(for: product)
             // Pricing's services don't read introductory offers from App

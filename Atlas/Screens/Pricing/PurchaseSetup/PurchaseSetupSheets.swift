@@ -43,6 +43,7 @@ struct PurchaseSetupSheets: ViewModifier {
                 )
             }
             .modifier(SubscriptionOfferSheets(viewModel: viewModel))
+            .modifier(InAppPurchaseOfferCodeSheets(viewModel: viewModel))
     }
 
     private func current(for target: PurchaseSetupTarget) -> PurchaseReviewScreenshotState? {

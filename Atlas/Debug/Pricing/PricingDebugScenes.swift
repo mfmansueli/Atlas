@@ -45,6 +45,11 @@ import SwiftUI
 ///   Offer…, Change Prices…, New Win-Back Offer…, Edit…, New Offer Code…,
 ///   Add Custom Code… and Add One-Time Codes… on Lumen Monthly
 ///   (`SubscriptionOfferDebugSheet`).
+/// - `iap-offers`: Lumen Lifetime's Offers tab with an offer code (its
+///   custom code and one-time codes) from App Store Connect, selected.
+/// - `iap-offer-code`, `iap-offer-code-custom`, `iap-offer-code-batch`: New
+///   Offer Code…, Add Custom Code… and Add One-Time Codes… on Lumen Lifetime
+///   (`InAppPurchaseOfferCodeDebugSheet`).
 /// - `rs-match`, `rs-none`, `rs-run`, `rs-arrived`, `rs-preview`,
 ///   `rs-fail-nav`, `rs-fail-price`, `rs-accepted`: Lumen's App Review
 ///   screenshots made for the person (`ReviewShotsDebugState`).
@@ -56,8 +61,9 @@ enum PricingDebugScenes {
         "pricing-nosales", "pricing-skeleton", "pricing-refresh", "pricing-nosubs", "iap",
         "custom", "custom-tune", "custom-compare", "custom-csv",
         "pricing-map", "pricing-hist", "schedule", "results", "results-waiting", "offers",
-        "pricing-products", "new-iap", "intro-offer", "review-screenshot", "offers-all",
+        "pricing-products", "new-iap", "intro-offer", "review-screenshot", "offers-all", "iap-offers",
     ] + ReviewShotsDebugState.allCases.map(\.sceneID) + SubscriptionOfferDebugSheet.allCases.map(\.sceneID)
+        + InAppPurchaseOfferCodeDebugSheet.allCases.map(\.sceneID)
 
     @MainActor
     static func view(for id: String) -> AnyView? {
@@ -158,6 +164,17 @@ enum PricingDebugScenes {
         if let sheet = SubscriptionOfferDebugSheet(rawValue: id) {
             return scene(launch: PricingDebugLaunch(
                 productID: DebugPricingCatalog.lumenMonthlyID, tab: .offers, hasSampleOffers: true, offerSheet: sheet
+            ))
+        }
+        if let sheet = InAppPurchaseOfferCodeDebugSheet(rawValue: id) {
+            return scene(launch: PricingDebugLaunch(
+                productID: DebugPricingCatalog.lumenLifetimeID, tab: .offers, hasSampleOffers: true, inAppPurchaseOfferSheet: sheet
+            ))
+        }
+        if id == "iap-offers" {
+            return scene(launch: PricingDebugLaunch(
+                productID: DebugPricingCatalog.lumenLifetimeID, tab: .offers,
+                offerID: ExistingInAppPurchaseOfferCode.offerID(InAppPurchaseOfferCodesSampleData.offerCode.id), hasSampleOffers: true
             ))
         }
         if id == "offers-all" {

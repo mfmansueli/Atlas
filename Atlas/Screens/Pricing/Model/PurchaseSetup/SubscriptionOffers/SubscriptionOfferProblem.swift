@@ -7,8 +7,9 @@ import Foundation
 
 /// Why a promotional offer, win-back offer or offer code (or a custom code
 /// or one-time codes for one) can't be created or changed as it is: its
-/// sheet shows it, and `propose_promotional_offer`, `propose_win_back_offer`
-/// and `propose_offer_code` refuse with it.
+/// sheet shows it, and `propose_promotional_offer`, `propose_win_back_offer`,
+/// `propose_offer_code` and `propose_in_app_purchase_offer_code` refuse
+/// with it.
 enum SubscriptionOfferProblem: Hashable, Sendable {
     /// What the terms break, as an introductory offer's would.
     case terms(IntroductoryOfferProblem)
@@ -38,6 +39,16 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
     /// Deactivated already, or gone.
     case notActive
     case nothingChanged
+    // An in-app purchase's offer code.
+    /// A new in-app purchase waiting in Review & Push: push it first.
+    case inAppPurchaseNotCreated
+    case inAppPurchaseOfferCodeNameTaken(String)
+    case tooManyInAppPurchaseOfferCodes(limit: Int)
+    case noSpenderEligibility
+    /// Zero (free) or more, with at most two decimals.
+    case invalidInAppPurchaseOfferPrice
+    /// At or above the in-app purchase's own US price.
+    case notBelowPurchasePrice(String)
 
     var message: String {
         switch self {
@@ -85,6 +96,18 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
             return String(localized: "It isn’t active in App Store Connect any more.")
         case .nothingChanged:
             return String(localized: "Nothing changed from what App Store Connect has.")
+        case .inAppPurchaseNotCreated:
+            return String(localized: "The in-app purchase waits in Review & Push. Push it first, then add the offer code.")
+        case let .inAppPurchaseOfferCodeNameTaken(name):
+            return String(localized: "The in-app purchase has an offer code named “\(name)” already.")
+        case let .tooManyInAppPurchaseOfferCodes(limit):
+            return String(localized: "An in-app purchase has up to \(limit) active offer codes.")
+        case .noSpenderEligibility:
+            return String(localized: "Choose who can redeem it: people who never bought, who buy now, or who stopped buying.")
+        case .invalidInAppPurchaseOfferPrice:
+            return String(localized: "Enter a price in US dollars: zero for free, or more with up to two decimals.")
+        case let .notBelowPurchasePrice(price):
+            return String(localized: "An offer code’s price is below the in-app purchase’s own (\(price) in the United States).")
         }
     }
 }

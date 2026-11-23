@@ -5,12 +5,32 @@
 
 import SwiftUI
 
-/// An offer code's custom codes and batches of one-time codes, each with
-/// what it is, Save Codes… (one-time codes) and Deactivate….
+/// An offer code's custom codes and batches of one-time codes (a
+/// subscription's or an in-app purchase's), each with what it is, Save
+/// Codes… (one-time codes) and Deactivate….
 struct OfferCodeCodesList: View {
-    let code: ExistingOfferCode
+    let customCodes: [ExistingCustomCode]
+    let oneTimeCodes: [ExistingOneTimeCodes]
+    /// Whether the offer code itself is active: an inactive one's codes
+    /// can't be deactivated.
+    let isActive: Bool
     let onSave: (ExistingOneTimeCodes) -> Void
     let onDeactivate: (OfferCodeChangeBuilder.Target) -> Void
+
+    init(
+        customCodes: [ExistingCustomCode], oneTimeCodes: [ExistingOneTimeCodes], isActive: Bool,
+        onSave: @escaping (ExistingOneTimeCodes) -> Void, onDeactivate: @escaping (OfferCodeChangeBuilder.Target) -> Void
+    ) {
+        self.customCodes = customCodes
+        self.oneTimeCodes = oneTimeCodes
+        self.isActive = isActive
+        self.onSave = onSave
+        self.onDeactivate = onDeactivate
+    }
+
+    init(code: ExistingOfferCode, onSave: @escaping (ExistingOneTimeCodes) -> Void, onDeactivate: @escaping (OfferCodeChangeBuilder.Target) -> Void) {
+        self.init(customCodes: code.customCodes, oneTimeCodes: code.oneTimeCodes, isActive: code.isActive, onSave: onSave, onDeactivate: onDeactivate)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -38,12 +58,12 @@ struct OfferCodeCodesList: View {
     }
 
     private var lines: [Line] {
-        code.customCodes.map { custom in
+        customCodes.map { custom in
             Line(
                 title: custom.code, detail: custom.summary, isActive: custom.isActive,
                 identifier: "pricing.offerCodes.custom.\(custom.id)", target: .customCode(custom)
             )
-        } + code.oneTimeCodes.map { batch in
+        } + oneTimeCodes.map { batch in
             Line(
                 title: String(localized: "One-time codes"), detail: batch.summary, isActive: batch.isActive,
                 identifier: "pricing.offerCodes.batch.\(batch.id)", target: .oneTimeCodes(batch), batch: batch
@@ -70,7 +90,7 @@ struct OfferCodeCodesList: View {
                     Button("Save Codes…") { onSave(batch) }
                         .accessibilityIdentifier("\(identifier).save")
                 }
-                if isActive, code.isActive {
+                if isActive, self.isActive {
                     Button("Deactivate…", role: .destructive) { onDeactivate(line.target) }
                         .accessibilityIdentifier("\(identifier).deactivate")
                 }

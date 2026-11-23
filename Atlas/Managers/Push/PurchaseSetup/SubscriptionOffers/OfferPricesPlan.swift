@@ -7,10 +7,11 @@ import Foundation
 
 /// Where an offer runs and what it costs, as a queued offer write carries
 /// it under `atlas.offerPrices` until the push reads the price points: the
-/// subscription, the US price (nil for a free offer), the chosen
-/// territories (nil for every one it's sold in) and the ones priced apart.
+/// subscription (or in-app purchase) whose points it reads, the US price
+/// (nil for a free subscription offer), the chosen territories (nil for
+/// every one it's sold in) and the ones priced apart.
 struct OfferPricesPlan: Hashable, Sendable {
-    var subscriptionID: String
+    var owner: OfferPriceOwner
     var usPrice: Decimal?
     var territoryIDs: [String]?
     var territoryPrices: [String: Decimal] = [:]
@@ -20,11 +21,18 @@ struct OfferPricesPlan: Hashable, Sendable {
 
     var isFree: Bool { usPrice == nil }
 
-    init(subscriptionID: String, usPrice: Decimal?, territoryIDs: [String]?, territoryPrices: [String: Decimal] = [:]) {
-        self.subscriptionID = subscriptionID
+    /// The subscription's (or in-app purchase's) ID.
+    var subscriptionID: String { owner.id }
+
+    init(owner: OfferPriceOwner, usPrice: Decimal?, territoryIDs: [String]?, territoryPrices: [String: Decimal] = [:]) {
+        self.owner = owner
         self.usPrice = usPrice
         self.territoryIDs = territoryIDs
         self.territoryPrices = territoryPrices
+    }
+
+    init(subscriptionID: String, usPrice: Decimal?, territoryIDs: [String]?, territoryPrices: [String: Decimal] = [:]) {
+        self.init(owner: .subscription(subscriptionID), usPrice: usPrice, territoryIDs: territoryIDs, territoryPrices: territoryPrices)
     }
 
     /// The plan for `terms` on `subscriptionID`.
@@ -39,10 +47,14 @@ struct OfferPricesPlan: Hashable, Sendable {
 
     /// The plan a queued body carries; nil when it has none.
     init?(body: [String: Any]) {
-        guard let plan = (body[Self.metaKey] as? [String: Any])?[Self.planKey] as? [String: Any],
-              let subscriptionID = plan["subscriptionID"] as? String
-        else { return nil }
-        self.subscriptionID = subscriptionID
+        guard let plan = (body[Self.metaKey] as? [String: Any])?[Self.planKey] as? [String: Any] else { return nil }
+        if let id = plan[OfferPriceOwner.subscription("").planKey] as? String {
+            owner = .subscription(id)
+        } else if let id = plan[OfferPriceOwner.inAppPurchase("").planKey] as? String {
+            owner = .inAppPurchase(id)
+        } else {
+            return nil
+        }
         usPrice = (plan["priceUSD"] as? String).flatMap(Self.decimal)
         territoryIDs = plan["territories"] as? [String]
         let prices = plan["territoryPrices"] as? [String: String] ?? [:]
@@ -51,7 +63,7 @@ struct OfferPricesPlan: Hashable, Sendable {
 
     /// `atlas.offerPrices` as JSON.
     var json: [String: Any] {
-        var plan: [String: Any] = ["subscriptionID": subscriptionID]
+        var plan: [String: Any] = [owner.planKey: owner.id]
         if let usPrice { plan["priceUSD"] = Self.string(usPrice) }
         if let territoryIDs { plan["territories"] = territoryIDs }
         if !territoryPrices.isEmpty { plan["territoryPrices"] = territoryPrices.mapValues(Self.string) }

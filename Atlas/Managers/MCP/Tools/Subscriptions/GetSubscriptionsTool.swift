@@ -19,11 +19,12 @@ struct GetSubscriptionsTool: MCPTool {
         subscriptions (id, productId, name, duration, state, price in the United States, introductoryOffer, \
         promotionalOffers, winBackOffers and offerCodes with every attribute, their territories, US price, \
         territoryPrices priced apart (promotional offers), custom codes and one-time code batches, queuedOffers \
-        waiting in Review & Push, reviewScreenshot), its in-app purchases (type, state, reviewScreenshot), and the \
-        new subscriptions (queued, each with the queuedOffers that wait for it) and in-app purchases \
+        waiting in Review & Push, reviewScreenshot), its in-app purchases (type, state, offerCodes with every \
+        attribute, territories, US price, custom codes and one-time code batches, queuedOffers, reviewScreenshot), \
+        and the new subscriptions (queued, each with the queuedOffers that wait for it) and in-app purchases \
         (queuedInAppPurchases) already waiting in Review & Push. reviewScreenshot.state MISSING keeps a product in \
         Missing Metadata. Use it before propose_subscription, propose_in_app_purchase, propose_introductory_offer, \
-        propose_promotional_offer, propose_win_back_offer, propose_offer_code and \
+        propose_promotional_offer, propose_win_back_offer, propose_offer_code, propose_in_app_purchase_offer_code and \
         propose_purchase_review_screenshot; reviewScreenshotUploadURL is where review screenshots go first, \
         offerDurations lists the durations each offer mode takes and offerRules the offers' limits.
         """,
@@ -96,6 +97,8 @@ struct GetSubscriptionsTool: MCPTool {
             "identifierCharacters": "letters, digits, _ and ., up to 64",
             "activePromotionalOffersPerSubscription": .int(SubscriptionOfferRules.activePerSubscription),
             "activeOfferCodesPerSubscription": .int(SubscriptionOfferRules.activePerSubscription),
+            "activeOfferCodesPerInAppPurchase": .int(NewInAppPurchaseOfferCode.activePerPurchase),
+            "inAppPurchaseCustomerEligibilities": .array(InAppPurchaseOfferCodeEligibility.allCases.map { .string($0.rawValue) }),
             "eligibilityMonths": [
                 "minimum": .int(SubscriptionOfferRules.eligibilityMonths.lowerBound),
                 "maximum": .int(SubscriptionOfferRules.eligibilityMonths.upperBound),
@@ -122,6 +125,9 @@ struct GetSubscriptionsTool: MCPTool {
             }
             let queued = SubscriptionOfferChanges.queued(in: setup.queue, appID: setup.app.id, subscriptionID: product.id)
             json.merge(MCPSubscriptionOffersJSON.fields(extras: extras, queued: queued)) { $1 }
+        } else {
+            let queued = SubscriptionOfferChanges.queued(in: setup.queue, appID: setup.app.id, subscriptionID: product.id)
+            json.merge(MCPInAppPurchaseOfferCodesJSON.fields(extras: extras, queued: queued, purchasePrice: product.basePrice)) { $1 }
         }
         var screenshot: [String: JSONValue] = ["state": .string(extras?.reviewScreenshot.code ?? "UNKNOWN")]
         if let name = extras?.reviewScreenshot.fileName { screenshot["fileName"] = .string(name) }
