@@ -29,7 +29,7 @@ struct WelcomeHeader: View {
     @State private var start = Date.now
 
     /// The icon's light gradient, top to bottom, in either appearance.
-    static let gradient = AtlasIconGradient.light
+    nonisolated static let gradient = AtlasIconGradient.light
 
     private var isStill: Bool { reduceMotion || forcesStill }
 

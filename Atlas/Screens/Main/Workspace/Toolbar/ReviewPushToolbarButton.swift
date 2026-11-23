@@ -82,7 +82,7 @@ struct ReviewPushToolbarButton: View {
 
     /// More waiting than before, and not because a push is running: what
     /// was just accepted has joined.
-    static func bounces(from old: Int, to new: Int, isSending: Bool) -> Bool {
+    nonisolated static func bounces(from old: Int, to new: Int, isSending: Bool) -> Bool {
         new > old && !isSending
     }
 

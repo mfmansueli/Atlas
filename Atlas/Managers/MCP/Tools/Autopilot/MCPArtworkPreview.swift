@@ -36,7 +36,7 @@ struct MCPArtworkPreview {
     func headline(for kind: AutopilotArtworkKind, locale: StoreLocale, book: ArtworkTextBook? = nil) async -> String {
         let role = ArtworkTextRole.role(for: kind)
         let texts: ArtworkTextBook = if let book { book } else { await self.book() }
-        let written = texts.headline(role, locale: locale.code) ?? ""
+        let written = texts.headline(role, locale: locale.code)
         guard written.isEmpty, role == .search else { return written }
         let profile = await AutopilotAppProfile.load(app: session.app, locales: [locale.code], in: workspace)
         return profile?.languages.first?.subtitle ?? profile?.subtitle ?? ""

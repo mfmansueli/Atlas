@@ -5,6 +5,7 @@
 
 import AVFoundation
 import CoreGraphics
+import CoreVideo
 import Foundation
 import ImageIO
 import UniformTypeIdentifiers
@@ -68,28 +69,22 @@ enum EventArtworkTestFiles {
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
             AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: width, AVVideoHeightKey: height,
         ])
-        input.expectsMediaDataInRealTime = false
-        let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [
-            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: width,
-            kCVPixelBufferHeightKey as String: height,
-        ])
-        writer.add(input)
-        writer.startWriting()
+        let pixels = writer.inputPixelBufferReceiver(for: input, pixelBufferAttributes: CVPixelBufferCreationAttributes(
+            pixelFormatType: CVPixelFormatType(rawValue: kCVPixelFormatType_32BGRA), size: CVImageSize(width: width, height: height)
+        ))
+        try writer.start()
         writer.startSession(atSourceTime: .zero)
         for frame in 0..<frames {
-            while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(5)) }
-            guard let pool = adaptor.pixelBufferPool else { throw CocoaError(.fileWriteUnknown) }
-            var buffer: CVPixelBuffer?
-            CVPixelBufferPoolCreatePixelBuffer(nil, pool, &buffer)
-            guard let buffer else { throw CocoaError(.fileWriteUnknown) }
-            CVPixelBufferLockBaseAddress(buffer, [])
-            if let base = CVPixelBufferGetBaseAddress(buffer) {
-                memset(base, Int32(40 + frame), CVPixelBufferGetDataSize(buffer))
+            guard let pool = pixels.pixelBufferPool else { throw CocoaError(.fileWriteUnknown) }
+            var buffer = try pool.makeMutablePixelBuffer()
+            buffer.accessUnsafeMutableRawPlaneBytes { planes in
+                for plane in planes {
+                    plane.bytes.initializeMemory(as: UInt8.self, repeating: UInt8(40 + frame))
+                }
             }
-            CVPixelBufferUnlockBaseAddress(buffer, [])
-            adaptor.append(buffer, withPresentationTime: CMTime(value: CMTimeValue(frame), timescale: fps))
+            try await pixels.append(CVReadOnlyPixelBuffer(buffer), with: CMTime(value: CMTimeValue(frame), timescale: fps))
         }
-        input.markAsFinished()
+        pixels.finish()
         await writer.finishWriting()
         guard writer.status == .completed else { throw writer.error ?? CocoaError(.fileWriteUnknown) }
         return url

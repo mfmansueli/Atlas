@@ -43,7 +43,9 @@ extension AppInformationDebugScenes {
         case "info-key-failed": keys.setReport(report(.couldNotAdd))
         case "info-key-inferred":
             appInformation.notes.setNotes(AppInformationNotes(), for: lumen)
-            appInformation.sampleBuilds = ["44", "43", "42"].map { EncryptionKeyBuild(id: "lumen-build-\($0)", number: $0, usesNonExemptEncryption: false) }
+            appInformation.sampleBuilds = ["44", "43", "42"].map { (number: String) in
+                EncryptionKeyBuild(id: "lumen-build-\(number)", number: number, usesNonExemptEncryption: false)
+            }
         case "info-export-first":
             appInformation.notes.setNotes(AppInformationNotes(), for: lumen)
             appInformation.lumenContent = firstVersion

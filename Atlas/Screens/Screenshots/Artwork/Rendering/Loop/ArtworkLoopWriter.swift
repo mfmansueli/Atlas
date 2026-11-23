@@ -39,7 +39,6 @@ final class ArtworkLoopWriter {
         for codec in [AVVideoCodecType.h264, .hevc] {
             guard let candidate = try? AVAssetWriter(outputURL: output, fileType: .mov) else { continue }
             let input = AVAssetWriterInput(mediaType: .video, outputSettings: Self.videoSettings(codec: codec, size: size, framesPerSecond: framesPerSecond))
-            input.expectsMediaDataInRealTime = false
             if candidate.canAdd(input) {
                 made = (candidate, input, codec == .h264 ? "H.264" : "HEVC")
                 break

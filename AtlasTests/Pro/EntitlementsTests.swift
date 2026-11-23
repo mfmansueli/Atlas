@@ -56,6 +56,16 @@ struct EntitlementsTests {
         #expect(entitlements.status == .lifetime)
     }
 
+    /// Redeeming an offer code reads what the person owns again.
+    @Test func aRedeemedCodeIsReadAgain() async {
+        let store = FakeProStore()
+        let entitlements = Entitlements(store: store)
+        store.owned = .subscribed(plan: .yearly, until: nil, isTrial: false)
+        await entitlements.refreshStatus()
+        #expect(entitlements.status == .subscribed(plan: .yearly, until: nil, isTrial: false))
+        #expect(entitlements.isPro)
+    }
+
     @Test func thePlansAreAskedForOnce() async {
         let store = FakeProStore()
         let entitlements = Entitlements(store: store)

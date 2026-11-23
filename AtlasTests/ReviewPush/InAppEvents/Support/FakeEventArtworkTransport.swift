@@ -85,8 +85,6 @@ final class FakeEventArtworkTransport: PushTransport, ScreenshotUploadTransport 
         case .delete:
             record("delete \(type) \(parts.last ?? "")", body: nil)
             return AppStoreConnectResponse(data: Data(), rateLimit: nil)
-        default:
-            return AppStoreConnectResponse(data: Data("{}".utf8), rateLimit: nil)
         }
     }
 

@@ -18,8 +18,8 @@ struct ArrivingText: View {
     @State private var elapsed: TimeInterval = 0
     @State private var isShown = false
 
-    static let wordDuration: TimeInterval = 0.28
-    static let wordDelay: TimeInterval = 0.035
+    nonisolated static let wordDuration: TimeInterval = 0.28
+    nonisolated static let wordDelay: TimeInterval = 0.035
     static let reducedDuration: TimeInterval = 0.2
 
     init(_ text: String) {
@@ -86,7 +86,7 @@ struct ArrivingText: View {
     }
 
     /// How far word `index` has arrived at `elapsed` seconds, eased (0–1).
-    static func progress(ofWord index: Int, at elapsed: TimeInterval) -> Double {
+    nonisolated static func progress(ofWord index: Int, at elapsed: TimeInterval) -> Double {
         let linear = min(max((elapsed - Double(index) * wordDelay) / wordDuration, 0), 1)
         return 1 - pow(1 - linear, 3)
     }

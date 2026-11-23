@@ -80,6 +80,11 @@ final class Entitlements {
         return outcome
     }
 
+    /// A code was redeemed: what the person owns now.
+    func refreshStatus() async {
+        status = await store.status()
+    }
+
     /// Restore Purchases: true when Pro came back.
     func restore() async -> Bool {
         status = await store.restore()

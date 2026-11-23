@@ -137,7 +137,7 @@ struct EventArtworkStudioTests {
         run.revisionRequest = "Warmer."
         studio.begin(run)
         let changed = try Test.concept("new", in: directory)
-        try #require(studio.add(changed, to: Test.key, replacing: "a"))
+        _ = try #require(studio.add(changed, to: Test.key, replacing: "a"))
         let after = try #require(studio.run(appID: Test.key.appID, eventID: Test.key.eventID))
         #expect(after.concepts.map(\.id) == ["a", "b"])
         #expect(after.concepts[0].isPick)

@@ -59,7 +59,7 @@ struct ScreenshotThumbnail: View {
     }
 
     /// Height ÷ width of what an item shows.
-    static func aspect(of item: ScreenshotPlanItem) -> CGFloat {
+    nonisolated static func aspect(of item: ScreenshotPlanItem) -> CGFloat {
         let known = item.content.renderJob?.layout.canvas.pixelSize ?? item.content.backupImage?.pixelSize ?? item.content.handFile?.pixelSize
             ?? item.old?.pixelSize
         let size = known.flatMap { $0.width > 0 ? $0 : nil } ?? item.cell.displayType.portraitPixelSize

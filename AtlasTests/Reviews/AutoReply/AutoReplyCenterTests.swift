@@ -80,7 +80,7 @@ struct AutoReplyCenterTests {
         let store = reviews()
         receive(["us5"], into: center, store: store)
         #expect(center.draft(for: "us5", appID: app.id)?.state == .drafted)
-        let told = try? #require(notifier.sent.first)
+        let told = notifier.sent.first
         #expect(told?.category == .autoReplyReady)
         #expect(told?.body.hasSuffix("Reply: “Thank you for writing!”") == true)
     }

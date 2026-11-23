@@ -31,7 +31,7 @@ struct ZoomableContainer<Content: View>: View {
     @State private var panStart: ViewerZoom?
     @State private var frameSize = CGSize.zero
     @State private var isHovering = false
-    @State private var scrollMonitor = ScrollMonitor()
+    @State private var scrollMonitor = ZoomableScrollMonitor()
 
     var body: some View {
         GeometryReader { proxy in
@@ -119,32 +119,5 @@ struct ZoomableContainer<Content: View>: View {
                 let anchor = CGPoint(x: value.location.x - size.width / 2, y: value.location.y - size.height / 2)
                 withAnimation(.snappy(duration: 0.25)) { zoom = zoom.toggled(around: anchor, in: size) }
             }
-    }
-
-    /// Two-finger scrolls in the app: `handler` takes the move and says
-    /// whether it used it (only while zoomed with the pointer over the
-    /// container), so a used scroll doesn't reach what's underneath.
-    @MainActor
-    private final class ScrollMonitor {
-        private var monitor: Any?
-
-        func start(_ handler: @escaping (CGSize) -> Bool) {
-            stop()
-            monitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
-                // A mouse wheel moves in lines, a trackpad in points.
-                let scale: CGFloat = event.hasPreciseScrollingDeltas ? 1 : 10
-                let delta = CGSize(width: event.scrollingDeltaX * scale, height: event.scrollingDeltaY * scale)
-                return handler(delta) ? nil : event
-            }
-        }
-
-        func stop() {
-            if let monitor { NSEvent.removeMonitor(monitor) }
-            monitor = nil
-        }
-
-        isolated deinit {
-            if let monitor { NSEvent.removeMonitor(monitor) }
-        }
     }
 }

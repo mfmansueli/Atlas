@@ -105,7 +105,7 @@ struct CaptureImageStoreTests {
         let gate = Gate()
         let unreadable = capture("en-US", slot: 1)
         let store = CaptureImageStore { capture, width in
-            while await !gate.isOpen {
+            while !gate.isOpen {
                 await Task.yield()
             }
             return capture == unreadable ? nil : FakeScreenshotsServices.flatImage(width: width, height: width * 2)

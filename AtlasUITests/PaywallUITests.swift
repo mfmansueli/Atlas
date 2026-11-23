@@ -13,7 +13,7 @@ import XCTest
 final class PaywallUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    override func setUp() {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
     }
