@@ -61,7 +61,7 @@ struct ScreenshotsPushDebugScenesTests {
         #expect(run.subtitle == "2 failed. Their live screenshots weren’t touched.")
         let failures = run.items.compactMap(\.status.failureText)
         #expect(failures == [
-            "Upload timed out on part 2 of 3. Nothing was replaced; the live screenshot stays.",
+            "Part 2 of 3 timed out. Nothing was replaced; the live screenshot stays.",
             "Apple couldn’t process the image (IMAGE_TOOL_FAILURE). The live screenshot stays.",
         ])
 

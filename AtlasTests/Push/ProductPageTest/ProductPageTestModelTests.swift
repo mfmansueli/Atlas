@@ -173,7 +173,7 @@ struct ProductPageTestModelTests {
 
         center.markVariantRead(appID: appID, client: "Claude Code")
         #expect(model.steps(of: center.run(for: appID)).map(\.state) == [.done, .done, .current, .upcoming])
-        #expect(center.run(for: appID)?.log.last?.text == "Claude Code read what to change for the test and is designing the variant")
+        #expect(center.run(for: appID)?.log.last?.text == "Claude Code is designing the test variant")
     }
 
     @Test func nobodyWorkingOnItIsIdleOnlyWhereClaudeCodeCanStart() async throws {

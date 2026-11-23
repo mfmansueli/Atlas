@@ -79,8 +79,7 @@ struct StabilityView: View {
                     }
                 }
                 Text("""
-                Crashes and sessions come from people who share analytics with developers, and Apple completes each day up to 5 days later. \
-                Both versions are compared on the days both had sessions.
+                From people who share analytics; days complete up to 5 days later. Versions compared on shared days.
                 """)
                 .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
             }

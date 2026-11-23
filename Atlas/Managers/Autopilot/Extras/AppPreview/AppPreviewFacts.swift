@@ -47,10 +47,10 @@ struct AppPreviewFacts: Hashable, Sendable {
             issues.append(String(localized: "The App Preview is \(pixelSize.title) pixels; \(display) takes \(spec.pixelSize.title) or \(spec.pixelSize.rotated.title)."))
         }
         if codec == .other {
-            issues.append(String(localized: "The App Preview isn't H.264 or ProRes 422 HQ, the only video App Store Connect takes."))
+            issues.append(String(localized: "App Store Connect takes only H.264 or ProRes 422 HQ App Previews."))
         }
         if audioChannels == 0 {
-            issues.append(String(localized: "The App Preview has no sound track; App Store Connect wants a stereo one, even a silent one."))
+            issues.append(String(localized: "The App Preview needs a stereo sound track, even a silent one."))
         } else if audioChannels == 1 {
             issues.append(String(localized: "The App Preview's sound is mono; App Store Connect wants stereo."))
         } else if audioChannels != 2 {

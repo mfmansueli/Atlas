@@ -18,7 +18,7 @@ enum PurchaseReviewScreenshotPushError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .cannotUpload:
-            String(localized: "This connection can’t upload files.")
+            String(localized: "This connection can’t push files.")
         case let .fileMissing(fileName):
             String(localized: "“\(fileName)” isn’t on this Mac anymore. Choose the review screenshot again.")
         case let .refused(fileName, details):

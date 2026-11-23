@@ -84,9 +84,9 @@ enum DuoState: Hashable, Sendable {
         case .unknown:
             String(localized: "Looking at iPhone Duo…")
         case .noHelper:
-            String(localized: "Install the helper so Atlas can open iPhone Duo and see whether it’s open.")
+            String(localized: "Install the helper so Atlas can open and check iPhone Duo.")
         case .oldHelper:
-            String(localized: "Save the helper again so Atlas can open iPhone Duo, see whether it’s open, and restart it when it’s stuck.")
+            String(localized: "Save the helper again so Atlas can open, check and restart iPhone Duo.")
         case .noSimulator:
             String(localized: "There’s no iPhone Duo simulator on this Mac yet.")
         case .notRunning:
@@ -96,15 +96,14 @@ enum DuoState: Hashable, Sendable {
         case .closed:
             String(localized: "Closed: Atlas opens it in Device Hub.")
         case .closedForScreens:
-            String(localized: "Closed, for its closed screenshots on the cover display; Atlas opens it for the open ones.")
+            String(localized: "Closed for the cover-display screenshots. Atlas opens it for the rest.")
         case .closing:
-            String(localized: "Its closed screenshots are next: Atlas is restarting it, which closes it…")
+            String(localized: "Restarting it to close it for the closed screenshots…")
         case .opening:
             String(localized: "Opening iPhone Duo in Device Hub…")
         case .needsAccessibility:
             String(localized: """
-            Closed: allow Atlas in Privacy & Security › Accessibility, and it opens iPhone Duo itself. It only presses \
-            Open in Device Hub.
+            Closed. Allow Atlas in Privacy & Security › Accessibility; it only presses Open in Device Hub.
             """)
         case .helperCantOpen:
             String(localized: "Closed: save the helper again so Atlas can open it itself, or open it in Device Hub.")
@@ -113,9 +112,9 @@ enum DuoState: Hashable, Sendable {
         case .spinner:
             String(localized: "Its inner display shows a spinner while it starts.")
         case .restarting(.springBoardCrashed):
-            String(localized: "Stuck, its SpringBoard crashed: Atlas is restarting it…")
+            String(localized: "SpringBoard crashed. Restarting iPhone Duo…")
         case .restarting(.spinner):
-            String(localized: "Stuck on a spinner: Atlas is restarting it…")
+            String(localized: "Stuck on a spinner. Restarting it…")
         case .stuck:
             String(localized: "Still stuck after restarting it twice: erase it in Device Hub, start it, then open it.")
         case .open:

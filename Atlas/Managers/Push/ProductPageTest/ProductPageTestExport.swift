@@ -22,9 +22,10 @@ struct ProductPageTestExport {
     static func steps(for request: ProductPageTestRequest) -> String {
         let placement = request.placement.title
         var steps = String(localized: """
-        In App Store Connect, open \(request.appName)’s Product Page Optimization and create a test with one treatment named \
-        “\(request.treatmentName)”. On the treatment’s \(request.placement.tabTitle) tab, add “\(placement) – \(request.treatmentName) – …” \
-        in each language. The “\(request.controlName)” images are what the page shows now, the control: leave them on the page.
+        In App Store Connect, open \(request.appName)’s Product Page Optimization and create a test with one treatment \
+        named “\(request.treatmentName)”. On its \(request.placement.tabTitle) tab, add “\(placement) – \
+        \(request.treatmentName) – …” for each language. Leave the “\(request.controlName)” images, the control, on \
+        the page.
         """)
         let fromLibrary = request.locales.filter { $0.treatmentFile == nil }.map(\.locale)
         if !fromLibrary.isEmpty {

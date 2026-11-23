@@ -80,7 +80,7 @@ struct AutopilotHeaderLoopReviewTests {
         let problem = try #require(run.extrasProgress?.artworkProblem)
         #expect(problem.contains("header page"))
         #expect(run.log.last?.kind == .problem)
-        #expect(run.log.last?.text == "Header artwork couldn’t be made, so it isn’t in Review & Push; Make Again tries again with what you chose")
+        #expect(run.log.last?.text == "Header artwork couldn’t be made and isn’t in Review & Push. Make Again retries.")
         let extras = try await savedExtras()
         #expect(AutopilotCenter.artworkMissing(run, extras: extras))
         #expect(ExtrasReviewFixtures.plan(extras ?? ScreenshotExtras(directionName: "", madeAt: .now), appID: appID) == nil)
@@ -142,15 +142,15 @@ struct AutopilotHeaderLoopReviewTests {
 
     @Test func theReadyLineNamesWhatsMade() {
         var run = Self.chosen
-        #expect(AutopilotCenter.readyLine(for: run) == "Ready in Review & Push: moving header artwork; the live screenshots stay as they are")
+        #expect(AutopilotCenter.readyLine(for: run) == "Ready in Review & Push: moving header artwork. Live screenshots unchanged")
         run.extrasProgress = AutopilotExtrasProgress()
         run.extrasProgress?.artworkProblem = "Couldn’t render the header page in English (U.S.): The page didn’t load"
-        let failed = "Header artwork couldn’t be made, so it isn’t in Review & Push; Make Again tries again with what you chose"
+        let failed = "Header artwork couldn’t be made and isn’t in Review & Push. Make Again retries."
         #expect(AutopilotCenter.readyLine(for: run) == failed)
 
         var screenshots = StudioDebugRuns.run(.localize)
         screenshots.extrasProgress = run.extrasProgress
-        let partly = "screenshots ready in Review & Push; header and search artwork couldn’t be made, Make Again tries again"
+        let partly = "screenshots ready in Review & Push. Header and search artwork couldn’t be made; Make Again retries."
         #expect(AutopilotCenter.readyLine(for: screenshots).hasSuffix(partly))
     }
 }

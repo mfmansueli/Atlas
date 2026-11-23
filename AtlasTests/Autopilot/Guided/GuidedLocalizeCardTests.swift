@@ -25,7 +25,7 @@ struct GuidedLocalizeCardTests {
     @Test func whileCheckingItSaysWhoShortensTheCaptions() {
         let card = GuidedLocalizeCard.make(run, client: "Claude Code")
         #expect(card.title == "Checking every image")
-        #expect(card.detail == "Captions that don’t fit are shortened by Claude Code. Every change is listed in the review.")
+        #expect(card.detail == "Claude Code shortens captions that don’t fit. The review lists each change.")
     }
 
     @Test func thenTheLoopsDraw() {
@@ -37,7 +37,7 @@ struct GuidedLocalizeCardTests {
         run.extrasProgress = extras
         let card = GuidedLocalizeCard.make(run, client: "Claude Code")
         #expect(card.title == "Header and search artwork")
-        #expect(card.detail.hasPrefix("Every language’s 20-second loop is drawn frame by frame on this Mac"))
+        #expect(card.detail.hasPrefix("Each language’s 20-second loop is drawn and checked on this Mac"))
 
         run.plan.alsoMakes.artworkMotion = .still
         #expect(GuidedLocalizeCard.make(run, client: "Claude Code").detail == "Every language’s image is drawn and checked. Every caption is in.")

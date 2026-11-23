@@ -124,7 +124,7 @@ struct AutopilotRecaptureRunTests {
         #expect(run.stage == .ready)
         #expect(run.recapture?.placedAt != nil)
         #expect(run.finishedAt != nil)
-        #expect(run.log.last?.text == "Redid 2 captures in de-DE: ready in Review & Push, where only the images they change go")
+        #expect(run.log.last?.text == "Redid 2 captures in de-DE · only changed images wait in Review & Push")
         let after = try await services.loadDocument(for: context.app, primaryLocale: context.primaryLocale)
         let changed = Set(after.captures.captures.map(\.id)).subtracting(before.captures.captures.map(\.id))
         #expect(changed == ["png-new-today", "png-new-week"])

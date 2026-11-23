@@ -31,7 +31,7 @@ enum ExtrasPushStatus: Hashable, Sendable {
         case .preparing: return String(localized: "Getting ready")
         case let .uploading(fraction):
             let percent = Int((min(1, max(0, fraction)) * 100).rounded(.down))
-            return String(localized: "Uploading \(percent)%")
+            return String(localized: "Pushing \(percent)%")
         case .processing: return String(localized: "Processing")
         case .placing: return String(localized: "Placing")
         case .done: return String(localized: "Done")

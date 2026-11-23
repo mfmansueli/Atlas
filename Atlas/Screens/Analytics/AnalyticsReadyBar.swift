@@ -49,7 +49,7 @@ struct AnalyticsReadyBar: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    .help("Reports from Apple: what each one adds, and where it stands")
+                    .help("Shows each Apple report and its status.")
                     .accessibilityIdentifier("analytics.dataThrough")
                 }
             }
@@ -81,7 +81,7 @@ struct AnalyticsReadyBar: View {
 
     private func staleText(_ behind: Int) -> String {
         let newest = AnalyticsText.day(funnel.period.last.date)
-        let base = String(localized: "Apple’s reports are usually 1 to 2 days behind. These are \(behind) days behind: the newest data is from \(newest).")
+        let base = String(localized: "\(behind) days behind (usually 1 to 2). Newest data: \(newest).")
         guard let checked = viewModel.store.record(for: viewModel.app.id).lastChecked else { return base }
         return base + " " + String(localized: "Last checked \(AnalyticsText.moment(checked, now: viewModel.store.now())).")
     }

@@ -27,11 +27,11 @@ enum AutopilotArtworkShow: String, Codable, CaseIterable, Hashable, Sendable {
     /// The plan's note under the choice.
     var note: String {
         switch self {
-        case .phone: String(localized: "A real screen from the captures, in a phone. Apple’s advice for search: show the app.")
-        case .ui: String(localized: "The same real screen, cropped and floating, with no phone around it. Still shows the app; lighter.")
+        case .phone: String(localized: "A real screen in a phone. Apple advises showing the app in search.")
+        case .ui: String(localized: "The same screen, cropped and floating, no phone. Still shows the app, lighter.")
         case .scene: String(localized: """
-            Only the name, the headline and a scene in the brand’s style. No captures needed for the artwork. \
-            Best when the app’s look says more than its screens.
+            Only name, headline and a brand-style scene; no captures needed. Best when the look says more than the \
+            screens.
             """)
         }
     }

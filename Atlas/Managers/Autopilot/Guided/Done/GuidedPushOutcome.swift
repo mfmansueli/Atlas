@@ -60,15 +60,15 @@ enum GuidedPushOutcome: Hashable, Sendable {
     var detail: String? {
         switch self {
         case .approved:
-            String(localized: "Everything is approved and waiting in Review & Push, top right, with your other changes. Push it from there.")
+            String(localized: "All approved and in Review & Push, with your other changes. Push from there.")
         case .sending:
-            String(localized: "Its progress is in Review & Push, top right.")
+            String(localized: "Its progress is in Review & Push.")
         case .sent:
             nil
         case .partly:
-            String(localized: "What was sent is on App Store Connect; the rest stays in Review & Push, where you can try again.")
+            String(localized: "Sent changes are on App Store Connect. Retry the rest in Review & Push.")
         case .unknown:
-            String(localized: "Atlas closed since this push, so it can’t tell how it ended. Anything not sent is still in Review & Push.")
+            String(localized: "Atlas closed during this push, so the outcome is unknown. Unsent changes stay in Review & Push.")
         }
     }
 

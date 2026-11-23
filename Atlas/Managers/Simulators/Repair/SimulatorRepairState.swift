@@ -36,17 +36,17 @@ enum SimulatorRepairState: Hashable, Sendable {
     var message: String? {
         switch self {
         case .idle: nil
-        case .restartingSimulators: String(localized: "Atlas is restarting this Mac’s simulators…")
+        case .restartingSimulators: String(localized: "Restarting this Mac’s simulators…")
         case .restartingAudio:
-            String(localized: "Atlas is restarting this Mac’s audio service. macOS asks for your password: it’s the system’s to restart.")
-        case .checking: String(localized: "Starting a simulator to see that it works again…")
-        case .repaired: String(localized: "The simulators start again. The run goes on by itself.")
+            String(localized: "Restarting this Mac’s audio service. macOS asks for your password.")
+        case .checking: String(localized: "Checking that a simulator starts…")
+        case .repaired: String(localized: "Simulators work again. The run continues.")
         case .declined:
-            String(localized: "The password request was closed, so the audio service wasn’t restarted. Fix It asks again; restarting the Mac fixes it too.")
+            String(localized: "Password request closed: audio service not restarted. Fix It asks again, or restart the Mac.")
         case .needsHelper:
-            String(localized: "Atlas repairs this through its helper, and the saved one is from before it could: save it again and the repair starts.")
+            String(localized: "The saved helper is too old to repair this. Save it again to start the repair.")
         case let .failed(reason):
-            String(localized: "Atlas restarted what it could and a simulator still doesn’t start: \(reason) Restarting the Mac usually fixes it.")
+            String(localized: "Simulators still won’t start: \(reason) Restarting the Mac usually fixes it.")
         }
     }
 }

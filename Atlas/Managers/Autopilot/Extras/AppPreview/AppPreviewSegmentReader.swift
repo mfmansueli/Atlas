@@ -31,7 +31,7 @@ final class AppPreviewSegmentReader {
         do {
             reader = try AVAssetReader(asset: asset)
         } catch {
-            throw AppPreviewError.readerFailed(error.localizedDescription)
+            throw AppPreviewError.readerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
         let output = AVAssetReaderTrackOutput(track: track, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
         reader.timeRange = CMTimeRange(
@@ -42,7 +42,7 @@ final class AppPreviewSegmentReader {
         do {
             try reader.start()
         } catch {
-            throw AppPreviewError.readerFailed(error.localizedDescription)
+            throw AppPreviewError.readerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
     }
 
@@ -90,7 +90,7 @@ final class AppPreviewSegmentReader {
         } catch is CancellationError {
             throw CancellationError()
         } catch {
-            throw AppPreviewError.readerFailed(error.localizedDescription)
+            throw AppPreviewError.readerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
     }
 }

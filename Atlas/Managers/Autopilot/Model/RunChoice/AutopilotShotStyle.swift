@@ -32,16 +32,16 @@ enum AutopilotShotStyle: String, Codable, CaseIterable, Hashable, Sendable {
         let inBrand = brand.map { String(localized: " in \($0)") } ?? ""
         switch self {
         case .free:
-            return String(localized: "\(design) designs 3 directions of its own\(inBrand). You choose one.")
+            return String(localized: "\(design) designs 3 directions\(inBrand). You choose one.")
         case .templates:
             let count = TemplateStarter.allCases.count
             return String(localized: """
-            Pick up to 3 of the \(count) templates (a 4th replaces the last). \(design) makes one direction from each\(inBrand). \
-            \(picked) of 3 picked.
+            Pick up to 3 of \(count) templates; a 4th replaces the last. \(design) makes a direction from \
+            each\(inBrand). \(picked) of 3 picked.
             """)
         case .keep:
             let name = version.map { String(localized: "template v\($0)") } ?? String(localized: "template")
-            return String(localized: "Your current \(name) stays; only the captures and captions are new. No direction to choose.")
+            return String(localized: "Keeps your current \(name), with new captures and captions.")
         }
     }
 

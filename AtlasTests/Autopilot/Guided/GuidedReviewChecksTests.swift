@@ -44,7 +44,7 @@ struct GuidedReviewChecksTests {
         let total = run.plan.localeCodes.count
         #expect(Self.check("fits", in: checks)?.text == "Every caption fits in \(total - 1) languages as written")
         let short = try #require(Self.check("short-de-DE", in: checks))
-        #expect(short.text == "German: 1 caption was shortened by Claude Code")
+        #expect(short.text == "German: Claude Code shortened 1 caption")
         #expect(short.state == .toConfirm)
         #expect(GuidedReviewChecks.toConfirm(in: run).count == 1)
 
@@ -152,7 +152,7 @@ struct GuidedReviewChecksTests {
         var warnings = run
         warnings.extrasProgress?.artworkChecks = [StudioDebugExtras.checks[1]]
         #expect(Self.check("findings", in: GuidedReviewChecks.checks(for: .artwork, run: warnings))?.text
-            == "1 warning to look at; it doesn’t keep anything out of the push")
+            == "1 warning to look at; it doesn’t block the push")
         warnings.extrasProgress?.artworkChecks = []
         #expect(Self.check("findings", in: GuidedReviewChecks.checks(for: .artwork, run: warnings)) == nil)
     }
@@ -161,7 +161,8 @@ struct GuidedReviewChecksTests {
         let checks = GuidedReviewChecks.checks(for: .artwork, run: StudioDebugHeaderStyle.headerNotMade)
         let made = Self.check("made", in: checks)
         #expect(made?.state == .attention)
-        #expect(made?.text.hasPrefix("Couldn’t render the header page") == true)
+        #expect(made?.text == "Not made. Make Again retries it.")
+        #expect(made?.details == ["Details: Couldn’t render the header page in English (U.S.): The page didn’t load"])
         #expect(Self.check("loop", in: checks)?.text == "\(AutopilotArtworkMotion.loopSeconds)-second loop · plays muted on repeat")
     }
 

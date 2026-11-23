@@ -76,7 +76,7 @@ struct AutopilotResumeTests {
         }
         let run = try #require(run)
         #expect(run.stage == .ready)
-        #expect(run.log.map(\.text).contains("Atlas closed while it was making them; picking up where it stopped"))
+        #expect(run.log.map(\.text).contains("Atlas closed while making them; resuming where it stopped"))
         #expect(center.localizing[appID, default: 0] == 0)
     }
 

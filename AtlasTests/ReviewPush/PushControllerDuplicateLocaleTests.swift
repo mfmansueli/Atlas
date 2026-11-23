@@ -91,8 +91,8 @@ struct PushControllerDuplicateLocaleTests {
         #expect(!transport.sent.contains { $0.method == .patch })
         #expect(queue.changes.map(\.id) == ["storePage.app1.version.v2.fr-FR.new"])
         #expect(push.items.last?.status == .failed(
-            "French is already in App Store Connect with its own Description, so nothing was overwritten. "
-                + "Open the Store Page to review these as edits of what’s there."
+            "French already has its own Description in App Store Connect. Nothing was overwritten. "
+                + "Review them as edits in Store Page."
         ))
     }
 

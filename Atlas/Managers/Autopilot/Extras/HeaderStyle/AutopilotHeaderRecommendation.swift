@@ -18,7 +18,7 @@ struct AutopilotHeaderRecommendation: Codable, Hashable, Sendable {
 
     /// "Recommended for Lumen: Day to Night. …".
     func text(appName: String) -> String {
-        let lead = String(localized: "Recommended for \(appName): \(template.name).")
+        let lead = String(localized: "Suggested for \(appName): \(template.name).")
         let because = reason.trimmingCharacters(in: .whitespacesAndNewlines)
         return because.isEmpty ? lead : lead + " " + because
     }

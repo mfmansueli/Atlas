@@ -41,10 +41,10 @@ struct AutopilotLoopProgress: Hashable, Sendable {
         return AutopilotLoopProgress(
             title: String(localized: "\(designer) is revising the loop: “\(note)”."),
             detail: total == 1
-                ? String(localized: "The still and the name stay as approved. Then Atlas makes it, \(about).")
-                : String(localized: "The still and the name stay as approved. Then Atlas makes it in \(total) languages, \(about)."),
+                ? String(localized: "Still and name stay as approved. Then Atlas makes it, \(about).")
+                : String(localized: "Still and name stay as approved. Then Atlas makes it in \(total) languages, \(about)."),
             line: "",
-            approveNote: String(localized: "You can approve once the new loop is made.")
+            approveNote: String(localized: "Approve once the new loop is made.")
         )
     }
 
@@ -60,12 +60,11 @@ struct AutopilotLoopProgress: Hashable, Sendable {
         return AutopilotLoopProgress(
             title: String(localized: "Making the new loop"),
             detail: String(localized: """
-            \(designer) sent the new version. Each language is drawn frame by frame on this Mac and checked; until \
-            they’re all made, you’re watching the earlier loop.
+            \(designer) sent a new version. Until every language is drawn and checked, you’re watching the earlier loop.
             """),
             fraction: total > 0 ? Double(done) / Double(total) : 0,
             line: count + aboutLeft,
-            approveNote: String(localized: "You can approve once the new loop is made") + aboutLeft,
+            approveNote: String(localized: "Approve once the new loop is made") + aboutLeft,
             minutesLeft: minutes
         )
     }

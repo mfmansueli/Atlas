@@ -149,8 +149,8 @@ struct ProductPageTestProposer {
         let name = test.name ?? test.id
         if test.isDraft {
             return String(localized: """
-            “\(name)” is a draft in App Store Connect, and it runs one test at a time. Propose deleting it first \
-            (action: deleteDraft, testId: \(test.id)) and send this again: the test then waits for that delete.
+            “\(name)” is a draft, and App Store Connect runs one test at a time. Suggest deleting it first \
+            (action: deleteDraft, testId: \(test.id)), then resend. The test waits for the delete.
             """)
         }
         return String(localized: """

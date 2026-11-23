@@ -21,7 +21,7 @@ struct GuidedPushOutcomeTests {
         let outcome = GuidedPushOutcome.make(images: nil, extras: nil)
         #expect(outcome == .approved)
         #expect(outcome.title == "Waiting in Review & Push")
-        #expect(outcome.detail?.contains("top right") == true)
+        #expect(outcome.detail == "All approved and in Review & Push, with your other changes. Push from there.")
         #expect(outcome.detail?.contains("with your other changes") == true)
         #expect(outcome.opensReviewPush)
         #expect(outcome.reviewPushTitle == "Open Review & Push…")
@@ -35,7 +35,7 @@ struct GuidedPushOutcomeTests {
         let outcome = GuidedPushOutcome.make(images: running, extras: finished)
         #expect(outcome == .sending)
         #expect(outcome.title == "Pushing from Review & Push")
-        #expect(outcome.detail == "Its progress is in Review & Push, top right.")
+        #expect(outcome.detail == "Its progress is in Review & Push.")
         #expect(outcome.opensReviewPush)
         #expect(outcome.reviewPushTitle == "Show Progress…")
     }
@@ -56,7 +56,7 @@ struct GuidedPushOutcomeTests {
         #expect(GuidedPushOutcome.make(images: Tally(total: 4, done: 3, isRunning: false), extras: nil) == .partly)
         #expect(GuidedPushOutcome.make(images: images, extras: Tally(total: 2, done: 0, isRunning: false)) == .partly)
         #expect(GuidedPushOutcome.partly.title == "Not everything was sent")
-        #expect(GuidedPushOutcome.partly.detail?.contains("stays in Review & Push, where you can try again") == true)
+        #expect(GuidedPushOutcome.partly.detail?.contains("Retry the rest in Review & Push.") == true)
         #expect(GuidedPushOutcome.partly.opensReviewPush)
     }
 
@@ -66,7 +66,7 @@ struct GuidedPushOutcomeTests {
         let outcome = GuidedPushOutcome.make(images: nil, extras: nil, pushedFromSheet: true)
         #expect(outcome == .unknown)
         #expect(outcome.title == "Sent from this Mac")
-        #expect(outcome.detail?.contains("can’t tell how it ended") == true)
+        #expect(outcome.detail?.contains("the outcome is unknown") == true)
     }
 }
 #endif

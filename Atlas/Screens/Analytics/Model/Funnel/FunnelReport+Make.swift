@@ -65,7 +65,7 @@ extension FunnelReport {
             return FunnelCallout(
                 kind: .newApp,
                 title: String(localized: "\(name) has \(dataset.dayCount) days of data"),
-                text: String(localized: "Comparisons start after a full period. Until then the funnel shows counts and rates, without “better” or “worse”.")
+                text: String(localized: "Comparisons start after a full period. Until then: counts and rates only.")
             )
         }
         if dataset.hasEngagement, views < AnalyticsStatistics.minimumTotal || downloads < AnalyticsStatistics.minimumCount {
@@ -73,7 +73,7 @@ extension FunnelReport {
                 kind: .tooFew,
                 title: String(localized: "Too few to tell"),
                 text: String(
-                    localized: "\(name) had \(AnalyticsText.count(views)) page views and \(AnalyticsText.count(downloads)) downloads in \(report.days) days. Rates this small move by chance, so they’re shown as counts. Switch to 90 days, or look at what people see first: the screenshots and subtitle."
+                    localized: "\(name) had \(AnalyticsText.count(views)) page views and \(AnalyticsText.count(downloads)) downloads in \(report.days) days, too few for rates. Switch to 90 days, or check the screenshots and subtitle."
                 )
             )
         }
@@ -97,7 +97,7 @@ extension FunnelReport {
             let rate = report.totals.rate(.downloads).text
             return FunnelCallout(
                 kind: .noSubscription,
-                title: String(localized: "\(name) has no subscription, so the funnel ends at downloads"),
+                title: String(localized: "\(name) has no subscription: funnel ends at downloads"),
                 text: String(localized: "\(AnalyticsText.count(downloads)) first-time downloads. Downloads per page view: \(rate).")
             )
         }
@@ -119,19 +119,18 @@ extension FunnelReport {
         guard dataset.sellsSubscriptions else { return (nil, false) }
         switch dataset.salesState {
         case .needsVendorNumber:
-            return (String(localized: "Store-page numbers work without a vendor number. Trials, paid starts and proceeds need it."), true)
+            return (String(localized: "Trials, paid starts and proceeds need a vendor number."), true)
         case .keyCannotRead:
-            return (String(localized: "Your key’s role can’t read sales. Keys with the Admin, Finance or Sales role can."), true)
+            return (String(localized: "Your key’s role can’t read sales. Admin, Finance and Sales keys can."), true)
         case .waiting:
-            return (String(localized: "Impressions, page views and downloads have arrived. Sales come in a separate report from Apple."), false)
+            return (String(localized: "Impressions, page views and downloads arrived. Sales come in a separate report."), false)
         case .ready:
             if case .waiting = dataset.engagementState {
                 return (String(localized: "Sales arrived. Impressions, page views and downloads come in Apple’s analytics reports."), false)
             }
             let text = String(
                 localized: """
-                Paid starts include trials that converted and people who subscribed without a trial. Trials that started in the \
-                last 7 days can’t have converted yet.
+                Includes converted trials and direct subscriptions. Trials under 7 days old can’t have converted.
                 """
             )
             return (text, false)

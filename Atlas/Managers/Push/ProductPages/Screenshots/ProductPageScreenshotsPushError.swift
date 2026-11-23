@@ -22,7 +22,7 @@ enum ProductPageScreenshotsPushError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .cannotUpload:
-            String(localized: "This connection can’t upload files.")
+            String(localized: "This connection can’t push files.")
         case let .pageMissing(name):
             String(localized: "“\(name)” isn’t in App Store Connect yet. Push the page first, then its screenshots.")
         case let .fileMissing(fileName):
