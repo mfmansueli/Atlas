@@ -52,6 +52,7 @@ struct MCPToolbox {
             ProposeComplianceAnswersTool(),
             GetExportComplianceTool(),
             ProposeExportComplianceTool(),
+            ReportEncryptionKeyTool(),
             GetScreenshotContextTool(),
             ListCapturesTool(),
             MarkCapturesStaleTool(),

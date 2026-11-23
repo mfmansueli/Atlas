@@ -88,7 +88,7 @@ struct AppInformationPageBar: View {
             Image(systemName: "info.circle")
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
-            Text(page.whereShown(appName: viewModel.app.name))
+            Text(page.whereShown(appName: viewModel.app.name, version: viewModel.content?.version))
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)

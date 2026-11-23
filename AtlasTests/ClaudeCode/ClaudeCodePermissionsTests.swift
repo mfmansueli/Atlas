@@ -152,8 +152,9 @@ struct ClaudeCodePermissionsTests {
         for permissions in ClaudeCodePermissions.allCases {
             let everything = permissions.tools + permissions.allowRules(port: port)
             // Make It Work… is the one run that changes the project.
-            // Make It Work… and Add StoreKit Configuration… are the runs that change the project.
-            let edits = [ClaudeCodePermissions.deepLinkWork, .reviewShotsStoreKit].contains(permissions)
+            // Make It Work…, Add StoreKit Configuration… and Add It to the
+            // Project (the export compliance key) are the runs that change the project.
+            let edits = [ClaudeCodePermissions.deepLinkWork, .reviewShotsStoreKit, .encryptionKey].contains(permissions)
             let tools = edits ? ["NotebookEdit", "WebFetch", "WebSearch"] : ["Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"]
             for tool in tools {
                 #expect(!everything.contains(tool), "\(permissions.title) allows \(tool)")

@@ -145,6 +145,12 @@ struct ReviewAndExportChangeTests {
         #expect(ExportComplianceAnswers(answers: [.usesEncryption: true]).visibleQuestions == ExportComplianceQuestion.allCases)
         #expect(ExportComplianceAnswers(answers: [.usesEncryption: true]).usesNonExemptEncryption == nil)
         #expect(ExportComplianceAnswers(usesNonExemptEncryption: true).status == "Docs needed")
-        #expect(ExportComplianceAnswers(usesNonExemptEncryption: false)[.usesEncryption] == false)
+        // The build's false can't tell exempt encryption from none: it
+        // reads as exempt, never as "no encryption".
+        let fromBuild = ExportComplianceAnswers(usesNonExemptEncryption: false)
+        #expect(fromBuild[.usesEncryption] == true)
+        #expect(fromBuild[.isExempt] == true)
+        #expect(fromBuild.usesNonExemptEncryption == false)
+        #expect(fromBuild.status == "Exempt")
     }
 }

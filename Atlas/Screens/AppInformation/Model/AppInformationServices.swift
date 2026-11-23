@@ -42,6 +42,11 @@ protocol AppInformationServices {
     /// for the built-in suggestions; nil when there's none or it can't be
     /// read.
     func previousReview(for app: StoreApp, content: AppInformationContent) async -> AppInformationBuiltInSuggestions.PreviousReview?
+
+    /// The app's newest uploaded builds, newest first, for whether they
+    /// arrive with their encryption answer set; empty when they can't be
+    /// read (`AppInformationServices+RecentBuilds.swift`).
+    func recentBuilds(for app: StoreApp) async -> [EncryptionKeyBuild]
 }
 
 extension AppInformationServices {

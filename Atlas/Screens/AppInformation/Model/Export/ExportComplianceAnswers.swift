@@ -45,9 +45,12 @@ struct ExportComplianceAnswers: Hashable, Codable, Sendable {
     }
 
     /// Answers implied by a build's flag, when nothing better is known.
+    /// False can't tell exempt encryption from none at all, so it reads as
+    /// exempt encryption (nearly every app uses HTTPS), never as "no
+    /// encryption": the page marks it as the build's answer.
     init(usesNonExemptEncryption: Bool?) {
         switch usesNonExemptEncryption {
-        case false?: answers = [.usesEncryption: false]
+        case false?: answers = [.usesEncryption: true, .isExempt: true]
         case true?: answers = [.usesEncryption: true, .isExempt: false]
         case nil: answers = [:]
         }
