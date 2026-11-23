@@ -18,7 +18,22 @@ enum ProductPageExperimentRequests {
     /// finished ones too.
     static func experimentsPath(appID: StoreApp.ID) -> String {
         "/v1/apps/\(appID)/appStoreVersionExperimentsV2?fields%5BappStoreVersionExperiments%5D="
-            + "name,platform,trafficProportion,state&limit=200"
+            + "name,platform,trafficProportion,state,reviewRequired,startDate,endDate&limit=200"
+    }
+
+    /// `GET /v2/appStoreVersionExperiments/{id}/appStoreVersionExperimentTreatments`:
+    /// a test's treatments.
+    static func treatmentsPath(experimentID: String) -> String {
+        "/v2/appStoreVersionExperiments/\(experimentID)/appStoreVersionExperimentTreatments"
+            + "?fields%5BappStoreVersionExperimentTreatments%5D=name,promotedDate&limit=50"
+    }
+
+    /// `GET /v1/appStoreVersionExperimentTreatments/{id}/appStoreVersionExperimentTreatmentLocalizations`
+    /// with each language's placements included: the artwork it shows.
+    static func treatmentLocalizationsPath(treatmentID: String) -> String {
+        "/v1/appStoreVersionExperimentTreatments/\(treatmentID)/appStoreVersionExperimentTreatmentLocalizations"
+            + "?include=placements&fields%5BappStoreVersionExperimentTreatmentLocalizations%5D=locale,placements"
+            + "&fields%5BappAssetLibraryPlacements%5D=placementType,placementGroup,state,image,video&limit=200&limit%5Bplacements%5D=50"
     }
 
     /// `POST /v2/appStoreVersionExperiments`: a draft test with no
@@ -101,6 +116,33 @@ enum ProductPageExperimentRequests {
                 ScreenshotAPIDocument<ProductPageExperimentAttributes, ProductPageExperimentAttributes>.self, from: data
             )
             return (page.data.map(ProductPageExperiment.init), page.links?.next)
+        } catch {
+            throw AppStoreConnectError.unexpectedPayload
+        }
+    }
+
+    static func treatments(in data: Data) throws -> [ProductPageTreatment] {
+        do {
+            let page = try JSONDecoder().decode(
+                ScreenshotAPIDocument<ProductPageTreatmentAttributes, ProductPageTreatmentAttributes>.self, from: data
+            )
+            return page.data.map(ProductPageTreatment.init)
+        } catch {
+            throw AppStoreConnectError.unexpectedPayload
+        }
+    }
+
+    /// Each language of a treatment, with the placements on its page.
+    static func treatmentLocalizations(in data: Data) throws -> [ProductPageTreatmentLocalization] {
+        do {
+            let page = try JSONDecoder().decode(
+                ScreenshotAPIDocument<ProductPageTreatmentLocaleAttributes, AssetLibraryPlacementAttributes>.self, from: data
+            )
+            return page.data.map { resource in
+                var localization = ProductPageTreatmentLocalization(resource)
+                localization.placements = page.items(of: resource, relationship: "placements").map(AssetLibraryPlacement.init)
+                return localization
+            }
         } catch {
             throw AppStoreConnectError.unexpectedPayload
         }

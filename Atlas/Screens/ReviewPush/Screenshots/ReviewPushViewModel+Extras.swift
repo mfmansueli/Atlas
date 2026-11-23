@@ -49,4 +49,14 @@ extension ReviewPushViewModel {
     func openTest(_ plan: ExtrasReviewPlan, placement: ProductPageTestPlacement) {
         extras.test = screenshots.testModel(for: plan, placement: placement)
     }
+
+    /// “Review Test…” on an assistant's proposed test: the sheet, prefilled.
+    func openProposedTest(_ plan: ExtrasReviewPlan, proposal: ProductPageTestProposal) {
+        extras.test = screenshots.proposedTestModel(for: plan, proposal: proposal)
+    }
+
+    /// “Dismiss” on a proposed test: it leaves Review & Push.
+    func dismissTestProposal(_ plan: ExtrasReviewPlan, proposal: ProductPageTestProposal) async {
+        await screenshots.decideTestProposal(appID: plan.appID, id: proposal.id, status: .dismissed)
+    }
 }

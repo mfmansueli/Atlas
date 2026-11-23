@@ -133,7 +133,9 @@ final class ScreenshotPushController {
         if let debug = workspace.pushing as? DebugScreenshotPushServices, let placement = debug.consumeOpenTest(),
            let plan = extras.orderedPlans.first
         {
-            let model = testModel(for: plan, placement: placement)
+            // `shots-ppo-proposed-sheet` opens on the assistant's proposal.
+            let proposal = debug.extrasScript.opensProposal ? plan.testProposals.first : nil
+            let model = proposal.flatMap { proposedTestModel(for: plan, proposal: $0) } ?? testModel(for: plan, placement: placement)
             model?.asksOnAppear = debug.extrasScript.asksVariant
             extras.test = model
             if debug.extrasScript.createsTest { model?.createTest() }

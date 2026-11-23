@@ -85,8 +85,12 @@ extension ScreenshotPushController {
 
     /// The Product Page Optimization sheet's model for `placement` of
     /// `plan`'s artwork. Both variants are exported to the app's Extras
-    /// folder when the API can't make the test.
-    func testModel(for plan: ExtrasReviewPlan, placement: ProductPageTestPlacement) -> ProductPageTestModel? {
+    /// folder when the API can't make the test. With `proposal`, it opens
+    /// prefilled with an assistant's proposed test
+    /// (`ScreenshotPushController+TestProposals`).
+    func testModel(
+        for plan: ExtrasReviewPlan, placement: ProductPageTestPlacement, proposal: ProductPageTestProposal? = nil
+    ) -> ProductPageTestModel? {
         guard let workspace, let app = apps[plan.appID] else { return nil }
         let screenshots = workspace.screenshots
         let environment = extrasProvider.map { provider in
@@ -104,7 +108,8 @@ extension ScreenshotPushController {
             loadExtras: {
                 guard let primary else { return nil }
                 return try? await screenshots.loadDocument(for: app, primaryLocale: primary).extras
-            }
+            },
+            proposal: proposal
         )
     }
 

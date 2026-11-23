@@ -13,6 +13,10 @@ import Foundation
 /// App Store Connect.
 protocol ProductPageTesting: Sendable {
     func productPageExperiments(appID: StoreApp.ID) async throws -> [ProductPageExperiment]
+    /// What `get_page_tests` reads of a test: its treatments, and each
+    /// one's languages with the artwork placed on them.
+    func productPageTreatments(experimentID: String) async throws -> [ProductPageTreatment]
+    func productPageTreatmentLocalizations(treatmentID: String) async throws -> [ProductPageTreatmentLocalization]
     func createProductPageExperiment(appID: StoreApp.ID, name: String, trafficProportion: Int) async throws -> ProductPageExperiment
     func createProductPageTreatment(experimentID: String, name: String) async throws -> ProductPageTreatment
     func createProductPageTreatmentLocalization(treatmentID: String, locale: String) async throws -> ProductPageTreatmentLocalization

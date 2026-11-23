@@ -38,7 +38,8 @@ struct AppStoreConnectClientExperimentsTests {
         let request = try #require(transport.requests.first)
         #expect(request.httpMethod == "GET")
         #expect(request.url?.path() == "/v1/apps/123/appStoreVersionExperimentsV2")
-        #expect(request.url?.query() == "fields%5BappStoreVersionExperiments%5D=name,platform,trafficProportion,state&limit=200")
+        let fields = "name,platform,trafficProportion,state,reviewRequired,startDate,endDate"
+        #expect(request.url?.query() == "fields%5BappStoreVersionExperiments%5D=\(fields)&limit=200")
         #expect(transport.requests.last?.url?.query() == "cursor=2")
         #expect(tests == [
             ProductPageExperiment(id: "exp-1", name: "Icons", platform: "IOS", state: "COMPLETED", trafficProportion: 30),
@@ -47,6 +48,47 @@ struct AppStoreConnectClientExperimentsTests {
         #expect(tests[0].isFinished)
         #expect(!tests[1].isFinished)
         #expect(tests[1].stateTitle == "running")
+    }
+
+    @Test func readsTheDatesAndWhetherReviewIsNeeded() async throws {
+        let body = """
+        {"data":[{"type":"appStoreVersionExperiments","id":"exp-1","attributes":{"name":"Header","state":"PREPARE_FOR_SUBMISSION",
+          "reviewRequired":true,"startDate":"2026-11-01T10:00:00Z","endDate":"2026-11-29T10:00:00.000Z"}}]}
+        """
+        let tests = try await client(FakeHTTPTransport([.init(body: body)])).productPageExperiments(appID: "123")
+        let test = try #require(tests.first)
+        #expect(test.reviewRequired == true)
+        #expect(test.startDate == Date(timeIntervalSince1970: 1_793_527_200))
+        #expect(test.endDate == Date(timeIntervalSince1970: 1_795_946_400))
+        #expect(test.isDraft)
+    }
+
+    @Test func readsATestsTreatmentsAndTheArtworkOnEachLanguage() async throws {
+        let treatments = """
+        {"data":[{"type":"appStoreVersionExperimentTreatments","id":"tr-1","attributes":{"name":"Outcome","promotedDate":"2026-11-20T08:00:00Z"}}]}
+        """
+        let locales = """
+        {"data":[{"type":"appStoreVersionExperimentTreatmentLocalizations","id":"trl-de","attributes":{"locale":"de-DE"},
+          "relationships":{"placements":{"data":[{"type":"appAssetLibraryPlacements","id":"p-1"}]}}}],
+         "included":[{"type":"appAssetLibraryPlacements","id":"p-1","attributes":{"placementType":"PRODUCT_PAGE_HEADER_ASSET",
+          "placementGroup":"PRODUCT_PAGE_HEADER_UNIVERSAL","state":"READY_FOR_REVIEW"},
+          "relationships":{"image":{"data":{"type":"appAssetLibraryImages","id":"img-1"}}}}]}
+        """
+        let transport = FakeHTTPTransport([.init(body: treatments), .init(body: locales)])
+        let made = try await client(transport).productPageTreatments(experimentID: "exp-1")
+        let languages = try await client(transport).productPageTreatmentLocalizations(treatmentID: "tr-1")
+
+        #expect(transport.requests.first?.url?.path() == "/v2/appStoreVersionExperiments/exp-1/appStoreVersionExperimentTreatments")
+        #expect(transport.requests.first?.url?.query() == "fields%5BappStoreVersionExperimentTreatments%5D=name,promotedDate&limit=50")
+        #expect(transport.requests.last?.url?.path() == "/v1/appStoreVersionExperimentTreatments/tr-1/appStoreVersionExperimentTreatmentLocalizations")
+        #expect(transport.requests.last?.url?.query()?.hasPrefix("include=placements&") == true)
+        #expect(made == [ProductPageTreatment(id: "tr-1", name: "Outcome", promotedDate: Date(timeIntervalSince1970: 1_795_161_600))])
+        #expect(languages == [ProductPageTreatmentLocalization(id: "trl-de", locale: "de-DE", placements: [
+            AssetLibraryPlacement(
+                id: "p-1", placementType: "PRODUCT_PAGE_HEADER_ASSET", placementGroup: "PRODUCT_PAGE_HEADER_UNIVERSAL", state: "READY_FOR_REVIEW",
+                asset: AssetLibraryAsset(id: "img-1", media: .image)
+            ),
+        ])])
     }
 
     @Test func createsADraftTestOnTheAppsIOSPage() async throws {

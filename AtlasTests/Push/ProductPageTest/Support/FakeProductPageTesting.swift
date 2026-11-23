@@ -17,6 +17,12 @@ final class FakeProductPageTesting: ProductPageTesting {
     struct Script: Sendable {
         /// What the app's test list shows.
         var tests: [ProductPageExperiment] = []
+        /// Each test's treatments, by test ID.
+        var treatments: [String: [ProductPageTreatment]] = [:]
+        /// Each treatment's languages, by treatment ID.
+        var treatmentLocalizations: [String: [ProductPageTreatmentLocalization]] = [:]
+        /// Reading the tests fails, like App Store Connect refusing the key.
+        var listFails = false
         /// Creating a test gets 409 `STATE_ERROR`.
         var refusesNewTest = false
         /// Placements on these languages' treatment pages are refused, as
@@ -41,7 +47,18 @@ final class FakeProductPageTesting: ProductPageTesting {
 
     func productPageExperiments(appID: StoreApp.ID) async throws -> [ProductPageExperiment] {
         log("tests \(appID)")
+        if script.listFails { throw AppStoreConnectError.forbidden(detail: "The key has no access to this app") }
         return script.tests
+    }
+
+    func productPageTreatments(experimentID: String) async throws -> [ProductPageTreatment] {
+        log("treatments \(experimentID)")
+        return script.treatments[experimentID] ?? []
+    }
+
+    func productPageTreatmentLocalizations(treatmentID: String) async throws -> [ProductPageTreatmentLocalization] {
+        log("treatment locales \(treatmentID)")
+        return script.treatmentLocalizations[treatmentID] ?? []
     }
 
     func createProductPageExperiment(appID _: StoreApp.ID, name: String, trafficProportion: Int) async throws -> ProductPageExperiment {

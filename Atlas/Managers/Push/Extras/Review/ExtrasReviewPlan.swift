@@ -28,9 +28,11 @@ struct ExtrasReviewPlan: Hashable, Sendable {
     var musicTitle: String?
     /// Why none of it can go now: the version is live.
     var blockedReason: String?
+    /// Tests assistants proposed that wait for the person, oldest first.
+    var testProposals: [ProductPageTestProposal] = []
 
     /// Nothing to show, push, test or undo.
-    var isEmpty: Bool { items.isEmpty && artwork.isEmpty && discardedCount == 0 }
+    var isEmpty: Bool { items.isEmpty && artwork.isEmpty && discardedCount == 0 && testProposals.isEmpty }
     var pushable: [ExtrasReviewItem] { blockedReason == nil ? items.filter { !$0.isBlocked } : [] }
     var blocked: [ExtrasReviewItem] { items.filter(\.isBlocked) }
 

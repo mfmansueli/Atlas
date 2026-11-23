@@ -19,6 +19,10 @@ final class DebugProductPageTesting: ProductPageTesting {
 
     func productPageExperiments(appID _: StoreApp.ID) async throws -> [ProductPageExperiment] { [] }
 
+    func productPageTreatments(experimentID _: String) async throws -> [ProductPageTreatment] { [] }
+
+    func productPageTreatmentLocalizations(treatmentID _: String) async throws -> [ProductPageTreatmentLocalization] { [] }
+
     func createProductPageExperiment(appID _: StoreApp.ID, name: String, trafficProportion: Int) async throws -> ProductPageExperiment {
         try await Task.sleep(for: script.delay)
         return ProductPageExperiment(id: "debug-test", name: name, platform: "IOS", state: "PREPARE_FOR_SUBMISSION", trafficProportion: trafficProportion)

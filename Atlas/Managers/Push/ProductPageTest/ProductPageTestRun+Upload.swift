@@ -23,15 +23,20 @@ extension ProductPageTestRun {
     /// The variant reserved in the app's library, uploaded in parts,
     /// committed and processed.
     func processedAsset(for locale: ProductPageTestLocale) async throws -> AssetLibraryAsset {
+        // Already in the library, processed: placed as it is.
+        if let asset = locale.libraryAsset { return asset }
+        guard let treatmentFile = locale.treatmentFile else {
+            throw ProductPageTestFailure.file(detail: String(localized: "there’s no file for \(locale.locale)"))
+        }
         let data: Data
         do {
-            data = try await environment.fileData(locale.treatmentFile)
+            data = try await environment.fileData(treatmentFile)
         } catch {
             throw ProductPageTestFailure.file(detail: error.localizedDescription)
         }
         let library = environment.library
         let libraryID = try await libraryID()
-        let fileName = locale.treatmentFile.lastPathComponent
+        let fileName = treatmentFile.lastPathComponent
         let referenceName = "Atlas · \(request.testName) · \(request.treatmentName) · \(locale.locale)"
         let reservation = try await call {
             try await library.reserveAssetLibraryImage(

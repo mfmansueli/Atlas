@@ -34,6 +34,8 @@ final class ProductPageTestModel: Identifiable {
         var control: URL?
         var treatment: URL?
         var checks: [ArtworkCheck]
+        /// A proposed treatment from the app's library: the image's name.
+        var libraryName: String?
 
         var id: String { locale }
     }
@@ -53,11 +55,20 @@ final class ProductPageTestModel: Identifiable {
     var launchedRunID: ClaudeCodeRun.ID?
     /// Atlas is starting Claude Code: nobody's idle yet.
     private(set) var isStarting = false
+    /// The test an assistant proposed (`propose_page_test`), which the
+    /// sheet opens prefilled with; nil when the person opened it.
+    let proposal: ProductPageTestProposal?
+    /// Sends the test to App Review once it's made; the proposal's choice
+    /// to start with, off otherwise.
+    var startsTest: Bool
     #if DEBUG
     /// DEBUG scenes: asks as soon as the sheet opens.
     var asksOnAppear = false
     #endif
 
+    /// Records that the person made the proposed test, with the outcome's
+    /// line, so it leaves Review & Push.
+    @ObservationIgnored var onProposalMade: @MainActor (ProductPageTestProposal.ID, String) async -> Void = { _, _ in }
     @ObservationIgnored let environment: ProductPageTestEnvironment?
     @ObservationIgnored let fileURL: (_ fileID: String, _ pathExtension: String) -> URL
     @ObservationIgnored let exportFolder: URL
@@ -71,7 +82,8 @@ final class ProductPageTestModel: Identifiable {
 
     init(
         plan: ExtrasReviewPlan, placement: ProductPageTestPlacement, environment: ProductPageTestEnvironment?,
-        fileURL: @escaping (String, String) -> URL, exportFolder: URL, loadExtras: @escaping () async -> ScreenshotExtras?
+        fileURL: @escaping (String, String) -> URL, exportFolder: URL, loadExtras: @escaping () async -> ScreenshotExtras?,
+        proposal: ProductPageTestProposal? = nil
     ) {
         self.plan = plan
         self.placement = placement
@@ -80,16 +92,24 @@ final class ProductPageTestModel: Identifiable {
         self.fileURL = fileURL
         self.exportFolder = exportFolder
         self.loadExtras = loadExtras
+        self.proposal = proposal
+        startsTest = proposal?.startsTest ?? false
         phase = .intro
-        if variant != nil { phase = .variantReady }
+        if variant != nil || usesLibrary { phase = .variantReady }
     }
 
     var role: ArtworkTextRole { placement == .header ? .header : .search }
     var controlName: String { ProductPageTestRequest.defaultControlName }
-    var treatmentName: String { ProductPageTestRequest.defaultTreatmentName }
+    var treatmentName: String { usesLibrary ? String(localized: "Library image") : ProductPageTestRequest.defaultTreatmentName }
 
-    /// "Header: Interface vs Outcome".
-    var testName: String { "\(placement.title): \(controlName) vs \(treatmentName)" }
+    /// The proposed treatment is images already in the app's library.
+    var usesLibrary: Bool { !(proposal?.treatment.libraryAssets.isEmpty ?? true) }
+
+    /// "Header: Interface vs Outcome", or the proposal's name.
+    var testName: String { proposal?.name ?? "\(placement.title): \(controlName) vs \(treatmentName)" }
+
+    /// The share of the page's visitors who see the treatment, in percent.
+    var trafficProportion: Int { proposal?.trafficProportion ?? 50 }
 
     /// The variant for this placement, once one was made.
     var variant: ExtrasArtworkVariant? {
@@ -97,18 +117,29 @@ final class ProductPageTestModel: Identifiable {
         return variant
     }
 
-    /// Primary language first.
+    /// Primary language first; a proposal's languages only.
     var rows: [LocaleRow] {
-        let codes = plan.artwork.filter { $0.kind == kind }.map(\.locale)
+        let assets = proposal?.treatment.libraryAssets ?? []
+        var codes = assets.isEmpty ? plan.artwork.filter { $0.kind == kind }.map(\.locale) : assets.map(\.locale)
+        if let proposal { codes = codes.filter(proposal.locales.contains) }
         let ordered = codes.filter { $0 == plan.primaryLocale } + codes.filter { $0 != plan.primaryLocale }
         return ordered.map { code in
             let control = plan.artwork.first { $0.kind == kind && $0.locale == code }
-            let treatment = variant?.files.first { $0.kind == kind && $0.locale == code }
+            let treatment = usesLibrary ? nil : variant?.files.first { $0.kind == kind && $0.locale == code }
             return LocaleRow(
                 locale: code, name: ExtrasReviewPlanner.name(of: code), control: control.map { fileURL($0.fileID, "png") },
-                treatment: treatment.map { fileURL($0.fileID, "png") }, checks: treatment?.checks ?? []
+                treatment: treatment.map { fileURL($0.fileID, "png") }, checks: treatment?.checks ?? [],
+                libraryName: assets.first { $0.locale == code }?.name
             )
         }
+    }
+
+    /// When the proposal asked the run for its variant and it isn't in
+    /// yet, the sheet opens waiting for it.
+    func adoptRequest(of run: AutopilotRun?) {
+        guard phase == .intro, proposal != nil, let request = run?.variantRequest, request.role == role, request.kind == kind else { return }
+        assistantName = run?.client
+        phase = .asking
     }
 
     var variantErrors: [ArtworkCheck] { rows.flatMap(\.checks).filter(\.isError) }
@@ -121,7 +152,11 @@ final class ProductPageTestModel: Identifiable {
 
     /// Why Create Test is off, or nil.
     var createBlockReason: String? {
-        guard variant != nil else { return String(localized: "The variant isn’t in yet.") }
+        if usesLibrary {
+            guard !rows.isEmpty else { return String(localized: "The proposal has no language to test.") }
+        } else if variant == nil {
+            return String(localized: "The variant isn’t in yet.")
+        }
         if let error = variantErrors.first {
             return String(localized: "The variant breaks one of Apple’s rules: \(error.text) Ask for another.")
         }
@@ -212,26 +247,43 @@ final class ProductPageTestModel: Identifiable {
 
     // MARK: - The test
 
-    /// What the run makes: each language the variant was rendered in, with
-    /// its current image for the export.
+    /// What the run makes: each language the variant was rendered in (or
+    /// the proposal's library image is for), with its current image for
+    /// the export.
     var request: ProductPageTestRequest? {
+        let assets = proposal?.treatment.libraryAssets ?? []
         let locales = rows.compactMap { row -> ProductPageTestLocale? in
+            if usesLibrary {
+                guard let asset = assets.first(where: { $0.locale == row.locale }) else { return nil }
+                return ProductPageTestLocale(
+                    locale: row.locale, treatmentFile: nil, treatmentPixelSize: asset.pixelSize, controlFile: row.control, libraryAsset: asset.asset
+                )
+            }
             guard let treatment = row.treatment else { return nil }
             return ProductPageTestLocale(locale: row.locale, treatmentFile: treatment, treatmentPixelSize: kind.pixelSize, controlFile: row.control)
         }
         guard !locales.isEmpty else { return nil }
         return ProductPageTestRequest(
-            appID: plan.appID, appName: plan.appName, placement: placement, testName: testName, locales: locales,
-            exportFolder: exportFolder
+            appID: plan.appID, appName: plan.appName, placement: placement, testName: testName, treatmentName: treatmentName,
+            trafficProportion: trafficProportion, locales: locales, startsTest: startsTest, exportFolder: exportFolder
         )
     }
 
-    /// Creates the test (a draft the person starts in App Store Connect),
-    /// or exports both variants when the API can't.
+    /// Creates the test (a draft the person starts in App Store Connect,
+    /// unless they send it to App Review), or exports both variants when
+    /// the API can't. A proposed test made either way leaves Review & Push.
     func createTest() {
         guard canCreateTest, let environment, let request else { return }
         let run = ProductPageTestRun(request: request, environment: environment)
-        run.onFinish = { [weak self] _ in self?.phase = .finished }
+        run.onFinish = { [weak self] run in
+            guard let self else { return }
+            phase = .finished
+            guard let proposal, let outcome = run.outcome else { return }
+            switch outcome {
+            case .created, .exported: await onProposalMade(proposal.id, outcome.detail)
+            case .testInProgress, .failed: break
+            }
+        }
         self.run = run
         phase = .testing
         run.start()

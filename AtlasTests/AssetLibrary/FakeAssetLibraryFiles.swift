@@ -41,6 +41,12 @@ final class FakeAssetLibraryFiles: AssetLibraryManaging {
         self.uncheckable = uncheckable
     }
 
+    /// `files` as they are (sizes and states included), on no page.
+    init(files: [AssetLibraryFile]) {
+        state = Mutex(State(files: files, placements: [:]))
+        uncheckable = []
+    }
+
     var deleted: [String] { state.withLock { $0.deleted } }
 
     func assetLibraryFiles(appID _: StoreApp.ID) async throws -> [AssetLibraryFile] {

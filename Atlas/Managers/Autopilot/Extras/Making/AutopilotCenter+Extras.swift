@@ -40,6 +40,8 @@ extension AutopilotCenter {
         extras.artworkDesign = plan.artworkKinds.isEmpty ? nil : run.madeArtworkDesign
         // What was discarded stays out while it's the same file.
         extras.discardedChecksums = document.extras?.discardedChecksums
+        // Proposed tests wait for the person whatever the run makes.
+        extras.testProposals = document.extras?.testProposals
         if !plan.artworkKinds.isEmpty, let look {
             extras.artworkShows = plan.alsoMakes.artworkShows
             extras.artworkMotion = plan.alsoMakes.makesMotion ? .loop : .still

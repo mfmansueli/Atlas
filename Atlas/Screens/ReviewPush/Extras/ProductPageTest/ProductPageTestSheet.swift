@@ -30,6 +30,10 @@ struct ProductPageTestSheet: View {
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("ppo.explanation")
+            if let proposal = model.proposal, model.phase != .finished {
+                ProductPageTestProposalNote(proposal: proposal, startsTest: $model.startsTest)
+                    .disabled(model.phase == .testing)
+            }
             comparison
             if model.controlWaits {
                 Banner(
@@ -51,7 +55,11 @@ struct ProductPageTestSheet: View {
         .frame(width: 660)
         // Again when the request is made or cleared (the variant is in),
         // not on each step of its progress.
-        .task(id: center?.run(for: model.plan.appID)?.variantRequest?.askedAt) { await model.reload() }
+        .task(id: center?.run(for: model.plan.appID)?.variantRequest?.askedAt) {
+            // A proposal that asked the run for its variant opens waiting for it.
+            model.adoptRequest(of: center?.run(for: model.plan.appID))
+            await model.reload()
+        }
         .task { await askOnAppearInDebugScenes() }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("ppo.sheet")
@@ -108,7 +116,10 @@ struct ProductPageTestSheet: View {
                     HStack(alignment: .top, spacing: Spacing.small) {
                         Text(row.name).font(.callout).frame(width: 150, alignment: .leading)
                         ExtrasFileThumbnail(url: row.treatment, pixelSize: model.kind.pixelSize, width: 120)
-                        if row.checks.isEmpty {
+                        if let libraryName = row.libraryName {
+                            Text("From the library: \(libraryName)")
+                                .font(.subheadline).foregroundStyle(Palette.label2)
+                        } else if row.checks.isEmpty {
                             Text(row.treatment == nil ? String(localized: "Not rendered") : String(localized: "Passes every check"))
                                 .font(.subheadline).foregroundStyle(Palette.label2)
                         } else {
@@ -191,10 +202,12 @@ struct ProductPageTestSheet: View {
                 Button("Cancel Request") { model.cancelAsking(center: center) }
                     .accessibilityIdentifier("ppo.cancelAsk")
             case .variantReady:
-                Button("Ask for Another") {
-                    Task { await model.ask(center: center, launcher: launcher) }
+                if !model.usesLibrary {
+                    Button("Ask for Another") {
+                        Task { await model.ask(center: center, launcher: launcher) }
+                    }
+                    .accessibilityIdentifier("ppo.askAgain")
                 }
-                .accessibilityIdentifier("ppo.askAgain")
                 Button("Create Test") { model.createTest() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!model.canCreateTest)
