@@ -41,6 +41,23 @@ final class ReleaseProposalUITests: XCTestCase {
         XCTAssertTrue(banner.waitForNonExistence(timeout: 10), "Done: the proposal is settled")
     }
 
+    /// A waiting proposal counts on the Overview in the sidebar, and the
+    /// count goes once it's dismissed.
+    func testAWaitingProposalCountsOnTheOverview() {
+        app.launch(debugScene: "rel-proposed-release")
+        XCTAssertTrue(element("overview.version.proposal").waitForExistence(timeout: 15))
+        let overview = element("sidebar.section.overview")
+        XCTAssertTrue(overview.waitForExistence(timeout: 5))
+        XCTAssertTrue(overview.label.contains("1 suggestion to review"), overview.label)
+        element("overview.version.proposal.dismiss").click()
+        XCTAssertTrue(element("overview.version.proposal").waitForNonExistence(timeout: 5))
+        let deadline = Date.now.addingTimeInterval(5)
+        while overview.label.contains("suggestion to review"), Date.now < deadline {
+            RunLoop.current.run(until: .now.addingTimeInterval(0.2))
+        }
+        XCTAssertFalse(overview.label.contains("suggestion to review"), overview.label)
+    }
+
     func testDismissLeavesTheVersionAsItIs() {
         app.launch(debugScene: "rel-proposed-release")
         XCTAssertTrue(element("overview.version.proposal").waitForExistence(timeout: 15))

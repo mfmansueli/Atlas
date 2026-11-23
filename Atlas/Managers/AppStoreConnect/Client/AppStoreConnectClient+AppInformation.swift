@@ -28,9 +28,10 @@ extension AppStoreConnectClient {
     /// One app info with its rating and category linkages
     /// (`GET /v1/appInfos/{id}?include=primaryCategory,…`).
     func appInfoDetail(appInfoID: String) async throws -> AppInformationResourceDocument<AppInfoRatingAttributes>.Resource? {
-        let include = ["primaryCategory", "secondaryCategory", "primarySubcategoryOne", "primarySubcategoryTwo"].joined(separator: ",")
+        let include = ["primaryCategory", "secondaryCategory"]
+            + AppInformationChangeBuilder.subcategoryRelationships + AppInformationChangeBuilder.secondarySubcategoryRelationships
         let document: AppInformationResourceDocument<AppInfoRatingAttributes> = try await get(
-            url("/v1/appInfos/\(appInfoID)", query: [URLQueryItem(name: "include", value: include)])
+            url("/v1/appInfos/\(appInfoID)", query: [URLQueryItem(name: "include", value: include.joined(separator: ","))])
         )
         return document.data
     }

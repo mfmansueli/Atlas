@@ -36,6 +36,9 @@ final class AppPrivacyViewModel {
     // MARK: - Page state
 
     var tab: AppPrivacyTab = .worksheet
+    /// The language the suggestion bar's arrows went to on Privacy URLs:
+    /// its row scrolls into view and is marked.
+    var focusedChoicesLocale: StoreLocale?
     var filter: PrivacyWorksheetFilter = .all
     /// "Show All 35 Data Types": every type, not only the answered ones.
     var showsAllTypes = false

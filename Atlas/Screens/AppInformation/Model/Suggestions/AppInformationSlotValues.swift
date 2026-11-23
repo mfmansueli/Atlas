@@ -93,7 +93,8 @@ struct AppInformationSlotValues {
     }
 
     /// Whether it can take a value: the categories always (Games'
-    /// subcategories while the primary category is Games), the version's
+    /// subcategories while the primary or secondary category is Games, each
+    /// its own pair), the version's
     /// fields while it's editable, the questionnaire once App Store Connect
     /// returned it, a feature and the accessibility URL once Accessibility
     /// loaded, on the app's devices, and a language's User Privacy Choices
@@ -101,6 +102,7 @@ struct AppInformationSlotValues {
     func canSuggest(_ slot: AppInformationSuggestionSlot) -> Bool {
         switch slot {
         case .field(.gamesSubcategories): general.isGame
+        case .field(.secondaryGamesSubcategories): general.isSecondaryGame
         case .field(.accessibilityURL): accessibility != nil
         case let .field(field): !field.isVersionLevel || content.isVersionEditable
         case .ageRating: content.ids.ageRatingDeclarationID != nil

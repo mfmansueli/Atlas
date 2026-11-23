@@ -44,6 +44,25 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertTrue(element("review.row.appInformation.\(lumen).general.lumen-v14.copyright").waitForExistence(timeout: 5))
     }
 
+    /// Games as the secondary category brings its own two subcategory
+    /// pickers under it; picking one queues the secondary pair.
+    func testGamesAsTheSecondaryCategoryTakesItsOwnSubcategories() {
+        launch(scene: "info-general")
+        let secondary = app.popUpButtons["appInformation.general.secondaryCategory"]
+        XCTAssertTrue(secondary.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.popUpButtons["appInformation.general.secondaryGamesSubcategory1"].exists)
+        secondary.click()
+        app.menuItems["Games"].click()
+        let first = app.popUpButtons["appInformation.general.secondaryGamesSubcategory1"]
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.popUpButtons["appInformation.general.gamesSubcategory1"].exists, "The primary category isn't Games.")
+        reveal(first)
+        first.click()
+        app.menuItems["Word"].click()
+        app.buttons["workspace.reviewPushButton"].click()
+        XCTAssertTrue(element("review.row.appInformation.\(lumen).general.secondaryGamesSubcategories").waitForExistence(timeout: 5))
+    }
+
     func testDeclaringForAppleWatchInTheEditor() {
         launch(scene: "a11y-published")
         let declare = app.buttons["appInformation.accessibility.APPLE_WATCH.declare"]
@@ -140,6 +159,36 @@ final class AppInformationUITests: XCTestCase {
         let accept = card.descendants(matching: .any)["suggestion.accept"].firstMatch
         accept.click()
         XCTAssertTrue(waitUntil { !accept.exists })
+    }
+
+    /// Privacy URLs has the suggestion bar for its URLs, saying the
+    /// answers are never in it; Accept 1 on This Page takes the German URL.
+    func testAppPrivacysBarAcceptsItsURLSuggestions() {
+        launch(scene: "info-choices-suggested")
+        let urls = element("appInformation.appPrivacy.urls")
+        XCTAssertTrue(urls.waitForExistence(timeout: 15))
+        let bar = urls.descendants(matching: .any)["appInformation.pageBar"]
+        XCTAssertTrue(bar.waitForExistence(timeout: 5))
+        XCTAssertTrue(element("appInformation.appPrivacy.barNote").exists)
+        let card = element("appInformation.suggestions.appPrivacy.de-DE.privacyChoicesUrl")
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        let acceptHere = bar.buttons["appInformation.acceptHere"]
+        XCTAssertTrue(acceptHere.exists)
+        acceptHere.click()
+        XCTAssertTrue(waitUntil { !card.descendants(matching: .any)["suggestion.accept"].firstMatch.exists })
+        XCTAssertTrue(element("appInformation.toast").waitForExistence(timeout: 5))
+    }
+
+    /// The bar's arrows go to the language with a suggestion and say which.
+    func testAppPrivacysArrowsGoToTheLanguageWithASuggestion() {
+        launch(scene: "info-choices-suggested")
+        let next = app.buttons["appInformation.appPrivacy.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 15))
+        next.click()
+        let position = element("appInformation.appPrivacy.position")
+        XCTAssertTrue(position.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(containing: "German, 1 of 1").exists)
+        XCTAssertTrue(element("appInformation.suggestions.appPrivacy.de-DE.privacyChoicesUrl").isHittable)
     }
 
     private func waitUntil(timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {

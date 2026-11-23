@@ -228,14 +228,15 @@ struct SuggestEverythingScope: Hashable, Sendable {
         openParts.append(String(localized: "the User Privacy Choices URLs"))
     }
 
-    /// Copyright, the categories (and Games subcategories for a game),
+    /// Copyright, the categories (and Games subcategories while the primary
+    /// or the secondary category is Games),
     /// content rights and the release; the categories and content rights,
     /// the app's, stay open while the version is in review.
     private mutating func addGeneral(_ slots: AppInformationSlotValues, locked: String) {
         let fields: [AppInformationSuggestionField] = [.copyright, .primaryCategory, .secondaryCategory, .contentRights, .release]
         let open = fields.filter { slots.canSuggest(.field($0)) }
         if open.count == fields.count {
-            let detail = slots.canSuggest(.field(.gamesSubcategories))
+            let detail = slots.canSuggest(.field(.gamesSubcategories)) || slots.canSuggest(.field(.secondaryGamesSubcategories))
                 ? String(localized: "Copyright, categories, Games subcategories, content rights, release")
                 : String(localized: "Copyright, categories, content rights, release")
             rows.append(Row(page: .general, detail: detail))

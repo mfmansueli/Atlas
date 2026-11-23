@@ -64,7 +64,7 @@ struct ProposeReleaseActionTool: MCPTool {
         withdraw_release_action; get_release's proposals say what became of them.
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId", "action", "reason"]),
-        proposalKind: .storeText
+        proposalKind: .release
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {

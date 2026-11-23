@@ -24,8 +24,8 @@ extension AppInformationViewModel {
         }
     }
 
-    /// The pages whose slots take suggestions: the ones with a suggestion
-    /// bar, and App Privacy, whose URLs show theirs in their rows.
+    /// The pages whose slots take suggestions, each with a suggestion bar:
+    /// App Privacy's are its URLs, shown in their rows.
     static let slotPages: [AppInformationPage] = [.general, .ageRating, .accessibility, .appPrivacy, .appReview]
 
     /// What takes suggestions in `scope`, in the page's order.

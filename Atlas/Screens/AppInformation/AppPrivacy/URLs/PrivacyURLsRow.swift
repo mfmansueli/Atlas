@@ -14,6 +14,8 @@ struct PrivacyURLsRow: View {
     let table: PrivacyURLsTable
     let locale: StoreLocale
     let viewModel: AppPrivacyViewModel
+    /// The suggestion bar's arrows went here: an edge in the AI colour.
+    var isFocused = false
 
     var body: some View {
         let isPending = table.isPolicyPending(locale) || table.isChoicesPending(locale)
@@ -52,6 +54,14 @@ struct PrivacyURLsRow: View {
         }
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.xSmall)
+        .overlay(alignment: .leading) {
+            if isFocused {
+                Rectangle()
+                    .fill(Palette.aiEdge)
+                    .frame(width: 3)
+                    .accessibilityHidden(true)
+            }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.appPrivacy.urls.\(locale.code)")
     }

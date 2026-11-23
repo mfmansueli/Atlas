@@ -38,7 +38,12 @@ final class MCPServerController {
 
     /// What assistants may propose; reading is always allowed.
     var allowedProposals: Set<MCPProposalKind> {
-        didSet { defaults?.set(allowedProposals.map(\.rawValue).sorted(), forKey: Key.allowedProposals) }
+        didSet {
+            defaults?.set(allowedProposals.map(\.rawValue).sorted(), forKey: Key.allowedProposals)
+            // The switches there were, so one added later starts on and a
+            // newer one the person turned off stays off.
+            defaults?.set(MCPProposalKind.allCases.map(\.rawValue), forKey: Key.knownProposals)
+        }
     }
 
     /// "Suggest and edit drafts" in the setup sheet: `suggest_fields` may
@@ -124,7 +129,10 @@ final class MCPServerController {
         self.bridgePath = bridgePath
         self.now = now
         isEnabled = defaults?.bool(forKey: Key.isEnabled) ?? false
-        allowedProposals = Self.allowedProposals(saved: defaults?.stringArray(forKey: Key.allowedProposals))
+        allowedProposals = Self.allowedProposals(
+            saved: defaults?.stringArray(forKey: Key.allowedProposals),
+            known: defaults?.stringArray(forKey: Key.knownProposals)
+        )
         editsDrafts = defaults?.bool(forKey: Key.editsDrafts) ?? false
         loadPairedClients()
     }
@@ -156,11 +164,18 @@ final class MCPServerController {
         }
     }
 
-    /// What was saved, with the kinds added since it was saved left on.
-    static func allowedProposals(saved: [String]?) -> Set<MCPProposalKind> {
+    /// What was saved, with the kinds added since it was saved left on, or,
+    /// for one that was under another switch before (`formerSwitch`), as
+    /// that switch was. `known` is the kinds there were when it was saved;
+    /// a choice saved before it was kept had the first ones.
+    static func allowedProposals(saved: [String]?, known: [String]? = nil) -> Set<MCPProposalKind> {
         guard let saved else { return Set(MCPProposalKind.allCases) }
         let kinds = Set(saved.compactMap(MCPProposalKind.init(rawValue:)))
-        return kinds.union(Set(MCPProposalKind.allCases).subtracting(MCPProposalKind.firstKinds))
+        let knownKinds = known.map { Set($0.compactMap(MCPProposalKind.init(rawValue:))) } ?? MCPProposalKind.firstKinds
+        let added = Set(MCPProposalKind.allCases).subtracting(knownKinds).filter { kind in
+            kind.formerSwitch.map(kinds.contains) ?? true
+        }
+        return kinds.union(added)
     }
 
     func allows(_ kind: MCPProposalKind) -> Bool {
@@ -300,6 +315,7 @@ final class MCPServerController {
     enum Key {
         static let isEnabled = "mcp.isEnabled"
         static let allowedProposals = "mcp.allowedProposals"
+        static let knownProposals = "mcp.knownProposals"
         static let pairedClients = "mcp.pairedClients"
         static let editsDrafts = "mcp.editsDrafts"
     }

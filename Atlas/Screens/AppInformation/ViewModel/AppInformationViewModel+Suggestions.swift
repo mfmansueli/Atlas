@@ -154,13 +154,15 @@ extension AppInformationViewModel {
     }
 
     /// Whether the page shows the suggestion bar: General, Age Rating,
-    /// Accessibility and App Review, once loaded.
+    /// Accessibility, App Privacy (its URLs) and App Review, once loaded.
     func showsSuggestions(on page: AppInformationPage) -> Bool {
         isLoaded && Self.suggestionPages.contains(page)
     }
 
-    /// The pages that take suggestions, in the page column's order.
-    static let suggestionPages: [AppInformationPage] = [.general, .ageRating, .accessibility, .appReview]
+    /// The pages that take suggestions, in the page column's order. App
+    /// Privacy's are its User Privacy Choices URLs only: its answers are
+    /// never in a bar, Accept All or Accept All Pages.
+    static let suggestionPages: [AppInformationPage] = [.general, .ageRating, .accessibility, .appPrivacy, .appReview]
 
     /// With "Only fields with suggestions or changes" on, a field shows
     /// only while it has one or a change.
@@ -173,20 +175,7 @@ extension AppInformationViewModel {
     }
 
     func suggestionBar(for scope: SuggestionScope, assistant: String?) -> SuggestionBarModel {
-        let all = suggestions.all(for: app.id, scope: scope)
-        let provenanceCount = suggestionSlots(in: scope).count { provenance($0) != nil }
-        var counts: [SuggestionSourceFilter: Int] = [:]
-        for filter in SuggestionSourceFilter.allCases where filter != .all {
-            counts[filter] = visibleSuggestions(in: scope, filter: filter).count
-        }
-        return SuggestionBarModel(
-            openCount: suggestionCount(in: scope),
-            totalCount: all.count + provenanceCount,
-            countsBySource: counts,
-            assistantName: assistant ?? all.lazy.compactMap(\.source.assistantName).first,
-            filter: suggestionFilter,
-            dismissedCount: all.count(where: suggestions.isDismissed)
-        )
+        suggestionBar(for: [scope], assistant: assistant)
     }
 
     func suggestionBar(for page: AppInformationPage, assistant: String?) -> SuggestionBarModel {
@@ -303,8 +292,12 @@ extension AppInformationViewModel {
     /// suggestions.
     func openSuggestions(on page: AppInformationPage) {
         self.page = page
-        // App Privacy's suggestions are its User Privacy Choices URLs.
-        if page == .appPrivacy { privacy.tab = .urls }
+        // App Privacy's suggestions are its User Privacy Choices URLs: the
+        // first language with one comes into view.
+        if page == .appPrivacy {
+            privacy.tab = .urls
+            if let first = privacySuggestionNavigation.withSuggestions.first { privacy.focusedChoicesLocale = first }
+        }
         if page == .accessibility, let family = accessibilitySuggestionFamilies.first(where: { suggestionCount(in: .accessibility($0)) > 0 }) {
             accessibilitySuggestionFamily = family
         }

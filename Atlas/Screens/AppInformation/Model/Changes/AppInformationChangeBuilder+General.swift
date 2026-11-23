@@ -12,12 +12,21 @@ extension AppInformationChangeBuilder {
         static let primaryCategory = "primaryCategory"
         static let secondaryCategory = "secondaryCategory"
         static let gamesSubcategories = "gamesSubcategories"
+        static let secondaryGamesSubcategories = "secondaryGamesSubcategories"
         static let contentRights = "contentRights"
         static let copyright = "copyright"
         static let release = "release"
     }
 
+    /// The primary category's two Games subcategories, and the secondary
+    /// category's, as the app info's relationships.
     static let subcategoryRelationships = ["primarySubcategoryOne", "primarySubcategoryTwo"]
+    static let secondarySubcategoryRelationships = ["secondarySubcategoryOne", "secondarySubcategoryTwo"]
+
+    /// One category's pair of Games subcategory relationships.
+    static func subcategoryRelationships(secondary: Bool) -> [String] {
+        secondary ? secondarySubcategoryRelationships : subcategoryRelationships
+    }
 
     // MARK: - Building
 
@@ -43,23 +52,25 @@ extension AppInformationChangeBuilder {
         )
     }
 
-    /// Up to two Games subcategories, sent together.
-    func gamesSubcategoriesChange(from old: [String], to new: [String], source: ChangeSource = .you) -> PendingChange? {
+    /// Up to two Games subcategories, sent together: the primary
+    /// category's, or with `secondary` the secondary category's.
+    func gamesSubcategoriesChange(from old: [String], to new: [String], secondary: Bool = false, source: ChangeSource = .you) -> PendingChange? {
         guard old != new else { return nil }
         let names = { (ids: [String]) in ids.isEmpty ? String(localized: "None") : ids.map { AppCategory.name(for: $0) }.joined(separator: ", ") }
+        let relationships = Self.subcategoryRelationships(secondary: secondary)
         return PendingChange(
-            id: changeID(.general, GeneralKey.gamesSubcategories),
+            id: changeID(.general, secondary ? GeneralKey.secondaryGamesSubcategories : GeneralKey.gamesSubcategories),
             appID: appID,
             section: .appInformation,
             group: group(.general),
-            title: String(localized: "Games subcategories"),
+            title: secondary ? String(localized: "Secondary Games subcategories") : String(localized: "Games subcategories"),
             oldValue: names(old),
             newValue: names(new),
             source: source,
-            requests: [Self.patch("appInfos", id: ids.appInfoID, relationships: Self.subcategories(new))],
-            restoreRequests: [Self.patch("appInfos", id: ids.appInfoID, relationships: Self.subcategories(old))],
+            requests: [Self.patch("appInfos", id: ids.appInfoID, relationships: Self.subcategories(new, secondary: secondary))],
+            restoreRequests: [Self.patch("appInfos", id: ids.appInfoID, relationships: Self.subcategories(old, secondary: secondary))],
             conflictCheck: ConflictCheck(
-                path: "/v1/appInfos/\(ids.appInfoID)/relationships/\(Self.subcategoryRelationships[0])",
+                path: "/v1/appInfos/\(ids.appInfoID)/relationships/\(relationships[0])",
                 keyPath: ["data", "id"],
                 expected: old.first
             )
@@ -148,6 +159,8 @@ extension AppInformationChangeBuilder {
                 values.secondaryCategory = document.relationshipID(GeneralKey.secondaryCategory)
             case changeID(.general, GeneralKey.gamesSubcategories):
                 values.gamesSubcategories = Self.subcategoryRelationships.compactMap(document.relationshipID)
+            case changeID(.general, GeneralKey.secondaryGamesSubcategories):
+                values.secondaryGamesSubcategories = Self.secondarySubcategoryRelationships.compactMap(document.relationshipID)
             case changeID(.general, GeneralKey.contentRights):
                 values.contentRights = document.attribute("contentRightsDeclaration")?.stringValue.flatMap(ContentRights.init(rawValue:))
                 values.rightsConfirmed = change.blockedReason == nil
@@ -169,8 +182,8 @@ extension AppInformationChangeBuilder {
         AppInformationWriteDocument.Relationship(data: id.map { AppInformationWriteDocument.Identifier(type: "appCategories", id: $0) })
     }
 
-    static func subcategories(_ ids: [String]) -> [String: AppInformationWriteDocument.Relationship] {
-        Dictionary(uniqueKeysWithValues: subcategoryRelationships.enumerated().map { index, name in
+    static func subcategories(_ ids: [String], secondary: Bool = false) -> [String: AppInformationWriteDocument.Relationship] {
+        Dictionary(uniqueKeysWithValues: subcategoryRelationships(secondary: secondary).enumerated().map { index, name in
             (name, category(ids.indices.contains(index) ? ids[index] : nil))
         })
     }

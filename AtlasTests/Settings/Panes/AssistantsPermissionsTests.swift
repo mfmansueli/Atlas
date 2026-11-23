@@ -8,24 +8,52 @@ import Testing
 @testable import Atlas
 
 /// Settings → AI Assistants → "Assistants may suggest" (board 48): the
-/// design's six switches, what each tool asks for, and choices saved
-/// before the new ones.
+/// design's six switches and release actions' own, what each tool asks
+/// for, and choices saved before the new ones.
 @MainActor
 @Suite("Assistants may suggest")
 struct AssistantsPermissionsTests {
     @Test func theDesignsSwitches() {
         #expect(MCPProposalKind.allCases.map(\.title) == [
             "Store text", "Screenshot templates and captions", "Prices", "App Information answers", "Replies to reviews",
-            "Event and header artwork",
+            "Event and header artwork", "Release actions",
         ])
+        #expect(MCPProposalKind.release.refusal.contains("release actions is turned off"))
+        #expect(MCPProposalKind.release.caption?.isEmpty == false)
     }
 
     /// Saved before replies and artwork had their own switch: those start on,
-    /// the four saved choices stay.
+    /// the four saved choices stay, and release actions follow store text,
+    /// whose switch they were under.
     @Test func olderChoicesLeaveTheNewSwitchesOn() {
         let allowed = MCPServerController.allowedProposals(saved: ["storeText"])
-        #expect(allowed == [.storeText, .reviewReplies, .artwork])
+        #expect(allowed == [.storeText, .reviewReplies, .artwork, .release])
+        #expect(MCPServerController.allowedProposals(saved: ["prices"]) == [.prices, .reviewReplies, .artwork])
         #expect(MCPServerController.allowedProposals(saved: nil) == Set(MCPProposalKind.allCases))
+    }
+
+    /// Saved with the switches there were: a newer one turned off stays
+    /// off, and one added since starts as its former switch says.
+    @Test func choicesSavedWithTheKnownSwitchesKeepTheNewerOnesOff() {
+        let everyKind = MCPProposalKind.allCases.map(\.rawValue)
+        #expect(MCPServerController.allowedProposals(saved: ["storeText"], known: everyKind) == [.storeText])
+        let beforeRelease = MCPProposalKind.allCases.filter { $0 != .release }.map(\.rawValue)
+        #expect(MCPServerController.allowedProposals(saved: ["storeText", "artwork"], known: beforeRelease) == [.storeText, .artwork, .release])
+        #expect(MCPServerController.allowedProposals(saved: ["artwork"], known: beforeRelease) == [.artwork])
+    }
+
+    @Test func turningReleaseActionsOffIsRememberedAfterARelaunch() throws {
+        let name = "AssistantsPermissionsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let first = MCPTestFixtures.controller(defaults: defaults)
+        #expect(first.allows(.release))
+        first.setAllowed(.release, false)
+        first.setAllowed(.artwork, false)
+        let relaunched = MCPTestFixtures.controller(defaults: defaults)
+        #expect(!relaunched.allows(.release))
+        #expect(!relaunched.allows(.artwork))
+        #expect(relaunched.allows(.storeText))
     }
 
     @Test func eachToolAsksForItsSwitch() {
@@ -34,6 +62,9 @@ struct AssistantsPermissionsTests {
         #expect(ProposeEventArtworkTool().definition.proposalKind == .artwork)
         #expect(ProposeArtworkVariantTool().definition.proposalKind == .artwork)
         #expect(ProposeCaptionsTool().definition.proposalKind == .screenshots)
+        #expect(ProposeReleaseActionTool().definition.proposalKind == .release)
+        #expect(GetReleaseTool().definition.proposalKind == nil)
+        #expect(WithdrawReleaseActionTool().definition.proposalKind == nil)
     }
 
     @Test func theActivitySummaryCountsThisWeeksRefusals() {

@@ -43,8 +43,8 @@ enum AppInformationSuggestionWriter {
             let key = field == .primaryCategory ? Key.primaryCategory : Key.secondaryCategory
             let old = field == .primaryCategory ? content.general.primaryCategory : content.general.secondaryCategory
             return (builder.categoryChange(key, from: old, to: value.isEmpty ? nil : value, source: source), builder.changeID(.general, key))
-        case .gamesSubcategories:
-            return subcategoriesChange(to: value, in: values, source: source)
+        case .gamesSubcategories, .secondaryGamesSubcategories:
+            return subcategoriesChange(to: value, secondary: field == .secondaryGamesSubcategories, in: values, source: source)
         case .contentRights:
             return contentRightsChange(to: value, in: values, source: source)
         case .release:
@@ -61,14 +61,22 @@ enum AppInformationSuggestionWriter {
         }
     }
 
-    /// Games subcategories: only for a game, as on the page.
-    private static func subcategoriesChange(to value: String, in values: Values, source: ChangeSource) -> (change: PendingChange?, id: String)? {
-        guard values.general.isGame else { return nil }
+    /// Games subcategories: only while that category is Games, as on the
+    /// page.
+    private static func subcategoriesChange(
+        to value: String,
+        secondary: Bool,
+        in values: Values,
+        source: ChangeSource
+    ) -> (change: PendingChange?, id: String)? {
+        typealias Key = AppInformationChangeBuilder.GeneralKey
+        guard secondary ? values.general.isSecondaryGame : values.general.isGame else { return nil }
         let ids = AppInformationSuggestionField.subcategoryIDs(value)
         let builder = values.builder
+        let old = secondary ? values.content.general.secondaryGamesSubcategories : values.content.general.gamesSubcategories
         return (
-            builder.gamesSubcategoriesChange(from: values.content.general.gamesSubcategories, to: ids, source: source),
-            builder.changeID(.general, AppInformationChangeBuilder.GeneralKey.gamesSubcategories)
+            builder.gamesSubcategoriesChange(from: old, to: ids, secondary: secondary, source: source),
+            builder.changeID(.general, secondary ? Key.secondaryGamesSubcategories : Key.gamesSubcategories)
         )
     }
 

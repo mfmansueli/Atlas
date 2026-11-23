@@ -10,7 +10,8 @@ import Foundation
 /// own). Raw values are the names MCP uses (`suggest_fields`), App Store
 /// Connect's attribute names. A picked value is kept as App Store Connect's
 /// id (`PRODUCTIVITY`, `AFTER_APPROVAL`, `USES_THIRD_PARTY_CONTENT`; Games
-/// subcategories comma-separated; sign-in required as `yes` or `no`) and
+/// subcategories, the primary or the secondary category's, comma-separated;
+/// sign-in required as `yes` or `no`) and
 /// shown by name. The demo account's password is never one: it stays out
 /// of suggestions and MCP.
 enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable, Sendable {
@@ -19,6 +20,8 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
     case secondaryCategory
     /// Up to two, only while the primary category is Games.
     case gamesSubcategories
+    /// The secondary category's, up to two, only while it's Games.
+    case secondaryGamesSubcategories
     case contentRights
     case release
     case contactFirstName
@@ -37,7 +40,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
 
     var page: AppInformationPage {
         switch self {
-        case .copyright, .primaryCategory, .secondaryCategory, .gamesSubcategories, .contentRights, .release: .general
+        case .copyright, .primaryCategory, .secondaryCategory, .gamesSubcategories, .secondaryGamesSubcategories, .contentRights, .release: .general
         case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .demoAccountRequired, .demoAccountName, .notes: .appReview
         case .accessibilityURL: .accessibility
         }
@@ -49,6 +52,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .primaryCategory: String(localized: "Primary Category")
         case .secondaryCategory: String(localized: "Secondary Category")
         case .gamesSubcategories: String(localized: "Games Subcategories")
+        case .secondaryGamesSubcategories: String(localized: "Secondary Games Subcategories")
         case .contentRights: String(localized: "Third-Party Content")
         case .release: String(localized: "Version Release")
         case .accessibilityURL: String(localized: "Accessibility URL")
@@ -67,7 +71,9 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .demoAccountRequired: .signInRequired
         case .demoAccountName: .userName
         case .notes: .notes
-        case .copyright, .primaryCategory, .secondaryCategory, .gamesSubcategories, .contentRights, .release, .accessibilityURL: nil
+        case .copyright, .primaryCategory, .secondaryCategory, .gamesSubcategories, .secondaryGamesSubcategories, .contentRights, .release,
+             .accessibilityURL:
+            nil
         }
     }
 
@@ -75,12 +81,13 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
     /// review or live is locked; the categories, content rights and the
     /// accessibility URL belong to the app.
     var isVersionLevel: Bool {
-        ![.primaryCategory, .secondaryCategory, .gamesSubcategories, .contentRights, .accessibilityURL].contains(self)
+        ![.primaryCategory, .secondaryCategory, .gamesSubcategories, .secondaryGamesSubcategories, .contentRights, .accessibilityURL].contains(self)
     }
 
     /// Picked from a list rather than typed.
     var isPicked: Bool {
-        [.primaryCategory, .secondaryCategory, .gamesSubcategories, .contentRights, .release, .demoAccountRequired].contains(self)
+        [.primaryCategory, .secondaryCategory, .gamesSubcategories, .secondaryGamesSubcategories, .contentRights, .release, .demoAccountRequired]
+            .contains(self)
     }
 
     var isURL: Bool { self == .accessibilityURL }
@@ -129,7 +136,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
     func displayValue(_ value: String) -> String {
         switch self {
         case .primaryCategory, .secondaryCategory: AppCategory.name(for: value.isEmpty ? nil : value)
-        case .gamesSubcategories: Self.subcategoryNames(value)
+        case .gamesSubcategories, .secondaryGamesSubcategories: Self.subcategoryNames(value)
         case .contentRights: ContentRights(rawValue: value)?.title ?? value
         case .release: ReleaseOption(rawValue: value)?.title ?? value
         case .demoAccountRequired: Self.answerName(value)
@@ -165,7 +172,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .primaryCategory, .secondaryCategory:
             let match = AppCategory.all.first { [$0.id, $0.name].contains { $0.caseInsensitiveCompare(trimmed) == .orderedSame } }
             return match?.id
-        case .gamesSubcategories:
+        case .gamesSubcategories, .secondaryGamesSubcategories:
             return Self.normalizedSubcategories(trimmed)
         case .release:
             let match = ReleaseOption.allCases.first { [$0.rawValue, $0.title].contains { $0.caseInsensitiveCompare(trimmed) == .orderedSame } }
@@ -208,6 +215,7 @@ enum AppInformationSuggestionField: String, CaseIterable, Identifiable, Hashable
         case .primaryCategory: general?.primaryCategory ?? ""
         case .secondaryCategory: general?.secondaryCategory ?? ""
         case .gamesSubcategories: general?.gamesSubcategories.joined(separator: ",") ?? ""
+        case .secondaryGamesSubcategories: general?.secondaryGamesSubcategories.joined(separator: ",") ?? ""
         case .contentRights: general?.contentRights?.rawValue ?? ""
         case .release: general?.release?.rawValue ?? ""
         case .demoAccountRequired: review.map { $0.signInRequired ? Self.yesAnswer : Self.noAnswer } ?? ""

@@ -63,7 +63,8 @@ struct WithdrawReleaseActionTool: MCPTool {
         )
     }
 
-    private static func reasonToLeave(_ proposal: ReleaseProposal?, appID: StoreApp.ID, client: String) -> String {
+    /// Why a release proposal stays: unknown, another assistant's, or settled.
+    static func reasonToLeave(_ proposal: ReleaseProposal?, appID: StoreApp.ID, client: String) -> String {
         guard let proposal, proposal.appID == appID else { return String(localized: "No release proposal with this id for this app.") }
         guard proposal.client == client else { return String(localized: "Proposed by \(proposal.client), not by you: left for the person.") }
         switch proposal.status {

@@ -21,9 +21,10 @@ struct SuggestFieldsTool: MCPTool {
         accepts, edits or dismisses it. Items are {area, locale | page, device, field, value, reason, evidence}: \
         area store with a locale code and a Store Page field (\(ListingField.mcpNames.joined(separator: ", "))), \
         or area info with page general (copyright, primaryCategory, secondaryCategory, gamesSubcategories, \
-        contentRights, release; contentRights is USES_THIRD_PARTY_CONTENT or DOES_NOT_USE_THIRD_PARTY_CONTENT, or yes \
-        or no; gamesSubcategories is up to two Games subcategory ids, comma-separated, only while the primary \
-        category is GAMES), page review (contactFirstName, contactLastName, contactPhone, contactEmail, \
+        secondaryGamesSubcategories, contentRights, release; contentRights is USES_THIRD_PARTY_CONTENT or \
+        DOES_NOT_USE_THIRD_PARTY_CONTENT, or yes or no; gamesSubcategories is up to two Games subcategory ids, \
+        comma-separated, only while the primary category is GAMES, and secondaryGamesSubcategories the same while the \
+        secondary category is GAMES), page review (contactFirstName, contactLastName, contactPhone, contactEmail, \
         demoAccountRequired yes or no, demoAccountName, notes; the demo account's password is never suggested), \
         page ageRating (field is a question, value one of its answers), page accessibility with a device (iphone, \
         ipad, watch, vision, mac, tv; field is a feature, value yes or no) or field accessibilityUrl (the app's, no \
@@ -48,7 +49,7 @@ struct SuggestFieldsTool: MCPTool {
         suggestions that went stale (a reason that cites a date that moved, a value no longer right) with \
         withdraw_suggestion and their ids. version may also be a new version queued with propose_app_version: its \
         fields (whatsNew, description, keywords, promotionalText, URLs, copyright, release, page review, and \
-        name, subtitle, privacy URLs (privacyChoicesUrl too), categories, Games subcategories and age rating, which \
+        name, subtitle, privacy URLs (privacyChoicesUrl too), categories, both Games subcategories and age rating, which \
         go into the app info App Store Connect makes with it) are then queued with it in Review & Push (status \
         applied, with a note) instead of shown as suggestions, since it has no page in Atlas yet; they go into it \
         right after Atlas creates it, and are discarded with it. contentRights and accessibilityUrl belong to the \
@@ -78,7 +79,7 @@ struct SuggestFieldsTool: MCPTool {
             "field": MCPToolDefinition.string("The field, question or feature, e.g. whatsNew, notes, wellness or voiceOver."),
             "value": MCPToolDefinition.string(
                 """
-                The suggested value, within the field's limit. Categories, gamesSubcategories, contentRights and release by id; \
+                The suggested value, within the field's limit. Categories, Games subcategories, contentRights and release by id; \
                 an answer by name, e.g. Yes or Infrequent.
                 """
             ),

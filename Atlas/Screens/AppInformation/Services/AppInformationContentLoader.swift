@@ -96,6 +96,7 @@ struct AppInformationContentLoader: Sendable {
             primaryCategory: appInfo?.relationshipID("primaryCategory"),
             secondaryCategory: appInfo?.relationshipID("secondaryCategory"),
             gamesSubcategories: AppInformationChangeBuilder.subcategoryRelationships.compactMap { appInfo?.relationshipID($0) },
+            secondaryGamesSubcategories: AppInformationChangeBuilder.secondarySubcategoryRelationships.compactMap { appInfo?.relationshipID($0) },
             contentRights: rights,
             rightsConfirmed: rights == .usesThirdPartyContent,
             copyright: release?.copyright ?? "",

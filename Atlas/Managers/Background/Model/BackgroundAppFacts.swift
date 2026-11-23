@@ -6,7 +6,8 @@
 import Foundation
 
 /// What waits on the person in one app, read from the stores that keep
-/// it (Autopilot, suggestions, releases, reviews, Analytics), so
+/// it (Autopilot, suggestions, releases and their proposals, reviews,
+/// Analytics), so
 /// `BackgroundNeedsBuilder` can word the menu bar's "Needs you" lines
 /// without reaching into them.
 struct BackgroundAppFacts: Hashable, Sendable {
@@ -32,10 +33,19 @@ struct BackgroundAppFacts: Hashable, Sendable {
     var crashHeadline: String?
     /// Events whose artwork concepts are ready behind a hidden sheet.
     var readyArtwork: [ReadyArtwork] = []
+    /// Release actions an assistant proposed, waiting on the version card.
+    var releaseProposals: [ReleaseProposalFact] = []
 
     struct ReadyArtwork: Hashable, Sendable {
         var eventID: InAppEvent.ID
         var eventName: String
         var count: Int
+    }
+
+    struct ReleaseProposalFact: Hashable, Sendable {
+        /// e.g. "Claude Code".
+        var client: String
+        /// "Release 1.4 now".
+        var title: String
     }
 }

@@ -132,7 +132,8 @@ struct AppSidebar: View {
             appID: app.id,
             suggestions: suggestions,
             screenshots: ScreenshotsDocumentCenter.shared,
-            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes)
+            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes),
+            extras: SectionBadgeCounts.Extras(releaseProposals: ReleaseProposalStore.shared.pending(for: app.id).count)
         )
         return AppIndicators(
             pendingChangeCount: changes.count(for: app.id),

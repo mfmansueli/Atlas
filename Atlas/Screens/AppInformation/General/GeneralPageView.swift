@@ -43,7 +43,8 @@ struct GeneralPageView: View {
     /// With "Only fields with suggestions or changes" on, a section shows
     /// while one of its suggestion fields does.
     private var showsCategories: Bool {
-        viewModel.showsField(.primaryCategory) || viewModel.showsField(.secondaryCategory) || viewModel.showsField(.gamesSubcategories)
+        let fields: [AppInformationSuggestionField] = [.primaryCategory, .secondaryCategory, .gamesSubcategories, .secondaryGamesSubcategories]
+        return fields.contains { viewModel.showsField($0) }
     }
 
     private var showsVersion: Bool {
@@ -76,23 +77,41 @@ struct GeneralPageView: View {
             }
             if general.isGame, viewModel.showsField(.gamesSubcategories) {
                 Divider()
-                AppInformationFormRow(label: String(localized: "Games subcategories"), detail: String(localized: "· up to two")) {
-                    HStack(spacing: Spacing.small) {
-                        ForEach(0..<2, id: \.self) { index in
-                            CategoryPicker(
-                                title: String(localized: "Games subcategory \(index + 1)"),
-                                selection: general.gamesSubcategories.indices.contains(index) ? general.gamesSubcategories[index] : nil,
-                                categories: AppCategory.gamesSubcategories,
-                                allowsNone: true
-                            ) { viewModel.setGamesSubcategory($0, at: index) }
-                                .disabled(index > general.gamesSubcategories.count)
-                                .accessibilityIdentifier("appInformation.general.gamesSubcategory\(index + 1)")
-                        }
-                    }
-                }
-                AppInformationFieldSuggestions(viewModel: viewModel, field: .gamesSubcategories)
+                subcategoryRow(general, secondary: false)
+            }
+            if general.isSecondaryGame, viewModel.showsField(.secondaryGamesSubcategories) {
+                Divider()
+                subcategoryRow(general, secondary: true)
             }
         }
+    }
+
+    /// Up to two Games subcategories: the primary category's, or under
+    /// Secondary the secondary category's, while it's Games.
+    @ViewBuilder
+    private func subcategoryRow(_ general: GeneralValues, secondary: Bool) -> some View {
+        let selected = secondary ? general.secondaryGamesSubcategories : general.gamesSubcategories
+        let identifier = secondary ? "appInformation.general.secondaryGamesSubcategory" : "appInformation.general.gamesSubcategory"
+        AppInformationFormRow(
+            label: secondary ? String(localized: "Secondary Games subcategories") : String(localized: "Games subcategories"),
+            detail: String(localized: "· up to two")
+        ) {
+            HStack(spacing: Spacing.small) {
+                ForEach(0..<2, id: \.self) { index in
+                    CategoryPicker(
+                        title: secondary
+                            ? String(localized: "Secondary Games subcategory \(index + 1)")
+                            : String(localized: "Games subcategory \(index + 1)"),
+                        selection: selected.indices.contains(index) ? selected[index] : nil,
+                        categories: AppCategory.gamesSubcategories,
+                        allowsNone: true
+                    ) { viewModel.setGamesSubcategory($0, at: index, secondary: secondary) }
+                        .disabled(index > selected.count)
+                        .accessibilityIdentifier("\(identifier)\(index + 1)")
+                }
+            }
+        }
+        AppInformationFieldSuggestions(viewModel: viewModel, field: secondary ? .secondaryGamesSubcategories : .gamesSubcategories)
     }
 
     private func contentRightsSection(_ general: GeneralValues) -> some View {
