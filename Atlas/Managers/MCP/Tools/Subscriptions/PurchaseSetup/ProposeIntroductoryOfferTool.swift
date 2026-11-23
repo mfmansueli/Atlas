@@ -56,8 +56,8 @@ struct ProposeIntroductoryOfferTool: MCPTool {
         push creates first. A paid offer's price is in US dollars and equalized everywhere else; it must be below \
         the subscription's price. territories defaults to everywhere the subscription is sold. Anything App Store \
         Connect would refuse is refused with the reasons (status "refused"); an accepted proposal is queued for \
-        the person to review (status "queued"), and proposing again replaces it. Nothing reaches App Store \
-        Connect until they push.
+        the person to review (status "queued"), and proposing again replaces it. Paid offers are refused for apps \
+        set to Keep my prices (a free trial sets no price). Nothing reaches App Store Connect until they push.
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId", "productId", "mode", "duration"]),
         proposalKind: .prices
@@ -74,6 +74,7 @@ struct ProposeIntroductoryOfferTool: MCPTool {
         }
         let offer = try Self.offer(from: arguments)
         let logTarget = "\(app.name) · \(target.name)"
+        if let refusal = catalog.offerPriceRefusal(for: offer.mode) { return Self.refused([refusal], productID: target.productID, target: logTarget) }
         var existing: String?
         if case let .existing(product) = target.place {
             existing = try? await PurchaseExtrasReader(transport: context.workspace.services.push).extras(for: product).introductorySummary

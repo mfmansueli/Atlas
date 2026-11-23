@@ -32,9 +32,11 @@ extension PushController {
         queuedVersions.noteReviewDetail(id, versionID: versionID)
     }
 
-    /// A new version's text whose version wasn't created: it isn't sent, and
+    /// A new version's text whose version wasn't created, or a new
+    /// subscription's offer whose subscription wasn't: it isn't sent, and
     /// waits in the queue.
     static func waitingStatus(_ error: any Error) -> PushItemStatus? {
+        if let error = error as? QueuedSubscriptionPlaceholder.NotCreated { return .notSent(error.errorDescription ?? "") }
         guard let error = error as? QueuedVersionPlaceholder.NotCreated else { return nil }
         return .notSent(error.errorDescription ?? "")
     }

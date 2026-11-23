@@ -31,6 +31,7 @@ enum MCPSubscriptionOffersJSON {
         json["id"] = .string(offer.id)
         json["name"] = .string(offer.name)
         json["offerIdentifier"] = .string(offer.identifier)
+        json["territoryPrices"] = .object(offer.prices.pricedApart.mapValues(MCPPriceValue.json))
         return .object(json)
     }
 
@@ -50,6 +51,7 @@ enum MCPSubscriptionOffersJSON {
         json["endDate"] = settings.endDate.map { .string(NewIntroductoryOffer.dayString($0)) } ?? .null
         json["priority"] = .string(settings.priority.rawValue)
         json["promotionIntent"] = .string(settings.promotionIntent.rawValue)
+        json[SubscriptionPlanType.attribute] = offer.targetPlanType.map { .string($0.rawValue) } ?? .null
         return .object(json)
     }
 
@@ -90,7 +92,8 @@ enum MCPSubscriptionOffersJSON {
         ]
     }
 
-    private static func queued(_ change: PendingChange) -> JSONValue {
+    /// One offer change waiting in Review & Push.
+    static func queued(_ change: PendingChange) -> JSONValue {
         var json: [String: JSONValue] = [
             "changeId": .string(change.id),
             "kind": .string(SubscriptionOfferChanges.kind(of: change)?.rawValue ?? ""),

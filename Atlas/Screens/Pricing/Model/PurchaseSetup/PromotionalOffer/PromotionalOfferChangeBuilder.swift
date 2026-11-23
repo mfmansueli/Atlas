@@ -61,7 +61,9 @@ struct PromotionalOfferChangeBuilder {
     }
 
     /// New prices for an offer App Store Connect has: `terms` keep its
-    /// mode and duration, with the new US price and territories.
+    /// mode and duration, with the new US price, territories and those
+    /// priced apart. Restore puts every old price back: the old US price
+    /// equalized, and the old territories priced apart at their own.
     func pricesChange(
         for existing: ExistingPromotionalOffer,
         terms: OfferTerms,
@@ -72,7 +74,7 @@ struct PromotionalOfferChangeBuilder {
         at date: Date = .now
     ) -> PendingChange {
         let plan = OfferPricesPlan(subscriptionID: subscription.id, terms: terms)
-        let old = OfferPricesPlan(subscriptionID: subscription.id, usPrice: existing.prices.usPrice, territoryIDs: existing.prices.territoryIDs)
+        let old = OfferPricesPlan(subscriptionID: subscription.id, terms: existing.terms)
         var change = SubscriptionOfferChanges.change(.init(
             id: Self.changeID(appID: app.id, productID: subscription.productID, identifier: existing.identifier),
             app: app, subscription: subscription,

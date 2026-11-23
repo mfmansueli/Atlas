@@ -53,7 +53,7 @@ final class PushController {
     /// (Settings → Notifications).
     var onFinished: (_ landed: Int, _ failed: Int) -> Void = { _, _ in }
 
-    private let queue: ChangeQueue
+    let queue: ChangeQueue
     let history: PushHistory
     /// Where `{secret:…}` placeholders are read from (the Keychain).
     private let secrets: any SecretStore
@@ -272,7 +272,7 @@ final class PushController {
         do {
             try await send(index)
             items[index].status = .done
-            queue.remove(pushed: change.id)
+            removePushed(index)
             return .pushed(change.appID)
         } catch let conflict as ConflictFound {
             items[index].status = .conflict
@@ -473,7 +473,7 @@ extension PushController {
 
     /// One of a change's requests, its placeholders filled in.
     private func send(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws {
-        let queued = try await resolvingQueuedVersion(request, at: index, transport: transport)
+        let queued = try await resolvingQueuedVersion(checkingQueuedSubscription(in: request), at: index, transport: transport)
         let request = try await resolvingSetupPlaceholders(queued.request, at: index, transport: transport)
         defer { noteReviewDetail(madeBy: queued, at: index) }
         if try await sendSetupStep(request, at: index, transport: transport) { return }

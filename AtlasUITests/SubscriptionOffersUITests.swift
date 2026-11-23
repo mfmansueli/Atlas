@@ -108,6 +108,26 @@ final class SubscriptionOffersUITests: XCTestCase {
         XCTAssertEqual(reviewCount(), before + 1)
     }
 
+    func testANewWinBackOfferCanGoToOnePaymentPlan() {
+        app.launch(debugScene: "winback-offer")
+        XCTAssertTrue(element("pricing.winBackOffer").waitForExistence(timeout: 10))
+        let before = reviewCount()
+        let name = app.textFields["pricing.winBackOffer.name"]
+        name.click()
+        name.typeText("Monthly plan")
+        let plan = revealed("pricing.winBackOffer.planType", in: element("pricing.winBackOffer"))
+        XCTAssertTrue(plan.waitForExistence(timeout: 5))
+        XCTAssertEqual(plan.value as? String, "Every plan")
+        plan.click()
+        let monthly = app.menuItems["Paid monthly"]
+        XCTAssertTrue(monthly.waitForExistence(timeout: 5))
+        monthly.click()
+        XCTAssertEqual(plan.value as? String, "Paid monthly")
+        app.buttons["pricing.winBackOffer.add"].click()
+        XCTAssertTrue(element("pricing.winBackOffer").waitForNonExistence(timeout: 5))
+        XCTAssertEqual(reviewCount(), before + 1)
+    }
+
     func testANewOfferCodeWithACustomCodeIsQueued() {
         app.launch(debugScene: "offer-code")
         XCTAssertTrue(element("pricing.offerCode").waitForExistence(timeout: 10))

@@ -16,13 +16,15 @@ struct ExistingWinBackOffer: Identifiable, Hashable, Sendable {
     var duration: IntroductoryOfferDuration
     var periodCount: Int
     var settings: WinBackOfferSettings
+    /// The payment plan it's for; nil for every plan. It can't change.
+    var targetPlanType: SubscriptionPlanType?
     var prices = ExistingOfferPrices()
 
     /// `GET` the subscription's win-back offers.
     static func listPath(subscriptionID: String) -> String {
         "/v1/subscriptions/\(subscriptionID)/winBackOffers?fields%5BwinBackOffers%5D=referenceName,offerId,duration,offerMode,"
             + "periodCount,customerEligibilityPaidSubscriptionDurationInMonths,customerEligibilityTimeSinceLastSubscribedInMonths,"
-            + "customerEligibilityWaitBetweenOffersInMonths,startDate,endDate,priority,promotionIntent&limit=200"
+            + "customerEligibilityWaitBetweenOffersInMonths,startDate,endDate,priority,promotionIntent,targetSubscriptionPlanType&limit=200"
     }
 
     /// One resource of the list; nil when its terms aren't ones Atlas knows.
@@ -40,11 +42,13 @@ struct ExistingWinBackOffer: Identifiable, Hashable, Sendable {
         self.duration = duration
         periodCount = attributes["periodCount"] as? Int ?? 1
         self.settings = settings
+        targetPlanType = SubscriptionPlanType(attributes: attributes)
     }
 
     init(
         id: String, referenceName: String, offerID: String, mode: OfferPaymentMode, duration: IntroductoryOfferDuration,
-        periodCount: Int = 1, settings: WinBackOfferSettings, prices: ExistingOfferPrices = ExistingOfferPrices()
+        periodCount: Int = 1, settings: WinBackOfferSettings, targetPlanType: SubscriptionPlanType? = nil,
+        prices: ExistingOfferPrices = ExistingOfferPrices()
     ) {
         self.id = id
         self.referenceName = referenceName
@@ -53,6 +57,7 @@ struct ExistingWinBackOffer: Identifiable, Hashable, Sendable {
         self.duration = duration
         self.periodCount = periodCount
         self.settings = settings
+        self.targetPlanType = targetPlanType
         self.prices = prices
     }
 
@@ -76,7 +81,7 @@ struct ExistingWinBackOffer: Identifiable, Hashable, Sendable {
             id: Self.offerID(id),
             kind: .winBack,
             name: referenceName.isEmpty ? terms.summary : referenceName,
-            eligibility: "\(settings.eligibility.summary) · \(settings.datesTitle)",
+            eligibility: [settings.eligibility.summary, settings.datesTitle, targetPlanType?.title].compactMap(\.self).joined(separator: " · "),
             paymentMode: mode,
             duration: terms.durationTitle,
             rule: "\(terms.summary) · \(prices.territoriesTitle)",

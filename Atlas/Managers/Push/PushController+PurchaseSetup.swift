@@ -7,7 +7,8 @@ import Foundation
 
 // A new in-app purchase's steps, a new subscription's or in-app purchase's
 // availability everywhere, a subscription's introductory offer, a
-// promotional offer, win-back offer or offer code with its prices, and a
+// promotional offer, win-back offer or offer code with its prices, an
+// offer code's custom code or one-time codes (never made twice), and a
 // product's App Review screenshot: each is one queued request the push
 // turns into the reads and writes it needs.
 extension PushController {
@@ -51,6 +52,20 @@ extension PushController {
             update(index) { item in
                 item.createdID = id
                 item.createdIDs[write.resource.type] = id
+            }
+            return true
+        }
+        if let codes = OfferCodeCodesCreate(request) {
+            let id = try await codes.send(via: transport, before: items[index].oneTimeBatchesBefore[codes.offerCodeID]) { before in
+                update(index) { $0.oneTimeBatchesBefore[codes.offerCodeID] = before }
+            } note: { rateLimit in
+                noteRequest(rateLimit)
+            }
+            if let id {
+                update(index) { item in
+                    item.createdID = id
+                    item.createdIDs[codes.type] = id
+                }
             }
             return true
         }

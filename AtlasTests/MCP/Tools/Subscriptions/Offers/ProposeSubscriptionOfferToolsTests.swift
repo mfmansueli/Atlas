@@ -52,7 +52,7 @@ struct ProposeSubscriptionOfferToolsTests {
         let offer = try #require(PromotionalOfferChangeBuilder.offer(in: change))
         #expect(offer.terms.price == Decimal(string: "1.99"))
         #expect(offer.terms.territoryPrices["BRA"] == Decimal(string: "4.9"))
-        #expect(SubscriptionOfferWrite(try #require(change.requests.first))?.plan.subscriptionID == Self.monthlyID)
+        #expect(try SubscriptionOfferWrite(#require(change.requests.first))?.plan.subscriptionID == Self.monthlyID)
         #expect(change.creation?.fields.first { $0.id == "evidence" }?.newValue.contains("Paywall/ComeBack.swift:22") == true)
     }
 
@@ -114,18 +114,101 @@ struct ProposeSubscriptionOfferToolsTests {
         #expect(free.result["status"] == "queued")
     }
 
-    @Test func aSubscriptionWaitingInReviewAndPushTakesOffersOnceItsPushed() async throws {
+    @Test func aSubscriptionWaitingInReviewAndPushTakesOffersThatWaitForIt() async throws {
         _ = try await call(ProposeSubscriptionTool(), [
             "appId": "Quiet Timer", "group": "Quiet Plus", "groupDisplayName": "Quiet Plus",
             "referenceName": "Quiet Plus Yearly", "productId": "dev.northpier.quiet.plus.yearly", "duration": "ONE_YEAR",
             "displayName": "Quiet Plus", "description": "Every sound and timer", "price": .double(19.99),
         ])
+        let subscriptionID = NewSubscriptionChangeBuilder.changeID(appID: DebugFixtures.AppID.quiet, productID: "dev.northpier.quiet.plus.yearly")
+        let token = QueuedSubscriptionPlaceholder(productID: "dev.northpier.quiet.plus.yearly").token
         let outcome = try await call(ProposeOfferCodeTool(), [
             "appId": "Quiet Timer", "productId": "dev.northpier.quiet.plus.yearly", "name": "Launch",
             "mode": "FREE_TRIAL", "duration": "ONE_MONTH",
         ])
-        #expect(outcome.result["status"] == "refused")
-        #expect(reasons(outcome) == [SubscriptionOfferProblem.subscriptionNotCreated.message])
+        #expect(outcome.result["status"] == "queued")
+        #expect(outcome.result["waitsFor"] == .string(subscriptionID))
+        let promotional = try await call(ProposePromotionalOfferTool(), [
+            "appId": "Quiet Timer", "productId": "dev.northpier.quiet.plus.yearly", "name": "Month free", "offerIdentifier": "half",
+            "mode": "FREE_TRIAL", "duration": "ONE_MONTH",
+        ])
+        #expect(promotional.result["status"] == "queued")
+        let winBack = try await call(ProposeWinBackOfferTool(), [
+            "appId": "Quiet Timer", "productId": "dev.northpier.quiet.plus.yearly", "referenceName": "We miss you",
+            "offerId": "quiet_winback", "mode": "FREE_TRIAL", "duration": "ONE_MONTH", "startDate": "2099-01-01",
+        ])
+        #expect(winBack.result["status"] == "queued")
+
+        let offers = changes.changes.filter(SubscriptionOfferChanges.owns)
+        #expect(offers.count == 3)
+        #expect(offers.allSatisfy { $0.dependsOn == subscriptionID && $0.groupID == token && $0.blockedReason == nil })
+        #expect(offers.allSatisfy { $0.requests.first.flatMap(SubscriptionOfferWrite.init)?.plan.subscriptionID == token })
+
+        // An offer it doesn't have in App Store Connect can't change.
+        let update = try await call(ProposePromotionalOfferTool(), [
+            "appId": "Quiet Timer", "productId": "dev.northpier.quiet.plus.yearly", "action": "delete", "offerIdentifier": "half",
+        ])
+        #expect(update.result["status"] == "refused")
+
+        // get_subscriptions lists them on the queued subscription.
+        let read = try await call(GetSubscriptionsTool(), ["appId": "Quiet Timer"])
+        let queued = try #require(read.result["queued"]?.arrayValue?.first)
+        #expect(queued["queuedOffers"]?.arrayValue?.count == 3)
+
+        // Discarding the subscription discards them.
+        changes.discard(id: subscriptionID)
+        #expect(changes.changes.isEmpty)
+    }
+
+    @Test func newPricesKeepTheTerritoriesPricedApartUnlessGiven() async throws {
+        // Brazil is priced apart (R$ 9.90, not the equalized R$ 14.90).
+        _ = try await call(ProposePromotionalOfferTool(), [
+            "appId": "Lumen Journal", "productId": "lumen.plus.monthly", "action": "update_prices", "id": "po1", "price": .double(1.99),
+        ], hasOffers: true)
+        let kept = try #require(changes.changes.first.flatMap(\.requests.first).flatMap(SubscriptionOfferWrite.init))
+        #expect(kept.plan.territoryPrices == ["BRA": Decimal(string: "9.9") ?? 0])
+        #expect(kept.plan.usPrice == Decimal(string: "1.99"))
+
+        _ = try await call(ProposePromotionalOfferTool(), [
+            "appId": "Lumen Journal", "productId": "lumen.plus.monthly", "action": "update_prices", "id": "po1", "price": .double(1.99),
+            "territoryPrices": [:],
+        ], hasOffers: true)
+        let none = try #require(changes.changes.first.flatMap(\.requests.first).flatMap(SubscriptionOfferWrite.init))
+        #expect(none.plan.territoryPrices.isEmpty)
+
+        // Where it no longer runs, it isn't priced apart.
+        _ = try await call(ProposePromotionalOfferTool(), [
+            "appId": "Lumen Journal", "productId": "lumen.plus.monthly", "action": "update_prices", "id": "po1", "price": .double(1.99),
+            "territories": ["USA"],
+        ], hasOffers: true)
+        let narrowed = try #require(changes.changes.first.flatMap(\.requests.first).flatMap(SubscriptionOfferWrite.init))
+        #expect(narrowed.plan.territoryIDs == ["USA"])
+        #expect(narrowed.plan.territoryPrices.isEmpty)
+        #expect(changes.changes.first?.blockedReason == nil)
+    }
+
+    @Test func aWinBackOfferTakesAPlanOnlyWhenItsCreated() async throws {
+        let outcome = try await call(ProposeWinBackOfferTool(), [
+            "appId": "Lumen Journal", "productId": "lumen.plus.monthly",
+            "referenceName": "Monthly plan", "offerId": "lumen_monthly_plan", "mode": "FREE_TRIAL", "duration": "ONE_MONTH",
+            "startDate": "2099-01-01", "targetSubscriptionPlanType": "monthly",
+        ], hasOffers: true)
+        #expect(outcome.result["status"] == "queued")
+        let offer = try #require(changes.changes.first.flatMap(WinBackOfferChangeBuilder.offer(in:)))
+        #expect(offer.targetPlanType == .monthly)
+
+        // wb1 is for the monthly plan; another plan can't be set.
+        let other = try await call(ProposeWinBackOfferTool(), [
+            "appId": "Lumen Journal", "productId": "lumen.plus.monthly", "action": "update", "id": "wb1",
+            "targetSubscriptionPlanType": "UPFRONT", "priority": "NORMAL",
+        ], hasOffers: true)
+        #expect(other.result["status"] == "refused")
+        await #expect(throws: MCPToolError.self) {
+            _ = try await call(ProposeWinBackOfferTool(), [
+                "appId": "Lumen Journal", "productId": "lumen.plus.monthly", "referenceName": "X", "offerId": "x",
+                "mode": "FREE_TRIAL", "duration": "ONE_MONTH", "startDate": "2099-01-01", "targetSubscriptionPlanType": "WEEKLY",
+            ], hasOffers: true)
+        }
     }
 
     @Test func anotherSourcesChangeIsntReplaced() async throws {
@@ -189,7 +272,7 @@ struct ProposeSubscriptionOfferToolsTests {
         ], hasOffers: true)
         #expect(outcome.result["status"] == "queued")
         let change = try #require(changes.changes.first)
-        let attributes = (PushPagedRead.body(of: try #require(change.requests.first))?["data"] as? [String: Any])?["attributes"] as? [String: Any]
+        let attributes = try (PushPagedRead.body(of: #require(change.requests.first))?["data"] as? [String: Any])?["attributes"] as? [String: Any]
         #expect(Set(attributes?.keys.map(\.self) ?? []) == ["priority", "customerEligibilityWaitBetweenOffersInMonths"])
 
         let nothing = try await call(ProposeWinBackOfferTool(), [
@@ -261,10 +344,13 @@ struct ProposeSubscriptionOfferToolsTests {
         #expect(promotional["offerIdentifier"] == "come_back")
         #expect(promotional["mode"] == "PAY_AS_YOU_GO")
         #expect(promotional["territories"] == ["BRA", "USA"])
+        #expect(promotional["territoryPrices"]?["BRA"] != nil)
+        #expect(promotional["territoryPrices"]?["USA"] == nil)
         let winBack = try #require(monthly["winBackOffers"]?.arrayValue?.first)
         #expect(winBack["offerId"] == "we_miss_you")
         #expect(winBack["sinceLastSubscribed"]?["maximum"] == 6)
         #expect(winBack["endDate"] == .null)
+        #expect(winBack["targetSubscriptionPlanType"] == "MONTHLY")
         let code = try #require(monthly["offerCodes"]?.arrayValue?.first)
         #expect(code["customCodes"]?.arrayValue?.first?["code"] == "LUMENPOD")
         #expect(code["oneTimeCodes"]?.arrayValue?.first?["numberOfCodes"] == 500)

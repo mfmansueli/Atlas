@@ -17,9 +17,10 @@ struct GetSubscriptionsTool: MCPTool {
         description: """
         Reads what an app sells in App Store Connect: each subscription group (id, referenceName) with its \
         subscriptions (id, productId, name, duration, state, price in the United States, introductoryOffer, \
-        promotionalOffers, winBackOffers and offerCodes with every attribute, their territories, US price, custom \
-        codes and one-time code batches, queuedOffers waiting in Review & Push, reviewScreenshot), its in-app \
-        purchases (type, state, reviewScreenshot), and the new subscriptions (queued) and in-app purchases \
+        promotionalOffers, winBackOffers and offerCodes with every attribute, their territories, US price, \
+        territoryPrices priced apart (promotional offers), custom codes and one-time code batches, queuedOffers \
+        waiting in Review & Push, reviewScreenshot), its in-app purchases (type, state, reviewScreenshot), and the \
+        new subscriptions (queued, each with the queuedOffers that wait for it) and in-app purchases \
         (queuedInAppPurchases) already waiting in Review & Push. reviewScreenshot.state MISSING keeps a product in \
         Missing Metadata. Use it before propose_subscription, propose_in_app_purchase, propose_introductory_offer, \
         propose_promotional_offer, propose_win_back_offer, propose_offer_code and \
@@ -52,8 +53,11 @@ struct GetSubscriptionsTool: MCPTool {
             let extras = try? await reader.extras(for: product)
             purchases.append(Self.product(product, extras: extras, setup: setup))
         }
-        let queued: [JSONValue] = NewSubscriptionChangeBuilder.queued(in: queue, appID: app.id).map(Self.queued)
-        let queuedPurchases: [JSONValue] = NewInAppPurchaseChangeBuilder.queued(in: queue, appID: app.id).map(Self.queued)
+        let queued: [JSONValue] = NewSubscriptionChangeBuilder.queued(in: queue, appID: app.id).map { change in
+            // The offers proposed for it, pushed after it.
+            Self.queued(change, offers: SubscriptionOfferChanges.waiting(for: change, in: queue))
+        }
+        let queuedPurchases: [JSONValue] = NewInAppPurchaseChangeBuilder.queued(in: queue, appID: app.id).map { Self.queued($0) }
         let result: JSONValue = [
             "appId": .string(app.id),
             "app": .string(app.name),
@@ -139,7 +143,7 @@ struct GetSubscriptionsTool: MCPTool {
         return .object(json)
     }
 
-    private static func queued(_ change: PendingChange) -> JSONValue {
+    private static func queued(_ change: PendingChange, offers: [PendingChange]? = nil) -> JSONValue {
         let fields = Dictionary((change.creation?.fields ?? []).map { ($0.id, $0.newValue) }, uniquingKeysWith: { first, _ in first })
         var json: [String: JSONValue] = [
             "changeId": .string(change.id),
@@ -153,6 +157,7 @@ struct GetSubscriptionsTool: MCPTool {
             json["introductoryOffer"] = .string("\(offer.summary) · \(offer.territories.title)")
         }
         json["reviewScreenshot"] = PurchaseReviewScreenshotChangeBuilder.screenshot(in: change).map { .string($0.fileName) } ?? "MISSING"
+        if let offers { json["queuedOffers"] = .array(offers.map(MCPSubscriptionOffersJSON.queued)) }
         if let blocked = change.blockedReason { json["blockedReason"] = .string(blocked) }
         return .object(json)
     }

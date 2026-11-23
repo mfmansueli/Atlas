@@ -7,9 +7,10 @@ import SwiftUI
 
 /// The new subscriptions and in-app purchases waiting in Review & Push,
 /// each with its product ID, duration or type and price, who proposed it,
-/// a menu that adds an introductory offer (subscriptions) or the review
-/// screenshot, and Discard. They're pushed from the toolbar's Review &
-/// Push (board 57).
+/// the offers waiting with it, a menu that adds an introductory offer,
+/// promotional offer, win-back offer or offer code (subscriptions) or the
+/// review screenshot, and Discard (its offers go with it). They're pushed
+/// from the toolbar's Review & Push (board 57).
 struct QueuedNewSubscriptionsList: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -38,6 +39,13 @@ struct QueuedNewSubscriptionsList: View {
                 Text(productID(of: change))
                     .font(.subheadline.monospaced())
                     .foregroundStyle(Palette.label2)
+                ForEach(viewModel.waitingOffers(forQueued: change)) { offer in
+                    Text("\(offer.title) · \(offer.newValue)")
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).offer.\(offer.id)")
+                }
                 if let blocked = change.blockedReason {
                     Text(blocked)
                         .font(.subheadline)
@@ -72,13 +80,24 @@ struct QueuedNewSubscriptionsList: View {
     }
 
     /// Add Introductory Offer… (a subscription without one) and Review
-    /// Screenshot…, as more steps of the queued change.
+    /// Screenshot…, as more steps of the queued change, and a promotional
+    /// offer, win-back offer or offer code, each its own change that waits
+    /// for it.
     private func setupMenu(_ change: PendingChange) -> some View {
         Menu {
             if NewSubscriptionChangeBuilder.owns(change) {
                 Button(IntroductoryOfferChangeBuilder.offer(in: change) == nil ? "Add Introductory Offer…" : "Change Introductory Offer…") {
                     viewModel.openIntroductoryOffer(forQueued: change)
                 }
+            }
+            if let subscription = viewModel.offerSubscription(forQueued: change) {
+                Button("Add Promotional Offer…") { viewModel.open(.newPromotional(subscription)) }
+                    .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newPromotional")
+                Button("Add Win-Back Offer…") { viewModel.open(.newWinBack(subscription)) }
+                    .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newWinBack")
+                Button("Add Offer Code…") { viewModel.open(.newOfferCode(subscription)) }
+                    .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newOfferCode")
+                Divider()
             }
             Button(PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) == nil ? "Add Review Screenshot…" : "Replace Review Screenshot…") {
                 viewModel.openReviewScreenshot(forQueued: change)

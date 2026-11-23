@@ -7,9 +7,10 @@ import Foundation
 @testable import Atlas
 
 /// App Store Connect's answers for one subscription's offers: a paid
-/// promotional offer in the United States and Brazil, a free win-back
-/// offer, and an offer code with a custom code and a batch of one-time
-/// codes, as `SubscriptionOffersReader` reads them.
+/// promotional offer in the United States and Brazil (priced apart there:
+/// R$ 9.90 where the US price equalizes to R$ 14.90), a free win-back
+/// offer for the monthly plan, and an offer code with a custom code and a
+/// batch of one-time codes, as `SubscriptionOffersReader` reads them.
 enum SubscriptionOfferFixtures {
     static func remote(subscriptionID: String) -> [String: Data] {
         [
@@ -22,12 +23,18 @@ enum SubscriptionOfferFixtures {
             "included":[{"type":"subscriptionPricePoints","id":"spUSA","attributes":{"customerPrice":"2.99"}},
             {"type":"subscriptionPricePoints","id":"spBRA","attributes":{"customerPrice":"9.90"}}]}
             """),
+            IntroductoryOfferEverywhere.equalizationsPath(pricePointID: "spUSA"): json("""
+            {"data":[{"type":"subscriptionPricePoints","id":"eqBRA","attributes":{"customerPrice":"14.90"},\
+            "relationships":{"territory":{"data":{"type":"territories","id":"BRA"}}}},\
+            {"type":"subscriptionPricePoints","id":"eqGBR","attributes":{"customerPrice":"2.49"},\
+            "relationships":{"territory":{"data":{"type":"territories","id":"GBR"}}}}]}
+            """),
             ExistingWinBackOffer.listPath(subscriptionID: subscriptionID): json("""
             {"data":[{"type":"winBackOffers","id":"wb1","attributes":{"referenceName":"We miss you","offerId":"we_miss_you",\
             "duration":"ONE_MONTH","offerMode":"FREE_TRIAL","periodCount":1,"customerEligibilityPaidSubscriptionDurationInMonths":2,\
             "customerEligibilityTimeSinceLastSubscribedInMonths":{"minimum":1,"maximum":6},\
             "customerEligibilityWaitBetweenOffersInMonths":6,"startDate":"2099-01-01","endDate":null,"priority":"HIGH",\
-            "promotionIntent":"NOT_PROMOTED"}}]}
+            "promotionIntent":"NOT_PROMOTED","targetSubscriptionPlanType":"MONTHLY"}}]}
             """),
             SubscriptionOfferResource.winBack.pricesPath(offerID: "wb1"): json("""
             {"data":[\(price("wp1", "USA", nil))]}

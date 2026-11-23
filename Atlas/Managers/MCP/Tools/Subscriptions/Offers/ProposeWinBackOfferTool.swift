@@ -36,7 +36,7 @@ struct ProposeWinBackOfferTool: MCPTool {
         .merging(settingsProperties) { $1 }
         .merging([
             "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions."),
+            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions; a queued one's too."),
             "action": [
                 "type": "string",
                 "enum": ["create", "update", "delete"],
@@ -48,18 +48,28 @@ struct ProposeWinBackOfferTool: MCPTool {
             StoreKit for. update and delete: the offer's offerId (or give id).
             """),
             "id": MCPToolDefinition.string("update and delete: the offer's App Store Connect id from get_subscriptions' winBackOffers."),
+            "targetSubscriptionPlanType": [
+                "type": "string",
+                "enum": .array(SubscriptionPlanType.allCases.map { .string($0.rawValue) }),
+                "description": .string("""
+                create: optional payment plan the offer is for, UPFRONT or MONTHLY (a subscription sold with a plan paid \
+                monthly); left out, every plan. It can't change once it's created.
+                """),
+            ],
         ]) { $1 }
 
     let definition = MCPToolDefinition(
         name: "propose_win_back_offer",
         title: "Propose Win-Back Offer",
         description: """
-        Proposes a win-back offer for a subscription App Store Connect has: free time or a lower price Apple shows people \
-        who used to subscribe (in the app, in Settings and, with USE_AUTO_GENERATED_ASSETS, on the App Store), from \
-        startDate. mode, duration, numberOfPeriods and price (US dollars, equalized everywhere else; territoryPrices \
-        sets some apart) work as in propose_introductory_offer. Eligibility: paidMonths, sinceLastSubscribed and \
-        waitMonths. action update changes the eligibility, dates, priority or promotion of one it has (send only what \
-        changes; terms and prices can't change); action delete removes one. Anything App Store Connect would refuse \
+        Proposes a win-back offer for a subscription App Store Connect has, or a new one still queued by \
+        propose_subscription (the push creates the subscription first; discarding it discards the offer): free time \
+        or a lower price Apple shows people who used to subscribe (in the app, in Settings and, with \
+        USE_AUTO_GENERATED_ASSETS, on the App Store), from startDate. mode, duration, numberOfPeriods and price (US \
+        dollars, equalized everywhere else; territoryPrices sets some apart) work as in propose_introductory_offer. \
+        Eligibility: paidMonths, sinceLastSubscribed and waitMonths; targetSubscriptionPlanType (create only) limits \
+        it to one payment plan. action update changes the eligibility, dates, priority or promotion of one it has \
+        (send only what changes; terms, prices and plan can't change); action delete removes one. Anything App Store Connect would refuse \
         is refused with the reasons (status "refused"); an accepted proposal is queued for the person (status \
         "queued"), and proposing again for the same offer replaces it. Paid offers are refused for apps set to Keep \
         my prices. Nothing reaches App Store Connect until they push.
@@ -92,7 +102,8 @@ struct ProposeWinBackOfferTool: MCPTool {
             referenceName: arguments.string("referenceName"),
             offerID: arguments.string("offerId"),
             terms: MCPOfferTermsArguments.terms(from: arguments),
-            settings: settings
+            settings: settings,
+            targetPlanType: Self.planType(from: arguments)
         )
         if let refusal = context.priceRefusal(for: offer.terms) { return context.refused([refusal]) }
         var reasons = context.offers.problems(for: offer, subscription: context.subscription, extras: context.extras).map(\.message)
@@ -105,6 +116,9 @@ struct ProposeWinBackOfferTool: MCPTool {
 
     private func update(_ arguments: MCPToolArguments, in context: MCPSubscriptionOfferContext, evidence: [String]) throws -> MCPToolOutcome {
         guard let existing = try existing(arguments, in: context) else { return context.refused([notFoundReason(arguments, in: context)]) }
+        if let plan = try Self.planType(from: arguments), plan != existing.targetPlanType {
+            return context.refused([String(localized: "App Store Connect doesn’t let a win-back offer’s payment plan change. Delete it and create another.")])
+        }
         var settings = try Self.settings(from: arguments, over: existing.settings)
         if let start = try MCPOfferTermsArguments.day("startDate", in: arguments) { settings.startDate = start }
         var reasons = context.offers.problems(forSettings: settings, of: existing).map(\.message)
@@ -145,6 +159,15 @@ struct ProposeWinBackOfferTool: MCPTool {
             settings.promotionIntent = intent
         }
         return settings
+    }
+
+    /// `targetSubscriptionPlanType`, or nil when it's left out.
+    static func planType(from arguments: MCPToolArguments) throws -> SubscriptionPlanType? {
+        guard let text = try arguments.optionalString(SubscriptionPlanType.attribute), !text.isEmpty else { return nil }
+        guard let plan = SubscriptionPlanType(rawValue: text.uppercased()) else {
+            throw MCPToolError.invalidArgument(name: SubscriptionPlanType.attribute, expected: "UPFRONT or MONTHLY")
+        }
+        return plan
     }
 
     /// paidMonths, sinceLastSubscribed and waitMonths (null for none), over `base`.

@@ -6,8 +6,10 @@
 import Foundation
 
 /// What an offer proposal is checked against: the app's subscription App
-/// Store Connect has (a new one waiting in Review & Push takes offers once
-/// it's pushed), the offers it has there, and what waits in Review & Push.
+/// Store Connect has, or a new one waiting in Review & Push (a stand-in,
+/// `PurchaseSetupTarget.offerSubscription`: its offers wait for it and are
+/// pushed after it), the offers it has there, and what waits in Review &
+/// Push.
 /// Refusals and queued results have the same shape in every offer tool.
 @MainActor
 struct MCPSubscriptionOfferContext {
@@ -35,11 +37,16 @@ struct MCPSubscriptionOfferContext {
             let reason = String(localized: "\(app.name) has no subscription “\(identifier)”, in App Store Connect or Review & Push.")
             return .refused(refused([reason], productID: identifier, target: app.name))
         }
-        guard case let .existing(subscription) = target.place else {
+        guard let subscription = target.offerSubscription else {
             return .refused(refused([SubscriptionOfferProblem.subscriptionNotCreated.message], productID: target.productID, target: app.name))
         }
-        let reader = PurchaseExtrasReader(transport: context.workspace.services.push)
-        let extras = (try? await reader.extras(for: subscription)) ?? PurchaseExtras()
+        var extras = PurchaseExtras()
+        if case let .existing(product) = target.place {
+            extras = await (try? PurchaseExtrasReader(transport: context.workspace.services.push).extras(for: product)) ?? PurchaseExtras()
+        } else {
+            // Not in App Store Connect yet: it has no offers to read.
+            extras.offersRead = true
+        }
         return .ready(MCPSubscriptionOfferContext(
             catalog: catalog, subscription: subscription, extras: extras,
             offers: SubscriptionOfferQueue(app: app, queue: queue), source: context.source
@@ -49,7 +56,7 @@ struct MCPSubscriptionOfferContext {
     /// Why a proposal that sets a price is refused before it's checked:
     /// an app set to Keep my prices.
     func priceRefusal(for terms: OfferTerms) -> String? {
-        catalog.mode == .keepPrices && terms.mode != .freeTrial ? catalog.keepPricesRefusal : nil
+        catalog.offerPriceRefusal(for: terms.mode)
     }
 
     /// Refused when someone else's change for the same offer waits.
@@ -59,6 +66,9 @@ struct MCPSubscriptionOfferContext {
 
     /// Why an existing offer couldn't be found or read.
     func notFound(_ kind: OfferKind, _ identifier: String) -> String {
+        if subscription.isQueuedSubscription {
+            return String(localized: "\(subscription.name) waits in Review & Push, so App Store Connect has no offers for it yet. Propose new ones (action create).")
+        }
         guard extras.offersRead else {
             return String(localized: "Atlas couldn’t read \(subscription.name)’s offers from App Store Connect. Try again later.")
         }
@@ -78,15 +88,23 @@ struct MCPSubscriptionOfferContext {
         return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
     }
 
-    /// The change queued for the person.
+    /// The change queued for the person; for a new subscription, the
+    /// change it waits for.
     func queued(_ change: PendingChange, note: String) -> MCPToolOutcome {
-        let result: JSONValue = [
+        var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(change.id),
             "productId": .string(subscription.productID),
             "change": .string("\(change.title): \(change.newValue)"),
             "note": .string(note),
         ]
-        return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: logTarget, outcome: .proposed)])
+        if let subscriptionChange = change.dependsOn {
+            result["waitsFor"] = .string(subscriptionChange)
+            result["note"] = .string(String(localized: """
+            The subscription waits in Review & Push: the push creates it first, then this offer. Discarding the \
+            subscription discards the offer too.
+            """))
+        }
+        return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: logTarget, outcome: .proposed)])
     }
 }
