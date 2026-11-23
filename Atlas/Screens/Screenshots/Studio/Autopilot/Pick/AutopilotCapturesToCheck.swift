@@ -20,7 +20,7 @@ struct AutopilotCapturesToCheck: View {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Label(Self.title(count: items.count), systemImage: "text.magnifyingglass")
                     .font(.body.weight(.semibold))
-                Text("Atlas read the text in every capture. The set uses these as they are; fix them in the app, or capture them again.")
+                Text("Text to check. Used as is unless you fix it in the app or capture again.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

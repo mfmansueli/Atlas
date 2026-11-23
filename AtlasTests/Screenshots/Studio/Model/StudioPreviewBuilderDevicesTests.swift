@@ -42,7 +42,7 @@ struct StudioPreviewBuilderDevicesTests {
         #expect(preview.shots.map(\.label) == ["1 · Mood check-in", "2 · Today’s prompt"])
         #expect(preview.shots.allSatisfy { $0.chip == nil })
         #expect(preview.note == "Live now · 2 English captures, uploaded by hand")
-        #expect(preview.searchNote.hasPrefix("Apple Watch screenshots don’t show in search results"))
+        #expect(preview.searchNote.hasPrefix("Apple Watch screenshots show only on the product page"))
     }
 
     @Test func aWatchSetAtlasPushedSaysSo() {
@@ -61,7 +61,7 @@ struct StudioPreviewBuilderDevicesTests {
         let preview = Self.builder(.visionPro).preview()
         #expect(preview.shots.isEmpty)
         #expect(preview.note == "Live now · no Apple Vision Pro screenshots")
-        #expect(preview.emptyText == "No Apple Vision Pro screenshots yet. App Store Connect needs at least one before you can submit for visionOS.")
+        #expect(preview.emptyText == "No Apple Vision Pro screenshots yet. Add at least one to submit for visionOS.")
     }
 
     // MARK: - New

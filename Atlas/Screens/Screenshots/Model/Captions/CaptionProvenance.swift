@@ -38,7 +38,7 @@ enum CaptionProvenance: Codable, Hashable, Sendable {
         case .reviewed: String(localized: "Reviewed")
         case .machineTranslated: String(localized: "Machine translated · not reviewed")
         case let .assistant(client, date):
-            String(localized: "Proposed by \(client) · \(date.formatted(date: .omitted, time: .shortened))")
+            String(localized: "Suggested by \(client) · \(date.formatted(date: .omitted, time: .shortened))")
         }
     }
 }

@@ -46,7 +46,7 @@ struct CaptureViewerTests {
         let korean = Self.target("ko", 3)
         let capture = try #require(coverage.cell(for: korean)?.capture)
         #expect(coverage.viewerStatus(of: korean, display: .iPhone)
-            == "Wrong size · \(capture.pixelSize.title) doesn’t fit iPhone 6.9″ screenshots, so it isn’t used")
+            == "Wrong size, not used · \(capture.pixelSize.title) doesn’t fit iPhone 6.9″")
     }
 
     @Test func leftAndRightStepThroughTheLocalesScreens() {

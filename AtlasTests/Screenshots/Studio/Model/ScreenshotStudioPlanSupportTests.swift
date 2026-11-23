@@ -57,7 +57,7 @@ struct ScreenshotStudioPlanSupportTests {
         let off = model.studio.run?.plan ?? StudioDebugRuns.plan
         #expect(!off.displayTypes.contains(.iPhoneDuo))
         #expect(model.studio.planDeviceDetail(.iPhoneDuo, plan: off) == "2007 × 2853 · inner display · "
-            + "required from April 2027 for apps built with the iOS 27.1 SDK. You’ll need to upload these by hand before submitting.")
+            + "required from April 2027 for apps built with the iOS 27.1 SDK. Add these by hand before submitting.")
     }
 
     /// The plan says what it captures, iPhone Duo by name.
@@ -70,7 +70,7 @@ struct ScreenshotStudioPlanSupportTests {
         plan.capturesEachLanguage = false
         let primary = model.studio.primaryLocale.shortName
         #expect(model.studio.planCaptureText(plan) == "Autopilot captures iPhone and iPad in \(primary), and uses those captures under every "
-            + "language’s captions. iPhone Duo is off, so its screenshots are left to upload by hand: Apple requires them from April 2027.")
+            + "language’s captions. iPhone Duo is off: add its screenshots by hand. Apple requires them from April 2027.")
         plan.localeCodes = ["en-US"]
         plan.capturesEachLanguage = true
         #expect(model.studio.planCaptureText(plan).hasPrefix("Autopilot captures iPhone and iPad in 1 language. "))
@@ -83,7 +83,7 @@ struct ScreenshotStudioPlanSupportTests {
         let primary = try #require(StoreLocaleCatalog.locale(code: "en-US")?.shortName)
         let other = try #require(StoreLocaleCatalog.locale(code: rehearsal)?.shortName)
         #expect(model.studio.planRehearsalText(plan)
-            == "It tries every screen in \(primary) and \(other) first, so what breaks in other languages shows up once, not in each.")
+            == "It tries every screen in \(primary) and \(other) first, so problems show up once, not per language.")
         plan.capturesEachLanguage = false
         #expect(model.studio.planRehearsalText(plan) == nil)
     }
@@ -94,7 +94,7 @@ struct ScreenshotStudioPlanSupportTests {
         let plan = model.studio.run?.plan ?? StudioDebugRuns.everyDevicePlan
         #expect(plan.displayTypes == [.iPhone, .iPhoneDuo, .iPad, .visionPro])
         #expect(model.studio.planDeviceDetail(.watch, plan: plan)
-            == "422 × 514 · Ultra 3 · required: Lumen has a watch app, LumenWatch. You’ll need to upload these by hand before submitting.")
+            == "422 × 514 · Ultra 3 · required: Lumen has a watch app, LumenWatch. Add these by hand before submitting.")
     }
 
     @Test func withoutAReportIPadIsLandscapeAndVisionFollowsAppStoreConnect() async {
@@ -103,7 +103,7 @@ struct ScreenshotStudioPlanSupportTests {
         #expect(model.studio.planDevices(plan) == [.iPhone, .iPhoneDuo, .iPad, .visionPro])
         #expect(model.studio.planDeviceDetail(.iPad, plan: plan) == "2752 × 2064 · landscape")
         #expect(model.studio.planDeviceDetail(.visionPro, plan: plan)
-            == "3840 × 2160 · required: 1.4 has a visionOS version. You’ll need to upload these by hand before submitting.")
+            == "3840 × 2160 · required: 1.4 has a visionOS version. Add these by hand before submitting.")
     }
 
     @Test func turningOnAppleVisionProStartsWithTheFirstIPhoneScreens() async {

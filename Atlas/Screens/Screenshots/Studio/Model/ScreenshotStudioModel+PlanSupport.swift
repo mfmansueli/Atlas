@@ -36,7 +36,7 @@ extension ScreenshotStudioModel {
             : String(localized: "Autopilot captures \(devices) in \(primaryLocale.shortName), and uses those captures under every language’s captions.")
         text += " " + (plan.displayTypes.contains(.iPhoneDuo)
             ? String(localized: "iPhone Duo is in every plan: Apple requires its screenshots from April 2027.")
-            : String(localized: "iPhone Duo is off, so its screenshots are left to upload by hand: Apple requires them from April 2027."))
+            : String(localized: "iPhone Duo is off: add its screenshots by hand. Apple requires them from April 2027."))
         return text
     }
 
@@ -46,7 +46,7 @@ extension ScreenshotStudioModel {
         guard let locale = plan.rehearsalLocale else { return nil }
         let primary = StoreLocaleCatalog.locale(code: plan.primaryLocale)?.shortName ?? plan.primaryLocale
         let other = StoreLocaleCatalog.locale(code: locale)?.shortName ?? locale
-        return String(localized: "It tries every screen in \(primary) and \(other) first, so what breaks in other languages shows up once, not in each.")
+        return String(localized: "It tries every screen in \(primary) and \(other) first, so problems show up once, not per language.")
     }
 
     /// "its build has an Apple Watch app, and it has a visionOS version".
@@ -110,7 +110,7 @@ extension ScreenshotStudioModel {
         }
         var detail = parts.joined(separator: " · ")
         if display != .iPhone, !plan.displayTypes.contains(display), requiredReason(display) != nil {
-            detail += ". " + String(localized: "You’ll need to upload these by hand before submitting.")
+            detail += ". " + String(localized: "Add these by hand before submitting.")
         }
         return detail
     }
@@ -123,7 +123,7 @@ extension ScreenshotStudioModel {
         for display in planDevices(plan) where display != .iPhone && !plan.displayTypes.contains(display) {
             guard let reason = requiredReason(display) else { continue }
             let required = display == .iPhoneDuo ? String(localized: "required \(reason)") : String(localized: "required: \(reason)")
-            notes.append(String(localized: "\(display.title) is left out (\(required)). You’ll need to upload these by hand before submitting."))
+            notes.append(String(localized: "\(display.title) is left out (\(required)). Add them in App Store Connect before submitting."))
         }
         return notes
     }
@@ -145,16 +145,16 @@ extension ScreenshotStudioModel {
         let count = plan.duoShots.count
         switch (plan.duoScreens, plan.duoBoth) {
         case (.inner, _):
-            return String(localized: "Unfolded, as Apple requires: the inner display at \(size). Atlas opens the Duo in Device Hub for each capture.")
+            return String(localized: "Unfolded, as Apple requires: inner display at \(size). Device Hub opens the Duo per capture.")
         case (.cover, _):
-            return String(localized: "Folded: the app on the cover display, placed on the \(size) canvas. Faster, since the Duo never opens, but people don’t see the big screen.")
+            return String(localized: "Folded: the cover display on the \(size) canvas. Faster, but people don’t see the big screen.")
         case (.both, .separate):
             guard plan.screens.count * 2 > AutopilotPlan.duoShotLimit else {
                 return String(localized: "Each screen unfolded, then folded: \(count) screenshots per language.")
             }
-            return String(localized: "Each screen unfolded, then folded: \(count) screenshots per language. Apple allows 10, so only the first \(plan.duoSeparateCovers) screens get a folded one.")
+            return String(localized: "Unfolded, then folded: \(count) screenshots per language. Apple allows 10, so the first \(plan.duoSeparateCovers) get a folded one.")
         case (.both, .sideBySide):
-            return String(localized: "Each screenshot shows the Duo unfolded with the folded cover beside it: \(count) per language, both states in one image.")
+            return String(localized: "Unfolded with the cover beside it: \(count) per language, both in one image.")
         }
     }
 

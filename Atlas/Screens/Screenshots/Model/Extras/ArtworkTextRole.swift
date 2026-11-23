@@ -41,12 +41,9 @@ enum ArtworkTextRole: String, Codable, Hashable, Sendable, CaseIterable {
     var guidance: String {
         switch self {
         case .search:
-            String(localized: """
-            3–5 words that answer the search: people comparing apps see a small card, so state the obvious. Start from \
-            this language’s keywords and subtitle.
-            """)
+            String(localized: "3–5 words that answer the search, from this language’s keywords and subtitle. State the obvious: it’s a small card.")
         case .header:
-            String(localized: "Optional: at most about 3 words for one feeling or outcome, or none. The first screenshot below delivers on it.")
+            String(localized: "Optional: about 3 words for one feeling or outcome. The first screenshot below delivers on it.")
         }
     }
 

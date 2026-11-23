@@ -5,7 +5,8 @@
 
 import Foundation
 
-/// Why an HTML page couldn't be rendered.
+/// Why an HTML page couldn't be rendered. A load's or script's reason
+/// is WebKit's own text, shown after "Details:".
 enum ArtworkWebError: LocalizedError, Equatable {
     case setupFailed
     case loadFailed(String)
@@ -24,9 +25,9 @@ enum ArtworkWebError: LocalizedError, Equatable {
         case .setupFailed:
             String(localized: "The page renderer couldn’t be set up.")
         case let .loadFailed(reason):
-            String(localized: "The page didn’t load: \(reason)")
+            AppleErrorCopy(summary: String(localized: "The page didn’t load. Try again.", comment: "kind:error"), details: reason).text
         case let .scriptFailed(reason):
-            String(localized: "Atlas couldn’t fill in the page: \(reason)")
+            AppleErrorCopy(summary: String(localized: "Atlas couldn’t fill in the page. Try again.", comment: "kind:error"), details: reason).text
         case .snapshotFailed:
             String(localized: "The page couldn’t be drawn.")
         case let .tooLarge(bytes):
@@ -34,10 +35,7 @@ enum ArtworkWebError: LocalizedError, Equatable {
         case .timedOut:
             String(localized: "The page took too long to load.")
         case .rendererStopped:
-            String(localized: """
-            The page renderer stopped twice on this page. Send it again; if it stops again, lighten the page \
-            (fewer or smaller blurs and filters).
-            """)
+            String(localized: "The page renderer stopped twice. Send it again; if it stops, use fewer or smaller blurs and filters.")
         }
     }
 }

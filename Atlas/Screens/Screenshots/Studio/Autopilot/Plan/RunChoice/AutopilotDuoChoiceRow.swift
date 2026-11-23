@@ -26,7 +26,7 @@ struct AutopilotDuoChoiceRow: View {
                     .fixedSize()
                     if plan.duoScreens == .both {
                         StudioSegmentedControl(
-                            label: String(localized: "How both states appear"),
+                            label: String(localized: "Showing both states"),
                             options: AutopilotDuoBoth.allCases.map { .init(value: $0, title: $0.title, key: $0.rawValue) },
                             selection: Binding { plan.duoBoth } set: { studio.setDuoBoth($0) },
                             identifier: "autopilot.plan.duoBoth"

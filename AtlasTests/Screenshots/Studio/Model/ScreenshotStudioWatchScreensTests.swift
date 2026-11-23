@@ -35,7 +35,7 @@ struct ScreenshotStudioWatchScreensTests {
         #expect(plan.screens(on: .watch).last == AutopilotScreen(id: "watch-mood-history", name: "Mood history", origin: .person, worksOutSteps: true))
         #expect(studio.screenDraft == nil)
         #expect(studio.addScreensNote(on: .watch).hasPrefix("New screens go after screen 5 on Apple Watch."))
-        #expect(studio.addScreensNote.hasPrefix("New screens go after screen 5 on iPhone and iPad."))
+        #expect(studio.addScreensNote.hasPrefix("Adds screens after screen 5 on iPhone and iPad."))
     }
 
     @Test func eachDeviceKeepsWhatWasAskedFor() async {

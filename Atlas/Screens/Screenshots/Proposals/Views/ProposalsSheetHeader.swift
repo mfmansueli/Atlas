@@ -15,9 +15,9 @@ struct ProposalsSheetHeader: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                    Text("Proposals · \(viewModel.app.name)")
+                    Text("Suggestions · \(viewModel.app.name)")
                         .font(.title3.weight(.semibold))
-                    Text("Nothing an assistant sends changes your screenshots until you accept it here. Accepted renders still go through Review & Push.")
+                    Text("Nothing changes until you accept it here. Then renders wait in Review & Push.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -28,7 +28,7 @@ struct ProposalsSheetHeader: View {
                 }
             }
             if let client, case let .disconnected(lastSeen) = status(of: client) {
-                Text("\(client) disconnected at \(lastSeen.formatted(date: .omitted, time: .shortened)). Its proposals stay here until you accept or reject them.")
+                Text("\(client) disconnected at \(lastSeen.formatted(date: .omitted, time: .shortened)). Its suggestions stay until you accept or reject them.")
                     .font(.callout)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Spacing.medium)

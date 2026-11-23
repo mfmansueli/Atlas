@@ -47,7 +47,7 @@ struct ScreenshotsLanguagePageTests {
         let (model, services) = await german()
         let caption = try #require(model.proposedCaption(locale: "de-DE", slot: 1))
         await model.acceptCaption(caption)
-        #expect(model.captionToast?.text == "Screenshot 2 caption accepted. It’s waiting in Review & Push, top right.")
+        #expect(model.captionToast?.text == "Accepted screenshot 2’s caption. In Review & Push.")
         #expect(model.captionToast?.actionTitle == "Review & Push")
         #expect(savedHeadline(services, slot: 1) == "Deine Woche auf einen Blick")
         #expect(model.proposedCaptions.count == 2)
@@ -72,7 +72,7 @@ struct ScreenshotsLanguagePageTests {
     @Test func acceptHereTakesTheLanguageInView() async {
         let (model, _) = await german()
         await model.acceptCaptionsHere()
-        #expect(model.captionToast?.text == "Accepted 3 captions in German. They’re waiting in Review & Push, top right.")
+        #expect(model.captionToast?.text == "Accepted 3 captions in German. In Review & Push.")
         #expect(model.proposedCaptions.isEmpty)
     }
 

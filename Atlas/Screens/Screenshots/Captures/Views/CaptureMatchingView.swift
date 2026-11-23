@@ -76,7 +76,7 @@ struct CaptureMatchingView: View {
 
     private var footer: some View {
         HStack(spacing: Spacing.small) {
-            Text("Nothing is uploaded at this step. Captures stay on this Mac until you push renders.")
+            Text("Captures stay on this Mac until you push renders.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
             Spacer(minLength: Spacing.large)

@@ -123,7 +123,7 @@ struct AutopilotConceptCard: View {
     private var askPopover: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Ask for changes to \(concept.name)").font(.body.weight(.semibold))
-            Text("Only this concept goes back to \(run.designKind.designer); the others stay as they are.")
+            Text("Only this concept goes back to \(run.designKind.designer). The others stay.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

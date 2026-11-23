@@ -28,8 +28,7 @@ struct CaptureSelectionBar: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(captures.captureAgainRefusal != nil)
                 .help(captures.captureAgainRefusal.map { Text($0) } ?? Text("""
-                A run for just these captures: the plan, template and captions stay, and Review & Push sends only the \
-                images that change
+                Redoes only these captures. Plan, template and captions stay; only changed images are pushed.
                 """))
                 .accessibilityIdentifier("captures.selection.captureAgain")
             Button("Clear") { captures.clearSelection() }

@@ -168,7 +168,7 @@ extension TemplateOperationApplier {
         guard !text.isEmpty, text.count <= 8, text.rangeOfCharacter(from: .letters) == nil else {
             return TemplateRefusal(
                 path: "\(path).value", kind: .wrongType,
-                reason: String(localized: "A laurel or badge shows numbers and symbols only, up to 8, like 4.8 or 4.8 ★, so it never needs translating.")
+                reason: String(localized: "A laurel or badge shows up to 8 numbers and symbols, like 4.8 ★.")
             )
         }
         return nil

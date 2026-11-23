@@ -19,9 +19,9 @@ struct AssetLibrarySheet: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("App Asset Library").font(.title3.weight(.semibold))
-                Text("\(model.appName) · files uploaded to App Store Connect").font(.callout).foregroundStyle(Palette.label2)
+                Text("\(model.appName) · files in App Store Connect").font(.callout).foregroundStyle(Palette.label2)
             }
-            Text("A file a page still shows can’t be deleted; take it off the page first. Files a later push replaced are on no page.")
+            Text("Files on a page can’t be deleted until you remove them there. Replaced files are on no page.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             controls
@@ -38,7 +38,7 @@ struct AssetLibrarySheet: View {
             }
             .accessibilityIdentifier("assetLibrary.confirmDelete")
         } message: {
-            Text("They’re removed from App Store Connect for good. Files on a page aren’t touched.")
+            Text("Removed from App Store Connect for good. Files on a page stay.")
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("assetLibrary.sheet")
@@ -53,7 +53,7 @@ struct AssetLibrarySheet: View {
             .labelsHidden()
             .fixedSize()
             .accessibilityIdentifier("assetLibrary.kind")
-            Toggle("Only on no page", isOn: $model.onlyUnused)
+            Toggle("On no page", isOn: $model.onlyUnused)
                 .toggleStyle(.checkbox)
                 .accessibilityIdentifier("assetLibrary.onlyUnused")
             TextField("Search names", text: $model.search)

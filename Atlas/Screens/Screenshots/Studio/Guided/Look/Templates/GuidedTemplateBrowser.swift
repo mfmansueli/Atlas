@@ -74,9 +74,9 @@ struct GuidedTemplateBrowser: View {
     private var trayText: String {
         let designer = studio.shotStyleDesigner
         guard let brand = studio.shotStyleBrand else {
-            return String(localized: "\(designer) makes one look from each pick. You choose one after it’s made.")
+            return String(localized: "\(designer) makes a look from each pick; you choose one.")
         }
-        return String(localized: "\(designer) makes one look from each pick, in \(brand). You choose one after it’s made.")
+        return String(localized: "\(designer) makes a look in \(brand) from each pick; you choose one.")
     }
 
     private func thumbnail(_ starter: TemplateStarter, isFocused: Bool) -> some View {
@@ -103,7 +103,7 @@ struct GuidedTemplateBrowser: View {
                     .lineLimit(2)
                     .frame(minHeight: 24, alignment: .top)
                 if isInUse {
-                    Text("In use now").font(.footnote).foregroundStyle(Palette.label2)
+                    Text("In use").font(.footnote).foregroundStyle(Palette.label2)
                 }
                 if starter.isNew {
                     Text("New")

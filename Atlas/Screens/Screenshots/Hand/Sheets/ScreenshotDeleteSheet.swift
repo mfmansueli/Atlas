@@ -52,15 +52,15 @@ struct ScreenshotDeleteSheet: View {
     private var explanation: String {
         let primary = viewModel.primaryLocaleName
         if isLastPrimary {
-            return String(localized: "\(primary) is the primary language, and Apple needs at least one \(display.title) screenshot in it.")
+            return String(localized: "Apple needs at least one \(display.title) screenshot in \(primary), the primary language.")
         }
         let left = viewModel.ownCount(locale: locale.code, displayType: display) - 1
         if left == 1 {
-            return String(localized: "\(locale.name) keeps 1 \(display.title) screenshot; the ones after it move up one place.")
+            return String(localized: "\(locale.name) keeps 1 \(display.title) screenshot; later ones move up.")
         }
         if left > 1 {
-            return String(localized: "\(locale.name) keeps \(left) \(display.title) screenshots; the ones after it move up one place.")
+            return String(localized: "\(locale.name) keeps \(left) \(display.title) screenshots; later ones move up.")
         }
-        return String(localized: "\(locale.name) will have no \(display.title) screenshots of its own, so the App Store will show the \(primary) ones there.")
+        return String(localized: "The App Store will show the \(primary) \(display.title) screenshots in \(locale.name) instead.")
     }
 }

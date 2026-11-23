@@ -46,7 +46,7 @@ struct ScreenshotHandSetView: View {
                 // Alba's six live screenshots showed as none for seconds.
                 HStack(spacing: Spacing.small) {
                     ProgressView().controlSize(.small)
-                    Text("Reading the screenshots on the App Store…")
+                    Text("Reading App Store screenshots…")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                 }

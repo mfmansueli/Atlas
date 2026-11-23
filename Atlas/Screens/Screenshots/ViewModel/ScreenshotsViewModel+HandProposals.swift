@@ -42,8 +42,8 @@ extension ScreenshotsViewModel {
         document.storeHandSet(set, live: live)
         decide(proposal.id, status: .accepted, in: &document)
         let text = isReplace
-            ? String(localized: "Screenshot \(proposal.position.map { $0 + 1 } ?? 0) replaced with \(proposal.client)’s file. It’s waiting in Review & Push.")
-            : String(localized: "\(proposal.client)’s screenshot added. It’s waiting in Review & Push.")
+            ? String(localized: "Screenshot \(proposal.position.map { $0 + 1 } ?? 0) replaced with \(proposal.client)’s file. In Review & Push.")
+            : String(localized: "\(proposal.client)’s screenshot added. In Review & Push.")
         await commit(document)
         handRevision += 1
         captionUndo = { [weak self] in

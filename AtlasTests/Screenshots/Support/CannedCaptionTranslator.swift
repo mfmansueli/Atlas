@@ -17,6 +17,8 @@ struct CannedCaptionTranslator: ListingTranslator {
     /// Target locale codes that get a caption far too long to fit.
     var overlong: Set<String> = []
     var availability: [String: TranslationAvailability] = [:]
+    /// Target locale codes whose translation fails as the network would.
+    var failing: Set<String> = []
     let sent = Sent()
 
     static let overlongText = "Ein außerordentlich langer Untertitel, der niemals in zwei Zeilen passt, egal wie klein die Schrift gesetzt wird"
@@ -27,6 +29,7 @@ struct CannedCaptionTranslator: ListingTranslator {
 
     func translate(_ text: String, field _: ListingField, from _: StoreLocale, to target: StoreLocale) async throws -> String {
         sent.append(text)
+        if failing.contains(target.code) { throw URLError(.timedOut) }
         if overlong.contains(target.code) { return Self.overlongText }
         return answers[target.code] ?? "[\(target.code)] \(text)"
     }

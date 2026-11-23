@@ -32,13 +32,10 @@ struct AutopilotLoopReviewBox: View {
                     .accessibilityIdentifier("autopilot.loop.subtitle")
             }
             loops
-            Text(String(localized: """
-            Made from the header you chose. \(kind.designer) animated it; Atlas checked that the first and last \
-            frames match and that the name never moves.
-            """))
-            .font(.subheadline)
-            .foregroundStyle(Palette.label2)
-            .fixedSize(horizontal: false, vertical: true)
+            Text(String(localized: "From your header, animated by \(kind.designer). Checked: first and last frames match; the name stays still."))
+                .font(.subheadline)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
             if let warnings = review?.motionWarnings, !warnings.isEmpty {
                 Label {
                     Text("Taken after one retry: \(warnings.joined(separator: " "))")
@@ -62,7 +59,7 @@ struct AutopilotLoopReviewBox: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("autopilot.loop.quickAsks")
                 HStack(spacing: Spacing.small) {
-                    TextField(String(localized: "Ask for changes to the loop, e.g. “slower, end on the moon”"), text: $note)
+                    TextField(String(localized: "Slower, end on the moon"), text: $note)
                         .textFieldStyle(.roundedBorder)
                         .onSubmit(send)
                         .disabled(isBusy)

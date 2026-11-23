@@ -188,7 +188,7 @@ struct TemplateOperationApplier: Sendable {
 
     private func unknownPath(_ path: String) -> TemplateRefusal {
         if TemplateSchema.readOnlyPaths.contains(path) {
-            return TemplateRefusal(path: path, kind: .unknownPath, reason: String(localized: "\(path) is set by Atlas and can’t be changed by a proposal."))
+            return TemplateRefusal(path: path, kind: .unknownPath, reason: String(localized: "\(path) is set by Atlas; suggestions can’t change it."))
         }
         let parent = path.split(separator: ".").dropLast().joined(separator: ".")
         let siblings = TemplateSchema.fields(under: parent)

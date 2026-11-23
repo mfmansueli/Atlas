@@ -122,13 +122,13 @@ extension ScreenshotStudioModel {
     /// Under `display`'s buttons: where new screens go, or Apple's limit.
     func addScreensNote(on display: ScreenshotDisplayType) -> String {
         guard !plansMaximumScreens(on: display) else {
-            return String(localized: "Apple allows up to 10 screenshots per device. Remove a screen to add another.")
+            return String(localized: "Apple allows 10 screenshots per device. Remove one to add another.")
         }
         let count = run?.plan.screens(on: display).count ?? 0
         if display == .watch {
-            return String(localized: "New screens go after screen \(count) on Apple Watch. Watch screenshots have no captions, so there’s nothing to translate.")
+            return String(localized: "New screens go after screen \(count) on Apple Watch. No captions to translate.")
         }
-        return String(localized: "New screens go after screen \(count) on iPhone and iPad. Their captions are translated into the run’s languages in Localize and check, where you review them.")
+        return String(localized: "Adds screens after screen \(count) on iPhone and iPad. Review their translations in Localize and check.")
     }
 
     /// "UI tests" folder or file the assistant adds worked-out steps to:

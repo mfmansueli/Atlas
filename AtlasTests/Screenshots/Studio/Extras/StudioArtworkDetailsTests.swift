@@ -81,7 +81,7 @@ struct StudioArtworkDetailsTests {
         #expect(french.rows.last?.status == "New · replaces the one on App Store Connect")
 
         let noLocalization = try details(locale: "fr-FR", hasLocalization: false)
-        #expect(noLocalization.rows.last?.status == "New · App Store Connect has no French localization on this version yet")
+        #expect(noLocalization.rows.last?.status == "New · this version has no French localization yet")
         #expect(noLocalization.rows.last?.statusTone == .warning)
     }
 

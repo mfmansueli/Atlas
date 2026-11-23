@@ -38,7 +38,7 @@ struct LocaleScopeRow: Identifiable, Hashable, Sendable {
     func liveTitle(primaryName: String) -> String {
         switch live {
         case .localizedSet: String(localized: "Localized set")
-        case .uploadedByHand: String(localized: "Uploaded by hand")
+        case .uploadedByHand: String(localized: "Added by hand")
         case .usesPrimary: String(localized: "Uses \(primaryName)")
         }
     }

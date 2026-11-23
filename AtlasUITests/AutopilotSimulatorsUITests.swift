@@ -222,7 +222,7 @@ final class AutopilotSimulatorsUITests: XCTestCase {
         XCTAssertFalse(lineText.contains("min left"), lineText)
         let footer = element("autopilot.guided.footer.text")
         let footerText = (footer.value as? String) ?? footer.label
-        XCTAssertTrue(footerText.hasPrefix("Everything else is in."), footerText)
+        XCTAssertTrue(footerText.hasPrefix("Everything else is done."), footerText)
     }
 
     func testLeavingTheDeviceOutClosesItsCard() {
