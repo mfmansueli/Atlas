@@ -59,7 +59,10 @@ struct PrivacyURLsTab: View {
             PrivacyURLsHeaderRow()
             Divider()
             ScrollView {
-                LazyVStack(spacing: 0) {
+                // Not lazy: a few dozen languages at most, and XCUITest's
+                // snapshot crashed SwiftUI's accessibility (label recursion)
+                // while lazy rows came and went under a suggestion card.
+                VStack(spacing: 0) {
                     ForEach(table.locales) { locale in
                         PrivacyURLsRow(table: table, locale: locale, viewModel: viewModel)
                         Divider()

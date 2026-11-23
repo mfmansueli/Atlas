@@ -50,8 +50,14 @@ enum ScreenshotsHandDebugScenes {
         case "hand-changed":
             await change(model)
         case "hand-fallback":
-            let fallback = model.pageLocales.first { model.handFallbackBanner(locale: $0, displayType: .iPhone) != nil }
-            model.pageLocale = fallback
+            if let fallback = model.pageLocales.first(where: { model.handFallbackBanner(locale: $0, displayType: .iPhone) != nil }) {
+                model.pageLocale = fallback
+            } else {
+                // Every sample language has its own set: German's goes, as
+                // Delete All would, so it falls back to the primary's.
+                await model.deleteAllHand()
+                model.captionToast = nil
+            }
         case "hand-proposal":
             await propose(model)
         case "hand-removal":

@@ -157,8 +157,9 @@ final class ScreenshotsByHandUITests: XCTestCase {
         XCTAssertTrue(accept.waitForExistence(timeout: 20))
         accept.click()
         XCTAssertTrue(waitUntil { !accept.exists })
-        let toast = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Claude Code’s order")).firstMatch
-        XCTAssertTrue(toast.waitForExistence(timeout: 5), "The toast says the set is in Claude Code's order")
+        let toast = element("toast.text")
+        XCTAssertTrue(toast.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: toast).contains("Claude Code’s order"), "The toast says the set is in Claude Code's order: \(text(of: toast))")
         attachScreenshot("Claude Code's order accepted")
     }
 

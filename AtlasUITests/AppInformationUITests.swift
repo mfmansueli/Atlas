@@ -121,8 +121,10 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertTrue(userName.exists)
         XCTAssertFalse(text(containing: "lumen-sandbox").exists, "No password is suggested.")
         reveal(signIn)
-        signIn.descendants(matching: .any)["suggestion.accept"].firstMatch.click()
-        XCTAssertTrue(waitUntil { !signIn.exists })
+        let accept = signIn.descendants(matching: .any)["suggestion.accept"].firstMatch
+        accept.click()
+        // The row stays, saying who suggested the value, with Undo.
+        XCTAssertTrue(waitUntil { !accept.exists })
         let toggle = element("appInformation.review.signInRequired")
         XCTAssertEqual(toggle.value as? Int, 1)
     }
@@ -135,8 +137,9 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertTrue(card.waitForExistence(timeout: 15))
         XCTAssertTrue(text(containing: "https://lumen.example/de/privacy/choices").exists)
         reveal(card)
-        card.descendants(matching: .any)["suggestion.accept"].firstMatch.click()
-        XCTAssertTrue(waitUntil { !card.exists })
+        let accept = card.descendants(matching: .any)["suggestion.accept"].firstMatch
+        accept.click()
+        XCTAssertTrue(waitUntil { !accept.exists })
     }
 
     private func waitUntil(timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {

@@ -115,8 +115,11 @@ final class SubscriptionOffersUITests: XCTestCase {
         let name = app.textFields["pricing.offerCode.name"]
         name.click()
         name.typeText("Newsletter")
-        app.checkBoxes["pricing.offerCode.hasCustomCode"].click()
-        let code = app.textFields["pricing.offerCode.customCode"]
+        // The switch sits below the sheet's fold, and XCUITest on macOS
+        // doesn't scroll a Form to it.
+        let hasCustomCode = revealed("pricing.offerCode.hasCustomCode", in: element("pricing.offerCode"))
+        hasCustomCode.click()
+        let code = revealed("pricing.offerCode.customCode", in: element("pricing.offerCode"))
         XCTAssertTrue(code.waitForExistence(timeout: 5))
         code.click()
         code.typeText("news30")
@@ -127,6 +130,15 @@ final class SubscriptionOffersUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    /// The element, after scrolling `container` down until it's on screen.
+    private func revealed(_ identifier: String, in container: XCUIElement) -> XCUIElement {
+        let target = element(identifier)
+        for _ in 0..<8 where !(target.exists && target.isHittable) {
+            container.scroll(byDeltaX: 0, deltaY: -200)
+        }
+        return target
     }
 
     /// A text element's string: its value on macOS, else its label.
