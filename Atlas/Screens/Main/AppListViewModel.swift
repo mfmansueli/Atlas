@@ -87,4 +87,22 @@ final class AppListViewModel {
     func findTeamName() async -> String? {
         try? await services.teamName()
     }
+
+    // MARK: - Add App
+
+    /// Add App…: the team's apps as App Store Connect lists them now that
+    /// the menu doesn't show yet (made since the last sync), by name.
+    func appsNotShown() async throws -> [StoreApp] {
+        let shown = Set(apps.map(\.id))
+        return try await services.apps().filter { !shown.contains($0.id) }
+    }
+
+    /// Add on one of them: it joins the menu in name order and opens.
+    func add(_ app: StoreApp) {
+        if !apps.contains(where: { $0.id == app.id }) {
+            let index = apps.firstIndex { $0.name.localizedStandardCompare(app.name) == .orderedDescending } ?? apps.endIndex
+            apps.insert(app, at: index)
+        }
+        selectedAppID = app.id
+    }
 }

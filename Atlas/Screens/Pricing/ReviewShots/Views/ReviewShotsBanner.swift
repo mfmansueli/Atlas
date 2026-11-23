@@ -41,9 +41,11 @@ struct ReviewShotsBanner: View {
     @ViewBuilder private var missing: some View {
         let count = viewModel.productsMissingReviewShot.count
         if count > 0, viewModel.setup.paywallCapture == nil {
-            shell(isAI: true) {
-                Image(systemName: "sparkles")
-                    .foregroundStyle(Palette.ai)
+            // Nothing an assistant made yet: a neutral note with a warning
+            // mark (Redesign, 23 November); only the button is AI.
+            shell(isAI: false) {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundStyle(Palette.warn)
                     .accessibilityHidden(true)
                 Text(missingText(count))
                     .font(.callout)
@@ -182,7 +184,9 @@ struct ReviewShotsBanner: View {
             }
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+            // Raised inside the amber box, as the canvas's StoreKit note.
+            .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
             HStack(spacing: Spacing.small) {
                 Spacer()
                 Button("Not Now") { viewModel.dismissReviewShotsRun() }
@@ -240,8 +244,8 @@ struct ReviewShotsBanner: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+        // A run that stopped is amber, never purple (README-DS state colours).
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .accessibilityElement(children: .contain)
     }
 }

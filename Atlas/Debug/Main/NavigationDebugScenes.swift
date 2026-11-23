@@ -11,6 +11,8 @@ import SwiftUI
 ///
 /// - `nav-ov`, `nav-sp` (Store Page in German), `nav-ev`, `nav-rv`,
 ///   `nav-an`: a section selected in the sidebar.
+/// - `nav-accounts`: Accounts and keys open; `nav-addapp`: Add App open,
+///   with two apps made since the first sync.
 /// - `nav-apps`: the app menu open; `nav-ph`: Reviews with the footer
 ///   following a phased release; `nav-free`: the Free plan.
 /// - `nav-s`: the sidebar hidden, so the toolbar has the section menu and
@@ -18,7 +20,10 @@ import SwiftUI
 /// - `nav-prefetch`: Overview with the other sections read ahead, the
 ///   Store Page and App Information taking `prefetchDelay` to read.
 enum NavigationDebugScenes {
-    static let ids = ["nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-ph", "nav-free", "nav-s", "nav-s-menu", "nav-prefetch"]
+    static let ids = [
+        "nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-accounts", "nav-addapp", "nav-ph", "nav-free", "nav-s", "nav-s-menu",
+        "nav-prefetch",
+    ]
 
     /// How long each slow read of `nav-prefetch` takes.
     static let prefetchDelay: Duration = .seconds(4)
@@ -29,6 +34,16 @@ enum NavigationDebugScenes {
         case "nav-apps":
             NavigationDebugLaunch.opensAppMenu = true
             return overview()
+        case "nav-accounts":
+            NavigationDebugLaunch.opensMenuSheet = "accounts"
+            return overview()
+        case "nav-addapp":
+            NavigationDebugLaunch.opensMenuSheet = "addApp"
+            var services = ReleaseDebugScenes.services(.prepare)
+            services.appList = DebugAppListServices(madeLater: madeLater)
+            return AnyView(DebugMainScene(
+                services: services, section: .overview, suggestions: SuggestionsDebugData.store(), release: DebugReleaseData.store(.prepare)
+            ))
         case "nav-ph":
             return AnyView(DebugMainScene(
                 services: ReleaseDebugScenes.services(.phased), section: .reviews, pendingChanges: [], release: DebugReleaseData.store(.phased)
@@ -63,6 +78,12 @@ enum NavigationDebugScenes {
         default: nil
         }
     }
+
+    /// The two apps App Store Connect lists after the first sync.
+    private static let madeLater = [
+        StoreApp(id: "6450000901", name: "Pebble Weather", bundleID: "dev.northpier.pebble", primaryLocale: "en-US"),
+        StoreApp(id: "6450000902", name: "Tidepool Sounds", bundleID: "dev.northpier.tidepool", primaryLocale: "en-US"),
+    ]
 
     /// Overview with Lumen 1.4 before it's submitted and the suggestions
     /// that give the sidebar its counts.

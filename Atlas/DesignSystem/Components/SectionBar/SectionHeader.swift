@@ -7,20 +7,24 @@ import SwiftUI
 
 /// The top of a section's page, under the toolbar that names it (board
 /// 57): one sentence about what it changes on the App Store, and the
-/// page's own controls on the right. The section's title and state are in
-/// the toolbar, not here.
+/// page's own controls on the right. Under the sentence, the section's
+/// summary line when something waits (`\.sectionSummary`). The section's
+/// title and state are in the toolbar, not here.
 struct SectionHeader<Trailing: View>: View {
     let subtitle: String
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
         HStack(spacing: Spacing.medium) {
-            Text(subtitle)
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .lineLimit(2)
-                .truncationMode(.tail)
-                .accessibilityIdentifier("section.description")
+            VStack(alignment: .leading, spacing: 1) {
+                Text(subtitle)
+                    .font(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
+                    .accessibilityIdentifier("section.description")
+                SectionSummaryLine()
+            }
             Spacer(minLength: Spacing.small)
             HStack(spacing: Spacing.small) {
                 trailing()

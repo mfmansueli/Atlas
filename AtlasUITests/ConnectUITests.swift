@@ -120,8 +120,10 @@ final class ConnectUITests: XCTestCase {
         let switcher = element("sidebar.accountSwitcher")
         XCTAssertTrue(switcher.waitForExistence(timeout: 5))
         switcher.click()
-        // The switcher's menu, not the same item in the Atlas menu.
-        switcher.menuItems["Add Another Key…"].click()
+        // Switch Account or Key… opens Accounts and keys.
+        let addKey = element("accounts.addKey")
+        XCTAssertTrue(addKey.waitForExistence(timeout: 5))
+        addKey.click()
         XCTAssertTrue(app.staticTexts["Add Another Key"].waitForExistence(timeout: 5))
         app.buttons["connect.cancelButton"].click()
         XCTAssertTrue(app.staticTexts["Add Another Key"].waitForNonExistence(timeout: 5))

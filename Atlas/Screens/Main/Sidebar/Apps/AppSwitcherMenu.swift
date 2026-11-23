@@ -6,17 +6,19 @@
 import SwiftUI
 
 /// The app menu: every app of the account with its count, search and sort
-/// when there are many, the saved keys, and when the list was synced.
+/// when there are many, Add App… and Switch Account or Key…, and when the
+/// list was synced.
 struct AppSwitcherMenu: View {
     @Bindable var viewModel: AppListViewModel
     let accounts: [TeamAccount]
     let currentAccountID: TeamAccount.ID?
     let indicators: (StoreApp) -> AppIndicators
     let onSelectApp: (StoreApp) -> Void
-    let onSelectAccount: (TeamAccount) -> Void
-    let onAddKey: () -> Void
+    /// Add App…: the team's apps the menu doesn't show yet.
+    let onAddApp: () -> Void
+    /// Switch Account or Key…: Accounts and keys.
+    let onShowAccounts: () -> Void
 
-    @Environment(\.openSettings) private var openSettings
     @Environment(ProGate.self) private var pro: ProGate?
 
     /// More apps than this get a search field.
@@ -86,29 +88,37 @@ struct AppSwitcherMenu: View {
         }
     }
 
-    /// The saved keys, Add Another Key… and Manage Keys….
+    /// Add App… and Switch Account or Key… (Redesign, 23 November): each
+    /// opens its sheet, Add App and Accounts and keys.
     private var accountMenu: some View {
-        Menu {
-            Section("App Store Connect Keys") {
-                ForEach(accounts) { account in
-                    Toggle(isOn: Binding(get: { account.id == currentAccountID }, set: { _ in onSelectAccount(account) })) {
-                        Text(account.name)
-                        Text("\(account.role) · Key \(account.keyID)")
-                    }
-                }
-            }
-            Divider()
-            Button("Add Another Key…", action: onAddKey)
-            Button("Manage Keys…") { openSettings() }
-        } label: {
-            Text("Switch Account or Key…")
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: 0) {
+            MenuItem(title: String(localized: "Add App…", comment: "kind:menu-item"), action: onAddApp)
+                .accessibilityIdentifier("sidebar.addApp")
+            MenuItem(title: String(localized: "Switch Account or Key…", comment: "kind:menu-item"), action: onShowAccounts)
+                .accessibilityIdentifier("sidebar.accountSwitcher")
         }
-        .menuStyle(.button)
-        .buttonStyle(.plain)
-        .padding(.horizontal, Spacing.medium)
-        .frame(height: 28)
-        .accessibilityIdentifier("sidebar.accountSwitcher")
+        .padding(.horizontal, Spacing.xSmall)
+    }
+
+    /// A row under the apps that opens a sheet, highlighted on hover.
+    private struct MenuItem: View {
+        let title: String
+        let action: () -> Void
+
+        @State private var isHovered = false
+
+        var body: some View {
+            Button(action: action) {
+                Text(title)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, Spacing.xSmall)
+                    .frame(height: 28)
+                    .background(isHovered ? Palette.fill1 : .clear, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovered = $0 }
+        }
     }
 
     private var footer: some View {

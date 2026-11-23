@@ -6,8 +6,12 @@
 import SwiftUI
 
 /// On the Overview while the newest version crashes clearly more often than
-/// the one before (at least fairly sure): the numbers, where the phased
-/// release stands, and Pause Phased Release…, which always asks first.
+/// the one before (at least fairly sure): one amber banner (Redesign,
+/// 23 November), “**Version 1.4 crashes 3.2× as often as 1.3,** mostly on
+/// iPhone 11. Pausing keeps it away from the other 95%.”, with See
+/// Stability and, while a phased release rolls out, Pause Phased
+/// Release…, which always asks first. The version card shows the phased
+/// release's days.
 struct StabilityAlertCard: View {
     let report: StabilityReport
     /// The version's phased release; nil when it isn't rolling out in phases.
@@ -18,36 +22,31 @@ struct StabilityAlertCard: View {
 
     @State private var isConfirmingPause = false
 
-    private var phasedDay: (day: Int, isPaused: Bool)? {
-        if case let .phased(day, isPaused) = phase { return (day, isPaused) }
-        return nil
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark).accessibilityHidden(true)
-                Text(report.headline ?? "").font(.body.weight(.semibold)).lineLimit(3)
-                Spacer(minLength: Spacing.small)
-            }
-            Text(detail).font(.callout).foregroundStyle(Palette.label2).lineLimit(3)
-            if let phasedDay {
-                PhasedReleaseBars(day: phasedDay.day, isPaused: phasedDay.isPaused)
-            }
+        let text = StabilityAlertText.make(report, phase: phase)
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark).accessibilityHidden(true)
+            message(text)
+                .font(.callout)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
+                .help(String(localized: "From a sample of people who share analytics with you.", comment: "kind:tooltip"))
             HStack(spacing: Spacing.small) {
-                Spacer()
-                Button("Open Stability", action: onOpenStability)
+                Button(String(localized: "See Stability", comment: "kind:button"), action: onOpenStability)
                     .accessibilityIdentifier("overview.stability.open")
-                if let phasedDay, !phasedDay.isPaused {
+                if StabilityAlertText.canPause(phase) {
                     Button("Pause Phased Release…") { isConfirmingPause = true }
                         .disabled(isPausing)
                         .accessibilityIdentifier("overview.stability.pause")
                 }
             }
             .controlSize(.regular)
+            .fixedSize()
         }
-        .padding(Spacing.medium)
-        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .padding(.horizontal, Spacing.medium)
+        .padding(.vertical, Spacing.small)
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("overview.stability")
         .confirmationDialog(
@@ -65,13 +64,10 @@ struct StabilityAlertCard: View {
         }
     }
 
-    private var detail: String {
-        var parts: [String] = []
-        if let new = report.latest.perThousand, let old = report.previous?.perThousand {
-            parts.append(String(localized: "\(AnalyticsText.perThousand(new)) crashes per 1,000 sessions against \(AnalyticsText.perThousand(old))"))
-        }
-        if let device = report.mostAffected { parts.append(String(localized: "most on \(device.device)")) }
-        parts.append(String(localized: "a sample of people who share analytics"))
-        return parts.joined(separator: " · ")
+    /// The bold lead, then the rest of the sentence.
+    private func message(_ text: StabilityAlertText?) -> Text {
+        let lead = Text(text?.lead ?? report.headline ?? "").fontWeight(.semibold)
+        guard let detail = text?.detail else { return lead }
+        return Text("\(lead) \(detail)")
     }
 }

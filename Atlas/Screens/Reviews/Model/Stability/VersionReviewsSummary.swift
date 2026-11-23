@@ -41,6 +41,40 @@ struct VersionReviewsSummary: Hashable, Sendable {
         reviews.isEmpty ? 0 : Double(reviews.reduce(0) { $0 + $1.rating }) / Double(reviews.count)
     }
 
+    /// The banner's bold lead (Redesign, 23 November): “Version 1.4
+    /// averages 3.9 ★ from 11 reviews; 1.3 averaged 4.7 ★.”
+    var lead: String {
+        let stars = average.formatted(.number.precision(.fractionLength(1)))
+        guard let previousVersion, let previousAverage else {
+            return count == 1
+                ? String(localized: "Version \(version) averages \(stars) ★ from 1 review.", comment: "kind:banner")
+                : String(localized: "Version \(version) averages \(stars) ★ from \(count) reviews.", comment: "kind:banner")
+        }
+        let before = previousAverage.formatted(.number.precision(.fractionLength(1)))
+        return count == 1
+            ? String(localized: "Version \(version) averages \(stars) ★ from 1 review; \(previousVersion) averaged \(before) ★.", comment: "kind:banner")
+            : String(
+                localized: "Version \(version) averages \(stars) ★ from \(count) reviews; \(previousVersion) averaged \(before) ★.",
+                comment: "kind:banner"
+            )
+    }
+
+    /// What follows the lead: “6 of the 11 mention a crash, and crashes are
+    /// 3.2× higher on 1.4.”; nil when there's neither.
+    func detail(crashTimes: Double?) -> String? {
+        let times = crashTimes.map(AnalyticsText.times)
+        switch (crashMentions > 0, times) {
+        case let (true, times?):
+            return String(localized: "\(crashMentions) of the \(count) mention a crash, and crashes are \(times) higher on \(version).", comment: "kind:banner")
+        case (true, nil):
+            return String(localized: "\(crashMentions) of the \(count) mention a crash.", comment: "kind:banner")
+        case let (false, times?):
+            return String(localized: "Crashes are \(times) higher on \(version).", comment: "kind:banner")
+        case (false, nil):
+            return nil
+        }
+    }
+
     /// "Reviews on 1.4: 3.1★ from 24 (1.3: 4.4★) · 5 mention a crash".
     var text: String {
         let stars = average.formatted(.number.precision(.fractionLength(1)))

@@ -5,8 +5,9 @@
 
 import SwiftUI
 
-/// A page's title and the line under it, with optional controls on the
-/// right (a badge, a link).
+/// A page's title and the line under it, then the section's summary line
+/// when something waits, with optional controls on the right (a badge, a
+/// link).
 struct AppInformationPageHeader<Trailing: View>: View {
     let title: String
     let subtitle: String
@@ -22,6 +23,8 @@ struct AppInformationPageHeader<Trailing: View>: View {
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
+                // What waits in App Information, as at the top of every section.
+                SectionSummaryLine()
             }
             Spacer(minLength: Spacing.medium)
             HStack(spacing: Spacing.small) {

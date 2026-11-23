@@ -16,11 +16,18 @@ struct DebugAppListServices: AppListServices {
     var error: AppStoreConnectError?
     var delay: Duration?
     var teamName: String?
+    /// Apps App Store Connect lists only from the second read on, as if
+    /// made since the first sync, for Add App (`nav-addapp`).
+    var madeLater: [StoreApp] = []
+
+    /// Whether `apps()` answered once already in this launch.
+    private static var hasRead = false
 
     func apps() async throws -> [StoreApp] {
         if let delay { try await Task.sleep(for: delay) }
         if let error { throw error }
-        return apps
+        defer { Self.hasRead = true }
+        return Self.hasRead ? (apps + madeLater).sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending } : apps
     }
 
     func teamName() async throws -> String? {

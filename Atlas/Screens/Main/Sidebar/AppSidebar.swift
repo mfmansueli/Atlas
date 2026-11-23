@@ -7,7 +7,7 @@ import SwiftUI
 
 /// The sidebar: "App" over the app being viewed (opening the app menu) at
 /// the top, its sections grouped by what the person is doing, each with
-/// its count, then Settings and Show the Tour (board 63) over the
+/// its count, then Settings, Show the Tour (board 63) and Atlas Help over the
 /// version's status at the bottom. Also the library's loading, empty and
 /// error states.
 struct AppSidebar: View {
@@ -31,6 +31,7 @@ struct AppSidebar: View {
     /// Nil in previews.
     @Environment(FirstRunTour.self) private var tour: FirstRunTour?
     @Environment(\.openSettings) private var openSettings
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         List(selection: selection) {
@@ -83,6 +84,8 @@ struct AppSidebar: View {
                     SidebarUtilityRow(title: String(localized: "Show the Tour"), systemImage: "questionmark", action: showTour)
                         .accessibilityIdentifier("sidebar.showTour")
                 }
+                SidebarUtilityRow(title: String(localized: "Atlas Help", comment: "kind:button"), systemImage: "book", shortcut: "⌘?", action: showHelp)
+                    .accessibilityIdentifier("sidebar.help")
                 if let version, viewModel.selectedApp != nil {
                     VersionStatusFooter(summary: version, action: onVersion)
                         .padding(.top, Spacing.xxSmall)
@@ -104,6 +107,12 @@ struct AppSidebar: View {
             try? await Task.sleep(for: .milliseconds(150))
             tour?.start()
         }
+    }
+
+    /// Atlas Help, on its home page, as Help → Atlas Help (⌘?) opens it.
+    private func showHelp() {
+        HelpNavigation.shared.goHome()
+        openWindow(id: HelpCommands.windowID)
     }
 
     /// A DEBUG scene that opens with the app menu showing.

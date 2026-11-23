@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// At the top of Reviews while Reply Automatically is on (board 58 · 3 and
-/// 6): the rule, the next check, Pause or Resume, History and Settings….
+/// 6): the assistant's sparkle, the rule, the next check, Pause or Resume,
+/// History, Settings… and Turn Off.
 /// It says why replies keep waiting (no reply sent by hand yet, the day's
 /// cap) and why none could be written (Claude Code isn't connected).
 struct AutoReplyStrip: View {
@@ -21,13 +22,16 @@ struct AutoReplyStrip: View {
     let onPause: (Bool) -> Void
     let onHistory: () -> Void
     let onSettings: () -> Void
+    /// Turn Off (Redesign, 23 November): the rule goes off; drafts stay.
+    var onTurnOff: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                Circle()
-                    .fill(rule.isPaused ? Palette.label3 : Palette.ok)
-                    .frame(width: 8, height: 8)
+                // The assistant replies: its sparkle, gray while paused.
+                Image(systemName: "sparkles")
+                    .font(.callout)
+                    .foregroundStyle(rule.isPaused ? Palette.label3 : Palette.ai)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -52,6 +56,8 @@ struct AutoReplyStrip: View {
                     }
                     Button("Settings…", action: onSettings)
                         .accessibilityIdentifier("autoReply.strip.settings")
+                    Button(String(localized: "Turn Off", comment: "kind:button"), action: onTurnOff)
+                        .accessibilityIdentifier("autoReply.strip.turnOff")
                 }
                 .controlSize(.regular)
                 .buttonBorderShape(.capsule)

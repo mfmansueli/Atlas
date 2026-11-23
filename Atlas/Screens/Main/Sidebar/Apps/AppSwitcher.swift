@@ -21,6 +21,30 @@ struct AppSwitcher: View {
 
     @State private var isPresented = false
     @State private var isHovered = false
+    /// Accounts and keys, or Add App, opened from the menu.
+    @State private var sheet: MenuSheet?
+    @Environment(\.openSettings) private var openSettings
+    /// For Add's toast; nil in previews.
+    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+
+    /// The sheets the app menu opens.
+    private enum MenuSheet: String, Identifiable {
+        case accounts
+        case addApp
+
+        var id: String { rawValue }
+    }
+
+    /// Closes the menu (or the other sheet), then opens `next` once it's
+    /// gone: a sheet asked for while the popover closes doesn't show.
+    private func openSheet(_ next: MenuSheet) {
+        isPresented = false
+        sheet = nil
+        Task {
+            try? await Task.sleep(for: .milliseconds(250))
+            sheet = next
+        }
+    }
 
     var body: some View {
         Button {
@@ -43,18 +67,42 @@ struct AppSwitcher: View {
                     isPresented = false
                     viewModel.selectedAppID = app.id
                 },
-                onSelectAccount: { account in
-                    isPresented = false
-                    onSelectAccount(account)
-                },
-                onAddKey: {
-                    isPresented = false
-                    onAddKey()
-                }
+                onAddApp: { openSheet(.addApp) },
+                onShowAccounts: { openSheet(.accounts) }
             )
+        }
+        .sheet(item: $sheet) { sheet in
+            switch sheet {
+            case .accounts:
+                AccountsSheet(
+                    accounts: accounts, currentAccountID: currentAccountID, currentAppCount: viewModel.hasLoaded ? viewModel.apps.count : nil,
+                    onSwitch: onSelectAccount,
+                    // The window's Add Another Key sheet, once this one is gone.
+                    onAddKey: {
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(250))
+                            onAddKey()
+                        }
+                    },
+                    onManageKeys: {
+                        SettingsNavigation.shared.pane = .accounts
+                        openSettings()
+                    }
+                )
+            case .addApp:
+                AddAppSheet(viewModel: viewModel, teamName: current?.name) { app in
+                    navigator?.toast = WorkspaceToast(message: ToastMessage(text: AccountsSheetText.added(app)))
+                } onSwitchAccount: {
+                    openSheet(.accounts)
+                }
+            }
         }
         .task {
             if startsOpen { isPresented = true }
+            #if DEBUG
+            // `nav-accounts` and `nav-addapp` open with their sheet showing.
+            if let id = NavigationDebugLaunch.opensMenuSheet { sheet = MenuSheet(rawValue: id) }
+            #endif
         }
         // The tour's first tip, pointing at the app's row.
         .tourTip(.apps, arrowEdge: .trailing, anchor: summary.hasOthers ? .point(UnitPoint(x: 1, y: 0.32)) : .rect(.bounds))

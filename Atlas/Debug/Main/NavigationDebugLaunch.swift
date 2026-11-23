@@ -11,6 +11,8 @@ import Foundation
 /// tour's tips.
 enum NavigationDebugLaunch {
     @MainActor static var opensAppMenu = false
+    /// The app menu's sheet showing: "accounts" or "addApp".
+    @MainActor static var opensMenuSheet: String?
     @MainActor static var hidesSidebar = false
     @MainActor static var opensSectionMenu = false
     /// The tour's tip the window shows once it's up.

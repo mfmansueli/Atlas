@@ -65,6 +65,8 @@ struct AppWorkspaceView: View {
             // Overview), so the edge is hard. Only the page's: a toolbar
             // background would cover the sidebar's glass up to the top too.
             content
+                // The line under the section's description: what waits.
+                .environment(\.sectionSummary, sectionSummary)
                 .pageControlSize()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollEdgeEffectStyle(.hard, for: .top)
@@ -428,6 +430,17 @@ struct AppWorkspaceView: View {
         case .inAppEvents:
             InAppEventsSectionView(app: app, services: services)
         }
+    }
+}
+
+// MARK: - Section summary
+
+extension AppWorkspaceView {
+    /// “3 suggestions · about 2 min · 2 in Review & Push” at the top of
+    /// the section, from the same counts as the toolbar's line.
+    var sectionSummary: SectionSummary? {
+        let status = sectionStatus
+        return SectionSummary.make(section: status.section, suggestions: status.waiting, notPushed: status.notPushed)
     }
 }
 

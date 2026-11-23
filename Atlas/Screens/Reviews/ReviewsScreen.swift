@@ -18,6 +18,8 @@ struct ReviewsScreen: View {
     @Environment(BackgroundWork.self) private var background: BackgroundWork?
     @Environment(AnalyticsStore.self) private var analytics: AnalyticsStore?
     @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+    /// The version's release, for Pause Phased Release…; nil in previews.
+    @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -78,7 +80,8 @@ struct ReviewsScreen: View {
                 historyCount: viewModel.autoReplyHistory.count,
                 onPause: { viewModel.setAutoReplyPaused($0) },
                 onHistory: { viewModel.isAutoReplyHistoryPresented = true },
-                onSettings: { viewModel.isAutoReplySettingsPresented = true }
+                onSettings: { viewModel.isAutoReplySettingsPresented = true },
+                onTurnOff: { viewModel.turnOffAutoReply() }
             )
         }
         if let message = viewModel.errorMessage, viewModel.bulkPlan == nil {
@@ -90,14 +93,9 @@ struct ReviewsScreen: View {
             .accessibilityIdentifier("reviews.error")
         }
         if let summary = versionSummary {
-            AnalyticsNotice(
-                tone: .warning,
-                text: [stability?.headline, summary.text].compactMap(\.self).joined(separator: " "),
-                primary: stability == nil ? nil : (String(localized: "Open Stability"), {
-                    navigator?.openAnalytics(.stability, appID: viewModel.app.id)
-                }),
-                identifier: "reviews.stability"
-            )
+            VersionCrashBanner(summary: summary, stability: stability, release: sectionModels?.models(for: viewModel.app.id).release) {
+                navigator?.openAnalytics(.stability, appID: viewModel.app.id)
+            }
         }
         if let text = viewModel.downloadText {
             Banner(kind: .info, title: text, isInline: true) {
