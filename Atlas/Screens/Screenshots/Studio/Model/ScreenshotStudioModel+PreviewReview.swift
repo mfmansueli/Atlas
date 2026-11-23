@@ -99,8 +99,7 @@ extension ScreenshotStudioModel {
         panel.canChooseDirectories = false
         panel.title = String(localized: "Music for the App Preview")
         panel.message = String(localized: """
-        Choose music you hold the rights to: it plays under your App Preview on the App Store, in every language. \
-        By choosing it, you confirm you may use it there.
+        Choose music you hold the rights to. Choosing it confirms you may use it under your App Preview, in every language.
         """)
         panel.prompt = String(localized: "Use This Music")
         guard panel.runModal() == .OK, let url = panel.url else { return }

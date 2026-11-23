@@ -34,10 +34,7 @@ enum ArtworkWebError: LocalizedError, Equatable {
         case .timedOut:
             String(localized: "The page took too long to load.")
         case .rendererStopped:
-            String(localized: """
-            The page renderer stopped twice on this page. Send it again; if it stops again, lighten the page \
-            (fewer or smaller blurs and filters).
-            """)
+            String(localized: "The page renderer stopped twice. Send it again; if it stops, use fewer or smaller blurs and filters.")
         }
     }
 }

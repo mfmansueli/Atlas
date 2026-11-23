@@ -198,7 +198,7 @@ final class AssetLibraryModel: Identifiable {
         }
         notice = deleteErrors.isEmpty
             ? (deletedCount == 1 ? String(localized: "Deleted 1 file.") : String(localized: "Deleted \(deletedCount) files."))
-            : String(localized: "Deleted \(deletedCount) of \(deleteTotal). \(deleteErrors.count) couldn’t be deleted: the reason is on each.")
+            : String(localized: "Deleted \(deletedCount) of \(deleteTotal). \(deleteErrors.count) failed; each shows why.")
     }
 
     /// "Deleting 3 of 5…" while it deletes.

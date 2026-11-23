@@ -17,7 +17,7 @@ struct LocaleScopeSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("Which locales get their own screenshots?")
                     .font(.title3.weight(.semibold))
-                Text("The rest show \(primaryName) screenshots on the App Store. Leaving a locale out never deletes what’s already live there.")
+                Text("The rest show \(primaryName) screenshots. Leaving a locale out never deletes its live screenshots.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

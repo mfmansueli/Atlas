@@ -21,14 +21,14 @@ struct AutopilotWatchAskBox: View {
                 }
                 Text("Ask for changes").font(.callout.weight(.semibold))
             }
-            Text("Pacing, order, captions and the end card. The recordings stay as they are; ask \(run.clientName(assistant: nil)) to record again from the plan.")
+            Text("Pacing, order, captions and end card. Recordings stay; to record again, ask \(run.clientName(assistant: nil)) from the plan.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             if isEditable {
                 quickAsks
                 HStack(spacing: Spacing.small) {
-                    TextField(String(localized: "e.g. “end on the Week screen, shorter captions”"), text: $studio.previewNote)
+                    TextField(String(localized: "End on Week, shorter captions"), text: $studio.previewNote)
                         .textFieldStyle(.roundedBorder)
                         .onSubmit { if canAsk { studio.askForPreviewChanges() } }
                         .disabled(!canRevise || isBusy)

@@ -108,21 +108,21 @@ struct ScreenshotStudioPickTests {
         model.studio.recordAgain(week)
         let asked = try #require(model.studio.run)
         #expect(model.studio.recordAgainNote(asked, moment: week)
-            == "Claude Code will record “Week” again before the design step. The rest of the recording stays.")
+            == "Claude Code re-records “Week” before design. The rest stays.")
     }
 
     @Test func iPhoneDuoShowsTheDisplaysTheRowChose() async throws {
         let model = await Self.model(StudioDebugDuoStates.run(.pick, .both, .sideBySide))
         let run = try #require(model.studio.run)
         #expect(model.studio.pickDevices(run) == [.phones, .duo])
-        #expect(model.studio.pickNote(run, device: .duo) == "Same moments as iPhone, on the inner and cover displays. Click to see them full size.")
+        #expect(model.studio.pickNote(run, device: .duo) == "Same moments as iPhone, on the inner and cover displays. Click for full size.")
         let both = model.studio.duoCaptures(run, screenID: run.plan.screens[0].id)
         #expect(both.inner != nil && both.cover != nil)
         #expect(both.cover.map { CaptureSizeRules.isDuoOuterDisplay($0.pixelSize) } == true)
 
         let inner = await Self.model(StudioDebugDuoStates.run(.pick, .inner, .sideBySide))
         let innerRun = try #require(inner.studio.run)
-        #expect(inner.studio.pickNote(innerRun, device: .duo) == "Same moments as iPhone, on the inner display. Click to see them full size.")
+        #expect(inner.studio.pickNote(innerRun, device: .duo) == "Same moments as iPhone, on the inner display. Click for full size.")
         let alone = inner.studio.duoCaptures(innerRun, screenID: innerRun.plan.screens[0].id)
         #expect(alone.inner != nil && alone.cover == nil)
     }

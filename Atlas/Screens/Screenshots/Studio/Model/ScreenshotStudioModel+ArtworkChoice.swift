@@ -47,12 +47,12 @@ extension ScreenshotStudioModel {
             }
             return String(localized: "Claude animates its artwork into a 20-second silent loop: slow light and scene")
                 + float
-                + String(localized: "; the name and headline stay still. The first frame is the poster. Apple plays it on repeat, muted, at \(extras.artworkSize.shortTitle).")
+                + String(localized: "; name and headline stay still. The first frame is the poster. Apple loops it muted at \(extras.artworkSize.shortTitle).")
         }
         if !extras.artworkSize.allowsMotion {
-            return String(localized: "Apple takes motion only at 21:9 and 3:2. Choose Motion loop to switch to those sizes.")
+            return String(localized: "Motion needs 21:9 or 3:2. Choose Motion loop to switch.")
         }
-        return String(localized: "One PNG per place and language. Apple shows it as is wherever the motion version would play.")
+        return String(localized: "One PNG per place and language, shown where motion would play.")
     }
 
     // MARK: - Expected result

@@ -34,7 +34,7 @@ final class IPhoneDuoRowUITests: XCTestCase {
         let note = element("autopilot.plan.duoNote")
         XCTAssertTrue(note.waitForExistence(timeout: 5), "The screens show the iPhone Duo row")
         reveal(note)
-        XCTAssertTrue(text(of: note).hasPrefix("Each screenshot shows the Duo unfolded with the folded cover beside it: "), text(of: note))
+        XCTAssertTrue(text(of: note).hasPrefix("Unfolded with the cover beside it: "), text(of: note))
         XCTAssertTrue(text(of: note).hasSuffix(" per language, both states in one image."), text(of: note))
         XCTAssertTrue(element("autopilot.plan.duoScreens.both").isSelected)
         XCTAssertTrue(element("autopilot.plan.duoBoth.sideBySide").isSelected)
@@ -50,7 +50,7 @@ final class IPhoneDuoRowUITests: XCTestCase {
 
         tap("autopilot.plan.duoScreens.inner")
         XCTAssertTrue(waitUntil {
-            self.text(of: note) == "Unfolded, as Apple requires: the inner display at 2007 × 2853. Atlas opens the Duo in Device Hub for each capture."
+            self.text(of: note) == "Unfolded, as Apple requires: inner display at 2007 × 2853. Device Hub opens the Duo per capture."
         }, text(of: note))
         attachScreenshot("Plan · iPhone Duo inner")
     }

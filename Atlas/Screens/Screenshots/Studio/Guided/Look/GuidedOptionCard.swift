@@ -7,7 +7,7 @@ import SwiftUI
 
 /// One of the Look step's choices (a new look, templates, the current
 /// look; scene templates or going freely): an optional preview, its
-/// title, "In use now" when it is, and what it means. Chosen, it has the
+/// title, "In use" when it is, and what it means. Chosen, it has the
 /// accent's outline.
 struct GuidedOptionCard<Preview: View>: View {
     let title: String
@@ -28,7 +28,7 @@ struct GuidedOptionCard<Preview: View>: View {
                         .font(.callout.weight(.semibold))
                         .foregroundStyle(isEnabled ? Palette.label : Palette.label3)
                     if isInUse {
-                        Pill(text: String(localized: "In use now"), style: .neutral)
+                        Pill(text: String(localized: "In use"), style: .neutral)
                     }
                 }
                 Text(text)

@@ -13,8 +13,7 @@ struct CaptionInspectorSection: View {
     @State private var isImporting = false
 
     private static let note = String(localized: """
-    Emphasis and highlights apply per line after wrapping, so they follow every language’s line breaks. \
-    1 u is 1/1320 of the canvas’s short side.
+    Emphasis and highlights follow each language’s line breaks. 1 u = 1/1320 of the canvas’s short side.
     """)
 
     var body: some View {

@@ -73,7 +73,7 @@ extension ScreenshotStudioModel {
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(prompt, forType: .string)
             studio.askedForCaptures(key, claudeRunID: nil)
-            screenshots.notice = String(localized: "The prompt to capture \(page.pageName)’s screens again is copied: paste it into Claude Code.")
+            screenshots.notice = String(localized: "Prompt copied. Paste it into Claude Code to recapture \(page.pageName)’s screens.")
         }
     }
 }

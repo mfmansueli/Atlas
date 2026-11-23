@@ -69,14 +69,8 @@ final class ArtworkTextEditor {
         guard selection.phrase != nil else { return selection.role.guidance }
         let image = selection.role.title.lowercased()
         return selection.locale == primary
-            ? String(localized: """
-            Words the design wrote on the \(image) image. Change them here; every language translates from the \
-            original words.
-            """)
-            : String(localized: """
-            Words the design wrote on the \(image) image, in this language. Write them for its readers, not word by \
-            word, and about as short: the box they go in doesn’t grow.
-            """)
+            ? String(localized: "Text on the \(image) image. Edit it here; every language translates from it.")
+            : String(localized: "This language’s text on the \(image) image. Write for its readers, as short as the original; the box doesn’t grow.")
     }
 
     /// The field's prompt.

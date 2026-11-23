@@ -62,7 +62,7 @@ struct ScreenshotsLanguagePage: View {
             Task { await viewModel.acceptCaptionsHere() }
         } onAskFirst: {
             preferences.acceptsAllWithoutAsking = false
-            viewModel.captionToast = ToastMessage(text: String(localized: "Accept All Languages will show you the suggestions first again."))
+            viewModel.captionToast = ToastMessage(text: String(localized: "Accept All Languages shows the suggestions first again."))
         } trailing: {
             EmptyView()
         }

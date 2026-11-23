@@ -29,7 +29,7 @@ struct ScreenshotRestoreStage: View {
                 .foregroundStyle(Palette.label2)
             stage
             if choice.hasImages {
-                Text("Restoring takes \(choice.locale.name) out of re-rendering until you choose Use Template Again, so the next push doesn’t replace these again.")
+                Text("Restoring stops re-rendering \(choice.locale.name) until you choose Use Template Again, so the next push keeps these.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -76,7 +76,7 @@ struct ScreenshotRestoreStage: View {
 
     private var emptyText: String {
         guard choice.hasImages else {
-            return String(localized: "\(choice.locale.name) had no screenshots of its own then. To go back to that, take it out of the localized locales; nothing live is deleted.")
+            return String(localized: "\(choice.locale.name) had no screenshots of its own then. To match, leave it out of localized locales; nothing live is deleted.")
         }
         return String(localized: "Nothing was kept for \(displayType.title).")
     }

@@ -17,7 +17,7 @@ extension ScreenshotChecker {
             guard reviews.isChecked else {
                 return RenderCheck(
                     kind: .reviews, status: .warning,
-                    text: String(localized: "Reviews not read yet: couldn’t read the App Store reviews in \(country), so this slot shows its capture"),
+                    text: String(localized: "Reviews not read in \(country); this slot shows its capture"),
                     shortReason: String(localized: "Reviews unread")
                 )
             }
@@ -25,7 +25,7 @@ extension ScreenshotChecker {
             // isn't the Reviews screen the template has.
             return RenderCheck(
                 kind: .reviews, status: .warning,
-                text: String(localized: "No 5-star App Store reviews in \(country) yet, so this slot shows its capture instead of reviews"),
+                text: String(localized: "No 5-star App Store reviews in \(country) yet; this slot shows its capture"),
                 shortReason: String(localized: "No reviews")
             )
         }

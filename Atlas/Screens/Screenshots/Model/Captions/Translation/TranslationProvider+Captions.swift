@@ -13,9 +13,9 @@ extension TranslationProvider {
         case .appleTranslation:
             String(localized: "Free and private. Translates the caption as written.")
         case .aiProvider:
-            String(localized: "Can write shorter, natural captions. Uses the API key in Settings.")
+            String(localized: "Shorter, natural captions. Uses your API key in Settings.")
         case .assistant:
-            String(localized: "Claude Code or another paired assistant, on its own plan. Arrives as proposals.")
+            String(localized: "Claude Code or another paired assistant, on its own plan. Arrives as suggestions.")
         }
     }
 

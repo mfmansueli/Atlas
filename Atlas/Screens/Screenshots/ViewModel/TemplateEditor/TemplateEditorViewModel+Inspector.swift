@@ -148,10 +148,10 @@ extension TemplateEditorViewModel {
         let size = "\(Int(box.width.rounded())) × \(Int(box.height.rounded()))"
         if template?.caption.headline.isTight == true {
             return String(
-                localized: "Caption box \(size) px on \(displayType.title) \(orientation.title.lowercased()), sized to each language’s lines: the device moves down when a language needs one more line."
+                localized: "Caption box \(size) px on \(displayType.title) \(orientation.title.lowercased()), fit to each language: the device moves down for an extra line."
             )
         }
-        return String(localized: "Caption box \(size) px on \(displayType.title) \(orientation.title.lowercased()), reserved at the maximum lines so the device never moves between locales.")
+        return String(localized: "Caption box \(size) px on \(displayType.title) \(orientation.title.lowercased()), at maximum lines, so the device never moves.")
     }
 
     // MARK: - Fonts by script

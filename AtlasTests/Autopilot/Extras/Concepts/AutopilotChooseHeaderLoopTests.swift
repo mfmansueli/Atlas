@@ -39,7 +39,7 @@ struct AutopilotChooseHeaderLoopTests {
         #expect(run.conceptsToChoose.allSatisfy(run.playsLoop))
         #expect(ScreenshotStudioModel.conceptLoopNote(plays: true, run: run) == "20-second loop · plays muted on repeat · ")
         #expect(ScreenshotStudioModel.conceptScopeNote(run).hasSuffix(
-            "Its loop is made again from the changes. After Localize and check you watch the one you chose in every language."
+            "Remade with your changes. After Localize and check, watch your pick in each language."
         ))
         #expect(try #require(run.nextChoiceLine) == """
         Next, you choose: 1 of 3 headers, each playing its 20-second loop. Then Atlas localizes the one you chose, \

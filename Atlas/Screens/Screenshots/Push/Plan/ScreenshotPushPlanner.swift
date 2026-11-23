@@ -21,7 +21,7 @@ struct ScreenshotPushPlanner {
         let displays = Set(matrix.localizedCells.map(\.key.displayType))
         if !input.context.version.isEditable, displays.allSatisfy({ input.context.editBlock(for: $0) != nil }) {
             let version = input.context.version.versionString
-            plan.blockedReason = String(localized: "Version \(version) is live. Screenshots can only change with a version that’s being prepared.")
+            plan.blockedReason = String(localized: "Version \(version) is live. To change screenshots, prepare a new version.")
         }
         var groups = handGroups(input, matrix: matrix, snapshot: snapshot, plan: &plan)
         for cell in matrix.localizedCells where !matrix.isHandRow(locale: cell.key.locale, displayType: cell.key.displayType) {

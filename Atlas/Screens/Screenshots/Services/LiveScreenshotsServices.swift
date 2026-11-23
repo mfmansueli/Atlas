@@ -151,8 +151,8 @@ struct LiveScreenshotsServices: ScreenshotsServices {
     }
 
     func otherDisplayTypeNotes(for _: StoreApp) -> [ScreenshotDisplayType: String] {
-        let note = String(localized: "Templates render iPhone and iPad screenshots; these stay as they are in App Store Connect.")
-        let mac = String(localized: "This app has no macOS version, so the Mac App Store shows its iPad screenshots.")
+        let note = String(localized: "Templates make only iPhone and iPad screenshots. These stay as they are.")
+        let mac = String(localized: "No macOS version: the Mac App Store shows the iPad screenshots.")
         return [.mac: mac, .watch: note, .appleTV: note, .visionPro: note]
     }
 

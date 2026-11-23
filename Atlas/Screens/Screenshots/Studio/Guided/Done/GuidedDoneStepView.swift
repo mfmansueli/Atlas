@@ -67,14 +67,14 @@ struct GuidedDoneStepView: View {
     }
 
     /// "12 screenshots, 2 App Previews and a header and search image in
-    /// 15 languages are on App Store Connect. Template v5 is saved;
-    /// everything is in the set’s history."
+    /// 15 languages are on App Store Connect. Template v5 saved in the
+    /// set’s history. Apple processes them; live within minutes."
     private var sentText: String {
         let what = GuidedMakeSummary.pushed(run.plan) ?? String(localized: "The new files")
         var text = String(localized: "\(what) are on App Store Connect.")
         if let version = run.templateVersion, run.plan.makesScreenshots {
-            text += " " + String(localized: "Template v\(version) is saved; everything is in the set’s history.")
+            text += " " + String(localized: "Template v\(version) saved in the set’s history.")
         }
-        return text + " " + String(localized: "Apple is processing them; the live page changes within minutes.")
+        return text + " " + String(localized: "Apple processes them; live within minutes.")
     }
 }

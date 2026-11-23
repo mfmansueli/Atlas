@@ -44,7 +44,7 @@ extension CaptionsViewModel {
 
     var headlinePlaceholder: String {
         selection?.locale == screenshots.context.primaryLocale.code
-            ? String(localized: "Say what this screen does for people")
+            ? String(localized: "What this screen does for people")
             : String(localized: "Translate or write a caption")
     }
 

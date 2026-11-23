@@ -214,7 +214,7 @@ final class CaptionTranslationViewModel {
                 if case let .failed(message) = item.state { return message }
                 return nil
             }.first ?? ""
-            parts.append(failed == 1 ? String(localized: "1 couldn’t be translated: \(reason)") : String(localized: "\(failed) couldn’t be translated: \(reason)"))
+            parts.append(failed == 1 ? String(localized: "1 couldn’t be translated: \(reason)") : String(localized: "\(failed) couldn’t be translated. Try again, or write them by hand. \(reason)"))
         }
         return parts.joined(separator: " ")
     }

@@ -17,8 +17,7 @@ struct AutopilotWaitStageView: View {
             Text("Capture").font(.title3.weight(.semibold)).accessibilityAddTraits(.isHeader)
             if let launched = studio.launchedRun {
                 Text("""
-                Atlas started Claude Code in \(launched.displayDirectory). It builds \(studio.app.name), boots the \
-                simulators and sends each capture back; the stages move on as they arrive.
+                Claude Code is building \(studio.app.name) in \(launched.displayDirectory), starting the simulators and sending back each capture.
                 """)
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
@@ -65,7 +64,7 @@ struct AutopilotWaitStageView: View {
             ClaudeCodeLaunchHint(client: name)
             HStack(spacing: Spacing.small) {
                 ProgressView().controlSize(.small)
-                Text("Waiting for \(name) to pick up the plan…")
+                Text("Waiting for \(name) to start…")
                     .foregroundStyle(Palette.label2)
             }
             .padding(.top, Spacing.medium)

@@ -89,7 +89,7 @@ struct AutopilotGuidedStripTests {
 
         let review = Self.strip(StudioDebugGuided.ready(approved: []))
         #expect(review.kind == .yourTurn)
-        #expect(review.text == "Everything is made and checked. Review it, then approve it.")
+        #expect(review.text == "Made and checked. Review, then approve.")
         #expect(review.primaryTitle == "Review…")
         #expect(review.secondary == .runAutopilot, "A set the person won't push can be dropped for a new run")
         #expect(review.secondaryTitle == "New Run…")

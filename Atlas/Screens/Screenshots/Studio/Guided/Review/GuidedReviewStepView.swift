@@ -29,7 +29,7 @@ struct GuidedReviewStepView: View {
                 HStack(alignment: .bottom, spacing: Spacing.medium) {
                     GuidedStepTitle(
                         title: String(localized: "Review everything"),
-                        subtitle: String(localized: "Approve each part, or ask for changes. Approved, it waits in Review & Push until you push it from there.")
+                        subtitle: String(localized: "Approve each part or ask for changes. Approved parts wait in Review & Push.")
                     )
                     if parts.count > 1, let part {
                         StudioSegmentedControl(

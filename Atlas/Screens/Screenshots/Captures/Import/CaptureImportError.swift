@@ -17,12 +17,9 @@ enum CaptureImportError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .noScreenshots:
-            String(localized: """
-            There are no PNG screenshots in what you chose. Choose fastlane’s screenshots folder, a folder per locale, \
-            or an Xcode result bundle.
-            """)
+            String(localized: "No PNG screenshots found. Choose fastlane’s screenshots folder, a folder per locale, or an Xcode result bundle.")
         case let .xcresultUnreadable(name):
-            String(localized: "Atlas couldn’t read the attachments in \(name). Export them with “xcrun xcresulttool export attachments --path \(name) --output-path <folder>” and drop that folder here.")
+            String(localized: "Couldn’t read the attachments in \(name). Export them with “xcrun xcresulttool export attachments --path \(name) --output-path <folder>” and drop that folder here.")
         case let .unreadable(path):
             String(localized: "Couldn’t read \(path). Check that the file is still there and try again.")
         }

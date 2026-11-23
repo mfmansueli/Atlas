@@ -53,8 +53,7 @@ struct ScreenshotReplaceSheet: View {
             ], selection: $scope)
             if item.cell.image.renderJob != nil {
                 ScreenshotHandNote(text: String(localized: """
-                Atlas made this one from the template and its caption. Once it’s replaced, Atlas won’t redraw it when the template \
-                or the caption changes. Undo Change brings the template version back.
+                Once replaced, it stops updating with the template and caption. Undo Change brings it back.
                 """))
             }
         } onOK: {

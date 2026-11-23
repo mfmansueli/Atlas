@@ -20,7 +20,7 @@ struct AssetLibraryFileRow: View {
                 .toggleStyle(.checkbox)
                 .labelsHidden()
                 .disabled(!model.canSelect(file))
-                .help(model.canSelect(file) ? "" : String(localized: "A page shows it: take it off the page before deleting it."))
+                .help(model.canSelect(file) ? "" : String(localized: "On a page. Remove it there before deleting."))
                 .accessibilityLabel(Text("Select \(file.title)"))
                 .accessibilityIdentifier("assetLibrary.check.\(file.id)")
             thumbnail

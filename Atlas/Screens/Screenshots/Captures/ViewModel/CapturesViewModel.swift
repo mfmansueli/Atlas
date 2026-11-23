@@ -77,7 +77,7 @@ final class CapturesViewModel {
     func useLiveScreenshots() {
         let scan = CaptureLiveCandidates.scan(screenshots.live)
         guard !scan.candidates.isEmpty else {
-            errorMessage = String(localized: "There are no iPhone 6.9″ or iPad 13″ screenshots live in App Store Connect for this version.")
+            errorMessage = String(localized: "This version has no live iPhone 6.9″ or iPad 13″ screenshots.")
             return
         }
         present(scan)

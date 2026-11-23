@@ -114,7 +114,7 @@ struct ArtworkCheckerTests {
         let found = checks(Fixtures.input(layout, line: line, locale: .german))
         let long = try #require(found.first { $0.kind == .searchHeadlineLength })
         #expect(long.severity == .warning)
-        #expect(long.text == "German search image: ‘\(line)’ is 8 words, 53 characters. A search headline reads best in 3 to 5 words, about 32 characters.")
+        #expect(long.text == "German search image: ‘\(line)’ is 8 words, 53 characters. Aim for 3 to 5 words, about 32 characters.")
         #expect(ArtworkChecker.canPush(found))
     }
 

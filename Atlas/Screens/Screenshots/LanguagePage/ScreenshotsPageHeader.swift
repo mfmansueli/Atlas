@@ -14,7 +14,7 @@ struct ScreenshotsPageHeader: View {
 
     var body: some View {
         SectionHeader(
-            subtitle: String(localized: "The images people swipe through on \(viewModel.app.name)’s App Store page, per language and device.")
+            subtitle: String(localized: "The images on \(viewModel.app.name)’s App Store page, per language and device.")
         ) {
             Picker("View", selection: $viewModel.pageShowsAll) {
                 Text(LanguageBarModel.shortName(viewModel.currentPageLocale)).tag(false)

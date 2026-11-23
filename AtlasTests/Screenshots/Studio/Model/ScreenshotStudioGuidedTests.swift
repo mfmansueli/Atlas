@@ -145,7 +145,7 @@ struct ScreenshotStudioGuidedTests {
         #expect(!studio.isAutopilotPresented)
         let toast = try #require(model.captionToast)
         #expect(toast.text.hasPrefix("Approved: "))
-        #expect(toast.text.hasSuffix(" wait in Review & Push, top right."))
+        #expect(toast.text.hasSuffix(" wait in Review & Push."))
         #expect(toast.actionTitle == "Review & Push")
         #expect(!toast.canUndo)
         let run = try #require(center.run(for: appID))
@@ -156,8 +156,8 @@ struct ScreenshotStudioGuidedTests {
     @Test func theApprovedToastSaysWhatWaits() throws {
         let plan = StudioDebugGuided.ready(approved: []).plan
         let what = try #require(GuidedMakeSummary.pushed(plan))
-        #expect(ScreenshotStudioModel.approvedToastText(plan) == "Approved: \(what) wait in Review & Push, top right.")
-        #expect(ScreenshotStudioModel.approvedToastText(nil) == "Approved: the new set waits in Review & Push, top right.")
+        #expect(ScreenshotStudioModel.approvedToastText(plan) == "Approved: \(what) wait in Review & Push.")
+        #expect(ScreenshotStudioModel.approvedToastText(nil) == "Approved: the new set waits in Review & Push.")
     }
 
     /// Done's Open Review & Push… opens the app-wide one, the toolbar's,

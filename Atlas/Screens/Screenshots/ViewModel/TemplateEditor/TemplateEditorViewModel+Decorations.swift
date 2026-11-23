@@ -100,7 +100,7 @@ extension TemplateEditorViewModel {
         case .unrated:
             return String(localized: "No ratings in \(country) yet · hidden there")
         case .unknown:
-            return String(localized: "Reading the App Store rating in \(country)…")
+            return String(localized: "Reading \(country)’s App Store rating…")
         }
     }
 
@@ -129,16 +129,14 @@ extension TemplateEditorViewModel {
     var ratingNote: String {
         if slotDecorations.contains(where: { $0.type == .art }) {
             return String(localized: """
-            Props are vector stand-ins drawn by the template, never taken from your captures. Hide or remove any that don’t \
-            fit your app. Props that would cover the caption in a language move below it or step aside on their own.
+            Props are drawn by the template, never taken from your captures. Hide or remove any \
+            that don’t fit. Props move aside where they would cover a caption.
             """)
         }
         return String(
             localized: """
-            Rating laurels show this app’s real App Store rating in each country, read daily from the App Store (average and \
-            count per storefront); where the app has no ratings yet, the laurel is left out. Ratings show only numbers and \
-            stars, so they need no translation. Type It sets a value by hand; before pushing, Atlas checks it against \
-            \(templateTitle)’s rating in that country, since Apple rejects misleading screenshots.
+            Laurels show the real App Store rating per country, updated daily, and hide where there are no ratings. Type It sets a value by \
+            hand; Atlas checks it against \(templateTitle)’s rating before pushing, since Apple rejects misleading screenshots.
             """
         )
     }

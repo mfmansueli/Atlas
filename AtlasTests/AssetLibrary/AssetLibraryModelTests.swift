@@ -96,7 +96,7 @@ struct AssetLibraryModelTests {
         await model.deleteSelected()
         #expect(files.deleted == ["header-old", "search-old"])
         #expect(model.deleteErrors["preview"] == "STATE_ERROR.ASSET_HAS_PLACEMENTS — Delete those placements first.")
-        #expect(model.notice == "Deleted 2 of 3. 1 couldn’t be deleted: the reason is on each.")
+        #expect(model.notice == "Deleted 2 of 3. 1 failed; each shows why.")
         #expect(model.files.map(\.id).contains("preview"))
     }
 }

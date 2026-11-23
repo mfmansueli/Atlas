@@ -33,7 +33,7 @@ struct TemplateEditorBanners: View {
             Banner(
                 kind: .info,
                 title: String(localized: "Write your captions next."),
-                message: String(localized: "The renders below have empty caption boxes until \(viewModel.context.primaryLocale.name) has captions."),
+                message: String(localized: "Caption boxes stay empty until \(viewModel.context.primaryLocale.name) has captions."),
                 isInline: true
             ) {
                 Button("Go to Captions") {

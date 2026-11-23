@@ -61,7 +61,7 @@ struct StudioPreviewBuilderDevicesTests {
         let preview = Self.builder(.visionPro).preview()
         #expect(preview.shots.isEmpty)
         #expect(preview.note == "Live now · no Apple Vision Pro screenshots")
-        #expect(preview.emptyText == "No Apple Vision Pro screenshots yet. App Store Connect needs at least one before you can submit for visionOS.")
+        #expect(preview.emptyText == "No Apple Vision Pro screenshots yet. Add at least one to submit for visionOS.")
     }
 
     // MARK: - New

@@ -48,7 +48,7 @@ struct AutopilotDuoRowTests {
         #expect(plan.duoPose(for: duo(plan, slot: 0)) == .open)
         #expect(plan.duoPose(for: AutopilotTestFixtures.target(plan.screens[0].id)) == nil, "iPhone has no pose")
         #expect(ScreenshotStudioModel.duoNote(plan)
-            == "Unfolded, as Apple requires: the inner display at 2007 × 2853. Atlas opens the Duo in Device Hub for each capture.")
+            == "Unfolded, as Apple requires: inner display at 2007 × 2853. Device Hub opens the Duo per capture.")
         #expect(AutopilotPlanTable.duoTitle(plan) == "iPhone Duo · inner display, opened in Device Hub · the same screens as iPhone")
     }
 
@@ -58,7 +58,7 @@ struct AutopilotDuoRowTests {
         #expect(plan.duoSlots(.open).isEmpty)
         #expect(plan.targets.filter { $0.displayType == .iPhoneDuo }.allSatisfy { $0.duoPose == .closed })
         #expect(ScreenshotStudioModel.duoNote(plan) == """
-        Folded: the app on the cover display, placed on the 2007 × 2853 canvas. Faster, since the Duo never opens, but people don’t see the big screen.
+        Folded: the cover display on the 2007 × 2853 canvas. Faster, but people don’t see the big screen.
         """)
         #expect(AutopilotPlanTable.duoTitle(plan) == "iPhone Duo · cover display, folded · the same screens as iPhone")
     }
@@ -72,7 +72,7 @@ struct AutopilotDuoRowTests {
         #expect(plan.screensPerLanguage == 12, "6 on iPhone, 6 on iPhone Duo")
         #expect(plan.duoCoverSlots.isEmpty, "Laid out as the unfolded Duo's")
         #expect(ScreenshotStudioModel.duoNote(plan)
-            == "Each screenshot shows the Duo unfolded with the folded cover beside it: 6 per language, both states in one image.")
+            == "Unfolded with the cover beside it: 6 per language, both in one image.")
         #expect(AutopilotPlanTable.duoTitle(plan) == "iPhone Duo · inner and cover display, side by side · the same screens as iPhone")
     }
 
@@ -91,7 +91,7 @@ struct AutopilotDuoRowTests {
         #expect(ScreenshotStudioModel.duoNote(Self.plan(screens: 5, .both, .separate))
             == "Each screen unfolded, then folded: 10 screenshots per language.")
         #expect(ScreenshotStudioModel.duoNote(Self.plan(screens: 6, .both, .separate))
-            == "Each screen unfolded, then folded: 10 screenshots per language. Apple allows 10, so only the first 4 screens get a folded one.")
+            == "Unfolded, then folded: 10 screenshots per language. Apple allows 10, so the first 4 get a folded one.")
         #expect(AutopilotPlanTable.duoTitle(Self.plan(.both, .separate))
             == "iPhone Duo · inner and cover display, as separate screenshots · the same screens as iPhone")
     }

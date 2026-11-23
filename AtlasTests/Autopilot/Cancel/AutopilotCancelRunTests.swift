@@ -131,7 +131,7 @@ struct AutopilotCancelRunTests {
         #expect(before.contains("Nothing was sent to App Store Connect."))
         #expect(!before.contains("Template v"))
         run.templateVersion = 5
-        #expect(AutopilotCancelRunButton.message(for: run).contains("Template v5 is already saved and stays in the set’s history."))
+        #expect(AutopilotCancelRunButton.message(for: run).contains("Template v5 stays saved in the set’s history."))
     }
 
     @Test func cancellingWhileCapturingSaysTheCapturesStay() {

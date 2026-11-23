@@ -242,7 +242,7 @@ extension ScreenshotStudioModel {
             defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
             let data = try Data(contentsOf: url)
             let file = try await screenshots.services.storeCapture(data, for: app)
-            let report = AutopilotCaptureReport(target: problem.target, notes: String(localized: "Uploaded by hand"))
+            let report = AutopilotCaptureReport(target: problem.target, notes: String(localized: "Added by hand"))
             _ = try await autopilot.receiveCapture(appID: app.id, file: file, report: report, context: context)
             await autopilot.resolveProblem(appID: app.id, problemID: problem.id, with: .uploadedByHand, context: context)
             await keepGoing()
@@ -301,13 +301,10 @@ extension ScreenshotStudioModel {
         let extras = plan.alsoMakes
         if run.usesConcepts { return Self.conceptScopeNote(run) }
         let scope = plan.makesScreenshots
-            ? String(localized: "A note changes the screenshots and the header and search images: colors, type, layout and what they show.")
-            : String(localized: "A note changes the header and search images: colors, type, layout and what they show. The live screenshots stay as they are.")
+            ? String(localized: "Notes change screenshots, header and search images: colors, type, layout, content.")
+            : String(localized: "Notes change header and search images: colors, type, layout, content. Live screenshots stay.")
         guard extras.makesMotion else { return scope }
-        let motion = String(localized: """
-        The loops move the way Atlas animates them (slow light, twinkling stars, a gentle float); the motion \
-        itself can’t change yet.
-        """)
+        let motion = String(localized: "Loops use Atlas’s motion: slow light, twinkling stars, a gentle float. It can’t change yet.")
         return scope + " " + motion
     }
 

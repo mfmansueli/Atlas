@@ -29,7 +29,7 @@ struct TemplateHistoryPopover: View {
             }
             .frame(maxHeight: 360)
             .fixedSize(horizontal: false, vertical: true)
-            Text("Restoring makes a new version from the old one, so nothing is lost.")
+            Text("Restoring makes a new version; nothing is lost.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .padding(.horizontal, Spacing.small)
