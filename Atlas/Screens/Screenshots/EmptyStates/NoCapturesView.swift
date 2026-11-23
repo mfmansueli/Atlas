@@ -15,7 +15,7 @@ struct NoCapturesView: View {
     var body: some View {
         VStack(spacing: Spacing.small) {
             Image(systemName: "iphone")
-                .font(.system(size: 28, weight: .light))
+                .font(.largeTitle.weight(.light))
                 .foregroundStyle(Palette.label3)
                 .accessibilityHidden(true)
             Text("No captures yet")

@@ -73,7 +73,7 @@ struct ReviewHeader: View {
                     viewModel.rejectAll(fromAssistant: client)
                 }
                 .buttonBorderShape(.capsule)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("review.rejectAll")
             }
         }

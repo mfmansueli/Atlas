@@ -11,7 +11,7 @@ import SwiftUI
 /// full size in 0.25 s as it appears. With Reduce Motion it's a still "…".
 /// VoiceOver reads `label`.
 struct TypingIndicator: View {
-    var label: String = String(localized: "Writing…")
+    var label: String = .init(localized: "Writing…")
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hasAppeared = false
@@ -24,8 +24,8 @@ struct TypingIndicator: View {
             .frame(height: 16)
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
-            .background(Palette.machineTranslatedTint, in: Self.bubble)
-            .overlay(Self.bubble.strokeBorder(Palette.suggestionEdge, lineWidth: 1))
+            .background(Palette.aiSurface, in: Self.bubble)
+            .overlay(Self.bubble.strokeBorder(Palette.aiEdge, lineWidth: 1))
             .scaleEffect(hasAppeared || reduceMotion ? 1 : 0.96, anchor: .topLeading)
             .onAppear {
                 withAnimation(.easeOut(duration: 0.25)) { hasAppeared = true }
@@ -40,7 +40,7 @@ struct TypingIndicator: View {
         if reduceMotion {
             Text(verbatim: "…")
                 .font(.body.weight(.semibold))
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
         } else {
             TimelineView(.animation) { context in
                 let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: Self.loop) / Self.loop
@@ -48,7 +48,7 @@ struct TypingIndicator: View {
                     ForEach(0..<3, id: \.self) { index in
                         let lift = Self.lift(phase: phase, dot: index)
                         Circle()
-                            .fill(Palette.machineTranslatedMark)
+                            .fill(Palette.aiMark)
                             .frame(width: 6, height: 6)
                             .opacity(0.35 + 0.65 * lift)
                             .offset(y: -2 * lift)

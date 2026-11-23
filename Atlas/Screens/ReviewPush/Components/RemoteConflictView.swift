@@ -26,11 +26,11 @@ struct RemoteConflictView: View {
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
     }
 
@@ -38,7 +38,7 @@ struct RemoteConflictView: View {
     private struct ConflictLabelStyle: LabelStyle {
         func makeBody(configuration: Configuration) -> some View {
             HStack(spacing: Spacing.xSmall) {
-                configuration.icon.foregroundStyle(Palette.warning)
+                configuration.icon.foregroundStyle(Palette.warn)
                 configuration.title
             }
         }

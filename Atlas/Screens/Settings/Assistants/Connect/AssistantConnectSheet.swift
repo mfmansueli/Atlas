@@ -76,7 +76,7 @@ struct AssistantConnectSheet: View {
         .padding(.horizontal, 9)
         .padding(.vertical, Spacing.xSmall)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(state == .now ? Palette.accentTint : Palette.fill1, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .background(state == .now ? Palette.accentTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityValue(Text(state == .done ? "Done" : state == .now ? "Now" : ""))
     }

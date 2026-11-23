@@ -36,7 +36,7 @@ struct KeywordTokensView: View {
                     Button(action: onOptimize) {
                         Label(analysis.optimizeTitle, systemImage: "sparkles")
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("storePage.optimizeKeywords")
                 }
             }
@@ -56,7 +56,7 @@ struct KeywordTokensView: View {
             }
             Text("Commas only, no spaces: each space costs a byte.")
         }
-        .font(.caption2)
+        .font(.footnote)
         .foregroundStyle(Palette.label2)
         .lineLimit(1)
         .accessibilityElement(children: .combine)

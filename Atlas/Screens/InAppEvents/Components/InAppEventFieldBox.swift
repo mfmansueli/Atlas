@@ -33,7 +33,7 @@ struct InAppEventFieldBox: View {
                     UnsavedDot(size: 6)
                 }
                 Text(field.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 counter
             }
@@ -50,7 +50,7 @@ struct InAppEventFieldBox: View {
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.xSmall)
             .background(Palette.content, in: shape)
-            .overlay(shape.strokeBorder(isOver ? Palette.danger : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
+            .overlay(shape.strokeBorder(isOver ? Palette.err : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
             .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
             .disabled(!isEditable)
             .focused($isFocused)
@@ -71,8 +71,8 @@ struct InAppEventFieldBox: View {
             if let suggested {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Text("SUGGESTED")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Palette.machineTranslated)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Palette.ai)
                     Text(suggested)
                         .font(.callout)
                         .textSelection(.enabled)
@@ -87,7 +87,7 @@ struct InAppEventFieldBox: View {
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
-                .strokeBorder(suggested == nil ? Palette.separator : Palette.machineTranslatedMark.opacity(0.55), lineWidth: suggested == nil ? 0.5 : 1)
+                .strokeBorder(suggested == nil ? Palette.separator : Palette.aiMark.opacity(0.55), lineWidth: suggested == nil ? 0.5 : 1)
         )
     }
 
@@ -100,7 +100,7 @@ struct InAppEventFieldBox: View {
             Pill(text: label, style: .danger)
         } else {
             Text(label)
-                .font(.caption2.monospaced())
+                .font(.footnote.monospaced())
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("events.field.\(field.rawValue).counter")
         }

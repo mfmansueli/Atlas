@@ -14,6 +14,7 @@ extension PricingViewModel {
     func applyDebugOpening(from services: any PricingServices) {
         guard let debug = services as? DebugPricingServices else { return }
         showsProductDetails = !(debug.launch?.showsProducts ?? false)
+        if let state = debug.launch?.reviewShots { applyReviewShotsDebugOpening(state) }
     }
 
     func applyDebugLaunch(from services: any PricingServices) async {
@@ -35,6 +36,7 @@ extension PricingViewModel {
             Task { await reload() }
         }
         if let sheet = launch.sheet { applyDebugSheet(sheet) }
+        if let state = launch.reviewShots { await applyReviewShotsDebugLaunch(state) }
     }
 
     private func applyDebugSheet(_ sheet: PricingDebugSheet) {

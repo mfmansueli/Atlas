@@ -115,12 +115,13 @@ struct GuidedChecksCard: View {
             if let proposalID = check.proposalID {
                 HStack(spacing: Spacing.xSmall) {
                     Button("Accept") { Task { await studio.acceptGuidedProposal(proposalID) } }
+                        .rowActionButton()
                         .accessibilityIdentifier("autopilot.guided.review.check.\(check.id).accept")
                     Button("Reject") { Task { await studio.rejectGuidedProposal(proposalID) } }
                         .buttonStyle(.borderless)
                         .accessibilityIdentifier("autopilot.guided.review.check.\(check.id).reject")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .buttonBorderShape(.capsule)
                 .padding(.leading, 18)
             }
@@ -139,7 +140,7 @@ struct GuidedChecksCard: View {
                             .buttonStyle(.borderless)
                             .accessibilityIdentifier("autopilot.guided.review.check.\(check.id).edit")
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                 }
                 .padding(.leading, 18)
@@ -161,8 +162,8 @@ struct GuidedChecksCard: View {
     private func color(_ state: GuidedCheck.State) -> Color {
         switch state {
         case .passed: Palette.decrease
-        case .toConfirm: Palette.warning
-        case .attention: Palette.danger
+        case .toConfirm: Palette.warn
+        case .attention: Palette.err
         case .working: Palette.label2
         }
     }

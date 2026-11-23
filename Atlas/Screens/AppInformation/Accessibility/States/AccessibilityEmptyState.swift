@@ -16,7 +16,7 @@ struct AccessibilityEmptyState: View {
         Card(padding: Spacing.xLarge) {
             HStack(alignment: .top, spacing: Spacing.large) {
                 Image(systemName: "accessibility")
-                    .font(.system(size: 30, weight: .light))
+                    .font(.largeTitle.weight(.light))
                     .foregroundStyle(Palette.label2)
                     .frame(width: 36)
                     .accessibilityHidden(true)

@@ -41,6 +41,8 @@ struct IntroductoryOfferTerritoryList: View {
                 .toggleStyle(.checkbox)
                 .accessibilityIdentifier("pricing.introductoryOffer.territory.\(territory.id)")
             }
+            // Rows hold row-sized (24 pt) controls.
+            .controlSize(.regular)
             .listStyle(.bordered)
         }
     }

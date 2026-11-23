@@ -10,5 +10,7 @@ import Foundation
 struct AssistantAskFinish: Identifiable, Hashable, Sendable {
     var id = UUID()
     let appID: StoreApp.ID
+    /// What it was about, as the ask named it: “Pricing · review screenshots”.
+    var subject = ""
     let text: String
 }

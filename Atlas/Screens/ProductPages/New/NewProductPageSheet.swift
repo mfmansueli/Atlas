@@ -50,7 +50,7 @@ struct NewProductPageSheet: View {
 
     private var name: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("Name").font(.headline)
+            Text("Name").font(.body.weight(.semibold))
             TextField("Name", text: $page.name, prompt: Text("Private diary"))
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.new.name")
@@ -62,7 +62,7 @@ struct NewProductPageSheet: View {
 
     private var start: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text("Start from").font(.headline)
+            Text("Start from").font(.body.weight(.semibold))
             RadioRow(
                 title: viewModel.defaultPage.versionString.map { String(localized: "The default page of version \($0)") }
                     ?? String(localized: "The default page"),
@@ -101,7 +101,7 @@ struct NewProductPageSheet: View {
 
     private var note: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("Who is it for, and what should it do?").font(.headline)
+            Text("Who is it for, and what should it do?").font(.body.weight(.semibold))
             TextField("Who is it for, and what should it do?", text: $page.note, axis: .vertical)
                 .lineLimit(3...5)
                 .textFieldStyle(.roundedBorder)
@@ -116,10 +116,10 @@ struct NewProductPageSheet: View {
     private var languages: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Languages with their own content").font(.headline)
+                Text("Languages with their own content").font(.body.weight(.semibold))
                 Spacer(minLength: Spacing.small)
                 Text("\(page.locales.count) of \(allLocales.count)")
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("pages.new.languages.count")
             }
@@ -153,7 +153,7 @@ struct NewProductPageSheet: View {
                 if let problem, !page.trimmedName.isEmpty {
                     Text(problem)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .accessibilityIdentifier("pages.new.problem")
                 }
             }

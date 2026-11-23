@@ -35,7 +35,7 @@ struct PricingModeOption: View {
                 }
                 Spacer(minLength: Spacing.medium)
                 Image(systemName: symbol)
-                    .font(.title3)
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityHidden(true)
             }

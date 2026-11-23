@@ -30,11 +30,14 @@ struct OffersView: View {
                     Paid afterwards = people whose first charge at the regular price came after the offer. \
                     An offer shows a rate once its first people reach the regular price. From Apple’s subscription event report: every subscriber.
                     """)
-                        .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
+                    .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
                 } else {
                     ContentUnavailableView(
                         "No offers in this period", systemImage: "gift",
-                        description: Text("Introductory offers, offer codes, promotional, win-back and retention offers show here once Apple’s subscription event report counts one.")
+                        description: Text("""
+                        Introductory offers, offer codes, promotional, win-back and retention offers show here once Apple’s \
+                        subscription event report counts one.
+                        """)
                     )
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, Spacing.xLarge)
@@ -87,7 +90,7 @@ struct OffersView: View {
             Text("Still measuring").foregroundStyle(Palette.label2)
         } else if let standing = offer.standing {
             Text("\(standing.mark) \(standing.title)")
-                .foregroundStyle(standing == .better ? Palette.done : standing == .worse ? Palette.danger : Palette.label2)
+                .foregroundStyle(standing == .better ? Palette.ok : standing == .worse ? Palette.err : Palette.label2)
         } else {
             Text(offer.rate.isTooFew ? String(localized: "Too few to tell") : "—").foregroundStyle(Palette.label2)
         }

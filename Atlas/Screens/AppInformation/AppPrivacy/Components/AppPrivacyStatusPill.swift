@@ -18,10 +18,10 @@ struct AppPrivacyStatusPill: View {
                 Text(title)
                     .font(.subheadline.weight(.medium))
                     .lineLimit(1)
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 1)
-                    .background(Palette.positive.opacity(0.14), in: Capsule())
+                    .background(Palette.ok.opacity(0.14), in: Capsule())
             } else {
                 Pill(text: title, style: style)
             }

@@ -20,9 +20,9 @@ struct PhasedReleaseBar: View {
                         .fill(color(index + 1))
                         .frame(height: 6)
                     Text("\(share)%")
-                        .font(.caption.monospacedDigit())
+                        .font(.footnote.monospacedDigit())
                     Text("Day \(index + 1)")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Palette.label2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -35,8 +35,8 @@ struct PhasedReleaseBar: View {
     }
 
     private func color(_ index: Int) -> Color {
-        if index < day { return Palette.positive }
-        if index == day { return isPaused ? Palette.warningMark : Palette.accent }
+        if index < day { return Palette.ok }
+        if index == day { return isPaused ? Palette.warnMark : Palette.accent }
         return Palette.fill2
     }
 }

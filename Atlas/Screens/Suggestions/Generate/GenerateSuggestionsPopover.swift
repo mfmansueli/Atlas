@@ -16,7 +16,7 @@ struct GenerateSuggestionsPopover: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(model.title)
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text(model.intro)
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
@@ -83,7 +83,7 @@ struct GenerateSuggestionsPopover: View {
             if case let .failed(reason) = model.phase {
                 Label(reason, systemImage: "exclamationmark.octagon")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("generate.error")
             }
@@ -98,7 +98,7 @@ struct GenerateSuggestionsPopover: View {
                     .disabled(!model.canGenerate)
                     .accessibilityIdentifier("generate.go")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
     }
 
@@ -110,7 +110,7 @@ struct GenerateSuggestionsPopover: View {
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel", action: onCancel)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("generate.cancel")
         }
         .padding(.horizontal, 10)

@@ -16,7 +16,7 @@ struct StudioSetCard: View {
         Card {
             HStack {
                 Text(summary.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("studio.setCard.title")
                 Spacer()
                 Pill(text: summary.pill, style: summary.pillStyle)

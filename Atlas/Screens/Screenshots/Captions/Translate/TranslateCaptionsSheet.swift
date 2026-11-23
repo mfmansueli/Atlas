@@ -43,7 +43,7 @@ struct TranslateCaptionsSheet: View {
                         availabilityMessages
                         CaptionTranslationLocaleList(translation: translation)
                         Text(footnote)
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }
                 }

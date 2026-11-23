@@ -26,7 +26,7 @@ struct AutoReplyStrip: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Circle()
-                    .fill(rule.isPaused ? Palette.label3 : Palette.positive)
+                    .fill(rule.isPaused ? Palette.label3 : Palette.ok)
                     .frame(width: 8, height: 8)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
@@ -53,14 +53,14 @@ struct AutoReplyStrip: View {
                     Button("Settings…", action: onSettings)
                         .accessibilityIdentifier("autoReply.strip.settings")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .buttonBorderShape(.capsule)
                 .fixedSize()
             }
             ForEach([hold, writeProblem].compactMap(\.self), id: \.self) { line in
                 Label(line, systemImage: "exclamationmark.circle")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warningMark)
+                    .foregroundStyle(Palette.warnMark)
                     .padding(.leading, 16)
             }
         }

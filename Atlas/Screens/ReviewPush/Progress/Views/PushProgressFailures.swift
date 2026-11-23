@@ -21,12 +21,12 @@ struct PushProgressFailures: View {
                     ForEach(groups) { group in
                         HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                             Image(systemName: "xmark.octagon.fill")
-                                .foregroundStyle(Palette.danger)
+                                .foregroundStyle(Palette.err)
                                 .frame(width: 14)
                                 .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 1) {
                                 Text("\(group.titles.count) failed · \(group.reason)")
-                                    .foregroundStyle(Palette.danger)
+                                    .foregroundStyle(Palette.err)
                                     .fixedSize(horizontal: false, vertical: true)
                                     .textSelection(.enabled)
                                 Text(group.itemsTitle)

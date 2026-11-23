@@ -22,7 +22,7 @@ struct BreakdownPopover: View {
             HStack(spacing: Spacing.small) {
                 FlagTile(regionCode: row.territory.alpha2)
                 Text("Price breakdown · \(row.territory.name)")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Spacer(minLength: Spacing.medium)
                 Text(provenance)
                     .font(.subheadline)
@@ -54,7 +54,7 @@ struct BreakdownPopover: View {
                     .accessibilityIdentifier("pricing.breakdown.done")
             }
             .buttonBorderShape(.capsule)
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.large)
         .frame(width: 420)

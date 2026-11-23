@@ -27,6 +27,25 @@ struct WorkspaceAutopilotStateTests {
         #expect(WorkspaceAutopilotState.autoReplyLine(isPaused: true, sentToday: 3) == "Auto-reply paused")
     }
 
+    /// Make Review Screenshots… shows its step and bar; what it stopped
+    /// for, or what it made, in purple; the guided run still comes first.
+    @Test func aReviewScreenshotRunCapturesOrNeedsYou() {
+        var inputs = WorkspaceAutopilotState.Inputs(askSubject: "Pricing · review screenshots")
+        inputs.reviewShotsWorking = "Capturing Annual · 2 of 3"
+        inputs.reviewShotsProgress = 0.5
+        let state = WorkspaceAutopilotState(inputs)
+        #expect(state == .capturing("Capturing Annual · 2 of 3", progress: 0.5))
+        #expect(state.isRunning)
+        #expect(state.announcementKey == "running:Capturing Annual")
+        #expect(state.doneText(becoming: .idle) == "Done")
+
+        var stopped = WorkspaceAutopilotState.Inputs()
+        stopped.reviewShotsNeeds = "Show It the Paywall"
+        #expect(WorkspaceAutopilotState(stopped) == .needsYou("Show It the Paywall"))
+        stopped.screenshotRunNeeds = "Choose the Look"
+        #expect(WorkspaceAutopilotState(stopped) == .needsYou("Choose the Look"))
+    }
+
     @Test func nothingRunningIsIdle() {
         let state = WorkspaceAutopilotState(.init())
         #expect(state == .idle)

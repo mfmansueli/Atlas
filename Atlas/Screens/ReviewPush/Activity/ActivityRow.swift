@@ -21,7 +21,7 @@ struct ActivityRow: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text(record.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text(details)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -38,7 +38,7 @@ struct ActivityRow: View {
                 ForEach(record.failedChanges) { change in
                     Text("\(change.title): \(record.failures[change.id] ?? "")")
                         .font(.subheadline.monospaced())
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .textSelection(.enabled)
                 }
             }
@@ -63,7 +63,7 @@ struct ActivityRow: View {
                 }
             }
             .buttonBorderShape(.capsule)
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.vertical, Spacing.medium)

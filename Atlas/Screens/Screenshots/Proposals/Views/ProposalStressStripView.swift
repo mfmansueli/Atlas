@@ -71,7 +71,7 @@ struct ProposalStressStripView: View {
                         SlotPreviewImage(preview: preview, capture: image(for: preview), width: Self.previewWidth)
                         Text(preview.fit.label)
                             .font(.subheadline)
-                            .foregroundStyle(preview.hasCaptionProblem ? Palette.danger : Palette.label2)
+                            .foregroundStyle(preview.hasCaptionProblem ? Palette.err : Palette.label2)
                             .lineLimit(1)
                             .minimumScaleFactor(0.85)
                     }

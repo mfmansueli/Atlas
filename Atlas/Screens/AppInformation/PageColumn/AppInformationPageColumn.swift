@@ -26,29 +26,15 @@ struct AppInformationPageColumn: View {
                 .tag(page)
             }
         }
+        // Rows hold row-sized (24 pt) controls.
+        .controlSize(.regular)
         .listStyle(.inset)
         .scrollContentBackground(.hidden)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            HStack(spacing: Spacing.small) {
-                Image(systemName: "info.circle")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 26, height: 26)
-                    .background(Palette.sectionAppInformation, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-                    .accessibilityHidden(true)
-                Text("App Information")
-                    .font(.headline)
-                    .lineLimit(1)
-                    .accessibilityAddTraits(.isHeader)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 14)
-            .padding(.top, 10)
-            .padding(.bottom, Spacing.small)
-        }
+        // README — redesign, November 22: the title shows once, in the toolbar.
+        .contentMargins(.top, Spacing.small, for: .scrollContent)
         .safeAreaInset(edge: .bottom) {
             Text("Details Apple asks for with each version. Most never show on the page.")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

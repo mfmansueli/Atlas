@@ -17,9 +17,9 @@ struct PageShotsStepsView: View {
                         Circle().fill(step.rawValue > current.rawValue ? Palette.fill2 : Palette.accent)
                             .frame(width: 20, height: 20)
                         if step.rawValue < current.rawValue {
-                            Image(systemName: "checkmark").font(.system(size: 9, weight: .bold))
+                            Image(systemName: "checkmark").font(.footnote.weight(.bold))
                         } else {
-                            Text("\(step.rawValue + 1)").font(.system(size: 11, weight: .bold))
+                            Text("\(step.rawValue + 1)").font(.subheadline.weight(.bold))
                         }
                     }
                     .foregroundStyle(step.rawValue > current.rawValue ? Palette.label2 : Color.white)

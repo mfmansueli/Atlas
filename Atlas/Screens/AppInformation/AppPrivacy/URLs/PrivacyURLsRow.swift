@@ -65,7 +65,7 @@ struct PrivacyURLsRow: View {
             if let problem {
                 Text(problem)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

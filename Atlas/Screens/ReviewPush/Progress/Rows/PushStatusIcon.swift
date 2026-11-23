@@ -17,7 +17,7 @@ struct PushStatusIcon: View {
         Group {
             if isConflict {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
             } else {
                 switch state {
                 case .waiting:
@@ -31,7 +31,7 @@ struct PushStatusIcon: View {
                         .foregroundStyle(Palette.label2)
                 case .failed:
                     Image(systemName: "exclamationmark.circle")
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 case .notSent:
                     Image(systemName: "minus.circle")
                         .foregroundStyle(Palette.label3)

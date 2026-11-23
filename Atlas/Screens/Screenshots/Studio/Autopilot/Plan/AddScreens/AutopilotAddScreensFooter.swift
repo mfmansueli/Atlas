@@ -63,7 +63,7 @@ struct AutopilotAddScreensFooter: View {
                 .disabled(!canSuggest)
                 .accessibilityIdentifier(identifier("autopilot.plan.suggestScreens"))
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             Text(studio.addScreensNote(on: display))
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -110,7 +110,7 @@ struct AutopilotAddScreensFooter: View {
             .font(.callout)
             .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel") { studio.cancelSuggestions() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("autopilot.plan.suggestions.cancel")
         }
         .padding(Spacing.small)

@@ -101,7 +101,7 @@ final class ReviewPushUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["All 28 changes pushed"].exists)
         done.click()
         XCTAssertTrue(element("review.sheet").waitForNonExistence(timeout: 5))
-        XCTAssertTrue(app.descendants(matching: .any)["overview.pendingChangesCard"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["overview.waiting"].waitForExistence(timeout: 5))
     }
 
     func testMinimizingKeepsThePushGoingAndTheToolbarOpensItAgain() {

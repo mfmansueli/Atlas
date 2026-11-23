@@ -73,7 +73,7 @@ struct TranslateMissingSheet: View {
                         availabilityMessages
                         locales
                         Text("You accept or reject each suggestion. Accepted text stays tagged “machine-translated” until someone reviews it.")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -190,7 +190,7 @@ struct TranslateMissingSheet: View {
                     }
                     TextField("Add term", text: $newTerm)
                         .textFieldStyle(.roundedBorder)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .frame(width: 100)
                         .onSubmit {
                             translation.glossary.add(newTerm)

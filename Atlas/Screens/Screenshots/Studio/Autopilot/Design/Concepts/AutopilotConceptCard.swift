@@ -82,7 +82,7 @@ struct AutopilotConceptCard: View {
                 }
             }
             .buttonBorderShape(.capsule)
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.small)
         .frame(width: width, alignment: .leading)
@@ -109,7 +109,7 @@ struct AutopilotConceptCard: View {
                         studio: studio, run: run, concept: concept, kind: .search, width: (imageWidth * 96 / 250).rounded(), plays: plays
                     )
                     Text("Header above, search results left")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -122,7 +122,7 @@ struct AutopilotConceptCard: View {
     /// The note for this concept only.
     private var askPopover: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Ask for changes to \(concept.name)").font(.headline)
+            Text("Ask for changes to \(concept.name)").font(.body.weight(.semibold))
             Text("Only this concept goes back to \(run.designKind.designer); the others stay as they are.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)

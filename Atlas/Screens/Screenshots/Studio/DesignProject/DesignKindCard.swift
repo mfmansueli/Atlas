@@ -18,7 +18,7 @@ struct DesignKindCard: View {
                     .foregroundStyle(isSelected ? Color.accentColor : Palette.label3)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: Spacing.xSmall) {
-                        Text(kind.title).font(.headline)
+                        Text(kind.title).font(.body.weight(.semibold))
                         if kind == .claudeDesign { Pill(text: String(localized: "Recommended"), style: .accent) }
                     }
                     Text(kind.summary)

@@ -15,7 +15,7 @@ struct AcceptAllCheckbox: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: symbol)
-                .font(.system(size: 15))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(state == .unchecked ? AnyShapeStyle(Palette.label3) : AnyShapeStyle(Palette.accent))
         }
         .buttonStyle(.plain)

@@ -29,7 +29,7 @@ struct RateLimitMeter: View {
     }
 
     private var tint: Color {
-        rateLimit.fractionUsed > 0.9 ? Palette.warningMark : Palette.label3
+        rateLimit.fractionUsed > 0.9 ? Palette.warnMark : Palette.label3
     }
 }
 

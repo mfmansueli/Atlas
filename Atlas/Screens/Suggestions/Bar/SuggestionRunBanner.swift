@@ -35,7 +35,7 @@ struct SuggestionRunBanner: View {
                 .frame(width: 100)
                 .accessibilityHidden(true)
             Button("Overview", action: onOverview)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("suggestions.run.overview")
         }
         .padding(.horizontal, Spacing.medium)

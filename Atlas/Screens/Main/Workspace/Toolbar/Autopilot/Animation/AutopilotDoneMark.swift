@@ -16,8 +16,8 @@ struct AutopilotDoneMark: View {
         ZStack {
             if isShown {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Palette.done)
+                    .font(.callout.weight(.bold))
+                    .foregroundStyle(Palette.ok)
                     .transition(.symbolEffect(.drawOn.wholeSymbol))
             }
         }

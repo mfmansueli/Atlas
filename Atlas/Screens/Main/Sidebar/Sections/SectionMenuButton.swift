@@ -25,7 +25,7 @@ struct SectionMenuButton: View {
                 Text(selection.title)
                     .lineLimit(1)
                 Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
             }
             .padding(.horizontal, 2)
@@ -59,7 +59,7 @@ struct SectionMenuButton: View {
                         SidebarSectionRow(section: section, counts: counts, isSelected: section == selection)
                             .padding(.horizontal, Spacing.xSmall)
                             .frame(height: 30)
-                            .background(section == selection ? Palette.fill3 : .clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .background(section == selection ? Palette.fill3 : .clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)

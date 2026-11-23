@@ -33,7 +33,7 @@ struct EventArtworkViewerSegments: View {
             kind = value
         } label: {
             Text(title)
-                .font(.system(size: 12, weight: .medium))
+                .font(.callout.weight(.medium))
                 .foregroundStyle(isOn ? EventArtworkViewerStyle.selectedText : .white)
                 .padding(.horizontal, 12)
                 .frame(height: 24)

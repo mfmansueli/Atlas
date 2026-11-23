@@ -10,12 +10,12 @@ import SwiftUI
 struct ProChip: View {
     var body: some View {
         Text(verbatim: "PRO")
-            .font(.system(size: 10, weight: .bold))
+            .font(.footnote.weight(.bold))
             .kerning(0.4)
             .foregroundStyle(.white)
             .padding(.horizontal, 5)
             .frame(height: 15)
-            .background(PaywallStyle.gradient, in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .background(PaywallStyle.gradient, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             .accessibilityLabel(Text("Part of Pro"))
             .accessibilityIdentifier("pro.chip")
     }

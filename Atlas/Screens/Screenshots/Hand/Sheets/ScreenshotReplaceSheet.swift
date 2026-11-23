@@ -83,15 +83,15 @@ struct ScreenshotReplaceSheet: View {
                 Button(action: choose) {
                     VStack(spacing: Spacing.xxSmall) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.title3)
+                            .font(.title3.weight(.semibold))
                         Text("Drop a file, or click")
-                            .font(.caption2)
+                            .font(.footnote)
                             .multilineTextAlignment(.center)
                     }
                     .frame(width: 96, height: tileHeight)
-                    .background(isTargeted ? Palette.accentTint : Palette.fill1, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .background(isTargeted ? Palette.accentTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                             .strokeBorder(Palette.label3, style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
                     )
                     .contentShape(Rectangle())
@@ -121,7 +121,7 @@ struct ScreenshotReplaceSheet: View {
                         .foregroundStyle(Palette.increase)
                 } else {
                     Label(check.problem(fileName: file.fileName, on: display) ?? "", systemImage: "xmark")
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .accessibilityIdentifier("screenshots.hand.replace.problem")
                     Text("Atlas never scales a screenshot for you: App Review rejects stretched ones.")
                         .font(.subheadline)
@@ -132,7 +132,7 @@ struct ScreenshotReplaceSheet: View {
                     .foregroundStyle(Palette.label2)
             }
             Button(file == nil ? String(localized: "Choose File…") : String(localized: "Choose Another File…"), action: choose)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("screenshots.hand.replace.choose")
         }
         .font(.callout)

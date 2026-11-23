@@ -15,17 +15,17 @@ struct FromAnalyticsBar: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             Image(systemName: AppWorkspaceSection.analytics.systemImage)
-                .font(.system(size: 11, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(.white)
                 .frame(width: 22, height: 22)
-                .background(Palette.sectionAnalytics, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .background(Palette.sectionAnalytics, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                 .accessibilityHidden(true)
             Text("\(Text("From Analytics").fontWeight(.semibold)) \(Text(origin.text).foregroundStyle(Palette.label2))")
                 .font(.callout)
                 .lineLimit(2)
             Spacer(minLength: Spacing.small)
             Button("Back to Analytics", action: onBack)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("analytics.origin.back")
             Button(action: onClose) { Image(systemName: "xmark") }
                 .buttonStyle(.plain)

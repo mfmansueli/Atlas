@@ -53,7 +53,7 @@ struct ArtworkTextCellView: View {
             }
             HStack(spacing: Spacing.xxSmall) {
                 Text(cell.fitLabel)
-                    .font(.caption2)
+                    .font(.footnote)
                     .monospacedDigit()
                     .foregroundStyle(labelColor)
                     .lineLimit(1)
@@ -70,8 +70,8 @@ struct ArtworkTextCellView: View {
     }
 
     private var labelColor: Color {
-        if cell.fit?.tone == .overflows { return Palette.danger }
-        if cell.fit?.tone == .shrinks || cell.count?.isTooLong == true { return Palette.warning }
+        if cell.fit?.tone == .overflows { return Palette.err }
+        if cell.fit?.tone == .shrinks || cell.count?.isTooLong == true { return Palette.warn }
         return Palette.label2
     }
 

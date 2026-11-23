@@ -16,12 +16,12 @@ struct AccessibilitySkeletonCard: View {
             }
             SkeletonBlock(width: 190)
             HStack(spacing: Spacing.xxSmall) {
-                SkeletonBlock(width: 64, height: 16, cornerRadius: 8)
-                SkeletonBlock(width: 80, height: 16, cornerRadius: 8)
-                SkeletonBlock(width: 70, height: 16, cornerRadius: 8)
+                SkeletonBlock(width: 64, height: 16, cornerRadius: Radius.field)
+                SkeletonBlock(width: 80, height: 16, cornerRadius: Radius.field)
+                SkeletonBlock(width: 70, height: 16, cornerRadius: Radius.field)
             }
-            SkeletonBlock(width: 120, height: 16, cornerRadius: 8)
-            SkeletonBlock(width: 48, height: 20, cornerRadius: 6)
+            SkeletonBlock(width: 120, height: 16, cornerRadius: Radius.field)
+            SkeletonBlock(width: 48, height: 20, cornerRadius: Radius.menuRow)
                 .padding(.top, Spacing.xxSmall)
         }
         .accessibilityHidden(true)

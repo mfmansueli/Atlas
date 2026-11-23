@@ -33,7 +33,7 @@ struct AlternativeConflictView: View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text(title.uppercased())
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 Text(text.isEmpty ? String(localized: "Empty") : text)
                     .font(.callout)

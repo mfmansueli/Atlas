@@ -18,7 +18,7 @@ struct PrivacyLabelPreviewColumn: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Palette.label2)
                 Text("App Privacy")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .padding(.top, Spacing.xxSmall)
                 if !preview.isAnswered {
                     Text("Answer the first question to see the label.")

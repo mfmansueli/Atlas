@@ -34,7 +34,7 @@ struct IndexDataSection: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 Button("Update Index Data") { model.updateIndexData() }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                     .accessibilityIdentifier("pricing.updateIndexData")
                 if let message = model.updateMessage {

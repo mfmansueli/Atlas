@@ -27,15 +27,15 @@ struct AcceptAllItemRow: View {
                 values
                     .opacity(isSelected ? 1 : 0.5)
                 Text(item.reason)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(isSelected ? AnyShapeStyle(Palette.machineTranslatedTint) : AnyShapeStyle(Palette.fill1), in: shape)
-        .overlay(shape.strokeBorder(isSelected ? Palette.machineTranslatedMark.opacity(0.35) : Palette.separator, lineWidth: isSelected ? 1 : 0.5))
+        .background(isSelected ? AnyShapeStyle(Palette.aiSurface) : AnyShapeStyle(Palette.fill1), in: shape)
+        .overlay(shape.strokeBorder(isSelected ? Palette.aiMark.opacity(0.35) : Palette.separator, lineWidth: isSelected ? 1 : 0.5))
         .accessibilityElement(children: .contain)
     }
 
@@ -47,7 +47,7 @@ struct AcceptAllItemRow: View {
         Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 3) {
             GridRow {
                 Text("NOW")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .gridColumnAlignment(.leading)
                 value(item.current.isEmpty ? String(localized: "Empty") : item.current, isRightToLeft: isRightToLeft && !item.current.isEmpty)
@@ -56,8 +56,8 @@ struct AcceptAllItemRow: View {
             }
             GridRow {
                 Text("NEW")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Palette.ai)
                 value(item.suggested, isRightToLeft: isRightToLeft)
                     .lineLimit(6)
             }

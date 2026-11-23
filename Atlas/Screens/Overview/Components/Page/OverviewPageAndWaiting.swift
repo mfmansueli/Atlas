@@ -5,10 +5,12 @@
 
 import SwiftUI
 
-/// The Overview's top: the App Store page as it reads now, beside the
-/// suggestions waiting in each section, how a change reaches the App Store,
-/// and the languages the app speaks that its page doesn't yet.
-struct OverviewPageAndWaiting: View {
+/// The Overview (README — redesign, November 22: "Overview is three
+/// lists"): what the version still needs, the suggestions to review per
+/// section and After release on the left; the App Store page, smaller, on
+/// the right. One above the other when the window is narrow, the lists
+/// first.
+struct OverviewPageAndWaiting<Lead: View>: View {
     let app: StoreApp
     /// For the preview's screenshots and the captions waiting.
     let services: any StorePageServices
@@ -19,26 +21,28 @@ struct OverviewPageAndWaiting: View {
     let newLanguages: NewLanguagesSummary?
     /// The version on its way to the App Store; its card leads the column.
     var release: ReleaseViewModel?
+    /// Analytics, Ratings & Reviews and Product Pages.
+    let afterRelease: [OverviewAfterReleaseRow]
+    /// Above the lists: the assistant's card and a stability alert.
+    @ViewBuilder var lead: () -> Lead
 
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(ChangeQueue.self) private var changes
     @Environment(PricingModeStore.self) private var pricingModes
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(FieldSuggestionStore.self) private var suggestions
-    @Environment(PushController.self) private var push
 
-    /// The App Store page on the left, what waits for the person on the
-    /// right; one above the other when the window is narrow.
+    /// The preview's column and the gap before it.
+    static var previewWidth: CGFloat { 300 }
+
     var body: some View {
-        let isWide = width >= 300 + Spacing.xLarge + 380 + 2 * Spacing.xxLarge
+        let isWide = width >= Self.previewWidth + Spacing.xxLarge + 380 + 2 * Spacing.xLarge
         let layout = isWide
-            ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.xLarge))
+            ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.xxLarge))
             : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.large))
         return layout {
-            if let content {
-                OverviewStorePreview(app: app, content: content, screenshots: services.screenshots, links: previewLinks)
-            }
             VStack(alignment: .leading, spacing: Spacing.large) {
+                lead()
                 if let release, release.phase != nil {
                     VersionCard(viewModel: release) {
                         navigator.isSubmitPresented = true
@@ -50,26 +54,14 @@ struct OverviewPageAndWaiting: View {
                         navigator.open(.reviews)
                     }
                 }
-                OverviewWaitingCard(appName: app.name, rows: OverviewWaitingSection.rows(waitingFacts), onOpen: open)
-                OverviewChangePathCard(
-                    suggestedCount: badgeCounts.total,
-                    readyCount: readyCount,
-                    liveVersion: content?.versions.first { $0.state.isLive }?.versionString,
-                    editedVersion: storePage?.versionString
-                )
-                newLanguagesBanner
+                OverviewWaitingCard(rows: OverviewWaitingSection.rows(waitingFacts), onOpen: open)
+                OverviewAfterReleaseCard(rows: afterRelease, onOpen: openAfterRelease)
             }
             .frame(minWidth: isWide ? 380 : nil, maxWidth: .infinity, alignment: .leading)
+            if let content {
+                OverviewStorePreview(app: app, content: content, screenshots: services.screenshots, links: previewLinks)
+            }
         }
-    }
-
-    /// What Review & Push has for this app: the edits, and the screenshots
-    /// and artwork planned. Alba's Overview said 0 ready to push beside a
-    /// toolbar badge of 117 screenshots.
-    private var readyCount: Int {
-        let screenshots = push.screenshots.plans(for: [app.id]).first?.items.count ?? 0
-        let extras = push.screenshots.extras.plans(for: [app.id]).first?.items.count ?? 0
-        return changes.count(for: app.id) + screenshots + extras
     }
 
     private var badgeCounts: SectionBadgeCounts {
@@ -128,24 +120,11 @@ struct OverviewPageAndWaiting: View {
         }
     }
 
-    /// "Lumen 1.4 speaks Polish and Turkish, but its App Store page doesn’t
-    /// yet. Their pages are suggested in Store Page."
-    @ViewBuilder
-    private var newLanguagesBanner: some View {
-        if let newLanguages, newLanguages.hasSuggestions {
-            let names = newLanguages.pending.map(\.name).formatted(.list(type: .and))
-            let speaker = storePage?.versionString.map { "\(app.name) \($0)" } ?? app.name
-            let suggested = suggestions.toReview(for: app.id, area: .storePage).contains { suggestion in
-                guard case let .storePage(code) = suggestion.target.scope else { return false }
-                return newLanguages.pending.contains { $0.code == code }
-            }
-            let text = String(localized: "\(speaker) speaks \(names), but its App Store page doesn’t yet.")
-                + (suggested ? " " + String(localized: "Their pages are suggested in Store Page.") : "")
-            Banner(kind: .info, title: text, isInline: true) {
-                Button("Show") { navigator.open(.storePage, intent: .reviewFieldSuggestions(.storePage)) }
-                    .accessibilityIdentifier("overview.newLanguages.show")
-            }
-            .accessibilityIdentifier("overview.newLanguages")
+    /// Open on an After release row: Product Pages opens on its list.
+    private func openAfterRelease(_ section: AppWorkspaceSection) {
+        switch section {
+        case .productPages: navigator.open(.productPages, intent: .showProductPage(name: nil))
+        default: navigator.open(section)
         }
     }
 }

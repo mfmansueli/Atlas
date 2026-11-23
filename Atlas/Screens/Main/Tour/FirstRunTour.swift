@@ -6,7 +6,8 @@
 import Foundation
 import Observation
 
-/// The first-run tour (board 63): which tip shows, if any. It starts by
+/// The first-run tour (board 63): which tip shows, if any. TipKit draws
+/// the tips (`TourTip`, `TourTipModifier`); this keeps their order. It starts by
 /// itself once per Mac, the first time the main window shows an app after
 /// connecting, and the sidebar's Show the Tour starts it again. Next moves
 /// to the following tip and Done ends it; Skip the Tour and the close
@@ -28,6 +29,10 @@ final class FirstRunTour {
 
     /// The tip showing; nil while the tour isn't.
     private(set) var step: TourStep?
+
+    /// This start of the tour: its TipKit tips are new each time it starts
+    /// (see `TourTip`).
+    private(set) var run = UUID().uuidString
 
     /// Nil keeps whether it was shown in memory only (DEBUG scenes, tests).
     @ObservationIgnored private let defaults: UserDefaults?
@@ -56,6 +61,7 @@ final class FirstRunTour {
 
     /// Shows the first tip (or `step`), from Show the Tour or the first run.
     func start(at step: TourStep = .apps) {
+        run = UUID().uuidString
         self.step = step
         markShown()
     }

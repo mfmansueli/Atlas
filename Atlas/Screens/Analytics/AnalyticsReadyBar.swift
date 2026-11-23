@@ -55,17 +55,17 @@ struct AnalyticsReadyBar: View {
             }
             if let behind = viewModel.staleDays {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                    Image(systemName: "clock").foregroundStyle(Palette.warningMark).accessibilityHidden(true)
+                    Image(systemName: "clock").foregroundStyle(Palette.warnMark).accessibilityHidden(true)
                     Text(staleText(behind)).font(.callout).lineLimit(3)
                     Spacer(minLength: Spacing.small)
                     Button("Check Again") { Task { await viewModel.refresh(force: true) } }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .disabled(viewModel.activity.isLoading)
                         .accessibilityIdentifier("analytics.checkAgain")
                 }
                 .padding(.horizontal, Spacing.medium)
                 .padding(.vertical, Spacing.small)
-                .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner))
+                .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner))
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("analytics.stale")
             }

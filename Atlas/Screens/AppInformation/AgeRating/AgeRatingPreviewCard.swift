@@ -20,7 +20,7 @@ struct AgeRatingPreviewCard: View {
                 .foregroundStyle(Palette.label2)
             HStack(alignment: .top, spacing: Spacing.medium) {
                 Text(preview.effective.title)
-                    .font(.system(size: 26, weight: .semibold))
+                    .font(.largeTitle.weight(.semibold))
                     .monospacedDigit()
                     .frame(width: 64, height: 64)
                     .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.label, lineWidth: 2))
@@ -38,7 +38,7 @@ struct AgeRatingPreviewCard: View {
                 Pill(text: String(localized: "Changes with your next push"), systemImage: "circle.fill", style: .accent)
             }
             Text("BY REGION")
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)
             VStack(spacing: 0) {
@@ -48,7 +48,7 @@ struct AgeRatingPreviewCard: View {
                 regionRow(String(localized: "Everywhere else"), preview.effective.title)
             }
             Text("Regional values follow Apple’s published tables. Regulators in Australia and Brazil can replace them with an official rating.")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

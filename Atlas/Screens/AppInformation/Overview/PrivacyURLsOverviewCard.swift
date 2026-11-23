@@ -34,7 +34,7 @@ struct PrivacyURLsOverviewCard: View {
                 }
             }
             Button("Open Privacy URLs", action: onOpen)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .buttonBorderShape(.capsule)
                 .accessibilityIdentifier("overview.privacyURLs.open")
         }

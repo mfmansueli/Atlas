@@ -106,7 +106,7 @@ struct SubscriptionsView: View {
     private var cancellations: some View {
         box {
             HStack {
-                Text("Cancellations · \(AnalyticsText.count(report.cancellations))").font(.headline)
+                Text("Cancellations · \(AnalyticsText.count(report.cancellations))").font(.body.weight(.semibold))
                 Spacer()
                 Text("Apple’s reasons").font(.subheadline).foregroundStyle(Palette.label2)
             }
@@ -135,12 +135,12 @@ struct SubscriptionsView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: Spacing.small)
                     Button("Open Retention") { onAct(.retention, early) }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("analytics.subscriptions.openRetention")
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(liveRetentionMessages == 0 ? Palette.warningTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field))
+                .background(liveRetentionMessages == 0 ? Palette.warnTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field))
                 .padding(.horizontal, Spacing.medium)
             } else {
                 empty(String(localized: "No cancellations in this period."))

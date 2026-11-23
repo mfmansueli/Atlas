@@ -18,7 +18,7 @@ struct FunnelStepTile: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
             Text(step.countText)
-                .font(.system(size: 19, weight: .bold))
+                .font(.title2.weight(.bold))
                 .monospacedDigit()
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -26,7 +26,7 @@ struct FunnelStepTile: View {
             if let gap = step.gap {
                 Text(gap.text)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .fixedSize(horizontal: false, vertical: true)
             } else if let change = step.change {
                 Text("\(change) vs before")

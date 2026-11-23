@@ -6,12 +6,15 @@
 import SwiftUI
 
 /// A file an assistant suggested for a screenshot: which one, who and why,
-/// the file small, with Dismiss and Accept.
+/// the file small, with Dismiss and Accept. It arrives and settles like
+/// any suggestion (effects 2 and 5).
 struct ScreenshotHandProposalCard: View {
     @Bindable var viewModel: ScreenshotsViewModel
     let proposal: ScreenshotHandProposal
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var image: CGImage?
+    @State private var isSettling = false
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.medium) {
@@ -25,10 +28,10 @@ struct ScreenshotHandProposalCard: View {
                 }
             }
             .frame(width: 54, height: 110)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text(viewModel.handProposalTitle(proposal))
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 HStack(spacing: Spacing.xSmall) {
                     Pill(text: String(localized: "Suggested"), style: .machineTranslated)
                         .fixedSize()
@@ -47,16 +50,15 @@ struct ScreenshotHandProposalCard: View {
                     Spacer()
                     Button("Dismiss") { Task { await viewModel.dismissHandProposal(proposal) } }
                         .accessibilityIdentifier("screenshots.hand.proposal.dismiss")
-                    Button("Accept") { Task { await viewModel.acceptHandProposal(proposal) } }
-                        .buttonStyle(.borderedProminent)
+                    Button("Accept", action: accept)
+                        .rowActionButton()
                         .accessibilityIdentifier("screenshots.hand.proposal.accept")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             }
         }
         .padding(Spacing.medium)
-        .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+        .suggestionSurface(isSettling: isSettling, arrivalKey: proposal.id, arrivedAt: proposal.receivedAt, cornerRadius: Radius.card)
         .task(id: proposal.file.id) {
             let folder = viewModel.services.handFiles
             let file = proposal.file
@@ -65,5 +67,13 @@ struct ScreenshotHandProposalCard: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.hand.proposal")
+    }
+
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            Task.immediate { await viewModel.acceptHandProposal(proposal) }
+        }
     }
 }

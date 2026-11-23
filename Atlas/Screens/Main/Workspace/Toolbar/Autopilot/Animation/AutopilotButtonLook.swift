@@ -16,6 +16,9 @@ enum AutopilotButtonLook: Equatable {
     /// What runs, and its progress (0–1) when it's counted; nil draws no
     /// bar rather than a made-up one.
     case working(String, progress: Double?)
+    /// Like `working`, with its bar, but without the edge light: the card
+    /// it works on has it, and one light shows at a time.
+    case counting(String, progress: Double)
     /// “Done · Store Page · German”, after a run ended by itself.
     case done(String)
     /// Solid purple with what the run waits for: still.
@@ -35,6 +38,8 @@ enum AutopilotButtonLook: Equatable {
         case let .running(text, isScreenshotRun):
             let counted = isScreenshotRun ? runProgress.flatMap { $0.isCounted ? $0.fraction : nil } : nil
             self = .working(text, progress: counted.map { min(max($0, 0), 1) })
+        case let .capturing(text, progress):
+            self = .counting(text, progress: min(max(progress, 0), 1))
         case let .needsYou(text):
             self = .needsYou(text)
         case let .failed(text):
@@ -56,14 +61,17 @@ enum AutopilotButtonLook: Equatable {
     var text: String? {
         switch self {
         case .idle: nil
-        case let .working(text, _), let .done(text), let .needsYou(text), let .failed(text), let .autoReplyOn(text): text
+        case let .working(text, _), let .counting(text, _), let .done(text), let .needsYou(text), let .failed(text), let .autoReplyOn(text): text
         }
     }
 
     /// The 2 pt bar's value; nil draws none.
     var progress: Double? {
-        if case let .working(_, progress) = self { return progress }
-        return nil
+        switch self {
+        case let .working(_, progress): progress
+        case let .counting(_, progress): progress
+        case .idle, .done, .needsYou, .failed, .autoReplyOn: nil
+        }
     }
 
     /// “55 percent”, after what runs, for VoiceOver; nil without a counted

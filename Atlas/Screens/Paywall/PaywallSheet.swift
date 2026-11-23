@@ -32,7 +32,7 @@ struct PaywallSheet: View {
                     onClose(false)
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .frame(width: 24, height: 24)
                         .contentShape(Rectangle())
                 }
@@ -67,13 +67,13 @@ struct PaywallSheet: View {
             HStack(alignment: .top, spacing: Spacing.small) {
                 Image(systemName: "checkmark")
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
                     .accessibilityHidden(true)
                 Text("""
                 **Free stays free.** Editing and pushing every language yourself, built-in checks, suggestions one at a time \
                 and Review & Push, for one app.
                 """)
-                .font(.system(size: 12))
+                .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -92,11 +92,11 @@ struct PaywallSheet: View {
     private func contextCard(title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: Spacing.small + 2) {
             Image(systemName: "lock.fill")
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("paywall.context.title")
                 Text(detail)
                     .font(.callout)
@@ -108,7 +108,7 @@ struct PaywallSheet: View {
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 3)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         // Clear of Close.
         .padding(.trailing, 30)
         .accessibilityElement(children: .contain)
@@ -156,7 +156,7 @@ struct PaywallSheet: View {
                 Task { await model.buy() }
             } label: {
                 Text(model.callToAction)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, minHeight: 28)
             }
             .heroButton()
@@ -166,7 +166,7 @@ struct PaywallSheet: View {
             if let message = model.message {
                 Text(message)
                     .font(.footnote)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("paywall.message")
@@ -203,7 +203,7 @@ struct PaywallSheet: View {
             }
         }
         .buttonStyle(.link)
-        .font(.system(size: 12))
+        .font(.callout)
         .foregroundStyle(Palette.label2)
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -218,7 +218,7 @@ struct PaywallSheet: View {
                 } label: {
                     Label("Plans", systemImage: "chevron.left")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("paywall.backToPlans")
                 Text("Free and Pro")
                     .font(.title3.weight(.semibold))

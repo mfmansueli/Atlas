@@ -44,7 +44,7 @@ struct ArtworkTextEditorPanel: View {
             } label: {
                 Image(systemName: "xmark")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .keyboardShortcut(.cancelAction)
             .accessibilityLabel(Text("Close editor"))
             .accessibilityIdentifier("screenshots.captions.artworkEditor.close")
@@ -68,7 +68,7 @@ struct ArtworkTextEditorPanel: View {
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.field)
                     .strokeBorder(
-                        editor.fit?.tone == .overflows ? Palette.dangerMark : Palette.separator2,
+                        editor.fit?.tone == .overflows ? Palette.errMark : Palette.separator2,
                         lineWidth: editor.fit?.tone == .overflows ? 1.5 : 0.5
                     )
             )
@@ -88,13 +88,13 @@ struct ArtworkTextEditorPanel: View {
                 Text(ArtworkTextCell.label(fit))
                     .font(.callout.weight(.medium))
                     .monospacedDigit()
-                    .foregroundStyle(fit.tone == .overflows ? Palette.danger : fit.tone == .shrinks ? Palette.warning : Palette.label)
+                    .foregroundStyle(fit.tone == .overflows ? Palette.err : fit.tone == .shrinks ? Palette.warn : Palette.label)
                     .accessibilityIdentifier("screenshots.captions.artworkEditor.fitLabel")
             }
             if let detail = editor.countDetail {
                 Text(detail)
                     .font(.subheadline)
-                    .foregroundStyle(editor.count?.isTooLong == true ? Palette.warning : Palette.label2)
+                    .foregroundStyle(editor.count?.isTooLong == true ? Palette.warn : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("screenshots.captions.artworkEditor.count")
             }
@@ -110,7 +110,7 @@ struct ArtworkTextEditorPanel: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(source.title)
                         .textCase(.uppercase)
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                     Text(source.text)
                         .font(.callout)

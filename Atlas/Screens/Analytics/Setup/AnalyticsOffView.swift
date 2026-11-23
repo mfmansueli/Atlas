@@ -77,7 +77,7 @@ struct AnalyticsOffView: View {
                 if hasVendorNumber {
                     Label("Set", systemImage: "checkmark").font(.callout).foregroundStyle(Palette.label2)
                 } else {
-                    Button("Add Vendor Number…", action: onAddVendorNumber).controlSize(.small)
+                    Button("Add Vendor Number…", action: onAddVendorNumber).controlSize(.regular)
                 }
             }
             .padding(.horizontal, Spacing.medium)

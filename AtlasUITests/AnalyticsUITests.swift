@@ -164,10 +164,10 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertTrue(element("analytics.settings.stop.confirm").waitForExistence(timeout: 5), "Says what happens before anything does")
     }
 
-    func testTheOverviewHasAnAnalyticsCard() {
+    func testTheOverviewHasAnAnalyticsRow() {
         app.launch(debugScene: "an-overview")
-        XCTAssertTrue(element("overview.analyticsCard").waitForExistence(timeout: 15))
-        element("overview.analyticsCard.open").click()
+        XCTAssertTrue(element("overview.afterRelease.row.analytics").waitForExistence(timeout: 15))
+        element("overview.afterRelease.open.analytics").click()
         XCTAssertTrue(element("analytics.funnel.strip").waitForExistence(timeout: 10))
     }
 

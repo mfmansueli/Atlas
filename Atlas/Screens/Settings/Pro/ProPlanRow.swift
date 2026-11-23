@@ -16,12 +16,12 @@ struct ProPlanRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.medium) {
             Image(systemName: isPro ? "checkmark.seal.fill" : "seal")
-                .font(.title2)
+                .font(.title2.weight(.semibold))
                 .foregroundStyle(isPro ? Palette.accent : Palette.label2)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("settings.pro.plan")
                 Text(detail)
                     .font(.subheadline)

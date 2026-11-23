@@ -14,7 +14,7 @@ struct NotificationPermissionBanner: View {
         Section {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Image(systemName: isBlocked ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                    .foregroundStyle(isBlocked ? Palette.warning : Palette.positive)
+                    .foregroundStyle(isBlocked ? Palette.warn : Palette.ok)
                     .accessibilityHidden(true)
                 Text(message)
                     .font(.callout)
@@ -26,7 +26,7 @@ struct NotificationPermissionBanner: View {
                 }
                 .accessibilityIdentifier("settings.notif.openSystemSettings")
             }
-            .listRowBackground(isBlocked ? Palette.warningTint : nil)
+            .listRowBackground(isBlocked ? Palette.warnTint : nil)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(isBlocked ? "settings.notif.blocked" : "settings.notif.allowed")

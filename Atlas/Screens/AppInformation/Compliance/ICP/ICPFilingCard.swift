@@ -65,7 +65,7 @@ struct ICPFilingCard: View {
                         .accessibilityIdentifier("appInformation.compliance.icp.copy")
                     ExternalLinkButton(title: String(localized: "Open App Store Connect"), url: viewModel.appStoreConnectComplianceURL)
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             }
         }
         .padding(.leading, 34)

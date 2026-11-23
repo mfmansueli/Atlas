@@ -7,16 +7,19 @@ import SwiftUI
 
 /// The app's App Store page in miniature, in the storefront's own language
 /// and direction: icon, name and Get, ratings, age and category, screenshots,
-/// the texts, What's New and the purchases. On the Overview each part has a
-/// tag that opens the section editing it, shown while the pointer is over
-/// the part or when it has suggestions.
+/// the texts, What's New and the purchases. On the Overview each part opens
+/// the section editing it when clicked, lit while the pointer is over it
+/// (README — redesign, November 22: no tags on the preview), and the page
+/// stops after the screenshots (`isCompact`).
 struct AppStorePagePreview<Shots: View>: View {
     let model: AppStorePreviewModel
     let appName: String
     var icon: AppIcon?
     var links: AppStorePreviewLinks?
+    /// Name, ratings and screenshots only: the Overview's smaller preview.
+    var isCompact = false
     @ViewBuilder var shots: () -> Shots
-    /// The part under the pointer, by its link's title: its tag shows.
+    /// The part under the pointer, by its link's title: it lights.
     @State private var hovered: String?
 
     private static var getBlue: Color { Color(red: 0.04, green: 0.52, blue: 1) }
@@ -28,13 +31,15 @@ struct AppStorePagePreview<Shots: View>: View {
             row(link: links?.appInformation, vertical: 8) { stats }
             divider
             row(link: links?.screenshots) { shots() }
-            divider
-            row(link: nil) { texts }
-            divider
-            row(link: nil) { whatsNew }
-            if !model.purchases.isEmpty {
+            if !isCompact {
                 divider
-                row(link: links?.pricing) { purchases }
+                row(link: nil) { texts }
+                divider
+                row(link: nil) { whatsNew }
+                if !model.purchases.isEmpty {
+                    divider
+                    row(link: links?.pricing) { purchases }
+                }
             }
         }
         .padding(6)
@@ -58,47 +63,36 @@ struct AppStorePagePreview<Shots: View>: View {
             .padding(.horizontal, 10)
     }
 
+    @ViewBuilder
     private func row(link: AppStorePreviewLink?, vertical: CGFloat = 9, @ViewBuilder content: () -> some View) -> some View {
-        content()
+        let part = content()
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 10)
             .padding(.vertical, vertical)
-            .overlay(alignment: .topTrailing) {
-                // Only over the part pointed at, or with suggestions: always
-                // shown, they covered Alba's name, the Category label and
-                // the third screenshot's caption.
-                if let link { tag(link).opacity(hovered == link.title || link.count > 0 ? 1 : 0) }
+        if let link {
+            Button(action: link.open) {
+                part
+                    .background(
+                        Palette.fill1.opacity(hovered == link.title ? 1 : 0),
+                        in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
+                    )
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
             .onHover { inside in
-                guard let title = link?.title else { return }
                 if inside {
-                    hovered = title
-                } else if hovered == title {
+                    hovered = link.title
+                } else if hovered == link.title {
                     hovered = nil
                 }
             }
             .animation(.easeOut(duration: 0.15), value: hovered)
-    }
-
-    private func tag(_ link: AppStorePreviewLink) -> some View {
-        Button(action: link.open) {
-            HStack(spacing: Spacing.tiny) {
-                Text(link.title)
-                SuggestionBadge(count: link.count, isSmall: true)
-                Image(systemName: "chevron.forward")
-                    .imageScale(.small)
-            }
-            .font(.caption2.weight(.medium))
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(.regularMaterial, in: Capsule())
-            .overlay(Capsule().strokeBorder(Palette.separator2, lineWidth: 0.5))
-            .contentShape(Capsule())
+            .help(String(localized: "Edit in \(link.title)"))
+            .accessibilityLabel(Text(link.count > 0 ? String(localized: "Edit in \(link.title), \(link.count) suggestions") : String(localized: "Edit in \(link.title)")))
+            .accessibilityIdentifier("storePreview.part.\(link.title)")
+        } else {
+            part
         }
-        .buttonStyle(.plain)
-        .environment(\.layoutDirection, .leftToRight)
-        .padding(Spacing.xxSmall)
-        .accessibilityLabel(Text(link.count > 0 ? String(localized: "Edit in \(link.title), \(link.count) suggestions") : String(localized: "Edit in \(link.title)")))
     }
 
     private func highlighted(_ text: AppStorePreviewText, display: String? = nil) -> some View {

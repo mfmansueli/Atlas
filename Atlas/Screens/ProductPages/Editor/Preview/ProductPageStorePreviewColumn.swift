@@ -22,17 +22,17 @@ struct ProductPageStorePreviewColumn: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text(title.uppercased())
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             HStack(spacing: Spacing.xSmall) {
                 AppIconTile(name: viewModel.app.name, icon: viewModel.app.icon, size: 28)
                 Text(viewModel.app.name)
-                    .font(.caption.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Text("Get")
-                .font(.caption2.weight(.bold))
+                .font(.footnote.weight(.bold))
                 .foregroundStyle(Palette.accentText)
                 .padding(.horizontal, 10)
                 .frame(height: 18)
@@ -47,7 +47,7 @@ struct ProductPageStorePreviewColumn: View {
                 )
             }
             Text(text)
-                .font(.caption2)
+                .font(.footnote)
                 .lineLimit(5)
                 .fixedSize(horizontal: false, vertical: true)
                 .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
@@ -55,7 +55,7 @@ struct ProductPageStorePreviewColumn: View {
                 .padding(Spacing.xxSmall)
                 .overlay {
                     if outlinesText {
-                        RoundedRectangle(cornerRadius: 4, style: .continuous).strokeBorder(Palette.accent, lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: Radius.flag, style: .continuous).strokeBorder(Palette.accent, lineWidth: 1.5)
                     }
                 }
         }

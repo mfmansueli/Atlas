@@ -20,7 +20,7 @@ struct GuidedTemplateShot: View {
                 studio.openTemplatePreview(preview.starter, plan: plan, at: item.slot)
             } label: {
                 GuidedJobImage(studio: studio, job: item.job, width: width, cornerFraction: preview.isWatch ? 0.24 : 0.05)
-                    .shadow(color: .black.opacity(0.14), radius: 5, y: 2)
+                    .depth(.card)
                     .overlay(alignment: .bottomLeading) {
                         if item.showsPrimaryInterface { interfaceMark }
                     }
@@ -31,7 +31,7 @@ struct GuidedTemplateShot: View {
             .accessibilityLabel(Text(accessibilityText))
             .accessibilityIdentifier("autopilot.guided.look.template.shot.\(item.slot)")
             Text(item.label)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .frame(maxWidth: width)
@@ -57,11 +57,11 @@ struct GuidedTemplateShot: View {
     /// than white on orange.
     private var interfaceMark: some View {
         Text("\(primaryName) UI")
-            .font(.system(size: 10, weight: .semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(Color.black.opacity(0.85))
             .padding(.horizontal, 5)
             .padding(.vertical, 1)
-            .background(Palette.warningMark, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .background(Palette.warnMark, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
             .padding(4)
             .accessibilityHidden(true)
     }

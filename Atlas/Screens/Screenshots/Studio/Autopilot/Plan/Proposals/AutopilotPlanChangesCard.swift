@@ -33,7 +33,7 @@ struct AutopilotPlanChangesCard: View {
                         .accessibilityIdentifier("autopilot.plan.changes.screens")
                     if !studio.guided.showsScreens {
                         Button("Show Screens") { studio.guided.showsScreens = true }
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("autopilot.plan.changes.showScreens")
                     }
                 }
@@ -41,7 +41,7 @@ struct AutopilotPlanChangesCard: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint.opacity(0.5), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.aiSurface.opacity(0.5), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("autopilot.plan.changes")
     }

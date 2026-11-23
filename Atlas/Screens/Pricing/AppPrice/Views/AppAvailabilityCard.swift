@@ -48,7 +48,7 @@ struct AppAvailabilityCard: View {
         case let .failed(message):
             InlineMessage.error(message)
             Button("Try Again") { Task { await model.loadAvailability() } }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pricing.availability.tryAgain")
         case let .loaded(state):
             loaded(state)
@@ -100,12 +100,12 @@ struct AppAvailabilityCard: View {
             if model.queuedTerritoryCount > 0 {
                 Button("Review & Push…", action: model.onOpenReview)
                     .buttonStyle(.link)
-                    .controlSize(.small)
+                    .controlSize(.regular)
             }
             Spacer()
             Button("Edit Countries and Regions…") { model.isAvailabilitySheetPresented = true }
                 .buttonStyle(.link)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pricing.availability.edit")
         }
     }

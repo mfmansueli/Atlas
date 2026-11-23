@@ -80,12 +80,12 @@ struct GuidedShotLookOptions: View {
 
     private var newLookPlaceholders: some View {
         ForEach(0..<3, id: \.self) { index in
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                 .fill(Palette.accentTint)
                 .frame(width: 50, height: (50 * GuidedTemplateFocus.aspect).rounded())
                 .overlay {
                     if index == 1 {
-                        Image(systemName: "sparkles").font(.system(size: 16)).foregroundStyle(Palette.accent)
+                        Image(systemName: "sparkles").font(.title3.weight(.semibold)).foregroundStyle(Palette.accent)
                     }
                 }
         }
@@ -113,7 +113,7 @@ struct GuidedShotLookOptions: View {
             // Empty slots: a missing image would show a spinner, as if the
             // set were still loading.
             ForEach(0..<3, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                     .strokeBorder(Palette.separator, style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
                     .frame(width: 50, height: (50 * GuidedTemplateFocus.aspect).rounded())
             }

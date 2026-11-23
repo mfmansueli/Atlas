@@ -23,7 +23,7 @@ struct KeyAssistantCodeNote: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Add an MCP Assistant…", action: onAddAssistant)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("suggestions.addAssistant")
         }
         .padding(.horizontal, Spacing.medium)

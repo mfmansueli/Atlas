@@ -42,7 +42,7 @@ struct AccessibilityFeatureRow: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if let suggestion {
                     Text("\(suggestion.client): \(suggestion.rationale) Code alone can’t prove support; check it with the feature on.")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -64,7 +64,7 @@ struct AccessibilityFeatureRow: View {
                 .imageScale(.small)
             Text(confidence.title)
         }
-        .font(.caption2.weight(.medium))
+        .font(.footnote.weight(.medium))
         .foregroundStyle(Palette.label2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(confidence.title) confidence"))

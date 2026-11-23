@@ -53,7 +53,7 @@ struct AssistantPopoverContent: View {
                     AssistantWorkingDot()
                 }
                 .font(.callout)
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
                 .accessibilityIdentifier("workspace.assistantPopover.ask")
             }
             if status.isConnected {
@@ -72,7 +72,7 @@ struct AssistantPopoverContent: View {
             }
             capabilities
             Text("Runs only on this Mac (127.0.0.1). Your App Store Connect key stays in the Keychain; assistants never see it, and they can’t push.")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             Divider()
@@ -87,7 +87,7 @@ struct AssistantPopoverContent: View {
     private var header: some View {
         HStack(spacing: Spacing.small) {
             Text("AI Assistant")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: Spacing.xxSmall) {
                 AssistantStatusDot(status: status, tone: connection?.tone)
@@ -135,7 +135,7 @@ struct AssistantPopoverContent: View {
                 }
                 if !recentCalls.isEmpty {
                     Text("RECENT CALLS")
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                     ForEach(recentCalls) { call in
                         HStack(spacing: Spacing.small) {
@@ -145,7 +145,7 @@ struct AssistantPopoverContent: View {
                                 .truncationMode(.tail)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(call.date, format: .relative(presentation: .named))
-                                .font(.caption2)
+                                .font(.footnote)
                                 .foregroundStyle(Palette.label2)
                         }
                         .accessibilityElement(children: .combine)
@@ -175,7 +175,7 @@ struct AssistantPopoverContent: View {
             }
             if !recentRequests.isEmpty {
                 Text("RECENT REQUESTS")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 ForEach(recentRequests) { request in
                     HStack(spacing: Spacing.small) {
@@ -185,7 +185,7 @@ struct AssistantPopoverContent: View {
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(Self.requestDetail(request))
-                            .font(.caption2)
+                            .font(.footnote)
                             .monospacedDigit()
                             .foregroundStyle(Palette.label2)
                     }
@@ -248,14 +248,14 @@ struct AssistantPopoverContent: View {
                         .accessibilityIdentifier("workspace.screenshotProposals")
                 }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
     }
 
     private var capabilities: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("WHAT IT CAN SUGGEST HERE")
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: Spacing.small, verticalSpacing: Spacing.xxSmall) {
                 ForEach(Self.capabilities(withKey: status.isReady), id: \.title) { item in
@@ -298,7 +298,7 @@ struct AssistantPopoverContent: View {
                     .accessibilityIdentifier("assistant.setUp")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     /// With an API key, what needs the code says it needs an MCP

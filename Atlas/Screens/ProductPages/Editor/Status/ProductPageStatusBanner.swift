@@ -49,14 +49,14 @@ struct ProductPageStatusBanner: View {
                 .disabled(viewModel.isCancellingSubmission)
                 .accessibilityIdentifier("pages.status.cancel")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         case .edit:
             Button("Edit…") { viewModel.startNewVersion(of: page) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.status.edit")
         case .openAppStoreConnect:
             Button("Open in App Store Connect") { openURL(viewModel.appStoreConnectURL) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.status.openASC")
         }
     }
@@ -73,7 +73,7 @@ struct ProductPageStatusBanner: View {
         switch tone {
         case .waiting: Palette.label2
         case .fine: Palette.decrease
-        case .problem: Palette.danger
+        case .problem: Palette.err
         }
     }
 
@@ -81,7 +81,7 @@ struct ProductPageStatusBanner: View {
         switch tone {
         case .waiting: Palette.fill1
         case .fine: Palette.decreaseTint
-        case .problem: Palette.dangerTint
+        case .problem: Palette.errTint
         }
     }
 }

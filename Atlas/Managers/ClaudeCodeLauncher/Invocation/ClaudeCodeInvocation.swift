@@ -64,7 +64,7 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
         let deny = permissions.denyRules.map(JSONValue.string)
         var settings: [String: JSONValue] = ["permissions": ["allow": .array(allow), "deny": .array(deny)]]
         var environment = Self.toolEnvironment
-        if [.autopilot, .deepLinkCheck, .deepLinkWork].contains(permissions) { environment.merge(Self.longCommandEnvironment) { $1 } }
+        if Self.longCommandRuns.contains(permissions) { environment.merge(Self.longCommandEnvironment) { $1 } }
         settings["env"] = .object(environment.mapValues(JSONValue.string))
         return JSONValue.object(settings).jsonString()
     }
@@ -86,5 +86,11 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
     /// background, ended its turn "until they report back", and the print
     /// session ended with them. With these a command may run for an hour
     /// in the foreground.
+    /// The runs that build: Autopilot, deep links, page captures and
+    /// review screenshots.
+    static let longCommandRuns: Set<ClaudeCodePermissions> = [
+        .autopilot, .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit,
+    ]
+
     static let longCommandEnvironment = ["BASH_DEFAULT_TIMEOUT_MS": "3600000", "BASH_MAX_TIMEOUT_MS": "3600000"]
 }

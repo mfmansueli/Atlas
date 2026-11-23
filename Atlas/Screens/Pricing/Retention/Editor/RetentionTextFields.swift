@@ -55,7 +55,7 @@ struct RetentionTextFields: View {
             Spacer()
             Text("\(count) / \(limit)")
                 .font(.subheadline.weight(count > limit ? .bold : .regular))
-                .foregroundStyle(count > limit ? Palette.danger : Palette.label2)
+                .foregroundStyle(count > limit ? Palette.err : Palette.label2)
                 .monospacedDigit()
                 .accessibilityLabel(Text("\(count) of \(limit) characters"))
                 .accessibilityIdentifier(identifier)

@@ -25,7 +25,7 @@ struct TemplateCanvasView: View {
                 Text(fitLine(preview))
                     .font(.subheadline)
                     .monospacedDigit()
-                    .foregroundStyle(preview.firstFailure == nil ? Palette.label2 : Palette.danger)
+                    .foregroundStyle(preview.firstFailure == nil ? Palette.label2 : Palette.err)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: width)
                     .accessibilityIdentifier("screenshots.template.fit")

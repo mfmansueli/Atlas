@@ -15,7 +15,7 @@ struct SubmitSection<Accessory: View, Content: View>: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Text(title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityAddTraits(.isHeader)
                 accessory()

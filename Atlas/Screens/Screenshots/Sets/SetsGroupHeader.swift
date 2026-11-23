@@ -21,7 +21,7 @@ struct SetsGroupHeader: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 Text(verbatim: "\(group.count)")
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                 if let onToggle {
                     Button(isExpanded ? String(localized: "Hide") : String(localized: "Show All"), action: onToggle)

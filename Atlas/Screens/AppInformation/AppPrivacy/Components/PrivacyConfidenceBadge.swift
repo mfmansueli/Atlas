@@ -14,7 +14,7 @@ struct PrivacyConfidenceBadge: View {
         HStack(alignment: .bottom, spacing: 3) {
             HStack(alignment: .bottom, spacing: 1.5) {
                 ForEach(1...3, id: \.self) { bar in
-                    RoundedRectangle(cornerRadius: 0.5)
+                    RoundedRectangle(cornerRadius: Radius.flag)
                         .fill(bar <= confidence.bars ? Palette.label2 : Palette.fill3)
                         .frame(width: 2.5, height: 4 + CGFloat(bar) * 2.5)
                 }

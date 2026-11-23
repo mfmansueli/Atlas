@@ -16,7 +16,7 @@ struct PrivacyNotice<Content: View, Actions: View>: View {
         HStack(alignment: .center, spacing: Spacing.small) {
             if isWarning {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warningMark)
+                    .foregroundStyle(Palette.warnMark)
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
@@ -27,10 +27,10 @@ struct PrivacyNotice<Content: View, Actions: View>: View {
             HStack(spacing: Spacing.small) {
                 actions()
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
-        .background(isWarning ? Palette.warningTint : Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(isWarning ? Palette.warnTint : Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
     }
 }

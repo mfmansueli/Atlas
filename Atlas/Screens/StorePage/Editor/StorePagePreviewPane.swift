@@ -24,7 +24,7 @@ struct StorePagePreviewPane: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
                 Text("On the App Store")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Picker("Preview", selection: $showsSuggested) {
                     Text("Now").tag(false)

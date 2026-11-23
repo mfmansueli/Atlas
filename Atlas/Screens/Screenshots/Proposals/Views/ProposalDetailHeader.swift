@@ -24,7 +24,7 @@ struct ProposalDetailHeader: View {
             }
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("Why · from \(proposal.client)")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)
                 Text(proposal.reason)

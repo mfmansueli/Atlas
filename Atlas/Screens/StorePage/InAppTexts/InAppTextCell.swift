@@ -44,7 +44,7 @@ struct InAppTextCell: View {
                         if !issues.isEmpty {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .font(.subheadline)
-                                .foregroundStyle(Palette.warning)
+                                .foregroundStyle(Palette.warn)
                                 .help(issues.map(\.message).joined(separator: "\n"))
                                 .accessibilityIdentifier("storePage.inAppGuideline.\(locale.code).\(column.id)")
                         }
@@ -73,7 +73,7 @@ struct InAppTextCell: View {
         let counter = model.counter(column, in: locale)
         return VStack(alignment: .leading, spacing: Spacing.small) {
             Text("\(locale.name) · \(column.title)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             TextField(column.title, text: Binding {
                 model.value(column, in: locale)
             } set: { value in
@@ -85,13 +85,13 @@ struct InAppTextCell: View {
             .accessibilityIdentifier("storePage.inAppEditor")
             HStack {
                 if let message = ListingFieldValidator.validate(model.value(column, in: locale), for: column.field).message {
-                    InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
+                    InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.err)
                         .font(.subheadline)
                 }
                 Spacer()
                 Text(counter.text)
                     .font(.subheadline.monospaced())
-                    .foregroundStyle(counter.isOverLimit ? Palette.danger : Palette.label2)
+                    .foregroundStyle(counter.isOverLimit ? Palette.err : Palette.label2)
             }
             let issues = model.guidelineIssues(column, in: locale)
             if !issues.isEmpty {

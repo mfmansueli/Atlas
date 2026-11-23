@@ -23,7 +23,7 @@ struct GuidedChooseStepView: View {
                 if run.choosesDirection {
                     VStack(alignment: .leading, spacing: 10) {
                         Text(run.plan.makesScreenshots ? String(localized: "Screenshots") : String(localized: "App Preview"))
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                             .accessibilityAddTraits(.isHeader)
                         ForEach(run.directions) { direction in
                             GuidedLookRow(studio: studio, run: run, direction: direction)
@@ -33,7 +33,7 @@ struct GuidedChooseStepView: View {
                 if run.usesConcepts {
                     VStack(alignment: .leading, spacing: 10) {
                         Text(run.plan.alsoMakes.artworkSize.placeTitle)
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                             .accessibilityAddTraits(.isHeader)
                         let width = Self.conceptWidth(in: contentWidth)
                         let pick = GuidedPick.concept(in: run)?.id

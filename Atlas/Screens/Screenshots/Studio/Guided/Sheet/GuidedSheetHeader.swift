@@ -17,14 +17,14 @@ struct GuidedSheetHeader: View {
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Image(systemName: "sparkles")
-                .font(.system(size: 15, weight: .medium))
+                .font(.title3.weight(.medium))
                 .foregroundStyle(Palette.accent)
                 .frame(width: 34, height: 34)
-                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(step == .done ? String(localized: "Sent to the App Store") : String(localized: "New App Store assets"))
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("autopilot.guided.sheetTitle")
                 Text(subtitle)
                     .font(.callout)

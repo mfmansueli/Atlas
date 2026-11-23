@@ -88,7 +88,7 @@ struct CaptureCoverageView: View {
     private var bar: some View {
         HStack(spacing: Spacing.medium) {
             Button("Import More…") { viewModel.captures.isImporterPresented = true }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("captures.importMore")
             Text(coverage.summary)
                 .font(.subheadline)

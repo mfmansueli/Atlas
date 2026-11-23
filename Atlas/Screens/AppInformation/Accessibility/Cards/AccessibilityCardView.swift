@@ -39,7 +39,7 @@ struct AccessibilityCardView: View {
                 .frame(width: 16)
                 .accessibilityHidden(true)
             Text(card.family.name)
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             Spacer(minLength: Spacing.small)
             if card.hasPendingChange {
@@ -84,11 +84,11 @@ struct AccessibilityCardView: View {
             }
             if card.canDeleteDraft {
                 Button(String(localized: "Delete Draft"), role: .destructive) { viewModel.deleteDraft(card.family) }
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .accessibilityIdentifier("\(prefix).deleteDraft")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.top, Spacing.xxSmall)
     }
 }

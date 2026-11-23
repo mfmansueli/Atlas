@@ -11,7 +11,7 @@ struct NeutralCountPill: View {
 
     var body: some View {
         Text(count > 99 ? "99+" : "\(count)")
-            .font(.system(size: 10, weight: .semibold))
+            .font(.footnote.weight(.semibold))
             .monospacedDigit()
             .foregroundStyle(Palette.label)
             .padding(.horizontal, 5)

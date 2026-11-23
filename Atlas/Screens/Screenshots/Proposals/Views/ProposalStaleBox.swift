@@ -42,15 +42,15 @@ struct ProposalStaleBox: View {
                 Button("Discard", role: .destructive) {
                     Task { await viewModel.reject() }
                 }
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .accessibilityIdentifier("proposals.discard")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .padding(.top, Spacing.xxSmall)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.medium)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.field + 2, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field + 2, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("proposals.stale")
     }

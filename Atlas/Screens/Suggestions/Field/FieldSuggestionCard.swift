@@ -39,7 +39,7 @@ struct FieldSuggestionCard: View {
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(isSettling ? Palette.raised : Palette.machineTranslatedTint, in: shape)
+        .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
         .overlay(shape.strokeBorder(edge, lineWidth: isSettling ? 0.5 : 1))
         .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.arrivedAt, shape: shape))
         .id(suggestion.id)
@@ -50,7 +50,7 @@ struct FieldSuggestionCard: View {
     }
 
     private var edge: Color {
-        isSettling ? Palette.separator : Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35)
+        isSettling ? Palette.separator : Palette.aiMark.opacity(contrast == .increased ? 0.8 : 0.35)
     }
 
     private func accept() {
@@ -82,7 +82,7 @@ struct FieldSuggestionCard: View {
         Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
             GridRow {
                 Text("NOW")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .frame(width: 74, alignment: .leading)
                 Text(current.isEmpty ? String(localized: "Empty") : current)
@@ -94,10 +94,10 @@ struct FieldSuggestionCard: View {
             }
             GridRow {
                 Text("SUGGESTED")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Palette.ai)
                     .frame(width: 74, alignment: .leading)
-                Text(suggested)
+                SuggestedText(suggested, arrivalKey: suggestion.id, arrivedAt: suggestion.arrivedAt)
                     .font(.callout)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
@@ -110,7 +110,7 @@ struct FieldSuggestionCard: View {
     private var actions: some View {
         HStack(spacing: Spacing.xSmall) {
             Text(meta ?? "")
-                .font(.caption2.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Dismiss", action: onDismiss)
@@ -120,10 +120,10 @@ struct FieldSuggestionCard: View {
                     .accessibilityIdentifier("suggestion.useAndEdit")
             }
             Button("Accept", action: accept)
-                .buttonStyle(.borderedProminent)
+                .rowActionButton()
                 .accessibilityIdentifier("suggestion.accept")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 }
 

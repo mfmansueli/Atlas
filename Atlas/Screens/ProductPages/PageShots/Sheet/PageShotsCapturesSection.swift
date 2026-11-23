@@ -14,7 +14,7 @@ struct PageShotsCapturesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Captures").font(.headline)
+            Text("Captures").font(.body.weight(.semibold))
             Toggle("Capture screens again", isOn: Binding(
                 get: { flow.run?.recapture != nil },
                 set: { isOn in Task { await flow.setRecapture(isOn) } }
@@ -63,7 +63,7 @@ struct PageShotsCapturesSection: View {
         }
         if recapture.claudeRunID == nil {
             Button(recapture.captures.isEmpty ? "Ask to Capture" : "Ask Again") { Task { await flow.askForCaptures() } }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.shots.captures.ask")
         }
     }
@@ -88,7 +88,7 @@ struct PageShotsCapturesSection: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Button("Use the Default") { flow.forgetCaptures(slot: slot) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.shots.captures.default.\(slot + 1)")
         }
         .accessibilityElement(children: .contain)

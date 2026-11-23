@@ -53,7 +53,7 @@ struct GuidedMakeStepView: View {
                 } else {
                     ForEach(shots) { shot in
                         GuidedShotImage(studio: studio, shot: shot, width: 58)
-                            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                            .depth(.card)
                     }
                 }
             }
@@ -75,11 +75,11 @@ struct GuidedMakeStepView: View {
                     placeholderPhone(width: 62)
                 }
                 Image(systemName: "play.circle.fill")
-                    .font(.system(size: 26))
+                    .font(.largeTitle.bold())
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, .black.opacity(0.45))
             }
-            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+            .depth(.card)
         } options: {
             // One language: nothing to choose.
             if plan.localeCodes.count > 1 {

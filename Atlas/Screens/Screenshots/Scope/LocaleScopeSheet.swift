@@ -48,7 +48,7 @@ struct LocaleScopeSheet: View {
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     private var footer: some View {

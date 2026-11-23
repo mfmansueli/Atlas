@@ -40,7 +40,7 @@ struct RetentionSummaryBlock: View {
             .padding(.horizontal, Spacing.medium)
             HStack {
                 Spacer()
-                Button("See Retention", action: onOpen).controlSize(.small).accessibilityIdentifier("analytics.subscriptions.seeRetention")
+                Button("See Retention", action: onOpen).controlSize(.regular).accessibilityIdentifier("analytics.subscriptions.seeRetention")
             }
             .padding(.horizontal, Spacing.medium)
         }

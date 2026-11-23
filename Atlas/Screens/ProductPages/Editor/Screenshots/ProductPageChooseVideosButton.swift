@@ -34,7 +34,7 @@ struct ProductPageChooseVideosButton: View {
                 Text("Choose App Previews…")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .disabled(isReading || !viewModel.canChooseFiles(for: page))
         .help(Text("Use App Preview videos you already have for this page only. The default page doesn’t change."))
         .accessibilityIdentifier("pages.screenshots.chooseVideos")

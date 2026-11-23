@@ -26,7 +26,7 @@ struct InAppEventLanguageBar: View {
                     }
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .help("Dismiss every suggested language and revision of this event. You can undo it.")
                     .accessibilityLabel(Text("Dismiss All, \(viewModel.suggestedCount) suggested"))
                     .accessibilityIdentifier("events.dismissAll")
@@ -41,7 +41,7 @@ struct InAppEventLanguageBar: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(Text("Accept All Languages, \(viewModel.suggestedCount) suggested"))
                     .accessibilityIdentifier("events.acceptAll")
                 }

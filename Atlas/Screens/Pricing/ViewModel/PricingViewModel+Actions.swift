@@ -62,6 +62,12 @@ extension PricingViewModel {
         case .showRetention:
             page = .retention
             return true
+        case .autopilot(.makeReviewScreenshots):
+            // The cards, where each product's screenshot shows.
+            page = .prices
+            showsProductDetails = false
+            makeReviewScreenshots()
+            return true
         default:
             return false
         }

@@ -55,7 +55,7 @@ struct ProductPageLinkCard: View {
                         .accessibilityLabel(Text("Open the page on the App Store"))
                         .accessibilityIdentifier("pages.link.open")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .environment(\.layoutDirection, .leftToRight)
             } else {
                 Text("Apple makes the link when the page is first pushed.")
@@ -144,7 +144,7 @@ struct ProductPageLinkCard: View {
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .incomplete(message):
-            InlineMessage(text: message, systemImage: "exclamationmark.octagon.fill", tint: Palette.danger)
+            InlineMessage(text: message, systemImage: "exclamationmark.octagon.fill", tint: Palette.err)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .unfamiliar(message):
@@ -156,7 +156,7 @@ struct ProductPageLinkCard: View {
 
     private func label(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.caption2.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(Palette.label2)
     }
 }

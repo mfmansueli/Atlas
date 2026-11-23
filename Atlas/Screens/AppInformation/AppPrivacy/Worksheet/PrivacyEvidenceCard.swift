@@ -12,7 +12,7 @@ struct PrivacyEvidenceCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(evidence.kind.title)
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
             Text(evidence.reference)

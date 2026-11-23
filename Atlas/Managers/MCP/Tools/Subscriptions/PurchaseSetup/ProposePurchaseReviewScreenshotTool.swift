@@ -11,11 +11,22 @@ import Foundation
 /// its change). Without one a product stays in Missing Metadata and
 /// StoreKit doesn't return it.
 struct ProposePurchaseReviewScreenshotTool: MCPTool {
+    var details = ReviewShotDetailsStore.shared
+    var runs = ReviewShotsRunCenter.shared
+
     private static let properties: [String: JSONValue] = [
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "productId": MCPToolDefinition.string("The subscription's or in-app purchase's product ID (or App Store Connect id); a queued one's too."),
         "file": MCPToolDefinition.string(MCPReviewScreenshotArgument.description),
         "reason": MCPToolDefinition.string("Optional: what it shows, e.g. the paywall with the yearly plan selected."),
+        "planShown": MCPToolDefinition.string("Optional: the plan selected in it, e.g. Monthly."),
+        "price": MCPToolDefinition.string("Optional: the price it shows for that plan, e.g. $4.99."),
+        "device": MCPToolDefinition.string("Optional: where it was captured, e.g. iPhone 17 Pro."),
+        "language": MCPToolDefinition.string("Optional: the app's language in it, e.g. English (U.S.)."),
+        "checks": [
+            "type": "array", "items": ["type": "string"],
+            "description": "Optional: what you checked, e.g. [\"Price shows\", \"Monthly selected\", \"No test or debug banner\"].",
+        ],
     ]
 
     let definition = MCPToolDefinition(
@@ -28,8 +39,10 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         file to get_subscriptions' reviewScreenshotUploadURL with curl --data-binary @paywall.png \
         (?name=paywall.png) and pass the fileId it returns as file. It works for products App Store Connect has \
         (the push deletes the old screenshot and uploads this one) and for new ones queued by \
-        propose_subscription or propose_in_app_purchase. It's queued for the person to review (status "queued"); \
-        nothing is uploaded until they push.
+        propose_subscription or propose_in_app_purchase. For a product App Store Connect has, it arrives on its card \
+        as a suggestion (status "suggested") the person accepts or dismisses; for a queued product it joins its \
+        change (status "queued"). Nothing is uploaded until they push. Name the plan shown, its price, the device, \
+        the language and your checks so the card can say them.
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId", "productId", "file"]),
         proposalKind: .prices
@@ -63,14 +76,36 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         guard let changeID = setup.queueReviewScreenshot(file, for: target, current: current, source: context.source) else {
             return Self.refused([String(localized: "The new product left Review & Push.")], productID: target.productID, target: logTarget)
         }
+        let isSuggestion = !target.isQueued
+        if isSuggestion, var change = queue.change(id: changeID) {
+            let shot = try Self.details(arguments, client: context.clientName)
+            change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
+            change.title = shot.reviewLine
+            queue.upsert(change)
+            details.set(shot, for: changeID)
+            runs.arrived(appID: app.id, productID: target.productID)
+        }
         var result: [String: JSONValue] = [
-            "status": "queued",
+            "status": isSuggestion ? "suggested" : "queued",
             "changeId": .string(changeID),
             "productId": .string(target.productID),
             "file": .string(file.summary),
         ]
         if let name = current?.fileName { result["replaces"] = .string(name) }
         return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: logTarget, outcome: .proposed)])
+    }
+
+    /// What the card says of it: the plan, price, device, language and
+    /// checks the assistant named.
+    static func details(_ arguments: MCPToolArguments, client: String) throws -> ReviewShotDetails {
+        try ReviewShotDetails(
+            origin: .assistant(client: client),
+            plan: arguments.optionalString("planShown"),
+            price: arguments.optionalString("price"),
+            device: arguments.optionalString("device"),
+            language: arguments.optionalString("language"),
+            checks: arguments.optionalStrings("checks") ?? []
+        )
     }
 
     private static func refused(_ reasons: [String], productID: String, target: String) -> MCPToolOutcome {

@@ -28,7 +28,7 @@ struct PageShotsRunRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("pages.screenshots.run.text")
                 Button("Show") { Task { await viewModel.openPageShots(page) } }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("pages.screenshots.run.show")
             }
             .padding(Spacing.small)

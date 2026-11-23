@@ -38,11 +38,11 @@ struct PrivacyChecklistTab: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button(String(localized: "Back to Worksheet")) { viewModel.tab = .worksheet }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("appInformation.appPrivacy.checklist.back")
         }
         .padding(Spacing.medium)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.appPrivacy.checklist.blocked")
     }

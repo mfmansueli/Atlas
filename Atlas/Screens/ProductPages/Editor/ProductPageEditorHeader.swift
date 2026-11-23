@@ -22,9 +22,9 @@ struct ProductPageEditorHeader: View {
             } label: {
                 HStack(spacing: 2) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text("Pages")
-                        .font(.system(size: 13))
+                        .font(.body)
                 }
                 .foregroundStyle(Palette.accentText)
                 .contentShape(Rectangle())
@@ -33,7 +33,7 @@ struct ProductPageEditorHeader: View {
             .accessibilityLabel(Text("Back to Custom Product Pages"))
             .accessibilityIdentifier("pages.editor.back")
             Text(page.name)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.title2.weight(.semibold))
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .accessibilityAddTraits(.isHeader)

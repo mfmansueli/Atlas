@@ -38,7 +38,7 @@ struct AutopilotWatchAskBox: View {
                         studio.askForPreviewChanges()
                     }
                     .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(!canAsk)
                     .accessibilityIdentifier("autopilot.watch.ask")
                 }
@@ -100,7 +100,7 @@ struct AutopilotWatchAskBox: View {
                 Button(ask) { studio.addPreviewAsk(ask) }
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(!canRevise || isBusy)
                     .fixedSize()
                     .accessibilityIdentifier("autopilot.watch.quick.\(ask)")

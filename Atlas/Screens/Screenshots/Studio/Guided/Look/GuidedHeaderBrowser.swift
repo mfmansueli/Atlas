@@ -64,7 +64,7 @@ struct GuidedHeaderBrowser: View {
                     .overlay(alignment: .topTrailing) {
                         if let number {
                             Text("\(number)")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.footnote.weight(.bold))
                                 .foregroundStyle(.white)
                                 .frame(width: 16, height: 16)
                                 .background(Palette.accent, in: Circle())
@@ -78,12 +78,12 @@ struct GuidedHeaderBrowser: View {
             }
             .padding(5)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isFocused ? Palette.accentTint : Color.clear, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .background(isFocused ? Palette.accentTint : Color.clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                     .strokeBorder(number != nil ? Palette.accent : Color.clear, lineWidth: 1.5)
             }
-            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(cardLabel(template, number: number, isRecommended: isRecommended)))

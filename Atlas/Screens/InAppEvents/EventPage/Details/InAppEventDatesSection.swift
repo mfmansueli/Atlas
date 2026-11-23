@@ -78,7 +78,7 @@ struct InAppEventDatesSection: View {
                     Button(InAppEventsViewModel.showFromTitle(suggestion)) {
                         viewModel.applySuggestedDates([.publishStart: suggestion], of: event)
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("events.details.dates.suggestion")
                 }
                 suggestionControls
@@ -100,7 +100,7 @@ struct InAppEventDatesSection: View {
                 // The badge's purple: its text color is for text on the badge.
                 Text("Suggested by \(change.source.title)")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.suggestionBadge)
+                    .foregroundStyle(Palette.aiFill)
             } else {
                 Text("Not pushed")
                     .font(.subheadline)
@@ -135,7 +135,7 @@ struct InAppEventDatesSection: View {
                 Button("Dismiss") { viewModel.revertDates(of: event) }
                     .accessibilityIdentifier("events.details.dates.dismiss")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
     }
 

@@ -20,7 +20,7 @@ struct ProductPageKeywordChip: View {
             HStack(spacing: Spacing.xxSmall) {
                 if isChosen {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.footnote.weight(.bold))
                 }
                 Text(keyword)
                     .font(.callout)

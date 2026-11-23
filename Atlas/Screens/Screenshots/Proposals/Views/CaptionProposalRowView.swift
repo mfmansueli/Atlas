@@ -64,7 +64,7 @@ struct CaptionProposalRowView: View {
             }
             Text(text)
                 .font(.subheadline)
-                .foregroundStyle(fit.map { !$0.fits } == true ? Palette.danger : Palette.label2)
+                .foregroundStyle(fit.map { !$0.fits } == true ? Palette.err : Palette.label2)
                 .lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

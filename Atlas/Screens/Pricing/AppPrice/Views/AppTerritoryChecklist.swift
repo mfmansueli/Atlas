@@ -24,7 +24,7 @@ struct AppTerritoryChecklist: View {
                 Button("Select None") { selection.subtract(shown.map(\.id)) }
                     .accessibilityIdentifier("pricing.territories.none")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(shown) { territory in
@@ -44,8 +44,8 @@ struct AppTerritoryChecklist: View {
                 .padding(.vertical, Spacing.xxSmall)
             }
             .frame(height: 240)
-            .background(Palette.content, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+            .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
             Text("\(territories.count { selection.contains($0.id) }) of \(territories.count) selected")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)

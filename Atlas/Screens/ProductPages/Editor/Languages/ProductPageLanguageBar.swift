@@ -39,7 +39,7 @@ struct ProductPageLanguageBar: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .fixedSize()
                     .accessibilityLabel(Text("Accept All Languages, \(suggested.count) suggested"))
                     .accessibilityIdentifier("pages.acceptAllLanguages")

@@ -39,6 +39,8 @@ struct AppWorkspaceView: View {
     private var autoReply: AutoReplyCenter { .shared }
 
     private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
+    /// Make Review Screenshots… runs, which Pricing starts.
+    private var reviewShots: ReviewShotsRunCenter { .shared }
 
     var body: some View {
         @Bindable var navigator = navigator
@@ -59,9 +61,11 @@ struct AppWorkspaceView: View {
                 }
             }
             // The page doesn't show through the toolbar: the soft edge
-            // alone left a scrolled page's text behind the title (Alba's
-            // Overview), so the toolbar has the window's color.
+            // left a scrolled page's text behind the title (Alba's
+            // Overview), so the edge is hard. Only the page's: a toolbar
+            // background would cover the sidebar's glass up to the top too.
             content
+                .pageControlSize()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollEdgeEffectStyle(.hard, for: .top)
         }
@@ -87,15 +91,16 @@ struct AppWorkspaceView: View {
         // An asking button's request ended: where its suggestions are.
         .onChange(of: askCenter.finished) { _, finished in
             guard let finished else { return }
-            navigator.toast = WorkspaceToast(message: ToastMessage(text: finished.text))
+            // Make Review Screenshots… says what it made, not where it waits.
+            let ending = finished.subject == ReviewShotsAskPrompt.subject ? reviewShots.runEnded(appID: finished.appID) : nil
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: ending ?? finished.text))
         }
         .sheet(isPresented: $isAskingQuestion) {
             AutopilotQuestionSheet(client: clientName, appName: app.name) { question in
                 startAsk(.askSomethingElse, question: question)
             }
+            .pageControlSize()
         }
-        .toolbarBackgroundVisibility(.visible, for: .windowToolbar)
-        .toolbarBackground(Palette.window, for: .windowToolbar)
         .navigationTitle(app.name)
         .navigationSubtitle(app.bundleID)
         .toolbar(removing: .title)
@@ -109,7 +114,7 @@ struct AppWorkspaceView: View {
             }
             if toolbarLayout.showsTitle {
                 ToolbarItem(placement: .navigation) {
-                    WorkspaceToolbarTitle(title: navigator.section.fullTitle, status: sectionStatus) {
+                    WorkspaceToolbarTitle(title: navigator.section.toolbarTitle, status: sectionStatus) {
                         navigator.review(section: navigator.section)
                     }
                 }
@@ -201,11 +206,11 @@ struct AppWorkspaceView: View {
             items: autopilotItems,
             everythingTitle: navigator.section == .overview ? nil : String(localized: "Everything for \(app.name)…"),
             state: autopilotState(run: run),
-            runProgress: run.flatMap { $0.stage.isRunning ? GuidedRunProgress.make($0, now: .now) : nil },
+            runProgress: runProgress(run),
             isCompact: toolbarLayout.isAutopilotCompact,
             onAction: runAutopilot,
             onOpenRun: openNeeds,
-            onCancelRun: run.flatMap { AutopilotCenter.cancellableStages.contains($0.stage) ? { autopilot.cancelRun(appID: app.id) } : nil },
+            onCancelRun: cancelRun(run),
             autoReplyPaused: autoReply.rule(for: app.id).isOn && !pro.isFree ? autoReply.rule(for: app.id).isPaused : nil,
             onPauseAutoReply: { autoReply.setPaused($0, for: app.id) },
             onAutoReplySettings: { navigator.open(.reviews, intent: .autopilot(.replyAutomatically), appID: app.id) },
@@ -245,7 +250,9 @@ struct AppWorkspaceView: View {
                 action: action,
                 title: action.title(version: version?.versionString, sourceLanguage: language, detail: detail),
                 systemImage: action.systemImage,
-                isPro: pro.isFree && action.paywall != nil
+                isPro: pro.isFree && action.paywall != nil,
+                isEnabled: action == .makeReviewScreenshots ? reviewShotsNote.isEnabled : true,
+                note: action == .makeReviewScreenshots ? reviewShotsNote.text : nil
             )
         }
     }
@@ -267,6 +274,14 @@ struct AppWorkspaceView: View {
                 inputs.screenshotRunNeeds = WorkspaceAutopilotState.screenshotNeeds(run)
             }
         }
+        if let shots = reviewShots.run(for: app.id) {
+            if shots.isWorking {
+                inputs.reviewShotsWorking = shots.toolbarText
+                inputs.reviewShotsProgress = shots.fraction
+            } else {
+                inputs.reviewShotsNeeds = shots.needs
+            }
+        }
         let rule = autoReply.rule(for: app.id)
         if navigator.section == .reviews, rule.isOn, !pro.isFree {
             inputs.autoReplyOn = WorkspaceAutopilotState.autoReplyLine(isPaused: rule.isPaused, sentToday: autoReply.sentToday(for: app.id))
@@ -277,7 +292,11 @@ struct AppWorkspaceView: View {
     /// The purple button: the guided run's step, else the reviews Reply
     /// Automatically left for the person.
     private func openNeeds() {
-        if let run = autopilot.run(for: app.id), WorkspaceAutopilotState.screenshotNeeds(run) != nil || run.stage.isRunning {
+        let guided = autopilot.run(for: app.id)
+        let guidedNeedsOrRuns = guided.map { WorkspaceAutopilotState.screenshotNeeds($0) != nil || $0.stage.isRunning } ?? false
+        if reviewShots.run(for: app.id) != nil, !guidedNeedsOrRuns {
+            navigator.open(.subscriptionPricing, appID: app.id)
+        } else if let run = autopilot.run(for: app.id), WorkspaceAutopilotState.screenshotNeeds(run) != nil || run.stage.isRunning {
             openRun()
         } else if autoReply.needsYouCount(for: app.id) > 0 {
             navigator.open(.reviews, appID: app.id)
@@ -304,7 +323,8 @@ struct AppWorkspaceView: View {
         case .suggestAnswers: navigator.open(.appInformation, intent: .askForSuggestions(.appInformation), appID: app.id)
         case .checkPrivacy: navigator.open(.appInformation, intent: .openAppInformationPage(.appPrivacy), appID: app.id)
         case .askSomethingElse: isAskingQuestion = true
-        case .makeScreenshots, .makeAppPreview, .makeArtwork, .suggestPages, .makePageScreenshots, .makeEventArtwork, .replyAutomatically:
+        case .makeScreenshots, .makeAppPreview, .makeArtwork, .suggestPages, .makePageScreenshots, .makeEventArtwork, .replyAutomatically,
+             .makeReviewScreenshots:
             if let section = action.section { navigator.open(section, intent: .autopilot(action), appID: app.id) }
         default: startAsk(action)
         }
@@ -408,5 +428,44 @@ struct AppWorkspaceView: View {
         case .inAppEvents:
             InAppEventsSectionView(app: app, services: services)
         }
+    }
+}
+
+// MARK: - Make Review Screenshots…
+
+extension AppWorkspaceView {
+    /// The guided run's progress, else the review screenshot run's.
+    private func runProgress(_ run: AutopilotRun?) -> GuidedRunProgress? {
+        if let run, run.stage.isRunning { return GuidedRunProgress.make(run, now: .now) }
+        return reviewShotsProgress
+    }
+
+    /// Cancel Run…, for the guided run or the review screenshot run.
+    private func cancelRun(_ run: AutopilotRun?) -> (() -> Void)? {
+        if let run, AutopilotCenter.cancellableStages.contains(run.stage) {
+            return { autopilot.cancelRun(appID: app.id) }
+        }
+        guard reviewShots.workingRun(for: app.id) != nil else { return nil }
+        return { cancelReviewShots() }
+    }
+
+    /// Make Review Screenshots…'s note: “3 missing”, “Running”, “All set”.
+    private var reviewShotsNote: (text: String?, isEnabled: Bool) {
+        reviewShots.menuNote(for: app.id)
+    }
+
+    /// The review screenshot run's line in the menu, while it captures.
+    private var reviewShotsProgress: GuidedRunProgress? {
+        reviewShots.workingRun(for: app.id).map {
+            GuidedRunProgress(title: $0.toolbarText, fraction: $0.fraction, line: $0.menuText)
+        }
+    }
+
+    /// Cancel Run… on a review screenshot run: Claude Code stops; what it
+    /// already made stays as suggestions.
+    private func cancelReviewShots() {
+        if let runID = askCenter.ask(for: app.id)?.runID { launcher.stop(runID) }
+        reviewShots.clear(appID: app.id)
+        navigator.toast = WorkspaceToast(message: ToastMessage(text: String(localized: "Run cancelled. Screenshots it already made stay as suggestions.")))
     }
 }

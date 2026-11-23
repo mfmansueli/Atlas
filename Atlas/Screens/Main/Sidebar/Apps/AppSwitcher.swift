@@ -61,17 +61,17 @@ struct AppSwitcher: View {
     }
 
     private var label: some View {
-        let shape = RoundedRectangle(cornerRadius: 11, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
         return VStack(spacing: 0) {
             HStack(spacing: 9) {
                 if let app = viewModel.selectedApp {
                     AppIconTile(name: app.name, icon: app.icon, size: 30)
                 } else {
-                    SkeletonBlock(width: 30, height: 30, cornerRadius: 7)
+                    SkeletonBlock(width: 30, height: 30, cornerRadius: Radius.menuRow)
                 }
                 VStack(alignment: .leading, spacing: 1) {
                     Text(viewModel.selectedApp?.name ?? String(localized: "No app"))
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .lineLimit(1)
                     Text(teamLine)
                         .font(.subheadline)
@@ -81,11 +81,11 @@ struct AppSwitcher: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 // The round control that says the switcher opens a menu.
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label)
                     .frame(width: 22, height: 22)
                     .background(Palette.raised, in: Circle())
-                    .shadow(color: .black.opacity(0.18), radius: 0.5, y: 0.5)
+                    .depth(.card)
                     .overlay(Circle().strokeBorder(Palette.separator, lineWidth: 0.5))
             }
             .frame(minHeight: 46)
@@ -103,7 +103,7 @@ struct AppSwitcher: View {
     /// "5 other apps · 2 with suggestions", the suggestions in purple.
     private var othersLine: some View {
         let others = Text(summary.othersText).foregroundStyle(Palette.label2)
-        let suggestions = Text(summary.suggestionsText).foregroundStyle(Palette.machineTranslated).fontWeight(.semibold)
+        let suggestions = Text(summary.suggestionsText).foregroundStyle(Palette.ai).fontWeight(.semibold)
         return Text("\(others)\(suggestions)")
             .font(.subheadline)
             .lineLimit(1)

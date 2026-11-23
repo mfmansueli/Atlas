@@ -38,7 +38,7 @@ struct PrivacyScanActivityRow: View {
                 Button(String(localized: "Scan Summary")) {
                     viewModel.showsScanSummary = true
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .popover(isPresented: $viewModel.showsScanSummary, arrowEdge: .bottom) {
                     PrivacyScanSummaryPopover(scan: scan)
                 }

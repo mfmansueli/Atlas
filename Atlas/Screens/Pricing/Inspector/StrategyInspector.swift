@@ -16,7 +16,7 @@ struct StrategyInspector: View {
         VStack(spacing: 0) {
             VStack(spacing: Spacing.small) {
                 HStack(spacing: Spacing.small) {
-                    Text("Strategy").font(.headline)
+                    Text("Strategy").font(.body.weight(.semibold))
                     Spacer()
                     Pill(text: isCustom ? String(localized: "Custom") : String(localized: "Recommended"))
                         .accessibilityLabel(isCustom ? String(localized: "Custom strategy") : String(localized: "Recommended strategy"))
@@ -36,7 +36,7 @@ struct StrategyInspector: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("pricing.inspector.backToRecommended")
                 }
                 Picker(String(localized: "Inspector tab"), selection: $viewModel.inspectorTab) {

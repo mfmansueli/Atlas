@@ -17,7 +17,7 @@ struct AppPreviewTile: View {
             VStack(spacing: Spacing.xSmall) {
                 Image(systemName: "play.fill")
                 Text(previews.durationTitle ?? String(localized: "Preview"))
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                 Image(systemName: "lock.fill").imageScale(.small)
             }
             .foregroundStyle(.white)

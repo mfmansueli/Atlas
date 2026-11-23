@@ -38,13 +38,12 @@ final class EverythingUITests: XCTestCase {
 
     // MARK: - Starting
 
-    func testOverviewOffersSuggestEverythingInBothCards() {
+    func testOverviewOffersSuggestEverything() {
         app.launch(debugScene: "ev-start")
         let ask = app.buttons["overview.assistantConnected.ask"]
         XCTAssertTrue(ask.waitForExistence(timeout: 10))
         XCTAssertEqual(ask.label, "Suggest Everything…")
-        XCTAssertEqual(app.buttons["overview.suggestionsCard.suggest"].label, "Suggest Everything…")
-        XCTAssertTrue(element("overview.suggestionsCard.row.ageRating").exists)
+        XCTAssertTrue(element("overview.waiting.row.appInformation").exists)
     }
 
     func testThePromptIsCopiedAndWaitsUntilCancelled() {
@@ -79,8 +78,6 @@ final class EverythingUITests: XCTestCase {
         XCTAssertTrue(header.waitForExistence(timeout: 10))
         XCTAssertTrue(header.label.contains("Suggesting everything"))
         XCTAssertTrue(header.label.contains("9 of 18"))
-        XCTAssertEqual(text(of: element("overview.suggestionsCard.count")), "Arriving…")
-        XCTAssertFalse(app.buttons["overview.suggestionsCard.suggest"].exists)
         XCTAssertTrue(element("everything.row.storePage").exists)
 
         app.buttons["everything.stop"].click()
@@ -144,8 +141,8 @@ final class EverythingUITests: XCTestCase {
 
         let acceptAll = app.buttons["everything.acceptAll"]
         XCTAssertTrue(acceptAll.waitForExistence(timeout: 5))
-        XCTAssertTrue(acceptAll.label.hasPrefix("Accept All ("))
-        let count = element("overview.suggestionsCard.count")
+        XCTAssertTrue(acceptAll.label.hasPrefix("Accept All, "))
+        let count = element("overview.waiting.title")
         let before = text(of: count)
         acceptAll.click()
 

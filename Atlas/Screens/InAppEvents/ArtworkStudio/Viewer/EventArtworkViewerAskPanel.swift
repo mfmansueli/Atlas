@@ -18,16 +18,16 @@ struct EventArtworkViewerAskPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("What should change in “\(name)”?")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
             TextEditor(text: Binding { flow.viewer?.request ?? "" } set: { flow.viewer?.request = $0 })
-                .font(.system(size: 13))
+                .font(.body)
                 .scrollContentBackground(.hidden)
                 .foregroundStyle(.white)
                 .padding(6)
                 .frame(height: 72)
-                .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .focused($isFocused)
                 .accessibilityIdentifier("events.art.request")
             HStack(spacing: 6) {
@@ -36,7 +36,7 @@ struct EventArtworkViewerAskPanel: View {
                         flow.useChip(chip)
                     } label: {
                         Text(chip)
-                            .font(.system(size: 12))
+                            .font(.callout)
                             .foregroundStyle(.white)
                             .padding(.horizontal, 9)
                             .frame(height: 22)
@@ -47,7 +47,7 @@ struct EventArtworkViewerAskPanel: View {
                 }
             }
             Text("Only this pair is redrawn. You can keep working while Claude draws it.")
-                .font(.system(size: 11))
+                .font(.subheadline)
                 .foregroundStyle(EventArtworkViewerStyle.secondary(contrast))
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {
@@ -69,10 +69,10 @@ struct EventArtworkViewerAskPanel: View {
         }
         .padding(14)
         .frame(width: 340)
-        .background(EventArtworkViewerStyle.panel, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(EventArtworkViewerStyle.hairline(contrast), lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.5), radius: 24, y: 10)
+        .background(EventArtworkViewerStyle.panel, in: RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: Radius.popover, style: .continuous).strokeBorder(EventArtworkViewerStyle.hairline(contrast), lineWidth: 0.5))
+        .depth(.popover)
         .onAppear { isFocused = true }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("events.art.askPanel")

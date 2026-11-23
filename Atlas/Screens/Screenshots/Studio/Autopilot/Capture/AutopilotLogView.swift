@@ -39,7 +39,7 @@ struct AutopilotLogView: View {
         switch kind {
         case .command: Palette.label2
         case .event: Palette.label
-        case .problem: Palette.danger
+        case .problem: Palette.err
         }
     }
 }

@@ -16,7 +16,7 @@ struct PrivacyChecklistFooter: View {
                     .fixedSize(horizontal: false, vertical: true)
             } icon: {
                 Image(systemName: "checkmark.seal")
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
             }
             .font(.callout)
             .padding(Spacing.medium)

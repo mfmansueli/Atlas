@@ -15,10 +15,10 @@ struct AssistantFolderDropArea: View {
     var body: some View {
         VStack(spacing: Spacing.xxSmall) {
             Image(systemName: "folder.badge.plus")
-                .font(.system(size: 22))
+                .font(.title.weight(.semibold))
                 .foregroundStyle(Palette.accentText)
                 .frame(width: 44, height: 44)
-                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
                 .padding(.bottom, Spacing.xxSmall)
                 .accessibilityHidden(true)
             Text(model.isDragOver ? "Drop to use this folder" : "Drag the project folder here")
@@ -28,7 +28,7 @@ struct AssistantFolderDropArea: View {
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Button("Choose Folder…", action: model.chooseFolder)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .padding(.top, Spacing.xxSmall)
                     .accessibilityIdentifier("settings.connect.chooseFolder")
             }
@@ -57,6 +57,6 @@ struct AssistantFolderDropArea: View {
     }
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: 14, style: .continuous)
+        RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
     }
 }

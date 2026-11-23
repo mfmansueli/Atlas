@@ -17,8 +17,8 @@ struct AccountRemovalPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Remove \(name)?")
-                .font(.headline)
-                .foregroundStyle(Palette.danger)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(Palette.err)
                 .accessibilityIdentifier("settings.remove.title")
             Text(detail)
                 .font(.callout)
@@ -30,14 +30,14 @@ struct AccountRemovalPanel: View {
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("settings.remove.cancel")
                 Button("Remove Key", role: .destructive, action: onRemove)
-                    .buttonStyle(.borderedProminent)
-                    .tint(Palette.dangerMark)
+                    // Destructive (README — Design system §4): secondary, red label.
+                    .destructiveButton()
                     .accessibilityIdentifier("settings.remove.confirm")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
-        .background(Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+        .background(Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("settings.remove.panel")
     }

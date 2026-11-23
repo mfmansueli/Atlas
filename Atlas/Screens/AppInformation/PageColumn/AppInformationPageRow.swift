@@ -28,7 +28,7 @@ struct AppInformationPageRow: View {
                     .lineLimit(1)
                 if let subtitle {
                     Text(subtitle)
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(subtitleStyle)
                         .lineLimit(1)
                 }
@@ -53,8 +53,8 @@ struct AppInformationPageRow: View {
     }
 
     private var subtitleStyle: AnyShapeStyle {
-        if suggestionCount > 0 || comingCount > 0 { return AnyShapeStyle(Palette.machineTranslated) }
-        return needsPerson ? AnyShapeStyle(Palette.warning) : AnyShapeStyle(.secondary)
+        if suggestionCount > 0 || comingCount > 0 { return AnyShapeStyle(Palette.ai) }
+        return needsPerson ? AnyShapeStyle(Palette.warn) : AnyShapeStyle(.secondary)
     }
 
     private var subtitle: String? {

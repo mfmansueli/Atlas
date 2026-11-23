@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas — Analytics: new data from Apple</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ax{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",system-ui,"Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:16px;color:var(--label);-webkit-font-smoothing:antialiased}
+.ax *{box-sizing:border-box}
+.ax button{font:inherit;color:inherit;border:0;background:none;cursor:default;margin:0}
+.ax-l{--window:#EFEFF2;--content:#FFFFFF;--content-0:rgba(255,255,255,0);--content-9:rgba(255,255,255,.92);--raised:#FFFFFF;--sidebar:rgba(246,246,249,.86);--glass:rgba(255,255,255,.78);--control:#FFFFFF;--label:#1D1D1F;--label-2:#6B6B70;--label-3:#8E8E94;--sep:rgba(0,0,0,.09);--fill-1:rgba(0,0,0,.04);--fill-2:rgba(0,0,0,.07);--fill-3:rgba(0,0,0,.11);--accent:#0071E3;--accent-text:#0066CC;--accent-tint:rgba(0,113,227,.10);--mt:#7A35B0;--mt-tint:rgba(150,70,210,.08);--mt-edge:rgba(150,70,210,.28);--mtb:#8A3CD6;--mtb-fg:#FFFFFF;--ok:#1D7A3A;--warn:#7A5600;--warn-tint:rgba(255,190,0,.2);--pop:0 0 0 .5px rgba(0,0,0,.10),0 10px 32px rgba(0,0,0,.16);--sheet:0 0 0 .5px rgba(0,0,0,.10),0 24px 64px rgba(0,0,0,.24);--scrim:rgba(0,0,0,.16);--ctl:0 0 0 .5px rgba(0,0,0,.14),0 .5px 1.5px rgba(0,0,0,.1);--glass-sh:0 0 0 .5px rgba(0,0,0,.10),0 2px 10px rgba(0,0,0,.08);--before:#E4E4E8}
+.ax-d{--window:#1E1E21;--content:#161618;--content-0:rgba(22,22,24,0);--content-9:rgba(22,22,24,.92);--raised:#2A2A2E;--sidebar:rgba(40,40,44,.86);--glass:rgba(64,64,70,.72);--control:#2E2E33;--label:#F2F2F5;--label-2:#A3A3AA;--label-3:#8A8A91;--sep:rgba(255,255,255,.09);--fill-1:rgba(255,255,255,.05);--fill-2:rgba(255,255,255,.09);--fill-3:rgba(255,255,255,.15);--accent:#0A72E8;--accent-text:#4DA3FF;--accent-tint:rgba(77,163,255,.16);--mt:#D4A3FF;--mt-tint:rgba(200,140,255,.10);--mt-edge:rgba(200,140,255,.32);--mtb:#B98CFF;--mtb-fg:#1B0A2E;--ok:#5FD38A;--warn:#FFD34D;--warn-tint:rgba(255,205,60,.15);--pop:0 0 0 .5px rgba(255,255,255,.14),0 12px 36px rgba(0,0,0,.55);--sheet:0 0 0 .5px rgba(255,255,255,.14),0 28px 72px rgba(0,0,0,.6);--scrim:rgba(0,0,0,.45);--ctl:0 0 0 .5px rgba(255,255,255,.12),0 .5px 1.5px rgba(0,0,0,.3);--glass-sh:0 0 0 .5px rgba(255,255,255,.14),0 2px 12px rgba(0,0,0,.35);--before:#2A2A2E}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.sm{width:13px;height:13px}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.l2{color:var(--label-2)}
+.t-hl{font-size:13px;line-height:16px;font-weight:600}
+.t-c{font-size:12px;line-height:15px}
+.t-f{font-size:11px;line-height:14px}
+.t-1{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.01em}
+.scroll{overflow:auto;scrollbar-width:thin}
+.tl{display:flex;gap:8px;flex:none}
+.tl>i{width:12px;height:12px;border-radius:50%;display:block;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.nvh{padding:12px 8px 4px;font-size:11px;font-weight:600;color:var(--label-2)}
+.nvi{width:100%;flex:none;height:30px;display:flex;align-items:center;gap:9px;padding:0 6px 0 5px;border-radius:8px;font-size:13px;text-align:left}
+.nvi:hover{background:var(--fill-1)}
+.nvi.on{background:var(--fill-3);font-weight:600}
+.sq{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.sq .ic{width:12px;height:12px;stroke-width:1.7}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--mtb);color:var(--mtb-fg);font-size:11px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.bdg.neu{background:var(--fill-3);color:var(--label)}
+.glassb{height:32px;min-width:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;white-space:nowrap;flex:none;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
+.glassb:hover{filter:brightness(.97)}
+.grp{display:inline-flex;align-items:center;height:32px;border-radius:16px;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);flex:none}
+.grp>button{height:32px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;font-size:13px;font-weight:500;white-space:nowrap}
+.grp>.dv{width:.5px;height:18px;background:var(--sep);flex:none}
+.ap{color:var(--mt)}
+.ap.run{color:var(--label)}
+/* Autopilot button while a run is really in progress: a light travels along the edge, the sparkle twinkles, a thin bar shows known progress */
+.grp.ap{position:relative}
+.grp.ap.run::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;background:linear-gradient(90deg,transparent 0%,transparent 34%,var(--mtb) 50%,transparent 66%,transparent 100%) 100% 0/300% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:apedge 2.2s linear infinite}
+@keyframes apedge{from{background-position:100% 0}to{background-position:0% 0}}
+.grp.ap.run svg.apsp{color:var(--mt)}
+.grp.ap.run .sp1,.grp.ap.run .sp2{transform-box:fill-box;transform-origin:center;animation:aptw 1.5s ease-in-out infinite}
+.grp.ap.run .sp2{animation-delay:.75s}
+@keyframes aptw{0%,100%{transform:scale(1) rotate(0deg);opacity:1}50%{transform:scale(.5) rotate(45deg);opacity:.4}}
+.apbar{position:absolute;left:12px;right:36px;bottom:3px;height:2px;border-radius:1px;background:var(--fill-2);overflow:hidden;pointer-events:none}
+.apbar>i{display:block;height:100%;border-radius:1px;background:var(--mtb);transition:width .7s ease}
+.grp.ap.done{color:var(--ok);animation:appop .45s cubic-bezier(.3,1.5,.5,1)}
+.grp.ap.done .apck{stroke-dasharray:9;stroke-dashoffset:9;animation:apdraw .35s .1s ease-out forwards}
+@keyframes appop{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes apdraw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.grp.ap.run::after{animation:none;background:var(--mtb)}.grp.ap.run .sp1,.grp.ap.run .sp2,.grp.ap.done{animation:none}.grp.ap.run .sp2{opacity:.4}.grp.ap.done .apck{animation:none;stroke-dashoffset:0}.apbar>i{transition:none}}
+
+.ap.need{background:var(--mtb);color:var(--mtb-fg)}
+.ap.need .dv{background:rgba(255,255,255,.35)}
+.rp{background:var(--accent);color:#fff}
+.rp.zero{background:var(--glass);color:var(--label)}
+.rp.bump{animation:bump .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.cnt{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:rgba(255,255,255,.24);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.rp.zero .cnt{background:var(--fill-2)}
+.ring{width:14px;height:14px;border-radius:50%;border:2px solid var(--fill-3);border-top-color:var(--mtb);animation:spin 1s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.sublink{color:var(--accent-text);font-weight:500;border-radius:4px;padding:0 2px}
+.sublink:hover{text-decoration:underline}
+.btn{height:28px;padding:0 14px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--control);box-shadow:var(--ctl);font-size:13px;white-space:nowrap;flex:none}
+.btn.pri{background:var(--accent);color:#fff;box-shadow:none;font-weight:500}
+.btn.sm{height:24px;padding:0 11px;border-radius:12px;font-size:12px;gap:4px}.btn.ai{color:var(--mt);font-weight:500}.btn.ai .ic{color:var(--mt)}
+.card{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.sug{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.acc{background:var(--accent-tint);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.ph{background:var(--fill-2);border-radius:6px}
+.pop{position:absolute;z-index:40;background:var(--raised);border-radius:12px;box-shadow:var(--pop);padding:6px;display:flex;flex-direction:column;gap:1px}
+.mi{height:28px;border-radius:6px;padding:0 10px;display:flex;align-items:center;gap:8px;text-align:left;width:100%;font-size:13px}
+.mi:hover{background:var(--accent);color:#fff}
+.mi:hover .l2,.mi:hover .ap{color:#fff}
+.mh{padding:6px 10px 4px;font-size:11px;font-weight:600;color:var(--label-2)}
+.msep{height:.5px;background:var(--sep);margin:4px 6px}
+.sheet{position:absolute;z-index:60;left:50%;top:26px;transform:translateX(-50%);width:640px;max-height:640px;background:var(--raised);border-radius:16px;box-shadow:var(--sheet);display:flex;flex-direction:column;overflow:hidden}
+.chip{height:24px;padding:0 10px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2);white-space:nowrap}
+.chip.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.toast{position:absolute;z-index:50;left:50%;bottom:18px;transform:translateX(-50%);background:var(--raised);box-shadow:var(--pop);border-radius:16px;padding:10px 12px 10px 14px;display:flex;align-items:center;gap:12px;font-size:13px;white-space:nowrap}
+.fade{position:absolute;left:0;right:0;top:0;height:64px;z-index:3;pointer-events:none;background:linear-gradient(var(--content-9) 0%,var(--content-9) 40%,var(--content-0) 100%)}
+.oldbar{position:absolute;left:0;right:0;top:0;height:52px;z-index:3;background:var(--before);border-bottom:.5px solid var(--sep)}
+.mark{outline:2px dashed #E0182D;outline-offset:3px;border-radius:12px}
+.seg{display:inline-flex;padding:2px;border-radius:999px;background:var(--fill-2);flex:none}
+.seg>button{height:24px;padding:0 10px;border-radius:12px;font-size:12px}
+.seg>button.on{background:var(--control);box-shadow:var(--ctl);font-weight:600}
+.lng{height:32px;padding:0 10px 0 12px;border-radius:16px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);flex:none;white-space:nowrap}
+.narrow .wide-only{display:none}
+.ap.on{color:var(--label)}
+.rchip{height:26px;padding:0 10px;border-radius:13px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;box-shadow:inset 0 0 0 1px var(--sep);white-space:nowrap}
+.rchip.on{background:var(--accent);color:#fff;box-shadow:none}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--sep);text-align:left;width:100%}
+.opt.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.rad{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--label-3);flex:none;margin-top:1px}
+.opt.on .rad{box-shadow:inset 0 0 0 5px var(--accent)}
+.frow{display:flex;gap:16px;align-items:flex-start;padding:12px 0;border-bottom:.5px solid var(--sep)}
+.flab{width:150px;flex:none;font-size:13px;font-weight:600;padding-top:4px}
+.stat{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:11px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-sent{background:rgba(52,199,89,.14);color:var(--ok)}
+.st-wait{background:var(--accent-tint);color:var(--accent-text)}
+.st-need{background:var(--mtb);color:var(--mtb-fg)}
+.notif{position:absolute;z-index:70;right:14px;top:60px;width:340px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);box-shadow:var(--pop);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.proto{position:absolute;z-index:45;left:12px;bottom:12px;height:28px;padding:0 12px;border-radius:14px;font-size:12px;font-weight:500;background:var(--raised);box-shadow:inset 0 0 0 1px var(--label-3);border:1px dashed var(--label-3) !important}
+.proban{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(75,59,214,.12),rgba(138,60,214,.14))}
+@media (prefers-reduced-motion:reduce){.ring,.rp.bump{animation:none}}
+
+.a2 .card{padding:14px 16px}
+.bh{display:flex;align-items:baseline;gap:10px;padding:6px 2px 0}
+.dpill{height:20px;padding:0 8px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--sep);font-size:11px;font-weight:600;color:var(--label-2);display:inline-flex;align-items:center;white-space:nowrap}
+.big{font-size:22px;line-height:27px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:7px}
+.mtr{display:inline-flex;align-items:flex-end;gap:1.5px;height:9px;flex:none}
+.mtr>i{width:2.5px;border-radius:4px;background:var(--fill-3)}
+.mtr>i:nth-child(1){height:4px}.mtr>i:nth-child(2){height:6.5px}.mtr>i:nth-child(3){height:9px}
+.mtr>i.f{background:var(--label-2)}
+.big.sm{font-size:15px;line-height:20px}
+.vd{font-size:10px;line-height:1}
+.vd.dn{color:var(--warn)}.vd.eq{color:var(--label-2)}
+.tcard{padding:0!important;gap:0!important;overflow:hidden}
+.trow{display:grid;gap:10px;align-items:center;padding:10px 16px;border-top:.5px solid var(--sep);font-size:13px;line-height:17px}
+.trow.th{border-top:0;background:var(--fill-1);font-size:12px;font-weight:600;color:var(--label-2);padding:9px 16px}
+.trow.tot{font-weight:600}
+.tc{min-width:0;display:flex;flex-direction:column;gap:1px}
+.tc.num{align-items:flex-end;text-align:right;font-variant-numeric:tabular-nums}
+.tc.few .tv{color:var(--label-2)}
+.tc.wr .tv{color:var(--warn);font-weight:600}
+.tc.b .tv{font-weight:600}
+.tv{display:inline-flex;align-items:center;gap:5px;max-width:100%}
+.tfoot{padding:9px 16px;border-top:.5px solid var(--sep);background:var(--fill-1);font-size:12px;line-height:15px;color:var(--label-2)}
+.brow{display:flex;flex-direction:column;gap:4px}
+.btrack{height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden}
+.btrack>i{display:block;height:6px;border-radius:3px;background:var(--label-3)}
+.src{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px 0 3px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--sep);font-size:12px;font-weight:600;white-space:nowrap}
+.src>b{width:18px;height:16px;border-radius:4px;background:var(--label);color:var(--content);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.area{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--sep);font-size:12px;color:var(--label-2);white-space:nowrap}
+.newp{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:10px;background:var(--accent-tint);color:var(--accent-text);font-size:12px;font-weight:600}
+.surep{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:6px;background:var(--fill-2);color:var(--label-2);font-size:12px;font-weight:600;white-space:nowrap}
+.chipn{display:flex;flex-direction:column;gap:2px;padding:7px 10px;border-radius:8px;background:var(--fill-1);min-width:112px}
+.ban{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:13px;line-height:17px}
+.ban.neu{background:var(--fill-2)}
+.ban.wrn{background:var(--warn-tint)}
+.ban.okb{background:rgba(52,199,89,.13)}
+.ban.mtb{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:44px 24px}
+.reads{font:11.5px/1.6 ui-monospace,"SF Mono",Menlo,monospace;background:var(--fill-1);border-radius:10px;padding:10px 12px;white-space:pre-wrap;margin:0;color:var(--label)}
+.typ{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:6px;background:var(--fill-2);font-size:11px;font-weight:600;color:var(--label-2);white-space:nowrap}
+.a2 .seg>button{white-space:nowrap}
+.a2 .seg>button:disabled{opacity:1}
+.a2 .seg.lg>button{height:24px;font-size:13px;padding:0 11px}
+.a2 .seg .bdg{margin-left:5px;min-width:16px;height:16px}
+.msgq{font-size:12px;line-height:17px;color:var(--label-2);border-left:2px solid var(--sep);padding-left:10px}
+
+.btn.tint{background:var(--accent-tint);color:var(--accent-text);box-shadow:none;font-weight:600}.btn.tint:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}.alx-hc .btn.tint{box-shadow:inset 0 0 0 1px var(--accent)}
+</style>
+</helmet>
+<div class="ax a2 {{theme}}" style="position: relative; width: 100%; height: {{H}}; background: var(--window); display: flex; overflow: hidden">
+  <div style="width: 232px; flex: none; padding: 8px 0 8px 8px; display: flex">
+    <nav aria-label="Sections" style="flex: 1; min-width: 0; border-radius: 18px; background: var(--sidebar); box-shadow: 0 0 0 .5px var(--sep); display: flex; flex-direction: column; overflow: hidden">
+      <div style="height: 44px; flex: none; display: flex; align-items: center; padding: 0 14px"><div class="tl" aria-hidden="true"><i style="background: #FF5F57"></i><i style="background: #FEBC2E"></i><i style="background: #28C840"></i></div></div>
+      <div style="margin: 0 8px 6px; height: 46px; padding: 0 8px; border-radius: 11px; background: var(--fill-1); box-shadow: inset 0 0 0 .5px var(--sep); display: flex; align-items: center; gap: 9px; flex: none">
+        <span aria-hidden="true" style="width: 30px; height: 30px; border-radius: 7.5px; background: linear-gradient(160deg,#7C86FF,#3A2FB8); flex: none; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 40 40" style="width: 20px; height: 20px"><path d="M24.5 8.5a12 12 0 1 0 7 21.5A13 13 0 0 1 24.5 8.5z" fill="#fff"></path></svg></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-hl ell">{{appName}}</span><span class="t-f l2 ell">Northpier Studio · Admin</span></span>
+      </div>
+      <div style="flex: 1; min-height: 0; padding: 2px 8px 8px; display: flex; flex-direction: column; gap: 1px">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+          <sc-if value="{{g.hasT}}"><div class="nvh">{{g.title}}</div></sc-if>
+          <sc-for list="{{g.items}}" as="x" hint-placeholder-count="4">
+            <button class="{{x.cls}}" aria-current="{{x.cur}}" onClick="{{x.pick}}"><span class="sq" aria-hidden="true" style="background: {{x.col}}"><svg class="ic" viewBox="0 0 16 16"><path d="{{x.path}}"></path></svg></span><span class="ell" style="flex: 1">{{x.label}}</span><sc-if value="{{x.hasN}}"><span class="{{x.bcls}}" aria-hidden="true">{{x.n}}</span></sc-if></button>
+          </sc-for>
+        </sc-for>
+      </div>
+      <div style="flex: none; margin: 0 8px 8px; padding: 8px 8px 8px 10px; border-radius: 11px; background: var(--fill-1); box-shadow: inset 0 0 0 .5px var(--sep); display: flex; align-items: center; gap: 9px">
+        <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: {{ver.dot}}; flex: none"></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-c" style="font-weight: 600">{{ver.name}}</span><span class="t-f l2 ell">{{ver.st}}</span></span>
+      </div>
+    </nav>
+  </div>
+  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--content)">
+    <div style="height: 52px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 18px">
+      <div style="flex: 0 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="ell" style="font-size: 15px; line-height: 19px; font-weight: 600">{{title}}</span><span class="t-f l2 ell">{{subtitle}}</span></div>
+      <span style="flex: 1"></span>
+      <div class="grp ap"><button aria-label="Autopilot: {{apLabel}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8l1.3 3.4 3.4 1.3-3.4 1.3L8 11.2 6.7 7.8 3.3 6.5l3.4-1.3z"></path><path d="M12.6 10.6l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z"></path></svg><span>{{apLabel}}</span></button><span class="dv" aria-hidden="true"></span><button aria-label="More Autopilot actions" style="min-width: 30px; padding: 0 8px 0 6px"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5L8 10l3.5-3.5"></path></svg></button></div>
+      <button class="glassb rp zero" aria-label="Review and Push, nothing to push" style="padding: 0 12px 0 10px"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 11V5.2M5.6 7.4L8 5l2.4 2.4"></path></svg><span>Up to Date</span></button>
+    </div>
+    <div class="scroll" style="flex: 1; min-height: 0; padding: 6px 20px 24px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 10px; flex: none; min-height: 28px"><p class="t-c l2" style="margin: 0; flex: 1">{{desc}}</p>
+        <sc-if value="{{hasPeriod}}" hint-placeholder-val="{{true}}"><div class="seg lg" role="tablist" aria-label="Period"><button role="tab" aria-selected="false">7 days</button><button role="tab" aria-selected="true" class="on">28 days</button><button role="tab" aria-selected="false">90 days</button></div></sc-if>
+        <sc-if value="{{hasSecSeg}}" hint-placeholder-val="{{false}}"><div class="seg lg" role="tablist" aria-label="View"><sc-for list="{{secSeg}}" as="t" hint-placeholder-count="2"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div></sc-if>
+      </div>
+      <sc-if value="{{hasTabs}}" hint-placeholder-val="{{true}}"><div style="display: flex; align-items: center; gap: 10px; flex: none"><div class="seg lg" role="tablist" aria-label="Analytics views"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}"><span class="bdg neu">{{t.n}}</span></sc-if><sc-if value="{{t.isNew}}"><span class="newp" style="height: 16px; padding: 0 5px; font-size: 10px; margin-left: 5px">NEW</span></sc-if></button></sc-for></div><span style="flex: 1"></span><span class="dpill">{{through}}</span></div></sc-if>
+      <sc-if value="{{hasSub}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 10px; flex: none"><div class="seg" role="tablist" aria-label="{{subAx}}"><sc-for list="{{subs}}" as="t" hint-placeholder-count="4"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.isNew}}"><span class="newp" style="height: 16px; padding: 0 5px; font-size: 10px; margin-left: 5px">NEW</span></sc-if></button></sc-for></div><span class="t-f l2" style="flex: 1; text-align: right">{{subNote}}</span></div></sc-if>
+      <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; align-items: stretch">
+        <sc-for list="{{blocks}}" as="b" hint-placeholder-count="4">
+          <div style="grid-column: span {{b.span}}; min-width: 0; display: flex; flex-direction: column">
+            <sc-if value="{{b.isHead}}"><div class="bh"><h2 style="margin: 0; font-size: 15px; line-height: 20px; font-weight: 600">{{b.title}}</h2><span class="t-c l2" style="flex: 1">{{b.sub}}</span><sc-if value="{{b.hasPill}}"><span class="dpill">{{b.pill}}</span></sc-if><sc-if value="{{b.hasBtn}}"><button class="btn" onClick="{{b.go}}">{{b.btn}}</button></sc-if></div></sc-if>
+            <sc-if value="{{b.isStat}}"><div class="card" style="flex: 1; gap: 4px"><span class="t-c" style="font-weight: 600">{{b.label}}</span><span class="{{b.valCls}}">{{b.value}}<sc-if value="{{b.hasM}}"><span class="mtr" role="img" aria-label="{{b.mAx}}"><i class="{{b.m1}}"></i><i class="{{b.m2}}"></i><i class="{{b.m3}}"></i></span></sc-if></span><span class="t-f l2">{{b.sub}}</span></div></sc-if>
+            <sc-if value="{{b.isBars}}"><div class="card" style="flex: 1; gap: 10px"><div style="display: flex; align-items: baseline; gap: 8px"><span class="t-hl" style="flex: 1">{{b.title}}</span><span class="t-f l2">{{b.right}}</span></div>
+              <sc-for list="{{b.rows}}" as="r" hint-placeholder-count="3"><div class="brow"><div style="display: flex; align-items: baseline; gap: 6px"><span class="t-c" style="flex: 1; min-width: 0"><b style="font-weight: 600">{{r.label}}</b> <span class="l2">{{r.sub}}</span></span><span class="t-c" style="font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600">{{r.val}}</span></div><div class="btrack"><i style="width: {{r.pct}}; background: {{r.col}}"></i></div></div></sc-for>
+              <sc-if value="{{b.hasFoot}}"><span class="t-f l2">{{b.foot}}</span></sc-if>
+              <sc-if value="{{b.hasCall}}"><div class="ban wrn" style="margin-top: auto"><span style="flex: 1">{{b.call}}</span><button class="btn" onClick="{{b.go}}">{{b.callBtn}}</button></div></sc-if></div></sc-if>
+            <sc-if value="{{b.isTable}}"><div class="card tcard" style="flex: 1" role="table" aria-label="{{b.ax}}">
+              <div class="trow th" role="row" style="grid-template-columns: {{b.gt}}"><sc-for list="{{b.cols}}" as="c" hint-placeholder-count="5"><span class="{{c.cls}}" role="columnheader">{{c.t}}</span></sc-for></div>
+              <sc-for list="{{b.rows}}" as="r" hint-placeholder-count="4"><div class="{{r.cls}}" role="row" style="grid-template-columns: {{r.gt}}"><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="5"><div class="{{c.cls}}" role="cell"><span class="tv"><span class="ell">{{c.t}}</span><sc-if value="{{c.hasV}}"><span class="{{c.vCls}}" role="img" aria-label="{{c.vAx}}">{{c.v}}</span></sc-if><sc-if value="{{c.hasM}}"><span class="mtr" role="img" aria-label="{{c.mAx}}"><i class="{{c.m1}}"></i><i class="{{c.m2}}"></i><i class="{{c.m3}}"></i></span></sc-if><sc-if value="{{c.hasTyp}}"><span class="typ">{{c.typ}}</span></sc-if><sc-if value="{{c.hasBtn}}"><button class="btn" style="height: 22px; padding: 0 9px; font-size: 12px">{{c.btn}}</button></sc-if></span><sc-if value="{{c.hasSub}}"><span class="t-f l2 ell" style="max-width: 100%">{{c.sub}}</span></sc-if></div></sc-for></div></sc-for>
+              <sc-if value="{{b.hasFoot}}"><div class="tfoot">{{b.foot}}</div></sc-if></div></sc-if>
+            <sc-if value="{{b.isFind}}"><article class="card" style="gap: 8px">
+              <div style="display: flex; align-items: center; gap: 6px"><span class="src"><b aria-hidden="true">{{b.srcMark}}</b>{{b.srcName}}</span><span class="area">{{b.area}}</span><sc-if value="{{b.isNew}}"><span class="newp">New</span></sc-if><span style="flex: 1"></span><span class="surep">{{b.sure}}</span></div>
+              <h3 style="margin: 0; font-size: 15px; line-height: 20px; font-weight: 600">{{b.title}}</h3>
+              <p class="t-c l2" style="margin: 0; font-size: 13px; line-height: 17px">{{b.why}}</p>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{b.chips}}" as="k" hint-placeholder-count="3"><div class="chipn"><span class="t-f l2">{{k.l}}</span><span class="t-hl" style="font-size: 15px; font-variant-numeric: tabular-nums">{{k.v}}</span><sc-if value="{{k.hasS}}"><span class="t-f l2">{{k.s}}</span></sc-if></div></sc-for></div>
+              <span class="t-f l2">{{b.how}}</span>
+              <sc-if value="{{b.hasWait}}"><div class="ban mtb" style="padding: 7px 10px">{{b.wait}}</div></sc-if>
+              <sc-if value="{{b.hasReads}}"><pre class="reads">{{b.reads}}</pre></sc-if>
+              <div style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap"><sc-for list="{{b.acts}}" as="a" hint-placeholder-count="2"><button class="{{a.cls}}" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></article></sc-if>
+            <sc-if value="{{b.isBan}}"><div class="{{b.cls}}"><span style="flex: 1"><b style="font-weight: 600">{{b.t}}</b> {{b.s}}</span><sc-for list="{{b.acts}}" as="a" hint-placeholder-count="1"><button class="{{a.cls}}" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></sc-if>
+            <sc-if value="{{b.isEmpty}}"><div class="card empty" style="flex: 1"><svg class="ic l2" viewBox="0 0 16 16" aria-hidden="true" style="width: 28px; height: 28px"><path d="{{b.icon}}"></path></svg><span style="font-size: 17px; line-height: 22px; font-weight: 600">{{b.t}}</span><span class="t-c l2" style="max-width: 520px; font-size: 13px; line-height: 18px">{{b.s}}</span><div style="display: flex; gap: 8px; margin-top: 4px"><sc-for list="{{b.acts}}" as="a" hint-placeholder-count="1"><button class="{{a.cls}}" onClick="{{a.go}}">{{a.label}}</button></sc-for></div><sc-if value="{{b.hasFoot}}"><span class="t-f l2" style="max-width: 520px">{{b.foot}}</span></sc-if></div></sc-if>
+            <sc-if value="{{b.isChart}}"><div class="card" style="flex: 1; gap: 8px"><div style="display: flex; align-items: baseline; gap: 10px"><span class="t-hl" style="flex: 1">{{b.title}}</span><sc-for list="{{b.legend}}" as="l" hint-placeholder-count="2"><span class="t-f l2" style="display: inline-flex; align-items: center; gap: 5px"><i aria-hidden="true" style="width: 12px; height: 2px; background: {{l.col}}; display: inline-block"></i>{{l.t}}</span></sc-for></div>
+              <svg viewBox="0 0 600 {{b.h}}" preserveAspectRatio="none" role="img" aria-label="{{b.ax}}" style="width: 100%; height: {{b.hpx}}; display: block"><line x1="0" y1="{{b.base}}" x2="600" y2="{{b.base}}" stroke="var(--sep)" stroke-width="1"></line><sc-for list="{{b.series}}" as="s" hint-placeholder-count="2"><polyline points="{{s.pts}}" fill="none" stroke="{{s.col}}" stroke-width="{{s.w}}" stroke-dasharray="{{s.dash}}" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline></sc-for></svg>
+              <div style="display: flex; justify-content: space-between"><sc-for list="{{b.ticks}}" as="k" hint-placeholder-count="3"><span class="t-f l2">{{k}}</span></sc-for></div>
+              <sc-if value="{{b.hasFoot}}"><span class="t-f l2">{{b.foot}}</span></sc-if></div></sc-if>
+            <sc-if value="{{b.isMsg}}"><div class="card" style="flex-direction: row; gap: 16px; align-items: flex-start">
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px"><div style="display: flex; align-items: center; gap: 8px"><span class="t-hl ell">{{b.name}}</span><span class="typ">{{b.typ}}</span><sc-if value="{{b.hasSt}}"><span class="t-f" style="font-weight: 600; color: {{b.stCol}}">{{b.st}}</span></sc-if></div><span class="msgq">{{b.text}}</span><span class="t-f l2">{{b.meta}}</span></div>
+              <div style="width: 250px; flex: none; display: flex; flex-direction: column; gap: 3px; padding-left: 16px; border-left: .5px solid var(--sep)"><span class="t-f l2" style="font-weight: 600">SAVE RATE · 28 DAYS</span><span class="{{b.valCls}}">{{b.value}}<sc-if value="{{b.hasV}}"><span class="{{b.vCls}}" role="img" aria-label="{{b.vAx}}">{{b.v}}</span></sc-if><sc-if value="{{b.hasM}}"><span class="mtr" role="img" aria-label="{{b.mAx}}"><i class="{{b.m1}}"></i><i class="{{b.m2}}"></i><i class="{{b.m3}}"></i></span></sc-if></span><span class="t-c">{{b.counts}}</span><span class="t-f l2">{{b.verdict}}</span></div></div></sc-if>
+            <sc-if value="{{b.isNote}}"><p class="t-f l2" style="margin: 0">{{b.t}}</p></sc-if>
+            <sc-if value="{{b.isReads}}"><div class="card" style="gap: 8px"><span class="t-hl">{{b.title}}</span><pre class="reads">{{b.text}}</pre><span class="t-f l2">{{b.foot}}</span></div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><span>{{toast}}</span></div></sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene":{"editor":"enum","options":["sub","sub-ret","sub-ret-none","sub-ret-few","ret","ret-none","find-ret","bd-page","bd-camp","pages","sub-offers","sub-bill","crash","rel","rev","find-q","more","mcp","reports","reports-first"],"default":"sub"},"appearance":{"editor":"enum","options":["light","dark"],"default":"light"},"frameH":{"editor":null},"$preview":{"width":1200,"height":780}}'>
+class Component extends DCLogic {
+  static d() {
+    if (Component._d) return Component._d;
+    const P = { ov: 'M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z', store: 'M3 5.5h10l-.8 8H3.8zM5.8 5.5V4.3a2.2 2.2 0 0 1 4.4 0v1.2', shots: 'M5 1.8h6a1.2 1.2 0 0 1 1.2 1.2v10a1.2 1.2 0 0 1-1.2 1.2H5A1.2 1.2 0 0 1 3.8 13V3A1.2 1.2 0 0 1 5 1.8zM7 12h2', pages: 'M3 2.5h7l3 3v8H3zM10 2.5v3h3M5.5 8.5h5M5.5 11h3.5', events: 'M2.5 4h11v9.5h-11zM2.5 7h11M5.5 2.5v3M10.5 2.5v3', info: 'M8 14.2A6.2 6.2 0 1 0 8 1.8a6.2 6.2 0 0 0 0 12.4zM8 7.2v4M8 4.9v.2', pricing: 'M2.5 8.6l6-6h5v5l-6 6zM10.8 5.2v.1', reviews: 'M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2l-3.6 1.9.7-4-2.9-2.8 4-.6z', analytics: 'M3 13.5V9.5M6.5 13.5V5.5M10 13.5V8M13.5 13.5V3', clock: 'M8 14.2A6.2 6.2 0 1 0 8 1.8a6.2 6.2 0 0 0 0 12.4zM8 4.8V8l2.2 1.6' };
+    const NAV = [['', [['overview', 'Overview', 'linear-gradient(180deg,#4A4A50,#2C2C30)', P.ov, 0]]], ['Store Listing', [['store', 'Store Page', 'linear-gradient(180deg,#3D86F7,#2869D2)', P.store, 32], ['shots', 'Screenshots', 'linear-gradient(180deg,#F57A35,#CE5619)', P.shots, 10], ['pages', 'Product Pages', 'linear-gradient(180deg,#16A9B6,#0C848F)', P.pages, 4], ['events', 'In-App Events', 'linear-gradient(180deg,#EC5B8D,#C03B69)', P.events, 9], ['info', 'App Information', 'linear-gradient(180deg,#8E8E96,#6B6B73)', P.info, 19], ['pricing', 'Pricing', 'linear-gradient(180deg,#3BB466,#288F4D)', P.pricing, 4]]], ['After Release', [['reviews', 'Reviews', 'linear-gradient(180deg,#F7BE1A,#D99700)', P.reviews, 6], ['analytics', 'Analytics', 'linear-gradient(180deg,#6866E0,#4B49B8)', P.analytics, 4, true]]]];
+    // ----- block builders -----
+    const head = (title, sub, o) => Object.assign({ type: 'Head', span: 12, title: title, sub: sub || '' }, o || {});
+    const stat = (span, label, value, sub, o) => Object.assign({ type: 'Stat', span: span, label: label, value: value, sub: sub || '' }, o || {});
+    const bars = (span, title, right, rows, o) => Object.assign({ type: 'Bars', span: span, title: title, right: right || '', rows: rows.map((r) => ({ label: r[0], sub: r[1] || '', val: r[2], pct: r[3] + '%', col: r[4] || 'var(--label-3)' })) }, o || {});
+    const table = (span, ax, gt, cols, rows, foot) => ({ type: 'Table', span: span, ax: ax, gt: gt, cols: cols, rows: rows, foot: foot || '' });
+    const find = (src, area, sure, title, why, chips, how, acts, o) => Object.assign({ type: 'Find', span: 12, src: src, area: area, sure: sure, title: title, why: why, chips: chips, how: how, acts: acts }, o || {});
+    const ban = (kind, t, s, acts) => ({ type: 'Ban', span: 12, kind: kind, t: t, s: s || '', acts: acts || [] });
+    const note = (t) => ({ type: 'Note', span: 12, t: t });
+    const msg = (name, typ, st, text, meta, value, counts, verdict, o) => Object.assign({ type: 'Msg', span: 12, name: name, typ: typ, st: st, text: text, meta: meta, value: value, counts: counts, verdict: verdict }, o || {});
+    const N = (t, sub, o) => [t, sub || '', Object.assign({ num: true }, o || {})];
+    const OPT = 'Deletions and sessions come from people who share analytics with developers, so they’re a sample. Apple leaves out rows with fewer than 5 people.';
+    const RETFOOT = 'Save rate = 1 − cancels ÷ people who opened the cancel screen. Apple completes each day up to 4 days later, so this ends Nov 5. History starts Apr 20, 2026.';
+    const byMsg = table(12, 'Save rate by message', 'minmax(0,2.2fr) 1.5fr .7fr .7fr 1fr 1.5fr', ['Message', 'Type', ['Opened', 'num'], ['Stayed', 'num'], ['Save rate', 'num'], 'Against No Message'], [
+      [['Keep your weekly reflections', 'Annual and Monthly · 6 languages'], ['', '', { typ: 'Text with offer' }], N('168'), N('52'), N('31.0%', '', { m: 2, b: true }), ['Better, fairly sure', '25.4–37.2%', { v: 'up' }]],
+      [['Switch to Monthly', 'Annual · English'], ['', '', { typ: 'Text with switch plan' }], N('61'), N('14'), N('23.0%', '', { m: 1 }), ['About the same', '15.2–33.1%', { v: 'eq' }]],
+      [['Before you go', 'Monthly · German, French, Spanish'], ['', '', { typ: 'Text message' }], N('121'), N('21'), N('17.4%', '', { m: 2 }), ['About the same', '12.4–23.9%', { v: 'eq' }]],
+      [['No Message', '11 languages without a message'], ['', '', { typ: 'Apple’s plain screen' }], N('62'), N('7'), N('11.3%', '', { m: 1 }), ['The reference', '6.2–19.7%', {}]]
+    ], RETFOOT);
+    const withWithout = (span, o) => bars(span, 'With a message, or without', 'stayed', [['With a message', '87 of 350', '24.9%', 62, 'var(--accent)'], ['No Message', '7 of 62', '11.3%', 28]], Object.assign({ foot: 'Fairly sure a message helps: about twice as many people stay.' }, o || {}));
+    const saveType = (span) => bars(span, 'How they stayed', '94 saves', [['Redeemed the offer', '', '41 · 44%', 44, 'var(--accent)'], ['Tapped Don’t Cancel', '', '39 · 41%', 41], ['Switched plan', '', '14 · 15%', 15]]);
+    const REPORTS = [
+      ['App Store Engagement and Commerce', 'Impressions, page views, downloads', 'Ready', 'through Nov 9', 'ok'],
+      ['Retention Messaging', 'Cancel-screen views, cancels and saves, by message', 'Ready', 'through Nov 5 · complete after 4 days', 'ok'],
+      ['App Store Subscription Event', 'Trials, paid starts, offers and plan changes, by page', 'Ready', 'through Nov 9', 'ok'],
+      ['Subscription State', 'Active, billing retry, grace period, by page and campaign', 'Ready', 'through Nov 9', 'ok'],
+      ['App Crashes', 'Crashes by version and device', 'Ready', 'through Nov 9 · a sample', 'ok'],
+      ['App Store Installations and Deletions', 'Installs and deletions by version, source and page', 'Ready', 'through Nov 9 · a sample', 'ok'],
+      ['App Sessions', 'Sessions, duration and active devices', 'Ready', 'through Nov 9 · a sample', 'ok'],
+      ['App Store Web Preview', 'apps.apple.com page views and taps', 'No rows yet', 'Apple has sent the report, empty', 'none'],
+      ['Home Screen Widget Installs', 'Devices that added a widget', 'Ready', 'through Nov 9 · a sample', 'ok']
+    ];
+    const repTable = (mode) => table(12, 'Reports from Apple', 'minmax(0,1.6fr) minmax(0,2.4fr) 1.5fr', ['Report', 'What it adds', 'Status'], REPORTS.map((r, i) => {
+      const asked = mode === 'first' && i > 0;
+      return [[r[0], '', { b: true }], [r[1]], asked ? ['Asked Nov 20', 'expected by Nov 22', {}] : [r[2], r[3], r[4] === 'none' ? { few: true } : {}]];
+    }), 'Atlas asks once per app, with an Admin key. Nothing else changes in App Store Connect. Reports marked “a sample” only count people who share analytics with developers.');
+    const A = (label, kind, go) => ({ label: label, kind: kind || '', go: go || '' });
+
+    const SC = {
+      // ============ 1 · Retention Messaging ============
+      'sub': { sec: 'analytics', tab: 'sub', sub: 'sub', blocks: [
+        stat(3, 'Active subscribers', '1,284', '+3% vs previous 28 days'), stat(3, 'Trial → paid', '40.7%', '−3.5 pt · about the same', { m: 3 }), stat(3, 'Proceeds, 28 days', '$4,920', '+7% · after Apple’s commission and taxes'), stat(3, 'Refunds', '9', '0.7% of 1,310 charges'),
+        head('Retention', 'When someone taps Cancel Subscription', { pill: 'Through Nov 5', btn: 'See Retention', go: 'sub-ret' }),
+        stat(3, 'Save rate', '22.8%', '94 of 412 stayed · 90%: 19.6–26.4%', { m: 3 }), withWithout(4), saveType(5),
+        head('Billing', 'Subscribers Apple couldn’t charge'),
+        ban('wrn', '54 subscribers left in 28 days because Apple couldn’t charge them.', 'Billing Grace Period is off for Lumen.', [A('See Billing and Plans', '', 'sub-bill')]),
+        head('Where subscribers come from', ''),
+        ban('neu', 'Trials and paid subscribers are now split by product page, In-App Event, campaign and source.', '', [A('Break It Down by Page', '', 'bd-page')]),
+        note('Renewal rates, cancellations by reason, subscriptions and trial → paid by territory stay below, as on board 35.')
+      ] },
+      'sub-ret': { sec: 'analytics', tab: 'sub', sub: 'sub-ret', h: 900, through: 'Retention through Nov 5', blocks: [
+        stat(3, 'Opened Cancel Subscription', '412', 'People who reached Apple’s cancel screen'), stat(3, 'Stayed', '94', 'Redeemed the offer, switched plan or tapped Don’t Cancel'), stat(3, 'Canceled anyway', '318', ''), stat(3, 'Save rate', '22.8%', '+2.1 pt · about the same · 90%: 19.6–26.4%', { m: 3 }),
+        { type: 'Chart', span: 7, title: 'Save rate, weekly', ax: 'Save rate by week, with a message and with no message', legend: [['With a message', 'var(--accent)'], ['No Message', 'var(--label-3)']], series: [[[21, 23, 22, 26, 24, 27, 25, 25], 'var(--accent)', 1.8, ''], [[12, 10, 13, 11, 12, 9, 12, 11], 'var(--label-3)', 1.4, '4 3']], min: 0, max: 35, h: 150, ticks: ['Sep 14', 'Oct 12', 'Nov 5'], foot: '“Keep your weekly reflections” went live on Oct 6.' },
+        withWithout(5),
+        byMsg,
+        table(6, 'Save rate by subscription', 'minmax(0,1.6fr) .8fr .8fr 1fr', ['Subscription', ['Opened', 'num'], ['Stayed', 'num'], ['Save rate', 'num']], [[['Lumen Plus Annual'], N('148'), N('41'), N('27.7%', '', { m: 2 })], [['Lumen Plus Monthly'], N('264'), N('53'), N('20.1%', '', { m: 2 })]], 'Also by country and by device, from the same menu as Break It Down.'),
+        saveType(6)
+      ] },
+      'sub-ret-none': { sec: 'analytics', tab: 'sub', sub: 'sub-ret', app: 'Tidepool: Sleep Sounds', appShort: 'Tidepool', through: 'Checked today, 8:02', blocks: [
+        { type: 'Empty', span: 12, icon: P.clock, t: 'No one has opened Cancel Subscription yet', s: 'Apple’s Retention Messaging report starts when a subscriber reaches the cancel screen. Tidepool’s message went live on Nov 12 and nobody has been there since. That’s good news; the save rate appears here when someone does.', acts: [A('Open Retention', '', 'ret-none')], foot: 'Atlas checks each morning. A day’s numbers are complete up to 4 days later.' }
+      ] },
+      'sub-ret-few': { sec: 'analytics', tab: 'sub', sub: 'sub-ret', app: 'Quiet Timer', appShort: 'Quiet Timer', through: 'Retention through Nov 5', blocks: [
+        stat(4, 'Opened Cancel Subscription', '14', 'in 28 days'), stat(4, 'Stayed', '3', ''), stat(4, 'Save rate', '3 of 14', 'Too few to tell', { few: true }),
+        ban('neu', 'Too few to tell.', 'Rates this small move by chance, so they’re shown as counts until 30 people have opened the cancel screen.'),
+        ban('neu', 'Nov 6 to Nov 9 are still arriving.', 'Apple completes each day up to 4 days later, so the newest days are left out until then.'),
+        table(12, 'Save rate by message', 'minmax(0,2.2fr) 1.5fr .7fr .7fr 1fr', ['Message', 'Type', ['Opened', 'num'], ['Stayed', 'num'], ['Save rate', 'num']], [[['One more quiet minute', 'English'], ['', '', { typ: 'Text message' }], N('9'), N('2'), N('2 of 9', '', { few: true })], [['No Message', '3 languages without a message'], ['', '', { typ: 'Apple’s plain screen' }], N('5'), N('1'), N('1 of 5', '', { few: true })]], 'No “better” or “worse” until both rows have 30 people.')
+      ] },
+      'ret': { sec: 'pricing', seg: 'ret', h: 880, blocks: [
+        ban('neu', 'Save rates are from Analytics:', 'the last 28 days, through Nov 5. A save is someone who opened the cancel screen and stayed.', [A('Open in Analytics', '', 'sub-ret')]),
+        msg('Keep your weekly reflections', 'Text with offer', 'Live · 6 languages', '“Before you go: keep your weekly reflections and every entry. Stay with Lumen Plus and get 3 months at half price.”', 'Offer: 3 months at half price · Lumen Plus Annual and Monthly', '31.0%', '52 of 168 stayed · 41 redeemed the offer', 'Better than No Message (11.3%), fairly sure', { m: 2, v: 'up' }),
+        msg('Switch to Monthly', 'Text with switch plan', 'Live · English', '“Not ready for a year? Switch to Monthly and keep everything you’ve written.”', 'Switch to: Lumen Plus Monthly · shown on Lumen Plus Annual', '23.0%', '14 of 61 stayed · 14 switched plan', 'About the same as No Message', { m: 1, v: 'eq' }),
+        msg('Before you go', 'Text message', 'Live · German, French, Spanish', '“Bevor du gehst: Behalte deine Wochenrückblicke und alle Einträge.”', 'No offer · Lumen Plus Monthly', '17.4%', '21 of 121 stayed', 'About the same as No Message. The offer message keeps 31%.', { m: 2, v: 'eq' }),
+        msg('No Message', 'Apple’s plain cancel screen', '11 languages', 'Italian, Portuguese (Brazil), Korean and 8 more have no message, so people there see only Apple’s screen.', 'Add a message for a language and it appears here', '11.3%', '7 of 62 stayed', 'The reference the others are compared with', { m: 1 }),
+        table(12, 'Retention offers', 'minmax(0,2fr) 1.6fr .8fr .8fr 1fr', ['Retention offer', 'Used by', ['Shown', 'num'], ['Redeemed', 'num'], ['Redeem rate', 'num']], [[['3 months at half price', 'Lumen Plus Annual and Monthly'], ['Keep your weekly reflections'], N('168'), N('41'), N('24.4%', '', { m: 2 })]], 'Editing a message, its image or its offer keeps its design from board 28.')
+      ] },
+      'ret-none': { sec: 'pricing', seg: 'ret', app: 'Tidepool: Sleep Sounds', appShort: 'Tidepool', blocks: [
+        msg('Keep your quiet nights', 'Text message', 'Live since Nov 12 · English', '“Before you go: your saved mixes and every sound stay with Tidepool Plus.”', 'No offer · Tidepool Plus Monthly and Yearly', '—', 'No one has opened Cancel Subscription yet', 'The save rate appears after the first person does. Apple’s numbers arrive up to 4 days later.', { few: true }),
+        note('Nothing to compare yet, so there is no “better” or “worse”, and no finding.')
+      ] },
+      'find-ret': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
+        head('4 findings from the last 28 days', ''),
+        find('AL', 'Retention', 'Fairly sure', 'The offer message keeps 31% of people. The text-only one keeps 17%.', 'German, French and Spanish still show “Before you go”, which has no offer.', [['With an offer', '31.0%', '52 of 168'], ['Text only', '17.4%', '21 of 121'], ['Opened in de, fr, es', '121', '28 days']], 'How sure: 90% ranges 25.4–37.2% and 12.4–23.9% barely overlap. The two messages run in different languages, so part of the gap may be the language.', [A('Dismiss'), A('Try an Offer Message…'), A('Show This Message in German, French, Spanish…', 'pri', 'ret')], { isNew: true }),
+        find('AL', 'Retention', 'Fairly sure', 'People who see no message stay half as often.', '11 languages have no retention message, so 62 people saw only Apple’s cancel screen.', [['With a message', '24.9%', '87 of 350'], ['No Message', '11.3%', '7 of 62'], ['Languages without one', '11', '']], 'How sure: 7 of 62 is a small group; its range is 6.2–19.7%, below the 21.4–28.8% of people who saw a message.', [A('Dismiss'), A('Write Messages for 11 Languages…', 'pri', 'ret')], { isNew: true }),
+        find('CC', 'Retention', 'Not very sure', '“Before you go” may lose people at the header.', 'It’s the only message whose header doesn’t say what they keep. Claude Code read the three messages and their save rates.', [['Before you go', '17.4%', 'header: “Before you go”'], ['Keep your weekly reflections', '31.0%', 'header names what stays']], 'How sure: one comparison between two messages that also differ by offer and language. Worth a try, not proven.', [A('Dismiss'), A('Rewrite the Header…', 'pri', 'ret')], { wait: 'Claude Code also sent a new header in German, French and Spanish. It’s waiting in Retention.' })
+      ] },
+      // ============ 2 · Subscribers by page and campaign ============
+      'bd-page': { sec: 'analytics', tab: 'bd', sub: 'bd-page', h: 820, blocks: [
+        table(12, 'Subscribers by product page', 'minmax(0,2.3fr) .8fr .6fr .6fr 1fr 1fr 1fr .9fr', ['Product page', ['Downloads', 'num'], ['Trials', 'num'], ['Paid', 'num'], ['Trial → paid', 'num'], ['Deleted in 30 days', 'num'], ['Sessions / week', 'num'], ''], [
+          { tot: true, cells: [['All product pages'], N('3,120'), N('412'), N('168'), N('40.8%', '', { m: 3 }), N('21%'), N('4.1'), ['']] },
+          [['Default product page', 'default'], N('2,550'), N('322'), N('137'), N('42.5%', '', { m: 3, v: 'eq' }), N('21%', '', { v: 'eq' }), N('4.1', '', { v: 'eq' }), ['']],
+          [['Prompts', 'Custom product page · Search Ads'], N('330'), N('58'), N('24'), N('41.4%', '', { m: 2, v: 'eq' }), N('19%', '', { v: 'eq' }), N('4.4', '', { v: 'eq' }), ['', '', { btn: 'Open Page' }]],
+          [['Mood tracking', 'Custom product page · your website'], N('120'), N('21'), N('3'), N('3 of 21', '', { few: true }), N('44%', '', { v: 'dn', wr: true }), N('1.9', '', { v: 'dn', wr: true }), ['', '', { btn: 'Open Page' }]],
+          [['Mood Calendar', 'In-App Event page'], N('86'), N('7'), N('3'), N('3 of 7', '', { few: true }), N('18%', '', { v: 'eq' }), N('4.0', '', { v: 'eq' }), ['', '', { btn: 'Open Event' }]],
+          [['Sleep & wind-down', 'Custom product page · newsletter'], N('34'), N('4'), N('1'), N('1 of 4', '', { few: true }), N('too few', '', { few: true }), N('too few', '', { few: true }), ['', '', { btn: 'Open Page' }]]
+        ], 'Trials and paid come from Apple’s subscription reports, which name the page, campaign and source each subscriber came from. Impressions, page views and download rate are one column group to the left. ' + OPT),
+        ban('wrn', 'Mood tracking: people delete Lumen twice as often and open it half as much.', 'The page may promise something the app doesn’t do.', [A('See the Finding', '', 'find-q'), A('Open Page')])
+      ] },
+      'bd-camp': { sec: 'analytics', tab: 'bd', sub: 'bd-camp', h: 880, blocks: [
+        table(12, 'Subscribers by campaign', 'minmax(0,2fr) 1.3fr .8fr .6fr .6fr 1fr .9fr', ['Campaign', 'Source', ['Downloads', 'num'], ['Trials', 'num'], ['Paid', 'num'], ['Trial → paid', 'num'], ['Proceeds', 'num']], [
+          { tot: true, cells: [['All downloads'], [''], N('3,120'), N('412'), N('168'), N('40.8%', '', { m: 3 }), N('$4,920')] },
+          [['newsletter-nov', 'Sleep & wind-down page'], ['Web Referrer'], N('140'), N('31'), N('15'), N('48.4%', '', { m: 1, v: 'eq' }), N('$412')],
+          [['tiktok-mood', 'Mood tracking page'], ['App Referrer'], N('210'), N('12'), N('1'), N('1 of 12', '', { few: true }), N('$18')],
+          [['podcast-calm', 'Default product page'], ['Web Referrer'], N('60'), N('9'), N('4'), N('4 of 9', '', { few: true }), N('$96')],
+          [['No campaign', ''], ['Search, Browse, others'], N('2,710'), N('360'), N('148'), N('41.1%', '', { m: 3, v: 'eq' }), N('$4,394')]
+        ], 'A campaign is the ct value in a link you shared. The funnel used to stop at downloads here: Apple’s sales reports don’t say where a subscriber came from, and these reports do.'),
+        table(12, 'Subscribers by source', 'minmax(0,2fr) .8fr .6fr .6fr 1fr', ['Source', ['Downloads', 'num'], ['Trials', 'num'], ['Paid', 'num'], ['Trial → paid', 'num']], [
+          [['App Store Search'], N('1,870'), N('262'), N('112'), N('42.7%', '', { m: 3, v: 'eq' })],
+          [['App Store Browse'], N('520'), N('61'), N('22'), N('36.1%', '', { m: 2, v: 'eq' })],
+          [['App Referrer'], N('310'), N('44'), N('19'), N('43.2%', '', { m: 1, v: 'eq' })],
+          [['Web Referrer'], N('300'), N('36'), N('12'), N('33.3%', '', { m: 1, v: 'eq' })],
+          [['Unavailable'], N('120'), N('9'), N('3'), N('3 of 9', '', { few: true })]
+        ], '')
+      ] },
+      'pages': { sec: 'pages', blocks: [
+        table(12, 'Product pages', 'minmax(0,1.8fr) 1.4fr 1.7fr 1.2fr 1fr .9fr', ['Page', 'Status', 'Impressions → views → downloads', 'Download rate', ['Paid subscribers', 'num'], ['Trial → paid', 'num']], [
+          { tot: true, cells: [['Default product page', '12 languages · the reference'], ['On the App Store'], ['151K → 8,050 → 2,550'], ['31.7%', 'the reference'], N('137', 'of 322 trials'), N('42.5%', '', { m: 3 })] },
+          [['Prompts', '12 languages · Search Ads'], ['Approved', 'Visible'], ['18.4K → 1,020 → 330'], ['32.4%', 'about the same as default'], N('24', 'of 58 trials'), N('41.4%', '', { m: 2, v: 'eq' })],
+          [['Mood tracking', '6 languages · your website'], ['Approved', 'Visible'], ['9,200 → 470 → 120'], ['25.5%', '6.1 pt below default', { wr: true }], N('3', 'of 21 trials'), N('3 of 21', '', { few: true })],
+          [['Sleep & wind-down', '4 languages · newsletter'], ['Approved', 'Visible'], ['1,240 → 96 → 34'], ['35.4%', '96 views is too few to compare', { few: true }], N('1', 'of 4 trials'), N('1 of 4', '', { few: true })],
+          [['Private diary', '4 languages'], ['Prepare for Submission', 'Not on the App Store yet'], ['Numbers start once it’s approved', '', { few: true }], [''], N('—', '', { few: true }), N('—', '', { few: true })]
+        ], 'Last 28 days, data through Nov 9. Paid subscribers are people who downloaded from the page and later paid, from Apple’s subscription reports. The same numbers as Analytics → Break It Down → Product Page.')
+      ] },
+      'sub-offers': { sec: 'analytics', tab: 'sub', sub: 'sub-offers', blocks: [
+        table(12, 'Offers by name', 'minmax(0,2.2fr) 1.2fr .9fr 1fr 1fr 1.3fr', ['Offer', 'Type', ['Started', 'num'], ['Paid afterwards', 'num'], ['Rate', 'num'], 'Against Lumen’s average'], [
+          [['7 days free', 'Lumen Plus Annual'], ['', '', { typ: 'Introductory' }], N('262'), N('104'), N('39.7%', '', { m: 3 }), ['About the same', '', { v: 'eq' }]],
+          [['1 month for $0.99', 'Lumen Plus Monthly'], ['', '', { typ: 'Introductory' }], N('150'), N('64'), N('42.7%', '', { m: 2 }), ['About the same', '', { v: 'eq' }]],
+          [['Come back for half', 'Lapsed subscribers'], ['', '', { typ: 'Win-back' }], N('41'), N('17'), N('41.5%', '', { m: 1 }), ['About the same', '', { v: 'eq' }]],
+          [['3 months at half price', 'Shown on the cancel screen'], ['', '', { typ: 'Retention' }], N('41'), N('—', 'first renewals from Jan 6', { few: true }), N('—', '', { few: true }), ['Still measuring']],
+          [['Back to journaling', 'Sent in the app to people who stopped writing'], ['', '', { typ: 'Promotional' }], N('38'), N('22'), N('57.9%', '', { m: 1 }), ['About the same', '', { v: 'eq' }]],
+          [['PODCAST30', 'podcast-calm campaign'], ['', '', { typ: 'Offer code' }], N('60'), N('4'), N('6.7%', '', { m: 2, wr: true }), ['Worse, fairly sure', '', { v: 'dn' }]]
+        ], '“Paid afterwards” is the first charge at the regular price. An offer that hasn’t reached that date yet says so instead of showing a rate.'),
+        ban('wrn', 'PODCAST30 brought 60 people and 4 stayed at full price.', 'The code gives the first month free to anyone; consider a shorter code or a paid first month.', [A('Open Pricing')])
+      ] },
+      'sub-bill': { sec: 'analytics', tab: 'sub', sub: 'sub-bill', h: 960, blocks: [
+        stat(3, 'Couldn’t be charged', '83', 'Entered billing retry in 28 days'), stat(3, 'Recovered', '29', '35% paid again while Apple retried'), stat(3, 'Lost', '54', '23% of all cancellations'), stat(3, 'Billing Grace Period', 'Off', 'In grace period now: 0'),
+        find('AL', 'Billing', 'Sure', 'You lose about 54 subscribers a month to billing issues. Turn on Billing Grace Period.', 'With it on, people keep Lumen Plus while Apple retries their payment (3, 16 or 28 days), and a recovered payment keeps their renewal date. Today they lose access the day the charge fails.', [['Couldn’t be charged', '83', '28 days'], ['Recovered', '29', '35%'], ['Lost', '54', 'about $190 a month']], 'How sure: these are Apple’s own counts of billing retry, recovery and expiry, not an estimate. How many more would recover with grace period on isn’t known until it’s on.', [A('Dismiss'), A('How It Works'), A('Turn On Billing Grace Period…', 'pri')], { isNew: true }),
+        bars(6, 'Plan changes', '49 in 28 days', [['Upgraded', 'Monthly → Annual', '35', 71, 'var(--accent)'], ['Downgraded', 'Annual → Monthly', '14', 29], ['Crossgraded', '', '0', 0]], { foot: 'All 14 downgrades came from the “Switch to Monthly” retention message.' }),
+        bars(6, 'Why people canceled', '236 · Apple’s reasons', [['Canceled', 'The subscriber turned off renewal', '158 · 67%', 67], ['Billing issue', 'Apple couldn’t charge them', '54 · 23%', 23, 'var(--warn)'], ['Price increase', 'Didn’t agree to a new price', '0', 0], ['Other', '', '24 · 10%', 10]], { foot: 'No cancellations from price increases: Lumen hasn’t raised a price for existing subscribers.' })
+      ] },
+      // ============ 3 · Crashes × release ============
+      'crash': { sec: 'analytics', tab: 'crash', h: 900, ver: ['#FF9F0A', 'Version 1.4', 'Rolling out · 5% of people'], blocks: [
+        ban('wrn', 'Version 1.4 crashes 3.2× as often as 1.3, mostly on iPhone 11 and earlier.', 'It’s on day 3 of the phased release, with 5% of people.', [A('Open Version 1.4', '', 'rel'), A('Pause Phased Release…', 'pri')]),
+        stat(3, 'Crashes per 1,000 sessions · 1.4', '6.8', '46 crashes in 6,760 sessions · worse, sure', { m: 3, v: 'dn', wr: true }), stat(3, 'Version 1.3', '2.1', 'Same days, same devices'), stat(3, 'Sessions on 1.4', '6,760', 'Since Nov 7'), stat(3, 'Most affected', 'iPhone 11 and earlier', '14.2 per 1,000 sessions', { small: true }),
+        { type: 'Chart', span: 12, title: 'Crashes per 1,000 sessions, daily', ax: 'Daily crash rate for versions 1.3 and 1.4', legend: [['1.4', 'var(--warn)'], ['1.3', 'var(--label-3)']], series: [[[2.2, 2.0, 2.3, 2.1, 1.9, 2.2, 2.0, 2.1, 2.2, 2.0], 'var(--label-3)', 1.4, '4 3'], [[null, null, null, null, null, null, null, 5.9, 6.6, 7.4], 'var(--warn)', 2, '']], min: 0, max: 9, h: 130, ticks: ['Oct 31', 'Nov 7 · 1.4 starts', 'Nov 9'], foot: '' },
+        table(12, 'Crashes by device', 'minmax(0,2fr) 1fr 1fr 1.6fr', ['Device', ['1.3', 'num'], ['1.4', 'num'], 'Change'], [
+          [['iPhone 11 and earlier'], N('2.4'), N('14.2', '', { wr: true, m: 2 }), ['5.9× higher, sure', '', { v: 'dn' }]],
+          [['iPhone 12 to 14'], N('2.0'), N('5.1', '', { wr: true, m: 2 }), ['2.6× higher, fairly sure', '', { v: 'dn' }]],
+          [['iPhone 15 and later'], N('2.1'), N('2.2', '', { m: 3 }), ['About the same', '', { v: 'eq' }]],
+          [['iPad'], N('2.3'), N('2.5', '', { m: 1 }), ['About the same', '', { v: 'eq' }]]
+        ], 'Crashes per 1,000 sessions, from Apple’s App Crashes and App Sessions reports. Both only count people who share analytics with developers. For stack traces, open Xcode → Organizer.')
+      ] },
+      'rel': { sec: 'overview', ver: ['#FF9F0A', 'Version 1.4', 'Rolling out · 5% of people'], blocks: [
+        head('Version 1.4', 'Phased release · day 3 of 7 · 5% of people', {}),
+        ban('wrn', 'Crashes are 3.2× higher on 1.4 than on 1.3.', '6.8 per 1,000 sessions against 2.1, mostly on iPhone 11 and earlier. Pausing keeps 1.4 away from the other 95% while you fix it; people who have it keep it.', [A('See Stability', '', 'crash'), A('Pause Phased Release…', 'pri')]),
+        bars(6, 'Phased release', 'day 3 of 7', [['People who can get 1.4', 'Tomorrow: 10%', '5%', 5, 'var(--accent)']], { foot: 'Apple’s steps: 1%, 2%, 5%, 10%, 20%, 50%, 100%. A pause can last up to 30 days in total.' }),
+        stat(3, 'Reviews on 1.4', '3.9 ★', '11 reviews · 1.3 averaged 4.7 ★', { v: 'dn', wr: true }), stat(3, 'Deleted in the first week', '27%', '1.3: 19% · worse, fairly sure', { m: 2, v: 'dn', wr: true }),
+        note('The alert shows only when crashes are worse than the previous version and Atlas is at least fairly sure. It also goes to the menu bar and a notification. The rest of Overview stays as on board 38.')
+      ] },
+      'rev': { sec: 'reviews', ver: ['#FF9F0A', 'Version 1.4', 'Rolling out · 5% of people'], blocks: [
+        ban('wrn', 'Version 1.4 averages 3.9 ★ from 11 reviews; 1.3 averaged 4.7 ★.', '6 of the 11 mention a crash, and crashes are 3.2× higher on 1.4.', [A('See Stability', '', 'crash'), A('Pause Phased Release…', 'pri')]),
+        table(12, 'Reviews of version 1.4', '.8fr minmax(0,3fr) 1.2fr 1fr', ['Rating', 'Review', 'From', ''], [
+          [['★☆☆☆☆'], ['落ちます', 'エクスポートするとアプリが落ちます。'], ['Kenji · Japan', 'iPhone 11'], ['', '', { typ: 'Mentions a crash' }]],
+          [['★★☆☆☆'], ['Closes when I open the week view', 'Worked fine before the update.'], ['dana_r · United States', 'iPhone XR'], ['', '', { typ: 'Mentions a crash' }]],
+          [['★★★★★'], ['Weekly reflections are lovely', 'Exactly what I wanted on Sundays.'], ['mara_k · United States', 'iPhone 16'], ['']]
+        ], '“Mentions a crash” is read from the review’s text, in any language. Replies and the rest of Reviews stay as on board 39.')
+      ] },
+      // ============ 4, 5, 7 as findings ============
+      'find-q': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
+        head('Findings from what happens after the download', ''),
+        find('AL', 'Product Pages', 'Fairly sure', 'People who arrive through “Mood tracking” delete Lumen twice as often.', 'The page’s screenshots show a mood chart that needs two weeks of entries before it appears.', [['Deleted in 30 days', '44%', 'default page 21%'], ['Sessions a week', '1.9', 'default page 4.1'], ['Downloads', '120', '28 days']], 'How sure: 53 of 120 against 536 of 2,550. A sample: only people who share analytics are counted.', [A('Dismiss'), A('Make Screenshots for This Page…'), A('Open “Mood tracking”', 'pri', 'pages')], { isNew: true }),
+        find('AL', 'Version', 'Fairly sure', 'Deletions rose with version 1.3.1.', 'More people removed Lumen in their first week after 1.3.1 than after 1.3. Crashes didn’t change, so it isn’t stability.', [['1.3', '19%', 'deleted in the first week'], ['1.3.1', '27%', 'deleted in the first week'], ['What changed', 'Paywall', 'moved before the first entry']], 'How sure: 212 of 780 against 148 of 780 installs.', [A('Dismiss'), A('See After Changes', 'pri')], {}),
+        find('AL', 'Screenshots', 'Not very sure', '2% of people add the widget, and screenshot 4 is about it.', 'A screenshot is worth more on something most people use. The first three are the ones search shows.', [['Added the widget', '212', '2.3% of 9,400 active devices'], ['Screenshot 4', 'Widget', 'in 12 languages']], 'How sure: widget installs are a sample, and a low number can also mean people don’t know the widget exists.', [A('Dismiss'), A('Open Screenshots', 'pri')], {})
+      ] },
+      // ============ 6, 7 · detail, second phase ============
+      'more': { sec: 'analytics', tab: 'funnel', h: 820, blocks: [
+        note('The funnel strip, the biggest loss and the chart stay above, as on board 31. Two rows are added under them.'),
+        head('On the web', 'apps.apple.com, before the App Store', { pill: 'Second phase' }),
+        stat(3, 'Web page views', '2,140', 'Lumen’s page on apps.apple.com'),
+        bars(9, 'What people tap there', 'of 2,140 views', [['Ratings and reviews', '', '310 · 14%', 14, 'var(--accent)'], ['App Privacy', '', '140 · 7%', 7], ['Developer website', '', '85 · 4%', 4]], { foot: 'People read reviews first. The newest reviews are the ones they see: 4 have no reply.' }),
+        head('After the download', 'From people who share analytics', { pill: 'A sample' }),
+        stat(3, 'Installs', '3,480', 'First-time and again'), stat(3, 'Deletions', '742', '21 for every 100 installs'), stat(3, 'Sessions a week', '4.1', 'per active device · 2 min 40 s each'), stat(3, 'Added a widget', '212', '2.3% of 9,400 active devices'),
+        ban('neu', 'By version, source and product page:', 'these are columns in Break It Down, and each becomes a finding when a page or version stands out.', [A('Break It Down by Page', '', 'bd-page')])
+      ] },
+      // ============ MCP ============
+      'mcp': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
+        find('CC', 'Retention', 'Fairly sure', 'Italian and Portuguese (Brazil) cancel most and have no message.', 'They are 38 of the 62 people who saw Apple’s plain cancel screen. Claude Code wrote a message with the half-price offer for both.', [['Opened, no message', '38', 'it and pt-BR'], ['Stayed', '4', '11%'], ['Offer message elsewhere', '31.0%', '52 of 168']], 'How sure: small groups; the offer message’s result is from other languages.', [A('Dismiss'), A('Open Retention', 'pri', 'ret')], { isNew: true, wait: 'Claude Code sent 2 retention messages. They’re waiting in Retention, in purple.', reads: 'read  analytics_retention(app: "Lumen Journal", days: 28, by: ["message", "language"])\nread  retention_messages(app: "Lumen Journal")\nread  analytics_subscription_states(app: "Lumen Journal", days: 28, by: ["territory"])\nwrite add_finding(area: "Retention", sure: "fairly", …)\nwrite suggest_retention_message(language: "it", …)   ×2' }),
+        { type: 'Reads', span: 12, title: 'What Claude Code can read, and what it can do', text: 'analytics_retention            page views, cancels, saves · by message, type, offer, save type, subscription, country, device\nanalytics_subscribers          trials, paid, trial → paid, proceeds · by page, In-App Event, campaign, source, offer\nanalytics_subscription_states  active, billing retry, grace period, recovered, plan changes, cancel reasons\nanalytics_crashes              crashes per 1,000 sessions · by version, device\nanalytics_after_download       installs, deletions, sessions, widget installs · by version, source, page\nanalytics_web_preview          web page views and taps\n\nadd_finding                    lands in What to Try, marked CC, with what it read\nsuggest_*                      retention messages, product pages, texts: purple, waiting for you', foot: 'Reading is free of side effects. Claude Code never pauses a release, changes billing settings or pushes: those stay buttons for you.' }
+      ] },
+      // ============ report states ============
+      'reports': { sec: 'analytics', tab: '', h: 840, blocks: [head('Reports from Apple', 'What Atlas has asked for, and what has arrived', { btn: 'Check Now' }), repTable('ready')] },
+      'reports-first': { sec: 'analytics', tab: '', h: 840, blocks: [
+        ban('neu', 'Apple is preparing 8 more reports for Lumen.', 'Asked on Nov 20; the first ones usually take 1 to 2 days. The funnel keeps working meanwhile, and each view fills in as its report arrives.'),
+        head('Reports from Apple', 'What Atlas has asked for, and what has arrived', { btn: 'Check Now' }), repTable('first')
+      ] }
+    };
+    Component._d = { P: P, NAV: NAV, SC: SC };
+    return Component._d;
+  }
+
+  constructor(p) { super(p); this.state = { scene: (p && p.scene) || 'sub', toast: null }; this.timers = []; }
+  componentWillUnmount() { this.timers.forEach(clearTimeout); }
+  go(sc) { const D = Component.d(); if (sc && D.SC[sc]) this.setState({ scene: sc }); }
+  say(t) { this.setState({ toast: t }); this.timers.push(setTimeout(() => this.setState({ toast: null }), 2600)); }
+
+  meter(o, m) { const AX = ['', 'Not very sure', 'Fairly sure', 'Sure']; o.hasM = m > 0; o.m1 = m >= 1 ? 'f' : ''; o.m2 = m >= 2 ? 'f' : ''; o.m3 = m >= 3 ? 'f' : ''; o.mAx = AX[m] || ''; return o; }
+  verdict(o, v) { const V = { up: ['▲', 'vd', 'Better'], dn: ['▼', 'vd dn', 'Worse'], eq: ['≈', 'vd eq', 'About the same'] }[v]; o.hasV = !!V; o.v = V ? V[0] : ''; o.vCls = V ? V[1] : ''; o.vAx = V ? V[2] : ''; return o; }
+  cell(x) {
+    const a = typeof x === 'string' ? [x] : x; const op = a[2] || {};
+    const o = { t: a[0] || '', sub: a[1] || '', hasSub: !!a[1], cls: 'tc' + (op.num ? ' num' : '') + (op.few ? ' few' : '') + (op.wr ? ' wr' : '') + (op.b ? ' b' : ''), hasTyp: !!op.typ, typ: op.typ || '', hasBtn: !!op.btn, btn: op.btn || '' };
+    this.meter(o, op.m || 0); this.verdict(o, op.v); return o;
+  }
+  acts(list) { return (list || []).map((a) => ({ label: a.label, cls: a.kind === 'pri' ? 'btn pri' : 'btn', go: a.go ? () => this.go(a.go) : () => this.say('“' + a.label + '” isn’t drawn in this prototype.') })); }
+  block(b) {
+    const o = Object.assign({ isHead: false, isStat: false, isBars: false, isTable: false, isFind: false, isBan: false, isEmpty: false, isChart: false, isMsg: false, isNote: false, isReads: false, hasFoot: !!b.foot, hasM: false, hasV: false }, b);
+    o['is' + b.type] = true;
+    if (b.type === 'Head') { o.hasPill = !!b.pill; o.hasBtn = !!b.btn; o.go = b.go ? () => this.go(b.go) : () => this.say('Checking App Store Connect…'); }
+    if (b.type === 'Stat' || b.type === 'Msg') { this.meter(o, b.m || 0); this.verdict(o, b.v); o.valCls = 'big' + (b.small ? ' sm' : ''); }
+    if (b.type === 'Stat') o.valCls = 'big' + (b.few ? ' l2' : '') + (b.small ? ' sm' : '');
+    if (b.type === 'Msg') { o.valCls = b.few ? 'big l2' : 'big'; o.hasSt = !!b.st; o.stCol = 'var(--ok)'; }
+    if (b.type === 'Bars') { o.hasCall = !!b.call; }
+    if (b.type === 'Table') {
+      o.cols = b.cols.map((c) => (typeof c === 'string' ? { t: c, cls: '' } : { t: c[0], cls: c[1] === 'num' ? 'tc num' : '' }));
+      o.rows = b.rows.map((r) => { const cells = Array.isArray(r) ? r : r.cells; return { gt: b.gt, cls: 'trow' + (r.tot ? ' tot' : ''), cells: cells.map((c) => this.cell(c)) }; });
+    }
+    if (b.type === 'Find') { o.srcMark = b.src; o.srcName = b.src === 'CC' ? 'Claude Code' : 'Built-in'; o.isNew = !!b.isNew; o.chips = b.chips.map((k) => ({ l: k[0], v: k[1], s: k[2] || '', hasS: !!k[2] })); o.hasWait = !!b.wait; o.hasReads = !!b.reads; o.acts = this.acts(b.acts); }
+    if (b.type === 'Ban') { o.cls = 'ban ' + (b.kind || 'neu'); o.acts = this.acts(b.acts); }
+    if (b.type === 'Empty') { o.acts = this.acts(b.acts); }
+    if (b.type === 'Chart') {
+      const H = b.h; const n = b.series[0][0].length;
+      o.hpx = H + 'px'; o.base = H - 1;
+      o.series = b.series.map((s) => ({ col: s[1], w: s[2], dash: s[3] || 'none', pts: s[0].map((v, i) => (v == null ? null : (Math.round(i * 600 / (n - 1)) + ',' + (H - 4 - Math.round((v - b.min) / (b.max - b.min) * (H - 10)))))).filter(Boolean).join(' ') }));
+      o.legend = b.legend.map((l) => ({ t: l[0], col: l[1] }));
+    }
+    return o;
+  }
+
+  renderVals() {
+    const D = Component.d(); const pr = this.props; const s = this.state;
+    const sc = D.SC[s.scene] || D.SC.sub; const sec = sc.sec;
+    const app = sc.app || 'Lumen Journal'; const short = sc.appShort || 'Lumen';
+    const TT = { analytics: ['Analytics', app + ' · last 28 days', 'Where people drop off between seeing ' + short + ' and paying, and what to change next.', 'Find What to Try…'], pricing: ['Pricing', app + ' · retention', 'What ' + short + '’s subscriptions cost, and what subscribers see when they cancel.', 'Suggest Prices…'], pages: ['Product Pages', app + ' · custom product pages', 'Other versions of ' + short + '’s App Store page, each with its own link, for an audience, a campaign or a search.', 'Suggest Pages…'], overview: ['Overview', app + ' · Version 1.4 · rolling out', short + ' on the App Store, and everything waiting for you.', 'Suggest Everything…'], reviews: ['Ratings & Reviews', app + ' · every country', 'Ratings and reviews from every country, and your replies.', 'Draft Replies…'] }[sec];
+    const HOME = { overview: 'rel', pricing: 'ret', pages: 'pages', reviews: 'rev', analytics: 'sub' };
+    const groups = D.NAV.map((g) => ({ title: g[0], hasT: !!g[0], items: g[1].map((x) => ({ label: x[1], col: x[2], path: x[3], n: String(x[4]), hasN: x[4] > 0, bcls: x[5] ? 'bdg neu' : 'bdg', cls: x[0] === sec ? 'nvi on' : 'nvi', cur: x[0] === sec ? 'page' : 'false', pick: HOME[x[0]] ? () => this.go(HOME[x[0]]) : () => this.say(x[1] + ' isn’t part of this prototype.') })) }));
+    const tab = (id, label, to, o) => Object.assign({ label: label, on: sc.tab === id ? 'true' : 'false', cls: sc.tab === id ? 'on' : '', hasN: false, n: '', isNew: false, pick: to ? () => this.go(to) : () => this.say(label + ' stays as on boards 31–34.') }, o || {});
+    const tabs = [tab('funnel', 'Funnel', 'more'), tab('bd', 'Break It Down', 'bd-page'), tab('find', 'What to Try', 'find-ret', { hasN: true, n: '4' }), tab('chg', 'After Changes', null), tab('sub', 'Subscriptions', 'sub'), tab('crash', 'Stability', 'crash', { isNew: true })];
+    const st = (id, label, to, isNew) => ({ label: label, on: sc.sub === id ? 'true' : 'false', cls: sc.sub === id ? 'on' : '', isNew: !!isNew, pick: to ? () => this.go(to) : () => this.say(label + ' stays as on board 32.') });
+    let subs = [], subAx = '', subNote = '';
+    if (sc.tab === 'sub') { subs = [st('sub', 'Summary', 'sub'), st('sub-ret', 'Retention', 'sub-ret', true), st('sub-offers', 'Offers', 'sub-offers', true), st('sub-bill', 'Billing and Plans', 'sub-bill', true)]; subAx = 'Subscriptions views'; }
+    if (sc.tab === 'bd') { subs = [st('t', 'Territory'), st('l', 'Language'), st('s', 'Source'), st('d', 'Device'), st('bd-page', 'Product Page', 'bd-page'), st('bd-camp', 'Campaign', 'bd-camp', true)]; subAx = 'Break down by'; subNote = '▲ better  ▼ worse  ≈ about the same · “3 of 21” too few to tell'; }
+    const ver = sc.ver || ['#8E8E94', 'Version 1.4', 'Not submitted yet'];
+    return {
+      theme: pr.appearance === 'dark' ? 'ax-d' : 'ax-l', H: (pr.frameH || 780) + 'px', appName: app, groups: groups,
+      ver: { dot: ver[0], name: ver[1], st: ver[2] },
+      title: TT[0], subtitle: TT[1], desc: TT[2], apLabel: TT[3],
+      hasPeriod: sec === 'analytics', hasSecSeg: sec === 'pricing', secSeg: [{ label: 'Prices', on: 'false', cls: '', pick: () => this.say('Prices stays as it is.') }, { label: 'Retention', on: 'true', cls: 'on', pick: () => {} }],
+      hasTabs: sec === 'analytics', tabs: tabs, through: sc.through || 'Data through Nov 9',
+      hasSub: subs.length > 0, subs: subs, subAx: subAx, subNote: subNote,
+      blocks: sc.blocks.map((b) => this.block(b)),
+      hasToast: !!s.toast, toast: s.toast || ''
+    };
+  }
+}
+
+</script>
+</body>
+</html>

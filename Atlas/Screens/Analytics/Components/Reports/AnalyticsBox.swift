@@ -16,7 +16,7 @@ struct AnalyticsBox<Content: View>: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             if let title {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(title).font(.headline)
+                    Text(title).font(.body.weight(.semibold))
                     Spacer(minLength: Spacing.small)
                     if let trailing {
                         Text(trailing).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)

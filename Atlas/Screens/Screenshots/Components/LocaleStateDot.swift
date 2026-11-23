@@ -19,7 +19,7 @@ struct LocaleStateDot: View {
 
     private var color: Color {
         switch state {
-        case .failed: Palette.dangerMark
+        case .failed: Palette.errMark
         case .notPushed: Palette.unsaved
         default: Palette.fill3
         }

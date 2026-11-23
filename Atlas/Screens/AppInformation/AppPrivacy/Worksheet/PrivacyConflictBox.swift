@@ -23,7 +23,7 @@ struct PrivacyConflictBox: View {
                 Button(String(localized: "Use \(theirs.client)’s · \(theirs.answer.summary)"), action: onUseTheirs)
                     .accessibilityIdentifier("appInformation.appPrivacy.conflict.useTheirs")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.small + 2)
         .frame(maxWidth: .infinity, alignment: .leading)

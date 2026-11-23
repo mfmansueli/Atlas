@@ -19,7 +19,7 @@ struct AccessibilityPageView: View {
             ) {
                 Pill(text: String(localized: "Voluntary for now · required later"))
                 ExternalLinkButton(title: String(localized: "About the Labels"), url: AccessibilityFeature.overviewURL)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("appInformation.accessibility.about")
             }
             .padding(.bottom, Spacing.xxSmall)

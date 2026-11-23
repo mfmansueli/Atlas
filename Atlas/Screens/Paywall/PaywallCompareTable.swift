@@ -36,7 +36,7 @@ struct PaywallCompareTable: View {
 
     private func cell(_ text: String, isHeader: Bool = false, color: Color = Palette.label, weight: Font.Weight = .regular) -> some View {
         Text(text)
-            .font(isHeader ? .system(size: 12, weight: .bold) : .system(size: 12, weight: weight))
+            .font(isHeader ? .callout.weight(.bold) : .callout.weight(weight))
             .foregroundStyle(isHeader ? Palette.label2 : color)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, Spacing.small + 2)

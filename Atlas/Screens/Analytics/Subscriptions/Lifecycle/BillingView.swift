@@ -61,7 +61,7 @@ struct BillingView: View {
             AnalyticsStat(
                 label: String(localized: "Lost"), value: AnalyticsText.count(report.lost),
                 note: report.lostShare.map { String(localized: "\(AnalyticsText.wholePercent($0)) of cancellations") } ?? "",
-                valueColor: report.lost > 0 ? Palette.danger : Palette.label
+                valueColor: report.lost > 0 ? Palette.err : Palette.label
             )
             AnalyticsStat(
                 label: String(localized: "Billing Grace Period"),
@@ -95,7 +95,7 @@ struct BillingView: View {
             People whose renewal fails keep their subscription while Apple retries the charge. \
             It applies to every subscription of the app, in production, from the next failed renewal. You can turn it off in App Store Connect.
             """)
-                .lineLimit(5)
+            .lineLimit(5)
             Picker("Grace period", selection: $duration) {
                 ForEach(GracePeriodSetting.Duration.allCases) { Text($0.title).tag($0) }
             }

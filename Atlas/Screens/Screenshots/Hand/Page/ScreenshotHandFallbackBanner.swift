@@ -32,7 +32,7 @@ struct ScreenshotHandFallbackBanner: View {
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("screenshots.hand.addOwn")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .fixedSize()
         }
         .padding(.horizontal, Spacing.medium)

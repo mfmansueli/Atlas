@@ -129,14 +129,14 @@ struct CaptureViewerSheet: View {
             if let status = coverage?.viewerStatus(of: target, display: viewModel.displayType) {
                 Text(status)
                     .font(.callout)
-                    .foregroundStyle(isWrongSize ? Palette.danger : Palette.label2)
+                    .foregroundStyle(isWrongSize ? Palette.err : Palette.label2)
                     .lineLimit(2)
                     .accessibilityIdentifier("captures.viewer.status")
             }
             if let stale = coverage?.cell(for: target)?.stale {
                 Text("Out of date: \(stale.reason)")
                     .font(.callout)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .lineLimit(2)
                     .help(stale.evidence.map { Text($0) } ?? Text(stale.reason))
                     .accessibilityIdentifier("captures.viewer.stale")

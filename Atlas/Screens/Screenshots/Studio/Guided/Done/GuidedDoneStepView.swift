@@ -26,10 +26,10 @@ struct GuidedDoneStepView: View {
         VStack(spacing: Spacing.medium) {
             Spacer(minLength: 0)
             Image(systemName: outcome.symbol)
-                .font(.system(size: 26, weight: .bold))
+                .font(.largeTitle.weight(.bold))
                 .foregroundStyle(.white)
                 .frame(width: 56, height: 56)
-                .background(outcome == .partly ? Palette.warningMark : Palette.accent, in: Circle())
+                .background(outcome == .partly ? Palette.warnMark : Palette.accent, in: Circle())
                 .accessibilityHidden(true)
             Text(outcome.title)
                 .font(.title2.weight(.semibold))

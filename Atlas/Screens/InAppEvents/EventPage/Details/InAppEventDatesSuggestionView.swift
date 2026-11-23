@@ -9,7 +9,8 @@ import SwiftUI
 /// ones the person queued: who and why, the person's and the suggested
 /// "Shows from", "Starts" and "Ends" side by side (the ones that differ
 /// marked), and Dismiss (the person's stay) or Accept (the suggested ones
-/// replace them). Nothing changes until the person picks.
+/// replace them, and the box settles: effect 5). Nothing changes until the
+/// person picks.
 struct InAppEventDatesSuggestionView: View {
     let yours: InAppEventDates
     let suggested: InAppEventDates
@@ -18,10 +19,10 @@ struct InAppEventDatesSuggestionView: View {
     let onDismiss: () -> Void
     let onAccept: () -> Void
 
-    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 Pill(text: String(localized: "Suggested"), style: .machineTranslated)
@@ -39,7 +40,7 @@ struct InAppEventDatesSuggestionView: View {
                 GridRow {
                     Color.clear.frame(width: 74, height: 1)
                     heading(String(localized: "YOURS"), color: Palette.label2)
-                    heading(String(localized: "SUGGESTED"), color: Palette.machineTranslated)
+                    heading(String(localized: "SUGGESTED"), color: Palette.ai)
                 }
                 ForEach(InAppEventDateField.allCases) { field in
                     let differs = yours[field] != suggested[field]
@@ -55,7 +56,7 @@ struct InAppEventDatesSuggestionView: View {
                             .accessibilityIdentifier("events.details.dates.alternative.\(field.rawValue).yours")
                         Text(format.date(suggested[field]))
                             .font(.callout.weight(differs ? .semibold : .regular))
-                            .foregroundStyle(differs ? AnyShapeStyle(Palette.machineTranslated) : AnyShapeStyle(Palette.label))
+                            .foregroundStyle(differs ? AnyShapeStyle(Palette.ai) : AnyShapeStyle(Palette.label))
                             .accessibilityLabel(Text(differs ? "\(field.title): \(format.date(suggested[field])), changed" : "\(field.title): \(format.date(suggested[field]))"))
                             .accessibilityIdentifier("events.details.dates.alternative.\(field.rawValue)")
                     }
@@ -67,32 +68,39 @@ struct InAppEventDatesSuggestionView: View {
             }
             HStack(spacing: Spacing.xSmall) {
                 Text("Your dates stay until you pick.")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Dismiss", action: onDismiss)
                     .help("Keep your dates")
                     .accessibilityIdentifier("events.details.dates.alternative.dismiss")
-                Button("Accept", action: onAccept)
-                    .buttonStyle(.borderedProminent)
+                Button("Accept", action: accept)
+                    .rowActionButton()
                     .help("Use these dates instead of yours")
                     .accessibilityIdentifier("events.details.dates.alternative.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
+        .suggestionSurface(isSettling: isSettling, arrivalKey: "dates", arrivedAt: nil)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Dates suggested by \(alternative.source.title)"))
         .accessibilityIdentifier("events.details.dates.alternative")
     }
 
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            onAccept()
+        }
+    }
+
     private func heading(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.caption2.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(color)
     }
 }

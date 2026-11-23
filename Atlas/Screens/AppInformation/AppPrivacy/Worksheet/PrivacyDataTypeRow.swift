@@ -59,7 +59,7 @@ struct PrivacyDataTypeRow: View {
         .background(background(entry))
         .overlay(alignment: .leading) {
             if isMismatched {
-                Rectangle().fill(Palette.warningMark).frame(width: 3).accessibilityHidden(true)
+                Rectangle().fill(Palette.warnMark).frame(width: 3).accessibilityHidden(true)
             }
         }
         .accessibilityElement(children: .contain)
@@ -75,7 +75,7 @@ struct PrivacyDataTypeRow: View {
         .pickerStyle(.segmented)
         .labelsHidden()
         .fixedSize()
-        .controlSize(.small)
+        .controlSize(.regular)
         .accessibilityIdentifier("appInformation.appPrivacy.type.\(type.rawValue).collected")
     }
 
@@ -92,8 +92,8 @@ struct PrivacyDataTypeRow: View {
     }
 
     private func background(_ entry: PrivacyTypeEntry?) -> Color {
-        if isMismatched { return Palette.warningTint }
-        return entry?.status == .unreviewed ? Palette.machineTranslatedTint : Palette.raised
+        if isMismatched { return Palette.warnTint }
+        return entry?.status == .unreviewed ? Palette.aiSurface : Palette.raised
     }
 
     private func accessibilityLabel(_ entry: PrivacyTypeEntry?, answer: PrivacyAnswer) -> String {

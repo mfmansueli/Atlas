@@ -5,8 +5,8 @@
 
 import SwiftUI
 
-/// The Overview's left column: the App Store page as people see it, in one
-/// of the app's languages, with a tag on each part that opens the section
+/// The Overview's right column: the App Store page as people see it, in one
+/// of the app's languages, smaller; a click on a part opens the section
 /// editing it.
 struct OverviewStorePreview: View {
     let app: StoreApp
@@ -25,14 +25,19 @@ struct OverviewStorePreview: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(spacing: Spacing.small) {
-                Text("On the App Store")
-                    .font(.headline)
-                    .accessibilityAddTraits(.isHeader)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                languagePicker
+            // The picker goes under the title when both don't fit the column.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: Spacing.small) {
+                    title
+                    Spacer(minLength: 0)
+                    languagePicker
+                }
+                VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                    title
+                    languagePicker
+                }
             }
-            AppStorePagePreview(model: model, appName: app.name, icon: app.icon, links: links) {
+            AppStorePagePreview(model: model, appName: app.name, icon: app.icon, links: links, isCompact: true) {
                 AppStorePreviewShots(
                     services: screenshots,
                     app: app,
@@ -42,8 +47,9 @@ struct OverviewStorePreview: View {
                     width: 84
                 )
             }
-            Text("Everything on this page, in every language, is edited here. Click a part to open the section that edits it.")
-                .font(.caption)
+            Text("Click a part to edit it.")
+                .font(.callout)
+                .padding(.horizontal, Spacing.xxSmall)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -55,6 +61,14 @@ struct OverviewStorePreview: View {
             guard !Task.isCancelled else { return }
             ratings = loaded
         }
+    }
+
+    private var title: some View {
+        Text("On the App Store")
+            .font(.headline)
+            .lineLimit(1)
+            .fixedSize()
+            .accessibilityAddTraits(.isHeader)
     }
 
     /// The primary language, then the next two the page has, and the one

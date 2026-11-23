@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas — toolbar, Autopilot and Review &amp; Push</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ax{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",system-ui,"Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:16px;color:var(--label);-webkit-font-smoothing:antialiased}
+.ax *{box-sizing:border-box}
+.ax button{font:inherit;color:inherit;border:0;background:none;cursor:default;margin:0}
+.ax-l{--window:#EFEFF2;--content:#FFFFFF;--content-0:rgba(255,255,255,0);--content-9:rgba(255,255,255,.92);--raised:#FFFFFF;--sidebar:rgba(246,246,249,.86);--glass:rgba(255,255,255,.78);--control:#FFFFFF;--label:#1D1D1F;--label-2:#6B6B70;--label-3:#8E8E94;--sep:rgba(0,0,0,.09);--fill-1:rgba(0,0,0,.04);--fill-2:rgba(0,0,0,.07);--fill-3:rgba(0,0,0,.11);--accent:#0071E3;--accent-text:#0066CC;--accent-tint:rgba(0,113,227,.10);--mt:#7A35B0;--mt-tint:rgba(150,70,210,.08);--mt-edge:rgba(150,70,210,.28);--mtb:#8A3CD6;--mtb-fg:#FFFFFF;--ok:#1D7A3A;--warn:#7A5600;--warn-tint:rgba(255,190,0,.2);--pop:0 0 0 .5px rgba(0,0,0,.10),0 10px 32px rgba(0,0,0,.16);--sheet:0 0 0 .5px rgba(0,0,0,.10),0 24px 64px rgba(0,0,0,.24);--scrim:rgba(0,0,0,.16);--ctl:0 0 0 .5px rgba(0,0,0,.14),0 .5px 1.5px rgba(0,0,0,.1);--glass-sh:0 0 0 .5px rgba(0,0,0,.10),0 2px 10px rgba(0,0,0,.08);--before:#E4E4E8}
+.ax-d{--window:#1E1E21;--content:#161618;--content-0:rgba(22,22,24,0);--content-9:rgba(22,22,24,.92);--raised:#2A2A2E;--sidebar:rgba(40,40,44,.86);--glass:rgba(64,64,70,.72);--control:#2E2E33;--label:#F2F2F5;--label-2:#A3A3AA;--label-3:#8A8A91;--sep:rgba(255,255,255,.09);--fill-1:rgba(255,255,255,.05);--fill-2:rgba(255,255,255,.09);--fill-3:rgba(255,255,255,.15);--accent:#0A72E8;--accent-text:#4DA3FF;--accent-tint:rgba(77,163,255,.16);--mt:#D4A3FF;--mt-tint:rgba(200,140,255,.10);--mt-edge:rgba(200,140,255,.32);--mtb:#B98CFF;--mtb-fg:#1B0A2E;--ok:#5FD38A;--warn:#FFD34D;--warn-tint:rgba(255,205,60,.15);--pop:0 0 0 .5px rgba(255,255,255,.14),0 12px 36px rgba(0,0,0,.55);--sheet:0 0 0 .5px rgba(255,255,255,.14),0 28px 72px rgba(0,0,0,.6);--scrim:rgba(0,0,0,.45);--ctl:0 0 0 .5px rgba(255,255,255,.12),0 .5px 1.5px rgba(0,0,0,.3);--glass-sh:0 0 0 .5px rgba(255,255,255,.14),0 2px 12px rgba(0,0,0,.35);--before:#2A2A2E}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.sm{width:13px;height:13px}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.l2{color:var(--label-2)}
+.t-hl{font-size:13px;line-height:16px;font-weight:600}
+.t-c{font-size:12px;line-height:15px}
+.t-f{font-size:11px;line-height:14px}
+.t-1{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.01em}
+.scroll{overflow:auto;scrollbar-width:thin}
+.tl{display:flex;gap:8px;flex:none}
+.tl>i{width:12px;height:12px;border-radius:50%;display:block;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.nvh{padding:12px 8px 4px;font-size:11px;font-weight:600;color:var(--label-2)}
+.nvi{width:100%;flex:none;height:30px;display:flex;align-items:center;gap:9px;padding:0 6px 0 5px;border-radius:8px;font-size:13px;text-align:left}
+.nvi:hover{background:var(--fill-1)}
+.nvi.on{background:var(--fill-3);font-weight:600}
+.sq{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.sq .ic{width:12px;height:12px;stroke-width:1.7}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--mtb);color:var(--mtb-fg);font-size:11px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.bdg.neu{background:var(--fill-3);color:var(--label)}
+.glassb{height:32px;min-width:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;white-space:nowrap;flex:none;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
+.glassb:hover{filter:brightness(.97)}
+.grp{display:inline-flex;align-items:center;height:32px;border-radius:16px;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);flex:none}
+.grp>button{height:32px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;font-size:13px;font-weight:500;white-space:nowrap}
+.grp>.dv{width:.5px;height:18px;background:var(--sep);flex:none}
+.ap{color:var(--mt)}
+.ap.run{color:var(--label)}
+/* Autopilot button while a run is really in progress: a light travels along the edge, the sparkle twinkles, a thin bar shows known progress */
+.grp.ap{position:relative}
+.grp.ap.run::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;background:linear-gradient(90deg,transparent 0%,transparent 34%,var(--mtb) 50%,transparent 66%,transparent 100%) 100% 0/300% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:apedge 2.2s linear infinite}
+@keyframes apedge{from{background-position:100% 0}to{background-position:0% 0}}
+.grp.ap.run svg.apsp{color:var(--mt)}
+.grp.ap.run .sp1,.grp.ap.run .sp2{transform-box:fill-box;transform-origin:center;animation:aptw 1.5s ease-in-out infinite}
+.grp.ap.run .sp2{animation-delay:.75s}
+@keyframes aptw{0%,100%{transform:scale(1) rotate(0deg);opacity:1}50%{transform:scale(.5) rotate(45deg);opacity:.4}}
+.apbar{position:absolute;left:12px;right:36px;bottom:3px;height:2px;border-radius:1px;background:var(--fill-2);overflow:hidden;pointer-events:none}
+.apbar>i{display:block;height:100%;border-radius:1px;background:var(--mtb);transition:width .7s ease}
+.grp.ap.done{color:var(--ok);animation:appop .45s cubic-bezier(.3,1.5,.5,1)}
+.grp.ap.done .apck{stroke-dasharray:9;stroke-dashoffset:9;animation:apdraw .35s .1s ease-out forwards}
+@keyframes appop{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes apdraw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.grp.ap.run::after{animation:none;background:var(--mtb)}.grp.ap.run .sp1,.grp.ap.run .sp2,.grp.ap.done{animation:none}.grp.ap.run .sp2{opacity:.4}.grp.ap.done .apck{animation:none;stroke-dashoffset:0}.apbar>i{transition:none}}
+
+.ap.need{background:var(--mtb);color:var(--mtb-fg)}
+.ap.need .dv{background:rgba(255,255,255,.35)}
+.rp{background:var(--accent);color:#fff}
+.rp.zero{background:var(--glass);color:var(--label)}
+.rp.bump{animation:bump .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.cnt{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:rgba(255,255,255,.24);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.rp.zero .cnt{background:var(--fill-2)}
+.ring{width:14px;height:14px;border-radius:50%;border:2px solid var(--fill-3);border-top-color:var(--mtb);animation:spin 1s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.sublink{color:var(--accent-text);font-weight:500;border-radius:4px;padding:0 2px}
+.sublink:hover{text-decoration:underline}
+.btn{height:28px;padding:0 14px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--control);box-shadow:var(--ctl);font-size:13px;white-space:nowrap;flex:none}
+.btn.pri{background:var(--accent);color:#fff;box-shadow:none;font-weight:500}
+.btn.sm{height:24px;padding:0 11px;border-radius:12px;font-size:12px;gap:4px}.btn.ai{color:var(--mt);font-weight:500}.btn.ai .ic{color:var(--mt)}
+.card{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.sug{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.acc{background:var(--accent-tint);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.ph{background:var(--fill-2);border-radius:6px}
+.pop{position:absolute;z-index:40;background:var(--raised);border-radius:12px;box-shadow:var(--pop);padding:6px;display:flex;flex-direction:column;gap:1px}
+.mi{height:28px;border-radius:6px;padding:0 10px;display:flex;align-items:center;gap:8px;text-align:left;width:100%;font-size:13px}
+.mi:hover{background:var(--accent);color:#fff}
+.mi:hover .l2,.mi:hover .ap{color:#fff}
+.mh{padding:6px 10px 4px;font-size:11px;font-weight:600;color:var(--label-2)}
+.msep{height:.5px;background:var(--sep);margin:4px 6px}
+.sheet{position:absolute;z-index:60;left:50%;top:26px;transform:translateX(-50%);width:640px;max-height:640px;background:var(--raised);border-radius:16px;box-shadow:var(--sheet);display:flex;flex-direction:column;overflow:hidden}
+.chip{height:24px;padding:0 10px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2);white-space:nowrap}
+.chip.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.toast{position:absolute;z-index:50;left:50%;bottom:18px;transform:translateX(-50%);background:var(--raised);box-shadow:var(--pop);border-radius:16px;padding:10px 12px 10px 14px;display:flex;align-items:center;gap:12px;font-size:13px;white-space:nowrap}
+.fade{position:absolute;left:0;right:0;top:0;height:64px;z-index:3;pointer-events:none;background:linear-gradient(var(--content-9) 0%,var(--content-9) 40%,var(--content-0) 100%)}
+.oldbar{position:absolute;left:0;right:0;top:0;height:52px;z-index:3;background:var(--before);border-bottom:.5px solid var(--sep)}
+.mark{outline:2px dashed #E0182D;outline-offset:3px;border-radius:12px}
+.seg{display:inline-flex;padding:2px;border-radius:999px;background:var(--fill-2);flex:none}
+.seg>button{height:24px;padding:0 10px;border-radius:12px;font-size:12px}
+.seg>button.on{background:var(--control);box-shadow:var(--ctl);font-weight:600}
+.lng{height:32px;padding:0 10px 0 12px;border-radius:16px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;background:var(--glass);box-shadow:var(--glass-sh);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);flex:none;white-space:nowrap}
+.narrow .wide-only{display:none}
+.ap.on{color:var(--label)}
+.rchip{height:26px;padding:0 10px;border-radius:13px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;box-shadow:inset 0 0 0 1px var(--sep);white-space:nowrap}
+.rchip.on{background:var(--accent);color:#fff;box-shadow:none}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--sep);text-align:left;width:100%}
+.opt.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.rad{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--label-3);flex:none;margin-top:1px}
+.opt.on .rad{box-shadow:inset 0 0 0 5px var(--accent)}
+.frow{display:flex;gap:16px;align-items:flex-start;padding:12px 0;border-bottom:.5px solid var(--sep)}
+.flab{width:150px;flex:none;font-size:13px;font-weight:600;padding-top:4px}
+.stat{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:11px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-sent{background:rgba(52,199,89,.14);color:var(--ok)}
+.st-wait{background:var(--accent-tint);color:var(--accent-text)}
+.st-need{background:var(--mtb);color:var(--mtb-fg)}
+.notif{position:absolute;z-index:70;right:14px;top:60px;width:340px;border-radius:16px;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);box-shadow:var(--pop);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.proto{position:absolute;z-index:45;left:12px;bottom:12px;height:28px;padding:0 12px;border-radius:14px;font-size:12px;font-weight:500;background:var(--raised);box-shadow:inset 0 0 0 1px var(--label-3);border:1px dashed var(--label-3) !important}
+.proban{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(75,59,214,.12),rgba(138,60,214,.14))}
+@media (prefers-reduced-motion:reduce){.ring,.rp.bump{animation:none}}
+
+.btn.tint{background:var(--accent-tint);color:var(--accent-text);box-shadow:none;font-weight:600}.btn.tint:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}.alx-hc .btn.tint{box-shadow:inset 0 0 0 1px var(--accent)}
+</style>
+</helmet>
+<div class="ax {{theme}} {{narrowCls}}" style="position: relative; width: 100%; height: {{H}}; background: var(--window); display: flex; overflow: hidden">
+
+  <!-- ============ SIDEBAR (full height, floating glass) ============ -->
+  <sc-if value="{{sbOn}}" hint-placeholder-val="{{true}}">
+  <div style="width: 232px; flex: none; padding: 8px 0 8px 8px; display: flex">
+    <nav aria-label="Sections" style="flex: 1; min-width: 0; border-radius: 18px; background: var(--sidebar); box-shadow: 0 0 0 .5px var(--sep); display: flex; flex-direction: column; overflow: hidden">
+      <div style="height: 44px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 14px"><div class="tl" aria-hidden="true"><i style="background: #FF5F57"></i><i style="background: #FEBC2E"></i><i style="background: #28C840"></i></div><span style="flex: 1"></span><button aria-label="Hide sidebar" onClick="{{hideSb}}" style="height: 28px; width: 28px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2"></rect><path d="M6 2.8v10.4"></path></svg></button></div>
+      <div style="margin: 0 8px 6px; height: 46px; padding: 0 8px; border-radius: 11px; background: var(--fill-1); box-shadow: inset 0 0 0 .5px var(--sep); display: flex; align-items: center; gap: 9px; flex: none">
+        <span aria-hidden="true" style="width: 30px; height: 30px; border-radius: 7.5px; background: linear-gradient(160deg,#7C86FF,#3A2FB8); flex: none; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 40 40" style="width: 20px; height: 20px"><path d="M24.5 8.5a12 12 0 1 0 7 21.5A13 13 0 0 1 24.5 8.5z" fill="#fff"></path></svg></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-hl ell">Lumen Journal</span><span class="t-f l2 ell">Northpier Studio · Admin</span></span>
+        <svg class="ic sm l2" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg>
+      </div>
+      <div class="scroll" style="flex: 1; min-height: 0; padding: 2px 8px 8px; display: flex; flex-direction: column; gap: 1px">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+          <sc-if value="{{g.hasT}}"><div class="nvh">{{g.title}}</div></sc-if>
+          <sc-for list="{{g.items}}" as="x" hint-placeholder-count="4">
+            <button class="{{x.cls}}" aria-current="{{x.cur}}" aria-label="{{x.ax}}" onClick="{{x.pick}}"><span class="sq" aria-hidden="true" style="background: {{x.col}}"><svg class="ic" viewBox="0 0 16 16"><path d="{{x.path}}"></path></svg></span><span class="ell" style="flex: 1">{{x.label}}</span><sc-if value="{{x.hasN}}"><span class="{{x.bcls}}" aria-hidden="true">{{x.n}}</span></sc-if></button>
+          </sc-for>
+        </sc-for>
+      </div>
+      <div style="flex: none; margin: 0 8px 8px; padding: 8px 8px 8px 10px; border-radius: 11px; background: var(--fill-1); box-shadow: inset 0 0 0 .5px var(--sep); display: flex; align-items: center; gap: 9px">
+        <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #8E8E94; flex: none"></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-c" style="font-weight: 600">Version 1.4</span><span class="t-f l2 ell">Not submitted yet</span></span>
+        <button class="btn" onClick="{{submit}}" style="height: 22px; padding: 0 9px; font-size: 12px">Submit…</button>
+      </div>
+    </nav>
+  </div>
+  </sc-if>
+
+  <!-- ============ CONTENT + TOOLBAR ============ -->
+  <div style="flex: 1; min-width: 0; position: relative; background: var(--content)">
+
+    <!-- content scrolls under the toolbar -->
+    <div class="scroll" style="position: absolute; inset: 0; padding: {{padTop}} 20px 24px; display: flex; flex-direction: column; gap: 14px">
+
+      <sc-if value="{{before}}" hint-placeholder-val="{{false}}">
+        <div class="mark" style="display: flex; align-items: center; gap: 10px; flex: none; padding: 4px 0">
+          <span class="t-1" style="flex: 1">{{sec.label}}</span>
+          <sc-if value="{{sec.oldAuto}}"><button class="btn">{{sec.oldAutoLbl}}</button></sc-if>
+          <sc-if value="{{sec.oldPush}}"><button class="btn pri">{{sec.oldPushLbl}}</button></sc-if>
+        </div>
+      </sc-if>
+
+      <p class="t-c l2" style="margin: 0; flex: none; max-width: 640px">{{sec.desc}}</p>
+
+      <!-- Overview -->
+      <sc-if value="{{is.overview}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; gap: 16px; align-items: flex-start">
+          <section class="card" aria-label="Lumen on the App Store" style="width: 260px; flex: none; gap: 10px">
+            <div style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 11px; background: linear-gradient(160deg,#7C86FF,#3A2FB8)"></span><span style="display: flex; flex-direction: column; gap: 4px; flex: 1"><span class="t-hl">Lumen Journal</span><span class="t-f l2">A calm place to write each day</span></span></div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px"><div class="ph" style="height: 120px; background: linear-gradient(170deg,#C9CCFF,#7C86FF)"></div><div class="ph" style="height: 120px; background: linear-gradient(170deg,#FFD9C2,#FF9C7A)"></div><div class="ph" style="height: 120px; background: linear-gradient(170deg,#CDEFD9,#5FBF8A)"></div></div>
+            <span class="t-f l2">The App Store page as people see it. Click a part to open the section that edits it.</span>
+          </section>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+            <section class="card" aria-label="Suggestions waiting">
+              <span class="t-hl">65 suggestions waiting for you</span>
+              <sc-for list="{{ovRows}}" as="r" hint-placeholder-count="4"><button onClick="{{r.go}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: .5px solid var(--sep); text-align: left; width: 100%"><span class="sq" style="background: {{r.col}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="{{r.path}}"></path></svg></span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-c" style="font-weight: 600">{{r.label}}</span><span class="t-f l2 ell">{{r.what}}</span></span><span class="bdg">{{r.n}}</span><svg class="ic sm l2" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"></path></svg></button></sc-for>
+            </section>
+            <section class="card" aria-label="How a change reaches the App Store">
+              <span class="t-hl">How a change reaches the App Store</span>
+              <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+                <div style="display: flex; flex-direction: column; gap: 3px"><span class="t-1 ap">65</span><span class="t-c" style="font-weight: 600">Suggested</span><span class="t-f l2">You accept or dismiss.</span></div>
+                <div style="display: flex; flex-direction: column; gap: 3px"><span class="t-1" style="color: var(--accent-text)">{{pend}}</span><span class="t-c" style="font-weight: 600">Ready to push</span><span class="t-f l2">Waiting in Review &amp; Push, top right.</span></div>
+                <div style="display: flex; flex-direction: column; gap: 3px"><span class="t-1">1.3</span><span class="t-c" style="font-weight: 600">On the App Store</span><span class="t-f l2">What people see today.</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Store Page -->
+      <sc-if value="{{is.store}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 8px; flex: none"><span class="t-c l2" style="flex: 1">5 suggestions in English · 32 in 6 languages</span><button class="btn pri" onClick="{{acceptAll}}">Accept All Languages · 32</button></div>
+        <div style="display: flex; gap: 16px; align-items: flex-start">
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+            <sc-for list="{{fields}}" as="f" hint-placeholder-count="3">
+              <section class="card" aria-label="{{f.label}}">
+                <div style="display: flex; align-items: baseline; gap: 8px"><span class="t-hl" style="flex: 1">{{f.label}}</span><span class="t-f l2">{{f.where}}</span></div>
+                <div class="t-c" style="padding: 6px 8px; border-radius: 6px; box-shadow: inset 0 0 0 .5px var(--sep)">{{f.now}}</div>
+                <sc-if value="{{f.open}}"><div class="sug"><span class="t-f ap" style="font-weight: 600">Suggested by Claude Code</span><span class="t-c">{{f.sug}}</span><div style="display: flex; gap: 6px"><button class="btn sm" onClick="{{f.dismiss}}">Dismiss</button><button class="btn sm tint" onClick="{{f.accept}}">Accept</button></div></div></sc-if>
+                <sc-if value="{{f.done}}"><div class="acc"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true" style="color: var(--accent-text)"><path d="M3.5 8.5l3 3 6-7"></path></svg><span class="t-c" style="flex: 1">Accepted. Not pushed yet.</span></div></sc-if>
+              </section>
+            </sc-for>
+          </div>
+          <section class="card wide-only" aria-label="App Store preview" style="width: 240px; flex: none; gap: 8px"><span class="t-f l2" style="font-weight: 600">PREVIEW · ENGLISH (U.S.)</span><div class="ph" style="height: 18px; width: 70%"></div><div class="ph" style="height: 12px; width: 50%"></div><div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px"><div class="ph" style="height: 110px; background: linear-gradient(170deg,#C9CCFF,#7C86FF)"></div><div class="ph" style="height: 110px; background: linear-gradient(170deg,#FFD9C2,#FF9C7A)"></div><div class="ph" style="height: 110px; background: linear-gradient(170deg,#CDEFD9,#5FBF8A)"></div></div><div class="ph" style="height: 10px"></div><div class="ph" style="height: 10px; width: 85%"></div></section>
+        </div>
+      </sc-if>
+
+      <!-- Screenshots -->
+      <sc-if value="{{is.shots}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 10px; flex: none"><div class="seg" role="tablist" aria-label="Device"><button class="on" role="tab" aria-selected="true">iPhone</button><button role="tab" aria-selected="false">iPad</button><button role="tab" aria-selected="false">Mac</button></div><span class="t-c l2" style="flex: 1">Live now · template: Caption above device (v4)</span><button class="btn">All Languages</button></div>
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{shots}}" as="t" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 6px"><div style="aspect-ratio: 9/19.5; border-radius: 12px; background: {{t.bg}}; box-shadow: {{t.ring}}; display: flex; flex-direction: column; align-items: center; padding: 12px 8px; gap: 8px"><span style="color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 13px">{{t.cap}}</span><span style="flex: 1; width: 78%; border-radius: 10px; background: rgba(255,255,255,.85)"></span></div><sc-if value="{{t.sug}}"><span class="t-f ap" style="font-weight: 600">Caption suggested</span></sc-if></div></sc-for>
+        </div>
+      </sc-if>
+
+      <!-- Product Pages -->
+      <sc-if value="{{is.pages}}" hint-placeholder-val="{{false}}">
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{pages}}" as="p" hint-placeholder-count="3"><section class="card" aria-label="{{p.name}}"><div class="ph" style="height: 96px; background: {{p.bg}}"></div><span class="t-hl">{{p.name}}</span><span class="t-f l2">{{p.meta}}</span></section></sc-for>
+        </div>
+      </sc-if>
+
+      <!-- In-App Events -->
+      <sc-if value="{{is.events}}" hint-placeholder-val="{{false}}">
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{events}}" as="e" hint-placeholder-count="3"><section class="card" aria-label="{{e.name}}" style="padding: 10px"><div style="aspect-ratio: 16/9; border-radius: 8px; background: {{e.bg}}; display: flex; align-items: flex-end; padding: 10px"><span style="color: #fff; font-size: 13px; font-weight: 700">{{e.name}}</span></div><div style="display: flex; align-items: center; gap: 6px"><span class="t-f l2" style="flex: 1">{{e.dates}}</span><span class="t-f" style="font-weight: 600; color: {{e.stCol}}">{{e.st}}</span></div><sc-if value="{{e.missing}}"><div class="sug" style="flex-direction: row; align-items: center"><span class="t-f" style="flex: 1">Details image missing</span><button class="btn sm ai" onClick="{{e.make}}">Make the Artwork…</button></div></sc-if></section></sc-for>
+        </div>
+        <span class="t-f l2">An empty slot may offer the same action as the toolbar, with the same name and icon. That is the only place an Autopilot action repeats.</span>
+      </sc-if>
+
+      <!-- App Information -->
+      <sc-if value="{{is.info}}" hint-placeholder-val="{{false}}">
+        <section class="card" style="padding: 6px 0">
+          <sc-for list="{{infoRows}}" as="r" hint-placeholder-count="5"><div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: .5px solid var(--sep)"><span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span class="t-c" style="font-weight: 600">{{r.label}}</span><span class="t-f l2">{{r.what}}</span></span><span class="t-f l2">{{r.st}}</span><sc-if value="{{r.hasN}}"><span class="bdg">{{r.n}}</span></sc-if></div></sc-for>
+        </section>
+      </sc-if>
+
+      <!-- Pricing -->
+      <sc-if value="{{is.pricing}}" hint-placeholder-val="{{false}}">
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{products}}" as="p" hint-placeholder-count="3"><section class="card" aria-label="{{p.name}}"><span class="t-hl">{{p.name}}</span><span class="t-1">{{p.price}}</span><div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden"><span style="width: {{p.a}}; background: #34C759"></span><span style="width: {{p.b}}; background: var(--mtb)"></span><span style="flex: 1; background: var(--fill-3)"></span></div><span class="t-f l2">{{p.meta}}</span></section></sc-for>
+        </div>
+      </sc-if>
+
+      <!-- Reviews -->
+      <sc-if value="{{is.reviews}}" hint-placeholder-val="{{false}}">
+        <sc-if value="{{auto.on}}" hint-placeholder-val="{{false}}">
+          <div class="card" style="flex-direction: row; align-items: center; gap: 12px; flex: none">
+            <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: {{auto.dot}}; flex: none"></span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span class="t-hl">{{auto.head}}</span><span class="t-f l2">{{auto.rule}}</span></span>
+            <button class="btn" onClick="{{auto.pause}}">{{auto.pauseLbl}}</button>
+            <button class="btn" onClick="{{auto.settings}}">Settings…</button>
+          </div>
+        </sc-if>
+        <sc-for list="{{reviews}}" as="r" hint-placeholder-count="4"><section class="card" aria-label="Review by {{r.who}}">
+          <div style="display: flex; gap: 8px; align-items: center"><span style="color: #F5A623; letter-spacing: 1px">{{r.stars}}</span><span class="t-hl ell" style="flex: 1">{{r.title}}</span><sc-if value="{{r.hasStat}}"><span class="{{r.statCls}}">{{r.stat}}</span></sc-if><span class="t-f l2">{{r.who}} · {{r.where}}</span></div>
+          <span class="t-c">{{r.body}}</span>
+          <sc-if value="{{r.showDraft}}"><div class="sug"><span class="t-f ap" style="font-weight: 600">{{r.draftHead}}</span><span class="t-c">{{r.draft}}</span><div style="display: flex; gap: 6px"><button class="btn sm" onClick="{{r.edit}}">Edit…</button><button class="btn sm tint" onClick="{{r.send}}">Send Reply</button></div></div></sc-if>
+          <sc-if value="{{r.showWait}}"><div class="acc" style="flex-direction: column; align-items: stretch; gap: 6px"><span class="t-f" style="font-weight: 600; color: var(--accent-text)">{{r.waitHead}}</span><span class="t-c">{{r.draft}}</span><div style="display: flex; gap: 6px"><button class="btn pri" onClick="{{r.send}}">Send Now</button><button class="btn" onClick="{{r.edit}}">Edit…</button><button class="btn" onClick="{{r.cancel}}">Don’t Send</button></div></div></sc-if>
+          <sc-if value="{{r.showSent}}"><div style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 10px; background: var(--fill-1)"><div style="display: flex; align-items: center; gap: 8px"><span class="t-f l2" style="flex: 1; font-weight: 600">{{r.sentHead}}</span><button class="sublink t-f" onClick="{{r.undo}}">Undo</button></div><span class="t-c">{{r.draft}}</span></div></sc-if>
+        </section></sc-for>
+      </sc-if>
+
+      <!-- Analytics -->
+      <sc-if value="{{is.analytics}}" hint-placeholder-val="{{false}}">
+        <section class="card" aria-label="Funnel"><span class="t-hl">Last 30 days</span>
+          <sc-for list="{{funnel}}" as="f" hint-placeholder-count="4"><div style="display: flex; align-items: center; gap: 10px"><span class="t-c" style="width: 130px">{{f.label}}</span><span style="height: 18px; border-radius: 4px; background: var(--accent); width: {{f.w}}"></span><span class="t-c l2">{{f.n}}</span></div></sc-for>
+        </section>
+      </sc-if>
+
+      <div style="height: 40px; flex: none"></div>
+    </div>
+
+    <!-- scroll edge effect (or the old opaque band) -->
+    <sc-if value="{{before}}" hint-placeholder-val="{{false}}"><div class="oldbar"></div></sc-if>
+    <sc-if value="{{after}}" hint-placeholder-val="{{true}}"><div class="fade"></div></sc-if>
+
+    <!-- ============ TOOLBAR ============ -->
+    <div style="position: absolute; left: 0; right: 0; top: 0; height: 52px; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 14px">
+      <sc-if value="{{sbOff}}" hint-placeholder-val="{{false}}"><div class="tl" aria-hidden="true" style="margin-right: 6px"><i style="background: #FF5F57"></i><i style="background: #FEBC2E"></i><i style="background: #28C840"></i></div><button class="glassb" aria-label="Show sidebar" onClick="{{showSb}}" style="padding: 0"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2"></rect><path d="M6 2.8v10.4"></path></svg></button></sc-if>
+
+      <sc-if value="{{after}}" hint-placeholder-val="{{true}}">
+        <div class="{{titleCls}}" style="flex: 0 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-left: 4px">
+          <span class="ell" style="font-size: 15px; line-height: 19px; font-weight: 600">{{sec.label}}</span>
+          <span class="t-f l2 ell">{{sec.subA}}<sc-if value="{{sec.hasPend}}"> · <button class="sublink" onClick="{{openScoped}}" aria-label="{{sec.pendAx}}">{{sec.pendTxt}}</button></sc-if></span>
+        </div>
+        <sc-if value="{{sec.hasLang}}"><button class="lng" style="margin-left: 8px" onClick="{{langNote}}" aria-haspopup="menu" aria-label="Language: English (U.S.), 5 suggestions"><span>English (U.S.)</span><span class="bdg">5</span><svg class="ic sm l2" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5L8 10l3.5-3.5"></path></svg></button></sc-if>
+      </sc-if>
+
+      <span style="flex: 1 1 0; min-width: 4px"></span>
+
+      <!-- Autopilot: same place, same icon, every section -->
+      <sc-if value="{{after}}" hint-placeholder-val="{{true}}">
+      <div class="grp ap {{apCls}}" style="position: relative">
+        <button onClick="{{apMain}}" aria-label="{{apAx}}" title="{{apTip}}">
+          <sc-if value="{{apSpark}}" hint-placeholder-val="{{true}}"><svg class="ic apsp" viewBox="0 0 16 16" aria-hidden="true"><path class="sp1" d="M8 1.8l1.3 3.4 3.4 1.3-3.4 1.3L8 11.2 6.7 7.8 3.3 6.5l3.4-1.3z"></path><path class="sp2" d="M12.6 10.6l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z"></path></svg></sc-if>
+          <sc-if value="{{apNeed}}" hint-placeholder-val="{{false}}"><span class="dot" aria-hidden="true"></span></sc-if>
+          <sc-if value="{{apAuto}}" hint-placeholder-val="{{false}}"><span class="dot" aria-hidden="true" style="color: {{auto.dot}}"></span></sc-if>
+          <span class="{{apLblCls}}">{{apLabel}}</span>
+          <sc-if value="{{apRun}}" hint-placeholder-val="{{false}}"><span class="apbar" aria-hidden="true"><i style="width: {{runW}}"></i></span></sc-if>
+        </button>
+        <span class="dv" aria-hidden="true"></span>
+        <button onClick="{{apMenu}}" aria-haspopup="menu" aria-expanded="{{apOpen}}" aria-label="More Autopilot actions" style="min-width: 30px; padding: 0 8px 0 6px"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5L8 10l3.5-3.5"></path></svg></button>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{before}}" hint-placeholder-val="{{false}}"><button class="glassb" style="padding: 0 6px 0 12px"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #34C759"></span><span>Assistant</span><span class="cnt" style="background: var(--fill-2)">42</span></button></sc-if>
+
+      <div class="grp">
+        <button aria-label="Check App Store Connect now" title="Check App Store Connect now" onClick="{{refresh}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7"></path><path d="M13 2.8v3h-3"></path></svg></button>
+        <button aria-label="History" title="History" onClick="{{history}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.8"></circle><path d="M8 4.8V8l2.2 1.6"></path></svg></button>
+      </div>
+
+      <button class="glassb {{rpCls}}" onClick="{{openAll}}" aria-label="{{rpAx}}" title="Review &amp; Push  ⇧⌘P" style="padding: 0 6px 0 10px"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 11V5.2M5.6 7.4L8 5l2.4 2.4"></path></svg><span class="{{rpLblCls}}">{{rpLabel}}</span><sc-if value="{{hasPend}}"><span class="cnt">{{pend}}</span></sc-if></button>
+    </div>
+
+    <!-- Autopilot menu -->
+    <sc-if value="{{apOpen}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" onClick="{{closeAll}}" style="position: absolute; inset: 0; z-index: 30"></div>
+      <div class="pop" role="menu" aria-label="Autopilot" style="right: 160px; top: 46px; width: 300px">
+        <div class="mh">AUTOPILOT · {{sec.labelUp}}</div>
+        <sc-for list="{{apItems}}" as="m" hint-placeholder-count="3"><button class="mi" role="menuitem" onClick="{{m.go}}"><span style="width: 12px; flex: none; text-align: center">{{m.check}}</span><span style="flex: 1" class="ell">{{m.label}}</span><sc-if value="{{m.hasKb}}"><span class="t-f l2">{{m.kb}}</span></sc-if></button></sc-for>
+        <div class="msep"></div>
+        <sc-if value="{{apBusy}}" hint-placeholder-val="{{false}}"><div class="mh">RUNNING</div><div style="padding: 2px 10px 8px; display: flex; flex-direction: column; gap: 6px"><span class="t-c">{{runTxt}}</span><div style="height: 4px; border-radius: 2px; background: var(--fill-2); overflow: hidden"><span style="display: block; height: 4px; width: {{runW}}; background: var(--mtb)"></span></div><div style="display: flex; gap: 6px"><button class="btn" onClick="{{apCancel}}" style="height: 22px; font-size: 12px">Cancel Run…</button></div></div><div class="msep"></div></sc-if>
+        <button class="mi" role="menuitem" onClick="{{everything}}"><span style="flex: 1">Everything for Lumen…</span><span class="t-f l2">Suggest Everything</span></button>
+        <div class="msep"></div>
+        <div style="padding: 6px 10px; display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #34C759"></span><span class="t-c" style="flex: 1">Claude Code · connected to Lumen</span><button class="btn" onClick="{{asstSet}}" style="height: 22px; font-size: 12px">Settings…</button></div>
+      </div>
+    </sc-if>
+
+    <!-- Review & Push sheet -->
+    <sc-if value="{{rvOpen}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" onClick="{{closeAll}}" style="position: absolute; inset: 0; z-index: 55; background: var(--scrim)"></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rv-t">
+        <div style="padding: 16px 18px 10px; display: flex; flex-direction: column; gap: 10px; border-bottom: .5px solid var(--sep)">
+          <div style="display: flex; align-items: baseline; gap: 8px"><span id="rv-t" class="t-1" style="flex: 1">Review &amp; Push</span><span class="t-f l2">Nothing reaches the App Store until you push.</span></div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap" role="tablist" aria-label="Show changes from"><sc-for list="{{scopes}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" role="tab" aria-selected="{{c.on}}" onClick="{{c.pick}}">{{c.label}} <span style="opacity: .7">{{c.n}}</span></button></sc-for></div>
+        </div>
+        <div class="scroll" style="flex: 1; min-height: 0; padding: 6px 18px">
+          <sc-for list="{{rvRows}}" as="r" hint-placeholder-count="5"><div style="display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: .5px solid var(--sep)"><span class="sq" style="background: {{r.col}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="{{r.path}}"></path></svg></span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-c ell" style="font-weight: 600">{{r.what}}</span><span class="t-f l2 ell">{{r.sub}}</span></span><span class="t-f l2">{{r.sec}}</span></div></sc-for>
+        </div>
+        <div style="padding: 12px 18px; display: flex; align-items: center; gap: 8px; border-top: .5px solid var(--sep)"><span class="t-f l2" style="flex: 1">{{rvFoot}}</span><button class="btn" onClick="{{closeAll}}">Close</button><button class="btn pri" onClick="{{push}}">{{pushLbl}}</button></div>
+      </div>
+    </sc-if>
+
+    <!-- Reply Automatically sheet -->
+    <sc-if value="{{arOpen}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" onClick="{{closeAll}}" style="position: absolute; inset: 0; z-index: 55; background: var(--scrim)"></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ar-t" style="width: 680px; max-height: 720px; top: 20px">
+        <div style="padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 4px">
+          <span id="ar-t" class="t-1">Reply Automatically</span>
+          <span class="t-c l2">Atlas checks Lumen’s reviews every hour while it’s running, in the menu bar too. Claude writes each reply in the review’s language. A reply is public, under the review, so you choose which ones may go out by themselves.</span>
+        </div>
+        <div class="scroll" style="flex: 1; min-height: 0; padding: 0 20px">
+          <sc-if value="{{ar.free}}"><div class="proban" style="margin: 8px 0"><span class="prochip" style="display: inline-flex; align-items: center; height: 16px; padding: 0 5px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: .05em; background: linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%); color: #fff">PRO</span><span class="t-c" style="flex: 1">Replying automatically is part of Atlas Pro. Writing replies one at a time stays free.</span><button class="btn pri" onClick="{{ar.upgrade}}">Upgrade…</button></div></sc-if>
+          <div class="frow"><span class="flab">When a review arrives</span><div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+            <sc-for list="{{ar.modes}}" as="m" hint-placeholder-count="2"><button class="{{m.cls}}" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}"><span class="rad" aria-hidden="true"></span><span style="display: flex; flex-direction: column; gap: 2px"><span class="t-hl">{{m.label}}</span><span class="t-f l2">{{m.sub}}</span></span></button></sc-for>
+          </div></div>
+          <div class="frow"><span class="flab">Send by themselves</span><div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap" role="group" aria-label="Ratings"><sc-for list="{{ar.stars}}" as="x" hint-placeholder-count="5"><button class="{{x.cls}}" aria-pressed="{{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div>
+            <span class="t-f l2">{{ar.starNote}}</span>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center"><span class="t-c">Languages</span><span class="rchip on">All 6 of Lumen’s</span><span class="rchip">Choose…</span></div>
+          </div></div>
+          <div class="frow"><span class="flab">Always wait for me when it mentions</span><div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{ar.topics}}" as="x" hint-placeholder-count="5"><button class="{{x.cls}}" aria-pressed="{{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div>
+            <span class="t-f l2">Claude reads each review for these, in any language. A review it isn’t sure about waits for you too.</span>
+          </div></div>
+          <div class="frow"><span class="flab">Before it’s sent</span><div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: center; gap: 8px"><span class="t-c">Wait</span><div class="seg" role="radiogroup" aria-label="Wait before sending"><sc-for list="{{ar.delays}}" as="x" hint-placeholder-count="3"><button class="{{x.cls}}" role="radio" aria-checked="{{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+            <span class="t-f l2">You can read it, edit it or stop it from the notification, the menu bar or here. Up to 10 replies a day; the rest wait for you.</span>
+          </div></div>
+          <div class="frow"><span class="flab">Tone</span><div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div class="seg" role="radiogroup" aria-label="Tone"><sc-for list="{{ar.tones}}" as="x" hint-placeholder-count="3"><button class="{{x.cls}}" role="radio" aria-checked="{{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div>
+            <div style="display: flex; align-items: center; gap: 8px"><label class="t-c" for="ar-sig">Sign as</label><input id="ar-sig" value="Mateus, Lumen Journal" style="height: 24px; border-radius: 6px; border: 0; box-shadow: inset 0 0 0 1px var(--sep); padding: 0 8px; font: inherit; font-size: 13px; background: var(--control); color: var(--label); width: 220px"></div>
+          </div></div>
+          <div class="frow" style="border-bottom: 0"><span class="flab">Example</span><div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+            <span class="t-f l2">★★★★★ “Finally a journal I keep”: Simple and calm. I write every evening now.</span>
+            <div class="sug"><span class="t-c">{{ar.example}}</span></div>
+            <span class="t-f l2">Replies never mention prices, offers, other apps or dates for new features, and never ask for a better rating.</span>
+          </div></div>
+        </div>
+        <div style="padding: 12px 20px; display: flex; align-items: center; gap: 8px; border-top: .5px solid var(--sep)"><span class="t-f l2" style="flex: 1">{{ar.foot}}</span><button class="btn" onClick="{{closeAll}}">Cancel</button><button class="btn pri" onClick="{{ar.turnOn}}" disabled="{{ar.free}}">{{ar.okLbl}}</button></div>
+      </div>
+    </sc-if>
+
+    <!-- History popover -->
+    <sc-if value="{{hiOpen}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" onClick="{{closeAll}}" style="position: absolute; inset: 0; z-index: 30"></div>
+      <div class="pop" role="dialog" aria-label="History" style="right: 120px; top: 46px; width: 360px">
+        <div class="mh">HISTORY · TODAY</div>
+        <sc-for list="{{hist}}" as="h" hint-placeholder-count="4"><div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px"><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="t-c ell">{{h.what}}</span><span class="t-f l2 ell">{{h.sub}}</span></span><sc-if value="{{h.canUndo}}"><button class="btn" onClick="{{h.undo}}" style="height: 22px; font-size: 12px">Undo</button></sc-if></div></sc-for>
+      </div>
+    </sc-if>
+
+    <!-- macOS notification -->
+    <sc-if value="{{notifOn}}" hint-placeholder-val="{{false}}">
+      <div class="notif" role="alert">
+        <div style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 5px; background: linear-gradient(160deg,#4FA3FF,#0A4FC8)"></span><span class="t-f l2" style="flex: 1; font-weight: 600">ATLAS · LUMEN JOURNAL</span><span class="t-f l2">now</span></div>
+        <span class="t-hl">A 1★ review needs your reply</span>
+        <span class="t-c">Kenji, Japan: “エクスポートするとアプリが落ちます” (It crashes when I export). It mentions a crash, so Claude drafted a reply and is waiting for you.</span>
+        <div style="display: flex; gap: 6px"><button class="btn pri" onClick="{{notifOpen}}">Open Reply</button><button class="btn" onClick="{{notifLater}}">Later</button></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showProto}}" hint-placeholder-val="{{false}}"><button class="proto" onClick="{{simulate}}">Prototype · a new review arrives</button></sc-if>
+
+    <!-- toast -->
+    <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><span>{{toast}}</span><sc-if value="{{toastUndo}}"><button class="sublink" onClick="{{undo}}">Undo</button></sc-if></div></sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene":{"editor":"enum","options":["overview","store","shots","pages","events","info","pricing","reviews","analytics"],"default":"store"},"variant":{"editor":"enum","options":["after"],"default":"after"},"appearance":{"editor":"enum","options":["light","dark"],"default":"light"},"ap":{"editor":"enum","options":["idle","run","need"],"default":"idle"},"sheet":{"editor":"enum","options":["none","menu","review","scoped","auto","history"],"default":"none"},"auto":{"editor":"enum","options":["off","on","paused"],"default":"off"},"notif":{"editor":"boolean","default":false},"pro":{"editor":"boolean","default":true},"proto":{"editor":"boolean","default":true},"kenji":{"editor":null},"narrow":{"editor":"boolean","default":false},"sidebar":{"editor":"boolean","default":true},"frameH":{"editor":null},"$preview":{"width":1200,"height":780}}'>
+class Component extends DCLogic {
+  static d() {
+    const P = {
+      ov: 'M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z',
+      store: 'M3 5.5h10l-.8 8H3.8zM5.8 5.5V4.3a2.2 2.2 0 0 1 4.4 0v1.2',
+      shots: 'M5 1.8h6a1.2 1.2 0 0 1 1.2 1.2v10a1.2 1.2 0 0 1-1.2 1.2H5A1.2 1.2 0 0 1 3.8 13V3A1.2 1.2 0 0 1 5 1.8zM7 12h2',
+      pages: 'M3 2.5h7l3 3v8H3zM10 2.5v3h3M5.5 8.5h5M5.5 11h3.5',
+      events: 'M2.5 4h11v9.5h-11zM2.5 7h11M5.5 2.5v3M10.5 2.5v3',
+      info: 'M8 14.2A6.2 6.2 0 1 0 8 1.8a6.2 6.2 0 0 0 0 12.4zM8 7.2v4M8 4.9v.2',
+      pricing: 'M2.5 8.6l6-6h5v5l-6 6zM10.8 5.2v.1',
+      reviews: 'M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2l-3.6 1.9.7-4-2.9-2.8 4-.6z',
+      analytics: 'M3 13.5V9.5M6.5 13.5V5.5M10 13.5V8M13.5 13.5V3'
+    };
+    const S = {
+      overview: { label: 'Overview', col: 'linear-gradient(180deg,#4A4A50,#2C2C30)', path: P.ov, n: 0, kb: '⌘1', desc: 'Lumen Journal on the App Store, and everything waiting for you, in one place.', sub: 'Lumen Journal · 1.4 not submitted', ap: 'Suggest Everything…', apRun: 'Suggesting · 4 of 7 sections', apNeed: 'Review 65 Suggestions', items: [['Suggest Everything…', '⌥⌘A'], ['Make Screenshots…', ''], ['Write What’s New for 1.4…', '']], oldAuto: false, oldPush: true, oldPushLbl: 'Review & Push…', lang: false, pend: 0 },
+      store: { label: 'Store Page', col: 'linear-gradient(180deg,#3D86F7,#2869D2)', path: P.store, n: 32, kb: '⌘2', desc: 'The name, subtitle, description and keywords people read on the App Store, in each language.', sub: '32 suggestions in 6 languages', ap: 'Suggest Texts…', apRun: 'Writing · 4 of 12 languages', apNeed: 'Review 18 Suggestions', items: [['Suggest Texts…', '⌥⌘A'], ['Suggest for English (U.S.) Only…', ''], ['Translate into a New Language…', ''], ['Ask Claude Code Something Else…', '']], oldAuto: true, oldAutoLbl: 'Ask Claude Code…', oldPush: true, oldPushLbl: 'Review & Push…', lang: true, pend: 3 },
+      shots: { label: 'Screenshots', col: 'linear-gradient(180deg,#F57A35,#CE5619)', path: P.shots, n: 12, kb: '⌘3', desc: 'Screenshots, the App Preview and the header artwork, for every device and language.', sub: '12 captions suggested', ap: 'Make Screenshots…', apRun: 'Making screenshots · 5 of 10 captures', apNeed: 'Choose the Look', items: [['Make Screenshots…', '⌥⌘A'], ['Make the App Preview…', ''], ['Make Header and Search Artwork…', ''], ['Capture Some Screens Again…', '']], oldAuto: true, oldAutoLbl: 'Start Autopilot…', oldPush: true, oldPushLbl: 'Push to App Store…', lang: true, pend: 40 },
+      pages: { label: 'Product Pages', col: 'linear-gradient(180deg,#16A9B6,#0C848F)', path: P.pages, n: 2, kb: '⌘4', desc: 'Other versions of the App Store page, each with its own link, for ads and campaigns.', sub: '3 pages · 2 ideas', ap: 'Suggest Pages…', apRun: 'Thinking of pages · about 2 min', apNeed: 'Review 2 Page Ideas', items: [['Suggest Pages…', '⌥⌘A'], ['Make Screenshots for a Page…', '']], oldAuto: true, oldAutoLbl: 'Suggest Pages', oldPush: true, oldPushLbl: 'Push and Submit…', lang: false, pend: 0 },
+      events: { label: 'In-App Events', col: 'linear-gradient(180deg,#EC5B8D,#C03B69)', path: P.events, n: 1, kb: '⌘5', desc: 'Timely events shown on the App Store, in search and on Today.', sub: '3 events · 1 needs artwork', ap: 'Make Event Artwork…', apRun: 'Drawing 3 concepts · about 4 min', apNeed: 'Choose the Artwork', items: [['Make Event Artwork…', '⌥⌘A'], ['Write Event Texts…', ''], ['Check It Will Pass App Review…', '']], oldAuto: true, oldAutoLbl: 'Make the Artwork…', oldPush: false, lang: false, pend: 1 },
+      info: { label: 'App Information', col: 'linear-gradient(180deg,#8E8E96,#6B6B73)', path: P.info, n: 7, kb: '⌘6', desc: 'Answers App Review and the App Store need: age rating, privacy, accessibility, compliance.', sub: '7 answers suggested', ap: 'Suggest Answers…', apRun: 'Reading your code · Accessibility', apNeed: 'Review 7 Answers', items: [['Suggest Answers…', '⌥⌘A'], ['Check Privacy Against the Code…', '']], oldAuto: true, oldAutoLbl: 'Ask Claude Code…', oldPush: false, lang: false, pend: 0 },
+      pricing: { label: 'Pricing', col: 'linear-gradient(180deg,#3BB466,#288F4D)', path: P.pricing, n: 3, kb: '⌘7', desc: 'What each product costs in 175 countries, and the offer people see when they cancel.', sub: '3 suggestions · 2 products', ap: 'Suggest Prices…', apRun: 'Comparing 175 countries', apNeed: 'Review 3 Price Changes', items: [['Suggest Prices…', '⌥⌘A'], ['Write a Retention Offer…', '']], oldAuto: false, oldPush: false, lang: false, pend: 2 },
+      reviews: { label: 'Reviews', col: 'linear-gradient(180deg,#F7BE1A,#D99700)', path: P.reviews, n: 4, kb: '⌘8', desc: 'Ratings and reviews from every country, and your replies.', sub: '4.7 ★ · 4 reviews without a reply', ap: 'Draft Replies…', apRun: 'Drafting 4 replies', apNeed: 'Review 4 Replies', items: [['Draft Replies…', '⌥⌘A'], ['Reply Automatically…', ''], ['Summarize What People Ask For…', '']], oldAuto: false, oldPush: false, lang: false, pend: 0 },
+      analytics: { label: 'Analytics', col: 'linear-gradient(180deg,#6866E0,#4B49B8)', path: P.analytics, n: 2, kb: '⌘9', desc: 'Where people find Lumen, where they leave, and what to try next.', sub: 'Last 30 days · 2 new findings', ap: 'Find What to Try…', apRun: 'Reading 30 days of reports', apNeed: 'Read 2 Findings', items: [['Find What to Try…', '⌥⌘A'], ['Explain a Change…', '']], oldAuto: false, oldPush: true, oldPushLbl: 'Review & Push…', lang: false, pend: 0, neu: true }
+    };
+    const ORDER = [['', ['overview']], ['Store Listing', ['store', 'shots', 'pages', 'events', 'info', 'pricing']], ['After Release', ['reviews', 'analytics']]];
+    const RV = [
+      ['store', 'Subtitle · English (U.S.)', 'Write, reflect, and grow every day'], ['store', 'Promotional Text · German', 'Neu: Tagebuch-Erinnerungen am Abend'], ['store', 'Keywords · Japanese', '日記, ジャーナル, 習慣, 感謝'],
+      ['shots', '40 screenshots · iPhone 6.9″', '8 languages · caption above device (v5)'],
+      ['pricing', 'Lumen Pro Yearly · 104 countries', 'Recommended prices, Brazil included'], ['pricing', 'Retention offer · German', 'Shorter message'],
+      ['events', '7 Days of Gratitude · artwork', 'Card and details image, English (U.S.)']
+    ];
+    return { S: S, ORDER: ORDER, RV: RV };
+  }
+
+  constructor(p) {
+    super(p);
+    const pr = p || {};
+    this.state = {
+      sec: pr.scene || 'store', sb: pr.sidebar !== false,
+      ap: pr.ap || 'idle', apOpen: pr.sheet === 'menu', run: 35,
+      rv: pr.sheet === 'review' ? 'all' : (pr.sheet === 'scoped' ? (pr.scene || 'store') : null),
+      acc: {}, dis: {}, extra: 0, toast: null, bump: false,
+      auto: pr.auto === 'on' || pr.auto === 'paused' ? pr.auto : 'off', arOpen: pr.sheet === 'auto', hiOpen: pr.sheet === 'history', notif: !!pr.notif, pro: pr.pro !== false,
+      kenji: pr.kenji === true || pr.kenji === false ? pr.kenji : (pr.auto === 'on' || !!pr.notif), arMode: 'auto', arStars: { 4: 1, 5: 1 }, arTopics: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1 }, arDelay: '1 hour', arTone: 'Warm', rs: {}
+    };
+    this.timers = [];
+  }
+  componentWillUnmount() { this.timers.forEach(clearTimeout); }
+  later(ms, fn) { this.timers.push(setTimeout(fn, ms)); }
+  say(t, undo) { this.setState({ toast: t, toastUndo: !!undo }); this.later(3200, () => this.setState({ toast: null })); }
+
+  pendOf(sec) {
+    const D = Component.d();
+    const base = D.S[sec].pend;
+    return sec === 'store' ? base + this.state.extra : base;
+  }
+
+  renderVals() {
+    const D = Component.d(); const s = this.state; const pr = this.props;
+    const before = pr.variant === 'before';
+    const narrow = !!pr.narrow;
+    const sec = D.S[s.sec];
+    let pend = 0; Object.keys(D.S).forEach((k) => { pend += this.pendOf(k); });
+    const secPend = this.pendOf(s.sec);
+
+    const groups = D.ORDER.map((g) => ({ title: g[0], hasT: !!g[0], items: g[1].map((k) => { const x = D.S[k]; const n = k === 'store' ? Math.max(0, x.n - Object.keys(s.acc).length - Object.keys(s.dis).length) : x.n; return { label: x.label, col: x.col, path: x.path, n: String(n), hasN: n > 0, bcls: x.neu ? 'bdg neu' : 'bdg', cls: k === s.sec ? 'nvi on' : 'nvi', cur: k === s.sec ? 'page' : 'false', ax: x.label + (n ? ', ' + n + (x.neu ? ' new findings' : ' suggestions') : ''), pick: () => this.setState({ sec: k, apOpen: false, rv: null }) }; }) }));
+
+    // Autopilot button
+    const R = this.revs();
+    const isRv = s.sec === 'reviews';
+    const autoOn = s.auto !== 'off';
+    const rvNeed = R.filter((r) => r.st === 'need').length;
+    let apMode = s.ap;
+    let apLabel = s.ap === 'run' ? sec.apRun : (s.ap === 'need' ? sec.apNeed : sec.ap);
+    let apAuto = false;
+    if (isRv && s.ap === 'idle' && autoOn) {
+      if (rvNeed && s.auto === 'on') { apMode = 'need'; apLabel = rvNeed + ' Review Needs You'; }
+      else { apAuto = true; apLabel = s.auto === 'on' ? 'Auto-reply on · ' + R.filter((r) => r.st === 'sent').length + ' sent today' : 'Auto-reply paused'; }
+    }
+    const apItems = sec.items.map((m, i) => {
+      const isAr = m[0] === 'Reply Automatically…';
+      return { label: m[0], kb: m[1], hasKb: !!m[1], check: isAr && autoOn ? '✓' : '', go: isAr ? () => this.setState({ arOpen: true, apOpen: false }) : () => this.startRun(i) };
+    });
+    if (isRv && autoOn) apItems.splice(2, 0, { label: s.auto === 'on' ? 'Pause Auto-Reply' : 'Resume Auto-Reply', kb: '', hasKb: false, check: '', go: () => this.setState({ auto: s.auto === 'on' ? 'paused' : 'on', apOpen: false }) });
+
+    // Review & Push
+    const scopeKeys = Object.keys(D.S).filter((k) => this.pendOf(k) > 0);
+    const rvScope = s.rv;
+    const rows = [];
+    D.RV.forEach((r) => { if (rvScope === 'all' || rvScope === r[0]) rows.push({ what: r[1], sub: r[2], sec: D.S[r[0]].label, col: D.S[r[0]].col, path: D.S[r[0]].path }); });
+    if (rvScope === 'all' || rvScope === 'store') Object.keys(s.acc).forEach((k) => rows.unshift({ what: k + ' · English (U.S.)', sub: 'Accepted just now', sec: 'Store Page', col: D.S.store.col, path: D.S.store.path }));
+    const scopedN = rvScope && rvScope !== 'all' ? this.pendOf(rvScope) : pend;
+    const scopes = [{ label: 'All', n: String(pend), cls: rvScope === 'all' ? 'chip on' : 'chip', on: rvScope === 'all' ? 'true' : 'false', pick: () => this.setState({ rv: 'all' }) }].concat(scopeKeys.map((k) => ({ label: D.S[k].label, n: String(this.pendOf(k)), cls: rvScope === k ? 'chip on' : 'chip', on: rvScope === k ? 'true' : 'false', pick: () => this.setState({ rv: k }) })));
+
+    // Store Page fields
+    const F = [['Subtitle', 'Under the name, on the page and in search', 'Your daily journal', 'Write, reflect, and grow every day'], ['Promotional Text', 'Top of the description. Changes without a new version', 'New this week: evening reminders.', 'New: gentle evening reminders and a weekly look back.'], ['Keywords', 'Not shown. Only App Store search reads them', 'journal,diary,notes', 'journal,diary,gratitude,habit,reflection,mood']];
+    const fields = F.map((f) => ({ label: f[0], where: f[1], now: s.acc[f[0]] ? f[3] : f[2], sug: f[3], open: !s.acc[f[0]] && !s.dis[f[0]], done: !!s.acc[f[0]],
+      accept: () => { const a = Object.assign({}, s.acc); a[f[0]] = 1; this.setState({ acc: a, extra: s.extra + 1, bump: true }); this.later(600, () => this.setState({ bump: false })); this.say('Accepted. It’s waiting in Review & Push, top right.', true); },
+      dismiss: () => { const d = Object.assign({}, s.dis); d[f[0]] = 1; this.setState({ dis: d }); } }));
+
+    const shotBg = ['linear-gradient(170deg,#7C86FF,#3A2FB8)', 'linear-gradient(170deg,#FF9C7A,#D9573F)', 'linear-gradient(170deg,#5FBF8A,#1D7A3A)', 'linear-gradient(170deg,#FFC86B,#E08A00)', 'linear-gradient(170deg,#B98CFF,#6A2FB0)'];
+    const caps = ['Write in a minute', 'See your week', 'Gentle reminders', 'Private by design', 'Look back on a year'];
+    const shots = caps.map((c, i) => ({ cap: c, bg: shotBg[i], sug: i === 1 || i === 3, ring: i === 1 || i === 3 ? '0 0 0 2px var(--mtb)' : '0 0 0 .5px var(--sep)' }));
+
+    const padTop = before ? '64px' : '62px';
+    const titleCls = narrow ? 'ell' : '';
+    return {
+      theme: pr.appearance === 'dark' ? 'ax-d' : 'ax-l', narrowCls: narrow ? 'narrow' : '',
+      H: (pr.frameH || 780) + 'px', before: before, after: !before, padTop: padTop, titleCls: titleCls,
+      sbOn: s.sb, sbOff: !s.sb, hideSb: () => this.setState({ sb: false }), showSb: () => this.setState({ sb: true }),
+      groups: groups,
+      submit: () => this.say('Submit for Review stays in the version footer: it sends a build to App Review, not changes to the store.'),
+      sec: { label: sec.label, labelUp: sec.label.toUpperCase(), desc: sec.desc, subA: isRv && autoOn ? '4.7 ★ · auto-reply ' + (s.auto === 'on' ? 'on' : 'paused') + (rvNeed ? ' · ' + rvNeed + ' needs you' : '') : sec.sub, hasPend: !before && secPend > 0, pendTxt: secPend + ' not pushed', pendAx: secPend + ' changes from ' + sec.label + ' not pushed. Open them in Review and Push', hasLang: sec.lang && !narrow, oldAuto: sec.oldAuto, oldAutoLbl: sec.oldAutoLbl, oldPush: sec.oldPush, oldPushLbl: sec.oldPushLbl },
+      is: { overview: s.sec === 'overview', store: s.sec === 'store', shots: s.sec === 'shots', pages: s.sec === 'pages', events: s.sec === 'events', info: s.sec === 'info', pricing: s.sec === 'pricing', reviews: s.sec === 'reviews', analytics: s.sec === 'analytics' },
+      // autopilot
+      apCls: apMode === 'run' ? 'run' : (apMode === 'need' ? 'need' : (apAuto ? 'on' : '')), apIdle: apMode === 'idle' && !apAuto, apSpark: (apMode === 'idle' && !apAuto) || apMode === 'run', apRun: apMode === 'run', apNeed: apMode === 'need', apAuto: apAuto, apBusy: s.ap !== 'idle',
+      apLabel: apLabel, apLblCls: narrow && apMode === 'idle' && !apAuto ? 'wide-only' : 'ell',
+      apAx: 'Autopilot: ' + apLabel, apTip: 'Autopilot · what Claude Code can do in ' + sec.label,
+      apOpen: s.apOpen, apItems: apItems, runTxt: sec.apRun + ' · about 6 min left', runW: s.run + '%',
+      apMain: () => { if (isRv && autoOn && s.ap === 'idle') { if (apMode === 'need') this.say('Scrolls to the review that needs you.'); else this.setState({ apOpen: !s.apOpen }); return; } if (s.ap === 'idle') this.startRun(0); else if (s.ap === 'run') this.setState({ apOpen: !s.apOpen }); else { this.setState({ ap: 'idle' }); this.say('Opens the step where Autopilot needs you (for Screenshots: Choose, board 21).'); } },
+      apMenu: () => this.setState({ apOpen: !s.apOpen, rv: null }),
+      apCancel: () => { this.setState({ ap: 'idle', apOpen: false }); this.say('Run cancelled. Nothing was changed.'); },
+      everything: () => { this.setState({ apOpen: false }); this.say('Suggest Everything: every section, every language (board 20).'); },
+      asstSet: () => { this.setState({ apOpen: false }); this.say('Opens Settings → Assistants.'); },
+      // review & push
+      pend: String(pend), hasPend: pend > 0, rpCls: (pend ? 'rp' : 'rp zero') + (s.bump ? ' bump' : ''), rpLabel: pend ? 'Review & Push' : 'Up to Date', rpLblCls: narrow ? 'wide-only' : '',
+      rpAx: pend ? 'Review and Push, ' + pend + ' changes ready' : 'Review and Push, nothing to push',
+      openAll: () => this.setState({ rv: 'all', apOpen: false }), openScoped: () => this.setState({ rv: s.sec, apOpen: false }),
+      rvOpen: !!s.rv, scopes: scopes, rvRows: rows, rvFoot: (!rvScope || rvScope === 'all') ? 'Everything you accepted or edited, from every section.' : 'Only changes from ' + D.S[rvScope].label + '. Choose All to see the rest.',
+      pushLbl: rvScope === 'all' || !rvScope ? 'Push All ' + pend + '…' : 'Push ' + scopedN + ' from ' + (D.S[rvScope] ? D.S[rvScope].label : '') + '…',
+      push: () => { this.setState({ rv: null }); this.say('Pushing. The button shows sent / total while it works.'); },
+      closeAll: () => this.setState({ rv: null, apOpen: false, arOpen: false, hiOpen: false }),
+      refresh: () => this.say('Checking App Store Connect…'), history: () => this.setState({ hiOpen: !s.hiOpen, apOpen: false }),
+      langNote: () => this.say('The language menu moved into the toolbar: languages with suggestions first.'),
+      hasToast: !!s.toast, toast: s.toast || '', toastUndo: !!s.toastUndo, undo: () => this.setState({ acc: {}, extra: 0, toast: null }),
+      acceptAll: () => this.say('Accept All Languages shows every suggestion first (unchanged).'),
+      arOpen: s.arOpen, hiOpen: s.hiOpen, notifOn: s.notif, showProto: isRv && pr.proto !== false && !s.notif,
+      notifOpen: () => this.setState({ notif: false, sec: 'reviews', kenji: true }),
+      notifLater: () => this.setState({ notif: false, kenji: true }),
+      simulate: () => this.setState({ kenji: true, notif: true }),
+      auto: { on: isRv && autoOn, dot: s.auto === 'on' ? '#34C759' : '#FF9F0A',
+        head: s.auto === 'on' ? 'Replying automatically' : 'Auto-reply is paused',
+        rule: s.auto === 'on' ? this.arRule() + ' · checks every hour · next in 38 min' : 'New reviews are drafted and wait for you until you resume.',
+        pauseLbl: s.auto === 'on' ? 'Pause' : 'Resume', pause: () => this.setState({ auto: s.auto === 'on' ? 'paused' : 'on' }),
+        settings: () => this.setState({ arOpen: true }) },
+      ar: this.arView(),
+      hist: this.histView(),
+      // content
+      fields: fields, shots: shots,
+      ovRows: ['store', 'shots', 'info', 'pricing'].map((k) => ({ label: D.S[k].label, col: D.S[k].col, path: D.S[k].path, n: String(D.S[k].n), what: D.S[k].desc, go: () => this.setState({ sec: k }) })),
+      pages: [['Default page', 'All languages · live', 'linear-gradient(160deg,#7C86FF,#3A2FB8)'], ['For students', '4 languages · live', 'linear-gradient(160deg,#5FBF8A,#1D7A3A)'], ['Gratitude habit', 'Draft · 2 changes', 'linear-gradient(160deg,#FF9C7A,#D9573F)']].map((p) => ({ name: p[0], meta: p[1], bg: p[2] })),
+      events: [['7 Days of Gratitude', 'Nov 23 – 29', 'Draft', 'var(--warn)', true, 'linear-gradient(160deg,#6B4BA8,#2A1F55)'], ['Share Kindness This Christmas', 'Dec 18 – 31', 'Pushed', 'var(--ok)', false, 'linear-gradient(160deg,#20335F,#0B1430)'], ['New Year, New Mindset', 'Jan 1 – 31', 'Pushed', 'var(--ok)', false, 'linear-gradient(160deg,#1A2152,#FF9C7A)']].map((e) => ({ name: e[0], dates: e[1], st: e[2], stCol: e[3], missing: e[4], bg: e[5], make: () => this.startRun(0) })),
+      infoRows: [['Age Rating', 'Shown on the page', '7 suggested · 7 unanswered', 7], ['App Privacy', 'Shown on the page', 'Done', 0], ['Accessibility', 'Shown on the page', 'In progress', 0], ['App Review Information', 'Only App Review reads it', 'Done', 0], ['App Compliance', 'Only App Review reads it', '3 need you', 0]].map((r) => ({ label: r[0], what: r[1], st: r[2], n: String(r[3]), hasN: r[3] > 0 })),
+      products: [['Lumen Pro Monthly', '$4.99', '60%', '0%', '175 prices · all equalized'], ['Lumen Pro Yearly', '$29.99', '40%', '35%', '104 recommended prices suggested'], ['Lifetime', '$79.99', '70%', '0%', '175 prices · equalized']].map((p) => ({ name: p[0], price: p[1], a: p[2], b: p[3], meta: p[4] })),
+      reviews: R.map((r) => this.revView(r)),
+      funnel: [['Page views', '12,480', '100%'], ['Downloads', '3,120', '25%'], ['Started trial', '640', '5.1%'], ['Subscribed', '212', '1.7%']].map((f) => ({ label: f[0], n: f[1], w: (parseFloat(f[2]) * 4.2) + 'px' }))
+    };
+  }
+
+  revs() {
+    const s = this.state; const on = s.auto === 'on'; const anyAuto = s.auto !== 'off';
+    const B = [
+      { id: 'kenji', stars: '★☆☆☆☆', title: '落ちます', who: 'Kenji', where: 'Japan', body: 'エクスポートするとアプリが落ちます。(It crashes when I export.)', draft: 'Kenjiさん、ご不便をおかけしてすみません。エクスポートの不具合を確認しています。次のアップデートで修正します。— Mateus', auto: 'need', why: 'Waiting for you · it mentions a crash' },
+      { id: 'mara', stars: '★★★★★', title: 'Finally a journal I keep', who: 'mara_k', where: 'United States', body: 'Simple and calm. I write every evening now.', draft: 'Thank you so much, Mara! Writing every evening is exactly what we hoped Lumen would help with. — Mateus, Lumen Journal', auto: 'sent', at: '2:14 PM' },
+      { id: 'weber', stars: '★★★★☆', title: 'Ein schönes Tagebuch', who: 'J. Weber', where: 'Germany', body: 'Bitte eine Exportfunktion als PDF.', draft: 'Danke für die schöne Bewertung! Wir haben Ihren Wunsch nach einem PDF-Export notiert. — Mateus, Lumen Journal', auto: 'wait' },
+      { id: 'yuki', stars: '★★★★★', title: '毎日使っています', who: 'yuki', where: 'Japan', body: 'シンプルで使いやすい。', draft: 'ありがとうございます！毎日使っていただけてうれしいです。— Mateus', auto: 'sent', at: '11:02 AM' }
+    ];
+    return B.filter((r) => r.id !== 'kenji' || s.kenji).map((r) => {
+      let st = s.rs[r.id];
+      if (!st) st = anyAuto ? (r.auto === 'wait' && !on ? 'draft' : r.auto) : (r.id === 'yuki' ? 'none' : 'draft');
+      return Object.assign({}, r, { st: st });
+    });
+  }
+  setRs(id, v) { const rs = Object.assign({}, this.state.rs); rs[id] = v; this.setState({ rs: rs }); }
+  revView(r) {
+    const draftHead = r.st === 'need' ? r.why : 'Reply drafted by Claude';
+    const stat = { sent: 'Sent automatically', wait: 'Sending in 42 min', need: 'Needs you', mine: 'Replied' }[r.st] || '';
+    const statCls = { sent: 'stat st-sent', wait: 'stat st-wait', need: 'stat st-need', mine: 'stat st-sent' }[r.st] || 'stat';
+    return { stars: r.stars, title: r.title, who: r.who, where: r.where, body: r.body, draft: r.draft, hasStat: !!stat, stat: stat, statCls: statCls,
+      showDraft: r.st === 'draft' || r.st === 'need', draftHead: draftHead,
+      showWait: r.st === 'wait', waitHead: 'Sends by itself in 42 min · 4★, English rules apply in German too',
+      showSent: r.st === 'sent' || r.st === 'mine', sentHead: r.st === 'sent' ? 'Sent automatically at ' + r.at + ' · public under the review' : 'Sent by you just now',
+      send: () => { this.setRs(r.id, 'mine'); this.say('Reply sent. It can take a while to show on the App Store.'); },
+      edit: () => this.say('Opens the reply to edit, with the review beside it.'),
+      cancel: () => { this.setRs(r.id, 'draft'); this.say('Won’t be sent. The draft stays here for you.'); },
+      undo: () => { this.setRs(r.id, 'draft'); this.say('Reply removed from the App Store. The draft stays here.'); } };
+  }
+  arRule() {
+    const st = Object.keys(this.state.arStars).sort();
+    return this.state.arMode === 'draft' ? 'Drafts every reply for you' : (st.length ? st.join('★, ') + '★ sent after ' + this.state.arDelay : 'Nothing is sent by itself');
+  }
+  arView() {
+    const s = this.state;
+    const tog = (k, i) => () => { const o = Object.assign({}, s[k]); if (o[i]) delete o[i]; else o[i] = 1; const n = {}; n[k] = o; this.setState(n); };
+    const st = Object.keys(s.arStars).map(Number).sort();
+    const ex = { Warm: 'Thank you so much, Mara! Writing every evening is exactly what we hoped Lumen would help with. — Mateus, Lumen Journal', Brief: 'Thanks, Mara! Glad Lumen helps you write every evening. — Mateus, Lumen Journal', Formal: 'Thank you for your review, Mara. We are glad Lumen Journal has become part of your evenings. — Mateus, Lumen Journal' };
+    return {
+      free: !s.pro, upgrade: () => this.say('Opens the paywall: Atlas Pro.'),
+      modes: [['draft', 'Draft a reply and tell me', 'A notification with Send and Edit. Nothing is sent until you press Send.'], ['auto', 'Send the ones I allow by themselves', 'The rest are drafted and wait for you, as above.']].map((m) => ({ label: m[1], sub: m[2], on: s.arMode === m[0] ? 'true' : 'false', cls: s.arMode === m[0] ? 'opt on' : 'opt', pick: () => this.setState({ arMode: m[0] }) })),
+      stars: [1, 2, 3, 4, 5].map((n) => ({ label: n + '★', on: s.arStars[n] ? 'true' : 'false', cls: s.arStars[n] ? 'rchip on' : 'rchip', pick: tog('arStars', n) })),
+      starNote: s.arMode === 'draft' ? 'Used only when replies are sent by themselves.' : (st.length ? st.map((n) => n + '★').join(', ') + ' reviews are sent by themselves; the others wait for you.' : 'None selected: every reply waits for you.') + (s.arStars[1] || s.arStars[2] ? ' Low ratings usually need a person.' : ''),
+      topics: ['A bug or a crash', 'Billing or a refund', 'Their account or data', 'A feature request', 'Something personal'].map((t, i) => ({ label: t, on: s.arTopics[i] ? 'true' : 'false', cls: s.arTopics[i] ? 'rchip on' : 'rchip', pick: tog('arTopics', i) })),
+      delays: ['15 min', '1 hour', '3 hours'].map((d) => ({ label: d, on: s.arDelay === d ? 'true' : 'false', cls: s.arDelay === d ? 'on' : '', pick: () => this.setState({ arDelay: d }) })),
+      tones: ['Warm', 'Brief', 'Formal'].map((d) => ({ label: d, on: s.arTone === d ? 'true' : 'false', cls: s.arTone === d ? 'on' : '', pick: () => this.setState({ arTone: d }) })),
+      example: ex[s.arTone],
+      foot: s.arMode === 'draft' ? 'You get a notification for every new review.' : 'Allowed replies go out ' + s.arDelay + ' after they’re written. Everything else waits for you.',
+      okLbl: s.auto === 'off' ? 'Turn On' : 'Save',
+      turnOn: () => { this.setState({ auto: 'on', arOpen: false }); this.say('Auto-reply is on for Lumen. Atlas checks for new reviews every hour.'); }
+    };
+  }
+  histView() {
+    const s = this.state;
+    const R = this.revs().filter((r) => r.st === 'sent');
+    const rows = R.map((r) => ({ what: 'Replied automatically to ' + r.who + ' · ' + r.stars.replace(/☆/g, '').length + '★', sub: r.where + ' · ' + r.at, canUndo: true, undo: () => { this.setRs(r.id, 'draft'); this.setState({ hiOpen: false }); this.say('Reply removed from the App Store.'); } }));
+    return rows.concat([{ what: 'Pushed 12 changes · Store Page', sub: '9:40 AM · by you', canUndo: false, undo: null }, { what: 'Autopilot made 40 screenshots', sub: 'Yesterday · approved by you', canUndo: false, undo: null }]);
+  }
+
+  startRun(i) {
+    this.setState({ ap: 'run', apOpen: false, run: 12 });
+    this.say('Autopilot started. You can keep working: the button shows how it’s going.');
+    this.later(1400, () => this.setState({ run: 48 }));
+    this.later(2800, () => this.setState({ run: 81 }));
+    this.later(4200, () => this.setState({ ap: 'need', run: 100 }));
+  }
+}
+</script>
+</body>
+</html>

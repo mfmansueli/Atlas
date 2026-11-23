@@ -15,7 +15,7 @@ struct ConfidenceBars: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 1.5) {
             ForEach(1...3, id: \.self) { level in
-                RoundedRectangle(cornerRadius: 0.75)
+                RoundedRectangle(cornerRadius: Radius.flag)
                     .fill(level <= confidence.bars ? filled : Palette.fill3)
                     .frame(width: 2.5, height: CGFloat(3 + level * 2))
             }

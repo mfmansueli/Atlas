@@ -39,7 +39,7 @@ struct AutopilotStripView: View {
         }
         .padding(Spacing.medium)
         .background(
-            content.kind == .yourTurn ? Palette.machineTranslatedTint : Palette.raised,
+            content.kind == .yourTurn ? Palette.aiSurface : Palette.raised,
             in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
         )
         .overlay {
@@ -51,11 +51,11 @@ struct AutopilotStripView: View {
 
     private var icon: some View {
         Image(systemName: "camera")
-            .font(.system(size: 15, weight: .medium))
-            .foregroundStyle(Palette.machineTranslated)
+            .font(.title3.weight(.medium))
+            .foregroundStyle(Palette.ai)
             .frame(width: 34, height: 34)
-            .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+            .background(Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
             .accessibilityHidden(true)
     }
 
@@ -63,7 +63,7 @@ struct AutopilotStripView: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             HStack(spacing: Spacing.small) {
                 Text(content.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("studio.autopilot.title")
                 if let pill = content.pill {
                     Pill(text: pill, style: content.pillStyle)

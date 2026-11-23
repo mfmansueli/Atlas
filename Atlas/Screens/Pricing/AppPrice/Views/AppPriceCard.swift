@@ -45,7 +45,7 @@ struct AppPriceCard: View {
         case let .failed(message):
             InlineMessage.error(message)
             Button("Try Again") { Task { await model.loadPrice() } }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pricing.appPrice.tryAgain")
         case let .loaded(state):
             loaded(state)
@@ -104,7 +104,7 @@ struct AppPriceCard: View {
             Spacer()
             Button("Change Price…") { model.isPriceSheetPresented = true }
                 .buttonStyle(.link)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pricing.appPrice.change")
         }
     }

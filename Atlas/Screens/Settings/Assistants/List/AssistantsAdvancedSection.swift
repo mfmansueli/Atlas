@@ -69,7 +69,7 @@ struct AssistantsAdvancedSection: View {
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Pair Assistant…", systemImage: "plus", action: onPair)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(!server.isRunning)
                     .accessibilityIdentifier("settings.ai.pair")
             }
@@ -84,7 +84,7 @@ struct AssistantsAdvancedSection: View {
                     .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                     .accessibilityIdentifier("settings.ai.byHandLine")
                 Button(line == nil ? String(localized: "Copy") : String(localized: "Copied ✓"), action: copy)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(!server.isRunning)
                     .accessibilityIdentifier("settings.ai.byHandCopy")
             }

@@ -100,12 +100,12 @@ struct ConnectView: View {
     private var welcomeTitle: some View {
         VStack(spacing: Spacing.xSmall) {
             Text("Connect App Store Connect")
-                .font(.system(size: 24, weight: .bold))
+                .font(.title.weight(.bold))
                 .tracking(-0.4)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("connect.title")
             Text("Atlas uses an App Store Connect API key to read your apps and to push what you approve.")
-                .font(.system(size: 13))
+                .font(.body)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 440)

@@ -9,11 +9,11 @@ import SwiftUI
 struct InterfaceChip: View {
     var body: some View {
         Text("UI")
-            .font(.system(size: 10, weight: .bold).monospaced())
+            .font(.footnote.weight(.bold).monospaced())
             .foregroundStyle(Color.black.opacity(0.85))
             .padding(.horizontal, 3)
             .padding(.vertical, 1)
-            .background(Palette.warningMark, in: RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .background(Palette.warnMark, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             .accessibilityHidden(true)
     }
 }

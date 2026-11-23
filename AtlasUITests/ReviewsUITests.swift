@@ -155,12 +155,14 @@ final class ReviewsUITests: XCTestCase {
         XCTAssertTrue(element("reviews.editor.send.r-de1").isEnabled)
     }
 
-    func testTheOverviewCardOpensReplyToAll() {
+    /// After release on the Overview: one line about the reviews, and Open.
+    func testTheOverviewRowOpensRatingsAndReviews() {
         app.launch(debugScene: "rv-overview")
-        let card = element("overview.reviewsCard")
-        XCTAssertTrue(card.waitForExistence(timeout: 15))
-        element("overview.reviewsCard.replyToAll").click()
-        XCTAssertTrue(element("reviews.bulk").waitForExistence(timeout: 15))
+        let open = app.buttons["overview.afterRelease.open.reviews"]
+        XCTAssertTrue(open.waitForExistence(timeout: 15))
+        XCTAssertTrue(open.label.hasPrefix("Open Ratings & Reviews"))
+        open.click()
+        XCTAssertTrue(element("workspace.reviews").waitForExistence(timeout: 15))
     }
 
     func testWithoutSuggestionsTheReviewsOfferWritingAndAsking() {

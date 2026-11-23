@@ -44,7 +44,7 @@ struct PricingFilterBar: View {
                 }
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .toggleStyle(.button)
         .buttonBorderShape(.capsule)
         .padding(.horizontal, Spacing.large)

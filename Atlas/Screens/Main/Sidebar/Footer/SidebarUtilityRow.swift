@@ -21,10 +21,10 @@ struct SidebarUtilityRow: View {
         Button(action: action) {
             HStack(spacing: 9) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 11.5, weight: .medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(Palette.label)
                     .frame(width: 22, height: 22)
-                    .background(Palette.fill3, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .background(Palette.fill3, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                     .accessibilityHidden(true)
                 Text(title)
                     .lineLimit(1)
@@ -40,7 +40,7 @@ struct SidebarUtilityRow: View {
             .padding(.leading, 5)
             .padding(.trailing, Spacing.xSmall)
             .frame(height: 32)
-            .background(isHovered ? Palette.fill1 : .clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(isHovered ? Palette.fill1 : .clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

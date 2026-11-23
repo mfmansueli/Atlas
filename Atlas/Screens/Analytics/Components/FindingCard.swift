@@ -28,7 +28,7 @@ struct FindingCard: View {
                     .help(finding.surenessDetail)
             }
             Text(finding.title)
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
             Text(finding.why)
                 .font(.callout)
@@ -81,7 +81,7 @@ struct FindingCard: View {
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("analytics.finding.action")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .accessibilityIdentifier("analytics.finding.\(finding.id)")
     }

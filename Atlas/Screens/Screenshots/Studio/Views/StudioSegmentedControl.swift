@@ -40,7 +40,7 @@ struct StudioSegmentedControl<Value: Hashable>: View {
                         .padding(.vertical, 3)
                         .background {
                             if isSelected {
-                                Capsule().fill(Palette.raised).shadow(color: .black.opacity(0.12), radius: 1, y: 0.5)
+                                Capsule().fill(Palette.raised).depth(.card)
                             }
                         }
                         .contentShape(Capsule())

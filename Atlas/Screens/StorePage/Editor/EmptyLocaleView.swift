@@ -15,7 +15,7 @@ struct EmptyLocaleView: View {
         let primary = viewModel.listing?.primaryLocale ?? .englishUS
         VStack(spacing: Spacing.small) {
             Image(systemName: "globe")
-                .font(.system(size: 26))
+                .font(.largeTitle.bold())
                 .foregroundStyle(Palette.label3)
                 .accessibilityHidden(true)
             Text("\(locale.name) has no text yet")

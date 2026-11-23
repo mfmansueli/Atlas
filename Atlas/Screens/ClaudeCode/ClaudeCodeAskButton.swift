@@ -128,7 +128,7 @@ struct ClaudeCodeAskButton: View {
     private var popover: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Ask \(client)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             if let run {
                 Text(explanation(client))
                     .font(.callout)
@@ -157,7 +157,7 @@ struct ClaudeCodeAskButton: View {
                         .foregroundStyle(Palette.label2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Copy Again", action: copy)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                 }
                 ClaudeCodeLaunchHint(client: client)
             } else {

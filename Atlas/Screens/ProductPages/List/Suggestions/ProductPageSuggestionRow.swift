@@ -7,11 +7,16 @@ import SwiftUI
 
 /// One suggested page: its name, who it's for, why with its evidence, and
 /// what's in it once shown (keywords, promotional text, screenshots, deep
-/// link).
+/// link). A page that lands while the person looks fades in (effect 2,
+/// without the edge pass: the group draws the edge); accepted, the row
+/// settles (effect 5).
 struct ProductPageSuggestionRow: View {
     @Bindable var viewModel: ProductPagesViewModel
     let suggestion: ProductPageSuggestion
     let isCompact: Bool
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -32,8 +37,19 @@ struct ProductPageSuggestionRow: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
+        .background(isSettling ? Palette.raised : Color.clear)
+        .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.createdAt, shape: Rectangle(), edgePass: false))
+        .modifier(AcceptSettle(isSettling: isSettling))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pages.suggestion.\(suggestion.id)")
+    }
+
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            viewModel.acceptPage(suggestion)
+        }
     }
 
     private var isExpanded: Bool { viewModel.expandedSuggestionID == suggestion.id }
@@ -61,7 +77,7 @@ struct ProductPageSuggestionRow: View {
                     viewModel.expandedSuggestionID = isExpanded ? nil : suggestion.id
                 }
                 .buttonStyle(.link)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.suggestion.\(suggestion.id).show")
             }
         }
@@ -92,11 +108,11 @@ struct ProductPageSuggestionRow: View {
         HStack(spacing: Spacing.xSmall) {
             Button("Dismiss") { viewModel.dismissPage(suggestion) }
                 .accessibilityIdentifier("pages.suggestion.\(suggestion.id).dismiss")
-            Button("Accept") { viewModel.acceptPage(suggestion) }
-                .buttonStyle(.borderedProminent)
+            Button("Accept", action: accept)
+                .rowActionButton()
                 .accessibilityIdentifier("pages.suggestion.\(suggestion.id).accept")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .fixedSize()
     }
 }

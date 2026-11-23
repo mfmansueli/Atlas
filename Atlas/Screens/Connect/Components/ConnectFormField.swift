@@ -27,8 +27,8 @@ struct ConnectFormField: View {
                 .frame(width: width)
                 .overlay {
                     if issue != nil {
-                        RoundedRectangle(cornerRadius: 5, style: .continuous)
-                            .strokeBorder(Palette.dangerMark, lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
+                            .strokeBorder(Palette.errMark, lineWidth: 1.5)
                             .allowsHitTesting(false)
                     }
                 }
@@ -41,7 +41,7 @@ struct ConnectFormField: View {
                     Image(systemName: "exclamationmark.circle")
                 }
                 .font(.footnote)
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .accessibilityIdentifier("\(identifier).issue")
             }
         }

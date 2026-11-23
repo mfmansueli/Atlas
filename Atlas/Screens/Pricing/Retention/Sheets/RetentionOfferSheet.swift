@@ -146,7 +146,7 @@ struct RetentionOfferSheet: View {
             if let problem {
                 Text(problem.message)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("retention.offerSheet.problem")
             }

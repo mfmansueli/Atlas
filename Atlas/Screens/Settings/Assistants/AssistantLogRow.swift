@@ -13,7 +13,7 @@ struct AssistantLogRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Text(entry.date.formatted(date: .omitted, time: .standard))
-                .font(.caption.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
                 .frame(width: 64, alignment: .leading)
             VStack(alignment: .leading, spacing: 2) {
@@ -29,11 +29,11 @@ struct AssistantLogRow: View {
                 if let reason = entry.reason {
                     Text(reason)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Text(entry.client)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

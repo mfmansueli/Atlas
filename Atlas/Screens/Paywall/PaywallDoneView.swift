@@ -14,8 +14,8 @@ struct PaywallDoneView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 34))
-                .foregroundStyle(Palette.positive)
+                .font(.largeTitle.bold())
+                .foregroundStyle(Palette.ok)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text(model.doneTitle)
@@ -29,7 +29,7 @@ struct PaywallDoneView: View {
                     .accessibilityIdentifier("paywall.done.subtitle")
             }
             Text("Unlocked")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .padding(.top, Spacing.xSmall)
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 ForEach(ProFeature.allCases) { feature in

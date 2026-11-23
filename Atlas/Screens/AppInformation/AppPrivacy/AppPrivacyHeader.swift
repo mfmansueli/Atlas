@@ -27,13 +27,13 @@ struct AppPrivacyHeader: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .controlSize(.small)
+                .controlSize(.regular)
                 .fixedSize()
                 .accessibilityIdentifier("appInformation.appPrivacy.tabs")
                 Button(String(localized: "Export…")) {
                     viewModel.isExportSheetPresented = true
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(viewModel.worksheet.reviewedAnswers.collects == nil)
                 .accessibilityIdentifier("appInformation.appPrivacy.export")
             }

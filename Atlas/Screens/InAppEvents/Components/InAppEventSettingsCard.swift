@@ -17,7 +17,7 @@ struct InAppEventSettingsCard: View {
     var body: some View {
         Card {
             Text("Event")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.xSmall) {
                 ForEach(rows) { row in
@@ -28,7 +28,7 @@ struct InAppEventSettingsCard: View {
                         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                             if row.isProblem {
                                 Label(row.value, systemImage: "exclamationmark.circle.fill")
-                                    .foregroundStyle(Palette.danger)
+                                    .foregroundStyle(Palette.err)
                                     .fixedSize(horizontal: false, vertical: true)
                                     .accessibilityIdentifier("events.settings.\(row.key).problem")
                             } else {
@@ -38,7 +38,7 @@ struct InAppEventSettingsCard: View {
                             }
                             if let field = row.fixField {
                                 Button("Fix…") { onFix(field) }
-                                    .controlSize(.small)
+                                    .controlSize(.regular)
                                     .accessibilityIdentifier("events.settings.\(row.key).fix")
                             }
                         }

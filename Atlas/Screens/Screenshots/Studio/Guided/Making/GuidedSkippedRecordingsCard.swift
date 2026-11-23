@@ -30,7 +30,7 @@ struct GuidedSkippedRecordingsCard: View {
             Button("Record Again") { studio.recordAgain() }
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("autopilot.guided.making.recordAgain")
         }
         .frame(maxWidth: .infinity, alignment: .leading)

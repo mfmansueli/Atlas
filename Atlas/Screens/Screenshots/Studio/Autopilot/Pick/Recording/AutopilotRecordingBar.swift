@@ -26,7 +26,7 @@ struct AutopilotRecordingBar: View {
                         Button {
                             seek(piece.start)
                         } label: {
-                            RoundedRectangle(cornerRadius: 3)
+                            RoundedRectangle(cornerRadius: Radius.flag)
                                 .fill(color(piece.kind))
                                 .frame(width: max(room * CGFloat(piece.length / total), 1), height: 8)
                                 .contentShape(Rectangle().inset(by: -3))
@@ -37,7 +37,7 @@ struct AutopilotRecordingBar: View {
                         .accessibilityIdentifier("autopilot.recording.piece.\(piece.id)")
                     }
                 }
-                RoundedRectangle(cornerRadius: 1)
+                RoundedRectangle(cornerRadius: Radius.flag)
                     .fill(Palette.label)
                     .frame(width: 2, height: 14)
                     .offset(x: proxy.size.width * CGFloat(min(max(seconds / max(length, 0.001), 0), 1)) - 1)

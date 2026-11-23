@@ -45,7 +45,7 @@ struct AutopilotStallNotice: View {
                 }
             }
             .buttonBorderShape(.capsule)
-            .controlSize(.small)
+            .controlSize(.regular)
             Text(note)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -57,7 +57,7 @@ struct AutopilotStallNotice: View {
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
-                .strokeBorder(stall.isWarning ? Palette.warningMark : Palette.separator, lineWidth: stall.isWarning ? 1 : 0.5)
+                .strokeBorder(stall.isWarning ? Palette.warnMark : Palette.separator, lineWidth: stall.isWarning ? 1 : 0.5)
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("autopilot.stall")

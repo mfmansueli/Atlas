@@ -17,7 +17,7 @@ struct ComplianceCard<Content: View>: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Text(rule.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityAddTraits(.isHeader)
                 ComplianceStatePill(state: state)

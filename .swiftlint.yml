@@ -52,7 +52,34 @@ identifier_name:
   excluded:
     - id
     - vm   # view model
+    - ai   # Palette.ai: the AI colour (README — Design system §1)
+    - ok   # Palette.ok: the state colour for live, connected, passed
     - ui   # AutopilotArtworkShow: the app, no device
     - x
     - y
     - i
+
+# README — Design system: no loose colours, text sizes or radii in the UI.
+# Mockups of Apple's pages, screenshot templates and artwork keep their own.
+custom_rules:
+  design_system_color:
+    name: "Design system colour"
+    regex: 'Color\((red|white|hue): '
+    included: '^.*/Atlas/(Screens|DesignSystem)/.*\.swift$'
+    excluded: '/(Screenshots/(Rendering|Model|Artwork|TemplateEditor|Studio)|Suggestions/StorePreview|Pricing/Retention/Preview|Welcome/Header|AtlasMark|InAppEvents/Components|Screenshots/Components/AppPreviewTile|AppIcon)/?'
+    message: "Use a Palette token (Assets.xcassets/Palette), not a loose colour."
+    severity: warning
+  design_system_font_size:
+    name: "Design system text size"
+    regex: '\.system\(size: [0-9]'
+    included: '^.*/Atlas/(Screens|DesignSystem)/.*\.swift$'
+    excluded: '/(Screenshots/(Rendering|Model|Artwork|TemplateEditor)|Suggestions/StorePreview|Pricing/Retention/Preview|Welcome/Header|AtlasMark|InAppEventStorePreview|StoreProductPreviewCard|StudioSearchCard|HeaderStyle|ArtworkSketch|InAppEventArtworkTextLayer|AppPreviewPosterView|Font\+TextStyles)'
+    message: "Use one of the ten text styles (.body, .callout, .subheadline…), not a point size."
+    severity: warning
+  design_system_radius:
+    name: "Design system radius"
+    regex: 'cornerRadius: [1-9][0-9]*(\.[0-9]+)?\s*[,)]'
+    included: '^.*/Atlas/(Screens|DesignSystem)/.*\.swift$'
+    excluded: '/(Screenshots/(Rendering|Model|Artwork|TemplateEditor)|Suggestions/StorePreview|Pricing/Retention/Preview|Welcome/Header|AtlasMark|InAppEventStorePreview|StoreProductPreviewCard|StudioSearchCard|HeaderStyle|ArtworkSketch|InAppEventArtworkTextLayer|AppPreviewPosterView|InAppEvents/Components/Artwork|Tokens/Radius)'
+    message: "Use a Radius token (4, 6, 8, 10, 12, 16, 20) or a Capsule."
+    severity: warning

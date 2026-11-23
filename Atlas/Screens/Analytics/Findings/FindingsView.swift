@@ -36,7 +36,7 @@ struct FindingsView: View {
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 1) {
-                Text("What to try next").font(.headline).accessibilityAddTraits(.isHeader)
+                Text("What to try next").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
                 Text("From Atlas’s rules and your assistant, on the last 28 days. Each one opens the section where the fix is made.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -111,7 +111,7 @@ struct FindingsView: View {
                         Pill(text: finding.area.title, style: .outline)
                         Pill(text: String(localized: "Acted on"))
                     }
-                    Text(finding.title).font(.headline).fixedSize(horizontal: false, vertical: true)
+                    Text(finding.title).font(.body.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
                     Text("You pushed “\(change.title)” on \(AnalyticsText.day(change.date)). \(change.stageTitle):")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
@@ -123,7 +123,7 @@ struct FindingsView: View {
                         Spacer()
                         Button("See the Result") { viewModel.show(change.id) }
                             .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
+                            .controlSize(.regular)
                     }
                 }
             }
@@ -144,7 +144,7 @@ struct FindingsView: View {
                         Spacer(minLength: Spacing.small)
                         Text("Dismissed \(AnalyticsText.day(item.date))").font(.subheadline).foregroundStyle(Palette.label2)
                         Button("Restore") { viewModel.restore(item.id) }
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("analytics.findings.restore")
                     }
                     .padding(.horizontal, Spacing.medium)

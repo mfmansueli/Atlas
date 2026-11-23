@@ -10,7 +10,7 @@ import SwiftUI
 struct WelcomeChipView: View {
     let chip: WelcomeChip
 
-    static let coinColor = Color(red: 0x0A / 255, green: 0x5C / 255, blue: 0xF2 / 255)
+    static let coinColor = Palette.brandBottom
 
     var body: some View {
         HStack(spacing: 6) {
@@ -49,5 +49,5 @@ struct WelcomeChipView: View {
         WelcomeChipView(chip: WelcomeChip(content: .price(currency: "R$", amount: "24,90"), delay: 0))
     }
     .padding()
-    .background(Color.blue)
+    .background(Palette.brand)
 }

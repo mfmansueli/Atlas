@@ -73,7 +73,7 @@ struct GuidedLookRow: View {
                             note = ""
                         }
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                 }
                 HStack(spacing: Spacing.xSmall) {
                     Group {
@@ -93,7 +93,7 @@ struct GuidedLookRow: View {
                     }
                 }
                 .buttonBorderShape(.capsule)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityAddTraits(isChosen ? .isSelected : [])
             }
             .frame(maxWidth: .infinity, alignment: .leading)

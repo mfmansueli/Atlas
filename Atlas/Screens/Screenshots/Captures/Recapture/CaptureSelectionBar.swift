@@ -35,7 +35,7 @@ struct CaptureSelectionBar: View {
             Button("Clear") { captures.clearSelection() }
                 .accessibilityIdentifier("captures.selection.clear")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.xSmall)
         .background(Palette.accentTint)

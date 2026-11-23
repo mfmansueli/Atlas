@@ -25,9 +25,9 @@ enum PillStyle: Sendable {
         case .neutral, .outline: Palette.label2
         case .increase: Palette.increase
         case .decrease: Palette.decrease
-        case .danger: Palette.danger
-        case .warning: Palette.warning
-        case .machineTranslated: Palette.machineTranslated
+        case .danger: Palette.err
+        case .warning: Palette.warn
+        case .machineTranslated: Palette.ai
         case .accent: Palette.accentText
         }
     }
@@ -38,9 +38,9 @@ enum PillStyle: Sendable {
         case .outline: .clear
         case .increase: Palette.increaseTint
         case .decrease: Palette.decreaseTint
-        case .danger: Palette.dangerTint
-        case .warning: Palette.warningTint
-        case .machineTranslated: Palette.machineTranslatedTint
+        case .danger: Palette.errTint
+        case .warning: Palette.warnTint
+        case .machineTranslated: Palette.aiSurface
         case .accent: Palette.accentTint
         }
     }

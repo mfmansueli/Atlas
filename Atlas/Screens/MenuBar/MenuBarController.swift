@@ -166,7 +166,7 @@ final class MenuBarController {
         // The click that took the panel's focus away already closed it.
         if let closedAt = menuPanel?.closedAt, Date.now.timeIntervalSince(closedAt) < 0.3 { return }
         notePanel?.close()
-        let panel = MenuBarPanel(content: MenuBarLiveMenu(work: work, actions: closingActions), cornerRadius: 14)
+        let panel = MenuBarPanel(content: MenuBarLiveMenu(work: work, actions: closingActions), cornerRadius: Radius.card)
         menuPanel = panel
         panel.show(below: anchor)
     }
@@ -198,7 +198,7 @@ final class MenuBarController {
             onQuitWhenClosed: { close(); onQuitWhenClosed() },
             onDismiss: { close(); onDismiss() }
         )
-        let panel = MenuBarPanel(content: note, cornerRadius: 16)
+        let panel = MenuBarPanel(content: note, cornerRadius: Radius.popover)
         panel.closesWhenInactive = false
         notePanel = panel
         panel.show(below: anchor)

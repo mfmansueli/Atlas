@@ -41,7 +41,7 @@ struct ViewerSidePanel: View {
             FlagTile(regionCode: locale?.regionCode ?? "")
                 .frame(width: 20)
             Text(locale?.name ?? target.locale)
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Spacer(minLength: Spacing.small)
             if let cell {
                 Pill(text: cell.state.title, style: pillStyle(cell.state))

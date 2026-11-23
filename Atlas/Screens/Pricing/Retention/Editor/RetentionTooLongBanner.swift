@@ -22,7 +22,7 @@ struct RetentionTooLongBanner: View {
                     .accessibilityIdentifier("retention.tooLong.text")
                 if model.suggestion != nil {
                     Button("Use Shorter Version", action: model.useSuggestion)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("retention.tooLong.use")
                 } else {
                     RetentionAskButton(
@@ -31,11 +31,11 @@ struct RetentionTooLongBanner: View {
                             message: message.referenceName, language: locale.name, locale: locale.code, header: text.header, body: text.body
                         )
                     )
-                    .controlSize(.small)
+                    .controlSize(.regular)
                 }
             }
             .padding(Spacing.medium)
-            .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+            .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("retention.tooLong")
         }

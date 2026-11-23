@@ -30,9 +30,9 @@ struct AnalyticsSegments<Value: Hashable>: View {
                     .frame(minHeight: 22)
                     .background {
                         if selection == option.value {
-                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
                                 .fill(Palette.raised)
-                                .shadow(color: .black.opacity(0.12), radius: 1, y: 0.5)
+                                .depth(.card)
                         }
                     }
                     .contentShape(Rectangle())
@@ -44,7 +44,7 @@ struct AnalyticsSegments<Value: Hashable>: View {
             }
         }
         .padding(2)
-        .background(Palette.fill2, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Palette.fill2, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .fixedSize()
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(label))

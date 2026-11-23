@@ -20,7 +20,7 @@ struct ProductPageChooseFilesButton: View {
             guard let urls = ProductPageScreenshotFilePanel.choose(pageName: page.name, language: language, device: viewModel.device) else { return }
             viewModel.chooseFiles(urls, for: page, locale: locale)
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .disabled(!viewModel.canChooseFiles(for: page))
         .help(Text("Use screenshots you already have for this page only. The default page doesn’t change."))
         .accessibilityIdentifier("pages.screenshots.chooseFiles")

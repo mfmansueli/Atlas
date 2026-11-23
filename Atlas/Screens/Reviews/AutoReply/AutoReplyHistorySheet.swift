@@ -26,6 +26,8 @@ struct AutoReplyHistorySheet: View {
             List(entries) { entry in
                 row(entry)
             }
+            // Rows hold row-sized (24 pt) controls.
+            .controlSize(.regular)
             .listStyle(.inset)
             Divider()
             HStack {
@@ -57,7 +59,7 @@ struct AutoReplyHistorySheet: View {
                 if let error = errors[entry.id] {
                     Text(error)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.warningMark)
+                        .foregroundStyle(Palette.warnMark)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

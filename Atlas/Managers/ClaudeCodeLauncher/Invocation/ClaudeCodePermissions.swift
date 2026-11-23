@@ -34,13 +34,21 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// project folder only), and bump its build number. Never archives or
     /// uploads.
     case deepLinkWork
+    /// Make Review Screenshots… in Pricing: read the project, build the
+    /// app, open its paywall in a simulator and upload each capture to the
+    /// review screenshot link. Never changes the project.
+    case reviewShots
+    /// Add StoreKit Configuration…: the same, and also add a StoreKit
+    /// configuration to the project (and set it in the scheme's Run
+    /// action) so the paywall shows prices in Simulator.
+    case reviewShotsStoreKit
 
     /// `--tools`: the built-in tools available at all.
     var tools: [String] {
         switch self {
         case .atlasOnly: []
-        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures: ["Read", "Grep", "Glob", "Bash"]
-        case .deepLinkWork: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
+        case .deepLinkWork, .reviewShotsStoreKit: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
 
@@ -84,6 +92,11 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                 + Self.uploadRules(port: port, path: MCPEndpoint.pageShotsPath)
         case .deepLinkWork:
             return atlas + reading + ["Edit", "Write"] + Self.linkCommands
+        case .reviewShots, .reviewShotsStoreKit:
+            // Captures go to the review screenshot link, and nowhere else.
+            let capturing = atlas + reading + Self.linkCommands + ["Bash(xcrun xcresulttool:*)"]
+                + Self.uploadRules(port: port, path: MCPEndpoint.reviewScreenshotPath)
+            return self == .reviewShotsStoreKit ? capturing + ["Edit", "Write"] : capturing
         }
     }
 
@@ -127,7 +140,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         switch self {
         case .atlasOnly, .readProject, .eventArtwork: []
         case .autopilot: ["Bash(xcrun simctl io * screenConfig*)"]
-        case .deepLinkCheck, .deepLinkWork, .pageCaptures: Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
+        case .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit:
+            Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
         }
     }
 
@@ -150,7 +164,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             "Never push or change App Store Connect directly; everything goes through Atlas's tools, and the person reviews it there.",
             "If something you need is refused or missing, say so in one sentence in your last message and finish.",
         ]
-        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .pageCaptures].contains(self) {
+        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit].contains(self) {
             lines.append(
                 "Find files with Glob and Grep and read them with Read. Run each allowed command on its own: "
                     + "a pipe, ;, && or cd in front of it is refused."
@@ -189,6 +203,17 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                     + "Run xcodebuild in the foreground and wait for it. You can't edit the "
                     + "project: set screens up with the app's own launch arguments and sample data, and if a screen can't be "
                     + "shown that way, say so in your last message. Never archive, export or upload a build."
+            )
+        }
+        if self == .reviewShots || self == .reviewShotsStoreKit {
+            lines.append(Self.reviewShotsPrompt)
+            lines.append(
+                self == .reviewShots
+                    ? "You can't edit the project here: when the paywall can't be reached or shows no prices, say so with "
+                    + "report_review_screenshot_run."
+                    : "You may edit and write files in this project only, to add the StoreKit configuration and set it in the "
+                    + "Run action of the scheme you build. Keep the change small, and say in your last message which files you "
+                    + "changed. Never commit or push."
             )
         }
         if self == .deepLinkCheck {
@@ -234,6 +259,20 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         return lines.joined(separator: "\n")
     }
 
+    /// What a review screenshot run is told about capturing a paywall
+    /// without tapping, and uploading.
+    static let reviewShotsPrompt = """
+    To capture purchase screens you may also run xcodebuild, xcrun simctl, xcrun xcresulttool, open -a Simulator, \
+    mkdir, ls, sleep and echo, each on its own. You can't tap in the Simulator from here: open the paywall and select \
+    a plan with the app's own deep links (xcrun simctl openurl booted '<link>'), launch arguments or debug scenes \
+    (they go after the bundle ID in xcrun simctl launch), or its UI tests (xcodebuild test -only-testing:… \
+    -resultBundlePath <path>, then xcrun xcresulttool export attachments). When no way selects a plan, a capture where \
+    the product's plan and price show on the paywall is fine: say in planShown which plan is selected. Save each \
+    screen with xcrun simctl io booted screenshot <file>. Upload each with exactly: curl -s --data-binary @<file> \
+    -H 'Content-Type: image/png' '<reviewScreenshotUploadURL from get_subscriptions>?name=<file name>'. \
+    Run xcodebuild in the foreground and wait for it. Never buy anything, and never archive, export or upload a build.
+    """
+
     /// For Settings: "Suggestions, translations, privacy".
     var title: String {
         switch self {
@@ -244,6 +283,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .deepLinkCheck: String(localized: "In-App Event deep link check")
         case .deepLinkWork: String(localized: "In-App Event deep link fix")
         case .pageCaptures: String(localized: "Product page captures")
+        case .reviewShots: String(localized: "Pricing review screenshots")
+        case .reviewShotsStoreKit: String(localized: "Pricing review screenshots with StoreKit")
         }
     }
 
@@ -257,6 +298,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .deepLinkCheck: String(localized: "Reading the project, xcodebuild and xcrun simctl; never uploads")
         case .deepLinkWork: String(localized: "Also edits files in the project folder; never uploads")
         case .pageCaptures: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of captures to Atlas")
+        case .reviewShots: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of review screenshots to Atlas")
+        case .reviewShotsStoreKit: String(localized: "Also adds a StoreKit configuration in the project folder; never uploads a build")
         }
     }
 }

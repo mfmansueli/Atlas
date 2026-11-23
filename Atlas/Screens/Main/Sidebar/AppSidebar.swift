@@ -59,7 +59,7 @@ struct AppSidebar: View {
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("App")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .padding(.horizontal, Spacing.small)
                     .accessibilityAddTraits(.isHeader)
@@ -147,7 +147,7 @@ struct AppSidebar: View {
         if viewModel.isLoading, viewModel.apps.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 ForEach(0..<6, id: \.self) { _ in
-                    SkeletonBlock(height: 22, cornerRadius: 6)
+                    SkeletonBlock(height: 22, cornerRadius: Radius.menuRow)
                 }
                 // The app menu's footer says it too, but nothing opens it yet.
                 Text("Syncing with App Store Connect…")

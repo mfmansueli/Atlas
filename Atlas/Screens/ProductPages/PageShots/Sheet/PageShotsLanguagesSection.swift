@@ -18,7 +18,7 @@ struct PageShotsLanguagesSection: View {
         let ready = Set(flow.readyLocales)
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                Text("Own images for").font(.headline)
+                Text("Own images for").font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("\(chosen.count) of \(flow.languages.count) languages")
                     .font(.subheadline)

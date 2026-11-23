@@ -20,7 +20,7 @@ struct PriceTileButton: View {
     var body: some View {
         Button(action: onSelect) {
             Text(tile.code)
-                .font(.system(size: 10, weight: .semibold).monospaced())
+                .font(.footnote.weight(.semibold).monospaced())
                 .foregroundStyle(tile.usesLightText ? Color.white : Palette.label)
                 .frame(width: PriceTileMapView.tileSize, height: PriceTileMapView.tileSize)
                 .background(fill, in: RoundedRectangle(cornerRadius: Radius.badge - 1, style: .continuous))

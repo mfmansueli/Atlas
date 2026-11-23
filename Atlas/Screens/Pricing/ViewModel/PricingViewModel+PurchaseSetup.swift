@@ -10,7 +10,9 @@ import Foundation
 /// product's change), which the push sends.
 extension PricingViewModel {
     var setupQueue: PurchaseSetupQueue {
-        PurchaseSetupQueue(app: app, queue: queue)
+        // The folder the cards keep their files in, so the change points
+        // where the file is.
+        PurchaseSetupQueue(app: app, queue: queue, folder: setup.folder)
     }
 
     // MARK: - New in-app purchases
@@ -120,6 +122,8 @@ extension PricingViewModel {
 
     /// Reads every product's offers and screenshot, for the cards.
     func loadPurchaseExtras() async {
+        refreshReviewShots()
         await setup.load(catalog?.products ?? [])
+        refreshReviewShots()
     }
 }

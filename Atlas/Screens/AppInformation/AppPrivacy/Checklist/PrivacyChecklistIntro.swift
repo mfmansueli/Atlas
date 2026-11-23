@@ -25,7 +25,7 @@ struct PrivacyChecklistIntro: View {
                 Button(String(localized: "Tile with Safari"), action: viewModel.tileWithSafari)
                     .accessibilityIdentifier("appInformation.appPrivacy.checklist.tile")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             HStack(spacing: Spacing.small) {
                 MeterBar(fraction: viewModel.progress, tint: Palette.accent)
                     .accessibilityHidden(true)

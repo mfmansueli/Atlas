@@ -43,6 +43,8 @@ struct LocaleScopeTable: View {
             }
             .width(min: 120, ideal: 150)
         }
+        // Rows hold row-sized (24 pt) controls.
+        .controlSize(.regular)
         .tableStyle(.inset)
         .alternatingRowBackgrounds(.disabled)
         .accessibilityIdentifier("screenshots.scope.table")
@@ -56,7 +58,7 @@ struct LocaleScopeTable: View {
                 Button("Use Template Again") {
                     Task { await viewModel.useTemplateAgain(row.locale.code) }
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("screenshots.scope.useTemplate.\(row.locale.code)")
             }
         } else {

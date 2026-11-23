@@ -56,7 +56,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
         .background {
             ZStack {
                 Rectangle().fill(.ultraThinMaterial)
-                Color(red: 12 / 255, green: 12 / 255, blue: 16 / 255).opacity(0.88)
+                Palette.viewerStage.opacity(0.88)
             }
             .contentShape(Rectangle())
             .onTapGesture { onClose() }
@@ -103,7 +103,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
         HStack(spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                     .accessibilityIdentifier("\(identifier).title")
@@ -137,7 +137,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
 
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .font(.system(size: 17, weight: .medium))
+                .font(.title2.weight(.medium))
                 .foregroundStyle(.white.opacity(isEnabled ? 1 : 0.35))
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(.white.opacity(configuration.isPressed ? 0.28 : 0.16)))

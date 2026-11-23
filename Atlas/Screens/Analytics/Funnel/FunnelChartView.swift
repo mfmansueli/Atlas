@@ -15,7 +15,7 @@ struct FunnelChartView: View {
     var body: some View {
         Card(padding: Spacing.medium) {
             FlowLayout(spacing: Spacing.medium) {
-                Text(chart.title).font(.headline)
+                Text(chart.title).font(.body.weight(.semibold))
                 if chart.hasPrevious { legend(String(localized: "Previous period")) { Rectangle().fill(Palette.fill2) } }
                 legend(String(localized: "This period")) { Rectangle().fill(Palette.accent).frame(height: 2) }
                 if chart.average != nil {
@@ -105,7 +105,7 @@ struct FunnelChartView: View {
                     }
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.mini)
+                    .controlSize(.regular)
                     .help("\(mark.title) · pushed from Atlas")
                     .accessibilityLabel(Text("\(AnalyticsText.day(mark.date)), \(mark.title). Open its result"))
                 }

@@ -32,7 +32,7 @@ struct AutopilotConceptThumbnail: View {
                 shows: plan.alsoMakes.artworkShows, isMotion: plays, plays: plays, page: page
             )
         } else {
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                 .fill(Palette.fill2)
                 .frame(width: width, height: height)
                 .accessibilityHidden(true)

@@ -17,10 +17,10 @@ struct AssistantFolderRow<Action: View>: View {
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Image(systemName: "folder.fill")
-                .font(.system(size: 16))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(Palette.accentText)
                 .frame(width: 32, height: 32)
-                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 title

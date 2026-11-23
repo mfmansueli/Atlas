@@ -29,7 +29,7 @@ struct AskFlightView: View {
                 if let ring = AskTokenPath.ring(at: elapsed - AskTokenPath.landing) {
                     // The stroke's inner edge sits on the button's.
                     Capsule()
-                        .stroke(Palette.suggestionBadge.opacity(ring.opacity), lineWidth: ring.spread)
+                        .stroke(Palette.aiFill.opacity(ring.opacity), lineWidth: ring.spread)
                         .frame(width: target.width + ring.spread, height: target.height + ring.spread)
                         .position(x: target.midX, y: target.midY)
                 }
@@ -43,12 +43,12 @@ struct AskFlightView: View {
     private struct Token: View {
         var body: some View {
             Image(systemName: "sparkle")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Palette.suggestionBadgeText)
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(Palette.aiFillLabel)
                 .frame(width: AskTokenPath.size, height: AskTokenPath.size)
-                .background(Palette.suggestionBadge, in: Circle())
-                .background(Circle().stroke(Palette.suggestionBusyTint, lineWidth: 8))
-                .shadow(color: Palette.suggestionBadge.opacity(0.45), radius: 9, y: 6)
+                .background(Palette.aiFill, in: Circle())
+                .background(Circle().stroke(Palette.aiBusyTint, lineWidth: 8))
+                .shadow(color: Palette.aiFill.opacity(0.45), radius: 9, y: 6)
         }
     }
 }

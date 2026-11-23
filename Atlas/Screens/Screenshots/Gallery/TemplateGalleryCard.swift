@@ -34,7 +34,7 @@ struct TemplateGalleryCard: View {
             .overlay(alignment: .topTrailing) {
                 if let pickNumber {
                     Text(pickNumber.formatted())
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.subheadline.weight(.bold))
                         .foregroundStyle(.white)
                         .frame(width: 18, height: 18)
                         .background(Circle().fill(Palette.accent))
@@ -45,7 +45,7 @@ struct TemplateGalleryCard: View {
             }
             HStack(spacing: Spacing.xSmall) {
                 Text(starter.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if isInUse {
                     Pill(text: String(localized: "In use"), style: .accent)
@@ -81,7 +81,7 @@ struct TemplateGalleryCard: View {
     @ViewBuilder
     private var button: some View {
         let button = Button(buttonTitle, action: onUse)
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityLabel(Text("\(buttonTitle): \(starter.title)"))
             .accessibilityIdentifier("screenshots.starter.\(starter.rawValue)")
         if isProminent {

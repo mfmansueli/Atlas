@@ -14,7 +14,7 @@ struct PhasedReleaseBars: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 3) {
                 ForEach(1...PhasedRelease.dayCount, id: \.self) { index in
-                    RoundedRectangle(cornerRadius: 2)
+                    RoundedRectangle(cornerRadius: Radius.flag)
                         .fill(index <= day ? (isPaused ? Palette.label3 : Palette.accentTint) : Palette.fill2)
                         .frame(height: 6)
                 }

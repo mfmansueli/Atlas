@@ -33,12 +33,12 @@ struct ExtrasFileThumbnail: View {
             } else if Self.isReading(url, readURL: readURL) {
                 ImageLoadingTile(controlSize: width >= 60 ? .small : .mini)
             } else {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                     .strokeBorder(Palette.separator2, style: StrokeStyle(lineWidth: 1, dash: [3]))
             }
         }
         .frame(width: size.width, height: size.height)
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
         .task(id: url) {
             image = await Self.thumbnail(url, maxPixels: Int(max(size.width, size.height) * 3))
             readURL = url

@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// A row of the Overview's "suggestions waiting for you": a section, what
+/// A row of the Overview's "suggestions to review": a section, what
 /// it changes on the App Store, where its suggestions are, and how many.
 struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
     var section: AppWorkspaceSection
@@ -45,6 +45,15 @@ struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
         case 0: String(localized: "Open \(title)")
         case 1: String(localized: "Open \(title), 1 suggestion to review")
         default: String(localized: "Open \(title), \(count) suggestions to review")
+        }
+    }
+
+    /// The list's title: "65 suggestions to review", or "Nothing to review".
+    static func title(total: Int) -> String {
+        switch total {
+        case 0: String(localized: "Nothing to review")
+        case 1: String(localized: "1 suggestion to review")
+        default: String(localized: "\(total) suggestions to review")
         }
     }
 

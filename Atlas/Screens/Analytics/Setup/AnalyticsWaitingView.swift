@@ -21,7 +21,7 @@ struct AnalyticsWaitingView: View {
     var body: some View {
         VStack(spacing: Spacing.large) {
             Image(systemName: "clock")
-                .font(.system(size: 30, weight: .regular))
+                .font(.largeTitle.bold())
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
             Text("Apple is preparing the reports")
@@ -55,7 +55,7 @@ struct AnalyticsWaitingView: View {
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                 Button("Check Now", action: onCheck)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(isChecking)
             }
         }

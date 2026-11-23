@@ -58,7 +58,7 @@ struct ReviewViewerContentView: View {
                     nothingLive
                 } else {
                     StudioShotImage(image: large ?? thumbnail(of: shot), width: width, aspect: aspect, cornerFraction: 0.05)
-                        .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+                        .depth(.sheet)
                 }
             }
             .task { large = await largeImage(of: shot) }
@@ -72,7 +72,7 @@ struct ReviewViewerContentView: View {
             } else {
                 ZoomableContainer(identifier: Self.zoomIdentifier, label: item.title) {
                     StudioShotImage(image: large, width: width, aspect: aspect, cornerFraction: 0.01)
-                        .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+                        .depth(.sheet)
                 }
                 .task { large = await artworkImage(extra) }
             }
@@ -100,7 +100,7 @@ struct ReviewViewerContentView: View {
         } else {
             ZoomableContainer(identifier: Self.zoomIdentifier, label: item.title) {
                 StudioShotImage(image: large, width: width, aspect: aspect, cornerFraction: 0.01)
-                    .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+                    .depth(.sheet)
             }
             .task { large = await fileImage(file) }
         }

@@ -23,34 +23,34 @@ struct AutopilotButtonLabel: View {
             case .idle:
                 AutopilotSparkle()
                 if !isCompact, let title {
-                    Text(title).foregroundStyle(Palette.machineTranslated)
+                    Text(title).foregroundStyle(Palette.ai)
                 }
                 if isPro { ProChip() }
-            case let .working(text, _):
+            case let .working(text, _), let .counting(text, _):
                 AutopilotSparkle(isWorking: true)
                 if !isCompact { Text(text).foregroundStyle(Palette.label) }
             case let .done(text):
                 AutopilotDoneMark()
-                if !isCompact { Text(text).foregroundStyle(Palette.done) }
+                if !isCompact { Text(text).foregroundStyle(Palette.ok) }
             case let .needsYou(text):
-                AutopilotSparkle(color: Palette.suggestionBadgeText)
+                AutopilotSparkle(color: Palette.aiFillLabel)
                 if !isCompact {
                     Text(text)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Palette.suggestionBadgeText)
+                        .foregroundStyle(Palette.aiFillLabel)
                 }
             case let .failed(text):
                 AutopilotSparkle(color: Palette.label2)
                 if !isCompact { Text(text).foregroundStyle(Palette.label) }
             case let .autoReplyOn(text):
                 Circle()
-                    .fill(Palette.positive)
+                    .fill(Palette.ok)
                     .frame(width: 7, height: 7)
                     .accessibilityHidden(true)
                 if !isCompact { Text(text).foregroundStyle(Palette.label) }
             }
         }
-        .font(.system(size: 13, weight: .medium))
+        .font(.body.weight(.medium))
         .lineLimit(1)
         .frame(maxWidth: 280)
     }

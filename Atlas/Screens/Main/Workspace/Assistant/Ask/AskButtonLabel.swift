@@ -15,7 +15,7 @@ struct AskButtonLabel: View {
             Text(title)
         } icon: {
             Image(systemName: "sparkle")
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
         }
     }
 }

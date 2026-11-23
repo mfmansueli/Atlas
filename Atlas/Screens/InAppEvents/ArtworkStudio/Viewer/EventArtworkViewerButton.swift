@@ -53,8 +53,8 @@ struct EventArtworkViewerButton: View {
                 .frame(width: size, height: size)
         case .capsule:
             HStack(spacing: Spacing.xxSmall) {
-                if let systemImage { Image(systemName: systemImage).font(.system(size: 11, weight: .semibold)) }
-                if let title { Text(title).font(.system(size: 12, weight: .medium)) }
+                if let systemImage { Image(systemName: systemImage).font(.subheadline.weight(.semibold)) }
+                if let title { Text(title).font(.callout.weight(.medium)) }
             }
             .padding(.horizontal, 12)
             .frame(height: 28)

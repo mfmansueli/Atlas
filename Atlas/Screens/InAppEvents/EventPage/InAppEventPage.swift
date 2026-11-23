@@ -96,7 +96,7 @@ struct InAppEventPage: View {
                     }
                     TimelineView(.everyMinute) { _ in
                         Text(viewModel.footerText)
-                            .font(.system(size: 10))
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("events.footer.text")

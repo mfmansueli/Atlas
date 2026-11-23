@@ -17,8 +17,8 @@ struct AssistantSuggestionCTA: View {
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Image(systemName: "apple.terminal")
-                .font(.title3)
-                .foregroundStyle(Palette.machineTranslated)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(Palette.ai)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -35,7 +35,7 @@ struct AssistantSuggestionCTA: View {
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("suggestions.ctaSetUp")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.leading, 14)
         .padding(.trailing, Spacing.medium)
         .padding(.vertical, 11)

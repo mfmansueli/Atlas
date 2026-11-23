@@ -32,7 +32,7 @@ struct AppPreviewTimeline: View {
                                 }
                                 .frame(height: 5)
                             Text(scene.title)
-                                .font(.caption2.weight(isCurrent ? .semibold : .regular))
+                                .font(.footnote.weight(isCurrent ? .semibold : .regular))
                                 .foregroundStyle(isCurrent ? Palette.label : Palette.label2)
                                 .lineLimit(1)
                                 .truncationMode(.tail)

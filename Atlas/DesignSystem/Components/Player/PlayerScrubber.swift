@@ -35,7 +35,7 @@ struct PlayerScrubber: View {
                 Circle()
                     .fill(Color.white)
                     .frame(width: Self.knob, height: Self.knob)
-                    .shadow(color: .black.opacity(0.35), radius: 1.5, y: 0.5)
+                    .depth(.card)
                     .offset(x: min(max(width * fraction - Self.knob / 2, 0), width - Self.knob))
                     .opacity(isEnabled ? 1 : 0)
             }

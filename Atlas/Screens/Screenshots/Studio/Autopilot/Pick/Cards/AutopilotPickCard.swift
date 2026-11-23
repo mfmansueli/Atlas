@@ -42,7 +42,7 @@ struct AutopilotPickCard: View {
                 Pill(text: studio.pickBadge(run, screenID: screen.id), style: studio.isYourPick(run, screenID: screen.id) ? .neutral : .accent)
                     .accessibilityIdentifier("autopilot.pick.badge.\(index)")
             } else {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                     .fill(Palette.fill1)
                     .frame(width: Self.pickWidth, height: Self.pickWidth * 2.17)
                     .overlay(Text("No capture").font(.subheadline).foregroundStyle(Palette.label2))

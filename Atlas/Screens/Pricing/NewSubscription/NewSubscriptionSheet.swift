@@ -271,8 +271,8 @@ struct NewSubscriptionSheet: View {
                 if let limit = field.limit, limit <= 100 {
                     let count = NewSubscription.trimmed(text.wrappedValue).count
                     Text(verbatim: "\(count)/\(limit)")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(count > limit ? Palette.danger : Palette.label2)
+                        .font(.footnote.monospacedDigit())
+                        .foregroundStyle(count > limit ? Palette.err : Palette.label2)
                 }
             }
             problemText(for: field)
@@ -301,7 +301,7 @@ struct NewSubscriptionSheet: View {
         if let problem = currentProblems.first(where: { $0.field == field && (showsMissing || !Self.isMissing($0)) }) {
             Text(problem.message)
                 .font(.subheadline)
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pricing.newSubscription.\(field.rawValue).problem")
         }

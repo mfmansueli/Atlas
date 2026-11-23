@@ -68,7 +68,7 @@ struct LanguageMenu: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if entry.comingCount > 0 {
                     Text("\(entry.comingCount) coming")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Palette.label2)
                         .fixedSize()
                 }
@@ -79,7 +79,7 @@ struct LanguageMenu: View {
                 SuggestionBadge(count: entry.count)
                 if entry.count == 0 {
                     Image(systemName: "checkmark")
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label3)
                 }
             }
@@ -87,7 +87,7 @@ struct LanguageMenu: View {
             .padding(.horizontal, Spacing.small)
             .background(
                 entry.locale == model.current ? AnyShapeStyle(Palette.accentTint) : AnyShapeStyle(.clear),
-                in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
             )
             .contentShape(Rectangle())
         }

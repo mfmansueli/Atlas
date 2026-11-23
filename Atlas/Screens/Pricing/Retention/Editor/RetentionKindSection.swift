@@ -47,7 +47,7 @@ struct RetentionKindSection: View {
             if let image = message.image {
                 RetentionArtworkView(image: image)
                     .frame(width: 150, height: 150 * CGFloat(image.pixelHeight) / CGFloat(max(1, image.pixelWidth)))
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 Text(imageDetail(image))
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)

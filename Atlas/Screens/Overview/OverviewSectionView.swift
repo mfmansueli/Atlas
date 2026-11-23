@@ -6,10 +6,10 @@
 import AppKit
 import SwiftUI
 
-/// The landing page for the selected app (⌘1): a header with quick actions
-/// and summary cards for subscriptions, territory prices, the pricing mode,
-/// the store page, App Information, pending changes and the last push. It
-/// runs Suggest Everything: Suggest Everything… starts Claude Code when its
+/// The landing page for the selected app (⌘1), three lists beside the App
+/// Store page: what the version still needs, the suggestions to review and
+/// After release (README — redesign, November 22). It runs Suggest
+/// Everything: Suggest Everything… starts Claude Code when its
 /// helper is saved (else copies the prompt) and waits in a popover, and
 /// once the assistant announces its plan the progress card takes the
 /// assistant card's place until Done, with the run's strip under it.
@@ -22,8 +22,6 @@ struct OverviewSectionView: View {
 
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(ChangeQueue.self) private var changes
-    @Environment(PushHistory.self) private var history
-    @Environment(PricingModeStore.self) private var pricingModes
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(AppPreferences.self) private var preferences
     @Environment(MCPServerController.self) private var assistants
@@ -48,34 +46,24 @@ struct OverviewSectionView: View {
                 if isLoading {
                     OverviewSkeleton()
                 } else {
-                    OverviewHeader(
-                        app: app,
-                        storePage: storePage,
-                        versionState: release?.headerState,
-                        territoryCount: pricing.map { $0.equalizedTerritoryCount + $0.customTerritoryCount },
-                        showsReviewSuggestions: mode.showsSuggestions && pricing?.sellsAnything == true,
-                        onReviewSuggestions: reviewSuggestions,
-                        onTranslateMissing: { navigator.open(.storePage, intent: .translateMissing) }
-                    )
                     if let message = errorMessage {
                         InlineMessage.error(message)
                             .accessibilityIdentifier("overview.error")
                     }
-                    assistantCard
-                    stabilityAlert
                     OverviewPageAndWaiting(
                         app: app, services: services, content: shownContent, width: width, storePage: storePage, newLanguages: newLanguages,
-                        release: release
-                    )
-                    Text("Details")
-                        .font(.headline)
-                        .padding(.top, Spacing.small)
-                        .accessibilityAddTraits(.isHeader)
-                    cards
+                        release: release, afterRelease: afterRelease
+                    ) {
+                        assistantCard
+                        stabilityAlert
+                    }
                 }
             }
-            .padding(Spacing.xxLarge)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            // The prototype's Overview: 12 pt under the toolbar, 20 at the
+            // sides, at most 1080 wide and centred.
+            .padding(EdgeInsets(top: Spacing.medium, leading: Spacing.xLarge, bottom: Spacing.xxLarge, trailing: Spacing.xLarge))
+            .frame(maxWidth: 1080 + 2 * Spacing.xLarge)
+            .frame(maxWidth: .infinity)
             .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 }
         }
         .accessibilityIdentifier("workspace.overview")
@@ -204,62 +192,6 @@ struct OverviewSectionView: View {
         }
     }
 
-    private var cards: some View {
-        // Not lazy: under the page and what's waiting, the cards start below
-        // the fold, and VoiceOver and UI tests need them all.
-        AdaptiveGridLayout(minimumWidth: Metrics.overviewCardMinimumWidth, spacing: 14) {
-            SuggestionsCard(
-                summary: SuggestionsSummary(open: overviewSuggestions),
-                assistant: assistants.assistantStatus.clientName,
-                run: run,
-                lockedPages: storePage?.hasEditableVersion == false ? [.appReview] : [],
-                suggestTitle: assistants.assistantStatus.isReady
-                    ? String(localized: "Generate Store Page Suggestions…")
-                    : String(localized: "Suggest Everything…"),
-                newLanguages: newLanguages,
-                onSuggest: suggestEverything
-            ) {
-                navigator.open(.storePage, intent: .reviewFieldSuggestions(.storePage))
-            }
-            if let pricing {
-                SubscriptionsCard(summary: pricing)
-                if pricing.sellsAnything {
-                    TerritoryPricesCard(summary: pricing)
-                    PricingModeCard(
-                        mode: mode,
-                        summary: pricing,
-                        onReviewSuggestions: reviewSuggestions,
-                        onShowSuggestions: {
-                            pricingModes.setMode(.showSuggestions, for: app.id)
-                            navigator.open(.subscriptionPricing, intent: .reviewSuggestions)
-                        }
-                    )
-                }
-            }
-            if let storePage {
-                StorePageCard(summary: storePage, languagesText: newLanguages?.languagesText) { navigator.open(.storePage) }
-            }
-            if let information = summaries.appInformation[app.id]?.value {
-                AppInformationCard(summary: information) {
-                    navigator.open(.appInformation)
-                } onOpenPrivacy: { tab in
-                    navigator.open(.appInformation, intent: .openAppInformationPage(.appPrivacy, privacyTab: tab))
-                }
-            }
-            ProductPagesOverviewCard(summary: productPagesSummary) {
-                navigator.open(.productPages, intent: .showProductPage(name: nil))
-            }
-            analyticsCard
-            ReviewsOverviewCard(archive: reviewsStore.archive(for: app.id), isPro: !pro.isFree) {
-                navigator.open(.reviews)
-            } onReplyToAll: {
-                navigator.open(.reviews, intent: .replyToAllReviews)
-            }
-            PendingChangesCard(count: changes.count(for: app.id))
-            LastPushCard(record: history.lastRecord(for: app.id)) { navigator.isActivityPresented = true }
-        }
-    }
-
     /// The newest version crashes clearly more than the one before.
     @ViewBuilder
     private var stabilityAlert: some View {
@@ -272,25 +204,18 @@ struct OverviewSectionView: View {
         }
     }
 
-    /// The funnel's last 28 days in one line, from what's on this Mac.
-    private var analyticsCard: some View {
+    /// After release: the funnel's last 28 days, the reviews waiting for a
+    /// reply and the product pages, one line each.
+    private var afterRelease: [OverviewAfterReleaseRow] {
         let setup = analytics.setup(for: app.id)
         let report: FunnelReport? = setup == .ready
             ? FunnelReport.make(analytics.dataset(for: app, sellsSubscriptions: (pricing?.subscriptionCount ?? 1) > 0), days: 28)
             : nil
-        return AnalyticsOverviewCard(setup: setup, report: report, topFinding: analytics.findings(for: app.id).open.first) {
-            navigator.open(.analytics)
-        }
-    }
-
-    /// The open suggestions the Suggestions card counts: drafts of languages
-    /// not added yet show as New languages instead.
-    private var overviewSuggestions: [FieldSuggestion] {
-        let pending = Set((newLanguages?.pending ?? []).map(\.code))
-        return suggestions.toReview(for: app.id).filter { suggestion in
-            guard case let .storePage(code) = suggestion.target.scope else { return true }
-            return !pending.contains(code)
-        }
+        return [
+            .analytics(setup: setup, report: report, newFindings: analytics.findings(for: app.id).open.count),
+            .reviews(archive: reviewsStore.archive(for: app.id), isPro: !(pro?.isFree ?? false)),
+            .productPages(productPagesSummary),
+        ]
     }
 
     /// The languages the app supports and its App Store page doesn't, once
@@ -311,10 +236,6 @@ struct OverviewSectionView: View {
         summaries.pricing[app.id]?.errorMessage
             ?? summaries.storePage[app.id]?.errorMessage
             ?? summaries.appInformation[app.id]?.errorMessage
-    }
-
-    private func reviewSuggestions() {
-        navigator.open(.subscriptionPricing, intent: .reviewSuggestions)
     }
 
     // MARK: - Suggest Everything
@@ -457,5 +378,4 @@ private extension OverviewSectionView {
 
     var pricing: PricingSummary? { summaries.pricing[app.id]?.value }
     var storePage: StorePageSummary? { summaries.storePage[app.id]?.value }
-    var mode: PricingMode { pricingModes.mode(for: app.id) }
 }

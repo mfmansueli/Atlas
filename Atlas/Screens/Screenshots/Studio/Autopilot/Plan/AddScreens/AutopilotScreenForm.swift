@@ -59,7 +59,7 @@ struct AutopilotScreenForm: View {
                     .disabled(!draft.wrappedValue.canAdd || studio.plansMaximumScreens(on: display))
                     .accessibilityIdentifier("autopilot.plan.form.add")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
         .background(Palette.fill1.opacity(0.5), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))

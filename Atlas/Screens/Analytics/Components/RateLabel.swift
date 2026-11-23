@@ -25,7 +25,7 @@ struct RateLabel: View {
                 Text(rate.text)
                 if let standing = measured.standing {
                     Text(standing.mark)
-                        .font(.system(size: 10))
+                        .font(.footnote)
                         .foregroundStyle(Self.color(for: standing))
                 }
                 ConfidenceMeter(bars: measured.bars)
@@ -42,7 +42,7 @@ struct RateLabel: View {
     static func color(for standing: RateStanding) -> Color {
         switch standing {
         case .better: Palette.label
-        case .worse: Palette.warning
+        case .worse: Palette.warn
         case .same: Palette.label3
         }
     }

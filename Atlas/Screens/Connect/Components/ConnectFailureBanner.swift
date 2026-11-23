@@ -15,14 +15,14 @@ struct ConnectFailureBanner: View {
     var body: some View {
         HStack(alignment: isOffline ? .center : .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: isOffline ? "wifi.slash" : "exclamationmark.circle")
-                .foregroundStyle(isOffline ? Palette.label2 : Palette.dangerMark)
+                .foregroundStyle(isOffline ? Palette.label2 : Palette.errMark)
                 .accessibilityHidden(true)
             if isOffline {
                 Text("\(Text(failure.title).bold()) \(Text(failure.message).foregroundStyle(Palette.label2))")
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: Spacing.small)
                 Button("Try Again", action: onRetry)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("connect.retry")
             } else {
                 VStack(alignment: .leading, spacing: 2) {
@@ -39,7 +39,7 @@ struct ConnectFailureBanner: View {
         .font(.callout)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 1)
-        .background(isOffline ? Palette.fill2 : Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(isOffline ? Palette.fill2 : Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("connect.error")
     }

@@ -95,7 +95,7 @@ struct CoverageGridView: View {
 
     private func groupHeader(_ title: String) -> some View {
         Text(title.uppercased())
-            .font(.caption2.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(Palette.label2)
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)

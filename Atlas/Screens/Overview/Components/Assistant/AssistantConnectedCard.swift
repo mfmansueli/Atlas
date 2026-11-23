@@ -58,7 +58,7 @@ struct AssistantConnectedCard<Popover: View>: View {
                     AssistantStatusDot(status: status, tone: tone)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(title)
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                         Text(detail)
                             .font(.subheadline)
                             .foregroundStyle(Palette.label2)
@@ -84,7 +84,7 @@ struct AssistantConnectedCard<Popover: View>: View {
                     Button("Details", action: onDetails)
                         .accessibilityIdentifier("overview.assistantConnected.details")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             }
             .accessibilityIdentifier("overview.assistantConnected")
             if status.isReady {

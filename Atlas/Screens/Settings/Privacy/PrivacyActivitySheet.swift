@@ -19,7 +19,7 @@ struct PrivacyActivitySheet: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("Activity")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Button("Export…") { isExporting = true }

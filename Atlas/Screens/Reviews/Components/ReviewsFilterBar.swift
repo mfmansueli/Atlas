@@ -30,6 +30,8 @@ struct ReviewsFilterBar: View {
             territoryMenu
             sortMenu
         }
+        // The filter row's controls are row-sized (24 pt), like the prototype's.
+        .controlSize(.regular)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.filterBar")
     }
@@ -59,7 +61,7 @@ struct ReviewsFilterBar: View {
                 viewModel.show(nil)
             } label: {
                 Image(systemName: "xmark")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Clear"))
@@ -93,7 +95,7 @@ struct ReviewsFilterBar: View {
                 Text("All Countries")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .buttonBorderShape(.capsule)
         .fixedSize()
         .accessibilityIdentifier("reviews.territoryMenu")
@@ -109,7 +111,7 @@ struct ReviewsFilterBar: View {
             .pickerStyle(.inline)
             .labelsHidden()
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .buttonBorderShape(.capsule)
         .fixedSize()
         .accessibilityIdentifier("reviews.sortMenu")

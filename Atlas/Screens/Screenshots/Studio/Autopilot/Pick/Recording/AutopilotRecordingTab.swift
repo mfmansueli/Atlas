@@ -19,7 +19,7 @@ struct AutopilotRecordingTab: View {
                 switches
                 AutopilotRecordingPlayer(studio: studio, run: run, width: playerWidth)
                 Button("View Larger") { studio.openRecording(run) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("autopilot.recording.viewLarger")
             }
             .fixedSize()
@@ -98,7 +98,7 @@ struct AutopilotRecordingTab: View {
         let fits = run.pickedPreviewFits
         return HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: fits ? "info.circle" : "exclamationmark.triangle.fill")
-                .foregroundStyle(fits ? Palette.label2 : Palette.warningMark)
+                .foregroundStyle(fits ? Palette.label2 : Palette.warnMark)
                 .accessibilityHidden(true)
             Text(studio.momentsSummary(run))
                 .font(.callout)
@@ -107,7 +107,7 @@ struct AutopilotRecordingTab: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
-        .background(fits ? Palette.fill1 : Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(fits ? Palette.fill1 : Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("autopilot.recording.summary")
     }

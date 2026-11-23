@@ -40,7 +40,7 @@ struct EventArtworkConceptRow: View {
                             }
                         }
                         Text(row.why)
-                            .font(.system(size: 10))
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                             .lineLimit(row.tagTitle == nil ? 2 : 1)
                             .fixedSize(horizontal: false, vertical: true)
@@ -62,7 +62,7 @@ struct EventArtworkConceptRow: View {
             if row.canView {
                 Button(action: onView) {
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.footnote.weight(.semibold))
                         .frame(width: 26, height: 26)
                         .background(Palette.fill2, in: Circle())
                         .contentShape(Circle())
@@ -75,9 +75,9 @@ struct EventArtworkConceptRow: View {
             }
         }
         .opacity(row.isDisabled ? 0.75 : 1)
-        .background(background, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+        .background(background, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 11, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                 .strokeBorder(ring, lineWidth: row.isPreviewed ? (contrast == .increased ? 2.5 : 2) : contrast == .increased ? 1 : 0.5)
         )
         .onHover { isHovered = $0 }
@@ -95,7 +95,7 @@ struct EventArtworkConceptRow: View {
 
     private var name: some View {
         Text(row.name)
-            .font(.system(size: 12, weight: .bold))
+            .font(.callout.weight(.bold))
             .lineLimit(1)
     }
 
@@ -112,22 +112,22 @@ struct EventArtworkConceptRow: View {
         if row.state == .ready || row.state == .animating, let still = row.concept?.still(kind, locale: locale), still.kind == kind {
             InAppEventArtworkThumbnailFill(path: still.path, isVideo: still.isVideo)
                 .frame(width: width, height: 48)
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                 .overlay {
-                    if row.state == .animating { SkeletonBlock(width: width, height: 48, cornerRadius: 6).opacity(0.55) }
+                    if row.state == .animating { SkeletonBlock(width: width, height: 48, cornerRadius: Radius.menuRow).opacity(0.55) }
                 }
         } else if row.isBusy {
-            SkeletonBlock(width: width, height: 48, cornerRadius: 6)
+            SkeletonBlock(width: width, height: 48, cornerRadius: Radius.menuRow)
                 .overlay {
                     if row.state == .redrawing, let still = row.concept?.still(kind, locale: locale), still.kind == kind {
                         InAppEventArtworkThumbnailFill(path: still.path, isVideo: still.isVideo)
                             .opacity(0.4)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                     }
                 }
                 .accessibilityHidden(true)
         } else {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
                 .fill(Palette.fill2)
                 .frame(width: width, height: 48)
         }

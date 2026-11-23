@@ -11,7 +11,7 @@ import SwiftUI
 /// it stays still, the small star dimmed.
 struct AutopilotSparkle: View {
     var isWorking = false
-    var color: Color = Palette.machineTranslated
+    var color: Color = Palette.ai
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

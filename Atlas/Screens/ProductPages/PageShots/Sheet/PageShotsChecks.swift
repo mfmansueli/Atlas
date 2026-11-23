@@ -12,11 +12,11 @@ struct PageShotsChecks: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Checks").font(.headline)
+            Text("Checks").font(.body.weight(.semibold))
             ForEach(checks, id: \.title) { check in
                 HStack(alignment: .top, spacing: Spacing.small) {
                     Image(systemName: check.isOK ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                        .foregroundStyle(check.isOK ? Palette.positive : Palette.warningMark)
+                        .foregroundStyle(check.isOK ? Palette.ok : Palette.warnMark)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(check.title).font(.callout)

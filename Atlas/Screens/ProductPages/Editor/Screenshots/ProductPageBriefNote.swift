@@ -39,7 +39,7 @@ struct ProductPageBriefNote: View {
             if !page.isDraft {
                 Button("Open in App Store Connect") { openURL(viewModel.appStoreConnectURL) }
                     .buttonStyle(.link)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("pages.brief.open")
             }
         }

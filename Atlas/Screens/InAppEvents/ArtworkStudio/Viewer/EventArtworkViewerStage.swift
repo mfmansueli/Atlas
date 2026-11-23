@@ -81,7 +81,7 @@ struct EventArtworkViewerStage: View {
         .overlay(alignment: .topTrailing) {
             if video != nil {
                 Label("0:\(AutopilotArtworkMotion.loopSeconds)", systemImage: "play.fill")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.callout.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
@@ -92,7 +92,7 @@ struct EventArtworkViewerStage: View {
                     .accessibilityIdentifier("events.art.viewer.motion")
             }
         }
-        .shadow(color: .black.opacity(viewer.isFull ? 0 : 0.6), radius: 30, y: 20)
+        .depth(viewer.isFull ? .flat : .sheet)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("events.art.viewer.image.\(viewer.conceptID ?? "event").\(viewer.kind.mcpValue)")
     }
@@ -100,10 +100,10 @@ struct EventArtworkViewerStage: View {
     private var missing: some View {
         VStack(spacing: Spacing.small) {
             Text("!")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(Palette.warning)
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(Palette.warn)
             Text(viewer.kind == .card ? "No event card yet" : "No event details image yet")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -115,7 +115,7 @@ struct EventArtworkViewerStage: View {
             SkeletonBlock(width: size.width, height: size.height, cornerRadius: 0)
                 .opacity(0.5)
             Text("Claude is changing this concept…")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)

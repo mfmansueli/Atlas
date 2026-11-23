@@ -148,8 +148,8 @@ struct ProductPageTestSheet: View {
         if let outcome = model.run?.outcome {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Label(outcome.title, systemImage: outcome.isCreated ? "checkmark.circle.fill" : "info.circle")
-                    .font(.headline)
-                    .foregroundStyle(outcome.isCreated ? Palette.positive : Palette.label)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(outcome.isCreated ? Palette.ok : Palette.label)
                 Text(outcome.detail).font(.callout).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
             }
             .accessibilityElement(children: .combine)

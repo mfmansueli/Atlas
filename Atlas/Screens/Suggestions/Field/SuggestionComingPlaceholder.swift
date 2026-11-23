@@ -38,13 +38,13 @@ struct SuggestionComingPlaceholder: View {
                     path.move(to: CGPoint(x: x, y: size.height))
                     path.addLine(to: CGPoint(x: x + size.height, y: 0))
                 }
-                context.stroke(path, with: .color(Palette.machineTranslatedTint), lineWidth: 5)
+                context.stroke(path, with: .color(Palette.aiSurface), lineWidth: 5)
             }
             .clipShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         }
         .overlay {
             RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
-                .strokeBorder(Palette.machineTranslatedMark.opacity(0.35), lineWidth: 1)
+                .strokeBorder(Palette.aiMark.opacity(0.35), lineWidth: 1)
         }
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("suggestions.coming")

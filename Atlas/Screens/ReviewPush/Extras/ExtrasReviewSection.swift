@@ -40,7 +40,7 @@ struct ExtrasReviewSection: View {
                 discardedNote(discarded)
             }
             if let error = extras.recordError {
-                Text(error).font(.subheadline).foregroundStyle(Palette.danger).padding(.horizontal, Spacing.small)
+                Text(error).font(.subheadline).foregroundStyle(Palette.err).padding(.horizontal, Spacing.small)
             }
         }
         .accessibilityElement(children: .contain)
@@ -56,7 +56,7 @@ struct ExtrasReviewSection: View {
             Spacer(minLength: Spacing.small)
             if viewModel.screenshots.canPushExtras {
                 Button("Asset Library…") { viewModel.openAssetLibrary(plan) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .help(String(localized: "The files uploaded for \(plan.appName) on App Store Connect: see which are on a page and delete leftovers."))
                     .accessibilityIdentifier("review.extras.library.\(plan.appID)")
             }
@@ -66,7 +66,7 @@ struct ExtrasReviewSection: View {
                 Button(count == 1 ? String(localized: "Push 1 Extra") : String(localized: "Push \(count) Extras")) {
                     viewModel.pushExtras(plan)
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(count == 0 || extras.isPushing || !viewModel.screenshots.canPushExtras)
                 .help(String(localized: "Uploads them to the app’s asset library and places each on its language’s page. Images with errors stay here."))
                 .accessibilityIdentifier("review.extras.push.\(plan.appID)")
@@ -108,9 +108,9 @@ struct ExtrasReviewSection: View {
             }
         }
         .background(Palette.raised)
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                 .strokeBorder(Palette.separator, lineWidth: 0.5)
         }
         .accessibilityElement(children: .contain)
@@ -167,7 +167,7 @@ struct ExtrasReviewSection: View {
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(errors.enumerated()), id: \.offset) { _, line in
                     Label(line, systemImage: "xmark.octagon.fill")
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 }
                 ForEach(Array(warnings.enumerated()), id: \.offset) { _, line in
                     Label(line, systemImage: "exclamationmark.triangle")
@@ -190,7 +190,7 @@ struct ExtrasReviewSection: View {
         let title = String(localized: "Test with Product Page Optimization…")
         if placements.count == 1, let placement = placements.first {
             Button(title) { viewModel.openTest(plan, placement: placement) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("review.extras.test.\(placement.rawValue)")
         } else if !placements.isEmpty {
             Menu(title) {
@@ -199,7 +199,7 @@ struct ExtrasReviewSection: View {
                 }
             }
             .menuStyle(.button)
-            .controlSize(.small)
+            .controlSize(.regular)
             .fixedSize()
             .accessibilityIdentifier("review.extras.test.both")
         }

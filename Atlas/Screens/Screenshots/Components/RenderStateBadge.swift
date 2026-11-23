@@ -23,7 +23,7 @@ struct RenderStateBadge: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
         }
-        .font(.caption2.weight(.medium))
+        .font(.footnote.weight(.medium))
         .foregroundStyle(foreground)
         .padding(.horizontal, 5)
         .padding(.vertical, 1)
@@ -58,7 +58,7 @@ struct RenderStateBadge: View {
         if isRendering { return Palette.label2 }
         return switch state {
         case .notPushed, .handNew, .handReplaced: Palette.accentText
-        case .failed, .willBeDeleted: Palette.danger
+        case .failed, .willBeDeleted: Palette.err
         case .noCaption, .noCapture, .fallback, .empty: Palette.label3
         default: Palette.label2
         }
@@ -68,7 +68,7 @@ struct RenderStateBadge: View {
         if isRendering { return .clear }
         return switch state {
         case .notPushed, .handNew, .handReplaced: Palette.accentTint
-        case .failed, .willBeDeleted: Palette.dangerTint
+        case .failed, .willBeDeleted: Palette.errTint
         case .restored: Palette.fill2
         default: .clear
         }

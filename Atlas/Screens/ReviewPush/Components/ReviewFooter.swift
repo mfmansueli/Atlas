@@ -18,7 +18,7 @@ struct ReviewFooter: View {
         HStack(spacing: Spacing.small) {
             Button("Discard All", role: .destructive, action: onDiscardAll)
                 .buttonStyle(.borderless)
-                .foregroundStyle(viewModel.canDiscardAll ? Palette.danger : Palette.label3)
+                .foregroundStyle(viewModel.canDiscardAll ? Palette.err : Palette.label3)
                 .disabled(!viewModel.canDiscardAll)
                 .accessibilityIdentifier("review.discardAll")
             Spacer()

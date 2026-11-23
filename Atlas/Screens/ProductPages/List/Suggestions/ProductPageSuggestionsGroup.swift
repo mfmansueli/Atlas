@@ -20,7 +20,7 @@ struct ProductPageSuggestionsGroup: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: Spacing.small) {
                 Text(viewModel.pageSuggestionsTitle)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("pages.suggestions.title")
                 if let source = suggestions.first?.source {
@@ -40,7 +40,7 @@ struct ProductPageSuggestionsGroup: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(Text("Accept all \(suggestions.count) suggested pages"))
                     .accessibilityIdentifier("pages.suggestions.acceptAll")
                 }
@@ -48,10 +48,10 @@ struct ProductPageSuggestionsGroup: View {
             .padding(.horizontal, Spacing.medium)
             .padding(.vertical, 10)
             ForEach(suggestions) { suggestion in
-                Divider().overlay(Palette.machineTranslatedMark.opacity(0.25))
+                Divider().overlay(Palette.aiMark.opacity(0.25))
                 ProductPageSuggestionRow(viewModel: viewModel, suggestion: suggestion, isCompact: isCompact)
             }
-            Divider().overlay(Palette.machineTranslatedMark.opacity(0.25))
+            Divider().overlay(Palette.aiMark.opacity(0.25))
             Text("Accepting makes a draft page in Atlas. You still push it and submit it to App Review yourself.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -59,10 +59,10 @@ struct ProductPageSuggestionsGroup: View {
                 .padding(.horizontal, Spacing.medium)
                 .padding(.vertical, Spacing.small)
         }
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
-                .strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1)
+                .strokeBorder(Palette.aiMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1)
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pages.suggestions")

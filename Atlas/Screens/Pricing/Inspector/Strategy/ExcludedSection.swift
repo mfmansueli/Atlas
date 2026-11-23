@@ -61,7 +61,7 @@ struct ExcludedSection: View {
             Button {
                 viewModel.toggleExclusion(of: territory.id)
             } label: {
-                Image(systemName: "xmark").font(.caption2.weight(.bold))
+                Image(systemName: "xmark").font(.footnote.weight(.bold))
             }
             .buttonStyle(.borderless)
             .accessibilityLabel(String(localized: "Include \(territory.name) in the index again"))

@@ -19,7 +19,7 @@ struct CaptionEditorTags: View {
                     Button("Mark Reviewed") {
                         Task { await model.markReviewed() }
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("screenshots.captions.editor.markReviewed")
                 }
             }
@@ -36,7 +36,7 @@ struct CaptionEditorTags: View {
                 Button("Suggest a Shorter Version") {
                     Task { await model.suggestShorter() }
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("screenshots.captions.editor.suggest")
             }
             if model.isSuggesting {

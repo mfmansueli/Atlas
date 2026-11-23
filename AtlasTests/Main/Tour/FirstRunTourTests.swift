@@ -78,6 +78,16 @@ struct FirstRunTourTests {
         #expect(tour.step == .apps)
     }
 
+    @Test func everyStartShowsNewTips() {
+        let tour = FirstRunTour()
+        tour.start()
+        let first = tour.run
+        tour.close()
+        tour.start()
+        #expect(tour.run != first)
+        #expect(TourTip.id(step: .apps, run: first) != TourTip.id(step: .apps, run: tour.run))
+    }
+
     @Test func theFirstRunStartsTheTourOncePerMac() {
         let defaults = freshDefaults()
         let first = FirstRunTour(defaults: defaults)

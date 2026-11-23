@@ -15,7 +15,7 @@ struct InAppEventResultsCard: View {
     var body: some View {
         Card {
             Text("How it did")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             if let results {
                 HStack(alignment: .top, spacing: Spacing.medium) {

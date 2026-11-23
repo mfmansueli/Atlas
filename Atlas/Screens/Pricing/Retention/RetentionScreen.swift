@@ -64,7 +64,7 @@ struct RetentionScreen: View {
         case let .failed(message):
             Card {
                 Text("Atlas couldn’t read the retention messages")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text(message)
                     .foregroundStyle(Palette.label2)
                     .textSelection(.enabled)

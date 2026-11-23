@@ -24,7 +24,7 @@ struct SavedKeyRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: Spacing.xSmall) {
                     Text(account.name)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                     if isInUse {
                         Pill(text: String(localized: "In use"))
                             .accessibilityIdentifier("settings.inUse")
@@ -47,11 +47,11 @@ struct SavedKeyRow: View {
                     .accessibilityIdentifier("settings.test.\(credentials.keyID)")
                 Button(role: .destructive, action: onRemove) {
                     Text("Remove…")
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 }
                 .accessibilityIdentifier("settings.remove.\(credentials.keyID)")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.vertical, Spacing.xSmall)
         .accessibilityElement(children: .contain)
@@ -69,7 +69,7 @@ struct SavedKeyRow: View {
             .font(.subheadline)
             .foregroundStyle(Palette.label2)
         } else if let failure {
-            statusLine(failure.title, systemImage: "xmark.circle", tint: Palette.danger)
+            statusLine(failure.title, systemImage: "xmark.circle", tint: Palette.err)
                 .help(failure.message)
                 .accessibilityIdentifier("settings.failure.\(credentials.keyID)")
         } else if let check {
@@ -77,7 +77,7 @@ struct SavedKeyRow: View {
                 statusLine(
                     check.salesSummary,
                     systemImage: check.salesAccess == .readable ? "checkmark" : "exclamationmark.triangle",
-                    tint: check.salesAccess == .readable ? Palette.label : Palette.warningMark
+                    tint: check.salesAccess == .readable ? Palette.label : Palette.warnMark
                 )
                 statusLine(check.connectionSummary, systemImage: "checkmark", tint: Palette.label2, isSecondary: true)
                     .accessibilityIdentifier("settings.connection.\(credentials.keyID)")

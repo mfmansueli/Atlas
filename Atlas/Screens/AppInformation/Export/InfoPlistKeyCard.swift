@@ -14,7 +14,7 @@ struct InfoPlistKeyCard: View {
     var body: some View {
         Card(padding: Spacing.medium + 2) {
             Text("Skip the question for every build")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text("""
             Set this key in the app’s Info.plist, and App Store Connect stops asking for builds that use only exempt encryption. \
             Set it to true instead if they don’t.
@@ -33,7 +33,7 @@ struct InfoPlistKeyCard: View {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(Self.snippet, forType: .string)
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityLabel(Text("Copy the Info.plist key"))
                 .accessibilityIdentifier("appInformation.export.copyKey")
             }

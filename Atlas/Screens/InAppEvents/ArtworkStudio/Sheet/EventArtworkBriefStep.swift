@@ -32,7 +32,7 @@ struct EventArtworkBriefStep: View {
     private var briefBox: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("What it should show")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             TextEditor(text: Binding { flow.run.brief } set: { text in flow.edit { $0.brief = text } })
                 .font(.body)
@@ -51,7 +51,7 @@ struct EventArtworkBriefStep: View {
     private var gets: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("What Claude gets")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             getsRow(isOn: true, title: String(localized: "The event"), detail: String(localized: "Name, both descriptions, the badge, dates"))
             if flow.hasDesignSystem {
@@ -85,7 +85,7 @@ struct EventArtworkBriefStep: View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: isOn ? "checkmark" : "minus")
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(isOn ? Palette.positive : Palette.label3)
+                .foregroundStyle(isOn ? Palette.ok : Palette.label3)
                 .frame(width: 14)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
@@ -103,7 +103,7 @@ struct EventArtworkBriefStep: View {
     private var options: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Options")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             option(
                 title: String(localized: "Words in the art"),
@@ -141,7 +141,7 @@ struct EventArtworkBriefStep: View {
     private var looks: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("Look")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             ForEach(EventArtworkStyle.allCases, id: \.self) { style in
                 RadioRow(
@@ -169,7 +169,7 @@ struct EventArtworkBriefStep: View {
     private var result: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("What you’ll get")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             HStack(alignment: .bottom, spacing: Spacing.medium) {
                 tile(String(localized: "Event card"), size: "1920 × 1080", width: 96, height: 54, isKept: run.style == .extendCard)
@@ -192,7 +192,7 @@ struct EventArtworkBriefStep: View {
             Text(title)
                 .font(.subheadline.weight(.semibold))
             Text(isKept ? String(localized: "Kept") : size)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityElement(children: .combine)

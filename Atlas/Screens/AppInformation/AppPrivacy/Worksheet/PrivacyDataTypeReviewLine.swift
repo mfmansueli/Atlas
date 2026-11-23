@@ -21,7 +21,7 @@ struct PrivacyDataTypeReviewLine: View {
                     Button(String(localized: "Evidence · \(suggestion.evidence.count)")) {
                         viewModel.evidenceType = type
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .popover(isPresented: Binding(
                         get: { viewModel.evidenceType == type },
                         set: { if !$0, viewModel.evidenceType == type { viewModel.evidenceType = nil } }
@@ -34,7 +34,7 @@ struct PrivacyDataTypeReviewLine: View {
             if let question = viewModel.worksheet.openQuestion(about: type) {
                 Label(String(localized: "Open question"), systemImage: "questionmark.circle")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .help(question.question)
             }
             Spacer(minLength: 0)
@@ -42,11 +42,11 @@ struct PrivacyDataTypeReviewLine: View {
                 Button(String(localized: "Reject")) { viewModel.reject(type) }
                     .accessibilityIdentifier("appInformation.appPrivacy.type.\(type.rawValue).reject")
                 Button(String(localized: "Accept")) { viewModel.accept(type) }
-                    .buttonStyle(.borderedProminent)
+                    .rowActionButton()
                     .disabled(entry.answer.isMissingPurpose)
                     .accessibilityIdentifier("appInformation.appPrivacy.type.\(type.rawValue).accept")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 }

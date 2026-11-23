@@ -30,8 +30,8 @@ struct KeyAssistantSetupTestStep: View {
             case let .works(text):
                 box(id: "keySetup.works") {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(Palette.positive)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(Palette.ok)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Works")
@@ -43,7 +43,7 @@ struct KeyAssistantSetupTestStep: View {
                     }
                 }
                 Text("Where to use it")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .padding(.top, Spacing.xxSmall)
                 VStack(spacing: 0) {
                     place(
@@ -61,14 +61,14 @@ struct KeyAssistantSetupTestStep: View {
             case let .failed(text):
                 box(id: "keySetup.failed") {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .accessibilityHidden(true)
                     Text(text)
                         .font(.callout)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Try Again") { Task { await viewModel.runTest() } }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                 }
             }
         }
@@ -90,7 +90,7 @@ struct KeyAssistantSetupTestStep: View {
             Text(title)
                 .font(.callout)
             Text(detail)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

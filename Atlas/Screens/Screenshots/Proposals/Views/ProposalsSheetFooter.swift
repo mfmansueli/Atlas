@@ -17,7 +17,7 @@ struct ProposalsSheetFooter: View {
             if let message = viewModel.errorMessage {
                 Text(message)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .lineLimit(2)
             }
             if let proposal = viewModel.selected, proposal.isWaiting, viewModel.status(of: proposal) != .stale {
@@ -39,7 +39,7 @@ struct ProposalsSheetFooter: View {
         switch proposal.kind {
         case .template:
             Button("Reject") { Task { await viewModel.reject() } }
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .accessibilityIdentifier("proposals.reject")
             Spacer()
             Button("Close", action: onClose)
@@ -52,7 +52,7 @@ struct ProposalsSheetFooter: View {
                 .accessibilityIdentifier("proposals.acceptTemplate")
         case .captions:
             Button("Reject All") { Task { await viewModel.reject() } }
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .accessibilityIdentifier("proposals.rejectAll")
             Spacer()
             Button("Close", action: onClose)

@@ -21,7 +21,7 @@ struct PrivacyCollectsRow: View {
             YesNoPicker(title: String(localized: "Collects data"), value: collects?.value) { value in
                 viewModel.setCollects(value)
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("appInformation.appPrivacy.collects")
             if let collects {
                 if let client = collects.client, collects.status.isAssistants {
@@ -32,13 +32,13 @@ struct PrivacyCollectsRow: View {
             }
             if isUnreviewed {
                 Button(String(localized: "Accept")) { viewModel.acceptCollects() }
-                    .controlSize(.small)
-                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
+                    .rowActionButton()
                     .accessibilityIdentifier("appInformation.appPrivacy.collects.accept")
             }
         }
         .padding(Spacing.medium)
-        .background(isUnreviewed ? Palette.machineTranslatedTint : Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(isUnreviewed ? Palette.aiSurface : Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.appPrivacy.collectsRow")

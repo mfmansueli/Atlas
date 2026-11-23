@@ -59,12 +59,12 @@ struct GuidedDesignerNote: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Add Image or Video…") { studio.chooseArtworkReferences() }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .help(Text("\(studio.headerDesignerName) takes the feel from them, not the content."))
                     .accessibilityIdentifier("autopilot.guided.look.note.addReference")
             }
             if let error = studio.referenceError {
-                Text(error).font(.subheadline).foregroundStyle(Palette.danger)
+                Text(error).font(.subheadline).foregroundStyle(Palette.err)
             }
         }
         .modifier(GuidedSelectableCard())

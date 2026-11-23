@@ -12,11 +12,11 @@ struct AskBusyButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.body)
-            .foregroundStyle(Palette.machineTranslated)
+            .foregroundStyle(Palette.ai)
             .lineLimit(1)
             .padding(.horizontal, 10)
             .frame(minHeight: 24)
-            .background(Palette.suggestionBusyTint, in: Capsule())
-            .overlay(Capsule().strokeBorder(Palette.suggestionEdge, lineWidth: 1))
+            .background(Palette.aiBusyTint, in: Capsule())
+            .overlay(Capsule().strokeBorder(Palette.aiEdge, lineWidth: 1))
     }
 }

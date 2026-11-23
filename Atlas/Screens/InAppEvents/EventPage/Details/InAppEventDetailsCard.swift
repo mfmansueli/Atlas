@@ -21,7 +21,7 @@ struct InAppEventDetailsCard: View {
     var body: some View {
         Card {
             Text("Details")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.small) {
                 row(.deepLink) { deepLinkField }
@@ -89,12 +89,12 @@ struct InAppEventDetailsCard: View {
                 // The badge's purple: its text color is for text on the badge.
                 Text("Suggested by \(change.source.title)")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.suggestionBadge)
+                    .foregroundStyle(Palette.aiFill)
                 Button("Accept") { viewModel.acceptDetail(detail, of: event) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("events.details.\(detail.rawValue).accept")
                 Button("Dismiss") { viewModel.revertDetail(detail, of: event) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("events.details.\(detail.rawValue).dismiss")
             } else {
                 Text("Not pushed")

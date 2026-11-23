@@ -15,6 +15,8 @@ struct WorkspaceAutopilotItem: Identifiable, Equatable {
     /// Free plan: the item shows PRO and opens the paywall.
     var isPro = false
     var isEnabled = true
+    /// What the menu says beside it: “3 missing”, “Running”, “All set”.
+    var note: String?
 
     var id: WorkspaceAutopilotAction { action }
 }

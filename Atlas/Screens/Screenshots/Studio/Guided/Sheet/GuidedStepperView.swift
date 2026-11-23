@@ -70,9 +70,9 @@ struct GuidedStepperView: View {
             Circle().fill(state == .upcoming ? Palette.fill2 : Palette.accent)
                 .frame(width: 20, height: 20)
             if state == .done {
-                Image(systemName: "checkmark").font(.system(size: 9, weight: .bold))
+                Image(systemName: "checkmark").font(.footnote.weight(.bold))
             } else {
-                Text("\(step.number)").font(.system(size: 11, weight: .bold))
+                Text("\(step.number)").font(.subheadline.weight(.bold))
             }
         }
         .foregroundStyle(state == .upcoming ? Palette.label2 : Color.white)

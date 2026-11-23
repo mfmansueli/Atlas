@@ -75,7 +75,7 @@ struct KeyAssistantSetupContextStep: View {
                             .foregroundStyle(viewModel.projectFolder == nil ? Palette.label3 : Palette.label)
                             .accessibilityIdentifier("keySetup.folderPath")
                         Button("Choose…", action: chooseFolder)
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("keySetup.chooseFolder")
                     }
                     .padding(.top, Spacing.xxSmall)

@@ -28,7 +28,7 @@ struct InAppEventArtworkThumbnail: View {
             }
             if isVideo, phase.image != nil {
                 Image(systemName: "play.circle.fill")
-                    .font(.title3)
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(.white, .black.opacity(0.45))
                     .accessibilityHidden(true)
             }

@@ -50,13 +50,13 @@ struct AIProviderKeyStatusLine: View {
                 .controlSize(.mini)
         case .connected:
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Palette.positive)
+                .foregroundStyle(Palette.ok)
         case .rejected:
             Image(systemName: "xmark.octagon.fill")
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
         case .unchecked:
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
         }
     }
 
@@ -64,8 +64,8 @@ struct AIProviderKeyStatusLine: View {
         switch status {
         case .notSaved, .checking: Palette.label2
         case .connected: Palette.label
-        case .rejected: Palette.danger
-        case .unchecked: Palette.warning
+        case .rejected: Palette.err
+        case .unchecked: Palette.warn
         }
     }
 }

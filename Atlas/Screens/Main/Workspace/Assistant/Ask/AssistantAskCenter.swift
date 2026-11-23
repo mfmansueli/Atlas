@@ -85,10 +85,10 @@ final class AssistantAskCenter {
 
     /// Ends the ask; `text` goes in the window's toast.
     func finish(_ id: AssistantAsk.ID, text: String?) {
-        guard let appID = asks.first(where: { $0.value.id == id })?.key else { return }
+        guard let (appID, ask) = asks.first(where: { $0.value.id == id }) else { return }
         asks[appID] = nil
         endings[id] = nil
-        if let text { finished = AssistantAskFinish(appID: appID, text: text) }
+        if let text { finished = AssistantAskFinish(appID: appID, subject: ask.subject, text: text) }
     }
 
     /// Ends the ask without a toast: nothing was sent after all.

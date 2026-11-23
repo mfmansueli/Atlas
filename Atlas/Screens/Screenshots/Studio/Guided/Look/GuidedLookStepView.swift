@@ -62,7 +62,7 @@ struct GuidedLookStepView: View {
     private var screenshots: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text("Screenshots").font(.headline).accessibilityAddTraits(.isHeader)
+                Text("Screenshots").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
                 Text(studio.guidedLiveLookText)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -83,7 +83,7 @@ struct GuidedLookStepView: View {
         let extras = plan.alsoMakes
         let designer = studio.headerDesignerName
         return VStack(alignment: .leading, spacing: Spacing.small) {
-            Text(extras.artworkSize.placeTitle).font(.headline).accessibilityAddTraits(.isHeader)
+            Text(extras.artworkSize.placeTitle).font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
             HStack(alignment: .top, spacing: Spacing.medium) {
                 GuidedOptionCard(
                     title: String(localized: "Start from scene templates"),
@@ -131,7 +131,7 @@ struct GuidedLookStepView: View {
                 }
                 .labelsHidden()
                 .pickerStyle(.menu)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .fixedSize()
                 .help(Text(ScreenshotStudioModel.artworkSizeNote))
                 .accessibilityIdentifier("autopilot.guided.look.artworkSize")

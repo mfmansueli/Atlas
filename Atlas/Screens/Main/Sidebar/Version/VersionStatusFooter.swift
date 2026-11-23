@@ -56,16 +56,16 @@ struct VersionStatusFooter: View {
     }
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: 11, style: .continuous)
+        RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
     }
 
     static func color(_ tone: VersionStatusSummary.Tone) -> Color {
         switch tone {
         case .neutral: Palette.label3
         case .active: Palette.accent
-        case .good: Palette.positive
-        case .warning: Palette.warningMark
-        case .bad: Palette.dangerMark
+        case .good: Palette.ok
+        case .warning: Palette.warnMark
+        case .bad: Palette.errMark
         }
     }
 }

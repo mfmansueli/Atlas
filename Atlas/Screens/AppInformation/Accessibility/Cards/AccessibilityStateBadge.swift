@@ -27,13 +27,13 @@ struct AccessibilityStateBadge: View {
     }
 
     private var foreground: Color {
-        state == .published ? Palette.positive : Palette.label2
+        state == .published ? Palette.ok : Palette.label2
     }
 
     private var background: Color {
         switch state {
         case .notDeclared: .clear
-        case .published: Palette.positive.opacity(0.14)
+        case .published: Palette.ok.opacity(0.14)
         case .draft, .draftCantPublish, .publishedChangesWaiting: Palette.fill2
         }
     }

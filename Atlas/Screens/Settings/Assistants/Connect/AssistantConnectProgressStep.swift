@@ -57,7 +57,7 @@ struct AssistantConnectProgressStep: View {
     private var helper: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Atlas needs its helper to start Claude Code")
@@ -81,7 +81,7 @@ struct AssistantConnectProgressStep: View {
             .accessibilityIdentifier("settings.connect.installHelper")
         }
         .padding(Spacing.medium)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("settings.connect.needsHelper")
     }

@@ -27,7 +27,7 @@ struct InAppEventStorePreview: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
                 Text("On the App Store")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.headline)
                     .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: Spacing.small)
                 Picker("Where it’s shown", selection: $kind) {
@@ -43,7 +43,7 @@ struct InAppEventStorePreview: View {
             stage
             Text(note.text)
                 .font(.system(size: 10, weight: note.isPreviewing ? .semibold : .regular))
-                .foregroundStyle(note.isPreviewing ? Palette.machineTranslated : Palette.label2)
+                .foregroundStyle(note.isPreviewing ? Palette.ai : Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("events.preview.note")
         }
@@ -164,7 +164,7 @@ struct InAppEventStorePreview: View {
         VStack(spacing: Spacing.xSmall) {
             Text("!")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(Palette.warning)
+                .foregroundStyle(Palette.warn)
             Text("No event details image yet")
                 .font(.system(size: 12, weight: .semibold))
                 .multilineTextAlignment(.center)
@@ -175,10 +175,10 @@ struct InAppEventStorePreview: View {
         }
         .padding(Spacing.medium)
         .frame(width: 330 * 9 / 16, height: 330)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Palette.warningMark, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                .strokeBorder(Palette.warnMark, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
         )
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("events.preview.detailsMissing")

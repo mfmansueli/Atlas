@@ -17,7 +17,7 @@ struct ReviewChangeGroupView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(group.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Spacer()
                 Text(group.countText)
                     .font(.subheadline)

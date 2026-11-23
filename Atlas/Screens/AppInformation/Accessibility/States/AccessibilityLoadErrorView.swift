@@ -17,7 +17,7 @@ struct AccessibilityLoadErrorView: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.circle")
-                .foregroundStyle(Palette.danger)
+                .foregroundStyle(Palette.err)
                 .accessibilityHidden(true)
             Text("\(Text(message).fontWeight(.semibold))\(Text(requestLine.map { "  \($0)" } ?? "").font(.subheadline.monospaced()).foregroundStyle(Palette.label2))")
                 .font(.callout)
@@ -25,12 +25,12 @@ struct AccessibilityLoadErrorView: View {
                 .textSelection(.enabled)
             Spacer(minLength: Spacing.medium)
             Button(String(localized: "Try Again"), action: onRetry)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("\(identifier).retry")
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 2)
-        .background(Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("\(identifier).error")
     }

@@ -17,7 +17,7 @@ struct ConfidenceMeter: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 1.5) {
             ForEach(0..<3, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 0.75)
+                RoundedRectangle(cornerRadius: Radius.flag)
                     .fill(index < bars ? Palette.label2 : Palette.separator2)
                     .frame(width: 2.5, height: Self.heights[index])
             }

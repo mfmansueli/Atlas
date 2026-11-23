@@ -58,7 +58,7 @@ struct ReviewChangeRow: View {
             } else if let reason = change.blockedReason {
                 Label(reason, systemImage: "exclamationmark.octagon.fill")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .padding(.leading, 26)
             } else if let note = change.awaitingAcceptance {
                 HStack(spacing: Spacing.small) {
@@ -66,7 +66,8 @@ struct ReviewChangeRow: View {
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                     Button("Accept", action: onAccept)
-                        .controlSize(.small)
+                        .controlSize(.regular)
+                        .rowActionButton()
                         .accessibilityLabel(Text("Accept \(change.title)"))
                         .accessibilityIdentifier("review.accept.\(change.id)")
                 }
@@ -77,7 +78,7 @@ struct ReviewChangeRow: View {
                 // A warning, not a block: the person may know better.
                 Label(issues.map(\.message).joined(separator: "\n"), systemImage: "exclamationmark.triangle.fill")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.leading, 26)
                     .accessibilityIdentifier("review.guideline.\(change.id)")
@@ -140,7 +141,7 @@ struct ReviewChangeRow: View {
                 .lineLimit(1)
                 .layoutPriority(-1)
             Image(systemName: "arrow.right")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label3)
                 .accessibilityLabel(Text("to"))
             Text(change.newValue.isEmpty ? String(localized: "Empty") : change.newValue)

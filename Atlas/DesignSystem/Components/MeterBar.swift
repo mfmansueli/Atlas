@@ -31,7 +31,7 @@ struct MeterBar: View {
 #Preview {
     VStack {
         MeterBar(fraction: 0.88)
-        MeterBar(fraction: 0.3, tint: Palette.warningMark)
+        MeterBar(fraction: 0.3, tint: Palette.warnMark)
     }
     .frame(width: 260)
     .padding()

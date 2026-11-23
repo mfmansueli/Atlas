@@ -82,7 +82,7 @@ struct ConnectDesignProjectSheet: View {
 
     private var source: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text(sourceTitle).font(.headline)
+            Text(sourceTitle).font(.body.weight(.semibold))
             HStack(spacing: Spacing.small) {
                 TextField(sourcePrompt, text: $link)
                     .textFieldStyle(.roundedBorder)

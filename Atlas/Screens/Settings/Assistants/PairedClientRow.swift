@@ -21,7 +21,7 @@ struct PairedClientRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: Spacing.xSmall) {
                         Circle()
-                            .fill(status.isConnected ? Palette.positive : Palette.label3)
+                            .fill(status.isConnected ? Palette.ok : Palette.label3)
                             .frame(width: 7, height: 7)
                             .accessibilityHidden(true)
                         Text(status.text)
@@ -37,7 +37,7 @@ struct PairedClientRow: View {
                 }
                 Spacer(minLength: 0)
                 Button("Disconnect…") { isAsking = true }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(isAsking)
                     .accessibilityLabel(Text("Disconnect \(client.name)…"))
                     .accessibilityIdentifier("settings.ai.revoke.\(client.kind.rawValue)")
@@ -55,18 +55,18 @@ struct PairedClientRow: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel") { isAsking = false }
-                .controlSize(.small)
+                .controlSize(.regular)
             Button("Disconnect", role: .destructive) {
                 isAsking = false
                 onDisconnect()
             }
-            .controlSize(.small)
-            .buttonStyle(.borderedProminent)
-            .tint(Palette.dangerMark)
+            .controlSize(.regular)
+            // Destructive (README — Design system §4): secondary, red label.
+            .destructiveButton()
             .accessibilityIdentifier("settings.ai.revoke.\(client.kind.rawValue).confirm")
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
     }
 }

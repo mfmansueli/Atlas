@@ -23,18 +23,18 @@ struct MenuBarItemButton: View {
             HStack(spacing: Spacing.small) {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
-                        .font(.system(size: 13))
+                        .font(.body)
                         .foregroundStyle(isHovered ? Color.white : Palette.label)
                     if let detail {
                         Text(detail)
-                            .font(.system(size: 12))
+                            .font(.subheadline)
                             .foregroundStyle(isHovered ? Color.white.opacity(0.85) : Palette.label2)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if let count, count > 0 {
                     Text(count, format: .number)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                         .padding(.horizontal, 5)
                         .frame(minWidth: 18, minHeight: 18)
@@ -43,7 +43,7 @@ struct MenuBarItemButton: View {
                 }
                 if let shortcut {
                     Text(shortcut)
-                        .font(.system(size: 12))
+                        .font(.callout)
                         .foregroundStyle(isHovered ? Color.white.opacity(0.8) : Palette.label3)
                         .accessibilityHidden(true)
                 }
@@ -51,7 +51,7 @@ struct MenuBarItemButton: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
             .frame(minHeight: 28)
-            .background(isHovered ? Palette.accent : Color.clear, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .background(isHovered ? Palette.accent : Color.clear, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

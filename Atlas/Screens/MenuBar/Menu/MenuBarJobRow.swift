@@ -12,13 +12,13 @@ struct MenuBarJobRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(job.title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.body.weight(.semibold))
             if let fraction = job.fraction {
                 MenuBarProgressBar(fraction: fraction)
             }
             if !job.detail.isEmpty {
                 Text(job.detail)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)

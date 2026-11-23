@@ -19,7 +19,7 @@ struct ScreenshotActivityDetails: View {
             ForEach(summary.failures, id: \.self) { failure in
                 Text(failure)
                     .font(.subheadline.monospaced())
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .textSelection(.enabled)
             }
         }

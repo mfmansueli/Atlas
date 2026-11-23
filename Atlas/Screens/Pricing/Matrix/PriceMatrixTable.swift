@@ -93,6 +93,8 @@ struct PriceMatrixTable: View {
                     .customizationID(PriceColumn.pricing.customizationID)
             }
         }
+        // Rows hold row-sized (24 pt) controls.
+        .controlSize(.regular)
         .contextMenu(forSelectionType: PricingRow.ID.self) { ids in
             if !matrix.isReadOnly {
                 BulkActionsMenu(viewModel: viewModel, matrix: matrix, ids: Array(ids))

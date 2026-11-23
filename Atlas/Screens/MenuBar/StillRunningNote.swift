@@ -19,7 +19,7 @@ struct StillRunningNote: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: 10) {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                     .fill(LinearGradient(colors: AtlasIconGradient.colors(for: colorScheme), startPoint: .top, endPoint: .bottom))
                     .frame(width: 34, height: 34)
                     .overlay {
@@ -30,7 +30,7 @@ struct StillRunningNote: View {
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Atlas is still running")
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                     Text("Closing the window doesn’t quit it.")
                         .font(.footnote)
@@ -44,10 +44,10 @@ struct StillRunningNote: View {
             HStack(spacing: Spacing.xSmall) {
                 Spacer(minLength: 0)
                 Button("Quit When I Close the Window", action: onQuitWhenClosed)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("stillRunning.quitWhenClosed")
                 Button("Got It", action: onDismiss)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
                     .accessibilityIdentifier("stillRunning.gotIt")

@@ -21,7 +21,7 @@ struct AnalyticsLoadingView: View {
             .accessibilityHidden(true)
             Card {
                 Text("Downloading Apple’s reports for \(appName)")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 ForEach(Array(AnalyticsActivity.steps.enumerated()), id: \.offset) { index, step in
                     HStack(spacing: Spacing.small) {
                         if index < finished {

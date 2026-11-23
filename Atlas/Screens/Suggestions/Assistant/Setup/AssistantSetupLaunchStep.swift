@@ -39,7 +39,7 @@ struct AssistantSetupLaunchStep: View {
                     }
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                 }
                 .accessibilityIdentifier("assistantSetup.launch.helperState")
             }
@@ -74,7 +74,7 @@ struct AssistantSetupLaunchStep: View {
     private func installed(_ installation: ClaudeCodeInstallation) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Palette.positive)
+                .foregroundStyle(Palette.ok)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: Spacing.small) {
@@ -105,7 +105,7 @@ struct AssistantSetupLaunchStep: View {
     private var folder: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("\(viewModel.appName)’s project folder")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             HStack(spacing: Spacing.small) {
                 Image(systemName: "folder")
                     .foregroundStyle(Palette.label2)
@@ -120,7 +120,7 @@ struct AssistantSetupLaunchStep: View {
                 Button(viewModel.projectFolder == nil ? String(localized: "Choose…") : String(localized: "Change…")) {
                     viewModel.chooseProjectFolder()
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("assistantSetup.launch.chooseFolder")
             }
             .padding(.horizontal, Spacing.medium)

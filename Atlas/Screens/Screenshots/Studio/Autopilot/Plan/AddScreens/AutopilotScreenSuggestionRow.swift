@@ -47,11 +47,11 @@ struct AutopilotScreenSuggestionRow: View {
                         .disabled(studio.plansMaximumScreens(on: display))
                         .accessibilityIdentifier("autopilot.plan.suggestion.\(suggestion.id).add")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             case .added:
                 Label("Added", systemImage: "checkmark")
                     .font(.callout)
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
                     .accessibilityIdentifier("autopilot.plan.suggestion.\(suggestion.id).added")
             case .dismissed:
                 EmptyView()

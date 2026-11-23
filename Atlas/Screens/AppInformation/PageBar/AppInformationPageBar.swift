@@ -69,9 +69,9 @@ struct AppInformationPageBar: View {
         .padding(.horizontal, 10)
         .padding(.vertical, Spacing.xSmall)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.pageBar")
@@ -113,7 +113,7 @@ struct AppInformationPageBar: View {
                 if pro.isFree, model.otherPageCount > 0 { ProChip() }
                 if model.totalCount > 0 {
                     Text(SuggestionBadge.text(for: model.totalCount))
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.subheadline.weight(.bold))
                         .monospacedDigit()
                         .padding(.horizontal, 5)
                         .frame(minWidth: 17, minHeight: 17)

@@ -17,14 +17,14 @@ struct SectionBarTitle: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             Image(systemName: systemImage)
-                .font(.system(size: 13))
+                .font(.body)
                 .foregroundStyle(Palette.label2)
                 .frame(width: 28, height: 28)
-                .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(Palette.label)
                     .lineLimit(1)
                 if let subtitle {
@@ -37,7 +37,7 @@ struct SectionBarTitle: View {
             }
             if showsChevron {
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityHidden(true)
             }

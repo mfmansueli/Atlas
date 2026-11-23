@@ -80,7 +80,7 @@ struct PrivateKeyDropZone: View {
     private var hover: some View {
         VStack(spacing: Spacing.xSmall) {
             Image(systemName: "square.and.arrow.down")
-                .font(.title3)
+                .font(.title3.weight(.semibold))
                 .accessibilityHidden(true)
             Text("Release to import")
                 .font(.callout.weight(.semibold))
@@ -107,7 +107,7 @@ struct PrivateKeyDropZone: View {
             }
             Spacer(minLength: Spacing.medium)
             Button("Remove", action: onRemove)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("connect.removeKeyButton")
         }
         .padding(Spacing.medium)
@@ -116,7 +116,7 @@ struct PrivateKeyDropZone: View {
     private func rejected(_ fileName: String) -> some View {
         HStack(alignment: .top, spacing: Spacing.medium) {
             Image(systemName: "exclamationmark.triangle")
-                .foregroundStyle(Palette.dangerMark)
+                .foregroundStyle(Palette.errMark)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text("\(Text(verbatim: fileName).monospaced().bold()) isn’t a .p8 private key")
@@ -128,7 +128,7 @@ struct PrivateKeyDropZone: View {
             }
             Spacer(minLength: Spacing.small)
             Button("Choose Again…", action: onChoose)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("connect.chooseAgainButton")
         }
         .padding(Spacing.medium)
@@ -142,13 +142,13 @@ struct PrivateKeyDropZone: View {
 
     private var background: Color {
         if isTargeted { return Palette.accentTint }
-        if key == nil, rejectedFileName != nil { return Palette.dangerTint }
+        if key == nil, rejectedFileName != nil { return Palette.errTint }
         return Palette.fill1
     }
 
     private var borderColor: Color {
         if isTargeted { return Palette.accent }
-        if key == nil, rejectedFileName != nil { return Palette.dangerMark.opacity(0.7) }
+        if key == nil, rejectedFileName != nil { return Palette.errMark.opacity(0.7) }
         return key == nil ? Palette.dropOutline : Palette.separator
     }
 

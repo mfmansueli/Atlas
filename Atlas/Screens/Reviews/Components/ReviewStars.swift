@@ -13,7 +13,7 @@ struct ReviewStars: View {
         Text(ReviewText.stars(rating))
             .font(.subheadline)
             .tracking(1)
-            .foregroundStyle(rating <= 2 ? Palette.danger : Palette.sectionReviews)
+            .foregroundStyle(rating <= 2 ? Palette.err : Palette.sectionReviews)
             .accessibilityLabel(Text(ReviewText.starsSpoken(rating)))
     }
 }

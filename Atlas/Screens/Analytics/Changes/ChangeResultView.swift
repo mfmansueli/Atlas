@@ -22,7 +22,7 @@ struct ChangeResultView: View {
             }
             if change.kind == .prices {
                 Card {
-                    Text("Price changes have their own results").font(.headline)
+                    Text("Price changes have their own results").font(.body.weight(.semibold))
                     Text("Pricing → Results measures a price change per territory: starts and proceeds, 28 days before against 28 days after.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)

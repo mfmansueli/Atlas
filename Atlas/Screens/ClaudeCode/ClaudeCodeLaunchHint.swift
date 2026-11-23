@@ -26,13 +26,13 @@ struct ClaudeCodeLaunchHint: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Set Up…") { Task { await launcher.installHelper() } }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("claudeCode.hint.setUp")
                 }
                 if let error = launcher.installError {
                     Text(error)
-                        .font(.caption2)
-                        .foregroundStyle(Palette.danger)
+                        .font(.footnote)
+                        .foregroundStyle(Palette.err)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

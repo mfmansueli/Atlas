@@ -75,9 +75,9 @@ struct ScreenshotAddSheet: View {
         Button(action: choose) {
             VStack(spacing: Spacing.xSmall) {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.title2)
+                    .font(.title2.weight(.semibold))
                 Text("Drop PNG or JPEG files here")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text("or click to choose them. \(sizeHint)")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -122,7 +122,7 @@ struct ScreenshotAddSheet: View {
                 .accessibilityIdentifier("screenshots.hand.add.file")
             }
             Button("Add More Files…", action: choose)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .padding(.top, Spacing.xSmall)
                 .accessibilityIdentifier("screenshots.hand.add.more")
         }

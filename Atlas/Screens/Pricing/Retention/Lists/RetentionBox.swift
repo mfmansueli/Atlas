@@ -17,7 +17,7 @@ struct RetentionBox<Trailing: View, Content: View>: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text(title)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                     Spacer(minLength: Spacing.small)
                     trailing()

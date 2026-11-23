@@ -34,17 +34,17 @@ enum BannerKind: Sendable {
     var tint: Color {
         switch self {
         case .offline, .info: Palette.label2
-        case .rateLimited: Palette.warning
-        case .warning: Palette.warningMark
-        case .apiError, .partialFailure: Palette.danger
+        case .rateLimited: Palette.warn
+        case .warning: Palette.warnMark
+        case .apiError, .partialFailure: Palette.err
         }
     }
 
     var background: Color {
         switch self {
         case .offline, .info: Palette.fill1
-        case .rateLimited, .warning: Palette.warningTint
-        case .apiError, .partialFailure: Palette.dangerTint
+        case .rateLimited, .warning: Palette.warnTint
+        case .apiError, .partialFailure: Palette.errTint
         }
     }
 }

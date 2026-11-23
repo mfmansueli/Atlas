@@ -6,17 +6,18 @@
 import SwiftUI
 
 /// An assistant's promotional text for this language: why, what's there
-/// now, what it suggests, and Dismiss, Use and Edit or Accept.
+/// now, what it suggests, and Dismiss, Use and Edit or Accept. It arrives,
+/// with its text, and settles like any suggestion (effects 2, 3 and 5).
 struct ProductPageTextSuggestionCard: View {
     @Bindable var viewModel: ProductPagesViewModel
     let suggestion: ProductPageTextSuggestion
     let current: String
     let isRightToLeft: Bool
 
-    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 Pill(text: String(localized: "Suggested"), style: .machineTranslated)
@@ -35,7 +36,7 @@ struct ProductPageTextSuggestionCard: View {
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
                     Text("NOW")
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(width: 74, alignment: .leading)
                     Text(current.isEmpty ? String(localized: "Same as the default page") : current)
@@ -48,10 +49,10 @@ struct ProductPageTextSuggestionCard: View {
                 }
                 GridRow {
                     Text("SUGGESTED")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Palette.machineTranslated)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Palette.ai)
                         .frame(width: 74, alignment: .leading)
-                    Text(suggestion.text)
+                    SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.createdAt)
                         .font(.callout)
                         .textSelection(.enabled)
                         .fixedSize(horizontal: false, vertical: true)
@@ -62,26 +63,36 @@ struct ProductPageTextSuggestionCard: View {
             }
             HStack(spacing: Spacing.xSmall) {
                 Text("\(suggestion.text.count) / \(ProductPageField.promotionalTextLimit)")
-                    .font(.caption2.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Dismiss") { viewModel.dismissText(suggestion) }
                     .accessibilityIdentifier("pages.textSuggestion.dismiss")
                 Button("Use and Edit") { viewModel.useAndEdit(suggestion) }
                     .accessibilityIdentifier("pages.textSuggestion.useAndEdit")
-                Button("Accept") { viewModel.acceptText(suggestion) }
-                    .buttonStyle(.borderedProminent)
+                Button("Accept", action: accept)
+                    .rowActionButton()
                     .accessibilityIdentifier("pages.textSuggestion.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
+        .suggestionSurface(isSettling: isSettling, arrivalKey: arrivalKey, arrivedAt: suggestion.createdAt)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Suggested promotional text from \(suggestion.source)"))
         .accessibilityIdentifier("pages.textSuggestion")
+    }
+
+    /// The text it shows: a new suggestion in its place arrives again.
+    private var arrivalKey: String { "\(suggestion.id)|\(suggestion.text)" }
+
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            viewModel.acceptText(suggestion)
+        }
     }
 }

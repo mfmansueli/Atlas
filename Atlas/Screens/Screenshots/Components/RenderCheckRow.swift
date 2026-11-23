@@ -12,7 +12,7 @@ struct RenderCheckRow: View {
     var body: some View {
         Label {
             Text(check.text)
-                .foregroundStyle(check.status == .failed ? Palette.danger : Palette.label)
+                .foregroundStyle(check.status == .failed ? Palette.err : Palette.label)
                 .fixedSize(horizontal: false, vertical: true)
         } icon: {
             Image(systemName: symbol)
@@ -35,8 +35,8 @@ struct RenderCheckRow: View {
     private var tint: Color {
         switch check.status {
         case .passed: Palette.label2
-        case .failed: Palette.dangerMark
-        case .warning: Palette.warningMark
+        case .failed: Palette.errMark
+        case .warning: Palette.warnMark
         case .pending: Palette.label3
         }
     }

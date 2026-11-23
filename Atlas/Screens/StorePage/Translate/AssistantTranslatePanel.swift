@@ -48,7 +48,7 @@ struct AssistantTranslatePanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Atlas can’t start your assistant")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text(explanation)
                 .font(.callout)
                 .foregroundStyle(Palette.label2)

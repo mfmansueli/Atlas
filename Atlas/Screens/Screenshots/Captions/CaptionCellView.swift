@@ -49,7 +49,7 @@ struct CaptionCellView: View {
                 .multilineTextAlignment(isRightToLeft ? .trailing : .leading)
             if cell.showsSubhead, let subhead = caption.visibleSubhead {
                 Text(subhead)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: isRightToLeft ? .trailing : .leading)
@@ -61,7 +61,7 @@ struct CaptionCellView: View {
             }
             HStack(spacing: Spacing.xxSmall) {
                 Text(cell.fitLabel)
-                    .font(.caption2)
+                    .font(.footnote)
                     .monospacedDigit()
                     .foregroundStyle(labelColor)
                     .lineLimit(1)
@@ -83,8 +83,8 @@ struct CaptionCellView: View {
 
     private var labelColor: Color {
         switch cell.fit?.tone {
-        case .overflows: Palette.danger
-        case .shrinks: Palette.warning
+        case .overflows: Palette.err
+        case .shrinks: Palette.warn
         default: Palette.label2
         }
     }

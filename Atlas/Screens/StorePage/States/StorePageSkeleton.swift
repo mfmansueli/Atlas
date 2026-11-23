@@ -14,14 +14,14 @@ struct StorePageSkeleton: View {
             if showsContextBar {
                 SectionBar {
                     HStack(spacing: Spacing.small) {
-                        SkeletonBlock(width: 28, height: 28, cornerRadius: 7)
+                        SkeletonBlock(width: 28, height: 28, cornerRadius: Radius.menuRow)
                         VStack(alignment: .leading, spacing: 5) {
                             SkeletonBlock(width: 220, height: 11)
                             SkeletonBlock(width: 320, height: 8)
                         }
                     }
                 } trailing: {
-                    SkeletonBlock(width: 320, height: 22, cornerRadius: 11)
+                    SkeletonBlock(width: 320, height: 22, cornerRadius: Radius.banner)
                 }
             }
             StorePageTableSkeleton()

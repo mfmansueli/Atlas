@@ -31,7 +31,7 @@ struct ReviewReplyEditor: View {
                 .padding(4)
                 .frame(minHeight: 66, maxHeight: 150)
                 .background(Palette.content, in: shape)
-                .overlay(shape.strokeBorder(isOverLimit ? Palette.danger : Palette.separator2, lineWidth: isOverLimit ? 1.5 : 1))
+                .overlay(shape.strokeBorder(isOverLimit ? Palette.err : Palette.separator2, lineWidth: isOverLimit ? 1.5 : 1))
                 .environment(\.layoutDirection, ReviewLanguage.isRightToLeft(review.languageCode) ? .rightToLeft : .leftToRight)
                 .focused($isFocused)
                 .accessibilityLabel(Text("Your reply"))
@@ -54,8 +54,8 @@ struct ReviewReplyEditor: View {
             }
             HStack(spacing: Spacing.small) {
                 Text(ReviewText.replyCounter(text))
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(isOverLimit ? Palette.danger : Palette.label2)
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(isOverLimit ? Palette.err : Palette.label2)
                 Text("Public on the App Store.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -68,7 +68,7 @@ struct ReviewReplyEditor: View {
                     .disabled(!canSend || isSending)
                     .accessibilityIdentifier("reviews.editor.send.\(review.id)")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .buttonBorderShape(.capsule)
         }
         .onAppear { isFocused = true }

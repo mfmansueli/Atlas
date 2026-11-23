@@ -25,13 +25,13 @@ struct EventArtworkViewerBottomBar: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(flow.viewerWhy)
-                    .font(.system(size: 13))
+                    .font(.body)
                     .foregroundStyle(.white.opacity(0.92))
                     .lineLimit(2)
                     .accessibilityIdentifier("events.art.viewer.why")
                 if !isNarrow {
                     Text(flow.viewerChecks)
-                        .font(.system(size: 12))
+                        .font(.callout)
                         .foregroundStyle(EventArtworkViewerStyle.secondary(contrast))
                         .lineLimit(1)
                         .accessibilityIdentifier("events.art.viewer.checks")
@@ -51,7 +51,7 @@ struct EventArtworkViewerBottomBar: View {
                 .disabled(!flow.viewerCanAsk || viewer.isAsking)
                 if flow.viewerIsUsed {
                     Text("✓ In use")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(EventArtworkViewerStyle.inUse)
                         .accessibilityIdentifier("events.art.viewer.inUse")
                 } else {
@@ -99,17 +99,17 @@ struct EventArtworkViewerBottomBar: View {
                 }
             }
             .frame(width: width, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             .padding(2)
             .overlay(
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
                     .strokeBorder(isOn ? .white : .white.opacity(0.25), lineWidth: isOn ? 2 : 1)
             )
             .opacity(isOn || contrast == .increased ? 1 : 0.78)
             .overlay(alignment: .topTrailing) {
                 if concept.id == flow.run.usedConceptID {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 8, weight: .heavy))
+                        .font(.footnote.weight(.heavy))
                         .foregroundStyle(.white)
                         .frame(width: 16, height: 16)
                         .background(EventArtworkViewerStyle.inUse, in: Circle())
@@ -134,7 +134,7 @@ struct EventArtworkViewerBottomBar: View {
                     flow.viewer?.locale = code
                 } label: {
                     Text(StoreLocaleCatalog.locale(code: code)?.shortName ?? code)
-                        .font(.system(size: 12, weight: isOn ? .semibold : .regular))
+                        .font(.callout.weight(isOn ? .semibold : .regular))
                         .foregroundStyle(isOn ? EventArtworkViewerStyle.selectedText : .white)
                         .padding(.horizontal, 9)
                         .frame(height: 22)

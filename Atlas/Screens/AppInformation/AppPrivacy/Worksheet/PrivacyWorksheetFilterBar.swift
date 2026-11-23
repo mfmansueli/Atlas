@@ -20,15 +20,21 @@ struct PrivacyWorksheetFilterBar: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .controlSize(.small)
+            .controlSize(.regular)
             .fixedSize()
             .accessibilityIdentifier("appInformation.appPrivacy.filter")
             HStack(spacing: Spacing.small) {
                 let count = viewModel.highConfidenceCount
                 if count > 0 {
-                    Button(String(localized: "Accept All High-Confidence · \(count)")) {
+                    Button {
                         viewModel.acceptAllHighConfidence()
+                    } label: {
+                        HStack(spacing: Spacing.xSmall) {
+                            Text("Accept All High-Confidence")
+                            SuggestionBadge(count: count, isSmall: true)
+                        }
                     }
+                    .accessibilityLabel(Text("Accept All High-Confidence, \(count) suggested"))
                     .accessibilityIdentifier("appInformation.appPrivacy.acceptHighConfidence")
                 }
                 Button(viewModel.showsAllTypes
@@ -40,7 +46,7 @@ struct PrivacyWorksheetFilterBar: View {
                 }
                 .accessibilityIdentifier("appInformation.appPrivacy.showAll")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
     }
 }

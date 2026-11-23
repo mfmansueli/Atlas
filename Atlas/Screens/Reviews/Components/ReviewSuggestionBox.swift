@@ -33,11 +33,11 @@ struct ReviewSuggestionBox: View {
             HStack(spacing: Spacing.small) {
                 Text(label)
                     .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SuggestionSourceTag(source: .assistant(client: suggestion.source))
             }
-            Text(suggestion.text)
+            SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.date)
                 .font(.callout)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -55,7 +55,7 @@ struct ReviewSuggestionBox: View {
                     if let line = autoLine(now: context.date) {
                         Label(line.text, systemImage: line.icon)
                             .font(.subheadline.weight(.medium))
-                            .foregroundStyle(line.isWarning ? Palette.warningMark : Palette.label2)
+                            .foregroundStyle(line.isWarning ? Palette.warnMark : Palette.label2)
                             .accessibilityIdentifier("reviews.suggestion.auto.\(review.id)")
                     }
                 }
@@ -82,14 +82,14 @@ struct ReviewSuggestionBox: View {
                     .disabled(isSending)
                     .accessibilityIdentifier("reviews.suggestion.send.\(review.id)")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .buttonBorderShape(.capsule)
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(isSettling ? Palette.raised : Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(isSettling ? Palette.separator : Palette.machineTranslatedMark.opacity(0.35), lineWidth: isSettling ? 0.5 : 1))
-        .modifier(SuggestionArrival(key: "\(review.id)|\(suggestion.date.timeIntervalSinceReferenceDate)", arrivedAt: suggestion.date, shape: shape))
+        .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
+        .overlay(shape.strokeBorder(isSettling ? Palette.separator : Palette.aiMark.opacity(0.35), lineWidth: isSettling ? 0.5 : 1))
+        .modifier(SuggestionArrival(key: arrivalKey, arrivedAt: suggestion.date, shape: shape))
         .modifier(AcceptSettle(isSettling: isSettling))
         .onChange(of: isSending) { _, sending in
             // Still here once it stopped sending: it didn't go.
@@ -100,6 +100,9 @@ struct ReviewSuggestionBox: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.suggestion.\(review.id)")
     }
+
+    /// The suggestion it shows: a new draft in its place arrives again.
+    private var arrivalKey: String { "\(review.id)|\(suggestion.date.timeIntervalSinceReferenceDate)" }
 
     private var shape: RoundedRectangle {
         RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)

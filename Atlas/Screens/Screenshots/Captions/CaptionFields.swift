@@ -67,7 +67,7 @@ struct CaptionFields: View {
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.field))
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.field)
-                    .strokeBorder(isOverflowing ? Palette.dangerMark : Palette.separator2, lineWidth: isOverflowing ? 1.5 : 0.5)
+                    .strokeBorder(isOverflowing ? Palette.errMark : Palette.separator2, lineWidth: isOverflowing ? 1.5 : 0.5)
             )
             .environment(\.layoutDirection, model.isRightToLeft ? .rightToLeft : .leftToRight)
     }

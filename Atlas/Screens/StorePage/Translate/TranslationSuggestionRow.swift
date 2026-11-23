@@ -37,7 +37,7 @@ struct TranslationSuggestionRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .environment(\.layoutDirection, suggestion.isRightToLeft ? .rightToLeft : .leftToRight)
                 if let message = suggestion.validation.message {
-                    InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
+                    InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.err)
                         .font(.subheadline)
                 }
             }
@@ -59,6 +59,7 @@ struct TranslationSuggestionRow: View {
             case .pending:
                 Button("Reject", action: onReject)
                 Button("Accept", action: onAccept)
+                    .rowActionButton()
             case .accepted:
                 Pill(text: String(localized: "Accepted"), systemImage: "checkmark", style: .machineTranslated)
                 Button("Undo", action: onUndo)
@@ -69,6 +70,6 @@ struct TranslationSuggestionRow: View {
                     .buttonStyle(.link)
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 }

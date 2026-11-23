@@ -14,7 +14,7 @@ struct HelpShownBanner: View {
             .font(.callout)
             .padding(Spacing.small)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 8))
+            .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field))
             .accessibilityIdentifier("help.shown")
     }
 }

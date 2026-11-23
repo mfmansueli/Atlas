@@ -28,7 +28,7 @@ struct ConnectableAssistantRow: View {
                     Text(assistant.title)
                     Text(statusText)
                         .font(.subheadline)
-                        .foregroundStyle(isConnected && server.isEnabled ? Palette.done : Palette.label2)
+                        .foregroundStyle(isConnected && server.isEnabled ? Palette.ok : Palette.label2)
                         .accessibilityIdentifier("settings.ai.assistant.\(assistant.rawValue).status")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,7 +86,7 @@ struct ConnectableAssistantRow: View {
             HStack(spacing: Spacing.small) {
                 Label("Connected", systemImage: "checkmark")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.done)
+                    .foregroundStyle(Palette.ok)
                     .labelStyle(.titleAndIcon)
                 Button("Disconnect…") { isAskingToDisconnect = true }
                     .disabled(isAskingToDisconnect)
@@ -94,8 +94,9 @@ struct ConnectableAssistantRow: View {
                     .accessibilityIdentifier("settings.ai.disconnect.\(assistant.rawValue)")
             }
         } else if connector.isInstalled(assistant, launcher: launcher) {
+            // Repeated on every assistant row: a tinted row action.
             Button("Connect", action: onConnect)
-                .buttonStyle(.borderedProminent)
+                .rowActionButton()
                 .accessibilityLabel(Text("Connect \(assistant.title)"))
                 .accessibilityIdentifier("settings.ai.connect.\(assistant.rawValue)")
         } else {
@@ -117,7 +118,7 @@ struct ConnectableAssistantRow: View {
             Button(testTitle(test)) {
                 Task { await connector.sendTest(assistant, appID: fresh.appID, appName: fresh.appName, launcher: launcher) }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .disabled(test == .sending || test == .arrived || test == .copied)
             .accessibilityIdentifier("settings.ai.test.\(assistant.rawValue)")
         }
@@ -162,20 +163,20 @@ struct ConnectableAssistantRow: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel") { isAskingToDisconnect = false }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("settings.ai.disconnect.\(assistant.rawValue).cancel")
             Button("Disconnect", role: .destructive) {
                 isAskingToDisconnect = false
                 connector.disconnect(assistant, server: server, launcher: launcher)
             }
-            .controlSize(.small)
-            .buttonStyle(.borderedProminent)
-            .tint(Palette.dangerMark)
+            .controlSize(.regular)
+            // Destructive (README — Design system §4): secondary, red label.
+            .destructiveButton()
             .accessibilityIdentifier("settings.ai.disconnect.\(assistant.rawValue).confirm")
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("settings.ai.disconnect.\(assistant.rawValue).ask")
     }

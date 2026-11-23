@@ -26,7 +26,7 @@ struct AppSaleCard<Content: View>: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: Spacing.xSmall) {
                         Text(title)
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                             .accessibilityAddTraits(.isHeader)
                         if isQueued {
                             Pill(text: String(localized: "Not pushed"), style: .accent)
@@ -47,7 +47,7 @@ struct AppSaleCard<Content: View>: View {
                             .accessibilityIdentifier("\(identifier).figure")
                         if let figureCaption {
                             Text(figureCaption)
-                                .font(.caption2)
+                                .font(.footnote)
                                 .foregroundStyle(Palette.label2)
                         }
                     }

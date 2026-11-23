@@ -54,7 +54,7 @@ struct ClaudeCodeLauncherSection: View {
     private var helperRow: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: launcher.canStart ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundStyle(launcher.canStart ? Palette.positive : Palette.warning)
+                .foregroundStyle(launcher.canStart ? Palette.ok : Palette.warn)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(launcher.helper.title)
@@ -68,7 +68,7 @@ struct ClaudeCodeLauncherSection: View {
                 if let error = launcher.installError {
                     Text(error)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 }
             }
             Spacer()

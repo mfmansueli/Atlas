@@ -30,12 +30,12 @@ struct MarkedDiffText: View {
             case let (.removed(text), .now):
                 var part = AttributedString(text)
                 part.strikethroughStyle = .single
-                part.foregroundColor = Palette.danger
+                part.foregroundColor = Palette.err
                 result += part
             case let (.added(text), .suggested):
                 var part = AttributedString(text)
-                part.foregroundColor = Palette.machineTranslated
-                part.backgroundColor = Palette.machineTranslatedMark.opacity(0.18)
+                part.foregroundColor = Palette.ai
+                part.backgroundColor = Palette.aiMark.opacity(0.18)
                 part.inlinePresentationIntent = .stronglyEmphasized
                 result += part
             case (.removed, .suggested), (.added, .now):

@@ -170,7 +170,7 @@ struct GuidedReviewStepView: View {
                         }
                     }
                     .menuStyle(.button)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .fixedSize()
                     .accessibilityIdentifier("autopilot.guided.review.moreLanguages")
                 }

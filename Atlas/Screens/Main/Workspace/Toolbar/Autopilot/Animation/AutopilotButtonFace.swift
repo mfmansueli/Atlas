@@ -59,15 +59,15 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             .accessibilityLabel(Text(accessibilityLabel))
             .accessibilityIdentifier("workspace.autopilot.main")
             Rectangle()
-                .fill(isNeedingYou ? Palette.suggestionBadgeText.opacity(0.35) : Palette.separator)
+                .fill(isNeedingYou ? Palette.aiFillLabel.opacity(0.35) : Palette.separator)
                 .frame(width: 0.5, height: 18)
                 .accessibilityHidden(true)
             Menu {
                 menu()
             } label: {
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(isNeedingYou ? Palette.suggestionBadgeText : Palette.label2)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(isNeedingYou ? Palette.aiFillLabel : Palette.label2)
                     .frame(width: 30, height: Self.height)
                     .contentShape(Rectangle())
             }
@@ -84,7 +84,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
     @ViewBuilder
     private var glass: some View {
         if isNeedingYou {
-            Capsule().fill(Palette.suggestionBadge)
+            Capsule().fill(Palette.aiFill)
         } else {
             Capsule().fill(.clear).glassEffect(.regular, in: Capsule())
         }

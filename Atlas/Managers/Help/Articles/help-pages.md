@@ -1,7 +1,7 @@
 ---
 id: pages
 group: listing
-title: Custom Product Pages
+title: Product pages for an audience
 summary: Other versions of your App Store page, each with its own link, for an audience, a campaign or a search.
 keywords: custom product pages, product page, product pages, page, pages, link, campaign, audience, deep link, visible, hidden, 70, promotional text, keywords, not offered, rules, screenshots, make screenshots for this page, autopilot, look, template, claude design, capture again, simulator, choose files, sizes, app review, approved, rejected, notification, app previews, video, choose app previews, campaign, referrer
 showMe: section:productPages

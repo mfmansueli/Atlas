@@ -19,7 +19,7 @@ struct AutopilotCapturesToCheck: View {
         if !items.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Label(Self.title(count: items.count), systemImage: "text.magnifyingglass")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text("Atlas read the text in every capture. The set uses these as they are; fix them in the app, or capture them again.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -36,7 +36,7 @@ struct AutopilotCapturesToCheck: View {
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.warningMark, lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.warnMark, lineWidth: 1))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("autopilot.pick.toCheck")
         }
@@ -45,7 +45,7 @@ struct AutopilotCapturesToCheck: View {
     private func row(_ item: CaptureToCheck) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(Self.place(of: item, in: run)).font(.callout.weight(.medium))

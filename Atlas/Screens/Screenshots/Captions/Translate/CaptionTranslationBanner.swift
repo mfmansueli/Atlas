@@ -29,7 +29,7 @@ struct CaptionTranslationBanner: View {
             Button("Cancel") {
                 translation.cancel()
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("screenshots.captions.cancelTranslation")
         }
         .padding(.horizontal, Spacing.medium)

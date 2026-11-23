@@ -20,14 +20,14 @@ struct SuggestionBadge: View {
     var body: some View {
         if count > 0 {
             Text(Self.text(for: count))
-                .font(.system(size: isSmall ? 10 : 11, weight: .semibold))
+                .font((isSmall ? Font.footnote : .subheadline).weight(.semibold))
                 .monospacedDigit()
                 .lineLimit(1)
                 .fixedSize()
-                .foregroundStyle(Palette.suggestionBadgeText)
+                .foregroundStyle(Palette.aiFillLabel)
                 .padding(.horizontal, isSmall ? 4 : 5)
                 .frame(minWidth: height, minHeight: height)
-                .background(Palette.suggestionBadge, in: Capsule())
+                .background(Palette.aiFill, in: Capsule())
                 .accessibilityHidden(true)
         }
     }

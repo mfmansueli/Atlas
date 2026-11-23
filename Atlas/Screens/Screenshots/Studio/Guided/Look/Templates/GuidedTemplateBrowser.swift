@@ -90,7 +90,7 @@ struct GuidedTemplateBrowser: View {
                     .overlay(alignment: .topTrailing) {
                         if let number {
                             Text("\(number)")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.footnote.weight(.bold))
                                 .foregroundStyle(.white)
                                 .frame(width: 16, height: 16)
                                 .background(Palette.accent, in: Circle())
@@ -98,16 +98,16 @@ struct GuidedTemplateBrowser: View {
                         }
                     }
                 Text(starter.title)
-                    .font(.caption2)
+                    .font(.footnote)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .frame(minHeight: 24, alignment: .top)
                 if isInUse {
-                    Text("In use now").font(.system(size: 10)).foregroundStyle(Palette.label2)
+                    Text("In use now").font(.footnote).foregroundStyle(Palette.label2)
                 }
                 if starter.isNew {
                     Text("New")
-                        .font(.system(size: 10))
+                        .font(.footnote)
                         .foregroundStyle(Palette.accentText)
                 }
             }
@@ -115,12 +115,12 @@ struct GuidedTemplateBrowser: View {
             .padding(.vertical, 5)
             // Each a card as tall as the row's tallest (board 21).
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(isFocused ? Palette.accentTint : Color.clear, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .background(isFocused ? Palette.accentTint : Color.clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                     .strokeBorder(number != nil ? Palette.accent : Palette.separator, lineWidth: number != nil ? 1.5 : 1)
             }
-            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(thumbnailLabel(starter, number: number, isInUse: isInUse)))

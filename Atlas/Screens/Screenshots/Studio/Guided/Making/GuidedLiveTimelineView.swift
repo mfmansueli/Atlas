@@ -57,7 +57,7 @@ struct GuidedLiveTimelineView: View {
         switch state {
         case .done:
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 17))
+                .font(.title2.weight(.semibold))
                 .foregroundStyle(Palette.accent)
         case .running:
             ZStack {
@@ -75,9 +75,9 @@ struct GuidedLiveTimelineView: View {
     private func badge(_ row: GuidedTimelineRow, active: Bool) -> some View {
         Group {
             if row.isYours {
-                Image(systemName: "person.fill").font(.system(size: 9, weight: .semibold))
+                Image(systemName: "person.fill").font(.footnote.weight(.semibold))
             } else {
-                Text(row.who.initials).font(.system(size: 10, weight: .bold))
+                Text(row.who.initials).font(.footnote.weight(.bold))
             }
         }
         .foregroundStyle(active ? Palette.accent : Palette.label2)

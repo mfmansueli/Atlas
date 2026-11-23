@@ -35,7 +35,7 @@ struct SuggestionPopover: View {
                 )
             }
             Text(recommendation.reason)
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("What It’s Based On")
@@ -81,7 +81,7 @@ struct SuggestionPopover: View {
     private var header: some View {
         HStack(spacing: Spacing.small) {
             FlagTile(regionCode: row.territory.alpha2)
-            Text(row.territory.name).font(.headline)
+            Text(row.territory.name).font(.body.weight(.semibold))
             Spacer()
             if let confidence = recommendation.confidence {
                 Pill(text: confidence.title)

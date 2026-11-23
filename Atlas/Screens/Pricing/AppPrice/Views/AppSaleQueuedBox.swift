@@ -41,11 +41,11 @@ struct AppSaleQueuedBox: View {
                         .accessibilityIdentifier("\(identifier).change")
                 }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, Spacing.small)
-        .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(identifier)
     }

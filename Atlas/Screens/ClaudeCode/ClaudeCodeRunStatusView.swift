@@ -72,7 +72,7 @@ struct ClaudeCodeRunStatusView: View {
                 Button("Stop") { launcher.stop(run.id) }
                     .accessibilityIdentifier("claudeCode.run.stop")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
@@ -83,7 +83,7 @@ struct ClaudeCodeRunStatusView: View {
     private var elapsed: some View {
         TimelineView(.periodic(from: run.startedAt, by: 1)) { context in
             Text(Self.duration(run.elapsed(at: context.date)))
-                .font(.caption.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityLabel(Text("Running"))
@@ -95,13 +95,13 @@ struct ClaudeCodeRunStatusView: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Image(systemName: run.phase == .stopped ? "stop.circle" : "checkmark.circle.fill")
-                    .foregroundStyle(run.phase == .stopped ? Palette.label2 : Palette.positive)
+                    .foregroundStyle(run.phase == .stopped ? Palette.label2 : Palette.ok)
                     .accessibilityHidden(true)
                 Text(run.statusTitle)
                     .font(.callout.weight(.medium))
                     .accessibilityIdentifier("claudeCode.run.status")
                 Text(Self.duration(run.elapsed(at: .now)))
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -116,7 +116,7 @@ struct ClaudeCodeRunStatusView: View {
                 showOutputButton
                 dismissButton
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
@@ -134,7 +134,7 @@ struct ClaudeCodeRunStatusView: View {
                     .accessibilityIdentifier("claudeCode.run.status")
             } icon: {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
             }
             VStack(spacing: 0) {
                 ForEach(Array(run.denials.enumerated()), id: \.offset) { index, denial in
@@ -169,11 +169,11 @@ struct ClaudeCodeRunStatusView: View {
                 resumeButton
                 dismissButton
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
     }
 
     // MARK: - Failed
@@ -193,7 +193,7 @@ struct ClaudeCodeRunStatusView: View {
                 }
             } icon: {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
             }
             HStack(spacing: Spacing.small) {
                 if failure.suggestsTerminal {
@@ -209,17 +209,17 @@ struct ClaudeCodeRunStatusView: View {
                 Spacer(minLength: 0)
                 if run.activity.count > 1 { showOutputButton }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             if failure.suggestsTerminal {
                 Text(terminalNote(for: failure))
-                    .font(.caption2)
-                    .foregroundStyle(terminalUnavailable ? Palette.warning : Palette.label2)
+                    .font(.footnote)
+                    .foregroundStyle(terminalUnavailable ? Palette.warn : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
     }
 
     private func terminalNote(for failure: ClaudeCodeRunFailure) -> String {

@@ -53,7 +53,7 @@ struct GuidedPicksTray<Item: Hashable, Thumbnail: View>: View {
             Button {
                 remove(item)
             } label: {
-                Image(systemName: "xmark").font(.system(size: 10, weight: .semibold))
+                Image(systemName: "xmark").font(.footnote.weight(.semibold))
             }
             .buttonStyle(.borderless)
             .accessibilityLabel(Text("Remove \(name(item)) from My Picks"))

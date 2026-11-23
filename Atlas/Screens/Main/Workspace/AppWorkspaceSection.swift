@@ -37,7 +37,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .overview: String(localized: "Overview")
         case .storePage: String(localized: "Store Page")
         case .screenshots: String(localized: "Screenshots")
-        case .productPages: String(localized: "Custom Product Pages")
+        case .productPages: String(localized: "Product Pages")
         case .inAppEvents: String(localized: "In-App Events")
         case .appInformation: String(localized: "App Information")
         case .subscriptionPricing: String(localized: "Pricing")
@@ -51,9 +51,16 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
     var fullTitle: String {
         switch self {
         case .subscriptionPricing: String(localized: "Subscription Pricing")
+        case .productPages: String(localized: "Custom Product Pages")
         case .reviews: String(localized: "Ratings & Reviews")
         default: title
         }
+    }
+
+    /// The window's title (README — redesign): the sidebar's short names,
+    /// but Reviews says "Ratings & Reviews".
+    var toolbarTitle: String {
+        self == .reviews ? fullTitle : title
     }
 
     /// The glyph on the section's tile, in the sidebar and its own header.

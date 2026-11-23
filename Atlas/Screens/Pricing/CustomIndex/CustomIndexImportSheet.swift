@@ -112,7 +112,7 @@ struct CustomIndexImportSheet: View {
             : String(localized: "\(unmatched.count) codes didn’t match a territory:")
         return HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
                 .accessibilityHidden(true)
             Text("\(Text(title).bold()) \(list). They’re skipped.")
                 .font(.callout)
@@ -120,7 +120,7 @@ struct CustomIndexImportSheet: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("pricing.import.unmatched")
     }

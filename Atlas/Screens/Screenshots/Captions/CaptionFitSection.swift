@@ -26,7 +26,7 @@ struct CaptionFitSection: View {
                 Spacer()
                 Text("Overflows")
             }
-            .font(.caption2)
+            .font(.footnote)
             .foregroundStyle(Palette.label2)
             if let fit, !fit.isEmpty {
                 Text(fit.label)
@@ -46,8 +46,8 @@ struct CaptionFitSection: View {
 
     private func color(_ tone: FitTone) -> Color {
         switch tone {
-        case .overflows: Palette.danger
-        case .shrinks: Palette.warning
+        case .overflows: Palette.err
+        case .shrinks: Palette.warn
         case .fits, .empty: Palette.label
         }
     }

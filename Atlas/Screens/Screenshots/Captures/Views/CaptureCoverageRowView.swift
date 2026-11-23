@@ -84,7 +84,7 @@ struct CaptureCoverageRowView: View {
             }
             .overlay {
                 if isSelected(cell) || dropTarget == cell.slot {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                         .strokeBorder(Palette.accent, lineWidth: 2)
                         .padding(-2)
                 }
@@ -92,7 +92,7 @@ struct CaptureCoverageRowView: View {
             if cell.stale != nil {
                 Text("Out of date")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .lineLimit(1)
                     .fixedSize()
                     .accessibilityIdentifier("captures.coverage.\(row.locale.code).\(cell.slot + 1).stale")
@@ -123,10 +123,10 @@ struct CaptureCoverageRowView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: thumbnailWidth, height: height)
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .strokeBorder(cell.label == .wrongSize ? Palette.dangerMark : Palette.separator, lineWidth: cell.label == .wrongSize ? 1.5 : 0.5)
+                    RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
+                        .strokeBorder(cell.label == .wrongSize ? Palette.errMark : Palette.separator, lineWidth: cell.label == .wrongSize ? 1.5 : 0.5)
                 }
         } else {
             ImageLoadingTile(
@@ -134,9 +134,9 @@ struct CaptureCoverageRowView: View {
                 controlSize: thumbnailWidth >= 60 ? .small : .mini
             )
             .frame(width: thumbnailWidth, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                     .strokeBorder(Palette.separator, style: StrokeStyle(lineWidth: 0.5, dash: cell.capture == nil ? [3, 2] : []))
             }
         }
@@ -151,7 +151,7 @@ struct CaptureCoverageRowView: View {
         switch label {
         case .localized: Palette.label2
         case .primaryInterface, .missing: Palette.label3
-        case .wrongSize: Palette.danger
+        case .wrongSize: Palette.err
         }
     }
 }

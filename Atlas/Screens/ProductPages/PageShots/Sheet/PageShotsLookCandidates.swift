@@ -52,7 +52,7 @@ struct PageShotsLookCandidates: View {
         }
         if design?.claudeRunID == nil, count < total {
             Button(count == 0 ? "Ask for Three Looks" : "Ask Again") { Task { await flow.askForLooks() } }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pages.shots.looks.ask")
         }
     }
@@ -71,16 +71,16 @@ struct PageShotsLookCandidates: View {
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
                 Text(candidate.rationale)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(Spacing.xSmall)
             .frame(width: 150 * PageShotsTile.aspect(.iPhone) + Spacing.xSmall * 2, alignment: .leading)
-            .background(isChosen ? Palette.accent.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .background(isChosen ? Palette.accent.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                     .strokeBorder(isChosen ? Palette.accent : Palette.separator, lineWidth: isChosen ? 2 : 0.5)
             )
             .contentShape(Rectangle())

@@ -24,11 +24,11 @@ struct InlineMessage: View {
     }
 
     static func error(_ text: String) -> InlineMessage {
-        InlineMessage(text: text, systemImage: "exclamationmark.octagon.fill", tint: Palette.danger)
+        InlineMessage(text: text, systemImage: "exclamationmark.octagon.fill", tint: Palette.err)
     }
 
     static func warning(_ text: String) -> InlineMessage {
-        InlineMessage(text: text, systemImage: "exclamationmark.triangle.fill", tint: Palette.warning)
+        InlineMessage(text: text, systemImage: "exclamationmark.triangle.fill", tint: Palette.warn)
     }
 }
 

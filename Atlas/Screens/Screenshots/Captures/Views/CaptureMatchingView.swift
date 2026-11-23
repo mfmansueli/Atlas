@@ -102,7 +102,7 @@ struct CaptureMatchingView: View {
         var body: some View {
             Label(text, systemImage: "exclamationmark.triangle.fill")
                 .font(.subheadline)
-                .foregroundStyle(Palette.warning)
+                .foregroundStyle(Palette.warn)
                 .accessibilityIdentifier("captures.matching.warning")
         }
     }

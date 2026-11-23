@@ -108,8 +108,8 @@ struct AppReviewPageView: View {
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Text("\(count.formatted()) / \(AppReviewField.notesLimit.formatted())")
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(isOver ? Palette.danger : Palette.label2)
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(isOver ? Palette.err : Palette.label2)
                     .accessibilityLabel(Text("\(count) of \(AppReviewField.notesLimit) characters"))
                     .accessibilityIdentifier("appInformation.review.notesCount")
             }
@@ -121,7 +121,7 @@ struct AppReviewPageView: View {
                 .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
-                        .strokeBorder(isOver ? Palette.dangerMark : Palette.separator2, lineWidth: isOver ? 1.5 : 0.5)
+                        .strokeBorder(isOver ? Palette.errMark : Palette.separator2, lineWidth: isOver ? 1.5 : 0.5)
                 }
                 .focused($focusedField, equals: .notes)
                 .accessibilityLabel(Text(AppReviewField.notes.title))
@@ -129,7 +129,7 @@ struct AppReviewPageView: View {
             if isOver {
                 Text("App Store Connect takes up to \(AppReviewField.notesLimit.formatted()) characters. Shorten the notes to push them.")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
             }
             AppInformationFieldSuggestions(viewModel: viewModel, field: .notes)
                 .padding(.horizontal, -(Spacing.medium + 2))

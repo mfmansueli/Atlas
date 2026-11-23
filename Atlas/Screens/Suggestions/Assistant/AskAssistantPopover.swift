@@ -25,7 +25,7 @@ struct AskAssistantPopover: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Ask \(request.client)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             if let run {
                 started(run)
             } else {
@@ -82,7 +82,7 @@ struct AskAssistantPopover: View {
                         NSPasteboard.general.setString(request.prompt, forType: .string)
                         copiedPrompt = true
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("ask.copyPrompt")
                 }
             }
@@ -115,11 +115,11 @@ struct AskAssistantPopover: View {
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Copy Again", action: onCopyAgain)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("ask.copyAgain")
             }
-            Text("Shortcut in Claude Code: \(Text(MCPPrompt.suggest.slashCommand).font(.caption2.monospaced())) is the same prompt, offered by Atlas’s server.")
-                .font(.caption2)
+            Text("Shortcut in Claude Code: \(Text(MCPPrompt.suggest.slashCommand).font(.footnote.monospaced())) is the same prompt, offered by Atlas’s server.")
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
             ClaudeCodeLaunchHint(client: request.client)
@@ -130,7 +130,7 @@ struct AskAssistantPopover: View {
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Cancel", action: onCancel)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("ask.cancel")
             }
             .padding(.horizontal, 10)

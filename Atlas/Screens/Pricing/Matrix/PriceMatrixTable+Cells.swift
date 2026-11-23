@@ -42,7 +42,7 @@ extension PriceMatrixTable {
             HStack(spacing: Spacing.xxSmall) {
                 Text(recommendation.feelsLikeText).monospacedDigit()
                 Text(recommendation.ratioText)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
             }

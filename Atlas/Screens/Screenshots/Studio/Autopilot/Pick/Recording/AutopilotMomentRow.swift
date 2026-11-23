@@ -43,7 +43,7 @@ struct AutopilotMomentRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Button("▶ Play") { studio.playMoment(moment) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityLabel(Text("Play \(name)"))
                 .accessibilityIdentifier("autopilot.moment.play.\(index)")
             Button("Record Again") { studio.recordAgain(moment) }

@@ -29,7 +29,7 @@ struct AutopilotDuoPickCard: View {
                     if let inner = captures.inner { shot(inner, label: String(localized: "Inner display")) }
                     if let cover = captures.cover { shot(cover, label: String(localized: "Cover display")) }
                     if captures.inner == nil, captures.cover == nil {
-                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
                             .fill(Palette.fill1)
                             .frame(width: 168, height: Self.height)
                             .overlay(Text("No capture").font(.subheadline).foregroundStyle(Palette.label2))

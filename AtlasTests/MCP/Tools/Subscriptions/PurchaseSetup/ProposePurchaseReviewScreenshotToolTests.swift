@@ -34,12 +34,13 @@ struct ProposePurchaseReviewScreenshotToolTests {
 
     @Test func anExistingProductGetsItsOwnChange() async throws {
         let file = try upload(appID: DebugFixtures.AppID.lumen)
-        let outcome = try await call(ProposePurchaseReviewScreenshotTool(), [
+        let outcome = try await call(ProposePurchaseReviewScreenshotTool(details: ReviewShotDetailsStore(), runs: ReviewShotsRunCenter()), [
             "appId": "Lumen Journal", "productId": "lumen.lifetime", "file": .string(file.id),
         ])
-        #expect(outcome.result["status"] == "queued")
+        #expect(outcome.result["status"] == "suggested")
         let id = PurchaseReviewScreenshotChangeBuilder.changeID(appID: DebugFixtures.AppID.lumen, productID: "lumen.lifetime")
         let change = try #require(changes.change(id: id))
+        #expect(change.awaitingAcceptance != nil, "An assistant's image waits for Accept")
         let step = try #require(change.requests.first.flatMap(PurchaseReviewScreenshotPush.init))
         #expect(step.owner == .inAppPurchase)
         #expect(step.ownerID == DebugPricingCatalog.lumenLifetimeID)
@@ -86,6 +87,30 @@ struct ProposePurchaseReviewScreenshotToolTests {
         let step = try #require(change.requests.last.flatMap(PurchaseReviewScreenshotPush.init))
         #expect(step.owner == .subscription)
         #expect(step.ownerID == "{createdID:subscriptions}")
+    }
+
+    /// What the assistant saw arrives with the image: the card and Review
+    /// & Push say it, and the run moves on.
+    @Test func itsPlanAndChecksArriveWithIt() async throws {
+        let file = try upload(appID: DebugFixtures.AppID.lumen)
+        let details = ReviewShotDetailsStore()
+        let runs = ReviewShotsRunCenter()
+        runs.start(appID: DebugFixtures.AppID.lumen, client: "Claude Code", products: [.init(productID: "lumen.lifetime", plan: "Lifetime")])
+        runs.report(appID: DebugFixtures.AppID.lumen, productID: "lumen.lifetime", step: "Selecting Lifetime")
+        _ = try await call(ProposePurchaseReviewScreenshotTool(details: details, runs: runs), [
+            "appId": "Lumen Journal", "productId": "lumen.lifetime", "file": .string(file.id), "planShown": "Lifetime",
+            "price": "$59.99", "device": "iPhone 17 Pro", "language": "English (U.S.)",
+            "checks": ["Price shows", "Lifetime selected"],
+        ])
+        let id = PurchaseReviewScreenshotChangeBuilder.changeID(appID: DebugFixtures.AppID.lumen, productID: "lumen.lifetime")
+        let saved = try #require(details.details(for: id))
+        #expect(saved.origin == .assistant(client: "Claude Code"))
+        #expect(saved.plan == "Lifetime")
+        #expect(saved.price == "$59.99")
+        #expect(saved.checks == ["Price shows", "Lifetime selected"])
+        #expect(changes.change(id: id)?.title == "Review screenshot · Lifetime selected · from Claude Code")
+        #expect(runs.run(for: DebugFixtures.AppID.lumen)?.arrived == ["lumen.lifetime"])
+        #expect(runs.run(for: DebugFixtures.AppID.lumen)?.current == nil)
     }
 
     @Test func anotherAppsFileIsntFound() async throws {

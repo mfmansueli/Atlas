@@ -19,7 +19,7 @@ struct ProductPageRow: View {
     static let statusWidth: CGFloat = 150
     static let funnelWidth: CGFloat = 180
     static let rateWidth: CGFloat = 140
-    static let copyWidth: CGFloat = 90
+    static let copyWidth: CGFloat = 40
     static let subscribersWidth: CGFloat = 120
     static let trialToPaidWidth: CGFloat = 110
 
@@ -104,13 +104,13 @@ struct ProductPageRow: View {
 
     private var status: some View {
         VStack(alignment: isCompact ? .trailing : .leading, spacing: 2) {
-            HStack(spacing: Spacing.xxSmall) {
-                Pill(text: page.state.title, style: page.state.pillStyle)
+            // One above the other: side by side, "Approved" and "New version
+            // in review" ran into the numbers column.
+            Pill(text: page.state.title, style: page.state.pillStyle)
+                .fixedSize()
+            if let next = viewModel.nextVersionText(of: page) {
+                Pill(text: next, style: .warning)
                     .fixedSize()
-                if let next = viewModel.nextVersionText(of: page) {
-                    Pill(text: next, style: .warning)
-                        .fixedSize()
-                }
             }
             if let visibility = viewModel.visibilityText(of: page) {
                 Text(visibility)
@@ -148,7 +148,7 @@ struct ProductPageRow: View {
     static func color(_ comparison: ProductPageComparison) -> Color {
         switch comparison {
         case .above: Palette.decrease
-        case .below: Palette.warning
+        case .below: Palette.warn
         case .aboutTheSame: Palette.label2
         case .tooFewViews: Palette.label3
         }
@@ -163,8 +163,10 @@ struct ProductPageRow: View {
                 NSPasteboard.general.setString(url.absoluteString, forType: .string)
             } label: {
                 Label("Copy link", systemImage: "link")
+                    .labelStyle(.iconOnly)
             }
-            .controlSize(.small)
+            .controlSize(.regular)
+            .buttonBorderShape(.circle)
             .help(Text("Copy the page’s App Store link"))
             .accessibilityLabel(Text("Copy the link to “\(page.name)”"))
             .accessibilityIdentifier("pages.copy.\(page.id)")

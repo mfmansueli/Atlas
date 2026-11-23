@@ -37,7 +37,7 @@ struct ReviewScreenshotSlot: View {
                                 .accessibilityIdentifier("pricing.reviewScreenshot.remove")
                         }
                     }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                 }
                 Spacer(minLength: 0)
@@ -45,7 +45,7 @@ struct ReviewScreenshotSlot: View {
             if let problem {
                 Text(problem)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.reviewScreenshot.problem")
             }
@@ -64,7 +64,7 @@ struct ReviewScreenshotSlot: View {
 
     @ViewBuilder
     private var preview: some View {
-        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
         if let file, let image = NSImage(contentsOf: folder.url(for: file, appID: appID)) {
             Image(nsImage: image)
                 .resizable()

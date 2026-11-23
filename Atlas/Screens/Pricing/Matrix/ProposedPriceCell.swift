@@ -44,7 +44,7 @@ struct ProposedPriceCell: View {
             Button("Apply") {
                 Task { await matrix.applySuggestion(to: [row.id]) }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .buttonBorderShape(.capsule)
             .accessibilityLabel(String(localized: "Apply suggestion for \(row.territory.name)"))
             .accessibilityIdentifier("pricing.apply.\(row.id)")

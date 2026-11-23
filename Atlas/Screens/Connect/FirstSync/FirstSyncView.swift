@@ -37,12 +37,12 @@ struct FirstSyncView: View {
     private func body(layout: WelcomeLayout) -> some View {
         VStack(spacing: layout.isShort ? 10 : 14) {
             Text("Reading your apps…")
-                .font(.system(size: layout.isShort ? 24 : 30, weight: .bold))
+                .font(layout.isShort ? .largeTitle.bold() : .display)
                 .tracking(-0.4)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("sync.title")
             Text(progress.summary)
-                .font(.system(size: layout.isShort ? 13.5 : 15))
+                .font(layout.isShort ? .body : .title3)
                 .lineSpacing(layout.isShort ? 2 : 4)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)

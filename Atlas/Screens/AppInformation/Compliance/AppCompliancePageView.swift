@@ -88,7 +88,7 @@ struct AppCompliancePageView: View {
                 .accessibilityIdentifier("appInformation.compliance.headline")
             if !report.isUpToDate {
                 ComplianceAskButton(app: viewModel.app)
-                    .controlSize(.small)
+                    .controlSize(.regular)
             }
         }
         .padding(.horizontal, Spacing.medium)

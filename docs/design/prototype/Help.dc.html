@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas — Help</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+
+body{margin:0}
+.alx{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",system-ui,"Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:16px;color:var(--label);-webkit-font-smoothing:antialiased}
+.alx *{box-sizing:border-box}
+.alx-l{--window:#EFEFF2;--content:#FFFFFF;--raised:#FFFFFF;--sidebar:rgba(246,246,249,.72);--glass:rgba(255,255,255,.74);--control:#FFFFFF;--label:#1D1D1F;--label-2:#6B6B70;--label-3:#9A9AA0;--sep:rgba(0,0,0,.09);--sep-2:rgba(0,0,0,.16);--fill-1:rgba(0,0,0,.04);--fill-2:rgba(0,0,0,.07);--fill-3:rgba(0,0,0,.12);--glass-edge:rgba(0,0,0,.08);--glass-hi:rgba(255,255,255,.9);--accent:#0071E3;--accent-text:#0066CC;--accent-tint:rgba(0,113,227,.12);--err:#C8102E;--err-tint:rgba(215,0,21,.09);--err-mark:#E0182D;--warn:#7A5600;--warn-tint:rgba(255,190,0,.20);--warn-mark:#F5B400;--mt:#7A35B0;--mt-tint:rgba(150,70,210,.08);--mt-edge:rgba(150,70,210,.28);--unsaved:#0071E3;--ok:#1D7A3A;--pop-shadow:0 0 0 .5px rgba(0,0,0,.10),0 10px 32px rgba(0,0,0,.16);--sheet-shadow:0 0 0 .5px rgba(0,0,0,.10),0 24px 64px rgba(0,0,0,.24);--scrim:rgba(0,0,0,.18);--knob:#FFFFFF;--track:rgba(0,0,0,.09);--focus:rgba(0,113,227,.45);--edge-hc:transparent;--ctl-shadow:0 0 0 .5px rgba(0,0,0,.14),0 .5px 1.5px rgba(0,0,0,.1)}
+.alx-d{--window:#1E1E21;--content:#161618;--raised:#2A2A2E;--sidebar:rgba(40,40,44,.66);--glass:rgba(70,70,76,.58);--control:#2E2E33;--label:#F2F2F5;--label-2:#A3A3AA;--label-3:#6E6E75;--sep:rgba(255,255,255,.09);--sep-2:rgba(255,255,255,.16);--fill-1:rgba(255,255,255,.05);--fill-2:rgba(255,255,255,.09);--fill-3:rgba(255,255,255,.15);--glass-edge:rgba(255,255,255,.12);--glass-hi:rgba(255,255,255,.10);--accent:#0A72E8;--accent-text:#4DA3FF;--accent-tint:rgba(77,163,255,.18);--err:#FF7A70;--err-tint:rgba(255,90,80,.16);--err-mark:#FF5A50;--warn:#FFD34D;--warn-tint:rgba(255,205,60,.15);--warn-mark:#FFCC33;--mt:#D4A3FF;--mt-tint:rgba(200,140,255,.10);--mt-edge:rgba(200,140,255,.32);--unsaved:#4DA3FF;--ok:#5FD38A;--pop-shadow:0 0 0 .5px rgba(255,255,255,.14),0 12px 36px rgba(0,0,0,.55);--sheet-shadow:0 0 0 .5px rgba(255,255,255,.14),0 28px 72px rgba(0,0,0,.6);--scrim:rgba(0,0,0,.45);--knob:#636369;--track:rgba(255,255,255,.14);--focus:rgba(77,163,255,.55);--edge-hc:transparent;--ctl-shadow:0 0 0 .5px rgba(255,255,255,.12),0 .5px 1.5px rgba(0,0,0,.3)}
+.alx-l.alx-hc{--window:#E6E6EA;--sidebar:#F2F2F5;--glass:#FFFFFF;--label:#000000;--label-2:#3D3D42;--label-3:#5F5F66;--sep:rgba(0,0,0,.30);--sep-2:rgba(0,0,0,.55);--fill-1:rgba(0,0,0,.07);--fill-2:rgba(0,0,0,.11);--fill-3:rgba(0,0,0,.18);--glass-edge:rgba(0,0,0,.5);--glass-hi:transparent;--accent:#0040DD;--accent-text:#0040DD;--accent-tint:rgba(0,64,221,.14);--err:#9E0020;--err-tint:rgba(215,0,21,.14);--err-mark:#B80020;--warn:#5A3F00;--warn-tint:rgba(255,190,0,.30);--mt:#5C1E91;--mt-tint:rgba(150,70,210,.14);--mt-edge:rgba(92,30,145,.7);--unsaved:#0040DD;--ok:#0E5A26;--focus:#0040DD;--edge-hc:currentColor;--ctl-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.alx-d.alx-hc{--window:#141416;--content:#000000;--raised:#1C1C1F;--sidebar:#1C1C1F;--glass:#2C2C30;--control:#26262A;--label:#FFFFFF;--label-2:#D4D4DA;--label-3:#A8A8B0;--sep:rgba(255,255,255,.32);--sep-2:rgba(255,255,255,.55);--fill-1:rgba(255,255,255,.09);--fill-2:rgba(255,255,255,.14);--fill-3:rgba(255,255,255,.22);--glass-edge:rgba(255,255,255,.5);--glass-hi:transparent;--accent:#0A64D6;--accent-text:#8CC4FF;--accent-tint:rgba(140,196,255,.22);--err:#FFA8A2;--err-tint:rgba(255,90,80,.24);--err-mark:#FF7A70;--warn:#FFE28A;--warn-tint:rgba(255,205,60,.22);--mt:#E6C8FF;--mt-tint:rgba(200,140,255,.18);--mt-edge:rgba(230,200,255,.7);--unsaved:#8CC4FF;--ok:#9BE8B4;--focus:#8CC4FF;--edge-hc:currentColor;--ctl-shadow:0 0 0 1px rgba(255,255,255,.55)}
+.alx-hc .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+:where(.alx) button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;text-align:inherit;cursor:default;-webkit-appearance:none;appearance:none}
+:where(.alx) input,:where(.alx) textarea,:where(.alx) select{font:inherit;color:inherit;margin:0}
+:where(.alx) a{color:var(--accent-text);text-decoration:none}
+.alx :focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.alx input[type=checkbox],.alx input[type=radio]{accent-color:var(--accent);margin:0}
+.mono{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace}
+.tn{font-variant-numeric:tabular-nums}
+.l2{color:var(--label-2)}.l3{color:var(--label-2)}
+.t-1{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.015em}
+.t-2{font-size:17px;line-height:22px;font-weight:600;letter-spacing:-.01em}
+.t-3{font-size:15px;line-height:20px;font-weight:600}
+.t-hl{font-size:13px;line-height:16px;font-weight:600}
+.t-c{font-size:12px;line-height:15px}
+.t-s{font-size:11px;line-height:14px}
+.t-f{font-size:11px;line-height:14px}
+.b{font-weight:600}
+.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.ic.sm{width:12px;height:12px;stroke-width:1.7}
+.ic.lg{width:22px;height:22px;stroke-width:1.3}
+.spin{animation:alxspin .8s linear infinite;transform-origin:50% 50%}
+@keyframes alxspin{to{transform:rotate(360deg)}}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 0 0 .5px var(--glass-edge),inset 0 1px 0 var(--glass-hi),0 1px 3px rgba(0,0,0,.08)}
+.tbb{height:32px;min-width:32px;padding:0 10px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;white-space:nowrap;flex:none}
+.tbb:hover{background:var(--fill-1)}
+.tbg{display:inline-flex;align-items:center;border-radius:16px;height:32px;padding:0 2px;flex:none}
+.btn{height:28px;padding:0 14px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;white-space:nowrap;flex:none}
+.btn.sm{height:24px;padding:0 11px;border-radius:12px;font-size:12px;gap:4px}
+.btn.pri{background:var(--accent);color:#fff;box-shadow:none;font-weight:500}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn.plain{background:none;box-shadow:none;color:var(--accent-text);padding:0 4px}
+.btn.destr{color:var(--err)}
+.fld{height:28px;width:100%;padding:0 8px;border-radius:8px;border:0;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2),inset 0 1px 1px rgba(0,0,0,.04);outline:none;font-size:13px}
+.fld:focus,.ta:focus{box-shadow:inset 0 0 0 1px var(--accent),0 0 0 3px var(--focus)}
+.fld.err,.ta.err{box-shadow:inset 0 0 0 1.5px var(--err-mark)}
+.ta{width:100%;padding:6px 8px;border-radius:8px;border:0;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2);outline:none;font-size:13px;line-height:17px;resize:vertical;display:block}
+.sel{height:28px;padding:0 6px;border-radius:8px;border:0;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;color:var(--label)}
+.seg{display:inline-flex;padding:2px;border-radius:999px;background:var(--fill-2);flex:none}
+.seg button{height:24px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.seg button.on{background:var(--knob);box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.16)}
+.seg.sm button{height:20px;padding:0 8px;font-size:11px}
+.pill{display:inline-flex;align-items:center;gap:3px;height:18px;padding:0 6px;border-radius:9px;font-size:11px;line-height:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:inset 0 0 0 1px var(--edge-hc);flex:none}
+.p-err{color:var(--err);background:var(--err-tint)}.p-warn{color:var(--warn);background:var(--warn-tint)}.p-mt{color:var(--mt);background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}.p-acc{color:var(--accent-text);background:var(--accent-tint)}.p-neu{color:var(--label-2);background:var(--fill-2)}.p-out{color:var(--label-2);background:none;box-shadow:inset 0 0 0 1px var(--sep-2)}
+.who{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 6px 0 2px;border-radius:9px;font-size:11px;font-weight:500;color:var(--label);box-shadow:inset 0 0 0 1px var(--sep-2);white-space:nowrap;flex:none}
+.who b{width:18px;height:16px;border-radius:4px;background:var(--label);color:var(--content);font:700 10px/16px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;display:inline-block}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--unsaved);display:inline-block}
+.flag{width:28px;height:15px;border-radius:3px;flex:none;display:inline-flex;align-items:center;justify-content:center;font:600 10px/1 ui-monospace,"SF Mono",Menlo,monospace;color:var(--label-2);background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.card{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pop{position:absolute;z-index:30;background:var(--raised);border-radius:16px;box-shadow:var(--pop-shadow);padding:14px 16px;color:var(--label);text-align:left}
+.sheet{position:absolute;z-index:40;left:50%;transform:translateX(-50%);background:var(--raised);border-radius:20px;box-shadow:var(--sheet-shadow);display:flex;flex-direction:column;overflow:hidden;max-width:calc(100% - 32px)}
+.sh-h{padding:18px 22px 12px;display:flex;flex-direction:column;gap:4px;flex:none}
+.sh-f{padding:12px 18px 16px;display:flex;align-items:center;gap:8px;border-top:.5px solid var(--sep);flex:none}
+.scrim{position:absolute;inset:0;z-index:35;background:var(--scrim)}
+.th{display:flex;align-items:center;gap:4px;padding:0 8px;height:28px;font-size:11px;font-weight:600;color:var(--label-2);white-space:nowrap;min-width:0;overflow:hidden}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.scroll{overflow:auto;scrollbar-width:thin}
+.box{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05)}
+.frow{display:flex;align-items:center;gap:12px;min-height:40px;padding:8px 14px}
+.frow+.frow{border-top:.5px solid var(--sep)}
+.fl{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tl{display:flex;gap:8px;flex:none}.tl i{width:12px;height:12px;border-radius:50%;display:block;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.bar{height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden;flex:none}.bar>i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.ban{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-radius:10px;font-size:12px;line-height:15px;box-shadow:inset 0 0 0 1px var(--edge-hc);flex:none}
+.b-neu{background:var(--fill-2)}.b-acc{background:var(--accent-tint)}.b-warn{background:var(--warn-tint)}
+.sw{width:30px;height:17px;border-radius:9px;background:var(--track);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:1.5px;left:1.5px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.sw.on{background:var(--accent)}.sw.on::after{left:14.5px}
+.rdo{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--sep-2);background:var(--control);flex:none;display:inline-block}
+.rdo.on{box-shadow:inset 0 0 0 4.5px var(--accent);background:#fff}
+.code{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:11px;line-height:16px;background:var(--fill-1);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;box-shadow:inset 0 0 0 .5px var(--sep)}
+.pg{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:4px 9px;border-radius:8px;font-size:13px;text-align:left}
+.pg:hover{background:var(--fill-1)}.pg.on{background:var(--fill-3)}.pg.off{opacity:.5}
+.sug{border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);padding:9px 11px;display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;text-align:left;width:100%}
+.terr{color:var(--err)}.tmt{color:var(--mt);font-weight:600}
+.stepn{width:22px;height:22px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.alx-l{--mtb:#8A3CD6;--mtb-fg:#FFFFFF}
+.alx-d{--mtb:#B98CFF;--mtb-fg:#1B0A2E}
+.alx-l.alx-hc{--mtb:#5C1E91;--mtb-fg:#FFFFFF}
+.alx-d.alx-hc{--mtb:#E6C8FF;--mtb-fg:#000000}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--mtb);color:var(--mtb-fg);font-size:11px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.bdg.sm{min-width:15px;height:15px;padding:0 4px;font-size:10px}
+.bdg.inv{background:rgba(255,255,255,.26);color:#fff}
+.hl{background:var(--mt-tint);box-shadow:inset 0 -1.5px 0 var(--mt);border-radius:3px}
+.twarn{color:var(--warn);font-weight:600}
+.pre{white-space:pre-wrap;word-break:break-word}
+.sgrid{display:grid;grid-template-columns:70px minmax(0,1fr);gap:3px 10px;align-items:baseline}
+.sgrid>span{white-space:pre-wrap;word-break:break-word}
+.fbox{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:10px 12px;display:flex;flex-direction:column;gap:7px;flex:none}
+.fbox-s{box-shadow:0 0 0 1px var(--mt-edge),0 1px 3px rgba(0,0,0,.05)}
+.sech{display:flex;align-items:center;gap:12px;flex:none;min-height:40px}
+.sico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.sico .ic{width:17px;height:17px;stroke-width:1.5}
+.i-store{background:linear-gradient(180deg,#3D86F7,#2869D2)}.i-shots{background:linear-gradient(180deg,#F57A35,#CE5619)}.i-price{background:linear-gradient(180deg,#3BB466,#288F4D)}.i-info{background:linear-gradient(180deg,#8E8E96,#6B6B73)}
+.lbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:6px 10px 6px 6px;border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);flex:none}
+.lpick{display:flex;align-items:center;gap:9px;height:40px;padding:0 10px 0 8px;border-radius:10px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep-2);text-align:left;min-width:200px;max-width:250px;flex:none}
+.lpick:hover{background:var(--fill-2)}
+.accb{height:28px;padding:0 6px 0 12px;border-radius:14px;gap:6px;font-size:13px}
+.arw{display:inline-flex;border-radius:8px;box-shadow:var(--ctl-shadow);background:var(--control);flex:none}
+.arw button{width:26px;height:24px;display:inline-flex;align-items:center;justify-content:center}
+.arw button+button{border-left:.5px solid var(--sep)}
+.arw button:disabled{opacity:.35}
+.autoln{flex-basis:100%;display:flex;align-items:center;gap:8px;padding:2px 2px 2px 4px;font-size:12px;color:var(--label-2)}
+.menu{position:absolute;z-index:30;background:var(--raised);border-radius:12px;box-shadow:var(--pop-shadow);padding:6px;display:flex;flex-direction:column}
+.mi{display:flex;align-items:center;gap:8px;min-height:28px;padding:0 8px;border-radius:8px;width:100%;font-size:13px;text-align:left}
+.mi:hover{background:var(--fill-2)}.mi.on{background:var(--accent-tint)}
+.mi:disabled{opacity:.4}
+.mh{padding:7px 8px 3px;font-size:11px;font-weight:600;color:var(--label-2)}
+.msep{height:.5px;background:var(--sep);margin:5px 4px}
+.asm{position:relative;width:100%;border-radius:20px;background:var(--content);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:6px;display:flex;flex-direction:column}
+.asm-r{position:relative;padding:9px 10px;border-radius:12px}
+.asm-d{height:.5px;background:var(--sep);margin:0 10px}
+.asm.lk .asm-r{cursor:pointer}
+.asm.lk .asm-r:hover{background:var(--fill-1);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.asm-name{font-size:16px;line-height:20px;font-weight:700;letter-spacing:-.01em}
+.asm-sub{font-size:12px;line-height:15px;color:var(--label-2)}
+.asm-get{height:24px;padding:0 16px;border-radius:12px;background:#0A84FF;color:#fff;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;flex:none}
+.asm-st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.asm-st>div{display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 4px;min-width:0}
+.asm-st>div+div{border-left:.5px solid var(--sep)}
+.asm-big{font-size:15px;line-height:19px;font-weight:700;color:var(--label-2)}
+.asm-t{font-size:12px;line-height:16px}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ctag{position:absolute;top:-11px;right:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 4px 0 8px;border-radius:10px;background:var(--raised);box-shadow:var(--pop-shadow);font-size:11px;font-weight:600;color:var(--accent-text);white-space:nowrap}
+.ctag .ic{width:10px;height:10px;stroke-width:2}
+.pp{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:10px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);min-width:0}
+.pp-mt{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}
+.pp-acc{background:var(--accent-tint)}
+.pp-n{font-size:22px;line-height:26px;font-weight:700;letter-spacing:-.01em}
+.pp-mt .pp-n{color:var(--mt)}.pp-acc .pp-n{color:var(--accent-text)}
+.pcard{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:9px;flex:none}
+.pcard-s{box-shadow:0 0 0 1px var(--mt-edge),0 1px 3px rgba(0,0,0,.05)}
+.pbar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px}
+.pbar>i{display:block;height:100%}
+.ptab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:5px 10px;align-items:baseline;padding:4px 2px 2px}
+.ptab .th{padding:0;height:auto}
+.chip{height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--control)}
+.chip.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.ipv{display:grid;grid-template-columns:76px minmax(0,1fr);gap:5px 8px;font-size:12px;line-height:15px}
+.axc{padding:2px 7px;border-radius:8px;background:var(--fill-2)}
+.chk{width:16px;height:16px;border-radius:6px;flex:none;display:inline-flex;align-items:center;justify-content:center;background:var(--control);box-shadow:inset 0 0 0 1px var(--sep-2);color:#fff}
+.chk.on,.chk.mix{background:var(--accent);box-shadow:none}
+.chk .ic{width:11px;height:11px;stroke-width:2.4}
+.sa-g{display:flex;align-items:center;gap:8px;padding:4px 6px 4px 8px;border-radius:8px}
+.sa-g.on{background:var(--fill-2)}
+.sa-gb{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;font-size:13px;min-height:32px}
+.sa-i{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);flex:none}
+.sa-i.off{background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.sa-i.off .sgrid{opacity:.5}
+.prochip{display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.05em;background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%);color:#fff;flex:none;margin-left:2px}
+.prochip.inv{background:#fff;color:#0A5CF2}
+.pro-up{background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%)!important;color:#fff!important;padding:0 11px 0 9px;font-weight:600}
+.pw-l{width:320px;flex:none;padding:26px 20px 22px;display:flex;flex-direction:column;gap:6px;background:radial-gradient(120% 70% at 90% 0%,rgba(31,194,255,.45),rgba(31,194,255,0) 60%),linear-gradient(165deg,#0B6FE8 0%,#0A56DC 50%,#0840AE 100%);color:#fff}
+.pw-logo{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;flex:none}
+.pw-name{font-size:22px;line-height:24px;font-weight:700;letter-spacing:-.01em}
+.pw-tag{font-size:12px;line-height:16px;color:rgba(255,255,255,.82)}
+.pwf{display:flex;gap:11px;align-items:flex-start;padding:8px 10px;border-radius:10px}
+.pwf.on{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35)}
+.pw-ic{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.14);display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.pw-ic .ic{width:15px;height:15px}
+.pw-ft{font-size:13px;line-height:17px;font-weight:600}
+.pw-fd{font-size:12px;line-height:15px;color:rgba(255,255,255,.78)}
+.pw-r{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;gap:10px;padding:24px 28px 18px}
+.pw-ctx{display:flex;gap:10px;padding:11px 13px;border-radius:12px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);margin-right:30px}
+.pwp{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--sep-2);text-align:left;width:100%}
+.pwp.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.pw-rad{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--sep-2);flex:none;background:var(--control)}
+.pwp.on .pw-rad{box-shadow:inset 0 0 0 5px var(--accent);background:#fff}
+.pw-save{height:17px;padding:0 6px;border-radius:6px;background:#E3F6E8;color:#1D7A3A;font-size:11px;font-weight:700;display:inline-flex;align-items:center}
+.alx-d .pw-save{background:rgba(48,209,88,.18);color:#5BE584}
+.pw-keep{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:16px;color:var(--label-2);padding:10px 12px;border-radius:10px;background:var(--fill-1)}
+.pw-keep b{color:var(--label)}
+.pw-cta{height:40px;border-radius:12px;font-size:14px;font-weight:600;justify-content:center;width:100%}
+.pw-links{display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:var(--label-2);flex-wrap:wrap}
+.pw-links button{color:var(--accent-text);font-size:12px}
+.pw-tab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:0;border-radius:10px;box-shadow:inset 0 0 0 .5px var(--sep-2);overflow:hidden}
+.pw-tab>span{padding:7px 10px;border-top:.5px solid var(--sep)}
+.pw-tab>.th{border-top:none;background:var(--fill-1);font-size:12px;font-weight:700;color:var(--label-2);height:auto}
+.i-an{background:linear-gradient(180deg,#6866E0,#4B49B8)}
+.bdg.neu{background:var(--fill-3);color:var(--label)}
+.setup{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:640px;width:100%;padding-top:10px}
+.mini-f{width:220px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mini-f i{display:block;height:10px;border-radius:5px;background:var(--fill-3)}
+.qrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.qrow>div{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:10px;background:var(--fill-1);text-align:left;font-size:12px;line-height:16px}
+.qrow span{color:var(--label-2)}
+.bigic{width:52px;height:52px;border-radius:50%;background:var(--fill-2);display:flex;align-items:center;justify-content:center;color:var(--label-2)}
+.bigic .ic{width:26px;height:26px}
+.bigic.warn{background:var(--warn-tint);color:var(--warn)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0;text-align:left;width:100%;max-width:500px}
+.steps li{position:relative;padding:0 0 14px 28px;display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:17px}
+.steps li span{color:var(--label-2);font-size:12px}
+.steps li::before{content:"";position:absolute;left:4px;top:3px;width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--sep-2);background:var(--content)}
+.steps li::after{content:"";position:absolute;left:8.5px;top:15px;bottom:2px;width:1px;background:var(--sep-2)}
+.steps li:last-child::after{display:none}
+.steps li.done::before{background:var(--ok);box-shadow:none}
+.steps li.now::before{box-shadow:inset 0 0 0 3px var(--accent)}
+.proto-btn{height:24px;padding:0 10px;border-radius:12px;font-size:10.5px;color:var(--label-2);outline:1.5px dashed var(--sep-2)}
+.fstrip{display:flex;align-items:stretch;gap:0;flex:none}
+.fst{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:3px;padding:10px 11px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05)}
+.fs-l{line-height:13px;min-height:26px}
+.td{display:flex;align-items:center;gap:6px;padding:0 10px;min-width:0;white-space:nowrap;overflow:hidden;height:100%}
+.tb-title.tb-hide{visibility:hidden}
+.chempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--label-2);background:var(--fill-1);border-radius:6px}
+.fcnt{font-size:17px;line-height:23px;font-weight:700;letter-spacing:-.01em}
+.fconn{width:104px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px;border-radius:10px;text-align:center;position:relative}
+.fconn:hover{background:var(--fill-1)}
+.fconn.on{background:var(--accent-tint);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.fc-l{line-height:13px}
+.frate{font-size:15px;line-height:19px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.fc-ar{width:40px;height:8px;fill:none;stroke:var(--label-3);stroke-width:1.2;margin-top:2px}
+.fst.sk,.fconn.sk{min-height:84px;background:var(--fill-1);box-shadow:none;animation:skp 1.4s ease-in-out infinite}
+@keyframes skp{0%,100%{opacity:1}50%{opacity:.55}}
+.cmpv{font-size:11px;font-weight:600}
+.cmpv.down{color:var(--warn)}.cmpv.up{color:var(--label)}.cmpv.same,.cmpv.few{color:var(--label-2)}
+.mk{font-size:10px;line-height:1;width:9px;display:inline-block;text-align:center}
+.mk-worse{color:var(--warn)}.mk-better{color:var(--label)}.mk-same{color:var(--label-2);font-size:11px}
+.cm{display:inline-flex;align-items:flex-end;gap:1.5px;height:9px;flex:none}
+.cm i{display:block;width:2.5px;border-radius:1px;background:var(--sep-2)}
+.cm i:nth-child(1){height:4px}.cm i:nth-child(2){height:6.5px}.cm i:nth-child(3){height:9px}
+.cm-1 i:nth-child(1),.cm-2 i:nth-child(-n+2),.cm-3 i{background:var(--label-2)}
+.cm-0{display:none}
+.callout{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);flex:none}
+.c-loss{background:var(--warn-tint);box-shadow:inset 0 0 0 .5px var(--sep)}
+.chw{position:relative;height:170px;margin:4px 0 0 44px}
+.chp{position:absolute;left:0;top:0;bottom:0;width:50%;background:var(--fill-1);border-radius:4px}
+.chs{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.chl{fill:none;stroke:var(--accent);stroke-width:1.8;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.cha{stroke:var(--label-3);stroke-width:1;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.chm{position:absolute;top:-2px;bottom:0;width:0;border-left:1px solid var(--label-3);transform:translateX(-.75px)}
+.chm-t{position:absolute;top:-4px;left:3px;white-space:nowrap;font-size:10px;font-weight:600;padding:1px 5px;border-radius:6px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2);color:var(--label)}
+.chm:hover .chm-t{background:var(--accent);color:#fff}
+.chy{position:absolute;left:-44px;width:40px;text-align:right;font-size:10px;color:var(--label-2)}
+.chy.t{top:-2px}.chy.b{bottom:-2px}
+.chx{display:flex;justify-content:space-between;margin-left:44px;font-size:10px;color:var(--label-2)}
+.lg-i{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--label-2)}
+.lg-i i{display:inline-block}
+.lg-prev{width:12px;height:9px;border-radius:2px;background:var(--fill-2)}
+.lg-cur{width:12px;height:9px;border-radius:2px;box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.lg-avg{width:14px;border-top:1px dashed var(--label-3)}
+.lg-mark{width:0;height:10px;border-left:1.5px solid var(--label-2)}
+.fcard{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:7px;flex:none}
+.fnums{display:flex;gap:6px;flex-wrap:wrap}
+.fnums>div{display:flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:8px;background:var(--fill-1);min-width:120px}
+.fstate{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px}
+.fstate.mt{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);color:var(--label)}
+.fstate.acc{background:var(--accent-tint)}
+.legend{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.bgrid{display:grid;grid-template-columns:minmax(150px,1.6fr) 84px 76px 100px 76px 100px 60px 100px 72px;align-items:center;min-height:30px}
+.bgrid.pp{grid-template-columns:minmax(150px,1.6fr) 84px 76px 100px 76px 100px 190px}
+.bgrid.nar{grid-template-columns:minmax(120px,1.4fr) 72px 100px 100px 100px 66px}
+.bgrid.nar.pp{grid-template-columns:minmax(120px,1.4fr) 72px 100px 100px 160px}
+.bgrid.nar .c-imp,.bgrid.nar .c-dl,.bgrid.nar .c-st{display:none}
+.bgrid.pp .c-st,.bgrid.pp .c-sr,.bgrid.pp .c-pr{display:none}
+.bgrid .c-ap{display:none}.bgrid.pp .c-ap{display:flex}
+.bgrid .td{font-size:12px}
+.bgrid .td.r,.bgrid .th.r{justify-content:flex-end;text-align:right}
+.bgrid .td.r{gap:4px}
+.bhead{background:var(--fill-1);border-bottom:.5px solid var(--sep);min-height:28px}
+.th.sortable:hover{color:var(--label)}
+.th.sorted{color:var(--label)}
+.btot{border-bottom:.5px solid var(--sep);background:var(--raised)}
+.brow{border-bottom:.5px solid var(--sep);min-height:34px;cursor:default}
+.brow:hover{background:var(--fill-1)}
+.brow.on{background:var(--accent-tint)}
+.rowbtn{text-align:left;font-size:12px;font-weight:500;max-width:100%}
+.bfoot{padding:8px 12px;border-top:.5px solid var(--sep);background:var(--fill-1)}
+.insp{width:290px;flex:none;background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.spark{display:flex;flex-direction:column;gap:3px}
+.spark svg{width:100%;height:60px;overflow:visible}
+.ilist{display:flex;flex-direction:column;border-top:.5px solid var(--sep)}
+.ilist>div{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:.5px solid var(--sep)}
+.chrow{display:flex;flex-direction:column;gap:3px;padding:7px 8px;border-radius:8px;text-align:left;width:100%}
+.chrow:hover{background:var(--fill-1)}
+.chrow.on{background:var(--accent-tint)}
+.res3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.res4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.fromban{display:flex;align-items:center;gap:10px;margin:8px 20px 0;padding:7px 8px 7px 8px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);font-size:12px;flex:none}
+.fromban .sico .ic{width:13px;height:13px}
+.ovf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ovf-i{display:flex;flex-direction:column;gap:0}
+.stopc{flex-basis:100%;display:flex;align-items:center;gap:8px;padding:8px 10px;margin-top:6px;border-radius:8px;background:var(--err-tint)}
+.focusring{box-shadow:0 0 0 3px var(--accent-tint),inset 0 0 0 1px var(--accent)!important}
+.ok{color:var(--ok)}
+@media (max-width:1040px){.tb-title{display:none!important}.tb-rp{display:none}.an-range{display:none}}
+@media (max-width:940px){.tbtab{padding:0 6px!important;gap:4px!important;font-size:12px!important}.tb-asst{display:none!important}.insp{width:250px}.bgrid.nar{grid-template-columns:minmax(104px,1fr) 72px 86px 86px 86px 60px}.bgrid.nar.pp{grid-template-columns:minmax(110px,1fr) 64px 88px 88px 140px}.fconn{width:90px}.fcnt{font-size:15px}.legend{display:none}.res4{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}.qrow{grid-template-columns:minmax(0,1fr)}}
+.sugm{display:flex;flex-direction:column;gap:3px;padding:6px 8px 6px 10px;border-radius:8px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}
+
+.i-ov{background:linear-gradient(180deg,#4A4A50,#2C2C30)}.i-ev{background:linear-gradient(180deg,#EC5B8D,#C03B69)}
+.sico.sm{width:22px;height:22px;border-radius:6px}.sico.sm .ic{width:13px;height:13px;stroke-width:1.6}
+.appsw{width:100%;display:flex;flex-direction:column;align-items:stretch;padding:0 8px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.appsw:hover{background:var(--fill-2)}
+.nvh{padding:12px 8px 4px;font-size:11px;font-weight:600;color:var(--label-2);letter-spacing:.01em}
+.nvi{width:100%;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 6px 0 5px;border-radius:8px;font-size:13px;text-align:left}
+.nvi:hover{background:var(--fill-1)}.nvi.on{background:var(--fill-3);font-weight:600}
+.menu .nvi{height:30px}
+.vfoot{flex:none;display:flex;align-items:center;gap:9px;margin:0 8px 8px;padding:8px 8px 8px 10px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);text-align:left}
+.vfoot:hover{background:var(--fill-2)}
+.vdot{width:8px;height:8px;border-radius:50%;flex:none}.dot-n{background:var(--label-3)}.dot-a{background:var(--accent)}.dot-ok{background:#34C759}.dot-w{background:var(--warn)}.dot-e{background:var(--err)}
+.vbtn{height:24px;padding:0 11px;border-radius:12px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;display:inline-flex;align-items:center;flex:none}
+.alx.nav-side .tb-rp{display:inline!important}.alx.nav-side .tb-asst{display:inline-flex!important}
+.alx.nav-side .tb-title.tb-keep{display:flex!important}.alx.nav-side .tb-title .mono{font-family:inherit}
+@container (max-width:720px){.alx.nav-side .tb-rp{display:none!important}.alx.nav-side .tb-title.tb-keep{display:none!important}}
+
+.i-rv{background:linear-gradient(180deg,#F7BE1A,#D99700)}.i-rel{background:linear-gradient(180deg,#4A4A50,#2C2C30)}
+.p-ok{color:var(--ok);background:rgba(52,199,89,.14)}
+.rvc{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:6px;flex:none}
+.stars{color:#F5A30A;letter-spacing:1px;font-size:12px;line-height:14px}
+.rv-sug{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);margin-top:2px}
+.rv-ed{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.rv-rep{display:flex;flex-direction:column;gap:4px;padding:8px 12px;border-radius:10px;background:var(--fill-1);margin-top:2px}
+.rbar{flex:1;height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden;display:block}.rbar>i{display:block;height:100%;background:var(--label-2);border-radius:3px}
+.sa-i.off{background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}.sa-i.off .t-c{color:var(--label-3)}
+.evi{display:flex;flex-direction:column;gap:5px;padding:7px;border-radius:12px;text-align:left;width:100%;flex:none}
+.evi:hover{background:var(--fill-1)}.evi.on{background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.evi-img{height:76px;border-radius:9px;position:relative;display:block;overflow:hidden}
+.evi-img>span{position:absolute;left:8px;top:7px;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.95)}
+.lch{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 3px;border-radius:12px;font-size:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.lch:hover{background:var(--fill-2)}.lch.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.dot-mt{width:7px;height:7px;border-radius:50%;background:var(--mtb);flex:none}
+.lch.on .dot-mt{box-shadow:none}
+.evp{border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:8px;display:flex;flex-direction:column;gap:2px}
+.evp-img{position:relative;height:144px;border-radius:11px;overflow:hidden;display:block}
+.evp-o1{position:absolute;width:150px;height:150px;right:-36px;top:-50px;border-radius:50%;background:rgba(255,255,255,.18)}
+.evp-o2{position:absolute;width:86px;height:86px;left:26px;bottom:-34px;border-radius:50%;background:rgba(255,255,255,.13)}
+.evp-o3{position:absolute;width:26px;height:26px;left:40%;top:38%;border-radius:50%;background:rgba(255,255,255,.55)}
+.evp-b{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--label-2);padding:8px 4px 0}
+.evp-n{font-size:16px;line-height:20px;font-weight:700;letter-spacing:-.01em;padding:0 4px}
+.evp-s{font-size:12.5px;line-height:16px;color:var(--label-2);padding:0 4px}
+.evp-w{font-size:11px;font-weight:600;color:var(--accent-text);padding:2px 4px 4px}
+.ck{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+.ck.ok{background:rgba(52,199,89,.16);color:var(--ok)}.ck.warn{background:var(--warn-tint);color:var(--warn)}
+.stps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.stp{display:flex;flex-direction:column;gap:1px;position:relative;padding:18px 6px 0 0;min-width:0}
+.stp::before{content:'';position:absolute;top:6px;left:0;right:0;height:2px;background:var(--fill-3)}
+.stp>i{position:absolute;top:1px;left:0;width:12px;height:12px;border-radius:50%;background:var(--fill-3);box-shadow:0 0 0 3px var(--raised);z-index:1}
+.stp.done::before,.stp.done>i{background:var(--accent)}
+.stp.now>i{background:var(--accent);box-shadow:0 0 0 3px var(--raised),0 0 0 6px var(--accent-tint)}
+.stp.rej>i{background:var(--err);box-shadow:0 0 0 3px var(--raised),0 0 0 6px var(--err-tint)}
+.stp:last-child::before{right:auto;width:12px}
+.phs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.ph{display:flex;flex-direction:column;gap:2px}.ph>i{display:block;height:6px;border-radius:3px;background:var(--fill-2)}
+.ph.done>i{background:var(--ok)}.ph.now>i{background:var(--accent)}.ph.now.paused>i{background:var(--warn)}
+.rejbox{background:var(--err-tint);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.sbs{display:flex;flex-direction:column;gap:6px;padding-top:14px}
+.radg{display:flex;flex-direction:column;gap:1px}
+.rad{display:flex;align-items:center;gap:10px;min-height:32px;padding:5px 8px;border-radius:10px;width:100%}
+.rad:hover{background:var(--fill-1)}.rad.dis{opacity:.45}
+.rdo{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--sep-2);background:var(--control);flex:none;position:relative}
+.rad.on .rdo{background:var(--accent);box-shadow:none}.rad.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.wnl{display:flex;flex-direction:column}.wnr{display:flex;align-items:center;gap:8px;min-height:30px;border-top:.5px solid var(--sep)}
+.ckr{display:flex;align-items:center;gap:10px;padding:5px 2px}
+@media (max-width:1240px){.tb-rp{display:none}}
+.cq{container-type:inline-size}
+@container (max-width:1040px){.tb-title{display:none!important}.tb-rp{display:none}.an-range{display:none}.ev-pv{display:none!important}.rv-side{width:260px!important}}
+@container (max-width:940px){.tbtab{padding:0 6px!important;gap:4px!important;font-size:12px!important}.tb-asst{display:none!important}.insp{width:250px}.bgrid.nar{grid-template-columns:minmax(104px,1fr) 72px 86px 86px 86px 60px}.bgrid.nar.pp{grid-template-columns:minmax(110px,1fr) 64px 88px 88px 140px}.fconn{width:90px}.fcnt{font-size:15px}.legend{display:none}.res4{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}.qrow{grid-template-columns:minmax(0,1fr)}.ev-nav{width:170px!important}}
+
+@media (max-width:1040px){.ev-pv{display:none!important}.rv-side{width:260px!important}}
+@media (max-width:940px){.ev-nav{width:170px!important}}
+
+.alx.nav-side{container-type:inline-size}
+.ea-art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ea-tw{animation:eatw 1.2s ease-in-out infinite alternate}
+@keyframes eatw{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ea-tw,.eash{animation:none!important}}
+.eam{flex-direction:row!important;align-items:center;gap:14px!important;padding:10px 12px!important;flex:none}
+.eam-th{display:flex;gap:6px;align-items:stretch;flex:none}
+.eam-c,.eam-d{position:relative;display:block;height:72px;border-radius:8px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2)}
+.eam-c{width:128px}.eam-d{width:40.5px}
+.eam-g{position:absolute;inset:0;display:block}
+.eam-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700;font-size:13px;color:var(--warn);background:var(--warn-tint);box-shadow:inset 0 0 0 1px var(--warn);border-radius:8px}
+
+.evi-img .ea-art{border-radius:9px}
+.eapb{display:block;height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden}.eapb>i{display:block;height:100%;border-radius:3px;background:var(--mtb);transition:width .4s}
+.eas{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex:none}
+.eas li{display:flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 4px;border-radius:12px;font-size:12px;color:var(--label-3)}
+.eas li i{width:16px;height:16px;border-radius:50%;background:var(--fill-3);color:var(--label-2);font-style:normal;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.eas li.now{background:var(--fill-2);color:var(--label);font-weight:600}.eas li.now i{background:var(--accent);color:#fff}
+.eas li.done{color:var(--label-2)}.eas li.done i{background:var(--ok);color:#fff}
+.eao{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;text-align:left;width:100%;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--raised)}
+.eao:hover{background:var(--fill-1)}.eao.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.eao.on .rdo{background:var(--accent);box-shadow:none}.eao.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.eao-th{position:relative;width:86px;height:48px;border-radius:8px;overflow:hidden;flex:none;display:block;background:var(--fill-2)}
+.eao-tp{display:grid;grid-template-columns:1fr 1fr;gap:2px}.eao-tp i{display:block}
+.eao-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.eaget{display:flex;gap:10px;align-items:flex-end;padding:4px 0}
+.eag{box-sizing:border-box;border-radius:10px;border:1px dashed var(--sep-2);background:var(--fill-1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;color:var(--label-2);text-align:center;padding:4px}
+.eag b{font-size:11px;color:var(--label);font-weight:600}
+.eagrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.easl{display:flex;flex-direction:column;gap:8px}
+.eapair{display:flex;gap:6px;align-items:stretch}
+.eapc{position:relative;display:block;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2);flex:1;min-width:0}
+.eapd{position:relative;display:block;aspect-ratio:9/16;border-radius:10px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2);flex:none}
+.eapair .eapd{height:auto;align-self:stretch;aspect-ratio:auto;width:23.5%}
+.eapair{aspect-ratio:2.39/1}
+.eapair .eapc{aspect-ratio:auto}
+.eash{position:absolute;inset:0;display:block;background:linear-gradient(100deg,transparent 20%,var(--fill-3) 50%,transparent 80%);background-size:200% 100%;animation:eash 1.4s linear infinite}
+@keyframes eash{from{background-position:120% 0}to{background-position:-80% 0}}
+.eacc{display:flex;flex-direction:column;gap:10px;padding:8px;border-radius:16px;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--raised);text-align:left;align-self:start}
+.eacc:hover{background:var(--fill-1)}.eacc.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.eacc.on .rdo{background:var(--accent);box-shadow:none}.eacc.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.eamock{display:flex;gap:16px;align-items:flex-start}
+.eafig{margin:0;display:flex;flex-direction:column;gap:6px}
+.eac,.ead{position:relative;display:block;border-radius:14px;overflow:hidden;background:#101645;box-shadow:0 0 0 .5px var(--sep-2),0 8px 24px rgba(0,0,0,.14)}
+.eac{aspect-ratio:16/9}.ead{aspect-ratio:9/16}
+.eac-sc{position:absolute;left:0;right:0;bottom:0;top:45%;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.62));display:block}
+.eac-t{position:absolute;left:0;right:0;bottom:0;padding:0 14px 12px;display:flex;flex-direction:column;gap:2px;color:#fff}
+.ead .eac-t{padding:0 11px 11px}
+.eac-b{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+.eac-n{font-size:19px;line-height:23px;font-weight:700;letter-spacing:-.01em}
+.eac-s{font-size:12.5px;line-height:16px;opacity:.9}
+.eac-w{font-size:10px;font-weight:600;opacity:.85}
+.easafe{position:absolute;left:0;right:0;bottom:0;display:block;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9);border-radius:0 0 14px 14px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.16) 0 6px,rgba(255,255,255,0) 6px 12px)}
+.easafe b{position:absolute;right:8px;top:-21px;font-style:normal;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);border-radius:6px;padding:1px 6px}
+.eaplay{position:absolute;left:10px;top:10px;font-size:10.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);border-radius:9px;padding:2px 8px;font-variant-numeric:tabular-nums}
+@container (max-width:900px){.ea .eac-n{font-size:14px!important;line-height:17px!important}.ea .eac-s{font-size:10.5px!important;line-height:13px!important}.ea .eafig.d{width:132px!important}.ea .ead .eac-n{font-size:11.5px!important;line-height:14px!important}.ea .ead .eac-s{display:none}.ea .ea-side{width:236px!important}.easafe b{display:none}.eas li:not(.now){display:none}}
+@container (max-width:700px){.eagrid{grid-template-columns:1fr}}
+
+.i-cp{background:linear-gradient(180deg,#16A9B6,#0C848F)}
+.tok{color:var(--ok);font-weight:600}.tacc{color:var(--accent-text)}
+.ck.err{background:var(--err-tint);color:var(--err)}
+.b-ok{background:rgba(52,199,89,.14)}.b-err{background:var(--err-tint)}
+.btn.dng{color:var(--err)}
+
+.fld.bad{box-shadow:inset 0 0 0 1.5px var(--err)}
+.selb{height:28px;padding:0 6px 0 9px;border-radius:8px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap}
+.cp-ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:17px}.cp-ul b{font-weight:600}
+.cpl{padding:4px 12px!important;gap:0!important}
+.cpr{display:grid;grid-template-columns:minmax(170px,1.5fr) 168px minmax(200px,1.1fr) 168px 58px;gap:4px 12px;align-items:center;padding:9px 2px}
+.cpr+.cpr{box-shadow:inset 0 .5px 0 var(--sep)}
+.cph{font-size:11px;font-weight:600;color:var(--label-2);padding:7px 2px}
+.cpd{background:var(--fill-1);margin:0 -8px;padding-left:10px;padding-right:10px;border-radius:10px;box-shadow:none!important}
+.cprow{cursor:default}.cprow:hover{background:var(--fill-1);margin:0 -8px;padding-left:10px;padding-right:10px;border-radius:10px}
+.cpc-n,.cpc-s,.cpc-r{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cpc-s{align-items:flex-start;gap:3px}
+.cpc-a{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.cpf{display:inline-flex;align-items:baseline;gap:7px;font-size:12px}.cpf b{font-weight:600}.cpf i{font-style:normal;color:var(--label-3)}
+.cpsg{display:flex;flex-direction:column;gap:5px;padding:9px 11px;border-radius:9px;background:var(--raised);box-shadow:0 0 0 .5px var(--mt-edge)}
+.cpsg-g{display:grid;grid-template-columns:110px minmax(0,1fr);gap:5px 10px;font-size:12px;line-height:16px;padding:6px 0 2px;border-top:.5px solid var(--sep)}
+.kwg{display:flex;flex-wrap:wrap;gap:5px}
+.kwc{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:12px;font-size:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep-2);white-space:nowrap}
+.kwc.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}.kwc.on::before{content:'✓';font-size:10px;font-weight:700}
+.kwc.on.new{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);border:0;outline:1px dashed var(--accent);outline-offset:-1px}.kwc.on.new::before{content:''}
+.kwc.used{color:var(--label-2)}.kwc i{font-style:normal;font-size:10px;font-weight:600;color:var(--label-2);background:var(--fill-3);border-radius:8px;padding:1px 6px}
+.kwc:disabled{opacity:.55}
+.dot-own{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;flex:none}
+.cphd{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px!important;padding:10px 12px!important;flex:none}
+.cphd-c{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cps{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:thin}
+.cps.same{opacity:.5}.cps.dim2{opacity:.6}
+.cps-f{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+.cps-f>dc-import,.cps-f>span{border-radius:8px}
+.cps-v{width:92px;height:199px;border-radius:9px;background:linear-gradient(160deg,#2B2F6B,#6E7BFF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff}
+.cps-v i{font-style:normal;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px}.cps-v b{font-size:10.5px;font-weight:600}
+.cptile{display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2);min-height:0;color:var(--label-3)}
+.cptile::after{content:'';width:22px;height:22px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;opacity:.7}
+.cptile.sk::after{animation:cpspin 1s linear infinite}
+.cptile:not(.sk)::after{border-style:dashed;border-top-color:currentColor;opacity:.4}
+@keyframes cpspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.cptile.sk::after{animation:none}}
+.cpref{background:var(--warn-tint);box-shadow:inset 0 0 0 1px var(--warn-mark)}
+mark.cpm{background:none;color:var(--err);font-weight:600;text-decoration:underline wavy;text-underline-offset:3px}
+mark.cpn{background:var(--accent-tint);color:inherit;border-radius:3px;padding:0 2px}
+.cmp2{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0!important;padding:0!important;flex:none}
+.cmp2-c{display:flex;flex-direction:column;gap:6px;padding:10px 12px;min-width:0}.cmp2-c.new{box-shadow:inset .5px 0 0 var(--sep);background:var(--accent-tint);border-radius:0 12px 12px 0}
+.cp-pv{width:300px;flex:none;display:flex;flex-direction:column;gap:8px}
+.cpv2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cpv{display:flex;flex-direction:column;gap:7px;padding:8px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);min-width:0}
+.cpv-h{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--label-2)}
+.cpv-s{display:flex;gap:4px;border-radius:7px}
+.cpv-t{font-size:9.5px;line-height:13px;color:var(--label);display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;border-radius:5px}
+.cpv-own{outline:1.5px solid var(--accent);outline-offset:2px}
+.cpsk{display:flex;gap:6%;align-items:center;padding:16px 2px}.cpsk+.cpsk{box-shadow:inset 0 .5px 0 var(--sep)}.cpsk i{display:block;height:12px;border-radius:6px;background:var(--fill-3);animation:skp 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cpsk i{animation:none}}
+.c-nm .cpopen{flex:none}
+.cpfail{display:flex;flex-direction:column;gap:5px;padding:10px 12px;border-radius:10px;background:var(--err-tint)}
+.alx-hc .cpd,.alx-hc .cpsg,.alx-hc .cpv,.alx-hc .cpfail,.alx-hc .kwc{box-shadow:inset 0 0 0 1px var(--label)}
+.alx-hc .kwc.on{box-shadow:inset 0 0 0 1px var(--label)}
+.cp-show-s{display:none}
+@container (max-width:900px){.cp-pv{display:none}.cp-hide-s{display:none!important}.cp-show-s{display:inline-flex!important}.cph{display:none}
+  .cpr{grid-template-columns:minmax(0,1fr) auto 30px;gap:4px 10px}.cpc-n{grid-column:1}.cpc-s{grid-column:2;grid-row:1;align-items:flex-end}.cpc-f{grid-column:1;grid-row:2}.cpc-r{grid-column:2;grid-row:2;align-items:flex-end;text-align:right}.cpc-a{grid-column:3;grid-row:1 / span 2}.cpc-a .btn{display:none}
+  .cphd{grid-template-columns:1fr}.cmp2{grid-template-columns:1fr}.cmp2-c.new{border-radius:0 0 12px 12px;box-shadow:inset 0 .5px 0 var(--sep)}}
+@container (max-width:900px){.cpsh .eas li:not(.now){display:none}}
+
+.e2sw{display:inline-flex;align-items:center;gap:4px;min-width:0;height:30px;padding:0 6px 0 8px;margin-left:-4px;border-radius:10px;text-align:left}
+.e2sw:hover,.e2sw[aria-expanded="true"]{background:var(--fill-2)}
+.e2sw-th{position:relative;display:block;width:53px;height:30px;border-radius:6px;overflow:hidden;flex:none;box-shadow:0 0 0 .5px var(--sep-2)}
+.e2v-play{left:auto!important;right:1.6%;top:2.6%!important;font-size:12px!important}
+.alx-hc .e2sw{box-shadow:inset 0 0 0 1px var(--label)}
+.ev2 .eac,.ev2 .ead{display:block}
+.e2o1,.e2o2,.e2o3{position:absolute;border-radius:50%;display:block}
+.e2o1{width:42%;aspect-ratio:1;right:-9%;top:-34%;background:rgba(255,255,255,.18)}
+.e2o2{width:24%;aspect-ratio:1;left:9%;bottom:-24%;background:rgba(255,255,255,.13)}
+.e2o3{width:7%;aspect-ratio:1;left:40%;top:36%;background:rgba(255,255,255,.55)}
+.ead>.e2o1,.e2v-img.det>.e2o1,.e2pr.d>.e2o1{width:90%;right:-30%;top:-12%}.ead>.e2o2,.e2v-img.det>.e2o2,.e2pr.d>.e2o2{width:56%;left:-12%;bottom:22%}.ead>.e2o3,.e2v-img.det>.e2o3,.e2pr.d>.e2o3{width:14%;left:30%;top:30%}
+.e2g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.e2t{display:flex;min-width:0}
+.e2t-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding:8px 8px 10px;border-radius:18px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);text-align:left}
+.e2t-b:hover{box-shadow:0 0 0 .5px var(--sep-2),0 6px 18px rgba(0,0,0,.10)}
+.e2t-img{width:100%;border-radius:12px!important;box-shadow:none!important;margin-bottom:4px}
+.e2t-img .eac-n{font-size:16px;line-height:20px}.e2t-img .eac-s{font-size:12px;line-height:15px}.e2t-img .eac-t{padding:0 12px 10px;text-align:left}
+.e2chip{position:absolute;right:8px;top:8px;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px 0 7px;border-radius:11px;background:var(--mtb);color:var(--mtb-fg);font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.e2col{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.e2hero{flex-direction:row!important;gap:16px!important;padding:12px!important;align-items:stretch;flex:none}
+.e2pv{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.e2stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:268px;border-radius:12px;background:var(--fill-1);padding:10px}
+.e2stk{width:100%;max-width:440px;display:flex;flex-direction:column;gap:0;border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:7px}
+.e2big{width:100%;border-radius:11px!important;box-shadow:none!important;cursor:zoom-in;text-align:start}
+.e2bigd{height:330px;border-radius:14px!important;cursor:zoom-in;text-align:start;flex:none}
+.e2big .eac-n{font-size:18px;line-height:22px}
+.e2zoom{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:13px;background:rgba(0,0,0,.42);color:#fff;display:inline-flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;backdrop-filter:blur(8px)}
+.e2big:hover .e2zoom,.e2bigd:hover .e2zoom,.e2big:focus-visible .e2zoom,.e2bigd:focus-visible .e2zoom{opacity:1}
+.e2lock{display:flex;align-items:center;gap:8px;padding:8px 3px 1px}
+.e2lock-i{width:30px;height:30px;border-radius:8px;background:linear-gradient(160deg,#7C86FF,#3A2FB8);display:flex;align-items:center;justify-content:center;flex:none}
+.e2miss{height:330px;aspect-ratio:9/16;border-radius:16px;border:1.5px dashed var(--warn);background:var(--warn-tint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:12px}
+.e2art{width:292px;flex:none;display:flex;flex-direction:column;gap:9px;min-width:0}
+.e2rows{display:flex;flex-direction:column;gap:5px}
+.e2c{position:relative;display:flex;border-radius:12px;background:var(--raised);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.e2c:hover{background:var(--fill-1)}.e2c.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.e2c-b{flex:1;min-width:0;display:flex;align-items:center;gap:9px;padding:6px 34px 6px 6px;text-align:left;border-radius:12px}
+.e2c-b:disabled{opacity:.75}
+.e2c-th{display:flex;gap:3px;flex:none;height:48px}
+.e2c-c,.e2c-d{position:relative;display:block;height:48px;border-radius:6px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2)}
+.e2c-c{width:85px}.e2c-d{width:27px}
+.e2c-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.e2c-w{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.e2c-z{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;color:var(--label-2);background:var(--control);box-shadow:var(--ctl-shadow)}
+.e2c-z:hover{color:var(--label)}
+.e2pair{display:flex;gap:6px;height:118px}
+.e2pr{position:relative;display:block;height:118px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep-2);cursor:zoom-in;flex:none}
+.e2pr.c{aspect-ratio:16/9}.e2pr.d{aspect-ratio:9/16}
+.e2pr.miss{cursor:default;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--warn);background:var(--warn-tint);box-shadow:inset 0 0 0 1.5px var(--warn)}
+.e2pr:hover:not(.miss){box-shadow:0 0 0 2px var(--accent)}
+.e2acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:auto}
+@container (max-width:700px){.e2hero{flex-direction:column!important}.e2art{width:auto}.e2stage{min-height:0}}
+.e2v{position:absolute;inset:0;z-index:50;background:#0B0B0F;color:#fff;display:flex;flex-direction:column;--label:#fff}
+.e2v-top{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 16px;border-bottom:.5px solid rgba(255,255,255,.12)}
+.e2v-n{font-size:13px;line-height:16px;font-weight:600;color:#fff}.e2v-s{font-size:11.5px;line-height:14px;color:rgba(255,255,255,.62)}
+.e2v-b{width:28px;height:28px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.12);flex:none}
+.e2v-b:hover,.e2v-nav:hover{background:rgba(255,255,255,.22)}
+.e2v-seg{display:inline-flex;padding:2px;border-radius:999px;background:rgba(255,255,255,.12);flex:none}
+.e2v-seg button{height:24px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap}
+.e2v-seg button.on{background:rgba(255,255,255,.92);color:#111}
+.e2v-tg{height:28px;padding:0 11px 0 9px;border-radius:14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.8);background:rgba(255,255,255,.12);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
+.e2v-tg::before{content:'';width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.e2v-tg.on{color:#fff;background:rgba(255,255,255,.24)}.e2v-tg.on::before{background:#30D158;box-shadow:none}
+.e2v-stage{flex:1;min-height:0;display:flex;align-items:center;gap:12px;padding:16px 14px}
+.e2v-nav{width:36px;height:36px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.12);flex:none}
+.e2v-box{flex:1;min-width:0;height:100%;container-type:size;display:flex;align-items:center;justify-content:center}
+.e2v-img{position:relative;display:block;overflow:hidden;border-radius:14px;box-shadow:0 0 0 .5px rgba(255,255,255,.18),0 20px 60px rgba(0,0,0,.6);background:#101645}
+.e2v-img.card{aspect-ratio:16/9;width:min(100cqw,calc(100cqh * 16 / 9))}
+.e2v-img.det{aspect-ratio:9/16;width:min(100cqw,calc(100cqh * 9 / 16))}
+.e2v-t{padding:0 3.2% 3%!important;gap:.5cqh!important}
+.e2v-img.card .eac-b{font-size:clamp(10px,1.7cqh,15px)}.e2v-img.card .eac-n{font-size:clamp(18px,5.4cqh,44px);line-height:1.18}.e2v-img.card .eac-s{font-size:clamp(12px,3.1cqh,26px);line-height:1.25}
+.e2v-img.det .e2v-t{padding:0 6% 5%!important}
+.e2v-img.det .eac-b{font-size:clamp(9px,1.4cqh,13px)}.e2v-img.det .eac-n{font-size:clamp(15px,3.6cqh,30px);line-height:1.18}.e2v-img.det .eac-w{font-size:clamp(9px,1.6cqh,14px)}.e2v-img.det .eac-s{font-size:clamp(10px,2.1cqh,18px);line-height:1.3}
+.e2v-safe{top:62%;border-radius:0 0 14px 14px}.e2v-img.card .e2v-safe{top:64%}
+.e2v-img .eash{background-image:linear-gradient(100deg,rgba(0,0,0,.35) 20%,rgba(255,255,255,.2) 50%,rgba(0,0,0,.35) 80%)}
+.e2v-busy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 14px;border-radius:12px;background:rgba(0,0,0,.6);font-size:13px;font-weight:600;white-space:nowrap;backdrop-filter:blur(10px)}
+.e2v-bot{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px 14px;border-top:.5px solid rgba(255,255,255,.12)}
+.e2v-film{display:flex;gap:6px;flex:none;align-items:center}
+.e2f{position:relative;display:block;padding:2px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);opacity:.78}
+.e2f:hover{opacity:.9}.e2f.on{box-shadow:inset 0 0 0 2px #fff;opacity:1}
+.e2f-c,.e2f-d{position:relative;display:block;height:46px;border-radius:8px;overflow:hidden}.e2f-c{width:82px}.e2f-d{width:26px}
+.e2f-u{position:absolute;right:-4px;top:-4px;width:16px;height:16px;border-radius:50%;background:#30D158;color:#06260F;font:700 10px/16px -apple-system,sans-serif;text-align:center}
+.e2v-why{font-size:12.5px;line-height:16px;color:rgba(255,255,255,.92)}.e2v-ck{font-size:11.5px;line-height:15px;color:rgba(255,255,255,.62)}
+.e2v-l{height:22px;padding:0 9px;border-radius:11px;font-size:11.5px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.1);white-space:nowrap}
+.e2v-l.on{background:rgba(255,255,255,.9);color:#111;font-weight:600}
+.e2v-btn{height:28px;padding:0 14px;border-radius:14px;font-size:13px;color:#fff;background:rgba(255,255,255,.16);white-space:nowrap;flex:none;display:inline-flex;align-items:center}
+.e2v-btn:hover{background:rgba(255,255,255,.26)}.e2v-btn.pri{background:#0A84FF;font-weight:500}.e2v-btn.pri:hover{background:#2B95FF}
+.e2v-btn:disabled{opacity:.4;pointer-events:none}
+.e2v-used{font-size:12.5px;font-weight:600;color:#30D158;flex:none;padding:0 6px}
+.e2v.full .e2v-stage{padding:0}.e2v.full .e2v-img{border-radius:0;box-shadow:none}.e2v.full .e2v-nav{display:none}.e2v.full .e2v-safe{border-radius:0}
+.e2v-hud{position:absolute;left:50%;top:14px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:22px;background:rgba(20,20,24,.72);box-shadow:0 0 0 .5px rgba(255,255,255,.2),0 12px 40px rgba(0,0,0,.5);backdrop-filter:blur(24px) saturate(1.6);white-space:nowrap}
+.e2v-ask{position:absolute;right:16px;bottom:74px;width:340px;max-width:calc(100% - 32px);display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:16px;background:rgba(32,32,38,.92);box-shadow:0 0 0 .5px rgba(255,255,255,.2),0 16px 48px rgba(0,0,0,.6);backdrop-filter:blur(24px) saturate(1.6)}
+.e2v-ta{width:100%;padding:7px 9px;border-radius:9px;border:0;outline:none;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.25);color:#fff;font:inherit;font-size:12.5px;line-height:17px;resize:none;display:block}
+.alx-hc .e2v-top,.alx-hc .e2v-bot{border-color:rgba(255,255,255,.6)}.alx-hc .e2v-s,.alx-hc .e2v-ck{color:#fff}.alx-hc .e2f{opacity:1}.alx-hc .e2v-b,.alx-hc .e2v-nav,.alx-hc .e2v-btn,.alx-hc .e2v-tg,.alx-hc .e2v-seg{box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+.alx-hc .e2c{box-shadow:inset 0 0 0 1px var(--label)}.alx-hc .e2c.on{box-shadow:inset 0 0 0 2.5px var(--accent)}.alx-hc .e2t-b{box-shadow:0 0 0 1px var(--label)}.alx-hc .e2zoom{opacity:1}
+@container (max-width:900px){.e2v-tg{padding:0 9px;font-size:11.5px}.e2v-ck{display:none}.e2f-c{width:57px;height:32px}.e2f-d{width:18px;height:32px}}
+@media (prefers-reduced-motion:reduce){.e2zoom{transition:none}}
+
+.askb .ic{color:var(--mt)}
+.askb.busy{color:var(--mt);pointer-events:none;box-shadow:inset 0 0 0 1px var(--mt-edge);background:var(--mt-tint)}
+.askfly{position:absolute;z-index:70;width:26px;height:26px;pointer-events:none}
+.askfly>i{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--mtb);color:var(--mtb-fg);box-shadow:0 0 0 4px var(--mt-tint),0 6px 18px rgba(138,60,214,.45)}
+.askfly>i .ic{color:inherit}
+.askfly.live{transition:transform .68s cubic-bezier(.5,0,.9,.6)}
+.askfly.live>i{transition:transform .68s cubic-bezier(.1,.7,.3,1),opacity .16s linear .54s}
+.asd{width:8px;height:8px;border-radius:50%;background:#34C759;flex:none;display:block}
+.tb-asst{position:relative}
+.tb-asst.work{color:var(--mt)}
+.tb-asst.work::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:asring .9s ease-out 1}
+.tb-asst.work .asd{background:var(--mtb);animation:asdp 1.1s ease-in-out infinite}
+.tb-asl{font-size:12px;font-weight:600;white-space:nowrap}
+@keyframes asring{0%{box-shadow:0 0 0 0 rgba(138,60,214,.6)}100%{box-shadow:0 0 0 14px rgba(138,60,214,0)}}
+@keyframes asdp{0%,100%{transform:scale(.7);opacity:.55}50%{transform:scale(1.25);opacity:1}}
+@media (prefers-reduced-motion:reduce){.askfly{display:none}.tb-asst.work::after,.tb-asst.work .asd{animation:none}}
+
+.sx{display:flex;width:100%;overflow:hidden;background:var(--window);color:var(--label);font-size:13px;line-height:17px}
+.sx-sb{width:212px;flex:none;display:flex;flex-direction:column;gap:2px;padding:14px 8px 10px;box-sizing:border-box}
+.sx-srch{display:flex;align-items:center;gap:6px;height:28px;margin:12px 0 8px;padding:0 8px;border-radius:8px;background:var(--fill-2);color:var(--label-2);font-size:12px}
+.sx-srch input{flex:1;min-width:0;border:0;background:none;outline:none;font:inherit;color:var(--label)}
+.sx-main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--content);box-shadow:-.5px 0 0 var(--sep)}
+.sx-hd{flex:none;padding:16px 24px 10px;display:flex;align-items:center;gap:12px}
+.sx-bd{flex:1;min-height:0;padding:2px 24px 22px;display:flex;flex-direction:column;gap:6px}
+.sgh{font-size:12px;font-weight:600;color:var(--label-2);padding:12px 2px 2px}
+.sg{background:var(--fill-1);border-radius:12px;box-shadow:inset 0 0 0 .5px var(--sep);display:flex;flex-direction:column;flex:none}
+.sr{display:flex;align-items:center;gap:12px;padding:9px 12px;min-height:38px;box-sizing:border-box}
+.sr+.sr{box-shadow:inset 0 .5px 0 var(--sep)}
+.sr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.sr-s{font-size:12px;line-height:15px;color:var(--label-2)}
+.sgf{font-size:12px;line-height:15px;color:var(--label-2);padding:4px 2px 0}
+.selb{height:28px;padding:0 6px 0 9px;border-radius:8px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap}
+.selb .ic{width:11px;height:11px;color:var(--label-2)}
+.btn.dng{color:var(--err)}
+.kav{width:34px;height:34px;border-radius:10px;background:var(--label);color:var(--content);font:700 11px/34px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;flex:none}
+.kline{display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:15px}
+.kline .ic{width:11px;height:11px;margin-top:2px;stroke-width:2}
+.gch{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 6px 0 9px;border-radius:11px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:12px}
+.gch .ic{width:9px;height:9px;color:var(--label-3);stroke-width:2}
+.sld{position:relative;width:150px;height:4px;border-radius:2px;background:var(--accent);flex:none}
+.sld i{position:absolute;right:-7px;top:-6px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.25)}
+.lockr{color:var(--label-2)}
+.plan{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#1FC2FF 0%,#0A5CF2 100%);color:#fff;flex:none}
+.plan .btn{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5)}
+.plan.free{background:var(--fill-2);color:var(--label)}
+.plan.free .btn.pri{background:var(--accent);color:#fff;box-shadow:none}
+.pmark{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex:none}
+.plan.free .pmark{background:var(--fill-3)}
+.pmark .ic{width:22px;height:22px}
+.inl{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:var(--err-tint);margin:0 12px 10px}
+.nvi .ic{color:#fff}
+/* help */
+.hx-art{max-width:600px;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.hx-art h1{font-size:24px;line-height:29px;font-weight:700;letter-spacing:-.015em;margin:0}
+.hx-art h2{font-size:15px;line-height:20px;font-weight:600;margin:8px 0 0}
+.hx-art p{margin:0;font-size:13px;line-height:20px}
+.hx-lead{font-size:15px!important;line-height:22px!important;color:var(--label-2)}
+.hx-art ol,.hx-art ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px;font-size:13px;line-height:20px}
+.hx-note{background:var(--fill-1);border-radius:10px;box-shadow:inset 0 0 0 .5px var(--sep);padding:10px 12px;font-size:12px;line-height:18px}
+.hx-note.w{background:var(--warn-tint);box-shadow:none}
+.hx-t{width:100%;border-collapse:collapse;font-size:12px;line-height:17px}
+.hx-t th{text-align:left;font-weight:600;color:var(--label-2);font-size:12px;padding:5px 8px;border-bottom:.5px solid var(--sep-2)}
+.hx-t td{padding:6px 8px;border-bottom:.5px solid var(--sep);vertical-align:top}
+.hx-go{align-self:flex-start;gap:6px}
+.hx-rel{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding-top:10px;border-top:.5px solid var(--sep)}
+.hx-lnk{display:flex;align-items:center;gap:6px;min-height:24px;padding:3px 6px;box-sizing:border-box;border-radius:8px;color:var(--accent-text);font-size:13px;line-height:17px;text-align:left;align-self:flex-start;white-space:normal}
+.hx-lnk:hover{background:var(--fill-1)}
+.kb{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2);font:500 12px/1 -apple-system,system-ui,sans-serif;box-sizing:border-box}
+.sx-sb .nvh{padding:9px 8px 3px}
+.hx-hero{border-radius:16px;background:linear-gradient(135deg,#1FC2FF 0%,#0A5CF2 100%);color:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:10px;flex:none}
+.hx-big{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:10px;background:#fff;color:#6B6B70;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.hx-big input{flex:1;border:0;background:none;outline:none;font:inherit;color:#1D1D1F}
+.hx-sug{height:24px;padding:0 10px;border-radius:12px;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5);color:#fff;font-size:12px}
+.hx-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hx-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);text-align:left}
+.hx-card:hover{background:var(--fill-2)}
+.hx-res{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:10px;text-align:left;width:100%}
+.hx-res:hover{background:var(--fill-1)}
+.hx-res+.hx-res{box-shadow:inset 0 .5px 0 var(--sep)}
+.dsk2{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(160deg,#BFDDF9 0%,#E8EEF6 45%,#F7D2B4 100%)}
+.alx-d .dsk2{background:linear-gradient(160deg,#0E1626 0%,#1C3F73 45%,#0F5E68 100%)}
+.mbar2{position:absolute;left:0;right:0;top:0;height:30px;display:flex;align-items:center;gap:16px;padding:0 14px;font-size:13px;background:rgba(255,255,255,.55);color:#1d1d1f}
+.alx-d .mbar2{background:rgba(20,22,28,.5);color:#fff}
+.mbar2 .on{background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;margin:0 -8px}
+.hmenu{position:absolute;top:32px;left:254px;width:290px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 18px 50px rgba(0,0,0,.28);padding:6px;display:flex;flex-direction:column;gap:1px;font-size:13px}
+.hmenu .mi{height:26px;border-radius:6px;padding:0 10px;display:flex;align-items:center;gap:8px;text-align:left;width:100%}
+.hmenu .mi:hover,.hmenu .mi.hi{background:var(--accent);color:#fff}
+.hmenu .mi span.k{margin-left:auto;color:var(--label-2);font-size:12px}.hmenu .mi.hi span.k{color:rgba(255,255,255,.8)}
+.hmenu .msep{height:1px;background:var(--sep);margin:5px 10px}
+.sg.dim{opacity:.5}
+
+.btn.tint{background:var(--accent-tint);color:var(--accent-text);box-shadow:none;font-weight:600}.btn.tint:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}.alx-hc .btn.tint{box-shadow:inset 0 0 0 1px var(--accent)}
+</style>
+</helmet>
+<div class="{{theme}}" style="height: {{H}}; min-height: 300px; position: relative; overflow: hidden; background: var(--window)">
+<sc-if value="{{isWin}}" hint-placeholder-val="{{true}}"><div class="sx" style="height:100%"><nav class="sx-sb scroll" aria-label="Help topics" style="width:226px"><div class="tl" aria-hidden="true"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div><label class="sx-srch"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"></circle><path d="M10.2 10.2L14 14"></path></svg><input placeholder="Search Help" aria-label="Search Help" value="{{q}}"></label><button class="{{hnav.home.cls}}" onClick="{{go.home}}"><span class="sico sm" style="background:#0A5CF2"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.2h4a1.6 1.6 0 0 1 1 .5 1.6 1.6 0 0 1 1-.5h4v9.4H9a1.6 1.6 0 0 0-1 .5 1.6 1.6 0 0 0-1-.5H3zM8 3.8v9.3"></path></svg></span><span style="flex:1">Atlas Help</span></button><span class="nvh">Start here</span><button class="{{hnav.what.cls}}" aria-current="{{hnav.what.cur}}" onClick="{{go.what}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">What Atlas does</span></button><button class="{{hnav.connect.cls}}" aria-current="{{hnav.connect.cur}}" onClick="{{go.connect}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Connect App Store Connect</span></button><button class="{{hnav.suggest.cls}}" aria-current="{{hnav.suggest.cur}}" onClick="{{go.suggest}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">How suggestions work</span></button><button class="{{hnav.push.cls}}" aria-current="{{hnav.push.cur}}" onClick="{{go.push}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Review &amp; Push</span></button><span class="nvh">Store listing</span><button class="{{hnav.store.cls}}" aria-current="{{hnav.store.cur}}" onClick="{{go.store}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Store Page in every language</span></button><button class="{{hnav.shots.cls}}" aria-current="{{hnav.shots.cur}}" onClick="{{go.shots}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Screenshots and Autopilot</span></button><button class="{{hnav.pages.cls}}" aria-current="{{hnav.pages.cur}}" onClick="{{go.pages}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Product pages for an audience</span></button><button class="{{hnav.events.cls}}" aria-current="{{hnav.events.cur}}" onClick="{{go.events}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">In-App Events and their artwork</span></button><button class="{{hnav.info.cls}}" aria-current="{{hnav.info.cur}}" onClick="{{go.info}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">App Information, privacy and compliance</span></button><button class="{{hnav.pricing.cls}}" aria-current="{{hnav.pricing.cur}}" onClick="{{go.pricing}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Pricing by country</span></button><span class="nvh">After release</span><button class="{{hnav.submit.cls}}" aria-current="{{hnav.submit.cur}}" onClick="{{go.submit}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Submit for Review and release</span></button><button class="{{hnav.reviews.cls}}" aria-current="{{hnav.reviews.cur}}" onClick="{{go.reviews}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Reply to reviews</span></button><button class="{{hnav.analytics.cls}}" aria-current="{{hnav.analytics.cur}}" onClick="{{go.analytics}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Analytics</span></button><span class="nvh">Atlas</span><button class="{{hnav.assistant.cls}}" aria-current="{{hnav.assistant.cur}}" onClick="{{go.assistant}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Connect an AI assistant</span></button><button class="{{hnav.menubar.cls}}" aria-current="{{hnav.menubar.cur}}" onClick="{{go.menubar}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">The menu bar icon</span></button><button class="{{hnav.pro.cls}}" aria-current="{{hnav.pro.cur}}" onClick="{{go.pro}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Atlas Free and Atlas Pro</span></button><button class="{{hnav.privacy.cls}}" aria-current="{{hnav.privacy.cur}}" onClick="{{go.privacy}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Your key and your data</span></button><button class="{{hnav.keys.cls}}" aria-current="{{hnav.keys.cur}}" onClick="{{go.keys}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Keyboard shortcuts</span></button><button class="{{hnav.fix.cls}}" aria-current="{{hnav.fix.cur}}" onClick="{{go.fix}}" style="height:24px;padding-left:10px"><span class="ell" style="flex:1">Fix a problem</span></button></nav><main class="sx-main"><div class="sx-hd" style="padding-bottom:8px"><button class="btn sm" aria-label="Back" onClick="{{back}}" disabled="{{noBack}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 4L6 8l4 4"></path></svg></button><span class="sr-s" style="flex:1;font-size:12px">{{crumb}}</span><sc-if value="{{hasShown}}"><span class="pill p-acc" role="status">{{shown}}</span></sc-if></div><div class="sx-bd scroll" style="padding-top:6px"><sc-if value="{{isHome}}" hint-placeholder-val="{{true}}"><div style="display:flex;flex-direction:column;gap:14px;max-width:640px"><div class="hx-hero"><span style="font-size:22px;line-height:27px;font-weight:700;letter-spacing:-.01em">Atlas Help</span><label class="hx-big"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"></circle><path d="M10.2 10.2L14 14"></path></svg><input placeholder="Search Help" aria-label="Search Help"></label><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:12px;opacity:.9;align-self:center">Try</span><sc-for list="{{tries}}" as="t" hint-placeholder-count="4"><button class="hx-sug" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div></div><span class="sgh" style="padding:0 2px">Start here</span><div class="hx-grid"><button class="hx-card" onClick="{{go.what}}"><span class="sico sm" style="background:#0A84FF"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8"></path></svg></span><span class="sr-t"><b style="font-weight:600">What Atlas does</b><span class="sr-s">Atlas keeps your App Store page right in every country: the words, the screenshots and the prices.</span></span></button><button class="hx-card" onClick="{{go.connect}}"><span class="sico sm" style="background:#0A84FF"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8"></path></svg></span><span class="sr-t"><b style="font-weight:600">Connect App Store Connect</b><span class="sr-s">Atlas uses an App Store Connect API key to read your apps and to push what you approve.</span></span></button><button class="hx-card" onClick="{{go.suggest}}"><span class="sico sm" style="background:#0A84FF"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8"></path></svg></span><span class="sr-t"><b style="font-weight:600">How suggestions work</b><span class="sr-s">Anything purple is a suggestion. It is not on the App Store, and it is not accepted until you say so.</span></span></button><button class="hx-card" onClick="{{go.push}}"><span class="sico sm" style="background:#0A84FF"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8"></path></svg></span><span class="sr-t"><b style="font-weight:600">Review &amp; Push</b><span class="sr-s">Everything you accept or edit waits in Review &amp; Push. One push sends it to App Store Connect.</span></span></button></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-top:6px"><div style="display:flex;flex-direction:column;gap:2px"><span style="display:flex;align-items:center;gap:8px;padding:0 0 4px"><span class="sico sm" style="background:linear-gradient(180deg,#3D86F7,#2869D2)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="10" height="12" rx="2"></rect><path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3"></path></svg></span><b style="font-weight:600">Store listing</b></span><button class="hx-lnk" onClick="{{go.store}}">Store Page in every language</button><button class="hx-lnk" onClick="{{go.shots}}">Screenshots and Autopilot</button><button class="hx-lnk" onClick="{{go.pages}}">Product pages for an audience</button><button class="hx-lnk" onClick="{{go.events}}">In-App Events and their artwork</button><button class="hx-lnk" onClick="{{go.info}}">App Information, privacy and compliance</button><button class="hx-lnk" onClick="{{go.pricing}}">Pricing by country</button></div><div style="display:flex;flex-direction:column;gap:2px"><span style="display:flex;align-items:center;gap:8px;padding:0 0 4px"><span class="sico sm" style="background:linear-gradient(180deg,#6866E0,#4B49B8)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13V9M6.5 13V6M10 13V8M13.5 13V3.5"></path></svg></span><b style="font-weight:600">After release</b></span><button class="hx-lnk" onClick="{{go.submit}}">Submit for Review and release</button><button class="hx-lnk" onClick="{{go.reviews}}">Reply to reviews</button><button class="hx-lnk" onClick="{{go.analytics}}">Analytics</button></div><div style="display:flex;flex-direction:column;gap:2px"><span style="display:flex;align-items:center;gap:8px;padding:0 0 4px"><span class="sico sm" style="background:linear-gradient(180deg,#4A4A50,#2C2C30)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="3" width="12.4" height="10" rx="2"></rect><path d="M1.8 6h12.4M10.5 4.5h1.6"></path></svg></span><b style="font-weight:600">Atlas</b></span><button class="hx-lnk" onClick="{{go.assistant}}">Connect an AI assistant</button><button class="hx-lnk" onClick="{{go.menubar}}">The menu bar icon</button><button class="hx-lnk" onClick="{{go.pro}}">Atlas Free and Atlas Pro</button><button class="hx-lnk" onClick="{{go.privacy}}">Your key and your data</button><button class="hx-lnk" onClick="{{go.keys}}">Keyboard shortcuts</button><button class="hx-lnk" onClick="{{go.fix}}">Fix a problem</button></div></div><div class="sg" style="margin-top:6px"><div class="sr"><span class="sico sm" style="background:#34C759"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"></circle><circle cx="8" cy="8" r="2.4"></circle><path d="M3.8 3.8l2.5 2.5M9.7 9.7l2.5 2.5M12.2 3.8L9.7 6.3M6.3 9.7l-2.5 2.5"></path></svg></span><div class="sr-t"><span>Still stuck?</span><span class="sr-s">Write to us from here. Atlas attaches its version and nothing else.</span></div><button class="btn sm">Contact Support…</button></div></div></div></sc-if>
+<sc-if value="{{isSearch}}" hint-placeholder-val="{{false}}"><div style="display:flex;flex-direction:column;gap:8px;max-width:600px"><span class="t-2">{{resHead}}</span><sc-if value="{{hasRes}}"><div class="sg"><sc-for list="{{results}}" as="r" hint-placeholder-count="4"><button class="hx-res" onClick="{{r.pick}}"><span style="display:flex;align-items:baseline;gap:8px"><b style="font-weight:600;flex:1">{{r.title}}</b><span class="sr-s">{{r.group}}</span></span><span class="sr-s" style="font-size:12px;line-height:16px">{{r.sum}}</span></button></sc-for></div></sc-if><sc-if value="{{noRes}}"><div class="hx-note">Nothing in Help matches that. Try fewer words, or write to us: <b>Help → Contact Support…</b></div></sc-if></div></sc-if>
+<sc-if value="{{isA.what}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>What Atlas does</h1><p class="hx-lead">Atlas keeps your App Store page right in every country: the words, the screenshots and the prices.</p><p>It reads your apps from App Store Connect, shows each one the way people see it on the App Store, and points out what could be better in every language.</p><ul><li><b>It suggests.</b> Suggestions come from your AI assistant and from Atlas’s own checks. They are always purple.</li><li><b>You review.</b> Accept, edit or dismiss each one, or a whole language at once.</li><li><b>One push sends it.</b> Nothing reaches the App Store until you press Push in Review &amp; Push.</li></ul><div class="hx-note">Atlas does not replace Xcode or TestFlight. Builds, testers and your conversation with App Review stay where they are.</div><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.connect}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect App Store Connect</button><button class="hx-lnk" onClick="{{go.suggest}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>How suggestions work</button><button class="hx-lnk" onClick="{{go.push}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Review &amp; Push</button></div></article></sc-if>
+<sc-if value="{{isA.connect}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Connect App Store Connect</h1><p class="hx-lead">Atlas uses an App Store Connect API key to read your apps and to push what you approve.</p><h2>Make the key</h2><ol><li>In App Store Connect, open <b>Users and Access</b>, then <b>Integrations</b>.</li><li>Choose <b>App Store Connect API</b>, then <b>Team Keys</b>, and add a key.</li><li>Give it the <b>Admin</b> role, or <b>App Manager</b> if you don’t need sales figures.</li><li>Download the <b>.p8</b> file. Apple lets you download it once.</li></ol><h2>Give it to Atlas</h2><ol><li>Copy the <b>Issuer ID</b> from the top of that page and the <b>Key ID</b> from the key’s row.</li><li>In Atlas, paste both and drop the .p8 file on the window.</li><li>Click <b>Connect</b>. Atlas reads your apps and changes nothing.</li></ol><div class="hx-note">The key is stored in this Mac’s Keychain. Every request is signed on this Mac and sent straight to Apple.</div><button class="btn hx-go" onClick="{{show.connect}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → Accounts</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.privacy}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Your key and your data</button><button class="hx-lnk" onClick="{{go.fix}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Fix a problem</button></div></article></sc-if>
+<sc-if value="{{isA.suggest}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>How suggestions work</h1><p class="hx-lead">Anything purple is a suggestion. It is not on the App Store, and it is not accepted until you say so.</p><ul><li>A purple number in the sidebar counts the suggestions waiting in that section.</li><li>Each suggestion says who made it and why, under the field it belongs to.</li><li><b>Accept</b> keeps it, <b>Edit</b> lets you change it first, <b>Dismiss</b> removes it.</li><li><b>Accept All Languages</b> takes every language at once and shows the list first, so you can untick any.</li></ul><div class="hx-note">Prices, App Privacy answers, the age rating and App Compliance are never accepted for you. You accept each one.</div><button class="btn hx-go" onClick="{{show.suggest}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Store Page</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.push}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Review &amp; Push</button><button class="hx-lnk" onClick="{{go.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect an AI assistant</button><button class="hx-lnk" onClick="{{go.pro}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Atlas Free and Atlas Pro</button></div></article></sc-if>
+<sc-if value="{{isA.push}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Review &amp;amp; Push</h1><p class="hx-lead">Everything you accept or edit waits in Review &amp; Push. One push sends it to App Store Connect.</p><ol><li>Click <b>Review &amp; Push</b> at the top right. The number is how many changes are waiting.</li><li>Read the changes, grouped by section and language. Untick anything that should wait.</li><li>Click <b>Push</b>. Atlas sends the changes and shows each one as it lands.</li></ol><p>If a push stops halfway, what already landed stays on the App Store and the rest stays in Review &amp; Push.</p><div class="hx-note">Some changes go live at once, such as promotional text and prices. Others wait for your next version’s review. Review &amp; Push marks which is which.</div><button class="btn hx-go" onClick="{{show.push}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Review &amp; Push</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.submit}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Submit for Review and release</button><button class="hx-lnk" onClick="{{go.fix}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Fix a problem</button></div></article></sc-if>
+<sc-if value="{{isA.store}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Store Page in every language</h1><p class="hx-lead">The name, subtitle, description, keywords and What’s New, for each language you sell in.</p><ul><li>Use the language menu at the top to switch. A dot marks languages with suggestions.</li><li>The preview on the right shows the page as people there will see it.</li><li>A counter on each field shows Apple’s limit. Text over the limit can’t be pushed.</li></ul><p>To add a language, choose <b>Add Language…</b> in the language menu. Atlas suggests the whole page from your source language.</p><button class="btn hx-go" onClick="{{show.store}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Store Page</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.suggest}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>How suggestions work</button><button class="hx-lnk" onClick="{{go.shots}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Screenshots and Autopilot</button></div></article></sc-if>
+<sc-if value="{{isA.shots}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Screenshots and Autopilot</h1><p class="hx-lead">Screenshots for every device and language, from templates or from a new look by Claude Design.</p><p>Each set is a template plus your app’s screens plus a caption per language. Change the caption and every device follows.</p><h2>Autopilot</h2><ol><li>Say what to make: screenshots, an App Preview, header artwork.</li><li>Choose the look.</li><li>Check the plan and start it. Atlas captures your app in the Simulator, designs, and writes every language.</li><li>Come back twice: to choose the look, and to review and push.</li></ol><div class="hx-note">Autopilot needs Xcode on this Mac and an assistant connected. It is part of Atlas Pro.</div><button class="btn hx-go" onClick="{{show.shots}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Screenshots</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.events}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>In-App Events and their artwork</button><button class="hx-lnk" onClick="{{go.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect an AI assistant</button></div></article></sc-if>
+<sc-if value="{{isA.pages}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Product pages for an audience</h1><p class="hx-lead">Other versions of your App Store page, each with its own link, for a campaign, an audience or a search.</p><p>A page can change the screenshots, the App Previews and the promotional text, in each language. The name, icon and description stay the same as your main page.</p><ol><li>Open <b>Product Pages</b> and click <b>New Page…</b> Name it, and say who it is for.</li><li>In each language, write the promotional text, choose keywords, and keep the default screenshots or make a set for this page.</li><li>Click <b>Push and Submit…</b> Atlas sends the page to App Store Connect, then you submit it to App Review.</li></ol><ul><li><b>Keywords</b> are chosen from your last approved version’s keywords. People who search them see this page once it is approved and visible.</li><li><b>A deep link</b> sends people who already have the app to the right place in it.</li><li><b>Hiding</b> a page needs no review. Its link then opens your main page.</li></ul><div class="hx-note">Up to 70 pages for each app. A page goes to App Review by itself, with no new version of the app.</div><button class="btn hx-go" onClick="{{show.pages}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Product Pages</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.shots}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Screenshots and Autopilot</button><button class="hx-lnk" onClick="{{go.analytics}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Analytics</button><button class="hx-lnk" onClick="{{go.submit}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Submit for Review and release</button></div></article></sc-if>
+<sc-if value="{{isA.events}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>In-App Events and their artwork</h1><p class="hx-lead">Cards on the App Store for what is happening in your app, written in every language.</p><p>An event needs a name, two descriptions, dates, and two images: the event card (1920 × 1080) and the event details image (1080 × 1920).</p><h2>Make the artwork</h2><ol><li>Open the event and click <b>Make the Artwork…</b></li><li>Check the brief Atlas wrote, and choose the look. The concepts are drawn on the event while you keep working.</li><li>Click a concept to see it on the App Store card. Each comes as the card and the details image together.</li><li>Click <b>View Full Size</b> to see one large, under the App Store’s text, in any language. The arrows at the top right make it fill the screen.</li><li>Click <b>Use This Artwork</b>.</li></ol><div class="hx-note">Leave words out of the art. The App Store writes the event’s name over the image in each language.</div><button class="btn hx-go" onClick="{{show.events}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: In-App Events</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.submit}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Submit for Review and release</button><button class="hx-lnk" onClick="{{go.shots}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Screenshots and Autopilot</button></div></article></sc-if>
+<sc-if value="{{isA.info}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>App Information, privacy and compliance</h1><p class="hx-lead">The answers Apple asks for once per app: category, age rating, accessibility, App Privacy and App Compliance.</p><ul><li>Each page shows its status: up to date, suggestions waiting, or needs you.</li><li>An assistant can read your project and suggest answers, with the evidence beside each one.</li><li><b>App Compliance</b> covers rules in some countries: trader details in the EU, the ICP filing number in China mainland, and licences.</li></ul><div class="hx-note w">These answers are statements you make to Apple and to regulators. Atlas never accepts them for you, including with Accept All Pages.</div><button class="btn hx-go" onClick="{{show.info}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: App Information</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.suggest}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>How suggestions work</button></div></article></sc-if>
+<sc-if value="{{isA.pricing}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Pricing by country</h1><p class="hx-lead">What your subscriptions and purchases cost in 175 countries and regions.</p><ul><li><b>Keep my prices</b> shows what you charge and changes nothing.</li><li><b>Show suggestions</b> recommends a price per country from what people there can afford and how your app sells.</li><li>Raising a price that people already pay asks them to agree. Atlas says how many before you push.</li></ul><div class="hx-note">Setting any price yourself is free. Recommended prices for every country are part of Atlas Pro.</div><button class="btn hx-go" onClick="{{show.pricing}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Pricing</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.analytics}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Analytics</button><button class="hx-lnk" onClick="{{go.pro}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Atlas Free and Atlas Pro</button></div></article></sc-if>
+<sc-if value="{{isA.submit}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Submit for Review and release</h1><p class="hx-lead">Send a version to App Review from Overview, then follow it until it is on the App Store.</p><ol><li>On <b>Overview</b>, the version card lists what goes to Apple and what is missing.</li><li>Click <b>Submit for Review…</b> Choose the build, check What’s New in every language, and answer the encryption question.</li><li>Choose what happens after approval: release right away, by you, or on a date.</li></ol><p>The bottom of the sidebar shows the version’s status from every section. If Apple rejects it, the card shows Apple’s message in full and where to fix it.</p><button class="btn hx-go" onClick="{{show.submit}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Overview</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.push}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Review &amp; Push</button><button class="hx-lnk" onClick="{{go.events}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>In-App Events and their artwork</button></div></article></sc-if>
+<sc-if value="{{isA.reviews}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Reply to reviews</h1><p class="hx-lead">Every review, translated, with a suggested reply in the reviewer’s language.</p><ul><li>Reviews are shown in your language. <b>Show Original</b> shows what the person wrote.</li><li>A suggested reply comes with its meaning in your language underneath, so you know what you are sending.</li><li><b>Reply to All</b> answers every review about one subject, with one message per language.</li></ul><div class="hx-note">Replies are public. Apple shows a reply under the review, usually within a day, and you can edit it later.</div><button class="btn hx-go" onClick="{{show.reviews}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Reviews</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.analytics}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Analytics</button></div></article></sc-if>
+<sc-if value="{{isA.analytics}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Analytics</h1><p class="hx-lead">Where people find your app, where they give up, and what to change.</p><ol><li>Click <b>Ask Apple for Reports</b>. Apple needs a day or two to prepare them the first time.</li><li>Read the funnel: impressions, page views, downloads, and trials and paid starts for subscriptions.</li><li>Use <b>Break It Down</b> to compare countries and sources, and <b>What to Try</b> for changes worth making.</li></ol><p>To see trials, paid starts and proceeds, add your vendor number in Settings → Accounts. The key needs the Admin, Finance or Sales role.</p><button class="btn hx-go" onClick="{{show.analytics}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Analytics</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.pricing}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Pricing by country</button><button class="hx-lnk" onClick="{{go.fix}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Fix a problem</button></div></article></sc-if>
+<sc-if value="{{isA.assistant}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Connect an AI assistant</h1><p class="hx-lead">Atlas has no AI of its own to pay for. Suggestions come from your assistant, an API key, or Atlas’s built-in checks.</p><ol><li>Open <b>Settings → AI Assistants</b> and turn on <b>Let assistants connect</b>.</li><li>Click <b>Pair Assistant…</b> and copy the command for your assistant.</li><li>Run it in your project’s folder. The assistant appears under Paired assistants.</li></ol><table class="hx-t"><tr><th>An assistant can</th><th>It never can</th></tr><tr><td>Read your listings, prices and app information</td><td>Push anything to App Store Connect</td></tr><tr><td>Suggest text, prices, answers, replies and artwork</td><td>Accept a suggestion for you</td></tr><tr><td>Read your project to find evidence</td><td>See your .p8 key</td></tr></table><button class="btn hx-go" onClick="{{show.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → AI Assistants</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.suggest}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>How suggestions work</button><button class="hx-lnk" onClick="{{go.privacy}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Your key and your data</button></div></article></sc-if>
+<sc-if value="{{isA.menubar}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>The menu bar icon</h1><p class="hx-lead">Atlas keeps running when you close its window, so pushes finish and you hear about reviews and Apple’s answers.</p><table class="hx-t"><tr><th>The icon</th><th>Means</th></tr><tr><td>Still</td><td>Nothing running, nothing waiting</td></tr><tr><td>A bright stretch going round</td><td>Atlas is working: a push, Autopilot, a check with Apple</td></tr><tr><td>A dot</td><td>Something needs you</td></tr><tr><td>Dimmed, with a pause mark</td><td>Background work is paused</td></tr><tr><td>A stroke across it</td><td>Atlas can’t reach Apple, or the key was refused</td></tr></table><p>Click the icon to see what is running and what needs you. To really quit, choose <b>Quit Atlas</b> or press <span class="kb">⌘</span><span class="kb">Q</span>.</p><button class="btn hx-go" onClick="{{show.menubar}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → General</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.fix}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Fix a problem</button></div></article></sc-if>
+<sc-if value="{{isA.pro}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Atlas Free and Atlas Pro</h1><p class="hx-lead">Free does it one at a time. Pro does it all at once.</p><table class="hx-t"><tr><th></th><th>Free</th><th>Pro</th></tr><tr><td>Apps and accounts</td><td>1 app, 1 account</td><td>Unlimited</td></tr><tr><td>Edit and push, every language</td><td>✓</td><td>✓</td></tr><tr><td>Suggestions</td><td>Accept one at a time</td><td>Also Accept All Languages and Accept All Pages</td></tr><tr><td>Screenshots</td><td>3 templates, iPhone and iPad</td><td>All 14 templates, every device, Autopilot</td></tr><tr><td>Artwork from Claude Design</td><td>—</td><td>✓</td></tr><tr><td>Recommended prices and retention offers</td><td>—</td><td>✓</td></tr><tr><td>Suggested replies and Reply to All</td><td>—</td><td>✓</td></tr></table><div class="hx-note">AI runs on your own assistant or API key, so Pro’s price never includes AI usage. If Pro ends, what you made stays and stays editable.</div><button class="btn hx-go" onClick="{{show.pro}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → Atlas Pro</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect an AI assistant</button></div></article></sc-if>
+<sc-if value="{{isA.privacy}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Your key and your data</h1><p class="hx-lead">Your App Store Connect key never leaves this Mac.</p><ul><li>The key is in the Keychain. Requests are signed here and go straight to Apple.</li><li>An assistant gets only what it asks for through the local server: text, captures, prices. Never a key.</li><li>With an API key, the text being suggested goes from this Mac to the provider you chose.</li><li>Atlas’s developer receives nothing unless you turn on sharing in Settings → Privacy &amp; Data.</li></ul><button class="btn hx-go" onClick="{{show.privacy}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → Privacy &amp; Data</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.connect}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect App Store Connect</button><button class="hx-lnk" onClick="{{go.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect an AI assistant</button></div></article></sc-if>
+<sc-if value="{{isA.keys}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Keyboard shortcuts</h1><p class="hx-lead">The sections, and the things you do most.</p><table class="hx-t"><tr><th>Do this</th><th>Press</th></tr><tr><td>Overview</td><td><span class="kb">⌘</span><span class="kb">1</span></td></tr><tr><td>Store Page</td><td><span class="kb">⌘</span><span class="kb">2</span></td></tr><tr><td>Screenshots</td><td><span class="kb">⌘</span><span class="kb">3</span></td></tr><tr><td>Product Pages</td><td><span class="kb">⌘</span><span class="kb">4</span></td></tr><tr><td>In-App Events</td><td><span class="kb">⌘</span><span class="kb">5</span></td></tr><tr><td>App Information</td><td><span class="kb">⌘</span><span class="kb">6</span></td></tr><tr><td>Pricing</td><td><span class="kb">⌘</span><span class="kb">7</span></td></tr><tr><td>Reviews</td><td><span class="kb">⌘</span><span class="kb">8</span></td></tr><tr><td>Analytics</td><td><span class="kb">⌘</span><span class="kb">9</span></td></tr><tr><td>Review &amp; Push</td><td><span class="kb">⇧</span><span class="kb">⌘</span><span class="kb">P</span></td></tr><tr><td>Check App Store Connect now</td><td><span class="kb">⌘</span><span class="kb">R</span></td></tr><tr><td>Show or hide the sidebar</td><td><span class="kb">⌃</span><span class="kb">⌘</span><span class="kb">S</span></td></tr><tr><td>Undo the last accept or edit</td><td><span class="kb">⌘</span><span class="kb">Z</span></td></tr><tr><td>Settings</td><td><span class="kb">⌘</span><span class="kb">,</span></td></tr><tr><td>Atlas Help</td><td><span class="kb">⌘</span><span class="kb">?</span></td></tr></table><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.menubar}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>The menu bar icon</button></div></article></sc-if>
+<sc-if value="{{isA.fix}}" hint-placeholder-val="{{false}}"><article class="hx-art"><h1>Fix a problem</h1><p class="hx-lead">The few things that go wrong, and what to do.</p><h2>The key was refused</h2><p>The key was revoked in App Store Connect, or the Issuer ID or Key ID doesn’t match the .p8 file. Make a new key and add it in Settings → Accounts.</p><h2>Atlas can’t read sales</h2><p>The key’s role is App Manager or Developer. Sales, trials and proceeds need Admin, Finance or Sales.</p><h2>A push stopped halfway</h2><p>What already landed stays on the App Store. The rest is still in Review &amp; Push, each with Apple’s reason. Fix and push again.</p><h2>Apple can’t be reached</h2><p>Your edits are kept on this Mac. Atlas tries again when the connection is back. Check Apple’s system status from the Help menu.</p><h2>An assistant won’t connect</h2><p>Check that <b>Let assistants connect</b> is on and that Atlas is running. If you made a new token, pair the assistant again.</p><button class="btn hx-go" onClick="{{show.fix}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3L7.5 8.5M11 9.5V13H3V5h3.5"></path></svg>Show Me: Settings → Accounts</button><div class="hx-rel"><span class="sgh" style="padding:0 6px 2px">Related</span><button class="hx-lnk" onClick="{{go.connect}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect App Store Connect</button><button class="hx-lnk" onClick="{{go.assistant}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"></path></svg>Connect an AI assistant</button></div></article></sc-if>
+</div></main></div></sc-if>
+<sc-if value="{{isMenu}}" hint-placeholder-val="{{false}}"><div class="dsk2"><div class="mbar2"><b>Atlas</b><span>File</span><span>Edit</span><span>View</span><span>Window</span><span class="on">Help</span></div><div class="hmenu" role="menu" aria-label="Help"><label class="sx-srch" style="margin:2px 2px 6px"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"></circle><path d="M10.2 10.2L14 14"></path></svg><input placeholder="Search" aria-label="Search menus and Help"></label><button class="mi hi" role="menuitem" onClick="{{go.home}}">Atlas Help<span class="k">⌘?</span></button><button class="mi" role="menuitem" onClick="{{go.keys}}">Keyboard Shortcuts</button><button class="mi" role="menuitem">What’s New in Atlas</button><div class="msep"></div><button class="mi" role="menuitem" onClick="{{go.connect}}">Connect App Store Connect</button><button class="mi" role="menuitem" onClick="{{go.fix}}">Fix a Problem</button><button class="mi" role="menuitem">App Store Connect System Status</button><div class="msep"></div><button class="mi" role="menuitem">Contact Support…</button><button class="mi" role="menuitem">Send Feedback…</button></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene": {"editor": "enum", "default": "help-home", "options": ["help-home", "help-connect", "help-suggest", "help-events", "help-assistant", "help-menubar", "help-pro", "help-keys", "help-fix", "help-search", "help-search-none", "help-shown", "help-menu"], "section": "Prototype"}, "appearance": {"editor": "enum", "default": "light", "options": ["light", "dark"], "section": "Prototype"}, "frameH": {"editor": null, "default": 0}, "$preview": {"width": 900, "height": 700}}'>
+
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = this.sceneState((p || {}).scene); }
+  componentDidUpdate(prev) { const p = this.props || {}; if (prev && prev.scene !== p.scene) this.setState(this.sceneState(p.scene)); }
+  sceneState(sc) { const S = {"help-home": {}, "help-connect": {"at": "connect"}, "help-suggest": {"at": "suggest"}, "help-events": {"at": "events"}, "help-assistant": {"at": "assistant"}, "help-menubar": {"at": "menubar"}, "help-pro": {"at": "pro"}, "help-keys": {"at": "keys"}, "help-fix": {"at": "fix"}, "help-search": {"q": "key"}, "help-search-none": {"q": "testflight"}, "help-shown": {"at": "connect", "shown": "Opened Settings \u2192 Accounts in Atlas"}, "help-menu": {"menu": true}}; return Object.assign({ at: 'home', q: '', hist: [], shown: '', menu: false }, S[sc] || {}); }
+  renderVals() {
+    const P = this.props || {}; const s = this.state; const dark = P.appearance === 'dark'; const A = [{"id": "what", "g": "Start here", "t": "What Atlas does", "s": "Atlas keeps your App Store page right in every country: the words, the screenshots and the prices.", "k": "overview introduction about", "go": ""}, {"id": "connect", "g": "Start here", "t": "Connect App Store Connect", "s": "Atlas uses an App Store Connect API key to read your apps and to push what you approve.", "k": "api key issuer id key id p8 connect account team", "go": "Show Me: Settings → Accounts"}, {"id": "suggest", "g": "Start here", "t": "How suggestions work", "s": "Anything purple is a suggestion. It is not on the App Store, and it is not accepted until you say so.", "k": "suggestion purple accept dismiss edit accept all languages", "go": "Show Me: Store Page"}, {"id": "push", "g": "Start here", "t": "Review & Push", "s": "Everything you accept or edit waits in Review & Push. One push sends it to App Store Connect.", "k": "push review send upload discard undo", "go": "Show Me: Review & Push"}, {"id": "store", "g": "Store listing", "t": "Store Page in every language", "s": "The name, subtitle, description, keywords and What’s New, for each language you sell in.", "k": "store page language translate description keywords subtitle name", "go": "Show Me: Store Page"}, {"id": "shots", "g": "Store listing", "t": "Screenshots and Autopilot", "s": "Screenshots for every device and language, from templates or from a new look by Claude Design.", "k": "screenshots autopilot template caption simulator app preview", "go": "Show Me: Screenshots"}, {"id": "pages", "g": "Store listing", "t": "Product pages for an audience", "s": "Other versions of your App Store page, each with its own link, for a campaign, an audience or a search.", "k": "custom product page cpp link campaign keywords deep link audience", "go": "Show Me: Product Pages"}, {"id": "events", "g": "Store listing", "t": "In-App Events and their artwork", "s": "Cards on the App Store for what is happening in your app, written in every language.", "k": "event in-app event artwork card details image claude design", "go": "Show Me: In-App Events"}, {"id": "info", "g": "Store listing", "t": "App Information, privacy and compliance", "s": "The answers Apple asks for once per app: category, age rating, accessibility, App Privacy and App Compliance.", "k": "app information privacy age rating accessibility compliance trader dsa icp", "go": "Show Me: App Information"}, {"id": "pricing", "g": "Store listing", "t": "Pricing by country", "s": "What your subscriptions and purchases cost in 175 countries and regions.", "k": "price pricing country purchasing power subscription increase retention", "go": "Show Me: Pricing"}, {"id": "submit", "g": "After release", "t": "Submit for Review and release", "s": "Send a version to App Review from Overview, then follow it until it is on the App Store.", "k": "submit review release phased version build whats new rejected", "go": "Show Me: Overview"}, {"id": "reviews", "g": "After release", "t": "Reply to reviews", "s": "Every review, translated, with a suggested reply in the reviewer’s language.", "k": "reviews ratings reply respond translate", "go": "Show Me: Reviews"}, {"id": "analytics", "g": "After release", "t": "Analytics", "s": "Where people find your app, where they give up, and what to change.", "k": "analytics funnel conversion reports vendor number downloads", "go": "Show Me: Analytics"}, {"id": "assistant", "g": "Atlas", "t": "Connect an AI assistant", "s": "Atlas has no AI of its own to pay for. Suggestions come from your assistant, an API key, or Atlas’s built-in checks.", "k": "assistant mcp claude code cursor api key ai server pair", "go": "Show Me: Settings → AI Assistants"}, {"id": "menubar", "g": "Atlas", "t": "The menu bar icon", "s": "Atlas keeps running when you close its window, so pushes finish and you hear about reviews and Apple’s answers.", "k": "menu bar icon running quit close window dock login", "go": "Show Me: Settings → General"}, {"id": "pro", "g": "Atlas", "t": "Atlas Free and Atlas Pro", "s": "Free does it one at a time. Pro does it all at once.", "k": "pro free plan price subscription restore purchase", "go": "Show Me: Settings → Atlas Pro"}, {"id": "privacy", "g": "Atlas", "t": "Your key and your data", "s": "Your App Store Connect key never leaves this Mac.", "k": "privacy security keychain data key p8", "go": "Show Me: Settings → Privacy & Data"}, {"id": "keys", "g": "Atlas", "t": "Keyboard shortcuts", "s": "The sections, and the things you do most.", "k": "keyboard shortcuts keys command", "go": ""}, {"id": "fix", "g": "Atlas", "t": "Fix a problem", "s": "The few things that go wrong, and what to do.", "k": "problem error troubleshoot refused offline failed role sales rejected", "go": "Show Me: Settings → Accounts"}];
+    const to = (id) => () => this.setState((x) => ({ at: id, q: '', menu: false, shown: '', hist: x.hist.concat([{ at: x.at, q: x.q }]) }));
+    const go = { home: to('home') }; const hnav = { home: { cls: s.at === 'home' && !s.q ? 'nvi on' : 'nvi' } }; const isA = {}; const show = {};
+    A.forEach((a) => { go[a.id] = to(a.id); const on = s.at === a.id && !s.q; hnav[a.id] = { cls: on ? 'nvi on' : 'nvi', cur: on ? 'page' : 'false' }; isA[a.id] = on; show[a.id] = () => this.setState({ shown: a.go.replace('Show Me: ', 'Opened ') + ' in Atlas' }); });
+    const q = s.q.trim().toLowerCase(); const res = q ? A.filter(function (a) { return (a.t + ' ' + a.s + ' ' + a.k).toLowerCase().indexOf(q) >= 0; }) : [];
+    const cur = A.filter(function (a) { return a.id === s.at; })[0];
+    return { theme: 'alx ' + (dark ? 'alx-d' : 'alx-l'), H: P.frameH > 0 ? P.frameH + 'px' : '100vh', isWin: !s.menu, isMenu: s.menu, go: go, hnav: hnav, isA: isA, show: show, q: s.q,
+      isHome: s.at === 'home' && !q, isSearch: !!q, hasRes: res.length > 0, noRes: !!q && !res.length, resHead: res.length ? res.length + (res.length === 1 ? ' result for “' : ' results for “') + s.q + '”' : 'No results for “' + s.q + '”',
+      results: res.map((a) => ({ title: a.t, group: a.g, sum: a.s, pick: to(a.id) })),
+      tries: ['API key', 'push', 'artwork', 'Pro'].map((t) => ({ label: t, pick: () => this.setState((x) => ({ q: t, shown: '', hist: x.hist.concat([{ at: x.at, q: x.q }]) })) })),
+      crumb: q ? 'Atlas Help  ›  Search' : cur ? 'Atlas Help  ›  ' + cur.g + '  ›  ' + cur.t : 'Atlas Help',
+      noBack: !s.hist.length, back: () => this.setState((x) => { const h = x.hist.slice(); const p = h.pop(); return p ? { at: p.at, q: p.q, hist: h, shown: '' } : {}; }),
+      hasShown: !!s.shown, shown: s.shown };
+  }
+}
+</script>
+</body>
+</html>

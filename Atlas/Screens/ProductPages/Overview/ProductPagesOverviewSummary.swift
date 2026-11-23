@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// The Overview's Custom Product Pages card in two lines: how many pages,
+/// Custom Product Pages on the Overview's After release: how many pages,
 /// how many are visible and rejected, and the one people download most
 /// from, against the default page.
 struct ProductPagesOverviewSummary: Hashable, Sendable {

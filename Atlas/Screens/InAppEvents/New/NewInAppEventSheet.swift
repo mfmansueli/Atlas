@@ -113,7 +113,7 @@ struct NewInAppEventSheet: View {
             HStack(spacing: Spacing.small) {
                 Text(showsProblem ? currentProblem ?? "" : footerNote)
                     .font(.subheadline)
-                    .foregroundStyle(showsProblem && currentProblem != nil ? Palette.danger : Palette.label2)
+                    .foregroundStyle(showsProblem && currentProblem != nil ? Palette.err : Palette.label2)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("events.new.note")

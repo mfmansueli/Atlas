@@ -31,7 +31,7 @@ struct SuggestEverythingPopover: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Suggest Everything with \(run.client)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             if let busyRequest {
                 Text(Self.busyText(busyRequest))
                     .font(.callout)
@@ -39,7 +39,7 @@ struct SuggestEverythingPopover: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, Spacing.small)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+                    .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                     .accessibilityIdentifier("everything.busy")
             }
             if let launched {
@@ -57,7 +57,7 @@ struct SuggestEverythingPopover: View {
             Fields you’ve changed are left alone, and suggestions you haven’t reviewed stay. Built-in suggestions don’t \
             need the assistant and are already here.
             """)
-            .font(.caption2)
+            .font(.footnote)
             .foregroundStyle(Palette.label2)
             .fixedSize(horizontal: false, vertical: true)
             if launched == nil {
@@ -97,7 +97,7 @@ struct SuggestEverythingPopover: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Copy Again", action: onCopyAgain)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("everything.copyAgain")
             }
             ClaudeCodeLaunchHint(client: run.client)
@@ -112,7 +112,7 @@ struct SuggestEverythingPopover: View {
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Cancel", action: onCancel)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("everything.cancel")
         }
         .padding(.horizontal, 10)
@@ -124,7 +124,7 @@ struct SuggestEverythingPopover: View {
     private var coverage: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("WHAT IT COVERS")
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             VStack(spacing: 0) {
                 ForEach(Array(scope.rows.enumerated()), id: \.element.id) { index, row in

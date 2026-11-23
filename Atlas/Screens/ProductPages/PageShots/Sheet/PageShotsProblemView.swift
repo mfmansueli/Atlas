@@ -17,7 +17,7 @@ struct PageShotsProblemView: View {
         VStack(spacing: Spacing.large) {
             Spacer()
             Image(systemName: "photo.on.rectangle.angled")
-                .font(.system(size: 30))
+                .font(.largeTitle.bold())
                 .foregroundStyle(Palette.label3)
                 .accessibilityHidden(true)
             Text(problem)

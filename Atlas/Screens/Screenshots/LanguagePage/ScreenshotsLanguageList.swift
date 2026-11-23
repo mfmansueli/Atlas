@@ -31,15 +31,15 @@ struct ScreenshotsLanguageList: View {
         } label: {
             HStack(spacing: Spacing.medium) {
                 Text(locale.regionCode.uppercased())
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .frame(width: 30, height: 22)
-                    .background(Palette.fill2, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                    .background(Palette.fill2, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(locale.name)
                     Text(viewModel.pageStatus(of: locale))
                         .font(.subheadline)
-                        .foregroundStyle(count > 0 ? AnyShapeStyle(Palette.machineTranslated) : AnyShapeStyle(Palette.label2))
+                        .foregroundStyle(count > 0 ? AnyShapeStyle(Palette.ai) : AnyShapeStyle(Palette.label2))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if count > 0 {

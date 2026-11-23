@@ -43,7 +43,7 @@ struct PushProgressRowLayout<Thumbnail: View>: View {
                     if let detail {
                         Text(detail)
                             .font(.subheadline)
-                            .foregroundStyle(state.failureReason != nil ? Palette.danger : Palette.label2)
+                            .foregroundStyle(state.failureReason != nil ? Palette.err : Palette.label2)
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true)
                     }

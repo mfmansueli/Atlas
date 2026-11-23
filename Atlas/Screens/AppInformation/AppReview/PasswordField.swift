@@ -28,7 +28,7 @@ struct PasswordField: View {
             .labelsHidden()
             .frame(width: 196)
             Button(isVisible ? String(localized: "Hide") : String(localized: "Show")) { isVisible.toggle() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityLabel(Text(isVisible ? "Hide password" : "Show password"))
                 .accessibilityIdentifier("appInformation.review.password.show")
         }

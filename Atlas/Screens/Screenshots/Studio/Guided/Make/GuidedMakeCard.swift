@@ -33,7 +33,7 @@ struct GuidedMakeCard<Preview: View, Options: View>: View {
             .accessibilityHidden(true)
             Toggle(title, isOn: $isOn)
                 .toggleStyle(.checkbox)
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityIdentifier(identifier)
             Text(text)
                 .font(.callout)

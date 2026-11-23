@@ -64,6 +64,6 @@ struct ChinaDeclarationCard: View {
                 .help(Text("Once you’ve entered your answer in App Store Connect"))
                 .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).markDeclared")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 }

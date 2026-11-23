@@ -45,12 +45,14 @@ struct HelpSidebar: View {
                         .accessibilityHidden(true)
                 }
                 Text(title)
-                    .lineLimit(2)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .help(title)
                 Spacer(minLength: 0)
             }
-            .padding(.vertical, 3)
+            .padding(.vertical, 1)
             .padding(.horizontal, Spacing.xSmall)
-            .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: 6))
+            .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: Radius.menuRow))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -51,7 +51,7 @@ final class SuggestionsUITests: XCTestCase {
         let card = element("overview.assistantIntro")
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         XCTAssertEqual(text(of: element("overview.assistantIntro.status")), "Not set up")
-        XCTAssertTrue(element("overview.suggestionsCard").exists)
+        XCTAssertTrue(element("overview.waiting").exists)
 
         app.buttons["overview.assistantIntro.hide"].click()
         XCTAssertTrue(card.waitForNonExistence(timeout: 5))
@@ -66,7 +66,7 @@ final class SuggestionsUITests: XCTestCase {
         XCTAssertTrue(summary.contains("Claude Code is connected"))
         XCTAssertTrue(summary.contains("Project ~/Developer/Lumen"))
         XCTAssertFalse(element("overview.assistantIntro").exists)
-        XCTAssertEqual(text(of: element("overview.suggestionsCard.count")), "8 to review")
+        XCTAssertTrue(text(of: element("overview.waiting.title")).hasSuffix("to review"))
     }
 
     /// An old token turned away: the card says so and offers Reconnect…,

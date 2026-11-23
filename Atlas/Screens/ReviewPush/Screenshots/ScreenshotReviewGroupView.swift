@@ -26,9 +26,9 @@ struct ScreenshotReviewGroupView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(Palette.raised)
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                 .strokeBorder(Palette.separator, lineWidth: 0.5)
         }
         .accessibilityElement(children: .contain)

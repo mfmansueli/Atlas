@@ -44,7 +44,7 @@ struct AutopilotLoopReviewBox: View {
                     Text("Taken after one retry: \(warnings.joined(separator: " "))")
                         .fixedSize(horizontal: false, vertical: true)
                 } icon: {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warning)
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warn)
                 }
                 .font(.subheadline)
                 .accessibilityIdentifier("autopilot.loop.warnings")
@@ -55,7 +55,7 @@ struct AutopilotLoopReviewBox: View {
                         Button(ask) { add(ask) }
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.capsule)
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .disabled(isBusy)
                     }
                 }
@@ -70,7 +70,7 @@ struct AutopilotLoopReviewBox: View {
                         .accessibilityIdentifier("autopilot.loop.note")
                     Button("Ask \(kind.designer)", action: send)
                         .buttonBorderShape(.capsule)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .disabled(!canAsk)
                         .accessibilityIdentifier("autopilot.loop.ask")
                 }

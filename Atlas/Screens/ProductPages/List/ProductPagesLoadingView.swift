@@ -26,7 +26,7 @@ struct ProductPagesLoadingView: View {
                             SkeletonBlock(width: 220, height: 9)
                         }
                         Spacer(minLength: Spacing.small)
-                        SkeletonBlock(width: 110, height: 16, cornerRadius: 8)
+                        SkeletonBlock(width: 110, height: 16, cornerRadius: Radius.field)
                         SkeletonBlock(width: 150, height: 10)
                     }
                     .padding(.horizontal, Spacing.medium)

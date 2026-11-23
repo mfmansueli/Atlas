@@ -1,0 +1,59 @@
+//
+//  ReviewShotDetailsTests.swift
+//  AtlasTests
+//
+
+#if DEBUG
+import Foundation
+import Testing
+@testable import Atlas
+
+/// What a waiting review screenshot says on its card and in Review & Push,
+/// kept by its change's id.
+@MainActor
+@Suite("ReviewShotDetails")
+struct ReviewShotDetailsTests {
+    private let now = Date(timeIntervalSinceReferenceDate: 815_000_000)
+
+    private var fromClaude: ReviewShotDetails {
+        ReviewShotDetails(
+            origin: .assistant(client: "Claude Code"), plan: "Monthly", price: "$4.99", device: "iPhone 17 Pro",
+            language: "English (U.S.)", checks: ["Price shows"], madeAt: now
+        )
+    }
+
+    @Test func anAssistantsImageSaysWhatItShows() {
+        let details = fromClaude
+        #expect(details.heading == "Review screenshot · Monthly selected")
+        #expect(details.capturedLine(now: now.addingTimeInterval(5))
+            == "Captured in Simulator on iPhone 17 Pro, English (U.S.), just now. Monthly is selected and shows $4.99.")
+        #expect(details.acceptedLine == "From Claude Code · Monthly selected · uploads when you push")
+        #expect(details.reviewLine == "Review screenshot · Monthly selected · from Claude Code")
+        #expect(details.isFromAssistant)
+        #expect(details.client == "Claude Code")
+    }
+
+    @Test func aCaptureSaysWhichOne() {
+        let details = ReviewShotDetails(origin: .capture(title: "Capture 14 · Paywall"))
+        #expect(!details.isFromAssistant)
+        #expect(details.heading == "Review screenshot")
+        #expect(details.acceptedLine == "Capture 14 · Paywall from Screenshots · uploads when you push")
+        #expect(details.reviewLine == "Review screenshot · Capture 14 · Paywall from Screenshots")
+    }
+
+    @Test func theStoreKeepsThemAndForgetsWhatLeftTheQueue() throws {
+        let defaults = try #require(UserDefaults(suiteName: "ReviewShotDetailsTests"))
+        defaults.removePersistentDomain(forName: "ReviewShotDetailsTests")
+        let store = ReviewShotDetailsStore(defaults: defaults)
+        store.set(fromClaude, for: "a")
+        store.set(ReviewShotDetails(origin: .capture(title: "Capture 1 · Paywall")), for: "b")
+        #expect(ReviewShotDetailsStore(defaults: defaults).details(for: "a") == fromClaude)
+
+        store.prune(keeping: ["b"])
+        let reread = ReviewShotDetailsStore(defaults: defaults)
+        #expect(reread.details(for: "a") == nil)
+        #expect(reread.details(for: "b") != nil)
+        defaults.removePersistentDomain(forName: "ReviewShotDetailsTests")
+    }
+}
+#endif

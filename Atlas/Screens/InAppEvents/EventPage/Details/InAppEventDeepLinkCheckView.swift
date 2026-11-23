@@ -24,11 +24,11 @@ struct InAppEventDeepLinkCheckView: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             if let report {
                 Label(report.statusLine, systemImage: report.opens ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundStyle(report.opens ? Palette.positive : Palette.warning)
+                    .foregroundStyle(report.opens ? Palette.ok : Palette.warn)
                     .accessibilityIdentifier("events.deepLink.status")
                 if let stale = viewModel.deepLinkReportStaleText(of: event) {
                     Label(String(localized: "Checked before the dates changed: Check in the Code"), systemImage: "clock.arrow.circlepath")
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                         .accessibilityIdentifier("events.deepLink.stale")
                     detailLine(stale)
                 }
@@ -50,7 +50,7 @@ struct InAppEventDeepLinkCheckView: View {
             if report == nil || claim.blocksSubmit, let message = claim.message(appName: viewModel.app.name) {
                 Text(message)
                     .font(.subheadline)
-                    .foregroundStyle(claim.blocksSubmit ? Palette.warning : Palette.label2)
+                    .foregroundStyle(claim.blocksSubmit ? Palette.warn : Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.deepLink.claim")
                 if let detail = claim.detail {
@@ -75,7 +75,7 @@ struct InAppEventDeepLinkCheckView: View {
                     }
                 }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .font(.subheadline)
         .task(id: launcher.projectFolderRevision) { await viewModel.linkClaims.refresh(viewModel.app, launcher: launcher) }

@@ -26,7 +26,7 @@ struct PrivacyCopyableBlock: View {
                 .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator, lineWidth: 1))
                 .accessibilityIdentifier("appInformation.appPrivacy.\(id).text")
             button
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("appInformation.appPrivacy.\(id).copy")
         }
     }

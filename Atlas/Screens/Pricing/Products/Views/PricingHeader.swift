@@ -6,10 +6,10 @@
 import SwiftUI
 
 /// The top of Pricing's Prices page: what Pricing changes, Prices |
-/// Retention with the Prices count, Add Subscription…, Add In-App
-/// Purchase…, and More (the
-/// pricing mode, Customize…, every price of a product, and Restore
-/// Dismissed).
+/// Retention with the Prices count, Add Subscription…, and More (Add In-App
+/// Purchase…, the pricing mode, Customize…, every price of a product, and
+/// Restore Dismissed). The prototype's header holds only the segments and
+/// Add Subscription…, so the rest waits in More.
 struct PricingHeader: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -25,6 +25,7 @@ struct PricingHeader: View {
                 ],
                 selection: $viewModel.page
             )
+            .controlSize(.small)
             .accessibilityIdentifier("pricing.page")
             Button {
                 viewModel.isNewSubscriptionSheetPresented = true
@@ -33,14 +34,6 @@ struct PricingHeader: View {
             }
             .buttonBorderShape(.capsule)
             .accessibilityIdentifier("pricing.addSubscription")
-            Button {
-                viewModel.setup.isNewInAppPurchaseSheetPresented = true
-            } label: {
-                Label("Add In-App Purchase…", systemImage: "plus")
-            }
-            .buttonBorderShape(.capsule)
-            .accessibilityIdentifier("pricing.addInAppPurchase")
-            PricingModeMenu(viewModel: viewModel)
             moreMenu
         }
     }
@@ -56,6 +49,20 @@ struct PricingHeader: View {
 
     private var moreMenu: some View {
         Menu {
+            Button("Add In-App Purchase…") { viewModel.setup.isNewInAppPurchaseSheetPresented = true }
+                .accessibilityIdentifier("pricing.addInAppPurchase")
+            Section(String(localized: "Pricing Mode for \(viewModel.app.name)")) {
+                ForEach(PricingMode.allCases) { mode in
+                    Toggle(isOn: Binding(
+                        get: { viewModel.mode == mode },
+                        set: { _ in Task { await viewModel.setMode(mode) } }
+                    )) {
+                        Text(mode.title)
+                        Text(PricingModeMenu.description(of: mode))
+                    }
+                }
+            }
+            Divider()
             if let product = viewModel.selectedProduct ?? viewModel.catalog?.defaultProduct {
                 Button("Every Price of \(product.name)…") {
                     Task { await viewModel.openDetails(productID: product.id) }

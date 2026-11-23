@@ -14,7 +14,7 @@ struct AccessibilityChangesBox: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("LIVE NOW → AFTER PUBLISHING")
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             ForEach(added) { feature in
                 line("+", feature.name)

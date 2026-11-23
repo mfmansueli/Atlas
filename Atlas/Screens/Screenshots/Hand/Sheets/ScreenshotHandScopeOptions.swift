@@ -24,7 +24,7 @@ struct ScreenshotHandScopeOptions: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(label)
-                .font(.headline)
+                .font(.body.weight(.semibold))
             ForEach(options) { option in
                 RadioRow(title: option.title, detail: option.detail, isSelected: selection == option.scope, isDisabled: option.isDisabled) {
                     selection = option.scope

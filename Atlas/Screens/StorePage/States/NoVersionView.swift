@@ -18,7 +18,7 @@ struct NoVersionView: View {
         let next = viewModel.newVersionStart.versionString
         VStack(spacing: Spacing.small) {
             Image(systemName: "doc")
-                .font(.system(size: 26))
+                .font(.largeTitle.bold())
                 .foregroundStyle(Palette.label3)
                 .accessibilityHidden(true)
             Text("No version to edit")

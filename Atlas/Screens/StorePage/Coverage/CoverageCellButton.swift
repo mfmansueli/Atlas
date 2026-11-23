@@ -55,12 +55,12 @@ struct CoverageCellButton: View {
                 Text(cell.text)
             }
             .fontWeight(.semibold)
-            .foregroundStyle(Palette.danger)
+            .foregroundStyle(Palette.err)
         case .machineTranslated:
             Label(cell.text, systemImage: "sparkle")
                 .labelStyle(.titleAndIcon)
                 .fontWeight(.medium)
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
         case .edited:
             HStack(spacing: Spacing.xxSmall) {
                 UnsavedDot(size: 6)
@@ -81,8 +81,8 @@ struct CoverageCellButton: View {
 
     private var background: Color {
         switch cell.state {
-        case .overLimit, .invalidURL: Palette.dangerTint
-        case .machineTranslated: Palette.machineTranslatedTint
+        case .overLimit, .invalidURL: Palette.errTint
+        case .machineTranslated: Palette.aiSurface
         case .edited: Palette.accentTint
         case .filled, .missing, .proposed, .notApplicable: .clear
         }

@@ -124,6 +124,8 @@ struct ResultsReportView: View {
             TableColumn("") { result in restoreCell(result) }
                 .width(min: 76, ideal: 80)
         }
+        // Rows hold row-sized (24 pt) controls.
+        .controlSize(.regular)
         .accessibilityIdentifier("pricing.results.table")
     }
 
@@ -163,7 +165,7 @@ struct ResultsReportView: View {
             } label: {
                 Label("Restore", systemImage: "arrow.uturn.backward")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .buttonBorderShape(.capsule)
             .help(String(localized: "Queue the old price for review in Review & Push"))
             .accessibilityLabel(String(localized: "Restore the old price in \(result.territory.name)"))

@@ -34,7 +34,7 @@ struct CompareSourcesView: View {
                         .accessibilityHidden(true)
                         if comparison.canUse, canEdit, let price = comparison.price {
                             Button("Use This") { onUse(price) }
-                                .controlSize(.small)
+                                .controlSize(.regular)
                                 .buttonBorderShape(.capsule)
                                 .accessibilityLabel(String(localized: "Use \(comparison.title), \(currency.format(price))"))
                         }

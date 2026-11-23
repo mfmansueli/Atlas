@@ -16,7 +16,7 @@ struct RatingsCard: View {
             HStack(alignment: .center, spacing: Spacing.large) {
                 VStack(spacing: 2) {
                     Text(summary.averageText)
-                        .font(.system(size: 34, weight: .semibold, design: .rounded))
+                        .font(.title.weight(.semibold))
                         .monospacedDigit()
                     Text(ReviewText.stars(Int((summary.average ?? 0).rounded())))
                         .font(.subheadline)
@@ -30,7 +30,7 @@ struct RatingsCard: View {
                     ForEach((1...5).reversed(), id: \.self) { stars in
                         HStack(spacing: Spacing.xSmall) {
                             Text(stars, format: .number)
-                                .font(.caption2.monospacedDigit())
+                                .font(.footnote.monospacedDigit())
                                 .foregroundStyle(Palette.label2)
                                 .frame(width: 8)
                             MeterBar(fraction: summary.histogram.share(stars: stars), tint: Palette.label2)
@@ -59,7 +59,7 @@ struct RatingsCard: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 Text("\(ReviewText.rating(comparison.average)) ★")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .monospacedDigit()
                 Text(comparison.sinceText)
                     .font(.subheadline)
@@ -67,7 +67,7 @@ struct RatingsCard: View {
             }
             Text(mark(comparison.outcome) + comparison.againstText)
                 .font(.subheadline)
-                .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
+                .foregroundStyle(comparison.outcome.isLower ? Palette.warn : Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .accessibilityElement(children: .combine)

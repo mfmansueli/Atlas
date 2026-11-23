@@ -25,7 +25,7 @@ struct ProSettingsPane: View {
                 ForEach(ProSettingsPane.includes, id: \.id) { item in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         Image(systemName: pro.entitlements.isPro ? "checkmark" : "plus")
-                            .foregroundStyle(pro.entitlements.isPro ? Palette.positive : Palette.label2)
+                            .foregroundStyle(pro.entitlements.isPro ? Palette.ok : Palette.label2)
                             .frame(width: 16)
                             .accessibilityHidden(true)
                         SettingsRowLabel(title: item.title, caption: item.free)

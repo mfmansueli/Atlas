@@ -19,7 +19,7 @@ struct CaptionEditorPanel: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(model.screenshots.context.primaryLocale.name)
                             .textCase(.uppercase)
-                            .font(.caption2.weight(.semibold))
+                            .font(.footnote.weight(.semibold))
                             .foregroundStyle(Palette.label2)
                         Text(source)
                             .font(.callout)
@@ -64,7 +64,7 @@ struct CaptionEditorPanel: View {
             } label: {
                 Image(systemName: "xmark")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .keyboardShortcut(.cancelAction)
             .accessibilityLabel(Text("Close editor"))
             .accessibilityIdentifier("screenshots.captions.editor.close")

@@ -18,7 +18,7 @@ import SwiftUI
 /// - `rv-none`: an assistant hasn't suggested anything yet; `rv-empty`: no
 ///   reviews; `rv-error`, `rv-loading`, `rv-refused` (Apple refuses a
 ///   reply), `rv-download` (Japanese has to be downloaded to translate),
-///   and `rv-overview`: the Overview's card.
+///   and `rv-overview`: the Overview's After release row.
 enum ReviewsDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugReviewsData

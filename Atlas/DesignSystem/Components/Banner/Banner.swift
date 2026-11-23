@@ -46,7 +46,7 @@ struct Banner<Actions: View>: View {
             HStack(spacing: Spacing.small) {
                 actions()
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .fixedSize()
         }
         .padding(.horizontal, Spacing.medium)

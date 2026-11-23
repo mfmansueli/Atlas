@@ -22,7 +22,7 @@ struct AccessibilityURLCard: View {
                 .textContentType(.URL)
                 .overlay {
                     if problem != nil {
-                        RoundedRectangle(cornerRadius: 5, style: .continuous).strokeBorder(Palette.dangerMark, lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: Radius.flag, style: .continuous).strokeBorder(Palette.errMark, lineWidth: 1.5)
                     }
                 }
                 .accessibilityLabel(Text("Accessibility URL"))
@@ -31,11 +31,11 @@ struct AccessibilityURLCard: View {
             if let problem {
                 Text(problem)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .accessibilityIdentifier("appInformation.accessibility.urlProblem")
             }
             Text("Shown on the product page on every device except Apple TV. Publishing it is immediate once a version is live.")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

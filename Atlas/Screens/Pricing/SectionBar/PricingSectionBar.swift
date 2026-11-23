@@ -75,7 +75,7 @@ struct PricingSectionBar: View {
                 }
             }
         } else {
-            SectionBarTitle(systemImage: "tag", title: String(localized: "Subscription Pricing"))
+            SectionBarTitle(systemImage: "tag", title: String(localized: "Pricing"))
         }
     }
 

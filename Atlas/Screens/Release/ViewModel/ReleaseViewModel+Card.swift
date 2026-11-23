@@ -33,7 +33,13 @@ extension ReleaseViewModel {
         switch phase {
         case nil: return ""
         case .prepare:
-            return String(localized: "Everything below goes to Apple in one submission.")
+            // README — redesign, November 22: the card lists only what's missing.
+            let left = checks.filter { !$0.isOK }.count
+            switch left {
+            case 0: return String(localized: "Nothing left to do. Submit when you want.")
+            case 1: return String(localized: "One thing left before you submit.")
+            default: return String(localized: "\(left) things left before you submit.")
+            }
         case .waitingForReview:
             return String(localized: "Most apps are reviewed within a day. Atlas tells you when it changes.")
         case .inReview:

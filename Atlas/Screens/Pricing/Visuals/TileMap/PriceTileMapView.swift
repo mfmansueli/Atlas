@@ -30,7 +30,7 @@ struct PriceTileMapView: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .fixedSize()
                     .accessibilityIdentifier("pricing.map.metric")
                     Spacer(minLength: Spacing.medium)

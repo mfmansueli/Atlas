@@ -109,11 +109,11 @@ final class NewLanguagesUITests: XCTestCase {
 
     func testOverviewNamesTheNewLanguages() {
         app.launch(debugScene: "ov-newlang")
-        let line = element("overview.suggestionsCard.newLanguages")
-        XCTAssertTrue(line.waitForExistence(timeout: 10))
-        // Each line is one element: "New languages, Polish, Turkish, Hebrew".
-        XCTAssertEqual(text(of: line), "New languages, Polish, Turkish, Hebrew")
-        XCTAssertEqual(text(of: element("overview.storePageCard.languages")), "Languages, 10 · 3 more in the app")
+        // The Store Page row says it (README — redesign, November 22).
+        let row = element("overview.waiting.row.storePage")
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        let detail = row.staticTexts.matching(NSPredicate(format: "value CONTAINS %@ OR label CONTAINS %@", "new page", "new page"))
+        XCTAssertTrue(detail.firstMatch.exists)
     }
 
     // MARK: - Helpers

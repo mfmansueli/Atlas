@@ -86,7 +86,7 @@ struct AutopilotSimulatorOptions: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Remove", action: remove)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(Text("Remove \(detail)"))
                     .accessibilityIdentifier("\(identifier).remove")
             }

@@ -83,7 +83,7 @@ struct GuidedStopsCard: View {
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("autopilot.guided.plan.design")
                     Button("Connect…") { studio.isDesignProjectPresented = true }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("autopilot.guided.plan.connectDesign")
                 }
             }

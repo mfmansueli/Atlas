@@ -34,7 +34,7 @@ struct PricingWhatPeoplePay: View {
             }
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("App Store · \(territory?.name ?? "")")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                 Text("In-App Purchases")
                     .font(.subheadline.weight(.semibold))

@@ -37,6 +37,9 @@ import SwiftUI
 /// - `new-iap`: Create In-App Purchase over Lumen's cards.
 /// - `intro-offer`: Add Introductory Offer… for Lumen Monthly.
 /// - `review-screenshot`: Review Screenshot… for Lumen Lifetime.
+/// - `rs-match`, `rs-none`, `rs-run`, `rs-arrived`, `rs-preview`,
+///   `rs-fail-nav`, `rs-fail-price`, `rs-accepted`: Lumen's App Review
+///   screenshots made for the person (`ReviewShotsDebugState`).
 enum PricingDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
 
@@ -46,7 +49,7 @@ enum PricingDebugScenes {
         "custom", "custom-tune", "custom-compare", "custom-csv",
         "pricing-map", "pricing-hist", "schedule", "results", "results-waiting", "offers",
         "pricing-products", "new-iap", "intro-offer", "review-screenshot",
-    ]
+    ] + ReviewShotsDebugState.allCases.map(\.sceneID)
 
     @MainActor
     static func view(for id: String) -> AnyView? {
@@ -141,6 +144,9 @@ enum PricingDebugScenes {
     /// over the product cards.
     @MainActor
     private static func setupScene(_ id: String) -> AnyView? {
+        if let state = ReviewShotsDebugState(sceneID: id) {
+            return scene(launch: PricingDebugLaunch(showsProducts: true, reviewShots: state))
+        }
         let sheet: PricingDebugSheet? = switch id {
         case "new-iap": .newInAppPurchase
         case "intro-offer": .introductoryOffer(productID: DebugPricingCatalog.lumenMonthlyID)

@@ -19,14 +19,14 @@ struct ScreenshotHandAddTile: View {
         Button(action: onAdd) {
             VStack(spacing: Spacing.xxSmall) {
                 Image(systemName: "plus")
-                    .font(.title2)
+                    .font(.title2.weight(.semibold))
                 Text("Add Screenshots")
                     .font(.subheadline.weight(.semibold))
                 Text("Drop PNG or JPEG files here, or click")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                 Text(room == 1 ? String(localized: "1 more allowed") : String(localized: "\(room) more allowed"))
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
             }
             .multilineTextAlignment(.center)

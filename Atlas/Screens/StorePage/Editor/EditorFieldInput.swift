@@ -31,7 +31,7 @@ struct EditorFieldInput: View {
                     .frame(height: field == .description ? 130 : 90)
                     .focused($isFocused)
                     .background(Palette.content, in: shape)
-                    .overlay(shape.strokeBorder(isBlocked ? Palette.danger : Palette.separator2, lineWidth: isBlocked ? 1.5 : 1))
+                    .overlay(shape.strokeBorder(isBlocked ? Palette.err : Palette.separator2, lineWidth: isBlocked ? 1.5 : 1))
             } else {
                 TextField(text: $text, prompt: Text(field.isURL ? "https://" : "")) {
                     Text(field.title)
@@ -41,7 +41,7 @@ struct EditorFieldInput: View {
                 .focused($isFocused)
                 .overlay {
                     if isBlocked {
-                        shape.strokeBorder(Palette.danger, lineWidth: 1.5)
+                        shape.strokeBorder(Palette.err, lineWidth: 1.5)
                     }
                 }
             }

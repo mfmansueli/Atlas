@@ -29,7 +29,7 @@ struct PushProgressHeader: View {
             }
             ProgressView(value: summary.progress)
                 .progressViewStyle(.linear)
-                .tint(summary.failedCount > 0 && !summary.isRunning ? Palette.danger : Palette.accent)
+                .tint(summary.failedCount > 0 && !summary.isRunning ? Palette.err : Palette.accent)
                 .accessibilityLabel(Text("Push progress"))
                 .accessibilityValue(Text(summary.subtitle))
                 .accessibilityIdentifier("push.bar")
@@ -60,8 +60,8 @@ struct PushProgressHeader: View {
     private func color(_ tone: PushProgressNote.Tone) -> Color {
         switch tone {
         case .secondary: Palette.label2
-        case .warning: Palette.warning
-        case .danger: Palette.danger
+        case .warning: Palette.warn
+        case .danger: Palette.err
         }
     }
 }

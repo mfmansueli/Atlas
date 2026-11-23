@@ -35,7 +35,7 @@ struct InAppEventGallery: View {
                 .accessibilityLabel(Text("Events"))
                 .accessibilityIdentifier("events.gallery")
                 Text("Each event is a card people see in search, in Today and on \(viewModel.app.name)’s page. Open one to write it, give it artwork and send it to App Review.")
-                    .font(.system(size: 10))
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.gallery.footer")

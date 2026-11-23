@@ -11,10 +11,10 @@ import SwiftUI
 struct AutopilotNeedsYouMark: View {
     var body: some View {
         Image(systemName: "sparkle")
-            .font(.system(size: 9, weight: .bold))
-            .foregroundStyle(Palette.suggestionBadgeText)
+            .font(.footnote.weight(.bold))
+            .foregroundStyle(Palette.aiFillLabel)
             .frame(width: 17, height: 17)
-            .background(Palette.suggestionBadge, in: Circle())
+            .background(Palette.aiFill, in: Circle())
             .help("Autopilot needs you")
             .accessibilityIdentifier("sidebar.autopilotNeedsYou")
     }

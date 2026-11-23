@@ -33,7 +33,7 @@ struct PlayerControls<Trailing: View>: View {
                     seek(max(seconds - PlayerScrubber.step, 0))
                 } label: {
                     Image(systemName: "gobackward.5")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.title3.weight(.medium))
                         .foregroundStyle(Palette.label)
                         .frame(width: 26, height: 24)
                         .contentShape(Rectangle())
@@ -52,7 +52,7 @@ struct PlayerControls<Trailing: View>: View {
                     seek(min(seconds + PlayerScrubber.step, duration))
                 } label: {
                     Image(systemName: "goforward.5")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.title3.weight(.medium))
                         .foregroundStyle(Palette.label)
                         .frame(width: 26, height: 24)
                         .contentShape(Rectangle())
@@ -70,7 +70,7 @@ struct PlayerControls<Trailing: View>: View {
                 trailing()
             }
             .buttonStyle(.borderless)
-            .controlSize(.small)
+            .controlSize(.regular)
             PlayerScrubber(
                 identifier: "\(identifier).scrubber", seconds: seconds, duration: duration, isEnabled: canPlay,
                 seek: seek, scrubbing: scrubbing

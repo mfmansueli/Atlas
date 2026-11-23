@@ -68,7 +68,7 @@ struct FullSizeViewerContentView: View {
                 image: large ?? studio.image(for: shot), width: width, aspect: shot.aspect,
                 cornerFraction: shot.pixelSize.width < 600 ? 0.24 : 0.05
             )
-            .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+            .depth(.sheet)
             .task(id: shot) { large = await largeImage(of: shot) }
         case let .layout(layout, capture, behind):
             let pixels = pixelWidth(layout.canvas.pixelSize)
@@ -76,13 +76,13 @@ struct FullSizeViewerContentView: View {
                 layout: layout, capture: studio.image(for: capture, width: pixels), width: width,
                 companion: behind.flatMap { studio.image(for: $0, width: pixels) }
             )
-            .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+            .depth(.sheet)
         case let .capture(capture):
             StudioShotImage(
                 image: studio.image(for: capture, width: capture.pixelSize.width), width: width,
                 aspect: item.content.aspect, cornerFraction: capture.pixelSize.width < 600 ? 0.24 : 0.05
             )
-            .shadow(color: .black.opacity(0.5), radius: 25, y: 20)
+            .depth(.sheet)
         case let .duoPair(inner, cover):
             duoPair(inner: inner, cover: cover)
         case let .artwork(artwork):
@@ -94,7 +94,7 @@ struct FullSizeViewerContentView: View {
             .overlay {
                 if artwork.kind == .header, studio.viewerShowsGuide { ArtworkHeaderGuide() }
             }
-            .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+            .depth(.sheet)
         case .recording, .appPreview:
             EmptyView()
         }
@@ -122,7 +122,7 @@ struct FullSizeViewerContentView: View {
             )
             .padding(5)
             .background(Color(white: 0.11), in: RoundedRectangle(cornerRadius: width * 0.05 + 5, style: .continuous))
-            .shadow(color: .black.opacity(0.55), radius: 35, y: 24)
+            .depth(.sheet)
             Text(label)
                 .font(.callout)
                 .foregroundStyle(.white.opacity(0.7))

@@ -73,12 +73,12 @@ struct AnalyticsSettingsSheet: View {
                     Account, or change this key’s role in Users and Access.
                     """)
                 } icon: {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warningMark)
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark)
                 }
                 .font(.callout)
             }
             if let error = store.salesError {
-                Label(error, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.danger)
+                Label(error, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.err)
             }
         } header: {
             Text("Sales and Trends")
@@ -115,7 +115,7 @@ struct AnalyticsSettingsSheet: View {
                         Text(Self.status(setup)).foregroundStyle(Palette.label2)
                         if setup != .off, setup != .keyCannotAsk {
                             Button("Stop Asking Apple for Reports…") { stoppingAppID = app.id }
-                                .controlSize(.small)
+                                .controlSize(.regular)
                                 .disabled(stoppingAppID != nil)
                                 .accessibilityIdentifier("analytics.settings.stop")
                         }
@@ -124,7 +124,7 @@ struct AnalyticsSettingsSheet: View {
                 }
             }
             if let errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.danger)
+                Label(errorMessage, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.err)
             }
         }
     }
@@ -149,10 +149,10 @@ struct AnalyticsSettingsSheet: View {
                 .disabled(isStopping)
                 .accessibilityIdentifier("analytics.settings.stop.confirm")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(10)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.field))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field))
     }
 
     /// "Asked Nov 10 at 15:04 · Last checked today at 08:12", for apps

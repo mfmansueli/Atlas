@@ -22,7 +22,7 @@ struct InAppEventSwitchMenu: View {
                 viewModel.showGallery()
             } label: {
                 Label("All Events", systemImage: "square.grid.2x2")
-                    .font(.system(size: 13))
+                    .font(.body)
                     .frame(maxWidth: .infinity, minHeight: 28, alignment: .leading)
                     .padding(.horizontal, Spacing.small)
                     .contentShape(Rectangle())
@@ -45,19 +45,19 @@ struct InAppEventSwitchMenu: View {
         } label: {
             HStack(spacing: Spacing.small) {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(Palette.accentText)
                     .opacity(isCurrent ? 1 : 0)
                     .frame(width: 12)
-                InAppEventArtwork(event: event, source: viewModel.artSource(.card, of: event), cornerRadius: 5, maxPixel: 200)
+                InAppEventArtwork(event: event, source: viewModel.artSource(.card, of: event), cornerRadius: Radius.flag, maxPixel: 200)
                     .frame(width: 53, height: 30)
-                    .overlay(RoundedRectangle(cornerRadius: 5, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
+                    .overlay(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(event.referenceName)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.body.weight(.medium))
                         .lineLimit(1)
                     Text(event.datesText)
-                        .font(.system(size: 11))
+                        .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                 }
@@ -67,7 +67,7 @@ struct InAppEventSwitchMenu: View {
             }
             .padding(.horizontal, Spacing.xxSmall)
             .frame(minHeight: 46)
-            .background(isCurrent ? Palette.fill1 : .clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(isCurrent ? Palette.fill1 : .clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

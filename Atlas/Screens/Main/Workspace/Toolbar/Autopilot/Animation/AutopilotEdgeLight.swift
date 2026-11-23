@@ -9,7 +9,7 @@ import SwiftUI
 /// works: a purple band crossing a 1.5 pt outline from left to right every
 /// 2.2 s, linear. With Reduce Motion it's a steady purple outline.
 struct AutopilotEdgeLight: View {
-    var color: Color = Palette.suggestionBadge
+    var color: Color = Palette.aiFill
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

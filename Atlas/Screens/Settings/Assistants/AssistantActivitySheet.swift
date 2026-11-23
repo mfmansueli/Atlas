@@ -15,7 +15,7 @@ struct AssistantActivitySheet: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("What assistants asked for")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
                 if !server.log.isEmpty {

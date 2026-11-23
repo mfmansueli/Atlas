@@ -22,7 +22,7 @@ struct PageShotsMakingStep: View {
                         .accessibilityLabel(Text("Screenshots ready"))
                         .accessibilityIdentifier("pages.shots.progress")
                     Text(headline)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .monospacedDigit()
                         .accessibilityIdentifier("pages.shots.progressText")
                 }
@@ -89,7 +89,7 @@ struct PageShotsMakingStep: View {
                         } else {
                             ImageLoadingTile(isLoading: run?.stage == .making)
                                 .frame(width: height * PageShotsTile.aspect(display), height: height)
-                                .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                         }
                         Text(image == nil ? String(localized: "Laying out…") : ProductPageChangeBuilder.localeName(locale))
                             .font(.subheadline)

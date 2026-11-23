@@ -14,7 +14,7 @@ struct FallbackChainEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Fallback chain")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text("When \(strategy.indexSource.name) has no value for a territory, try in order:")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)

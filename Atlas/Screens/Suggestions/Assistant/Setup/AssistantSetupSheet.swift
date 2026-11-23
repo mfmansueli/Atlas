@@ -101,7 +101,7 @@ struct AssistantSetupSheet: View {
                     .font(.title2.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("Step \(viewModel.step.rawValue) of \(AssistantSetupStep.allCases.count)")
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("assistantSetup.stepCount")
             }
@@ -112,7 +112,7 @@ struct AssistantSetupSheet: View {
                             .fill(step <= viewModel.step ? Palette.accent : Palette.fill3)
                             .frame(height: 3)
                         Text(viewModel.stepTitles[step.rawValue - 1])
-                            .font(.caption2.weight(step == viewModel.step ? .semibold : .regular))
+                            .font(.footnote.weight(step == viewModel.step ? .semibold : .regular))
                             .foregroundStyle(step == viewModel.step ? Palette.label : step < viewModel.step ? Palette.label2 : Palette.label3)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -209,7 +209,7 @@ struct AssistantSetupSheet: View {
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
             Text("What can assistants do?")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .padding(.top, Spacing.xxSmall)
             VStack(spacing: Spacing.xSmall) {
                 AssistantSetupOptionRow(

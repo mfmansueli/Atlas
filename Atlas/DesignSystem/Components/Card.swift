@@ -26,7 +26,7 @@ struct Card<Content: View>: View {
         }
         // The card depth (README — Design system §6): the line and a soft
         // 3 pt shadow, the only depth the app draws itself.
-        .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
+        .depth(.card)
         // One element, so an identifier on the card doesn't land on every
         // text inside it.
         .accessibilityElement(children: .contain)

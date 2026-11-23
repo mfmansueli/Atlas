@@ -53,12 +53,13 @@ struct LanguageBar<Trailing: View>: View {
                 acceptsRightAwayLine
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, Spacing.xSmall)
         .padding(.trailing, 10)
         .padding(.vertical, Spacing.xSmall)
-        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("languageBar")
@@ -84,15 +85,15 @@ struct LanguageBar<Trailing: View>: View {
                     .lineLimit(1)
                 if model.hereCount > 0 {
                     Text(SuggestionBadge.text(for: model.hereCount))
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.subheadline.weight(.bold))
                         .monospacedDigit()
                         .foregroundStyle(.white)
                         .padding(.horizontal, 5)
                         .frame(minWidth: 17, minHeight: 17)
-                        .background(Palette.machineTranslated, in: Capsule())
+                        .background(Palette.ai, in: Capsule())
                 }
                 Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityHidden(true)
             }
@@ -129,23 +130,23 @@ struct LanguageBar<Trailing: View>: View {
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                     Text(model.hereText)
-                        .font(.caption2)
+                        .font(.footnote)
                         .fontWeight(model.hereCount > 0 ? .semibold : .regular)
-                        .foregroundStyle(model.hereCount > 0 ? Palette.machineTranslated : Palette.label2)
+                        .foregroundStyle(model.hereCount > 0 ? Palette.ai : Palette.label2)
                         .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .accessibilityHidden(true)
             }
             .padding(.leading, Spacing.small)
             .padding(.trailing, 10)
             .frame(width: 220, height: 40)
-            .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5)
             }
             .contentShape(Rectangle())
         }

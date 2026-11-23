@@ -24,12 +24,12 @@ struct InAppEventMediaCard: View {
         Card {
             HStack(spacing: Spacing.small) {
                 Text("Proposed images and video")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if let app, !event.state.isOver {
                     InAppEventArtworkAskButton(app: app, event: event)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                 }
             }
             ForEach(InAppEventMedia.Kind.allCases.filter { kind in proposals.contains { $0.kind == kind } }, id: \.self) { kind in
@@ -87,11 +87,11 @@ struct InAppEventMediaCard: View {
                         .accessibilityIdentifier("events.media.dismiss.\(proposal.kind.mcpValue)")
                     if proposal.isAwaitingAcceptance {
                         Button("Accept") { onAccept(proposal) }
-                            .buttonStyle(.borderedProminent)
+                            .rowActionButton()
                             .accessibilityIdentifier("events.media.accept.\(proposal.kind.mcpValue)")
                     }
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .padding(.top, Spacing.xSmall)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

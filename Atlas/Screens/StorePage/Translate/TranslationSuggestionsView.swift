@@ -51,7 +51,7 @@ struct TranslationSuggestionsView: View {
             Text(count == 1
                 ? "1 suggestion from \(translation.runProvider.shortTitle)"
                 : "\(count) suggestions from \(translation.runProvider.shortTitle)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text(translation.review?.statusLine ?? "")
                 .font(.subheadline)
                 .monospacedDigit()
@@ -66,7 +66,7 @@ struct TranslationSuggestionsView: View {
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("storePage.suggestions.done")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
     }

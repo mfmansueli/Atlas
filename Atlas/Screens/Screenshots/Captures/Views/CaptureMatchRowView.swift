@@ -22,7 +22,7 @@ struct CaptureMatchRowView: View {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     Text(issue.message)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                         .fixedSize(horizontal: false, vertical: true)
                     Picker(issue.message, selection: choice) {
                         ForEach(row.options) { option in
@@ -30,13 +30,13 @@ struct CaptureMatchRowView: View {
                         }
                     }
                     .labelsHidden()
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .fixedSize()
                     .accessibilityIdentifier("captures.row.choice")
                 }
                 .frame(width: CaptureMatchColumns.locale + CaptureMatchColumns.display + CaptureMatchColumns.slot + Spacing.medium * 2, alignment: .leading)
                 Image(systemName: "exclamationmark.triangle")
-                    .foregroundStyle(Palette.warningMark)
+                    .foregroundStyle(Palette.warnMark)
                     .frame(width: CaptureMatchColumns.status)
                     .accessibilityLabel(Text("Needs you"))
             } else if let placement = row.placement {
@@ -58,7 +58,7 @@ struct CaptureMatchRowView: View {
         .font(.callout)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, row.needsYou ? Spacing.small : Spacing.xSmall)
-        .background(row.needsYou ? Palette.warningTint : Color.clear)
+        .background(row.needsYou ? Palette.warnTint : Color.clear)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(row.needsYou ? "captures.row.needsYou" : "captures.row.matched")
     }

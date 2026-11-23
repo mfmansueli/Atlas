@@ -13,7 +13,7 @@ struct AssistantWorkingDot: View {
 
     var body: some View {
         Circle()
-            .fill(Palette.suggestionBadge)
+            .fill(Palette.aiFill)
             .frame(width: 8, height: 8)
             .scaleEffect(reduceMotion ? 1 : isLarge ? 1.25 : 0.7)
             .opacity(reduceMotion ? 1 : isLarge ? 1 : 0.55)

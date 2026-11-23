@@ -20,10 +20,10 @@ struct ArrivalEdgePass<S: InsettableShape>: View {
                 .strokeBorder(
                     AngularGradient(
                         stops: [
-                            .init(color: Palette.suggestionBadge.opacity(0), location: 0),
-                            .init(color: Palette.suggestionBadge.opacity(0), location: 250 / 360),
-                            .init(color: Palette.suggestionBadge, location: 330 / 360),
-                            .init(color: Palette.suggestionBadge.opacity(0), location: 1),
+                            .init(color: Palette.aiFill.opacity(0), location: 0),
+                            .init(color: Palette.aiFill.opacity(0), location: 250 / 360),
+                            .init(color: Palette.aiFill, location: 330 / 360),
+                            .init(color: Palette.aiFill.opacity(0), location: 1),
                         ],
                         center: .center,
                         angle: .degrees(Self.angle(progress: progress))

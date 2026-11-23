@@ -21,7 +21,7 @@ struct NewLanguagesBanner: View {
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Image(systemName: "globe")
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
                 .accessibilityHidden(true)
             Text(text)
                 .font(.callout)
@@ -34,12 +34,12 @@ struct NewLanguagesBanner: View {
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("storePage.newLanguages.addAll")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .buttonBorderShape(.capsule)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 2)
-        .background(Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
+        .background(Palette.aiSurface, in: shape)
+        .overlay(shape.strokeBorder(Palette.aiMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("storePage.newLanguages")
     }

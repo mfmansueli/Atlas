@@ -136,9 +136,11 @@ struct MainView: View {
         content
             .sheet(isPresented: $navigator.isReviewPresented, onDismiss: navigator.reviewDidClose) {
                 ReviewPushSheet(viewModel: reviewViewModel())
+                    .pageControlSize()
             }
             .sheet(isPresented: $navigator.isActivityPresented, onDismiss: navigator.activityDidClose) {
                 ActivitySheet()
+                    .pageControlSize()
             }
             .sheet(isPresented: $navigator.isAssistantSetupPresented, onDismiss: assistantSetupDidClose, content: {
                 AssistantSetupSheet(
@@ -150,20 +152,24 @@ struct MainView: View {
                     method: navigator.assistantSetupMethod,
                     reason: navigator.setupStartsSuggestEverything ? AssistantSetupSheet.suggestEverythingReason : nil
                 )
+                .pageControlSize()
             })
             // Show Output, for runs Atlas started from any screen.
             .sheet(item: shownRun) { run in
                 ClaudeCodeRunOutputSheet(runID: run.id)
+                    .pageControlSize()
             }
             // Submit for Review, from the version card or the sidebar's footer.
             .sheet(isPresented: $navigator.isSubmitPresented) {
                 if let release = selectedRelease {
                     SubmitForReviewSheet(viewModel: release)
+                        .pageControlSize()
                 }
             }
             // The paywall, from whatever needed Pro or the toolbar's button.
             .sheet(item: Binding(get: { pro?.paywall }, set: { pro?.paywall = $0 })) { model in
                 PaywallSheet(model: model) { continues in pro?.finish(model, continues: continues) }
+                    .pageControlSize()
             }
             // Free works on one app: another opens the paywall and the
             // selection stays where it was.

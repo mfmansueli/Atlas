@@ -17,7 +17,7 @@ struct StudioArtworkDetailsCard: View {
         Card {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Text("Header and search")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                 Text(details.languageName)
                     .foregroundStyle(Palette.label2)
@@ -69,7 +69,7 @@ struct StudioArtworkDetailsCard: View {
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             Button("View Larger") { studio.openArtwork(at: row.viewerIndex) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(!row.isMade)
                 .accessibilityIdentifier("studio.artwork.details.\(row.kind.rawValue).view")
         }
@@ -83,9 +83,9 @@ struct StudioArtworkDetailsCard: View {
         switch tone {
         case .neutral: Palette.label2
         case .accent: Palette.accent
-        case .positive: Palette.positive
-        case .warning: Palette.warning
-        case .danger: Palette.danger
+        case .positive: Palette.ok
+        case .warning: Palette.warn
+        case .danger: Palette.err
         }
     }
 

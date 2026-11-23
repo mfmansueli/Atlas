@@ -34,6 +34,7 @@ struct MCPToolbox {
             ProposeInAppPurchaseTool(),
             ProposeIntroductoryOfferTool(),
             ProposePurchaseReviewScreenshotTool(),
+            ReportReviewScreenshotRunTool(),
             GetRetentionTool(),
             ProposeRetentionMessageTool(),
             ProposeRetentionOfferTool(),

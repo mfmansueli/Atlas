@@ -52,7 +52,7 @@ struct AutopilotWaitStageView: View {
                     Label {
                         Text("Copied. Shortcut in Claude Code: \(Text(ScreenshotStudioModel.promptShortcut).font(.system(.callout, design: .monospaced)))")
                     } icon: {
-                        Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.positive)
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.ok)
                     }
                     .font(.callout)
                     .accessibilityIdentifier("autopilot.wait.copied")

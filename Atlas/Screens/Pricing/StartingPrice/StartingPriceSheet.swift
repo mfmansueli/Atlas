@@ -52,7 +52,7 @@ struct StartingPriceSheet: View {
                 if showsProblem, price == nil {
                     Text(NewSubscriptionProblem.invalidPrice.message)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 }
             }
             .padding(Spacing.xLarge)

@@ -24,7 +24,7 @@ struct RetentionServerSetupButton: View {
             .popover(isPresented: $copied, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: Spacing.small) {
                     Text("Prompt copied")
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                     Text("Atlas couldn’t open Claude Code. Paste the prompt into Claude Code in your server’s project.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)

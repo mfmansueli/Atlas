@@ -75,7 +75,7 @@ struct PairAssistantSheet: View {
             } label: {
                 Label(pairing.isWaiting ? "Copied" : "Copy", systemImage: "doc.on.doc")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("settings.ai.pairCopy")
         }
     }

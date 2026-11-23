@@ -18,8 +18,8 @@ struct AnalyticsKeyCannotAskView: View {
     var body: some View {
         VStack(spacing: Spacing.large) {
             Image(systemName: "key")
-                .font(.system(size: 30))
-                .foregroundStyle(Palette.warning)
+                .font(.largeTitle.bold())
+                .foregroundStyle(Palette.warn)
                 .accessibilityHidden(true)
             Text("Only an Admin key can ask Apple for reports")
                 .font(.title2.weight(.semibold))

@@ -93,11 +93,12 @@ struct ScreenshotsLanguagePage: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .controlSize(.small)
             .fixedSize()
             .accessibilityIdentifier("screenshots.page.mode")
             ScreenshotHandManageMenu(viewModel: viewModel, locale: locale)
         }
+        // The prototype's small segmented controls (`.seg.sm`) on this row.
+        .controlSize(.small)
     }
 
     private var shots: some View {

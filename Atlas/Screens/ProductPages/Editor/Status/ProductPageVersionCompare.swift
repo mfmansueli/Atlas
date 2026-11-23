@@ -54,7 +54,7 @@ struct ProductPageVersionCompare: View {
     private func column(title: String, text: String, keywords: [String], deepLink: String, changed: Set<Part>) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text(title)
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             value(
                 String(localized: "Promotional text"),

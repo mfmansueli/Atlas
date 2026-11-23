@@ -21,7 +21,7 @@ struct FunnelView: View {
                 if let note = report.note {
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         Image(systemName: report.noteIsWarning ? "exclamationmark.triangle.fill" : "info.circle")
-                            .foregroundStyle(report.noteIsWarning ? Palette.warningMark : Palette.label2)
+                            .foregroundStyle(report.noteIsWarning ? Palette.warnMark : Palette.label2)
                             .accessibilityHidden(true)
                         Text(note).font(.callout).fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
@@ -30,13 +30,13 @@ struct FunnelView: View {
                             Button(title) {
                                 viewModel.openSettings(focus: gap == .needsVendorNumber ? .vendorNumber : .salesRole)
                             }
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("analytics.funnel.fixGap")
                         }
                     }
                     .padding(.horizontal, Spacing.medium)
                     .padding(.vertical, Spacing.small)
-                    .background(report.noteIsWarning ? Palette.warningTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
+                    .background(report.noteIsWarning ? Palette.warnTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
                     .accessibilityElement(children: .contain)
                     .accessibilityIdentifier("analytics.funnel.note")
                 }
@@ -64,7 +64,7 @@ struct FunnelView: View {
         let open = viewModel.openFindings
         if !open.isEmpty {
             HStack {
-                Text("What to try next").font(.headline).accessibilityAddTraits(.isHeader)
+                Text("What to try next").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
                 Spacer()
                 Button(open.count == 1 ? String(localized: "1 Finding") : String(localized: "All \(open.count) Findings")) { viewModel.tab = .findings }
                     .buttonStyle(.plain)

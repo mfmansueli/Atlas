@@ -26,7 +26,7 @@ struct ArtworkCheckPills: View {
                 ForEach(Array(checks.prefix(lineCount).enumerated()), id: \.offset) { _, check in
                     Text(check.text)
                         .font(.subheadline)
-                        .foregroundStyle(check.isError ? Palette.danger : Palette.label2)
+                        .foregroundStyle(check.isError ? Palette.err : Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if checks.count > lineCount {

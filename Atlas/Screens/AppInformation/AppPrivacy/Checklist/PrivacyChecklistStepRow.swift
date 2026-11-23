@@ -40,7 +40,7 @@ struct PrivacyChecklistStepRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             if step.canCopy {
                 Button(isCopied ? String(localized: "Copied") : String(localized: "Copy"), action: onCopy)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(Text("Copy step \(step.number)"))
                     .accessibilityIdentifier("appInformation.appPrivacy.step.\(step.id).copy")
             }

@@ -20,14 +20,14 @@ struct TourTipView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: step.systemImage)
-                .font(.system(size: 15, weight: .medium))
+                .font(.title3.weight(.medium))
                 .foregroundStyle(Palette.accentText)
                 .frame(width: 30, height: 30)
-                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(step.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 18)
                     .accessibilityIdentifier("tour.title")
@@ -79,7 +79,7 @@ struct TourTipView: View {
     private var closeButton: some View {
         Button(action: onClose) {
             Image(systemName: "xmark")
-                .font(.system(size: 10, weight: .semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .frame(width: 22, height: 22)
                 .background(isCloseHovered ? Palette.fill2 : .clear, in: Circle())

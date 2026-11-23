@@ -16,7 +16,7 @@ struct QueuedNewSubscriptionsList: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("Waiting in Review & Push")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Card(padding: 0) {
                 VStack(spacing: 0) {
                     ForEach(Array(viewModel.queuedNewProducts.enumerated()), id: \.element.id) { index, change in
@@ -41,7 +41,7 @@ struct QueuedNewSubscriptionsList: View {
                 if let blocked = change.blockedReason {
                     Text(blocked)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

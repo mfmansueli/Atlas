@@ -25,6 +25,28 @@ final class PricingPurchaseSetup {
     @ObservationIgnored var transport: () -> (any PushTransport)? = { nil }
     /// Reads in place of the transport's (tests).
     @ObservationIgnored var reader: (any PurchaseExtrasReading)?
+    /// The Screenshots capture of the paywall, for Use This Capture; read
+    /// with the extras.
+    var paywallCapture: ReviewShotsCapture?
+    /// Finds it (DEBUG scenes and tests give their own).
+    @ObservationIgnored var findPaywallCapture: @MainActor (StoreApp.ID) -> ReviewShotsCapture? = { appID in
+        ReviewShotsCaptureFinder.find(in: AutopilotCenter.shared.run(for: appID))
+    }
+
+    /// Where Screenshots keeps its captures' PNGs.
+    @ObservationIgnored var capturesRoot = FileScreenshotsDocumentStore.defaultRoot
+    /// Where review screenshots wait for the push.
+    @ObservationIgnored var folder: PurchaseReviewScreenshotFolder = .shared
+    @ObservationIgnored var details = ReviewShotDetailsStore.shared
+    @ObservationIgnored var runs = ReviewShotsRunCenter.shared
+    /// Show Larger's sheet, on the product it opened from.
+    var reviewShotsPreviewProductID: String?
+    /// Where is it? after a run that didn't find the paywall.
+    var paywallRoute = ""
+    /// Starts Claude Code with a prompt and what it's about (or copies
+    /// the prompt): the client's name, or nil when the app's assistant is
+    /// busy. The section sets it.
+    @ObservationIgnored var startAsk: (@MainActor (_ prompt: String, _ purpose: ClaudeCodeRunPurpose) -> String?)?
 
     /// Reads every product's extras that isn't read yet; one that fails
     /// stays unknown.

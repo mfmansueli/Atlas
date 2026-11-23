@@ -72,10 +72,10 @@ struct CaptureDropZoneView: View {
             } else {
                 // A folder with an arrow into it, as in the design.
                 Image(systemName: "folder")
-                    .font(.system(size: 26, weight: .light))
+                    .font(.largeTitle.weight(.light))
                     .overlay {
                         Image(systemName: "arrow.down")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.subheadline.weight(.semibold))
                             .offset(y: 2)
                     }
                     .foregroundStyle(Palette.label2)

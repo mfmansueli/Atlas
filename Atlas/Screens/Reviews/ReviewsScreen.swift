@@ -132,7 +132,7 @@ struct ReviewsScreen: View {
                 if reviews.isEmpty {
                     Card {
                         Text(viewModel.emptyText)
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .accessibilityIdentifier("reviews.empty")

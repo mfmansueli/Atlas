@@ -54,7 +54,7 @@ struct ThumbnailCell: View {
         .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
-                .strokeBorder(cell.state.isFailed ? Palette.dangerMark : Palette.separator, lineWidth: cell.state.isFailed ? 2 : 0.5)
+                .strokeBorder(cell.state.isFailed ? Palette.errMark : Palette.separator, lineWidth: cell.state.isFailed ? 2 : 0.5)
         }
         .overlay(alignment: .topLeading) {
             if cell.showsPrimaryInterface, cell.state != .fallback { InterfaceChip().padding(3) }

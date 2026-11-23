@@ -19,7 +19,7 @@ struct AutopilotQuestionSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Text("Ask \(client)")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text("What should \(client) do for \(appName)? It reads the app and its project, and what it changes waits for you, marked in purple.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)

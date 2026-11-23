@@ -64,7 +64,7 @@ struct PricingOffersView: View {
         } label: {
             Label("Add Introductory Offer…", systemImage: "plus")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .buttonBorderShape(.capsule)
         .disabled(!canAdd)
         .help(canAdd
@@ -101,6 +101,8 @@ struct PricingOffersView: View {
                 .padding(.top, Spacing.xSmall)
                 .selectionDisabled()
         }
+        // Rows hold row-sized (24 pt) controls.
+        .controlSize(.regular)
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
         .accessibilityIdentifier("pricing.offers.list")

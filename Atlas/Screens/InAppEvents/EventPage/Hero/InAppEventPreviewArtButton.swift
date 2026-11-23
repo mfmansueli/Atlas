@@ -27,7 +27,7 @@ struct InAppEventPreviewArtButton<Content: View>: View {
             content()
                 .overlay(alignment: .topTrailing) {
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                         .frame(width: 26, height: 26)
                         .background(.black.opacity(0.42), in: Circle())

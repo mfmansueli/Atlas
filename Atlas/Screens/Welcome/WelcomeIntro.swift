@@ -15,7 +15,7 @@ struct WelcomeIntro: View {
     var body: some View {
         VStack(spacing: layout.isShort ? 10 : 14) {
             Text("Welcome to Atlas")
-                .font(.system(size: layout.isShort ? 24 : 30, weight: .bold))
+                .font(layout.isShort ? .largeTitle.bold() : .display)
                 .tracking(-0.4)
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
@@ -24,7 +24,7 @@ struct WelcomeIntro: View {
             Atlas keeps your App Store page right in every country: the words, the screenshots and the prices. \
             It suggests what to change, you review it, and one push sends it to App Store Connect.
             """)
-            .font(.system(size: layout.isShort ? 13.5 : 15))
+            .font(layout.isShort ? .body : .title3)
             .lineSpacing(layout.isShort ? 2 : 4)
             .foregroundStyle(Palette.label2)
             .multilineTextAlignment(.center)
@@ -34,13 +34,13 @@ struct WelcomeIntro: View {
             VStack(spacing: Spacing.small) {
                 Button(action: onGetStarted) {
                     Text("Get Started")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.body.weight(.semibold))
                         .padding(.horizontal, 10)
                 }
                 .heroButton()
                 .keyboardShortcut(.defaultAction)
                 .accessibilityIdentifier("welcome.getStarted")
-                Label("You’ll need an App Store Connect API key. It stays in this Mac’s Keychain.", systemImage: "lock")
+                Label("You’ll need an App Store Connect key. It never leaves this Mac.", systemImage: "lock")
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)

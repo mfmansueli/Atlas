@@ -15,7 +15,7 @@ struct PrivacyAssistantStatusLine: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.small) {
             Circle()
-                .fill(session == nil ? Palette.label3 : Palette.positive)
+                .fill(session == nil ? Palette.label3 : Palette.ok)
                 .frame(width: 7, height: 7)
                 .accessibilityHidden(true)
             Text(text)
@@ -26,7 +26,7 @@ struct PrivacyAssistantStatusLine: View {
                 SettingsLink {
                     Text("Settings…")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("appInformation.appPrivacy.settings")
             }
         }

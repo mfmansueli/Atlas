@@ -18,6 +18,16 @@ struct AutopilotButtonLookTests {
         GuidedRunProgress(title: "Capturing in Simulator", fraction: fraction, line: "", isCounted: counted)
     }
 
+    /// The review screenshot run counts its products but leaves the light
+    /// to the card being captured: one working light on screen.
+    @Test func aReviewScreenshotRunCountsWithoutTheLight() {
+        let look = AutopilotButtonLook(state: .capturing("Capturing Annual · 2 of 3", progress: 1.4), done: nil, runProgress: nil)
+        #expect(look == .counting("Capturing Annual · 2 of 3", progress: 1))
+        #expect(!look.isWorking)
+        #expect(look.progress == 1)
+        #expect(look.text == "Capturing Annual · 2 of 3")
+    }
+
     @Test func idleIsStill() {
         let look = AutopilotButtonLook(state: .idle, done: nil, runProgress: nil)
         #expect(look == .idle)

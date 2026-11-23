@@ -49,7 +49,7 @@ struct AppPrivacyOverviewCard: View {
                 }
             }
             Button("Open App Privacy", action: onOpen)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .buttonBorderShape(.capsule)
                 .accessibilityIdentifier("overview.appPrivacy.open")
         }

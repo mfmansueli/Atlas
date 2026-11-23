@@ -26,6 +26,7 @@ struct PricingProductsView: View {
                 if viewModel.openPriceSuggestionCount > 0 {
                     banner
                 }
+                ReviewShotsBanner(viewModel: viewModel)
                 let isWide = width >= 560 + 256 + Spacing.large
                 let layout = isWide
                     ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.large))
@@ -47,12 +48,25 @@ struct PricingProductsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityIdentifier("pricing.products")
+        .sheet(isPresented: isPreviewing) {
+            ReviewShotsPreviewSheet(viewModel: viewModel)
+                .pageControlSize()
+        }
+    }
+
+    /// Show Larger on a card's review screenshot.
+    private var isPreviewing: Binding<Bool> {
+        Binding {
+            viewModel.setup.reviewShotsPreviewProductID != nil
+        } set: {
+            if !$0 { viewModel.setup.reviewShotsPreviewProductID = nil }
+        }
     }
 
     private var banner: some View {
         HStack(spacing: Spacing.small) {
             Image(systemName: "sparkles")
-                .foregroundStyle(Palette.machineTranslated)
+                .foregroundStyle(Palette.ai)
                 .accessibilityHidden(true)
             Text(viewModel.priceSuggestionsBannerText)
                 .font(.callout)
@@ -77,7 +91,7 @@ struct PricingProductsView: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.suggestionsBanner")
     }
@@ -94,16 +108,22 @@ struct PricingProductsView: View {
                         onAccept: {
                             // Prices for many countries at once are Pro's;
                             // one country's stays free.
-                            let accept = { _ = Task { await viewModel.acceptPriceSuggestion(productID: product.id) } }
+                            let accept = { _ = Task.immediate { await viewModel.acceptPriceSuggestion(productID: product.id) } }
                             if card.suggestedCount > 1 {
                                 pro.require(.recommendedPrices(countries: card.suggestedCount), then: accept)
                             } else {
                                 accept()
                             }
                         },
+                        settlesOnAccept: !(card.suggestedCount > 1 && pro.isFree),
                         onOpen: { Task { await viewModel.openDetails(productID: product.id) } },
                         setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product))
                     )
+                    .overlay {
+                        // Effect 1 on the card being captured, the only
+                        // working light on screen.
+                        if viewModel.reviewShotState(for: product).isWorking { CardWorkingLight() }
+                    }
                 } else if let message = viewModel.productErrors[product.id] {
                     unavailable(product, message: message)
                 } else {
@@ -117,7 +137,7 @@ struct PricingProductsView: View {
     private func placeholder(_ product: PricingProduct) -> some View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(product.name).font(.headline)
+                Text(product.name).font(.body.weight(.semibold))
                 Text(product.productID).font(.subheadline).foregroundStyle(Palette.label2)
             }
             Spacer()
@@ -133,20 +153,20 @@ struct PricingProductsView: View {
     private func unavailable(_ product: PricingProduct, message: String) -> some View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(product.name).font(.headline)
+                Text(product.name).font(.body.weight(.semibold))
                 Text(message).font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             if viewModel.unreadProductIDs.contains(product.id) {
                 // Apple's server failed on this product's prices alone.
                 Button("Try Again") { Task { await viewModel.retryProduct(productID: product.id) } }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(Text("Read \(product.name)’s prices again"))
                     .accessibilityIdentifier("pricing.card.tryAgain")
             } else {
                 Button(product.isInAppPurchase ? "See Prices…" : "Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
                     .buttonStyle(.link)
-                    .controlSize(.small)
+                    .controlSize(.regular)
             }
         }
         .padding(14)

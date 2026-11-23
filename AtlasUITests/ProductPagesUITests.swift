@@ -269,7 +269,7 @@ final class ProductPagesUITests: XCTestCase {
 
     func testTheOverviewCardOpensThePages() {
         app.launch(debugScene: "cp-overview")
-        let open = element("overview.pagesCard.open")
+        let open = element("overview.afterRelease.open.productPages")
         XCTAssertTrue(open.waitForExistence(timeout: 20))
         attach("cp-overview")
         open.click()

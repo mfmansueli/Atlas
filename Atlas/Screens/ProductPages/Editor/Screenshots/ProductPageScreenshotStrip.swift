@@ -24,7 +24,7 @@ struct ProductPageScreenshotStrip: View {
                     ForEach(0..<(limit ?? 5), id: \.self) { _ in
                         ImageLoadingTile()
                             .frame(width: height * ProductPageScreenshotThumb.aspect(device), height: height)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                     }
                 }
                 .accessibilityLabel(Text("Reading the screenshots"))

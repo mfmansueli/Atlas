@@ -45,5 +45,7 @@ struct PricingDebugLaunch {
     var today: Date?
     /// Opens a purchase setup sheet.
     var sheet: PricingDebugSheet?
+    /// Where Lumen's review screenshots are (`rs-*`).
+    var reviewShots: ReviewShotsDebugState?
 }
 #endif

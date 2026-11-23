@@ -15,7 +15,7 @@ struct StabilityDaysChart: View {
             ForEach(days) { day in
                 if let value = day.latest {
                     LineMark(x: .value("Day", day.day.date), y: .value("Crashes", value), series: .value("Version", "latest"))
-                        .foregroundStyle(Palette.dangerMark)
+                        .foregroundStyle(Palette.errMark)
                 }
                 if let value = day.previous {
                     LineMark(x: .value("Day", day.day.date), y: .value("Crashes", value), series: .value("Version", "previous"))

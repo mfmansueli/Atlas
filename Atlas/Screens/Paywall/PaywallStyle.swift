@@ -12,7 +12,7 @@ import SwiftUI
 /// is for fills without text.
 enum PaywallStyle {
     /// #0A5CF2, the brand gradient's lower colour.
-    static let brandBlue = Color(red: 0x0A / 255, green: 0x5C / 255, blue: 0xF2 / 255)
+    static let brandBlue = Palette.brandBottom
 
     /// Behind white text: the chip.
     static let gradient = LinearGradient(colors: AtlasIconGradient.dark, startPoint: .topLeading, endPoint: .bottomTrailing)

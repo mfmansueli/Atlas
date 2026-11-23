@@ -35,7 +35,7 @@ struct StressStripCard: View {
                 if let failure = entry.preview.firstFailure?.shortReason {
                     Text(failure)
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                 }
             }
         }
@@ -50,8 +50,8 @@ struct StressStripCard: View {
 
     private var labelColor: Color {
         switch entry.preview.fit.tone {
-        case .overflows: Palette.danger
-        case .shrinks: Palette.warning
+        case .overflows: Palette.err
+        case .shrinks: Palette.warn
         case .fits, .empty: Palette.label2
         }
     }

@@ -56,7 +56,7 @@ struct ProductPageSubmitSheet: View {
 
     private var checks: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("What goes to Apple").font(.headline)
+            Text("What goes to Apple").font(.body.weight(.semibold))
             VStack(alignment: .leading, spacing: Spacing.small) {
                 ForEach(viewModel.submitChecks(of: page)) { check in
                     ProductPageSubmitCheckRow(check: check)
@@ -70,7 +70,7 @@ struct ProductPageSubmitSheet: View {
 
     private var afterApproval: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("After approval").font(.headline)
+            Text("After approval").font(.body.weight(.semibold))
             HStack(alignment: .top, spacing: Spacing.medium) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Make the page visible when it’s approved")

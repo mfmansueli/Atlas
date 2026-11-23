@@ -50,10 +50,10 @@ struct AssistantConnectHelloStep: View {
         HStack(alignment: .top, spacing: 10) {
             if model.hello?.isFromAssistant == false {
                 Image(systemName: "globe")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.callout.weight(.semibold))
                     .foregroundStyle(.white)
                     .frame(width: 26, height: 26)
-                    .background(Palette.accent, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .background(Palette.accent, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                     .accessibilityHidden(true)
             } else {
                 AssistantLogo(assistant: model.assistant, size: 26)
@@ -72,8 +72,8 @@ struct AssistantConnectHelloStep: View {
                 .padding(.horizontal, 14)
                 .padding(.vertical, 11)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.machineTranslatedTint, in: TypingIndicator.bubble)
-                .overlay(TypingIndicator.bubble.strokeBorder(Palette.suggestionEdge, lineWidth: 1))
+                .background(Palette.aiSurface, in: TypingIndicator.bubble)
+                .overlay(TypingIndicator.bubble.strokeBorder(Palette.aiEdge, lineWidth: 1))
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("settings.connect.hello")
             } else {
@@ -100,7 +100,7 @@ struct AssistantConnectHelloStep: View {
                 model.copyHelloPrompt()
                 copied = true
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("settings.connect.copyHello")
         }
         .padding(Spacing.small)

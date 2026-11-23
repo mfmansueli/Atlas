@@ -121,7 +121,7 @@ struct PageShotsResultStep: View {
         let used = run?.useLocales ?? []
         let devices = run?.useDisplays ?? []
         return VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Use the new set in").font(.headline)
+            Text("Use the new set in").font(.body.weight(.semibold))
             FlowLayout(spacing: Spacing.xxSmall, lineSpacing: Spacing.xxSmall) {
                 ForEach(run?.locales ?? [], id: \.self) { code in
                     PageShotsChip(
@@ -172,7 +172,7 @@ struct PageShotsResultStep: View {
 
     private var askPopover: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("What should change?").font(.headline)
+            Text("What should change?").font(.body.weight(.semibold))
             Text("Say it in a sentence. Only this page’s set is redone.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)

@@ -9,7 +9,8 @@ import SwiftUI
 /// and why, and for each text it changes, Now and Suggested with the
 /// changed words marked; the texts it leaves out stay as they are.
 /// Dismiss keeps them, Use and Edit puts the revision in to edit, Accept
-/// queues it in Review & Push.
+/// queues it in Review & Push. It arrives and settles like any suggestion
+/// (effects 2 and 5).
 struct InAppEventRevisionCard: View {
     let languageName: String
     let revision: InAppEventTextSuggestion
@@ -20,15 +21,15 @@ struct InAppEventRevisionCard: View {
     let onUseAndEdit: () -> Void
     let onAccept: () -> Void
 
-    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 Pill(text: String(localized: "Suggested"), style: .machineTranslated)
                 Text("\(languageName): revision")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 SuggestionSourceTag(source: .assistant(client: revision.source))
                 Spacer(minLength: 0)
             }
@@ -46,27 +47,38 @@ struct InAppEventRevisionCard: View {
             }
             HStack(spacing: Spacing.xSmall) {
                 Text(keptText)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Dismiss", action: onDismiss)
                     .accessibilityIdentifier("events.revision.dismiss")
                 Button("Use and Edit", action: onUseAndEdit)
                     .accessibilityIdentifier("events.revision.useAndEdit")
-                Button("Accept", action: onAccept)
-                    .buttonStyle(.borderedProminent)
+                Button("Accept", action: accept)
+                    .rowActionButton()
                     .accessibilityIdentifier("events.revision.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
+        .suggestionSurface(
+            isSettling: isSettling,
+            arrivalKey: "\(revision.id)|\(revision.date.timeIntervalSinceReferenceDate)",
+            arrivedAt: revision.date
+        )
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Revision of \(languageName) from \(revision.source)"))
         .accessibilityIdentifier("events.revision")
+    }
+
+    private func accept() {
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            onAccept()
+        }
     }
 
     /// "Event Name and Short Description stay as they are."
@@ -94,7 +106,7 @@ struct InAppEventRevisionCard: View {
                         .accessibilityIdentifier("events.revision.\(field.rawValue).now")
                 }
                 GridRow {
-                    label(String(localized: "SUGGESTED"), color: Palette.machineTranslated)
+                    label(String(localized: "SUGGESTED"), color: Palette.ai)
                     MarkedDiffText(diff: diff, side: .suggested)
                         .font(.callout)
                         .textSelection(.enabled)
@@ -107,7 +119,7 @@ struct InAppEventRevisionCard: View {
                 }
             }
             Text("\(revision.text(field).count) / \(field.limit)")
-                .font(.caption2.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
         }
         .accessibilityElement(children: .contain)
@@ -122,7 +134,7 @@ struct InAppEventRevisionCard: View {
 
     private func label(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.caption2.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(color)
             .frame(width: 74, alignment: .leading)
     }

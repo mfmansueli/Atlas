@@ -21,7 +21,7 @@ struct BreakdownInspector: View {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 HStack(spacing: Spacing.small) {
                     if let region = row.regionCode { FlagTile(regionCode: region, size: 16) }
-                    Text(row.name).font(.headline).lineLimit(2)
+                    Text(row.name).font(.body.weight(.semibold)).lineLimit(2)
                     Spacer(minLength: 0)
                     Button(action: onClose) { Image(systemName: "xmark") }
                         .buttonStyle(.plain)
@@ -49,7 +49,7 @@ struct BreakdownInspector: View {
                                 Text(fact.label).font(.subheadline).foregroundStyle(Palette.label2)
                                 Text(fact.value)
                                     .font(.callout)
-                                    .foregroundStyle(fact.isWarning ? Palette.warning : Palette.label)
+                                    .foregroundStyle(fact.isWarning ? Palette.warn : Palette.label)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             .accessibilityElement(children: .combine)
@@ -65,7 +65,7 @@ struct BreakdownInspector: View {
                         }
                     }
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             }
             .padding(Spacing.medium)
         }

@@ -38,7 +38,7 @@ struct ClaudeCodeLaunchPanel: View {
             } else {
                 Label {
                     Text("Atlas starts Claude Code")
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                 } icon: {
                     Image(systemName: "bolt.horizontal.circle")
                         .foregroundStyle(Palette.accent)

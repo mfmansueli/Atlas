@@ -86,7 +86,7 @@ struct PriceIndexCard: View {
             }
             if source == .custom {
                 Button("Import CSV…", action: onImport)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                     .accessibilityIdentifier("pricing.importCSV")
             }

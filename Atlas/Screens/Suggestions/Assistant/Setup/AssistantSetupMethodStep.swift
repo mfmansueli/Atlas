@@ -40,7 +40,7 @@ struct AssistantSetupMethodStep: View {
                 .font(.subheadline)
             } else {
                 Text("Which assistant?")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .padding(.top, Spacing.xxSmall)
                 VStack(spacing: Spacing.xSmall) {
                     ForEach(MCPClientKind.allCases) { kind in

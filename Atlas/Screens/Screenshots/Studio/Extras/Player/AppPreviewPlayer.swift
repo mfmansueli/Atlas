@@ -88,7 +88,7 @@ struct AppPreviewPlayer: View {
         .frame(width: width, height: height)
         .background(Color.black)
         .clipShape(RoundedRectangle(cornerRadius: max(6, width * 0.06), style: .continuous))
-        .shadow(color: .black.opacity(0.22), radius: 12, y: 6)
+        .depth(.popover)
         .contentShape(Rectangle())
     }
 

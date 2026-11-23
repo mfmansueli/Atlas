@@ -31,16 +31,16 @@ struct EventArtworkPanelPair: View {
             PairButton(kind: kind) {
                 onOpen(kind)
             } content: {
-                InAppEventArtwork(event: event, source: source, cornerRadius: 9, maxPixel: 600)
+                InAppEventArtwork(event: event, source: source, cornerRadius: Radius.field, maxPixel: 600)
                     .frame(width: width, height: Self.height)
             }
         } else {
             Text("!")
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Palette.warning)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Palette.warn)
                 .frame(width: width, height: Self.height)
-                .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 9, style: .continuous).strokeBorder(Palette.warningMark, lineWidth: 1.5))
+                .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.warnMark, lineWidth: 1.5))
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(kind == .card ? "Event card missing" : "Event details image missing"))
                 .accessibilityAddTraits(.isImage)
@@ -60,11 +60,11 @@ struct EventArtworkPanelPair: View {
             Button(action: action) {
                 content()
                     .overlay(
-                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                             .strokeBorder(Palette.accent, lineWidth: 2)
                             .opacity(isHovered ? 1 : 0)
                     )
-                    .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    .contentShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             }
             .buttonStyle(.plain)
             .onHover { isHovered = $0 }

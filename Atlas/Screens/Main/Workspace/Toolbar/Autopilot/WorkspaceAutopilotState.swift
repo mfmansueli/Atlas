@@ -15,6 +15,10 @@ enum WorkspaceAutopilotState: Equatable {
     /// A ring and what's being done; `isScreenshotRun` when a click opens
     /// the guided run.
     case running(String, isScreenshotRun: Bool = false)
+    /// Make Review Screenshots… capturing in Simulator: its step and a
+    /// counted bar (0–1), without the button's own light, since the card
+    /// being captured has it (README — Pricing: review screenshots).
+    case capturing(String, progress: Double)
     /// Purple, with what the guided run or Reply Automatically needs; a
     /// click opens that step, or Reviews.
     case needsYou(String)
@@ -41,6 +45,13 @@ enum WorkspaceAutopilotState: Equatable {
         var screenshotRunWorking: String?
         /// What the guided run waits for, “Choose the Look”.
         var screenshotRunNeeds: String?
+        /// Make Review Screenshots… while it captures: “Capturing Annual ·
+        /// 2 of 3” and its bar.
+        var reviewShotsWorking: String?
+        var reviewShotsProgress: Double = 0
+        /// What a review screenshot run waits for: “Show It the Paywall”,
+        /// “Review Screenshots Ready”.
+        var reviewShotsNeeds: String?
         /// Reviews Reply Automatically left for the person.
         var autoReplyNeeds = 0
         /// “Auto-reply on · 2 sent today”, in Reviews while it's on.
@@ -54,18 +65,12 @@ enum WorkspaceAutopilotState: Equatable {
     init(_ inputs: Inputs) {
         if let needs = inputs.screenshotRunNeeds {
             self = .needsYou(needs)
+        } else if let needs = inputs.reviewShotsNeeds {
+            self = .needsYou(needs)
         } else if inputs.autoReplyNeeds > 0 {
             self = .needsYou(Self.reviewsNeedYou(inputs.autoReplyNeeds))
-        } else if let working = inputs.screenshotRunWorking {
-            self = .running(working, isScreenshotRun: true)
-        } else if let subject = inputs.askSubject {
-            self = .running(String(localized: "Working · \(subject)"))
-        } else if inputs.isSuggestingEverything {
-            self = .running(String(localized: "Suggesting everything"))
-        } else if let client = inputs.workingClient {
-            self = .running(String(localized: "\(client) is working"))
-        } else if inputs.launchedRuns > 0 {
-            self = .running(String(localized: "Claude Code is working"))
+        } else if let working = Self.working(inputs) {
+            self = working
         } else if let failure = inputs.failure {
             self = .failed(failure)
         } else if let line = inputs.autoReplyOn {
@@ -75,21 +80,34 @@ enum WorkspaceAutopilotState: Equatable {
         }
     }
 
+    /// What runs, the guided run first; nil when nothing does.
+    private static func working(_ inputs: Inputs) -> Self? {
+        if let working = inputs.screenshotRunWorking { return .running(working, isScreenshotRun: true) }
+        if let working = inputs.reviewShotsWorking { return .capturing(working, progress: inputs.reviewShotsProgress) }
+        if let subject = inputs.askSubject { return .running(String(localized: "Working · \(subject)")) }
+        if inputs.isSuggestingEverything { return .running(String(localized: "Suggesting everything")) }
+        if let client = inputs.workingClient { return .running(String(localized: "\(client) is working")) }
+        if inputs.launchedRuns > 0 { return .running(String(localized: "Claude Code is working")) }
+        return nil
+    }
+
     var isOn: Bool {
         if case .autoReplyOn = self { return true }
         return false
     }
 
     var isRunning: Bool {
-        if case .running = self { return true }
-        return false
+        switch self {
+        case .running, .capturing: true
+        case .idle, .needsYou, .autoReplyOn, .failed: false
+        }
     }
 
     /// What the button says instead of its action, if anything.
     var text: String? {
         switch self {
         case .idle: nil
-        case let .running(text, _), let .needsYou(text), let .autoReplyOn(text), let .failed(text): text
+        case let .running(text, _), let .capturing(text, _), let .needsYou(text), let .autoReplyOn(text), let .failed(text): text
         }
     }
 
@@ -98,10 +116,14 @@ enum WorkspaceAutopilotState: Equatable {
     /// Nil when it didn't just finish: it still runs, needs the person, or
     /// stopped with a problem.
     func doneText(becoming next: Self) -> String? {
-        guard case let .running(text, _) = self else { return nil }
+        let text: String
+        switch self {
+        case let .running(running, _), let .capturing(running, _): text = running
+        case .idle, .needsYou, .autoReplyOn, .failed: return nil
+        }
         switch next {
         case .idle, .autoReplyOn: break
-        case .running, .needsYou, .failed: return nil
+        case .running, .capturing, .needsYou, .failed: return nil
         }
         let working = String(localized: "Working · ")
         guard text.hasPrefix(working) else { return String(localized: "Done") }
@@ -126,6 +148,7 @@ enum WorkspaceAutopilotState: Equatable {
         switch self {
         case .idle, .autoReplyOn: nil
         case let .running(text, _): "running:" + (text.components(separatedBy: " · ").first ?? text)
+        case let .capturing(text, _): "running:" + (text.components(separatedBy: " · ").first ?? text)
         case let .needsYou(text): "needs:" + text
         case let .failed(text): "failed:" + text
         }

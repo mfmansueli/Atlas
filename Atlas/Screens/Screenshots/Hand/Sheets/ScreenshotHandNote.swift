@@ -18,7 +18,7 @@ struct ScreenshotHandNote: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Spacing.medium)
             .padding(.vertical, Spacing.small)
-            .background(isWarning ? Palette.warningTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
+            .background(isWarning ? Palette.warnTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
             .accessibilityIdentifier("screenshots.hand.note")
     }
 }

@@ -27,7 +27,7 @@ struct AutopilotPlanChangeView: View {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                 Label(change.client, systemImage: "sparkles")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslatedMark)
+                    .foregroundStyle(Palette.aiMark)
                 Text(change.reason ?? String(localized: "Changes for this plan"))
                     .font(.callout.weight(.semibold))
                     .fixedSize(horizontal: false, vertical: true)
@@ -37,10 +37,10 @@ struct AutopilotPlanChangeView: View {
                     Button("Reject") { studio.rejectPlanChange(change.id) }
                         .accessibilityIdentifier("autopilot.plan.change.\(change.id).reject")
                     Button("Accept") { studio.acceptPlanChange(change.id) }
-                        .buttonStyle(.borderedProminent)
+                        .rowActionButton()
                         .accessibilityIdentifier("autopilot.plan.change.\(change.id).accept")
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
             }
             if let evidence = change.evidence {
                 Text(evidence)

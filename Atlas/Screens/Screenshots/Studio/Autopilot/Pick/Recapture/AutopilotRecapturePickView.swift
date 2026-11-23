@@ -55,7 +55,7 @@ struct AutopilotRecapturePickView: View {
             }
         }
         .padding(Spacing.medium)
-        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("autopilot.recapturePick.\(target.key)")
     }
@@ -75,9 +75,9 @@ struct AutopilotRecapturePickView: View {
                     }
                 }
                 .frame(width: width, height: min(height, width * 2.3))
-                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                         .strokeBorder(isChosen ? Palette.accent : Palette.separator, lineWidth: isChosen ? 2 : 0.5)
                 }
                 Text(label)

@@ -30,20 +30,20 @@ struct PushFileThumbnail: View {
             } else {
                 Palette.fill2
                 Image(systemName: isVideo ? "play.rectangle" : "photo")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label3)
             }
             if isVideo, image != nil {
                 Image(systemName: "play.fill")
-                    .font(.system(size: 7, weight: .bold))
+                    .font(.footnote.weight(.bold))
                     .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.6), radius: 1.5)
+                    .depth(.card)
             }
         }
         .frame(width: size.width, height: size.height)
-        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                 .strokeBorder(Palette.separator2, lineWidth: 0.5)
         }
         .task(id: url) {

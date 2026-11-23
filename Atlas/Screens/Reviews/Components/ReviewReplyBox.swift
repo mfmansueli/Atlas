@@ -64,7 +64,7 @@ struct ReviewReplyBox: View {
     private var editButton: some View {
         Button("Edit", action: onEdit)
             .buttonStyle(.link)
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("reviews.reply.edit.\(review.id)")
     }
 }

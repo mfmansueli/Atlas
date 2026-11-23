@@ -48,14 +48,14 @@ struct VersionTimeline: View {
         switch state {
         case .done, .current: Palette.accent
         case .upcoming: Palette.fill3
-        case .rejected: Palette.dangerMark
+        case .rejected: Palette.errMark
         }
     }
 
     private func ring(_ state: ReleaseStep.State) -> Color {
         switch state {
         case .current: Palette.accentTint
-        case .rejected: Palette.dangerTint
+        case .rejected: Palette.errTint
         case .done, .upcoming: .clear
         }
     }

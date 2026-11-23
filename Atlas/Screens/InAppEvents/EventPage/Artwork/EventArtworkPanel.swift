@@ -29,12 +29,12 @@ struct EventArtworkPanel: View {
             heading
             VStack(alignment: .leading, spacing: 2) {
                 Text(state.line)
-                    .font(.system(size: 12, weight: state.tone == .normal ? .regular : .semibold))
+                    .font(.callout.weight(state.tone == .normal ? .regular : .semibold))
                     .foregroundStyle(lineColor)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.art.line")
                 Text(state.detail)
-                    .font(.system(size: 10))
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("events.art.detail")
@@ -47,7 +47,7 @@ struct EventArtworkPanel: View {
                     .overlay(alignment: .leading) {
                         GeometryReader { proxy in
                             Capsule()
-                                .fill(Palette.machineTranslated)
+                                .fill(Palette.ai)
                                 .frame(width: proxy.size.width * min(max(state.progress, 0), 1))
                         }
                     }
@@ -77,12 +77,15 @@ struct EventArtworkPanel: View {
             if let copiedPrompt, !copiedPrompt.isEmpty {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     InlineMessage(
-                        text: String(localized: "Atlas couldn’t start Claude Code here, so its prompt is copied. Paste it into Claude Code: the concepts arrive here."),
+                        text: String(localized: """
+                        Atlas couldn’t start Claude Code here, so its prompt is copied. Paste it into Claude Code: \
+                        the concepts arrive here.
+                        """),
                         systemImage: "doc.on.clipboard", tint: Palette.label2
                     )
                     .font(.subheadline)
                     Button("Copy Again", action: onCopyAgain)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("events.art.copyPrompt")
                 }
                 .accessibilityIdentifier("events.art.copied")
@@ -103,7 +106,7 @@ struct EventArtworkPanel: View {
     private var heading: some View {
         HStack(spacing: Spacing.small) {
             Text("Artwork")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             if state.isByClaudeDesign {
                 AssistantChip(name: DesignProjectKind.claude, monogram: "C")
@@ -117,8 +120,8 @@ struct EventArtworkPanel: View {
     private var lineColor: Color {
         switch state.tone {
         case .normal: Palette.label
-        case .suggestion: Palette.machineTranslated
-        case .warning: Palette.warning
+        case .suggestion: Palette.ai
+        case .warning: Palette.warn
         }
     }
 

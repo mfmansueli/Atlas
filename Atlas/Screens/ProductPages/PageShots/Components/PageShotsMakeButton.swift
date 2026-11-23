@@ -21,7 +21,7 @@ struct PageShotsMakeButton: View {
         } label: {
             Label("Make Screenshots for This Page…", systemImage: "sparkles")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .disabled(isLocked || !viewModel.canChange || viewModel.makePageShotsFlow == nil)
         .help(Text("Autopilot makes a set for this page only, from the default page’s screens. The default page doesn’t change."))
         .accessibilityIdentifier("pages.screenshots.make")

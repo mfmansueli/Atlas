@@ -30,18 +30,18 @@ struct InAppEventGalleryTile: View {
                     .padding(.bottom, Spacing.xxSmall)
                 HStack(spacing: Spacing.xSmall) {
                     Text(event.referenceName)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.body.weight(.semibold))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Pill(text: status.title, style: status.pillStyle)
                         .fixedSize()
                 }
                 Text(dates)
-                    .font(.system(size: 10))
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
                 Text(note.text)
-                    .font(.system(size: 10, weight: note.tone == .secondary ? .regular : .semibold))
+                    .font(.footnote.weight(note.tone == .secondary ? .regular : .semibold))
                     .foregroundStyle(noteColor)
                     .lineLimit(2)
                     .accessibilityIdentifier("events.tile.note.\(event.id)")
@@ -49,13 +49,13 @@ struct InAppEventGalleryTile: View {
             .padding(.horizontal, Spacing.small)
             .padding(.top, Spacing.small)
             .padding(.bottom, 10)
-            .background(Palette.raised, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.popover, style: .continuous)
                     .strokeBorder(contrast == .increased ? Palette.label : Palette.separator2, lineWidth: contrast == .increased ? 1 : 0.5)
             )
-            .shadow(color: .black.opacity(isHovered ? 0.1 : 0), radius: 9, y: 6)
-            .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .depth(isHovered ? .popover : .flat)
+            .contentShape(RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
@@ -69,13 +69,13 @@ struct InAppEventGalleryTile: View {
     private var noteColor: Color {
         switch note.tone {
         case .secondary: Palette.label2
-        case .suggestion: Palette.machineTranslated
-        case .warning: Palette.warning
+        case .suggestion: Palette.ai
+        case .warning: Palette.warn
         }
     }
 
     private var cardImage: some View {
-        InAppEventArtwork(event: event, source: card, cornerRadius: 12, maxPixel: 900)
+        InAppEventArtwork(event: event, source: card, cornerRadius: Radius.card, maxPixel: 900)
             .aspectRatio(16 / 9, contentMode: .fit)
             .overlay {
                 // Apple's fade, from 45% of the height down.
@@ -84,22 +84,22 @@ struct InAppEventGalleryTile: View {
                         .frame(height: proxy.size.height * 0.55)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
                 .allowsHitTesting(false)
             }
             .overlay(alignment: .bottomLeading) {
                 VStack(alignment: .leading, spacing: 1) {
                     if let badge = event.badge {
                         Text(badge.title.uppercased())
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.footnote.weight(.bold))
                             .tracking(0.4)
                             .foregroundStyle(.white.opacity(0.85))
                     }
                     Text(texts.name)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.title3.weight(.bold))
                         .lineLimit(1)
                     Text(texts.shortDescription)
-                        .font(.system(size: 12))
+                        .font(.callout)
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(1)
                 }
@@ -113,16 +113,16 @@ struct InAppEventGalleryTile: View {
                 if let readyConcepts {
                     HStack(spacing: Spacing.xxSmall) {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.footnote.weight(.semibold))
                         Text(readyConcepts == 1 ? "1 concept ready" : "\(readyConcepts) concepts ready")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.callout.weight(.semibold))
                     }
                     .foregroundStyle(.white)
                     .padding(.leading, 7)
                     .padding(.trailing, 9)
                     .frame(height: 22)
-                    .background(Palette.machineTranslated, in: Capsule())
-                    .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+                    .background(Palette.ai, in: Capsule())
+                    .depth(.card)
                     .padding(Spacing.small)
                     .accessibilityIdentifier("events.tile.ready.\(event.id)")
                 }

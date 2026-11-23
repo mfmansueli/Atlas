@@ -26,7 +26,7 @@ struct EventArtworkViewerToggle: View {
                     .overlay { if !isOn { Circle().strokeBorder(.white.opacity(0.7), lineWidth: 1) } }
                     .frame(width: 7, height: 7)
                 Text(title)
-                    .font(.system(size: isNarrow ? 11.5 : 12, weight: .medium))
+                    .font((isNarrow ? Font.subheadline : .callout).weight(.medium))
                     .lineLimit(1)
             }
             .foregroundStyle(.white)

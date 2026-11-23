@@ -27,7 +27,7 @@ struct StabilityView: View {
                         note: report.previous.map { previous in
                             String(localized: "\(previous.version): \(previous.perThousand.map(AnalyticsText.perThousand) ?? "—") on the same days")
                         } ?? "",
-                        valueColor: report.isWorse ? Palette.danger : Palette.label,
+                        valueColor: report.isWorse ? Palette.err : Palette.label,
                         identifier: "analytics.stability.rate"
                     )
                     AnalyticsStat(
@@ -72,7 +72,7 @@ struct StabilityView: View {
                                 AnyView(Text(AnalyticsText.count(row.latest.sessions))),
                                 AnyView(Text(row.latest.perThousand.map(AnalyticsText.perThousand) ?? "—")),
                                 AnyView(Text(row.previous?.perThousand.map(AnalyticsText.perThousand) ?? "—")),
-                                AnyView(Text(row.times.map(AnalyticsText.times) ?? "—").foregroundStyle((row.times ?? 0) > 1.5 ? Palette.danger : Palette.label)),
+                                AnyView(Text(row.times.map(AnalyticsText.times) ?? "—").foregroundStyle((row.times ?? 0) > 1.5 ? Palette.err : Palette.label)),
                             ],
                             widths: Self.widths
                         )
@@ -82,7 +82,7 @@ struct StabilityView: View {
                 Crashes and sessions come from people who share analytics with developers, and Apple completes each day up to 5 days later. \
                 Both versions are compared on the days both had sessions.
                 """)
-                    .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
+                .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
             }
             .padding(.bottom, Spacing.xLarge)
         }

@@ -54,8 +54,10 @@ struct AtlasApp: App {
         let launcher = ClaudeCodeLauncher(
             assistants: assistants, runner: Self.scriptRunner, defaults: Self.defaults, simulatorRunner: Self.simulatorRunner
         )
+        TourTip.configureTipKit()
         #if DEBUG
         if let id = DebugScene.requestedID { ClaudeCodeDebugScenes.configure(launcher, for: id) }
+        DebugSnapshot.startIfRequested()
         #endif
         if Self.continuesAutopilot {
             // A Claude Code that stops with captures left is started again.

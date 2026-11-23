@@ -55,15 +55,17 @@ struct VersionCard: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: Spacing.small) {
+            // Neutral, like the prototype's: section colours are for the
+            // sidebar's tiles (README — Design system §1).
             Image(systemName: "paperplane.fill")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.white)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(Palette.raised)
                 .frame(width: 26, height: 26)
-                .background(Palette.sectionRelease, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(viewModel.cardTitle)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("overview.version.title")
                 Text(viewModel.cardSubtitle)
@@ -82,25 +84,41 @@ struct VersionCard: View {
 
     // MARK: - Before submitting
 
+    /// Only what's missing, each with what fixes it; then one line for
+    /// everything that's ready, beside Submit for Review… (README —
+    /// redesign, November 22: "Overview is three lists").
     private var prepare: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
-            AdaptiveGridLayout(minimumWidth: 230, spacing: Spacing.medium) {
-                ForEach(viewModel.checks) { check in
-                    VersionCheckRow(check: check) { act(on: check) }
-                }
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewModel.checks.filter { !$0.isOK }) { check in
+                Divider()
+                VersionCheckRow(check: check) { act(on: check) }
+                    .padding(.vertical, Spacing.medium)
             }
-            HStack(spacing: Spacing.small) {
-                Text("TestFlight and builds stay in Xcode and App Store Connect.")
-                    .font(.subheadline)
+            Divider()
+            HStack(spacing: Spacing.medium) {
+                StatusMark(isOK: true)
+                Text(readyLine)
+                    .font(.callout)
                     .foregroundStyle(Palette.label2)
-                    .lineLimit(2)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("overview.version.ready")
                 Button("Submit for Review…", action: onSubmit)
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
+                    .primaryButton()
+                    .fixedSize()
                     .accessibilityIdentifier("overview.version.submit")
             }
+            .padding(.top, Spacing.medium)
         }
+    }
+
+    /// "Ready: Build 1.4 (212) · Store Page, Screenshots and Pricing are
+    /// pushed · In-App Event “Mood Calendar”".
+    private var readyLine: String {
+        let ready = viewModel.checks.filter(\.isOK).map(\.title)
+        guard !ready.isEmpty else { return String(localized: "TestFlight and builds stay in Xcode and App Store Connect.") }
+        return String(localized: "Ready: \(ready.joined(separator: " · "))")
     }
 
     private func act(on check: ReleaseCheck) {
@@ -124,11 +142,12 @@ struct VersionCard: View {
                 rejection
             }
             HStack(spacing: Spacing.small) {
-                buttons
+                Spacer(minLength: 0)
                 if viewModel.busyAction != nil {
                     ProgressView()
                         .controlSize(.small)
                 }
+                buttons
             }
             .buttonBorderShape(.capsule)
             .disabled(viewModel.busyAction != nil)
@@ -151,7 +170,7 @@ struct VersionCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(Palette.dangerTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.errTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("overview.version.rejection")
     }

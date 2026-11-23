@@ -15,7 +15,7 @@ struct GlossaryTermChip: View {
             Text(term)
             Button(action: onRemove) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 7, weight: .bold))
+                    .font(.footnote.weight(.bold))
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Remove \(term)"))

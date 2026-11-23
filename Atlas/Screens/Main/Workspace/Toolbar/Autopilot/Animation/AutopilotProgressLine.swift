@@ -20,7 +20,7 @@ struct AutopilotProgressLine: View {
                 .fill(Palette.fill2)
                 .overlay(alignment: .leading) {
                     Capsule()
-                        .fill(Palette.suggestionBadge)
+                        .fill(Palette.aiFill)
                         .frame(width: proxy.size.width * value)
                 }
         }

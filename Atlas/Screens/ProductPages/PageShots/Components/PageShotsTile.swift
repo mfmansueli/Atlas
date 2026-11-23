@@ -38,15 +38,15 @@ struct PageShotsTile: View {
                 }
             }
             .frame(width: height * aspect, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous)
                     .strokeBorder(isOwn ? Palette.accent : Palette.separator2, lineWidth: isOwn ? 1.5 : 0.5)
             )
             if overflows {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 10))
-                    .foregroundStyle(Palette.warningMark)
+                    .font(.footnote)
+                    .foregroundStyle(Palette.warnMark)
                     .padding(3)
                     .background(Palette.raised, in: Circle())
                     .padding(3)

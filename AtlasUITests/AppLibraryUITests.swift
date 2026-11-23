@@ -35,9 +35,10 @@ final class AppLibraryUITests: XCTestCase {
     func testTheAppMenuListsTheAccountsAppsAndTheOverviewShowsTheSelectedOne() {
         launch(scene: "apps")
         XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 10))
-        XCTAssertTrue(element("overview.subscriptionsCard").waitForExistence(timeout: 5))
-        XCTAssertTrue(element("overview.storePageCard").exists)
-        XCTAssertTrue(element("overview.pendingChangesCard").exists)
+        // README — redesign, November 22: the Overview is three lists.
+        XCTAssertTrue(element("overview.waiting").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("overview.afterRelease").exists)
+        XCTAssertTrue(element("overview.storePreview").exists)
         openAppMenu()
         for id in [AppID.lumen, AppID.habitat, AppID.tempo, AppID.fieldnote, AppID.parcel, AppID.quiet] {
             XCTAssertTrue(element("sidebar.app.\(id)").waitForExistence(timeout: 5), "missing app \(id)")
@@ -137,10 +138,13 @@ final class AppLibraryUITests: XCTestCase {
         XCTAssertTrue(element("sidebar.appMenu").waitForNonExistence(timeout: 5), "Choosing an app closes the menu")
     }
 
+    /// Keep My Prices: Pricing has nothing to review on the Overview, so its
+    /// row is Reviewed with Open.
     func testKeepMyPricesOverviewOffersSuggestionsQuietly() {
         launch(scene: "overview-keep")
-        XCTAssertTrue(element("overview.showPriceSuggestions").waitForExistence(timeout: 10))
-        XCTAssertFalse(element("overview.reviewSuggestions").exists)
+        let open = app.buttons["overview.waiting.open.subscriptionPricing"]
+        XCTAssertTrue(open.waitForExistence(timeout: 10))
+        XCTAssertFalse(open.label.contains("suggestion"), open.label)
     }
 
     func testReviewAndPushOpensTheReviewSheet() {

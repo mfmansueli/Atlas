@@ -25,15 +25,15 @@ struct ProposedCaptionCard: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.xSmall) {
                 Text(caption.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Spacer(minLength: Spacing.small)
                 Image(systemName: "sparkle")
                     .imageScale(.small)
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                     .accessibilityHidden(true)
                 Text("Suggested")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                 SuggestionSourceTag(source: caption.source)
             }
             if !caption.reason.isEmpty {
@@ -53,14 +53,14 @@ struct ProposedCaptionCard: View {
                 Button("Use and Edit", action: onUseAndEdit)
                     .accessibilityIdentifier("screenshots.page.caption.useAndEdit")
                 Button("Accept", action: accept)
-                    .buttonStyle(.borderedProminent)
+                    .rowActionButton()
                     .accessibilityIdentifier("screenshots.page.caption.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(isSettling ? Palette.raised : Palette.machineTranslatedTint, in: shape)
+        .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
         .modifier(SuggestionArrival(key: caption.id, arrivedAt: caption.receivedAt, shape: shape))
         .id(caption.id)
         .modifier(AcceptSettle(isSettling: isSettling))
@@ -83,14 +83,20 @@ struct ProposedCaptionCard: View {
     private func text(_ label: String, _ value: String, isEmpty: Bool = false, isSuggested: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(isSuggested ? AnyShapeStyle(Palette.machineTranslated) : AnyShapeStyle(Palette.label2))
-            Text(value)
-                .font(.callout)
-                .foregroundStyle(isEmpty ? Palette.label3 : Palette.label)
-                .fixedSize(horizontal: false, vertical: true)
-                .environment(\.layoutDirection, isRightToLeft && !isEmpty ? .rightToLeft : .leftToRight)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(isSuggested ? AnyShapeStyle(Palette.ai) : AnyShapeStyle(Palette.label2))
+            Group {
+                if isSuggested {
+                    SuggestedText(value, arrivalKey: caption.id, arrivedAt: caption.receivedAt)
+                } else {
+                    Text(value)
+                }
+            }
+            .font(.callout)
+            .foregroundStyle(isEmpty ? Palette.label3 : Palette.label)
+            .fixedSize(horizontal: false, vertical: true)
+            .environment(\.layoutDirection, isRightToLeft && !isEmpty ? .rightToLeft : .leftToRight)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)

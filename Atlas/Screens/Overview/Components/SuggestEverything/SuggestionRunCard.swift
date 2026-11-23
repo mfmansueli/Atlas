@@ -43,7 +43,7 @@ struct SuggestionRunCard: View {
                     .controlSize(.small)
             }
             Text(isQuiet ? run.quietText : run.title)
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Spacer(minLength: Spacing.small)
             if !isQuiet {
                 Text(run.countText)
@@ -86,7 +86,7 @@ struct SuggestionRunCard: View {
                             .frame(width: 80, alignment: .leading)
                     }
                     Button("Review") { onReview(row.page) }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .disabled(row.arrived == 0)
                         .accessibilityLabel(Text("Review \(row.page.title)"))
                         .accessibilityIdentifier("everything.review.\(row.page.rawValue)")
@@ -118,13 +118,21 @@ struct SuggestionRunCard: View {
                 Button("Done", action: onDone)
                     .accessibilityIdentifier("everything.done")
                 if toReviewCount > 0 {
-                    Button("Accept All (\(toReviewCount))", action: onAcceptAll)
-                        .buttonStyle(.borderedProminent)
-                        .accessibilityIdentifier("everything.acceptAll")
+                    // Accept All (README — Design system §4): primary blue,
+                    // the count in the purple badge, as in every section.
+                    Button(action: onAcceptAll) {
+                        HStack(spacing: Spacing.xSmall) {
+                            Text("Accept All")
+                            SuggestionBadge(count: toReviewCount, isSmall: true)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityLabel(Text("Accept All, \(toReviewCount) suggested"))
+                    .accessibilityIdentifier("everything.acceptAll")
                 }
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     private var footerText: String {

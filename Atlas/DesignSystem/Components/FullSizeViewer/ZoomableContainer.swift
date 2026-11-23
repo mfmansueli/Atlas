@@ -74,13 +74,13 @@ struct ZoomableContainer<Content: View>: View {
     private var zoomBadge: some View {
         HStack(spacing: Spacing.xSmall) {
             Text(zoom.percentTitle)
-                .font(.caption.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(.white.opacity(0.85))
                 .accessibilityIdentifier("\(identifier).percent")
             Button("Fit") {
                 withAnimation(.snappy(duration: 0.25)) { zoom = .fit }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .help(Text("Back to fit (or double-click)"))
             .accessibilityIdentifier("\(identifier).fit")
         }

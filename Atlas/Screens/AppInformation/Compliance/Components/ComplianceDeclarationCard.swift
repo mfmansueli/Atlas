@@ -35,7 +35,7 @@ struct ComplianceDeclarationCard: View {
                         .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).markDeclared")
                 }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
     }
 

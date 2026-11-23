@@ -32,7 +32,7 @@ struct TraderDetailsGrid: View {
         if isEditing {
             TextField(field.title, text: Binding(get: { details[field] }, set: { onChange($0, field) }))
                 .textFieldStyle(.roundedBorder)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .labelsHidden()
                 .accessibilityLabel(Text(field.title))
                 .accessibilityIdentifier("appInformation.compliance.trader.\(field.rawValue)")

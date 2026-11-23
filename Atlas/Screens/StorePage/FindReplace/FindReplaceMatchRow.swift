@@ -15,7 +15,7 @@ struct FindReplaceMatchRow: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(spacing: Spacing.xSmall) {
                 Text(match.key.title)
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 if match.occurrenceCount > 1 {
                     Pill(text: String(localized: "\(match.occurrenceCount) times"))
@@ -42,7 +42,7 @@ struct FindReplaceMatchRow: View {
         var prefix = AttributedString(snippet.prefix)
         prefix.foregroundColor = Palette.label2
         var hit = AttributedString(snippet.match)
-        hit.backgroundColor = Palette.warningTint
+        hit.backgroundColor = Palette.warnTint
         var suffix = AttributedString(snippet.suffix)
         suffix.foregroundColor = Palette.label2
         return prefix + hit + suffix

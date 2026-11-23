@@ -49,13 +49,13 @@ struct ProductPageRefusedTextCard: View {
                 .accessibilityIdentifier("pages.refused.rules")
                 ProductPagesAskButton(app: app, kind: .another(pageName: pageName), prompt: askPrompt, identifier: "pages.refused.ask")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.warningMark.opacity(0.5), lineWidth: 1))
+        .background(Palette.warnTint, in: shape)
+        .overlay(shape.strokeBorder(Palette.warnMark.opacity(0.5), lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pages.refused.\(suggestion.locale)")
     }
@@ -69,8 +69,8 @@ struct ProductPageRefusedTextCard: View {
         for phrase in suggestion.refusedPhrases where !phrase.isEmpty {
             var searchStart = text.startIndex
             while let range = text[searchStart...].range(of: phrase, options: [.caseInsensitive]) {
-                text[range].backgroundColor = Palette.dangerTint
-                text[range].foregroundColor = Palette.danger
+                text[range].backgroundColor = Palette.errTint
+                text[range].foregroundColor = Palette.err
                 text[range].underlineStyle = .single
                 searchStart = range.upperBound
             }

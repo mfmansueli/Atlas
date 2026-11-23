@@ -14,12 +14,12 @@ struct AppStorePreviewHighlight: ViewModifier {
         content
             .background(alignment: .bottom) {
                 if isOn {
-                    Palette.machineTranslatedMark.frame(height: 1.5)
+                    Palette.aiMark.frame(height: 1.5)
                 }
             }
             .background {
                 if isOn {
-                    RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Palette.machineTranslatedTint)
+                    RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Palette.aiSurface)
                 }
             }
     }

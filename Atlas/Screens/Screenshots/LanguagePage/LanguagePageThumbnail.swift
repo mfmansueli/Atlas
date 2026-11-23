@@ -129,7 +129,7 @@ struct LanguagePageThumbnail: View {
         .opacity(item.isDeleted ? 0.45 : 1)
         .overlay(alignment: .topLeading) {
             Text(item.position + 1, format: .number)
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .monospacedDigit()
                 .foregroundStyle(.white)
                 .padding(.horizontal, 5)
@@ -145,7 +145,7 @@ struct LanguagePageThumbnail: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, Spacing.xSmall)
                     .padding(.vertical, 2)
-                    .background(Palette.dangerMark, in: Capsule())
+                    .background(Palette.errMark, in: Capsule())
                     .accessibilityHidden(true)
             }
         }
@@ -157,7 +157,7 @@ struct LanguagePageThumbnail: View {
 
     private func ringColor(_ preview: SlotPreview?) -> Color {
         if item.isSelected || isTargeted { return Palette.accent }
-        return preview == nil ? Palette.separator2 : Palette.suggestionBadge
+        return preview == nil ? Palette.separator2 : Palette.aiFill
     }
 
     private func ringWidth(_ preview: SlotPreview?) -> CGFloat {

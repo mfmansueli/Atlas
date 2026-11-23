@@ -14,7 +14,7 @@ struct DesignSourceSummaryView: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack {
                 Label(summary.title, systemImage: "checkmark")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Spacer()
                 if let updated = summary.updated {
                     Text("Updated \(updated.formatted(.dateTime.month(.abbreviated).day()))")
@@ -29,10 +29,10 @@ struct DesignSourceSummaryView: View {
                         FlowLayout(spacing: Spacing.small) {
                             ForEach(summary.colors, id: \.self) { swatch in
                                 HStack(spacing: 4) {
-                                    RoundedRectangle(cornerRadius: 3)
+                                    RoundedRectangle(cornerRadius: Radius.flag)
                                         .fill(TemplateColor(swatch.hex)?.color ?? .gray)
                                         .frame(width: 14, height: 14)
-                                        .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Palette.separator, lineWidth: 0.5))
+                                        .overlay(RoundedRectangle(cornerRadius: Radius.flag).strokeBorder(Palette.separator, lineWidth: 0.5))
                                     Text(swatch.name).font(.callout)
                                 }
                             }

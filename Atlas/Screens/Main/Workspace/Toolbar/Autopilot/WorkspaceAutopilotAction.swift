@@ -37,6 +37,9 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
     case checkPrivacy
     // Pricing
     case suggestPrices
+    /// The App Review screenshots of the products missing one, captured
+    /// in Simulator (README — Pricing: review screenshots).
+    case makeReviewScreenshots
     case writeRetentionOffer
     // Reviews
     case draftReplies
@@ -56,7 +59,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .productPages: [.suggestPages, .makePageScreenshots]
         case .inAppEvents: [.makeEventArtwork, .writeEventTexts, .checkEventsForReview]
         case .appInformation: [.suggestAnswers, .checkPrivacy]
-        case .subscriptionPricing: [.suggestPrices, .writeRetentionOffer]
+        case .subscriptionPricing: [.suggestPrices, .makeReviewScreenshots, .writeRetentionOffer]
         case .reviews: [.draftReplies, .replyAutomatically, .summarizeRequests]
         case .analytics: [.findWhatToTry, .explainChange]
         }
@@ -111,6 +114,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
             .suggestAnswers: String(localized: "Suggest Answers…"),
             .checkPrivacy: String(localized: "Check Privacy Against the Code…"),
             .suggestPrices: String(localized: "Suggest Prices…"),
+            .makeReviewScreenshots: String(localized: "Make Review Screenshots…"),
             .writeRetentionOffer: String(localized: "Write a Retention Offer…"),
             .draftReplies: String(localized: "Draft Replies…"),
             .replyAutomatically: String(localized: "Reply Automatically…"),
@@ -122,7 +126,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
 
     var systemImage: String {
         switch self {
-        case .makeScreenshots, .makePageScreenshots, .recaptureSome: "camera.viewfinder"
+        case .makeScreenshots, .makePageScreenshots, .recaptureSome, .makeReviewScreenshots: "camera.viewfinder"
         case .makeAppPreview: "play.rectangle"
         case .makeArtwork, .makeEventArtwork: "photo.artframe"
         case .translateNewLanguage: "globe"
@@ -153,6 +157,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .suggestPages, .makePageScreenshots: .productPages
         case .makeEventArtwork: .inAppEvents
         case .suggestAnswers, .checkPrivacy: .appInformation
+        // Pricing knows the products missing one, their plans and prices.
+        case .makeReviewScreenshots: .subscriptionPricing
         // Free sees the settings with Upgrade…; Turn On waits for Pro.
         case .replyAutomatically: .reviews
         case .writeEventTexts, .checkEventsForReview, .writeWhatsNew, .suggestSourceLanguageOnly, .askSomethingElse, .recaptureSome,

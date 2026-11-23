@@ -20,7 +20,7 @@ struct ReviewCard: View {
             header
             if !text.title.isEmpty {
                 Text(text.title)
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .environment(\.layoutDirection, text.isRightToLeft ? .rightToLeft : .leftToRight)
@@ -92,7 +92,7 @@ struct ReviewCard: View {
             if let toggle {
                 Button(toggle) { viewModel.toggleTranslation(review) }
                     .buttonStyle(.link)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("reviews.card.translation.\(review.id)")
             }
         }
@@ -163,7 +163,7 @@ struct ReviewCard: View {
                 .buttonBorderShape(.capsule)
                 .accessibilityIdentifier("reviews.card.write.\(review.id)")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     private var writeText: String {

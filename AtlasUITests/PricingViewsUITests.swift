@@ -32,6 +32,24 @@ final class PricingViewsUITests: XCTestCase {
         XCTAssertFalse(app.links["Edit every price of Lumen Lifetime"].exists)
     }
 
+    /// Accept on a product's price suggestion is a row action (tinted, so
+    /// Accept All stays the one filled button). Accepted, the suggestion
+    /// settles and closes, and its prices wait in Review & Push.
+    func testAcceptingAPriceSuggestionSettlesItAway() {
+        launch(scene: "pricing-products")
+        let accept = app.buttons.matching(identifier: "pricing.card.accept").firstMatch
+        XCTAssertTrue(accept.waitForExistence(timeout: 20))
+        let suggestions = app.buttons.matching(identifier: "pricing.card.accept").count
+        let before = reviewCount()
+        accept.click()
+        let closed = NSPredicate { _, _ in
+            self.app.buttons.matching(identifier: "pricing.card.accept").count == suggestions - 1
+        }
+        wait(for: [XCTNSPredicateExpectation(predicate: closed, object: app)], timeout: 10)
+        let queued = NSPredicate { _, _ in self.reviewCount() > before }
+        wait(for: [XCTNSPredicateExpectation(predicate: queued, object: app)], timeout: 10)
+    }
+
     func testSwitchingToTheMapAndTheHistogram() {
         launch(scene: "pricing-applied")
         let picker = element("pricing.displayPicker")

@@ -85,7 +85,7 @@ struct AppPriceSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             TextField("Find a price", text: $search, prompt: Text("Find a price, e.g. 2.99"))
                 .textFieldStyle(.roundedBorder)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("pricing.appPriceSheet.search")
             Group {
                 switch model.ladder(for: territoryID) {
@@ -104,8 +104,8 @@ struct AppPriceSheet: View {
                 }
             }
             .frame(height: 260)
-            .background(Palette.content, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+            .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
         }
     }
 

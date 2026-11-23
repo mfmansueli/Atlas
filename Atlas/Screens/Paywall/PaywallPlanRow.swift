@@ -17,19 +17,19 @@ struct PaywallPlanRow: View {
         Button(action: onPick) {
             HStack(spacing: Spacing.medium) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                    .font(.system(size: 16))
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(isSelected ? Palette.accent : Palette.label2)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 1) {
                     HStack(spacing: Spacing.xSmall) {
-                        Text(offer.plan.title).font(.headline)
+                        Text(offer.plan.title).font(.body.weight(.semibold))
                         if let tag {
                             Text(tag)
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(Palette.positive)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(Palette.ok)
                                 .padding(.horizontal, 6)
                                 .frame(height: 17)
-                                .background(Palette.positive.opacity(0.16), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                                .background(Palette.ok.opacity(0.16), in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                         }
                     }
                     Text(offer.subtitle)

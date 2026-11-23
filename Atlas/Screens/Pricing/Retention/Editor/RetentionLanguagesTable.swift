@@ -67,7 +67,7 @@ struct RetentionLanguagesTable: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(text.body.isEmpty ? "—" : "\(text.bodyCount) / \(RetentionLimits.bodyLength)")
                     .font(.subheadline.weight(text.isBodyTooLong ? .semibold : .regular))
-                    .foregroundStyle(text.isBodyTooLong ? Palette.danger : Palette.label2)
+                    .foregroundStyle(text.isBodyTooLong ? Palette.err : Palette.label2)
                     .monospacedDigit()
                     .frame(width: Self.countWidth, alignment: .leading)
                 Pill(text: status.title, style: status.pillStyle)

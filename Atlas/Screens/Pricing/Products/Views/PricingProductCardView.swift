@@ -8,16 +8,23 @@ import SwiftUI
 /// One product on the Prices page: its name, kind and product ID, Not
 /// pushed, its price in the base territory, the bar of how its prices are
 /// set, and its open suggestion with Show Countries, Dismiss and Accept.
+/// Accepted, the suggestion settles (effect 5): its tint goes, a check
+/// draws, and it closes once the prices are queued.
 struct PricingProductCardView: View {
     let card: PricingProductCard
     let isExpanded: Bool
     let onToggleCountries: () -> Void
     let onDismiss: () -> Void
     let onAccept: () -> Void
+    /// False when Accept opens the paywall instead of accepting.
+    var settlesOnAccept = true
     /// Edit Prices…: the product's matrix.
     let onOpen: () -> Void
     /// Its review screenshot and introductory offer, above Edit Prices….
     var setupRow: AnyView?
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isSettling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -25,7 +32,7 @@ struct PricingProductCardView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: Spacing.xSmall) {
                         Text(card.product.name)
-                            .font(.headline)
+                            .font(.body.weight(.semibold))
                             .lineLimit(1)
                         if card.hasQueuedChanges {
                             Pill(text: String(localized: "Not pushed"), style: .accent)
@@ -45,7 +52,7 @@ struct PricingProductCardView: View {
                             .font(.title3.weight(.semibold))
                             .monospacedDigit()
                         Text(card.baseTerritoryText)
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }
                     .accessibilityElement(children: .combine)
@@ -73,7 +80,7 @@ struct PricingProductCardView: View {
                 // In-app purchase prices are shown, not changed.
                 Button(card.product.isInAppPurchase ? "See Prices…" : "Edit Prices…", action: onOpen)
                     .buttonStyle(.link)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityLabel(
                         card.product.isInAppPurchase ? Text("See every price of \(card.product.name)") : Text("Edit every price of \(card.product.name)")
                     )
@@ -84,7 +91,7 @@ struct PricingProductCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Palette.raised, in: shape)
         .overlay(
-            shape.strokeBorder(card.suggestion == nil ? Palette.separator : Palette.suggestionBadge.opacity(0.6), lineWidth: card.suggestion == nil ? 0.5 : 1)
+            shape.strokeBorder(card.suggestion == nil ? Palette.separator : Palette.aiFill.opacity(0.6), lineWidth: card.suggestion == nil ? 0.5 : 1)
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.card.\(card.product.productID)")
@@ -99,11 +106,11 @@ struct PricingProductCardView: View {
             HStack(spacing: Spacing.xSmall) {
                 Image(systemName: "sparkle")
                     .imageScale(.small)
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                     .accessibilityHidden(true)
                 Text("Suggested")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                 SuggestionSourceTag(source: .builtIn)
             }
             Text(suggestion.title)
@@ -122,19 +129,38 @@ struct PricingProductCardView: View {
                     .accessibilityIdentifier("pricing.card.dismiss")
                 // A row action (README — Design system §4): tinted, so the
                 // banner's Accept All stays the one filled button.
-                Button("Accept", action: onAccept)
-                    .buttonStyle(.bordered)
-                    .tint(.accentColor)
+                Button("Accept", action: accept)
+                    .rowActionButton()
                     .accessibilityIdentifier("pricing.card.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             if isExpanded {
                 PricingCountriesTable(suggestion: suggestion)
             }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, Spacing.small)
-        .background(Palette.machineTranslatedTint, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(isSettling ? Palette.fill1 : Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+        .modifier(AcceptSettle(isSettling: isSettling))
+        .task(id: isSettling) {
+            // Still here a while later: the prices weren't queued (an
+            // error, the paywall closed), so it takes clicks again.
+            guard isSettling else { return }
+            try? await Task.sleep(for: .seconds(3))
+            withAnimation(MotionTiming.acceptTint) { isSettling = false }
+        }
         .accessibilityElement(children: .contain)
+    }
+
+    private func accept() {
+        guard settlesOnAccept else {
+            onAccept()
+            return
+        }
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            onAccept()
+        }
     }
 }

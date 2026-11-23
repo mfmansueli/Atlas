@@ -21,7 +21,7 @@ struct ReviewLanguageDownloadButton: View {
         Button("Download Languages…") {
             downloads.start(languages: languages, target: ReviewLanguage.appLanguageCode, onFinish: onFinish)
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .disabled(downloads.isRunning)
         .translationTask(downloads.configuration) { @Sendable session in
             try? await session.prepareTranslation()

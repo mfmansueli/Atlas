@@ -152,7 +152,9 @@ struct ClaudeCodePermissionsTests {
         for permissions in ClaudeCodePermissions.allCases {
             let everything = permissions.tools + permissions.allowRules(port: port)
             // Make It Work… is the one run that changes the project.
-            let tools = permissions == .deepLinkWork ? ["NotebookEdit", "WebFetch", "WebSearch"] : ["Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"]
+            // Make It Work… and Add StoreKit Configuration… are the runs that change the project.
+            let edits = [ClaudeCodePermissions.deepLinkWork, .reviewShotsStoreKit].contains(permissions)
+            let tools = edits ? ["NotebookEdit", "WebFetch", "WebSearch"] : ["Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"]
             for tool in tools {
                 #expect(!everything.contains(tool), "\(permissions.title) allows \(tool)")
             }
@@ -241,5 +243,35 @@ struct ClaudeCodePermissionsTests {
         #expect(!prompt.contains("TEST_RUNNER_") && !system.contains("TEST_RUNNER_"))
         // Reading the project alone still can't export results.
         #expect(!ClaudeCodePermissions.readProject.allowRules(port: port).contains("Bash(xcrun xcresulttool:*)"))
+    }
+
+    /// Make Review Screenshots…: Bruma's first live run (2026-11-23) had
+    /// only the reading permissions and stopped at xcrun simctl. It builds,
+    /// drives the simulator and uploads only to the review screenshot
+    /// link; only Add StoreKit Configuration… may edit the project.
+    @Test func reviewScreenshotsBuildAndUploadOnlyToTheReviewLink() {
+        #expect(ReviewShotsAskPrompt.purpose(storeKit: false).permissions == .reviewShots)
+        #expect(ReviewShotsAskPrompt.purpose(storeKit: true).permissions == .reviewShotsStoreKit)
+        for permissions in [ClaudeCodePermissions.reviewShots, .reviewShotsStoreKit] {
+            let rules = permissions.allowRules(port: port)
+            #expect(permissions.tools.contains("Bash"))
+            #expect(rules.contains("Bash(xcodebuild:*)"))
+            #expect(rules.contains("Bash(xcrun simctl:*)"))
+            #expect(rules.contains("Bash(xcrun xcresulttool:*)"))
+            #expect(rules.contains("Bash(curl * http://127.0.0.1:\(port)/review-screenshot/*)"))
+            #expect(rules.contains("Bash(curl * 'http://127.0.0.1:\(port)/review-screenshot/*)"))
+            #expect(rules.filter { $0.contains("/autopilot/") || $0.contains("/page-shots/") }.isEmpty)
+            #expect(permissions.denyRules.contains("Bash(xcrun altool:*)"))
+            #expect(permissions.systemPrompt.contains("You can't tap in the Simulator"))
+            #expect(permissions.systemPrompt.contains("Never buy anything"))
+            let invocation = ClaudeCodeInvocation(
+                workingDirectory: "/tmp/Bruma", prompt: "p", permissions: permissions, port: port, token: "t", sessionName: "s"
+            )
+            #expect(invocation.settings.contains("BASH_DEFAULT_TIMEOUT_MS"), "A build runs longer than 2 minutes")
+        }
+        #expect(!ClaudeCodePermissions.reviewShots.tools.contains("Edit"))
+        #expect(!ClaudeCodePermissions.reviewShots.allowRules(port: port).contains("Write"))
+        #expect(ClaudeCodePermissions.reviewShotsStoreKit.tools.contains("Edit"))
+        #expect(ClaudeCodePermissions.reviewShotsStoreKit.systemPrompt.contains("Never commit or push."))
     }
 }

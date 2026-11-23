@@ -63,7 +63,7 @@ struct AutopilotProblemCard: View {
         }
         .padding(Spacing.medium)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.dangerMark, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.errMark, lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("autopilot.problem")
         .task(id: group.id) {
@@ -95,7 +95,7 @@ struct AutopilotProblemCard: View {
                 .accessibilityIdentifier("autopilot.problem.duoHelperNote")
             Spacer(minLength: 0)
             Button(state == .noHelper ? "Install the Helper…" : "Save the Helper Again…") { studio.installHelperAndCheck() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .fixedSize()
                 .accessibilityIdentifier("autopilot.problem.duoHelper")
         }
@@ -193,7 +193,7 @@ struct AutopilotProblemCard: View {
             }
         }
         .buttonBorderShape(.capsule)
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     // MARK: - Text

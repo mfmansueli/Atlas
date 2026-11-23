@@ -68,12 +68,12 @@ struct ClaudeCodeRunOutputSheet: View {
     private func phasePill(_ run: ClaudeCodeRun) -> some View {
         let (title, tint): (String, Color) = switch run.phase {
         case .starting, .working: (String(localized: "Working"), Palette.accent)
-        case .finished: (String(localized: "Finished"), Palette.positive)
+        case .finished: (String(localized: "Finished"), Palette.ok)
         case .stopped: (String(localized: "Stopped"), Palette.label2)
-        case .failed: (String(localized: "Failed"), Palette.danger)
+        case .failed: (String(localized: "Failed"), Palette.err)
         }
         return Text(title)
-            .font(.caption2.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(tint)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
@@ -151,7 +151,7 @@ struct ClaudeCodeRunOutputSheet: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: item.systemImage)
                 .font(.subheadline)
-                .foregroundStyle(item.kind == .problem ? Palette.warning : item.kind == .atlas ? Palette.accent : Palette.label2)
+                .foregroundStyle(item.kind == .problem ? Palette.warn : item.kind == .atlas ? Palette.accent : Palette.label2)
                 .frame(width: 16)
                 .accessibilityHidden(true)
             Text(item.text)
@@ -161,7 +161,7 @@ struct ClaudeCodeRunOutputSheet: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text(item.date, format: .dateTime.hour().minute())
-                .font(.caption2.monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
         }
         .padding(.vertical, 5)

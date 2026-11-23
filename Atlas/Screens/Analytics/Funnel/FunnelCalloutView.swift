@@ -14,7 +14,7 @@ struct FunnelCalloutView: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(callout.title).font(.headline)
+                Text(callout.title).font(.body.weight(.semibold))
                 Text(callout.text)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -23,12 +23,12 @@ struct FunnelCalloutView: View {
             Spacer(minLength: Spacing.small)
             ForEach(callout.actions, id: \.self) { action in
                 Button(action.title) { onAction(action) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
             }
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(callout.isLoss ? Palette.warningTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(callout.isLoss ? Palette.warnTint : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("analytics.funnel.callout")
     }

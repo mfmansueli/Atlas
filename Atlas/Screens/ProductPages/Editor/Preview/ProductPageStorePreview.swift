@@ -26,7 +26,7 @@ struct ProductPageStorePreview: View {
                     .font(.headline)
                 Spacer(minLength: Spacing.small)
                 Text(ProductPageChangeBuilder.localeName(locale))
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
             }
             HStack(alignment: .top, spacing: Spacing.small) {
@@ -43,12 +43,12 @@ struct ProductPageStorePreview: View {
                 )
             }
             Text(note(suggestion: suggestion, ownText: ownText, isOwnShots: isOwnShots))
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pages.preview.note")
             Text("The name, subtitle, icon and description are the default page’s on every page.")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }

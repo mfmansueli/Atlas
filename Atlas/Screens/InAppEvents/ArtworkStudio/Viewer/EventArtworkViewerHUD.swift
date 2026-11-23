@@ -23,12 +23,12 @@ struct EventArtworkViewerHUD: View {
                 }
             }
             Text(flow.viewerTitle)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
             if let position = flow.viewerPosition, position.count > 1 {
                 Text("\(position.index) of \(position.count)")
-                    .font(.system(size: 12))
+                    .font(.callout)
                     .foregroundStyle(.white.opacity(0.62))
             }
             if flow.viewerCanStep {
@@ -54,8 +54,8 @@ struct EventArtworkViewerHUD: View {
         }
         .padding(.horizontal, Spacing.small)
         .padding(.vertical, 6)
-        .background(EventArtworkViewerStyle.panel, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(EventArtworkViewerStyle.panel, in: RoundedRectangle(cornerRadius: Radius.sheet, style: .continuous))
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Radius.sheet, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("events.art.viewer.hud")
     }

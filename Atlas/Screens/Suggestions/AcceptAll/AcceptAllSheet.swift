@@ -92,12 +92,12 @@ struct AcceptAllSheet: View {
                         Text(group.title)
                             .lineLimit(1)
                         Text(groupCaption(group))
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     Image(systemName: "chevron.right")
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label3)
                         .accessibilityHidden(true)
                 }
@@ -112,7 +112,7 @@ struct AcceptAllSheet: View {
         .padding(.vertical, Spacing.xxSmall)
         .background(
             group.id == selection.focusedGroupID ? AnyShapeStyle(Palette.fill2) : AnyShapeStyle(.clear),
-            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
         )
     }
 
@@ -127,14 +127,14 @@ struct AcceptAllSheet: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: Spacing.small) {
                     Text(group.title)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(selection.focusedCountText)
                         .font(.subheadline)
                         .monospacedDigit()
                         .foregroundStyle(Palette.label2)
                     Button(selection.focusedToggleTitle) { selection.toggleFocusedGroup() }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("acceptAll.toggleFocused")
                 }
                 .padding(.horizontal, Spacing.large)
@@ -170,7 +170,7 @@ struct AcceptAllSheet: View {
                     Text(selection.kind.dontAskTitle)
                         .font(.subheadline)
                     Text("You can still undo right after, and turn this back on next to the button or in Settings → Suggestions.")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }

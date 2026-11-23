@@ -36,7 +36,7 @@ struct StorePageActionBar: View {
                 .truncationMode(.tail)
                 .accessibilityIdentifier("storePage.summary")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
     }

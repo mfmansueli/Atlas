@@ -22,7 +22,7 @@ struct ConsentWarningBox: View {
                     .monospacedDigit()
             } icon: {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warningMark)
+                    .foregroundStyle(Palette.warnMark)
             }
             Text("""
             Apple tells existing subscribers before an increase. In some territories, and above Apple’s limits, they \
@@ -40,7 +40,7 @@ struct ConsentWarningBox: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.schedule.consent")
     }

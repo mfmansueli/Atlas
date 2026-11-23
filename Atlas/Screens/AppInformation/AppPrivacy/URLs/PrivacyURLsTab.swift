@@ -53,7 +53,7 @@ struct PrivacyURLsTab: View {
                 Button(String(localized: "Also in Store Page ↗")) { navigator.open(.storePage) }
                     .accessibilityIdentifier("appInformation.appPrivacy.urls.storePage")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .padding(.horizontal, Spacing.large)
             .padding(.vertical, Spacing.small + 2)
             PrivacyURLsHeaderRow()

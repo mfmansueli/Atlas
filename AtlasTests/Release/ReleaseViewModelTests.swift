@@ -65,6 +65,15 @@ struct ReleaseViewModelTests {
         #expect(checks[3].title == "In-App Event “Mood Calendar”")
         #expect(checks[3].eventID == DebugInAppEventsData.moodID)
         #expect(model.summary?.line == "Version 1.4 · Not submitted yet")
+        // The card lists only what's missing (README — redesign, November 22).
+        #expect(model.cardSubtitle == "One thing left before you submit.")
+    }
+
+    @Test func withNothingMissingTheCardSaysSubmitWhenYouWant() async {
+        let (model, _) = await makeModel(isWhatsNewComplete: true, encryption: .exempt)
+        let missing = model.checks.filter { !$0.isOK }
+        #expect(missing.isEmpty)
+        #expect(model.cardSubtitle == "Nothing left to do. Submit when you want.")
     }
 
     @Test func theSheetSaysExactlyWhatToDoBeforeSubmitting() async {

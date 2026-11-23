@@ -13,7 +13,7 @@ struct ImportProblemRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: problem.isError ? "exclamationmark.circle" : "exclamationmark.triangle")
-                .foregroundStyle(problem.isError ? Palette.danger : Palette.warningMark)
+                .foregroundStyle(problem.isError ? Palette.err : Palette.warnMark)
                 .accessibilityHidden(true)
             Text(problem.message)
                 .fixedSize(horizontal: false, vertical: true)
@@ -22,7 +22,7 @@ struct ImportProblemRow: View {
         .font(.callout)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
-        .background(problem.isError ? Palette.dangerTint : Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(problem.isError ? Palette.errTint : Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("storePage.import.problem")
     }

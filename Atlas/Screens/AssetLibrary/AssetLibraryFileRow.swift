@@ -37,7 +37,7 @@ struct AssetLibraryFileRow: View {
                 if let error = model.deleteErrors[file.id] {
                     Text(error)
                         .font(.subheadline)
-                        .foregroundStyle(Palette.danger)
+                        .foregroundStyle(Palette.err)
                         .fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)
                         .accessibilityIdentifier("assetLibrary.error.\(file.id)")
@@ -67,8 +67,8 @@ struct AssetLibraryFileRow: View {
             }
         }
         .frame(width: Self.thumbnailWidth, height: 44)
-        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 4, style: .continuous))
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
         .accessibilityHidden(true)
     }
 

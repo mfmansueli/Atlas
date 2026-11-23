@@ -93,7 +93,7 @@ struct SubmitForReviewSheet: View {
                     Task { await viewModel.refreshStatus() }
                 }
                 .buttonStyle(.borderless)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .help("Look for builds uploaded since this opened")
                 .accessibilityIdentifier("submit.checkBuilds")
             }
@@ -209,7 +209,7 @@ struct SubmitForReviewSheet: View {
                     navigator.open(.appInformation, intent: .openAppInformationPage(.appReview))
                 }
                 .buttonStyle(.link)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("submit.openReviewInformation")
             }
         }
@@ -304,7 +304,7 @@ struct SubmitForReviewSheet: View {
                 }
                 Text(viewModel.footerText)
                     .font(.callout)
-                    .foregroundStyle(viewModel.blockers.isEmpty ? Palette.label2 : Palette.warning)
+                    .foregroundStyle(viewModel.blockers.isEmpty ? Palette.label2 : Palette.warn)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("submit.footer")

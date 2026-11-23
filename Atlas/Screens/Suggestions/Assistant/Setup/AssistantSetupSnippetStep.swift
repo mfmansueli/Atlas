@@ -29,7 +29,7 @@ struct AssistantSetupSnippetStep: View {
     private var choice: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Text("How should Claude Code reach Atlas?")
-                .font(.headline)
+                .font(.body.weight(.semibold))
             AssistantSetupOptionRow(
                 title: String(localized: "Atlas starts Claude Code"),
                 detail: String(localized: """
@@ -80,7 +80,7 @@ struct AssistantSetupSnippetStep: View {
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             InlineMessage(text: viewModel.kind.setupNote, systemImage: "info.circle", tint: Palette.label2)
                 .font(.subheadline)
         }

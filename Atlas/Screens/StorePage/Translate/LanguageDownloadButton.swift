@@ -20,7 +20,7 @@ struct LanguageDownloadButton: View {
         Button("Download Languages…") {
             queue.start(from: source, to: targets, onFinish: onFinish)
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .disabled(queue.isRunning)
         .translationTask(queue.configuration) { @Sendable session in
             try? await session.prepareTranslation()

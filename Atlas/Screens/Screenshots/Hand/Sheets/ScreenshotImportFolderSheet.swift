@@ -32,7 +32,7 @@ struct ScreenshotImportFolderSheet: View {
                 table(rows)
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     Text("For each language in the folder")
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                     RadioRow(
                         title: String(localized: "Replace its screenshots"), detail: String(localized: "Its current ones are deleted when you push."),
                         isSelected: mode == .replace
@@ -46,7 +46,7 @@ struct ScreenshotImportFolderSheet: View {
                 }
                 ScreenshotHandNote(text: String(localized: "Languages and devices that aren’t in the folder stay as they are."))
                 Button("Choose Another Folder…", action: choose)
-                    .controlSize(.small)
+                    .controlSize(.regular)
             } else {
                 explanation
             }
@@ -114,7 +114,7 @@ struct ScreenshotImportFolderSheet: View {
                     Text(fileCount(row), format: .number)
                         .monospacedDigit()
                     Text(whatHappens(row))
-                        .foregroundStyle(row.isReady ? Palette.label : Palette.danger)
+                        .foregroundStyle(row.isReady ? Palette.label : Palette.err)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .font(.callout)

@@ -49,7 +49,7 @@ struct AutopilotWatchInfoBox: View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             label(title)
             Text(value)
-                .foregroundStyle(isProblem ? Palette.warning : Palette.label)
+                .foregroundStyle(isProblem ? Palette.warn : Palette.label)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("autopilot.watch.info.\(identifier)")
@@ -81,7 +81,7 @@ struct AutopilotWatchInfoBox: View {
             Button("Your File…") { studio.chooseMusicFile() }
         }
         .menuStyle(.button)
-        .controlSize(.small)
+        .controlSize(.regular)
         .fixedSize()
         .disabled(!isEditable)
         .accessibilityLabel(Text("Music"))

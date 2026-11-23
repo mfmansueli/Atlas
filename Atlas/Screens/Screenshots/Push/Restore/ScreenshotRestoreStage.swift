@@ -62,7 +62,7 @@ struct ScreenshotRestoreStage: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .background(Palette.stage, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background(Palette.stage, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("restore.stage")
     }

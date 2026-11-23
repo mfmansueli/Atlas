@@ -46,7 +46,10 @@ struct AppSwitcherRow: View {
             }
             .padding(.horizontal, Spacing.small)
             .frame(height: 40)
-            .background(isCurrent ? Palette.accentTint : (isHovered ? Palette.fill2 : .clear), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(
+                isCurrent ? Palette.accentTint : (isHovered ? Palette.fill2 : .clear),
+                in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -41,7 +41,7 @@ struct InAppEventArtworkProposalPreview: View {
             }
             if isVideo, phase.image != nil {
                 Label("Video", systemImage: "play.fill")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(.black.opacity(0.5), in: Capsule())

@@ -41,7 +41,7 @@ struct AssistantsConnectSection: View {
     private var connectionsOff: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Connections are turned off")
@@ -56,7 +56,7 @@ struct AssistantsConnectSection: View {
                 .accessibilityIdentifier("settings.ai.turnOn")
         }
         .padding(Spacing.medium)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("settings.ai.connectionsOff")
     }

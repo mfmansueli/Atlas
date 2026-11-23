@@ -28,12 +28,12 @@ struct ActionToast: View {
                 .accessibilityIdentifier("toast.text")
             if message.canUndo {
                 Button("Undo", action: onUndo)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("toast.undo")
             }
             if let actionTitle = message.actionTitle {
                 Button(actionTitle, action: onAction)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("toast.action")
             }
             Button("Dismiss", systemImage: "xmark", action: onDismiss)
@@ -48,7 +48,7 @@ struct ActionToast: View {
             RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                 .strokeBorder(Palette.separator2, lineWidth: 0.5)
         }
-        .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+        .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("toast")
         .task(id: message.id) {

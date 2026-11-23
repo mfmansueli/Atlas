@@ -26,7 +26,7 @@ struct HelpHomeView: View {
                 ForEach(Array(HelpLibrary.tries.enumerated()), id: \.offset) { index, text in
                     Button(text) { navigation.query = text }
                         .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("help.try.\(index)")
                 }
             }
@@ -63,7 +63,7 @@ struct HelpHomeView: View {
     private func group(_ group: HelpGroup, @ViewBuilder content: ([HelpArticle]) -> some View) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text(group.title)
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
             content(library.articles(in: group))
         }
@@ -85,8 +85,8 @@ struct HelpHomeView: View {
             }
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, minHeight: 96, alignment: .topLeading)
-            .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 10))
-            .contentShape(RoundedRectangle(cornerRadius: 10))
+            .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
+            .contentShape(RoundedRectangle(cornerRadius: Radius.banner))
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

@@ -28,6 +28,10 @@ struct PricingSectionView: View {
     @Environment(PushHistory.self) private var history
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(AnalyticsStore.self) private var analytics: AnalyticsStore?
+    @Environment(ClaudeCodeLauncher.self) private var launcher: ClaudeCodeLauncher?
+    @Environment(MCPServerController.self) private var assistants: MCPServerController?
+    @Environment(\.askCenterOverride) private var askCenterOverride
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Group {
@@ -99,6 +103,7 @@ struct PricingSectionView: View {
             self.retentionModel = retentionModel
             Self.attachAppPriceAvailability(to: model, services: appPriceAvailability, queue: changes, navigator: navigator)
             viewModel = model
+            attachAsk(to: model)
             // What changed while another section showed.
             queueDidChange()
             model.resultsDidChange()
@@ -122,6 +127,7 @@ struct PricingSectionView: View {
         #endif
         self.retentionModel = retentionModel
         viewModel = model
+        attachAsk(to: model)
         kept?.pricing = model
         kept?.retention = retentionModel
         await Self.read(model, retention: nil, into: kept, refreshCount: navigator.refreshCount)
@@ -137,6 +143,7 @@ struct PricingSectionView: View {
     private func queueDidChange() {
         viewModel?.matrix?.queueDidChange()
         viewModel?.productsQueueDidChange()
+        viewModel?.refreshReviewShots()
         retentionModel?.refresh()
     }
 
@@ -193,6 +200,31 @@ struct PricingSectionView: View {
 
     /// Handles the navigator's intent once prices are here, so “Apply
     /// Recommended Prices…” from the overview has a matrix to fill.
+    /// Make Review Screenshots… asks Claude Code like the toolbar does,
+    /// or copies the request to paste.
+    private func attachAsk(to model: PricingViewModel) {
+        model.setup.startAsk = { [launcher, assistants, askCenterOverride, reduceMotion, navigator, app] prompt, purpose in
+            let client = assistants?.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
+            guard let launcher else { return nil }
+            let ask = WorkspaceAutopilotAsk(
+                purpose: purpose, prompt: prompt, subject: ReviewShotsAskPrompt.subject,
+                done: String(localized: "\(client) is done. The review screenshots wait in Pricing.")
+            )
+            switch AssistantAskStarter.start(
+                ask, app: app, client: client, launcher: launcher, askCenter: askCenterOverride ?? .shared, reduceMotion: reduceMotion
+            ) {
+            case .sent:
+                return client
+            case .copied:
+                navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAskStarter.copiedText(client: client)))
+                return client
+            case .busy:
+                navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAsk.busyTitle(client: client)))
+                return nil
+            }
+        }
+    }
+
     private func handlePendingIntent() async {
         guard let viewModel, let intent = navigator.intent, viewModel.catalog != nil, !viewModel.isLoadingSheet else { return }
         if await viewModel.handle(intent) { navigator.consume(intent) }

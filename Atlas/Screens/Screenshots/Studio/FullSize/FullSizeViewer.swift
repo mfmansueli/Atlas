@@ -87,11 +87,11 @@ struct FullSizeViewer: View {
         if action.isProminent {
             Button(title) { studio.performViewerAction(action) }
                 .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("studio.viewer.action")
         } else {
             Button(title) { studio.performViewerAction(action) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(!action.isEnabled)
                 .accessibilityIdentifier("studio.viewer.action")
         }

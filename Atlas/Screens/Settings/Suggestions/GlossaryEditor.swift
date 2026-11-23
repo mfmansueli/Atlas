@@ -55,7 +55,7 @@ struct GlossaryEditor: View {
                 glossary.remove(term)
             } label: {
                 Image(systemName: "xmark")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
             }
             .buttonStyle(.plain)

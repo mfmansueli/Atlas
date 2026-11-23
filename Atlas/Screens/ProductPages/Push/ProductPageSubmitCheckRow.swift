@@ -13,7 +13,7 @@ struct ProductPageSubmitCheckRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: check.isFine ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundStyle(check.isFine ? Palette.decrease : Palette.warningMark)
+                .foregroundStyle(check.isFine ? Palette.decrease : Palette.warnMark)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(check.title)

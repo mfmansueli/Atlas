@@ -24,13 +24,13 @@ struct InAppEventLanguageChip: View {
                 switch language.state {
                 case .suggested, .revision:
                     Circle()
-                        .fill(isSelected ? Color.white : Palette.suggestionBadge)
+                        .fill(isSelected ? Color.white : Palette.aiFill)
                         .frame(width: 7, height: 7)
                 case .notPushed:
                     UnsavedDot(size: 6)
                 case .missing:
                     Image(systemName: "minus")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.footnote.weight(.bold))
                         .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Palette.label3)
                 case .written:
                     EmptyView()

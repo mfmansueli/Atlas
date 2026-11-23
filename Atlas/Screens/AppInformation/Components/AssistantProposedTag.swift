@@ -14,7 +14,7 @@ struct AssistantProposedTag: View {
     var body: some View {
         HStack(spacing: Spacing.xxSmall) {
             Text(ChangeSource.assistant(client: client).monogram ?? "")
-                .font(.system(size: 10, weight: .bold))
+                .font(.footnote.weight(.bold))
                 .foregroundStyle(Color(nsColor: .windowBackgroundColor))
                 .frame(width: 16, height: 16)
                 .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))

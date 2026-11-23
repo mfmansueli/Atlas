@@ -21,7 +21,7 @@ struct KeywordTokenChip: View {
             if isEditable {
                 Button(action: onRemove) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.footnote.weight(.bold))
                         .frame(width: 14, height: 14)
                         .contentShape(Rectangle())
                 }
@@ -42,7 +42,7 @@ struct KeywordTokenChip: View {
     private var foreground: Color {
         switch token.state {
         case .useful: Palette.label
-        case .duplicate: Palette.warning
+        case .duplicate: Palette.warn
         case .inNameOrSubtitle: Palette.label3
         }
     }
@@ -50,7 +50,7 @@ struct KeywordTokenChip: View {
     private var background: Color {
         switch token.state {
         case .useful: Palette.fill2
-        case .duplicate: Palette.warningTint
+        case .duplicate: Palette.warnTint
         case .inNameOrSubtitle: Palette.fill1
         }
     }

@@ -25,7 +25,7 @@ struct CoverageRing: View {
             }
             .frame(width: 9, height: 9)
             Text(count, format: .number)
-                .font(.caption2)
+                .font(.footnote)
                 .monospacedDigit()
                 .foregroundStyle(Palette.label2)
         }

@@ -18,7 +18,7 @@ struct PrivacyEvidencePopover: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline) {
                 Text("\(type.category.name) · \(type.name)")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Spacer(minLength: Spacing.small)
                 if let suggestion {
                     PrivacyConfidenceBadge(confidence: suggestion.confidence)
@@ -50,7 +50,7 @@ struct PrivacyEvidencePopover: View {
             if let question = viewModel.worksheet.openQuestion(about: type) {
                 Text("Open question: \(question.question)")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .fixedSize(horizontal: false, vertical: true)
             }
             HStack(spacing: Spacing.small) {
@@ -67,7 +67,7 @@ struct PrivacyEvidencePopover: View {
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("appInformation.appPrivacy.evidence.close")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.large)
         .frame(width: 400)

@@ -46,7 +46,7 @@ struct ExtrasReviewTile: View {
             .overlay(alignment: .bottomTrailing) {
                 if item.isMotion {
                     Text("\(AutopilotRun.timeTitle(Double(AutopilotArtworkMotion.loopSeconds))) loop")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.footnote.weight(.semibold))
                         .monospacedDigit()
                         .foregroundStyle(.white)
                         .padding(.horizontal, 4)
@@ -64,10 +64,10 @@ struct ExtrasReviewTile: View {
         }
         .frame(width: Self.width, alignment: .leading)
         .padding(Spacing.xSmall)
-        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .overlay {
             if extras.run?.activities[item.id] != nil {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                     .strokeBorder(Palette.accent, lineWidth: 1.5)
             }
         }
@@ -91,7 +91,7 @@ struct ExtrasReviewTile: View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 3) {
                 if status.isDone {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.positive).accessibilityHidden(true)
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.ok).accessibilityHidden(true)
                 }
                 if case .processing = status, let since = run.activities[item.id]?.stepStartedAt {
                     TimelineView(.periodic(from: since, by: 1)) { context in
@@ -101,16 +101,16 @@ struct ExtrasReviewTile: View {
                     Text(run.pushItem(item.id).flatMap(run.queueTitle(of:)) ?? status.title)
                 }
             }
-            .font(.caption2)
-            .foregroundStyle(status.isFailure ? Palette.danger : status.isDone ? Palette.positive : Palette.label2)
+            .font(.footnote)
+            .foregroundStyle(status.isFailure ? Palette.err : status.isDone ? Palette.ok : Palette.label2)
             .monospacedDigit()
             .help(status.failureReason ?? "")
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("review.extras.status.\(item.id)")
             if let reason = status.failureReason {
                 Text(reason)
-                    .font(.caption2)
-                    .foregroundStyle(Palette.danger)
+                    .font(.footnote)
+                    .foregroundStyle(Palette.err)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
                     .help(reason)

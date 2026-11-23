@@ -39,7 +39,7 @@ struct RetentionMessagesTable: View {
             HStack {
                 Spacer()
                 Button("Open Retention") { onAct(.retention, String(localized: "Save rates are from Analytics: the last 28 complete days.")) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("analytics.retention.openRetention")
             }
             .padding(.horizontal, Spacing.medium)
@@ -53,7 +53,7 @@ struct RetentionMessagesTable: View {
             Text("The reference").foregroundStyle(Palette.label2)
         } else if let outcome = message.againstNoMessage {
             Text(outcome.verdict)
-                .foregroundStyle(outcome.isHigher ? Palette.done : outcome.isLower ? Palette.danger : Palette.label2)
+                .foregroundStyle(outcome.isHigher ? Palette.ok : outcome.isLower ? Palette.err : Palette.label2)
         } else {
             Text("—").foregroundStyle(Palette.label2)
         }

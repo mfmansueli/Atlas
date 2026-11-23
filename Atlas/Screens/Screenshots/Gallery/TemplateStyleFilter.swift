@@ -19,7 +19,7 @@ struct TemplateStyleFilter: View {
         .pickerStyle(.segmented)
         .labelsHidden()
         .fixedSize()
-        .controlSize(.small)
+        .controlSize(.regular)
         .accessibilityIdentifier("screenshots.gallery.style")
     }
 }

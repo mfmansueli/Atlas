@@ -23,21 +23,21 @@ struct CompactSuggestionRow: View {
             HStack(spacing: Spacing.xSmall) {
                 Image(systemName: "sparkle")
                     .imageScale(.small)
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                     .accessibilityHidden(true)
                 Text("Suggested: \(suggested)")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslated)
+                    .foregroundStyle(Palette.ai)
                     .accessibilityIdentifier("suggestion.value")
                 SuggestionSourceTag(source: suggestion.source)
                 Spacer(minLength: Spacing.small)
                 Button("Dismiss", action: onDismiss)
                     .accessibilityIdentifier("suggestion.dismiss")
                 Button("Accept", action: accept)
-                    .buttonStyle(.borderedProminent)
+                    .rowActionButton()
                     .accessibilityIdentifier("suggestion.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             Text(suggestion.reason)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -46,7 +46,7 @@ struct CompactSuggestionRow: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
-        .background(isSettling ? Palette.fill1 : Palette.machineTranslatedTint, in: shape)
+        .background(isSettling ? Palette.fill1 : Palette.aiSurface, in: shape)
         .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.arrivedAt, shape: shape))
         .id(suggestion.id)
         .modifier(AcceptSettle(isSettling: isSettling, checkAlignment: .trailing))
@@ -55,7 +55,7 @@ struct CompactSuggestionRow: View {
     }
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: 8, style: .continuous)
+        RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
     }
 
     private func accept() {

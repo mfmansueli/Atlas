@@ -17,7 +17,7 @@ struct AutopilotScreenSuggestionsBox: View {
             HStack(spacing: Spacing.small) {
                 Label(suggestions.client, systemImage: "sparkles")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Palette.machineTranslatedMark)
+                    .foregroundStyle(Palette.aiMark)
                 Text(studio.suggestionsTitle(suggestions))
                     .font(.callout.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -40,7 +40,7 @@ struct AutopilotScreenSuggestionsBox: View {
             }
         }
         .padding(Spacing.medium)
-        .background(Palette.machineTranslatedTint.opacity(0.5), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .background(Palette.aiSurface.opacity(0.5), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(identifier)
     }

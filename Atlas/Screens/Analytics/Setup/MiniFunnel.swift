@@ -12,7 +12,7 @@ struct MiniFunnel: View {
     var body: some View {
         VStack(spacing: 4) {
             ForEach(Self.widths, id: \.self) { width in
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.flag, style: .continuous)
                     .fill(Palette.sectionAnalytics.opacity(0.25 + width * 0.6))
                     .frame(width: 120 * width, height: 7)
             }

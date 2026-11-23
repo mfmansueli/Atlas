@@ -32,6 +32,6 @@ struct HelpSearchField: View {
         }
         .padding(.horizontal, Spacing.small)
         .padding(.vertical, 6)
-        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 8))
+        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field))
     }
 }

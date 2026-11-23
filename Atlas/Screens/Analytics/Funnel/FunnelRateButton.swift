@@ -19,22 +19,22 @@ struct FunnelRateButton: View {
         Button(action: onSelect) {
             VStack(spacing: 2) {
                 Text(step.stage.rateTitle)
-                    .font(.system(size: 11))
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
-                RateLabel(rate: step.rate, font: .system(size: 15, weight: .bold))
+                RateLabel(rate: step.rate, font: .title3.weight(.bold))
                 if let comparison = step.comparison {
                     if !comparison.pointsText.isEmpty {
                         Text(comparison.pointsText)
                             .font(.subheadline)
                             .monospacedDigit()
-                            .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
+                            .foregroundStyle(comparison.outcome.isLower ? Palette.warn : Palette.label2)
                     }
                     Text(comparison.outcome.title)
                         .font(.subheadline)
-                        .foregroundStyle(comparison.outcome.isLower ? Palette.warning : Palette.label2)
+                        .foregroundStyle(comparison.outcome.isLower ? Palette.warn : Palette.label2)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }

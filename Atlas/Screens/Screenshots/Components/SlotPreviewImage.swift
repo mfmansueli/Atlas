@@ -41,7 +41,7 @@ struct SlotPreviewImage: View {
             with: .color(Color.accentColor.opacity(0.9)),
             style: StrokeStyle(lineWidth: line, dash: [4 * line, 3 * line])
         )
-        let boxColor = preview.hasCaptionProblem ? Palette.dangerMark : Color.accentColor
+        let boxColor = preview.hasCaptionProblem ? Palette.errMark : Color.accentColor
         context.stroke(Path(layout.captionBox), with: .color(boxColor), lineWidth: 1.5 * line)
     }
 }

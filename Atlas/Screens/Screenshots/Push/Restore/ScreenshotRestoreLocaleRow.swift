@@ -32,7 +32,7 @@ struct ScreenshotRestoreLocaleRow: View {
             }
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.xSmall)
-            .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(isSelected ? Palette.fill2 : .clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

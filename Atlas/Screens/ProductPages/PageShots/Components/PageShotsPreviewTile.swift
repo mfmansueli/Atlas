@@ -31,8 +31,8 @@ struct PageShotsPreviewTile: View {
             }
         }
         .frame(width: height * aspect, height: height)
-        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).strokeBorder(Palette.accent, lineWidth: 1.5))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous).strokeBorder(Palette.accent, lineWidth: 1.5))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(label))
         .accessibilityAddTraits(.isImage)

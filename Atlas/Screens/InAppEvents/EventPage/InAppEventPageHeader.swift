@@ -24,9 +24,9 @@ struct InAppEventPageHeader: View {
             } label: {
                 HStack(spacing: 2) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text("Events")
-                        .font(.system(size: 13))
+                        .font(.body)
                 }
                 .foregroundStyle(Palette.accentText)
                 .contentShape(Rectangle())
@@ -64,11 +64,11 @@ struct InAppEventPageHeader: View {
         } label: {
             HStack(spacing: Spacing.xxSmall) {
                 Text(event.referenceName)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.title2.weight(.semibold))
                     .lineLimit(1)
                     .accessibilityIdentifier("events.title")
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.footnote.weight(.bold))
                     .foregroundStyle(Palette.label2)
             }
             .padding(.leading, Spacing.small)
@@ -76,11 +76,11 @@ struct InAppEventPageHeader: View {
             .frame(height: 30)
             .background(
                 isNameHovered || viewModel.isSwitchMenuShown ? Palette.fill2 : .clear,
-                in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
             )
             .overlay {
                 if contrast == .increased {
-                    RoundedRectangle(cornerRadius: 9, style: .continuous).strokeBorder(Palette.label, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.label, lineWidth: 1)
                 }
             }
             .contentShape(Rectangle())

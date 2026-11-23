@@ -28,18 +28,28 @@ struct AppWorkspaceSectionTests {
         #expect(AppWorkspaceSectionGroup.allCases.flatMap(\.sections) == AppWorkspaceSection.allCases)
     }
 
-    @Test func pricingAndReviewsAreShortenedOnlyInTheSidebar() {
+    @Test func pricingReviewsAndPagesAreShortenedOnlyInTheSidebar() {
         #expect(AppWorkspaceSection.subscriptionPricing.title == "Pricing")
         #expect(AppWorkspaceSection.subscriptionPricing.fullTitle == "Subscription Pricing")
         #expect(AppWorkspaceSection.reviews.title == "Reviews")
         #expect(AppWorkspaceSection.reviews.fullTitle == "Ratings & Reviews")
+        // README — redesign: "Product Pages" in the sidebar and toolbar.
+        #expect(AppWorkspaceSection.productPages.title == "Product Pages")
+        #expect(AppWorkspaceSection.productPages.fullTitle == "Custom Product Pages")
+    }
+
+    /// The toolbar names the section as the design does.
+    @Test func theToolbarUsesTheDesignsNames() {
+        #expect(AppWorkspaceSection.subscriptionPricing.toolbarTitle == "Pricing")
+        #expect(AppWorkspaceSection.productPages.toolbarTitle == "Product Pages")
+        #expect(AppWorkspaceSection.reviews.toolbarTitle == "Ratings & Reviews")
+        #expect(AppWorkspaceSection.storePage.toolbarTitle == "Store Page")
     }
 
     @Test(arguments: [
         (AppWorkspaceSection.overview, "Overview"),
         (.storePage, "Store Page"),
         (.screenshots, "Screenshots"),
-        (.productPages, "Custom Product Pages"),
         (.inAppEvents, "In-App Events"),
         (.appInformation, "App Information"),
         (.analytics, "Analytics"),

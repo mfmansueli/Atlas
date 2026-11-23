@@ -31,7 +31,7 @@ struct AutopilotGlint: ViewModifier {
             GeometryReader { proxy in
                 let width = proxy.size.width * Self.bandWidth
                 LinearGradient(
-                    colors: [Palette.suggestionBadge.opacity(0), Palette.suggestionBadge.opacity(0.35), Palette.suggestionBadge.opacity(0)],
+                    colors: [Palette.aiFill.opacity(0), Palette.aiFill.opacity(0.35), Palette.aiFill.opacity(0)],
                     startPoint: UnitPoint(x: 0, y: 0.4),
                     endPoint: UnitPoint(x: 1, y: 0.6)
                 )

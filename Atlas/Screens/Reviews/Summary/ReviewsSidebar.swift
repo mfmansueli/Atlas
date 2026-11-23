@@ -18,7 +18,7 @@ struct ReviewsSidebar: View {
                 RatingsCard(summary: viewModel.ratingsSummary)
                 HStack(spacing: Spacing.small) {
                     Text("What people write about")
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityAddTraits(.isHeader)
                     if viewModel.isPro, let source = viewModel.suggestionSource {
@@ -48,7 +48,7 @@ struct ReviewsSidebar: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Upgrade to Pro…", action: onUpgrade)
                     .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                     .accessibilityIdentifier("reviews.themes.upgrade")
             }
@@ -61,7 +61,7 @@ struct ReviewsSidebar: View {
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ReviewsAskButton(app: viewModel.app)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .buttonBorderShape(.capsule)
             }
             .accessibilityElement(children: .contain)

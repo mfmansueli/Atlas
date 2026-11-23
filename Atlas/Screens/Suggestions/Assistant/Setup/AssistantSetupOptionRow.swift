@@ -41,7 +41,7 @@ struct AssistantSetupOptionRow: View {
                                 HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                                     Text(point.isPlus ? "+" : "−")
                                         .font(.subheadline.weight(.semibold).monospaced())
-                                        .foregroundStyle(point.isPlus ? Palette.positive : Palette.label2)
+                                        .foregroundStyle(point.isPlus ? Palette.ok : Palette.label2)
                                     Text(point.text)
                                         .font(.subheadline)
                                 }

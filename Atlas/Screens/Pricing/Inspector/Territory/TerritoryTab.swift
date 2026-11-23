@@ -16,7 +16,7 @@ struct TerritoryTab: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: Spacing.small) {
                     FlagTile(regionCode: row.territory.alpha2)
-                    Text(row.territory.name).font(.headline)
+                    Text(row.territory.name).font(.body.weight(.semibold))
                     Spacer()
                     Text(verbatim: "\(row.territory.currencyCode) · \(row.territory.region.title)")
                         .font(.subheadline)

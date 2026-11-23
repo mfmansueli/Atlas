@@ -66,7 +66,7 @@ struct PageShotsPlanStep: View {
     private var angleSection: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
-                Text("The angle").font(.headline)
+                Text("The angle").font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if plan != nil { AssistantChip(name: assistant) }
             }
@@ -134,7 +134,7 @@ struct PageShotsPlanStep: View {
     private var orderSection: some View {
         if let plan {
             VStack(alignment: .leading, spacing: Spacing.small) {
-                Text("Screens, in this order").font(.headline)
+                Text("Screens, in this order").font(.body.weight(.semibold))
                 ScrollView(.horizontal) {
                     HStack(alignment: .top, spacing: Spacing.small) {
                         ForEach(Array(plan.screens.enumerated()), id: \.offset) { position, screen in
@@ -148,12 +148,12 @@ struct PageShotsPlanStep: View {
                                     .lineLimit(1)
                                 if screen.slot != position {
                                     Text("was \(screen.slot + 1)")
-                                        .font(.caption2)
+                                        .font(.footnote)
                                         .foregroundStyle(Palette.label2)
                                 }
                                 if recapturedSlots.contains(screen.slot) {
                                     Text("captured again")
-                                        .font(.caption2.weight(.medium))
+                                        .font(.footnote.weight(.medium))
                                         .foregroundStyle(Palette.accent)
                                 }
                             }
@@ -198,7 +198,7 @@ struct PageShotsPlanStep: View {
 
     private var planSection: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Plan").font(.headline)
+            Text("Plan").font(.body.weight(.semibold))
             planRow(
                 title: String(localized: "Write the captions"),
                 detail: plan == nil

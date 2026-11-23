@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas — Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+
+body{margin:0}
+.alx{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",system-ui,"Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:16px;color:var(--label);-webkit-font-smoothing:antialiased}
+.alx *{box-sizing:border-box}
+.alx-l{--window:#EFEFF2;--content:#FFFFFF;--raised:#FFFFFF;--sidebar:rgba(246,246,249,.72);--glass:rgba(255,255,255,.74);--control:#FFFFFF;--label:#1D1D1F;--label-2:#6B6B70;--label-3:#9A9AA0;--sep:rgba(0,0,0,.09);--sep-2:rgba(0,0,0,.16);--fill-1:rgba(0,0,0,.04);--fill-2:rgba(0,0,0,.07);--fill-3:rgba(0,0,0,.12);--glass-edge:rgba(0,0,0,.08);--glass-hi:rgba(255,255,255,.9);--accent:#0071E3;--accent-text:#0066CC;--accent-tint:rgba(0,113,227,.12);--err:#C8102E;--err-tint:rgba(215,0,21,.09);--err-mark:#E0182D;--warn:#7A5600;--warn-tint:rgba(255,190,0,.20);--warn-mark:#F5B400;--mt:#7A35B0;--mt-tint:rgba(150,70,210,.08);--mt-edge:rgba(150,70,210,.28);--unsaved:#0071E3;--ok:#1D7A3A;--pop-shadow:0 0 0 .5px rgba(0,0,0,.10),0 10px 32px rgba(0,0,0,.16);--sheet-shadow:0 0 0 .5px rgba(0,0,0,.10),0 24px 64px rgba(0,0,0,.24);--scrim:rgba(0,0,0,.18);--knob:#FFFFFF;--track:rgba(0,0,0,.09);--focus:rgba(0,113,227,.45);--edge-hc:transparent;--ctl-shadow:0 0 0 .5px rgba(0,0,0,.14),0 .5px 1.5px rgba(0,0,0,.1)}
+.alx-d{--window:#1E1E21;--content:#161618;--raised:#2A2A2E;--sidebar:rgba(40,40,44,.66);--glass:rgba(70,70,76,.58);--control:#2E2E33;--label:#F2F2F5;--label-2:#A3A3AA;--label-3:#6E6E75;--sep:rgba(255,255,255,.09);--sep-2:rgba(255,255,255,.16);--fill-1:rgba(255,255,255,.05);--fill-2:rgba(255,255,255,.09);--fill-3:rgba(255,255,255,.15);--glass-edge:rgba(255,255,255,.12);--glass-hi:rgba(255,255,255,.10);--accent:#0A72E8;--accent-text:#4DA3FF;--accent-tint:rgba(77,163,255,.18);--err:#FF7A70;--err-tint:rgba(255,90,80,.16);--err-mark:#FF5A50;--warn:#FFD34D;--warn-tint:rgba(255,205,60,.15);--warn-mark:#FFCC33;--mt:#D4A3FF;--mt-tint:rgba(200,140,255,.10);--mt-edge:rgba(200,140,255,.32);--unsaved:#4DA3FF;--ok:#5FD38A;--pop-shadow:0 0 0 .5px rgba(255,255,255,.14),0 12px 36px rgba(0,0,0,.55);--sheet-shadow:0 0 0 .5px rgba(255,255,255,.14),0 28px 72px rgba(0,0,0,.6);--scrim:rgba(0,0,0,.45);--knob:#636369;--track:rgba(255,255,255,.14);--focus:rgba(77,163,255,.55);--edge-hc:transparent;--ctl-shadow:0 0 0 .5px rgba(255,255,255,.12),0 .5px 1.5px rgba(0,0,0,.3)}
+.alx-l.alx-hc{--window:#E6E6EA;--sidebar:#F2F2F5;--glass:#FFFFFF;--label:#000000;--label-2:#3D3D42;--label-3:#5F5F66;--sep:rgba(0,0,0,.30);--sep-2:rgba(0,0,0,.55);--fill-1:rgba(0,0,0,.07);--fill-2:rgba(0,0,0,.11);--fill-3:rgba(0,0,0,.18);--glass-edge:rgba(0,0,0,.5);--glass-hi:transparent;--accent:#0040DD;--accent-text:#0040DD;--accent-tint:rgba(0,64,221,.14);--err:#9E0020;--err-tint:rgba(215,0,21,.14);--err-mark:#B80020;--warn:#5A3F00;--warn-tint:rgba(255,190,0,.30);--mt:#5C1E91;--mt-tint:rgba(150,70,210,.14);--mt-edge:rgba(92,30,145,.7);--unsaved:#0040DD;--ok:#0E5A26;--focus:#0040DD;--edge-hc:currentColor;--ctl-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.alx-d.alx-hc{--window:#141416;--content:#000000;--raised:#1C1C1F;--sidebar:#1C1C1F;--glass:#2C2C30;--control:#26262A;--label:#FFFFFF;--label-2:#D4D4DA;--label-3:#A8A8B0;--sep:rgba(255,255,255,.32);--sep-2:rgba(255,255,255,.55);--fill-1:rgba(255,255,255,.09);--fill-2:rgba(255,255,255,.14);--fill-3:rgba(255,255,255,.22);--glass-edge:rgba(255,255,255,.5);--glass-hi:transparent;--accent:#0A64D6;--accent-text:#8CC4FF;--accent-tint:rgba(140,196,255,.22);--err:#FFA8A2;--err-tint:rgba(255,90,80,.24);--err-mark:#FF7A70;--warn:#FFE28A;--warn-tint:rgba(255,205,60,.22);--mt:#E6C8FF;--mt-tint:rgba(200,140,255,.18);--mt-edge:rgba(230,200,255,.7);--unsaved:#8CC4FF;--ok:#9BE8B4;--focus:#8CC4FF;--edge-hc:currentColor;--ctl-shadow:0 0 0 1px rgba(255,255,255,.55)}
+.alx-hc .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+:where(.alx) button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;text-align:inherit;cursor:default;-webkit-appearance:none;appearance:none}
+:where(.alx) input,:where(.alx) textarea,:where(.alx) select{font:inherit;color:inherit;margin:0}
+:where(.alx) a{color:var(--accent-text);text-decoration:none}
+.alx :focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.alx input[type=checkbox],.alx input[type=radio]{accent-color:var(--accent);margin:0}
+.mono{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace}
+.tn{font-variant-numeric:tabular-nums}
+.l2{color:var(--label-2)}.l3{color:var(--label-2)}
+.t-1{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.015em}
+.t-2{font-size:17px;line-height:22px;font-weight:600;letter-spacing:-.01em}
+.t-3{font-size:15px;line-height:20px;font-weight:600}
+.t-hl{font-size:13px;line-height:16px;font-weight:600}
+.t-c{font-size:12px;line-height:15px}
+.t-s{font-size:11px;line-height:14px}
+.t-f{font-size:11px;line-height:14px}
+.b{font-weight:600}
+.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.ic.sm{width:12px;height:12px;stroke-width:1.7}
+.ic.lg{width:22px;height:22px;stroke-width:1.3}
+.spin{animation:alxspin .8s linear infinite;transform-origin:50% 50%}
+@keyframes alxspin{to{transform:rotate(360deg)}}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 0 0 .5px var(--glass-edge),inset 0 1px 0 var(--glass-hi),0 1px 3px rgba(0,0,0,.08)}
+.tbb{height:32px;min-width:32px;padding:0 10px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;white-space:nowrap;flex:none}
+.tbb:hover{background:var(--fill-1)}
+.tbg{display:inline-flex;align-items:center;border-radius:16px;height:32px;padding:0 2px;flex:none}
+.btn{height:28px;padding:0 14px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;white-space:nowrap;flex:none}
+.btn.sm{height:24px;padding:0 11px;border-radius:12px;font-size:12px;gap:4px}
+.btn.pri{background:var(--accent);color:#fff;box-shadow:none;font-weight:500}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn.plain{background:none;box-shadow:none;color:var(--accent-text);padding:0 4px}
+.btn.destr{color:var(--err)}
+.fld{height:28px;width:100%;padding:0 8px;border-radius:8px;border:0;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2),inset 0 1px 1px rgba(0,0,0,.04);outline:none;font-size:13px}
+.fld:focus,.ta:focus{box-shadow:inset 0 0 0 1px var(--accent),0 0 0 3px var(--focus)}
+.fld.err,.ta.err{box-shadow:inset 0 0 0 1.5px var(--err-mark)}
+.ta{width:100%;padding:6px 8px;border-radius:8px;border:0;background:var(--control);box-shadow:inset 0 0 0 .5px var(--sep-2);outline:none;font-size:13px;line-height:17px;resize:vertical;display:block}
+.sel{height:28px;padding:0 6px;border-radius:8px;border:0;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;color:var(--label)}
+.seg{display:inline-flex;padding:2px;border-radius:999px;background:var(--fill-2);flex:none}
+.seg button{height:24px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.seg button.on{background:var(--knob);box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.16)}
+.seg.sm button{height:20px;padding:0 8px;font-size:11px}
+.pill{display:inline-flex;align-items:center;gap:3px;height:18px;padding:0 6px;border-radius:9px;font-size:11px;line-height:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:inset 0 0 0 1px var(--edge-hc);flex:none}
+.p-err{color:var(--err);background:var(--err-tint)}.p-warn{color:var(--warn);background:var(--warn-tint)}.p-mt{color:var(--mt);background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}.p-acc{color:var(--accent-text);background:var(--accent-tint)}.p-neu{color:var(--label-2);background:var(--fill-2)}.p-out{color:var(--label-2);background:none;box-shadow:inset 0 0 0 1px var(--sep-2)}
+.who{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 6px 0 2px;border-radius:9px;font-size:11px;font-weight:500;color:var(--label);box-shadow:inset 0 0 0 1px var(--sep-2);white-space:nowrap;flex:none}
+.who b{width:18px;height:16px;border-radius:4px;background:var(--label);color:var(--content);font:700 10px/16px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;display:inline-block}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--unsaved);display:inline-block}
+.flag{width:28px;height:15px;border-radius:3px;flex:none;display:inline-flex;align-items:center;justify-content:center;font:600 10px/1 ui-monospace,"SF Mono",Menlo,monospace;color:var(--label-2);background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.card{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pop{position:absolute;z-index:30;background:var(--raised);border-radius:16px;box-shadow:var(--pop-shadow);padding:14px 16px;color:var(--label);text-align:left}
+.sheet{position:absolute;z-index:40;left:50%;transform:translateX(-50%);background:var(--raised);border-radius:20px;box-shadow:var(--sheet-shadow);display:flex;flex-direction:column;overflow:hidden;max-width:calc(100% - 32px)}
+.sh-h{padding:18px 22px 12px;display:flex;flex-direction:column;gap:4px;flex:none}
+.sh-f{padding:12px 18px 16px;display:flex;align-items:center;gap:8px;border-top:.5px solid var(--sep);flex:none}
+.scrim{position:absolute;inset:0;z-index:35;background:var(--scrim)}
+.th{display:flex;align-items:center;gap:4px;padding:0 8px;height:28px;font-size:11px;font-weight:600;color:var(--label-2);white-space:nowrap;min-width:0;overflow:hidden}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.scroll{overflow:auto;scrollbar-width:thin}
+.box{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05)}
+.frow{display:flex;align-items:center;gap:12px;min-height:40px;padding:8px 14px}
+.frow+.frow{border-top:.5px solid var(--sep)}
+.fl{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tl{display:flex;gap:8px;flex:none}.tl i{width:12px;height:12px;border-radius:50%;display:block;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.bar{height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden;flex:none}.bar>i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.ban{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-radius:10px;font-size:12px;line-height:15px;box-shadow:inset 0 0 0 1px var(--edge-hc);flex:none}
+.b-neu{background:var(--fill-2)}.b-acc{background:var(--accent-tint)}.b-warn{background:var(--warn-tint)}
+.sw{width:30px;height:17px;border-radius:9px;background:var(--track);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:1.5px;left:1.5px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.sw.on{background:var(--accent)}.sw.on::after{left:14.5px}
+.rdo{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--sep-2);background:var(--control);flex:none;display:inline-block}
+.rdo.on{box-shadow:inset 0 0 0 4.5px var(--accent);background:#fff}
+.code{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:11px;line-height:16px;background:var(--fill-1);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;box-shadow:inset 0 0 0 .5px var(--sep)}
+.pg{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:4px 9px;border-radius:8px;font-size:13px;text-align:left}
+.pg:hover{background:var(--fill-1)}.pg.on{background:var(--fill-3)}.pg.off{opacity:.5}
+.sug{border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);padding:9px 11px;display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;text-align:left;width:100%}
+.terr{color:var(--err)}.tmt{color:var(--mt);font-weight:600}
+.stepn{width:22px;height:22px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.alx-l{--mtb:#8A3CD6;--mtb-fg:#FFFFFF}
+.alx-d{--mtb:#B98CFF;--mtb-fg:#1B0A2E}
+.alx-l.alx-hc{--mtb:#5C1E91;--mtb-fg:#FFFFFF}
+.alx-d.alx-hc{--mtb:#E6C8FF;--mtb-fg:#000000}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--mtb);color:var(--mtb-fg);font-size:11px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.bdg.sm{min-width:15px;height:15px;padding:0 4px;font-size:10px}
+.bdg.inv{background:rgba(255,255,255,.26);color:#fff}
+.hl{background:var(--mt-tint);box-shadow:inset 0 -1.5px 0 var(--mt);border-radius:3px}
+.twarn{color:var(--warn);font-weight:600}
+.pre{white-space:pre-wrap;word-break:break-word}
+.sgrid{display:grid;grid-template-columns:70px minmax(0,1fr);gap:3px 10px;align-items:baseline}
+.sgrid>span{white-space:pre-wrap;word-break:break-word}
+.fbox{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:10px 12px;display:flex;flex-direction:column;gap:7px;flex:none}
+.fbox-s{box-shadow:0 0 0 1px var(--mt-edge),0 1px 3px rgba(0,0,0,.05)}
+.sech{display:flex;align-items:center;gap:12px;flex:none;min-height:40px}
+.sico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.sico .ic{width:17px;height:17px;stroke-width:1.5}
+.i-store{background:linear-gradient(180deg,#3D86F7,#2869D2)}.i-shots{background:linear-gradient(180deg,#F57A35,#CE5619)}.i-price{background:linear-gradient(180deg,#3BB466,#288F4D)}.i-info{background:linear-gradient(180deg,#8E8E96,#6B6B73)}
+.lbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:6px 10px 6px 6px;border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);flex:none}
+.lpick{display:flex;align-items:center;gap:9px;height:40px;padding:0 10px 0 8px;border-radius:10px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep-2);text-align:left;min-width:200px;max-width:250px;flex:none}
+.lpick:hover{background:var(--fill-2)}
+.accb{height:28px;padding:0 6px 0 12px;border-radius:14px;gap:6px;font-size:13px}
+.arw{display:inline-flex;border-radius:8px;box-shadow:var(--ctl-shadow);background:var(--control);flex:none}
+.arw button{width:26px;height:24px;display:inline-flex;align-items:center;justify-content:center}
+.arw button+button{border-left:.5px solid var(--sep)}
+.arw button:disabled{opacity:.35}
+.autoln{flex-basis:100%;display:flex;align-items:center;gap:8px;padding:2px 2px 2px 4px;font-size:12px;color:var(--label-2)}
+.menu{position:absolute;z-index:30;background:var(--raised);border-radius:12px;box-shadow:var(--pop-shadow);padding:6px;display:flex;flex-direction:column}
+.mi{display:flex;align-items:center;gap:8px;min-height:28px;padding:0 8px;border-radius:8px;width:100%;font-size:13px;text-align:left}
+.mi:hover{background:var(--fill-2)}.mi.on{background:var(--accent-tint)}
+.mi:disabled{opacity:.4}
+.mh{padding:7px 8px 3px;font-size:11px;font-weight:600;color:var(--label-2)}
+.msep{height:.5px;background:var(--sep);margin:5px 4px}
+.asm{position:relative;width:100%;border-radius:20px;background:var(--content);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:6px;display:flex;flex-direction:column}
+.asm-r{position:relative;padding:9px 10px;border-radius:12px}
+.asm-d{height:.5px;background:var(--sep);margin:0 10px}
+.asm.lk .asm-r{cursor:pointer}
+.asm.lk .asm-r:hover{background:var(--fill-1);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.asm-name{font-size:16px;line-height:20px;font-weight:700;letter-spacing:-.01em}
+.asm-sub{font-size:12px;line-height:15px;color:var(--label-2)}
+.asm-get{height:24px;padding:0 16px;border-radius:12px;background:#0A84FF;color:#fff;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;flex:none}
+.asm-st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.asm-st>div{display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 4px;min-width:0}
+.asm-st>div+div{border-left:.5px solid var(--sep)}
+.asm-big{font-size:15px;line-height:19px;font-weight:700;color:var(--label-2)}
+.asm-t{font-size:12px;line-height:16px}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ctag{position:absolute;top:-11px;right:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 4px 0 8px;border-radius:10px;background:var(--raised);box-shadow:var(--pop-shadow);font-size:11px;font-weight:600;color:var(--accent-text);white-space:nowrap}
+.ctag .ic{width:10px;height:10px;stroke-width:2}
+.pp{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:10px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);min-width:0}
+.pp-mt{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}
+.pp-acc{background:var(--accent-tint)}
+.pp-n{font-size:22px;line-height:26px;font-weight:700;letter-spacing:-.01em}
+.pp-mt .pp-n{color:var(--mt)}.pp-acc .pp-n{color:var(--accent-text)}
+.pcard{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:9px;flex:none}
+.pcard-s{box-shadow:0 0 0 1px var(--mt-edge),0 1px 3px rgba(0,0,0,.05)}
+.pbar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px}
+.pbar>i{display:block;height:100%}
+.ptab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:5px 10px;align-items:baseline;padding:4px 2px 2px}
+.ptab .th{padding:0;height:auto}
+.chip{height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--control)}
+.chip.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.ipv{display:grid;grid-template-columns:76px minmax(0,1fr);gap:5px 8px;font-size:12px;line-height:15px}
+.axc{padding:2px 7px;border-radius:8px;background:var(--fill-2)}
+.chk{width:16px;height:16px;border-radius:6px;flex:none;display:inline-flex;align-items:center;justify-content:center;background:var(--control);box-shadow:inset 0 0 0 1px var(--sep-2);color:#fff}
+.chk.on,.chk.mix{background:var(--accent);box-shadow:none}
+.chk .ic{width:11px;height:11px;stroke-width:2.4}
+.sa-g{display:flex;align-items:center;gap:8px;padding:4px 6px 4px 8px;border-radius:8px}
+.sa-g.on{background:var(--fill-2)}
+.sa-gb{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;font-size:13px;min-height:32px}
+.sa-i{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);flex:none}
+.sa-i.off{background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.sa-i.off .sgrid{opacity:.5}
+.prochip{display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.05em;background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%);color:#fff;flex:none;margin-left:2px}
+.prochip.inv{background:#fff;color:#0A5CF2}
+.pro-up{background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%)!important;color:#fff!important;padding:0 11px 0 9px;font-weight:600}
+.pw-l{width:320px;flex:none;padding:26px 20px 22px;display:flex;flex-direction:column;gap:6px;background:radial-gradient(120% 70% at 90% 0%,rgba(31,194,255,.45),rgba(31,194,255,0) 60%),linear-gradient(165deg,#0B6FE8 0%,#0A56DC 50%,#0840AE 100%);color:#fff}
+.pw-logo{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;flex:none}
+.pw-name{font-size:22px;line-height:24px;font-weight:700;letter-spacing:-.01em}
+.pw-tag{font-size:12px;line-height:16px;color:rgba(255,255,255,.82)}
+.pwf{display:flex;gap:11px;align-items:flex-start;padding:8px 10px;border-radius:10px}
+.pwf.on{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35)}
+.pw-ic{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.14);display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.pw-ic .ic{width:15px;height:15px}
+.pw-ft{font-size:13px;line-height:17px;font-weight:600}
+.pw-fd{font-size:12px;line-height:15px;color:rgba(255,255,255,.78)}
+.pw-r{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;gap:10px;padding:24px 28px 18px}
+.pw-ctx{display:flex;gap:10px;padding:11px 13px;border-radius:12px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);margin-right:30px}
+.pwp{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--sep-2);text-align:left;width:100%}
+.pwp.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.pw-rad{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--sep-2);flex:none;background:var(--control)}
+.pwp.on .pw-rad{box-shadow:inset 0 0 0 5px var(--accent);background:#fff}
+.pw-save{height:17px;padding:0 6px;border-radius:6px;background:#E3F6E8;color:#1D7A3A;font-size:11px;font-weight:700;display:inline-flex;align-items:center}
+.alx-d .pw-save{background:rgba(48,209,88,.18);color:#5BE584}
+.pw-keep{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:16px;color:var(--label-2);padding:10px 12px;border-radius:10px;background:var(--fill-1)}
+.pw-keep b{color:var(--label)}
+.pw-cta{height:40px;border-radius:12px;font-size:14px;font-weight:600;justify-content:center;width:100%}
+.pw-links{display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:var(--label-2);flex-wrap:wrap}
+.pw-links button{color:var(--accent-text);font-size:12px}
+.pw-tab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:0;border-radius:10px;box-shadow:inset 0 0 0 .5px var(--sep-2);overflow:hidden}
+.pw-tab>span{padding:7px 10px;border-top:.5px solid var(--sep)}
+.pw-tab>.th{border-top:none;background:var(--fill-1);font-size:12px;font-weight:700;color:var(--label-2);height:auto}
+.i-an{background:linear-gradient(180deg,#6866E0,#4B49B8)}
+.bdg.neu{background:var(--fill-3);color:var(--label)}
+.setup{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:640px;width:100%;padding-top:10px}
+.mini-f{width:220px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mini-f i{display:block;height:10px;border-radius:5px;background:var(--fill-3)}
+.qrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.qrow>div{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:10px;background:var(--fill-1);text-align:left;font-size:12px;line-height:16px}
+.qrow span{color:var(--label-2)}
+.bigic{width:52px;height:52px;border-radius:50%;background:var(--fill-2);display:flex;align-items:center;justify-content:center;color:var(--label-2)}
+.bigic .ic{width:26px;height:26px}
+.bigic.warn{background:var(--warn-tint);color:var(--warn)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0;text-align:left;width:100%;max-width:500px}
+.steps li{position:relative;padding:0 0 14px 28px;display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:17px}
+.steps li span{color:var(--label-2);font-size:12px}
+.steps li::before{content:"";position:absolute;left:4px;top:3px;width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--sep-2);background:var(--content)}
+.steps li::after{content:"";position:absolute;left:8.5px;top:15px;bottom:2px;width:1px;background:var(--sep-2)}
+.steps li:last-child::after{display:none}
+.steps li.done::before{background:var(--ok);box-shadow:none}
+.steps li.now::before{box-shadow:inset 0 0 0 3px var(--accent)}
+.proto-btn{height:24px;padding:0 10px;border-radius:12px;font-size:10.5px;color:var(--label-2);outline:1.5px dashed var(--sep-2)}
+.fstrip{display:flex;align-items:stretch;gap:0;flex:none}
+.fst{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:3px;padding:10px 11px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05)}
+.fs-l{line-height:13px;min-height:26px}
+.td{display:flex;align-items:center;gap:6px;padding:0 10px;min-width:0;white-space:nowrap;overflow:hidden;height:100%}
+.tb-title.tb-hide{visibility:hidden}
+.chempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--label-2);background:var(--fill-1);border-radius:6px}
+.fcnt{font-size:17px;line-height:23px;font-weight:700;letter-spacing:-.01em}
+.fconn{width:104px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px;border-radius:10px;text-align:center;position:relative}
+.fconn:hover{background:var(--fill-1)}
+.fconn.on{background:var(--accent-tint);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.fc-l{line-height:13px}
+.frate{font-size:15px;line-height:19px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.fc-ar{width:40px;height:8px;fill:none;stroke:var(--label-3);stroke-width:1.2;margin-top:2px}
+.fst.sk,.fconn.sk{min-height:84px;background:var(--fill-1);box-shadow:none;animation:skp 1.4s ease-in-out infinite}
+@keyframes skp{0%,100%{opacity:1}50%{opacity:.55}}
+.cmpv{font-size:11px;font-weight:600}
+.cmpv.down{color:var(--warn)}.cmpv.up{color:var(--label)}.cmpv.same,.cmpv.few{color:var(--label-2)}
+.mk{font-size:10px;line-height:1;width:9px;display:inline-block;text-align:center}
+.mk-worse{color:var(--warn)}.mk-better{color:var(--label)}.mk-same{color:var(--label-2);font-size:11px}
+.cm{display:inline-flex;align-items:flex-end;gap:1.5px;height:9px;flex:none}
+.cm i{display:block;width:2.5px;border-radius:1px;background:var(--sep-2)}
+.cm i:nth-child(1){height:4px}.cm i:nth-child(2){height:6.5px}.cm i:nth-child(3){height:9px}
+.cm-1 i:nth-child(1),.cm-2 i:nth-child(-n+2),.cm-3 i{background:var(--label-2)}
+.cm-0{display:none}
+.callout{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);flex:none}
+.c-loss{background:var(--warn-tint);box-shadow:inset 0 0 0 .5px var(--sep)}
+.chw{position:relative;height:170px;margin:4px 0 0 44px}
+.chp{position:absolute;left:0;top:0;bottom:0;width:50%;background:var(--fill-1);border-radius:4px}
+.chs{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.chl{fill:none;stroke:var(--accent);stroke-width:1.8;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.cha{stroke:var(--label-3);stroke-width:1;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.chm{position:absolute;top:-2px;bottom:0;width:0;border-left:1px solid var(--label-3);transform:translateX(-.75px)}
+.chm-t{position:absolute;top:-4px;left:3px;white-space:nowrap;font-size:10px;font-weight:600;padding:1px 5px;border-radius:6px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2);color:var(--label)}
+.chm:hover .chm-t{background:var(--accent);color:#fff}
+.chy{position:absolute;left:-44px;width:40px;text-align:right;font-size:10px;color:var(--label-2)}
+.chy.t{top:-2px}.chy.b{bottom:-2px}
+.chx{display:flex;justify-content:space-between;margin-left:44px;font-size:10px;color:var(--label-2)}
+.lg-i{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--label-2)}
+.lg-i i{display:inline-block}
+.lg-prev{width:12px;height:9px;border-radius:2px;background:var(--fill-2)}
+.lg-cur{width:12px;height:9px;border-radius:2px;box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.lg-avg{width:14px;border-top:1px dashed var(--label-3)}
+.lg-mark{width:0;height:10px;border-left:1.5px solid var(--label-2)}
+.fcard{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:7px;flex:none}
+.fnums{display:flex;gap:6px;flex-wrap:wrap}
+.fnums>div{display:flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:8px;background:var(--fill-1);min-width:120px}
+.fstate{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px}
+.fstate.mt{background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);color:var(--label)}
+.fstate.acc{background:var(--accent-tint)}
+.legend{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.bgrid{display:grid;grid-template-columns:minmax(150px,1.6fr) 84px 76px 100px 76px 100px 60px 100px 72px;align-items:center;min-height:30px}
+.bgrid.pp{grid-template-columns:minmax(150px,1.6fr) 84px 76px 100px 76px 100px 190px}
+.bgrid.nar{grid-template-columns:minmax(120px,1.4fr) 72px 100px 100px 100px 66px}
+.bgrid.nar.pp{grid-template-columns:minmax(120px,1.4fr) 72px 100px 100px 160px}
+.bgrid.nar .c-imp,.bgrid.nar .c-dl,.bgrid.nar .c-st{display:none}
+.bgrid.pp .c-st,.bgrid.pp .c-sr,.bgrid.pp .c-pr{display:none}
+.bgrid .c-ap{display:none}.bgrid.pp .c-ap{display:flex}
+.bgrid .td{font-size:12px}
+.bgrid .td.r,.bgrid .th.r{justify-content:flex-end;text-align:right}
+.bgrid .td.r{gap:4px}
+.bhead{background:var(--fill-1);border-bottom:.5px solid var(--sep);min-height:28px}
+.th.sortable:hover{color:var(--label)}
+.th.sorted{color:var(--label)}
+.btot{border-bottom:.5px solid var(--sep);background:var(--raised)}
+.brow{border-bottom:.5px solid var(--sep);min-height:34px;cursor:default}
+.brow:hover{background:var(--fill-1)}
+.brow.on{background:var(--accent-tint)}
+.rowbtn{text-align:left;font-size:12px;font-weight:500;max-width:100%}
+.bfoot{padding:8px 12px;border-top:.5px solid var(--sep);background:var(--fill-1)}
+.insp{width:290px;flex:none;background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.spark{display:flex;flex-direction:column;gap:3px}
+.spark svg{width:100%;height:60px;overflow:visible}
+.ilist{display:flex;flex-direction:column;border-top:.5px solid var(--sep)}
+.ilist>div{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:.5px solid var(--sep)}
+.chrow{display:flex;flex-direction:column;gap:3px;padding:7px 8px;border-radius:8px;text-align:left;width:100%}
+.chrow:hover{background:var(--fill-1)}
+.chrow.on{background:var(--accent-tint)}
+.res3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.res4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.fromban{display:flex;align-items:center;gap:10px;margin:8px 20px 0;padding:7px 8px 7px 8px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);font-size:12px;flex:none}
+.fromban .sico .ic{width:13px;height:13px}
+.ovf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ovf-i{display:flex;flex-direction:column;gap:0}
+.stopc{flex-basis:100%;display:flex;align-items:center;gap:8px;padding:8px 10px;margin-top:6px;border-radius:8px;background:var(--err-tint)}
+.focusring{box-shadow:0 0 0 3px var(--accent-tint),inset 0 0 0 1px var(--accent)!important}
+.ok{color:var(--ok)}
+@media (max-width:1040px){.tb-title{display:none!important}.tb-rp{display:none}.an-range{display:none}}
+@media (max-width:940px){.tbtab{padding:0 6px!important;gap:4px!important;font-size:12px!important}.tb-asst{display:none!important}.insp{width:250px}.bgrid.nar{grid-template-columns:minmax(104px,1fr) 72px 86px 86px 86px 60px}.bgrid.nar.pp{grid-template-columns:minmax(110px,1fr) 64px 88px 88px 140px}.fconn{width:90px}.fcnt{font-size:15px}.legend{display:none}.res4{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}.qrow{grid-template-columns:minmax(0,1fr)}}
+.sugm{display:flex;flex-direction:column;gap:3px;padding:6px 8px 6px 10px;border-radius:8px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge)}
+
+.i-ov{background:linear-gradient(180deg,#4A4A50,#2C2C30)}.i-ev{background:linear-gradient(180deg,#EC5B8D,#C03B69)}
+.sico.sm{width:22px;height:22px;border-radius:6px}.sico.sm .ic{width:13px;height:13px;stroke-width:1.6}
+.appsw{width:100%;display:flex;flex-direction:column;align-items:stretch;padding:0 8px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.appsw:hover{background:var(--fill-2)}
+.nvh{padding:12px 8px 4px;font-size:11px;font-weight:600;color:var(--label-2);letter-spacing:.01em}
+.nvi{width:100%;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 6px 0 5px;border-radius:8px;font-size:13px;text-align:left}
+.nvi:hover{background:var(--fill-1)}.nvi.on{background:var(--fill-3);font-weight:600}
+.menu .nvi{height:30px}
+.vfoot{flex:none;display:flex;align-items:center;gap:9px;margin:0 8px 8px;padding:8px 8px 8px 10px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);text-align:left}
+.vfoot:hover{background:var(--fill-2)}
+.vdot{width:8px;height:8px;border-radius:50%;flex:none}.dot-n{background:var(--label-3)}.dot-a{background:var(--accent)}.dot-ok{background:#34C759}.dot-w{background:var(--warn)}.dot-e{background:var(--err)}
+.vbtn{height:24px;padding:0 11px;border-radius:12px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;display:inline-flex;align-items:center;flex:none}
+.alx.nav-side .tb-rp{display:inline!important}.alx.nav-side .tb-asst{display:inline-flex!important}
+.alx.nav-side .tb-title.tb-keep{display:flex!important}.alx.nav-side .tb-title .mono{font-family:inherit}
+@container (max-width:720px){.alx.nav-side .tb-rp{display:none!important}.alx.nav-side .tb-title.tb-keep{display:none!important}}
+
+.i-rv{background:linear-gradient(180deg,#F7BE1A,#D99700)}.i-rel{background:linear-gradient(180deg,#4A4A50,#2C2C30)}
+.p-ok{color:var(--ok);background:rgba(52,199,89,.14)}
+.rvc{background:var(--raised);border-radius:12px;box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);padding:12px 14px;display:flex;flex-direction:column;gap:6px;flex:none}
+.stars{color:#F5A30A;letter-spacing:1px;font-size:12px;line-height:14px}
+.rv-sug{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);margin-top:2px}
+.rv-ed{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.rv-rep{display:flex;flex-direction:column;gap:4px;padding:8px 12px;border-radius:10px;background:var(--fill-1);margin-top:2px}
+.rbar{flex:1;height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden;display:block}.rbar>i{display:block;height:100%;background:var(--label-2);border-radius:3px}
+.sa-i.off{background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}.sa-i.off .t-c{color:var(--label-3)}
+.evi{display:flex;flex-direction:column;gap:5px;padding:7px;border-radius:12px;text-align:left;width:100%;flex:none}
+.evi:hover{background:var(--fill-1)}.evi.on{background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.evi-img{height:76px;border-radius:9px;position:relative;display:block;overflow:hidden}
+.evi-img>span{position:absolute;left:8px;top:7px;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.95)}
+.lch{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 3px;border-radius:12px;font-size:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep)}
+.lch:hover{background:var(--fill-2)}.lch.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.dot-mt{width:7px;height:7px;border-radius:50%;background:var(--mtb);flex:none}
+.lch.on .dot-mt{box-shadow:none}
+.evp{border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:8px;display:flex;flex-direction:column;gap:2px}
+.evp-img{position:relative;height:144px;border-radius:11px;overflow:hidden;display:block}
+.evp-o1{position:absolute;width:150px;height:150px;right:-36px;top:-50px;border-radius:50%;background:rgba(255,255,255,.18)}
+.evp-o2{position:absolute;width:86px;height:86px;left:26px;bottom:-34px;border-radius:50%;background:rgba(255,255,255,.13)}
+.evp-o3{position:absolute;width:26px;height:26px;left:40%;top:38%;border-radius:50%;background:rgba(255,255,255,.55)}
+.evp-b{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--label-2);padding:8px 4px 0}
+.evp-n{font-size:16px;line-height:20px;font-weight:700;letter-spacing:-.01em;padding:0 4px}
+.evp-s{font-size:12.5px;line-height:16px;color:var(--label-2);padding:0 4px}
+.evp-w{font-size:11px;font-weight:600;color:var(--accent-text);padding:2px 4px 4px}
+.ck{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+.ck.ok{background:rgba(52,199,89,.16);color:var(--ok)}.ck.warn{background:var(--warn-tint);color:var(--warn)}
+.stps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.stp{display:flex;flex-direction:column;gap:1px;position:relative;padding:18px 6px 0 0;min-width:0}
+.stp::before{content:'';position:absolute;top:6px;left:0;right:0;height:2px;background:var(--fill-3)}
+.stp>i{position:absolute;top:1px;left:0;width:12px;height:12px;border-radius:50%;background:var(--fill-3);box-shadow:0 0 0 3px var(--raised);z-index:1}
+.stp.done::before,.stp.done>i{background:var(--accent)}
+.stp.now>i{background:var(--accent);box-shadow:0 0 0 3px var(--raised),0 0 0 6px var(--accent-tint)}
+.stp.rej>i{background:var(--err);box-shadow:0 0 0 3px var(--raised),0 0 0 6px var(--err-tint)}
+.stp:last-child::before{right:auto;width:12px}
+.phs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.ph{display:flex;flex-direction:column;gap:2px}.ph>i{display:block;height:6px;border-radius:3px;background:var(--fill-2)}
+.ph.done>i{background:var(--ok)}.ph.now>i{background:var(--accent)}.ph.now.paused>i{background:var(--warn)}
+.rejbox{background:var(--err-tint);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.sbs{display:flex;flex-direction:column;gap:6px;padding-top:14px}
+.radg{display:flex;flex-direction:column;gap:1px}
+.rad{display:flex;align-items:center;gap:10px;min-height:32px;padding:5px 8px;border-radius:10px;width:100%}
+.rad:hover{background:var(--fill-1)}.rad.dis{opacity:.45}
+.rdo{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--sep-2);background:var(--control);flex:none;position:relative}
+.rad.on .rdo{background:var(--accent);box-shadow:none}.rad.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.wnl{display:flex;flex-direction:column}.wnr{display:flex;align-items:center;gap:8px;min-height:30px;border-top:.5px solid var(--sep)}
+.ckr{display:flex;align-items:center;gap:10px;padding:5px 2px}
+@media (max-width:1240px){.tb-rp{display:none}}
+.cq{container-type:inline-size}
+@container (max-width:1040px){.tb-title{display:none!important}.tb-rp{display:none}.an-range{display:none}.ev-pv{display:none!important}.rv-side{width:260px!important}}
+@container (max-width:940px){.tbtab{padding:0 6px!important;gap:4px!important;font-size:12px!important}.tb-asst{display:none!important}.insp{width:250px}.bgrid.nar{grid-template-columns:minmax(104px,1fr) 72px 86px 86px 86px 60px}.bgrid.nar.pp{grid-template-columns:minmax(110px,1fr) 64px 88px 88px 140px}.fconn{width:90px}.fcnt{font-size:15px}.legend{display:none}.res4{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}.qrow{grid-template-columns:minmax(0,1fr)}.ev-nav{width:170px!important}}
+
+@media (max-width:1040px){.ev-pv{display:none!important}.rv-side{width:260px!important}}
+@media (max-width:940px){.ev-nav{width:170px!important}}
+
+.alx.nav-side{container-type:inline-size}
+.ea-art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ea-tw{animation:eatw 1.2s ease-in-out infinite alternate}
+@keyframes eatw{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ea-tw,.eash{animation:none!important}}
+.eam{flex-direction:row!important;align-items:center;gap:14px!important;padding:10px 12px!important;flex:none}
+.eam-th{display:flex;gap:6px;align-items:stretch;flex:none}
+.eam-c,.eam-d{position:relative;display:block;height:72px;border-radius:8px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2)}
+.eam-c{width:128px}.eam-d{width:40.5px}
+.eam-g{position:absolute;inset:0;display:block}
+.eam-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700;font-size:13px;color:var(--warn);background:var(--warn-tint);box-shadow:inset 0 0 0 1px var(--warn);border-radius:8px}
+
+.evi-img .ea-art{border-radius:9px}
+.eapb{display:block;height:6px;border-radius:3px;background:var(--fill-2);overflow:hidden}.eapb>i{display:block;height:100%;border-radius:3px;background:var(--mtb);transition:width .4s}
+.eas{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex:none}
+.eas li{display:flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 4px;border-radius:12px;font-size:12px;color:var(--label-3)}
+.eas li i{width:16px;height:16px;border-radius:50%;background:var(--fill-3);color:var(--label-2);font-style:normal;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.eas li.now{background:var(--fill-2);color:var(--label);font-weight:600}.eas li.now i{background:var(--accent);color:#fff}
+.eas li.done{color:var(--label-2)}.eas li.done i{background:var(--ok);color:#fff}
+.eao{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;text-align:left;width:100%;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--raised)}
+.eao:hover{background:var(--fill-1)}.eao.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.eao.on .rdo{background:var(--accent);box-shadow:none}.eao.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.eao-th{position:relative;width:86px;height:48px;border-radius:8px;overflow:hidden;flex:none;display:block;background:var(--fill-2)}
+.eao-tp{display:grid;grid-template-columns:1fr 1fr;gap:2px}.eao-tp i{display:block}
+.eao-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.eaget{display:flex;gap:10px;align-items:flex-end;padding:4px 0}
+.eag{box-sizing:border-box;border-radius:10px;border:1px dashed var(--sep-2);background:var(--fill-1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;color:var(--label-2);text-align:center;padding:4px}
+.eag b{font-size:11px;color:var(--label);font-weight:600}
+.eagrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.easl{display:flex;flex-direction:column;gap:8px}
+.eapair{display:flex;gap:6px;align-items:stretch}
+.eapc{position:relative;display:block;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2);flex:1;min-width:0}
+.eapd{position:relative;display:block;aspect-ratio:9/16;border-radius:10px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2);flex:none}
+.eapair .eapd{height:auto;align-self:stretch;aspect-ratio:auto;width:23.5%}
+.eapair{aspect-ratio:2.39/1}
+.eapair .eapc{aspect-ratio:auto}
+.eash{position:absolute;inset:0;display:block;background:linear-gradient(100deg,transparent 20%,var(--fill-3) 50%,transparent 80%);background-size:200% 100%;animation:eash 1.4s linear infinite}
+@keyframes eash{from{background-position:120% 0}to{background-position:-80% 0}}
+.eacc{display:flex;flex-direction:column;gap:10px;padding:8px;border-radius:16px;box-shadow:inset 0 0 0 .5px var(--sep-2);background:var(--raised);text-align:left;align-self:start}
+.eacc:hover{background:var(--fill-1)}.eacc.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.eacc.on .rdo{background:var(--accent);box-shadow:none}.eacc.on .rdo::after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.eamock{display:flex;gap:16px;align-items:flex-start}
+.eafig{margin:0;display:flex;flex-direction:column;gap:6px}
+.eac,.ead{position:relative;display:block;border-radius:14px;overflow:hidden;background:#101645;box-shadow:0 0 0 .5px var(--sep-2),0 8px 24px rgba(0,0,0,.14)}
+.eac{aspect-ratio:16/9}.ead{aspect-ratio:9/16}
+.eac-sc{position:absolute;left:0;right:0;bottom:0;top:45%;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.62));display:block}
+.eac-t{position:absolute;left:0;right:0;bottom:0;padding:0 14px 12px;display:flex;flex-direction:column;gap:2px;color:#fff}
+.ead .eac-t{padding:0 11px 11px}
+.eac-b{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+.eac-n{font-size:19px;line-height:23px;font-weight:700;letter-spacing:-.01em}
+.eac-s{font-size:12.5px;line-height:16px;opacity:.9}
+.eac-w{font-size:10px;font-weight:600;opacity:.85}
+.easafe{position:absolute;left:0;right:0;bottom:0;display:block;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9);border-radius:0 0 14px 14px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.16) 0 6px,rgba(255,255,255,0) 6px 12px)}
+.easafe b{position:absolute;right:8px;top:-21px;font-style:normal;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);border-radius:6px;padding:1px 6px}
+.eaplay{position:absolute;left:10px;top:10px;font-size:10.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);border-radius:9px;padding:2px 8px;font-variant-numeric:tabular-nums}
+@container (max-width:900px){.ea .eac-n{font-size:14px!important;line-height:17px!important}.ea .eac-s{font-size:10.5px!important;line-height:13px!important}.ea .eafig.d{width:132px!important}.ea .ead .eac-n{font-size:11.5px!important;line-height:14px!important}.ea .ead .eac-s{display:none}.ea .ea-side{width:236px!important}.easafe b{display:none}.eas li:not(.now){display:none}}
+@container (max-width:700px){.eagrid{grid-template-columns:1fr}}
+
+.i-cp{background:linear-gradient(180deg,#16A9B6,#0C848F)}
+.tok{color:var(--ok);font-weight:600}.tacc{color:var(--accent-text)}
+.ck.err{background:var(--err-tint);color:var(--err)}
+.b-ok{background:rgba(52,199,89,.14)}.b-err{background:var(--err-tint)}
+.btn.dng{color:var(--err)}
+
+.fld.bad{box-shadow:inset 0 0 0 1.5px var(--err)}
+.selb{height:28px;padding:0 6px 0 9px;border-radius:8px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap}
+.cp-ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:17px}.cp-ul b{font-weight:600}
+.cpl{padding:4px 12px!important;gap:0!important}
+.cpr{display:grid;grid-template-columns:minmax(170px,1.5fr) 168px minmax(200px,1.1fr) 168px 58px;gap:4px 12px;align-items:center;padding:9px 2px}
+.cpr+.cpr{box-shadow:inset 0 .5px 0 var(--sep)}
+.cph{font-size:11px;font-weight:600;color:var(--label-2);padding:7px 2px}
+.cpd{background:var(--fill-1);margin:0 -8px;padding-left:10px;padding-right:10px;border-radius:10px;box-shadow:none!important}
+.cprow{cursor:default}.cprow:hover{background:var(--fill-1);margin:0 -8px;padding-left:10px;padding-right:10px;border-radius:10px}
+.cpc-n,.cpc-s,.cpc-r{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cpc-s{align-items:flex-start;gap:3px}
+.cpc-a{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.cpf{display:inline-flex;align-items:baseline;gap:7px;font-size:12px}.cpf b{font-weight:600}.cpf i{font-style:normal;color:var(--label-3)}
+.cpsg{display:flex;flex-direction:column;gap:5px;padding:9px 11px;border-radius:9px;background:var(--raised);box-shadow:0 0 0 .5px var(--mt-edge)}
+.cpsg-g{display:grid;grid-template-columns:110px minmax(0,1fr);gap:5px 10px;font-size:12px;line-height:16px;padding:6px 0 2px;border-top:.5px solid var(--sep)}
+.kwg{display:flex;flex-wrap:wrap;gap:5px}
+.kwc{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:12px;font-size:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep-2);white-space:nowrap}
+.kwc.on{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}.kwc.on::before{content:'✓';font-size:10px;font-weight:700}
+.kwc.on.new{background:var(--accent-tint);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent);border:0;outline:1px dashed var(--accent);outline-offset:-1px}.kwc.on.new::before{content:''}
+.kwc.used{color:var(--label-2)}.kwc i{font-style:normal;font-size:10px;font-weight:600;color:var(--label-2);background:var(--fill-3);border-radius:8px;padding:1px 6px}
+.kwc:disabled{opacity:.55}
+.dot-own{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;flex:none}
+.cphd{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px!important;padding:10px 12px!important;flex:none}
+.cphd-c{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cps{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:thin}
+.cps.same{opacity:.5}.cps.dim2{opacity:.6}
+.cps-f{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+.cps-f>dc-import,.cps-f>span{border-radius:8px}
+.cps-v{width:92px;height:199px;border-radius:9px;background:linear-gradient(160deg,#2B2F6B,#6E7BFF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff}
+.cps-v i{font-style:normal;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px}.cps-v b{font-size:10.5px;font-weight:600}
+.cptile{display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2);min-height:0;color:var(--label-3)}
+.cptile::after{content:'';width:22px;height:22px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;opacity:.7}
+.cptile.sk::after{animation:cpspin 1s linear infinite}
+.cptile:not(.sk)::after{border-style:dashed;border-top-color:currentColor;opacity:.4}
+@keyframes cpspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.cptile.sk::after{animation:none}}
+.cpref{background:var(--warn-tint);box-shadow:inset 0 0 0 1px var(--warn-mark)}
+mark.cpm{background:none;color:var(--err);font-weight:600;text-decoration:underline wavy;text-underline-offset:3px}
+mark.cpn{background:var(--accent-tint);color:inherit;border-radius:3px;padding:0 2px}
+.cmp2{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0!important;padding:0!important;flex:none}
+.cmp2-c{display:flex;flex-direction:column;gap:6px;padding:10px 12px;min-width:0}.cmp2-c.new{box-shadow:inset .5px 0 0 var(--sep);background:var(--accent-tint);border-radius:0 12px 12px 0}
+.cp-pv{width:300px;flex:none;display:flex;flex-direction:column;gap:8px}
+.cpv2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cpv{display:flex;flex-direction:column;gap:7px;padding:8px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);min-width:0}
+.cpv-h{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--label-2)}
+.cpv-s{display:flex;gap:4px;border-radius:7px}
+.cpv-t{font-size:9.5px;line-height:13px;color:var(--label);display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;border-radius:5px}
+.cpv-own{outline:1.5px solid var(--accent);outline-offset:2px}
+.cpsk{display:flex;gap:6%;align-items:center;padding:16px 2px}.cpsk+.cpsk{box-shadow:inset 0 .5px 0 var(--sep)}.cpsk i{display:block;height:12px;border-radius:6px;background:var(--fill-3);animation:skp 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cpsk i{animation:none}}
+.c-nm .cpopen{flex:none}
+.cpfail{display:flex;flex-direction:column;gap:5px;padding:10px 12px;border-radius:10px;background:var(--err-tint)}
+.alx-hc .cpd,.alx-hc .cpsg,.alx-hc .cpv,.alx-hc .cpfail,.alx-hc .kwc{box-shadow:inset 0 0 0 1px var(--label)}
+.alx-hc .kwc.on{box-shadow:inset 0 0 0 1px var(--label)}
+.cp-show-s{display:none}
+@container (max-width:900px){.cp-pv{display:none}.cp-hide-s{display:none!important}.cp-show-s{display:inline-flex!important}.cph{display:none}
+  .cpr{grid-template-columns:minmax(0,1fr) auto 30px;gap:4px 10px}.cpc-n{grid-column:1}.cpc-s{grid-column:2;grid-row:1;align-items:flex-end}.cpc-f{grid-column:1;grid-row:2}.cpc-r{grid-column:2;grid-row:2;align-items:flex-end;text-align:right}.cpc-a{grid-column:3;grid-row:1 / span 2}.cpc-a .btn{display:none}
+  .cphd{grid-template-columns:1fr}.cmp2{grid-template-columns:1fr}.cmp2-c.new{border-radius:0 0 12px 12px;box-shadow:inset 0 .5px 0 var(--sep)}}
+@container (max-width:900px){.cpsh .eas li:not(.now){display:none}}
+
+.e2sw{display:inline-flex;align-items:center;gap:4px;min-width:0;height:30px;padding:0 6px 0 8px;margin-left:-4px;border-radius:10px;text-align:left}
+.e2sw:hover,.e2sw[aria-expanded="true"]{background:var(--fill-2)}
+.e2sw-th{position:relative;display:block;width:53px;height:30px;border-radius:6px;overflow:hidden;flex:none;box-shadow:0 0 0 .5px var(--sep-2)}
+.e2v-play{left:auto!important;right:1.6%;top:2.6%!important;font-size:12px!important}
+.alx-hc .e2sw{box-shadow:inset 0 0 0 1px var(--label)}
+.ev2 .eac,.ev2 .ead{display:block}
+.e2o1,.e2o2,.e2o3{position:absolute;border-radius:50%;display:block}
+.e2o1{width:42%;aspect-ratio:1;right:-9%;top:-34%;background:rgba(255,255,255,.18)}
+.e2o2{width:24%;aspect-ratio:1;left:9%;bottom:-24%;background:rgba(255,255,255,.13)}
+.e2o3{width:7%;aspect-ratio:1;left:40%;top:36%;background:rgba(255,255,255,.55)}
+.ead>.e2o1,.e2v-img.det>.e2o1,.e2pr.d>.e2o1{width:90%;right:-30%;top:-12%}.ead>.e2o2,.e2v-img.det>.e2o2,.e2pr.d>.e2o2{width:56%;left:-12%;bottom:22%}.ead>.e2o3,.e2v-img.det>.e2o3,.e2pr.d>.e2o3{width:14%;left:30%;top:30%}
+.e2g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.e2t{display:flex;min-width:0}
+.e2t-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding:8px 8px 10px;border-radius:18px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep),0 1px 3px rgba(0,0,0,.05);text-align:left}
+.e2t-b:hover{box-shadow:0 0 0 .5px var(--sep-2),0 6px 18px rgba(0,0,0,.10)}
+.e2t-img{width:100%;border-radius:12px!important;box-shadow:none!important;margin-bottom:4px}
+.e2t-img .eac-n{font-size:16px;line-height:20px}.e2t-img .eac-s{font-size:12px;line-height:15px}.e2t-img .eac-t{padding:0 12px 10px;text-align:left}
+.e2chip{position:absolute;right:8px;top:8px;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px 0 7px;border-radius:11px;background:var(--mtb);color:var(--mtb-fg);font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.e2col{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.e2hero{flex-direction:row!important;gap:16px!important;padding:12px!important;align-items:stretch;flex:none}
+.e2pv{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.e2stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:268px;border-radius:12px;background:var(--fill-1);padding:10px}
+.e2stk{width:100%;max-width:440px;display:flex;flex-direction:column;gap:0;border-radius:16px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 6px 20px rgba(0,0,0,.08);padding:7px}
+.e2big{width:100%;border-radius:11px!important;box-shadow:none!important;cursor:zoom-in;text-align:start}
+.e2bigd{height:330px;border-radius:14px!important;cursor:zoom-in;text-align:start;flex:none}
+.e2big .eac-n{font-size:18px;line-height:22px}
+.e2zoom{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:13px;background:rgba(0,0,0,.42);color:#fff;display:inline-flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;backdrop-filter:blur(8px)}
+.e2big:hover .e2zoom,.e2bigd:hover .e2zoom,.e2big:focus-visible .e2zoom,.e2bigd:focus-visible .e2zoom{opacity:1}
+.e2lock{display:flex;align-items:center;gap:8px;padding:8px 3px 1px}
+.e2lock-i{width:30px;height:30px;border-radius:8px;background:linear-gradient(160deg,#7C86FF,#3A2FB8);display:flex;align-items:center;justify-content:center;flex:none}
+.e2miss{height:330px;aspect-ratio:9/16;border-radius:16px;border:1.5px dashed var(--warn);background:var(--warn-tint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:12px}
+.e2art{width:292px;flex:none;display:flex;flex-direction:column;gap:9px;min-width:0}
+.e2rows{display:flex;flex-direction:column;gap:5px}
+.e2c{position:relative;display:flex;border-radius:12px;background:var(--raised);box-shadow:inset 0 0 0 .5px var(--sep-2)}
+.e2c:hover{background:var(--fill-1)}.e2c.on{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-tint)}
+.e2c-b{flex:1;min-width:0;display:flex;align-items:center;gap:9px;padding:6px 34px 6px 6px;text-align:left;border-radius:12px}
+.e2c-b:disabled{opacity:.75}
+.e2c-th{display:flex;gap:3px;flex:none;height:48px}
+.e2c-c,.e2c-d{position:relative;display:block;height:48px;border-radius:6px;overflow:hidden;background:var(--fill-2);box-shadow:0 0 0 .5px var(--sep-2)}
+.e2c-c{width:85px}.e2c-d{width:27px}
+.e2c-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.e2c-w{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.e2c-z{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;color:var(--label-2);background:var(--control);box-shadow:var(--ctl-shadow)}
+.e2c-z:hover{color:var(--label)}
+.e2pair{display:flex;gap:6px;height:118px}
+.e2pr{position:relative;display:block;height:118px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep-2);cursor:zoom-in;flex:none}
+.e2pr.c{aspect-ratio:16/9}.e2pr.d{aspect-ratio:9/16}
+.e2pr.miss{cursor:default;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--warn);background:var(--warn-tint);box-shadow:inset 0 0 0 1.5px var(--warn)}
+.e2pr:hover:not(.miss){box-shadow:0 0 0 2px var(--accent)}
+.e2acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:auto}
+@container (max-width:700px){.e2hero{flex-direction:column!important}.e2art{width:auto}.e2stage{min-height:0}}
+.e2v{position:absolute;inset:0;z-index:50;background:#0B0B0F;color:#fff;display:flex;flex-direction:column;--label:#fff}
+.e2v-top{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 16px;border-bottom:.5px solid rgba(255,255,255,.12)}
+.e2v-n{font-size:13px;line-height:16px;font-weight:600;color:#fff}.e2v-s{font-size:11.5px;line-height:14px;color:rgba(255,255,255,.62)}
+.e2v-b{width:28px;height:28px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.12);flex:none}
+.e2v-b:hover,.e2v-nav:hover{background:rgba(255,255,255,.22)}
+.e2v-seg{display:inline-flex;padding:2px;border-radius:999px;background:rgba(255,255,255,.12);flex:none}
+.e2v-seg button{height:24px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap}
+.e2v-seg button.on{background:rgba(255,255,255,.92);color:#111}
+.e2v-tg{height:28px;padding:0 11px 0 9px;border-radius:14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.8);background:rgba(255,255,255,.12);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
+.e2v-tg::before{content:'';width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.e2v-tg.on{color:#fff;background:rgba(255,255,255,.24)}.e2v-tg.on::before{background:#30D158;box-shadow:none}
+.e2v-stage{flex:1;min-height:0;display:flex;align-items:center;gap:12px;padding:16px 14px}
+.e2v-nav{width:36px;height:36px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.12);flex:none}
+.e2v-box{flex:1;min-width:0;height:100%;container-type:size;display:flex;align-items:center;justify-content:center}
+.e2v-img{position:relative;display:block;overflow:hidden;border-radius:14px;box-shadow:0 0 0 .5px rgba(255,255,255,.18),0 20px 60px rgba(0,0,0,.6);background:#101645}
+.e2v-img.card{aspect-ratio:16/9;width:min(100cqw,calc(100cqh * 16 / 9))}
+.e2v-img.det{aspect-ratio:9/16;width:min(100cqw,calc(100cqh * 9 / 16))}
+.e2v-t{padding:0 3.2% 3%!important;gap:.5cqh!important}
+.e2v-img.card .eac-b{font-size:clamp(10px,1.7cqh,15px)}.e2v-img.card .eac-n{font-size:clamp(18px,5.4cqh,44px);line-height:1.18}.e2v-img.card .eac-s{font-size:clamp(12px,3.1cqh,26px);line-height:1.25}
+.e2v-img.det .e2v-t{padding:0 6% 5%!important}
+.e2v-img.det .eac-b{font-size:clamp(9px,1.4cqh,13px)}.e2v-img.det .eac-n{font-size:clamp(15px,3.6cqh,30px);line-height:1.18}.e2v-img.det .eac-w{font-size:clamp(9px,1.6cqh,14px)}.e2v-img.det .eac-s{font-size:clamp(10px,2.1cqh,18px);line-height:1.3}
+.e2v-safe{top:62%;border-radius:0 0 14px 14px}.e2v-img.card .e2v-safe{top:64%}
+.e2v-img .eash{background-image:linear-gradient(100deg,rgba(0,0,0,.35) 20%,rgba(255,255,255,.2) 50%,rgba(0,0,0,.35) 80%)}
+.e2v-busy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 14px;border-radius:12px;background:rgba(0,0,0,.6);font-size:13px;font-weight:600;white-space:nowrap;backdrop-filter:blur(10px)}
+.e2v-bot{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px 14px;border-top:.5px solid rgba(255,255,255,.12)}
+.e2v-film{display:flex;gap:6px;flex:none;align-items:center}
+.e2f{position:relative;display:block;padding:2px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);opacity:.78}
+.e2f:hover{opacity:.9}.e2f.on{box-shadow:inset 0 0 0 2px #fff;opacity:1}
+.e2f-c,.e2f-d{position:relative;display:block;height:46px;border-radius:8px;overflow:hidden}.e2f-c{width:82px}.e2f-d{width:26px}
+.e2f-u{position:absolute;right:-4px;top:-4px;width:16px;height:16px;border-radius:50%;background:#30D158;color:#06260F;font:700 10px/16px -apple-system,sans-serif;text-align:center}
+.e2v-why{font-size:12.5px;line-height:16px;color:rgba(255,255,255,.92)}.e2v-ck{font-size:11.5px;line-height:15px;color:rgba(255,255,255,.62)}
+.e2v-l{height:22px;padding:0 9px;border-radius:11px;font-size:11.5px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.1);white-space:nowrap}
+.e2v-l.on{background:rgba(255,255,255,.9);color:#111;font-weight:600}
+.e2v-btn{height:28px;padding:0 14px;border-radius:14px;font-size:13px;color:#fff;background:rgba(255,255,255,.16);white-space:nowrap;flex:none;display:inline-flex;align-items:center}
+.e2v-btn:hover{background:rgba(255,255,255,.26)}.e2v-btn.pri{background:#0A84FF;font-weight:500}.e2v-btn.pri:hover{background:#2B95FF}
+.e2v-btn:disabled{opacity:.4;pointer-events:none}
+.e2v-used{font-size:12.5px;font-weight:600;color:#30D158;flex:none;padding:0 6px}
+.e2v.full .e2v-stage{padding:0}.e2v.full .e2v-img{border-radius:0;box-shadow:none}.e2v.full .e2v-nav{display:none}.e2v.full .e2v-safe{border-radius:0}
+.e2v-hud{position:absolute;left:50%;top:14px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:22px;background:rgba(20,20,24,.72);box-shadow:0 0 0 .5px rgba(255,255,255,.2),0 12px 40px rgba(0,0,0,.5);backdrop-filter:blur(24px) saturate(1.6);white-space:nowrap}
+.e2v-ask{position:absolute;right:16px;bottom:74px;width:340px;max-width:calc(100% - 32px);display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:16px;background:rgba(32,32,38,.92);box-shadow:0 0 0 .5px rgba(255,255,255,.2),0 16px 48px rgba(0,0,0,.6);backdrop-filter:blur(24px) saturate(1.6)}
+.e2v-ta{width:100%;padding:7px 9px;border-radius:9px;border:0;outline:none;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.25);color:#fff;font:inherit;font-size:12.5px;line-height:17px;resize:none;display:block}
+.alx-hc .e2v-top,.alx-hc .e2v-bot{border-color:rgba(255,255,255,.6)}.alx-hc .e2v-s,.alx-hc .e2v-ck{color:#fff}.alx-hc .e2f{opacity:1}.alx-hc .e2v-b,.alx-hc .e2v-nav,.alx-hc .e2v-btn,.alx-hc .e2v-tg,.alx-hc .e2v-seg{box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+.alx-hc .e2c{box-shadow:inset 0 0 0 1px var(--label)}.alx-hc .e2c.on{box-shadow:inset 0 0 0 2.5px var(--accent)}.alx-hc .e2t-b{box-shadow:0 0 0 1px var(--label)}.alx-hc .e2zoom{opacity:1}
+@container (max-width:900px){.e2v-tg{padding:0 9px;font-size:11.5px}.e2v-ck{display:none}.e2f-c{width:57px;height:32px}.e2f-d{width:18px;height:32px}}
+@media (prefers-reduced-motion:reduce){.e2zoom{transition:none}}
+
+.askb .ic{color:var(--mt)}
+.askb.busy{color:var(--mt);pointer-events:none;box-shadow:inset 0 0 0 1px var(--mt-edge);background:var(--mt-tint)}
+.askfly{position:absolute;z-index:70;width:26px;height:26px;pointer-events:none}
+.askfly>i{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--mtb);color:var(--mtb-fg);box-shadow:0 0 0 4px var(--mt-tint),0 6px 18px rgba(138,60,214,.45)}
+.askfly>i .ic{color:inherit}
+.askfly.live{transition:transform .68s cubic-bezier(.5,0,.9,.6)}
+.askfly.live>i{transition:transform .68s cubic-bezier(.1,.7,.3,1),opacity .16s linear .54s}
+.asd{width:8px;height:8px;border-radius:50%;background:#34C759;flex:none;display:block}
+.tb-asst{position:relative}
+.tb-asst.work{color:var(--mt)}
+.tb-asst.work::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:asring .9s ease-out 1}
+.tb-asst.work .asd{background:var(--mtb);animation:asdp 1.1s ease-in-out infinite}
+.tb-asl{font-size:12px;font-weight:600;white-space:nowrap}
+@keyframes asring{0%{box-shadow:0 0 0 0 rgba(138,60,214,.6)}100%{box-shadow:0 0 0 14px rgba(138,60,214,0)}}
+@keyframes asdp{0%,100%{transform:scale(.7);opacity:.55}50%{transform:scale(1.25);opacity:1}}
+@media (prefers-reduced-motion:reduce){.askfly{display:none}.tb-asst.work::after,.tb-asst.work .asd{animation:none}}
+
+.sx{display:flex;width:100%;overflow:hidden;background:var(--window);color:var(--label);font-size:13px;line-height:17px}
+.sx-sb{width:212px;flex:none;display:flex;flex-direction:column;gap:2px;padding:14px 8px 10px;box-sizing:border-box}
+.sx-srch{display:flex;align-items:center;gap:6px;height:28px;margin:12px 0 8px;padding:0 8px;border-radius:8px;background:var(--fill-2);color:var(--label-2);font-size:12px}
+.sx-srch input{flex:1;min-width:0;border:0;background:none;outline:none;font:inherit;color:var(--label)}
+.sx-main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--content);box-shadow:-.5px 0 0 var(--sep)}
+.sx-hd{flex:none;padding:16px 24px 10px;display:flex;align-items:center;gap:12px}
+.sx-bd{flex:1;min-height:0;padding:2px 24px 22px;display:flex;flex-direction:column;gap:6px}
+.sgh{font-size:12px;font-weight:600;color:var(--label-2);padding:12px 2px 2px}
+.sg{background:var(--fill-1);border-radius:12px;box-shadow:inset 0 0 0 .5px var(--sep);display:flex;flex-direction:column;flex:none}
+.sr{display:flex;align-items:center;gap:12px;padding:9px 12px;min-height:38px;box-sizing:border-box}
+.sr+.sr{box-shadow:inset 0 .5px 0 var(--sep)}
+.sr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.sr-s{font-size:12px;line-height:15px;color:var(--label-2)}
+.sgf{font-size:12px;line-height:15px;color:var(--label-2);padding:4px 2px 0}
+.selb{height:28px;padding:0 6px 0 9px;border-radius:8px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:13px;display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap}
+.selb .ic{width:11px;height:11px;color:var(--label-2)}
+.btn.dng{color:var(--err)}
+.kav{width:34px;height:34px;border-radius:10px;background:var(--label);color:var(--content);font:700 11px/34px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;flex:none}
+.kline{display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:15px}
+.kline .ic{width:11px;height:11px;margin-top:2px;stroke-width:2}
+.gch{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 6px 0 9px;border-radius:11px;background:var(--control);box-shadow:var(--ctl-shadow);font-size:12px}
+.gch .ic{width:9px;height:9px;color:var(--label-3);stroke-width:2}
+.sld{position:relative;width:150px;height:4px;border-radius:2px;background:var(--accent);flex:none}
+.sld i{position:absolute;right:-7px;top:-6px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.25)}
+.lockr{color:var(--label-2)}
+.plan{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#1FC2FF 0%,#0A5CF2 100%);color:#fff;flex:none}
+.plan .btn{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5)}
+.plan.free{background:var(--fill-2);color:var(--label)}
+.plan.free .btn.pri{background:var(--accent);color:#fff;box-shadow:none}
+.pmark{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex:none}
+.plan.free .pmark{background:var(--fill-3)}
+.pmark .ic{width:22px;height:22px}
+.inl{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:var(--err-tint);margin:0 12px 10px}
+.nvi .ic{color:#fff}
+/* help */
+.hx-art{max-width:600px;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.hx-art h1{font-size:24px;line-height:29px;font-weight:700;letter-spacing:-.015em;margin:0}
+.hx-art h2{font-size:15px;line-height:20px;font-weight:600;margin:8px 0 0}
+.hx-art p{margin:0;font-size:13px;line-height:20px}
+.hx-lead{font-size:15px!important;line-height:22px!important;color:var(--label-2)}
+.hx-art ol,.hx-art ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px;font-size:13px;line-height:20px}
+.hx-note{background:var(--fill-1);border-radius:10px;box-shadow:inset 0 0 0 .5px var(--sep);padding:10px 12px;font-size:12px;line-height:18px}
+.hx-note.w{background:var(--warn-tint);box-shadow:none}
+.hx-t{width:100%;border-collapse:collapse;font-size:12px;line-height:17px}
+.hx-t th{text-align:left;font-weight:600;color:var(--label-2);font-size:12px;padding:5px 8px;border-bottom:.5px solid var(--sep-2)}
+.hx-t td{padding:6px 8px;border-bottom:.5px solid var(--sep);vertical-align:top}
+.hx-go{align-self:flex-start;gap:6px}
+.hx-rel{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding-top:10px;border-top:.5px solid var(--sep)}
+.hx-lnk{display:flex;align-items:center;gap:6px;min-height:24px;padding:3px 6px;box-sizing:border-box;border-radius:8px;color:var(--accent-text);font-size:13px;line-height:17px;text-align:left;align-self:flex-start;white-space:normal}
+.hx-lnk:hover{background:var(--fill-1)}
+.kb{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:var(--fill-2);box-shadow:inset 0 0 0 .5px var(--sep-2);font:500 12px/1 -apple-system,system-ui,sans-serif;box-sizing:border-box}
+.sx-sb .nvh{padding:9px 8px 3px}
+.hx-hero{border-radius:16px;background:linear-gradient(135deg,#1FC2FF 0%,#0A5CF2 100%);color:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:10px;flex:none}
+.hx-big{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:10px;background:#fff;color:#6B6B70;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.hx-big input{flex:1;border:0;background:none;outline:none;font:inherit;color:#1D1D1F}
+.hx-sug{height:24px;padding:0 10px;border-radius:12px;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5);color:#fff;font-size:12px}
+.hx-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hx-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;background:var(--fill-1);box-shadow:inset 0 0 0 .5px var(--sep);text-align:left}
+.hx-card:hover{background:var(--fill-2)}
+.hx-res{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:10px;text-align:left;width:100%}
+.hx-res:hover{background:var(--fill-1)}
+.hx-res+.hx-res{box-shadow:inset 0 .5px 0 var(--sep)}
+.dsk2{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(160deg,#BFDDF9 0%,#E8EEF6 45%,#F7D2B4 100%)}
+.alx-d .dsk2{background:linear-gradient(160deg,#0E1626 0%,#1C3F73 45%,#0F5E68 100%)}
+.mbar2{position:absolute;left:0;right:0;top:0;height:30px;display:flex;align-items:center;gap:16px;padding:0 14px;font-size:13px;background:rgba(255,255,255,.55);color:#1d1d1f}
+.alx-d .mbar2{background:rgba(20,22,28,.5);color:#fff}
+.mbar2 .on{background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;margin:0 -8px}
+.hmenu{position:absolute;top:32px;left:254px;width:290px;border-radius:12px;background:var(--raised);box-shadow:0 0 0 .5px var(--sep-2),0 18px 50px rgba(0,0,0,.28);padding:6px;display:flex;flex-direction:column;gap:1px;font-size:13px}
+.hmenu .mi{height:26px;border-radius:6px;padding:0 10px;display:flex;align-items:center;gap:8px;text-align:left;width:100%}
+.hmenu .mi:hover,.hmenu .mi.hi{background:var(--accent);color:#fff}
+.hmenu .mi span.k{margin-left:auto;color:var(--label-2);font-size:12px}.hmenu .mi.hi span.k{color:rgba(255,255,255,.8)}
+.hmenu .msep{height:1px;background:var(--sep);margin:5px 10px}
+.sg.dim{opacity:.5}
+.stgs{list-style:none;margin:0;padding:0;display:flex;gap:8px}.stgs li{flex:1;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--accent-tint);font-size:12px;line-height:15px}.stgs b{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex:none}.stgk{flex-basis:100%;list-style:none;margin:2px 0 0;padding:8px 10px;border-radius:8px;background:var(--content);display:flex;flex-direction:column;gap:5px;font-size:12px}.stgk li{display:flex;align-items:center;gap:8px;color:var(--label-2)}.stgk li.done{color:var(--label)}.stgk li.now{color:var(--label);font-weight:500}.stgk i{width:16px;height:16px;border-radius:50%;font-style:normal;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:var(--fill-3);flex:none}.stgk li.done i{background:rgba(52,199,89,.16);color:var(--ok)}.stgk li.now i{background:var(--accent);color:#fff}.stgt{flex-basis:100%;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--content)}.stgt.red{background:var(--err-tint)}.stgsp{width:14px;height:14px;border-radius:50%;border:2px solid var(--fill-3);border-top-color:var(--accent);animation:alxspin .8s linear infinite;flex:none}.wzst{list-style:none;margin:0;padding:0;display:flex;gap:6px}.wzst li{flex:1;display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:10px;background:var(--fill-1);font-size:12px;color:var(--label-2);white-space:nowrap}.wzst li.now{background:var(--accent-tint);color:var(--label);font-weight:600}.wzst li.done{color:var(--label)}.wzst i{width:18px;height:18px;border-radius:50%;font-style:normal;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:var(--fill-3);flex:none}.wzst li.now i{background:var(--accent);color:#fff}.wzst li.done i{background:rgba(52,199,89,.16);color:var(--ok)}.wzdrop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:150px;padding:16px;border-radius:16px;border:1.5px dashed var(--sep-2);background:var(--fill-1);text-align:center;cursor:default}.wzdrop.over{border-color:var(--accent);border-style:solid;background:var(--accent-tint)}.wzdrop:hover{background:var(--fill-2)}.wzfi{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--accent-tint);color:var(--accent-text);flex:none;margin-bottom:4px}.wzfi .ic{width:24px;height:24px}.wzfi.sm{width:32px;height:32px;border-radius:8px;margin:0}.wzfi.sm .ic{width:18px;height:18px}.wzmsg{display:flex;gap:10px;align-items:flex-start}.wzbub{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;padding:11px 14px;border-radius:4px 14px 14px 14px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);font-size:13px;line-height:18px}.wzc{display:inline-flex;align-items:center;height:26px;border-radius:13px;font-weight:400;font-size:12px}.aslogo{width:32px;height:32px;border-radius:8px;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}@media (prefers-reduced-motion:reduce){.stgsp{animation:none}}
+
+.btn.tint{background:var(--accent-tint);color:var(--accent-text);box-shadow:none;font-weight:600}.btn.tint:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}.alx-hc .btn.tint{box-shadow:inset 0 0 0 1px var(--accent)}
+
+.wztyp{display:inline-flex;gap:5px;align-items:center;padding:12px 14px;border-radius:4px 14px 14px 14px;background:var(--mt-tint);box-shadow:inset 0 0 0 1px var(--mt-edge);animation:wzpop .25s ease-out both}
+.wztyp i{width:6px;height:6px;border-radius:50%;background:var(--mt);opacity:.35;animation:wzdot 1.2s ease-in-out infinite}.wztyp i:nth-child(2){animation-delay:.15s}.wztyp i:nth-child(3){animation-delay:.3s}
+@keyframes wzdot{0%,60%,100%{opacity:.35;transform:none}30%{opacity:1;transform:translateY(-2px)}}
+@keyframes wzpop{from{opacity:0;transform:scale(.96)}}
+.wzbub.said{animation:wzpop .25s ease-out both}
+.wzbub.said>span{animation:wztxt .45s ease-out both}.wzbub.said>span:nth-child(2){animation-delay:.12s}.wzbub.said>span:nth-child(3){animation-delay:.55s}.wzbub.said>span:nth-child(4){animation-delay:1s}
+@keyframes wztxt{from{opacity:0;filter:blur(2px);transform:translateY(2px)}}
+@media (prefers-reduced-motion:reduce){.wztyp,.wztyp i,.wzbub.said,.wzbub.said>span{animation:none}.wztyp i{opacity:.6}}
+</style>
+</helmet>
+<div class="{{theme}} sx" style="height: {{H}}; min-height: 300px; position: relative">
+<nav class="sx-sb" aria-label="Settings"><div class="tl" aria-hidden="true"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div><label class="sx-srch"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"></circle><path d="M10.2 10.2L14 14"></path></svg><input placeholder="Search" aria-label="Search settings"></label><button class="{{nav.general.cls}}" aria-current="{{nav.general.cur}}" onClick="{{nav.general.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#8E8E96,#6B6B73)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2"></circle><path d="M8 1.8v1.7M8 12.5v1.7M1.8 8h1.7M12.5 8h1.7M3.6 3.6l1.2 1.2M11.2 11.2l1.2 1.2M12.4 3.6l-1.2 1.2M4.8 11.2l-1.2 1.2"></path></svg></span><span style="flex:1">General</span></button><button class="{{nav.accounts.cls}}" aria-current="{{nav.accounts.cur}}" onClick="{{nav.accounts.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#3D86F7,#2869D2)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="5" cy="8" r="2.6"></circle><path d="M7.6 8h6.2M11.2 8v2.2M13.4 8v1.6"></path></svg></span><span style="flex:1">Accounts</span></button><button class="{{nav.assistants.cls}}" aria-current="{{nav.assistants.cur}}" onClick="{{nav.assistants.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#9B55E3,#7A33C4)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8l1.3 3.4 3.4 1.3-3.4 1.3L8 11.2 6.7 7.8 3.3 6.5l3.4-1.3z"></path><path d="M12.4 10.6l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z"></path></svg></span><span style="flex:1">AI Assistants</span></button><button class="{{nav.suggestions.cls}}" aria-current="{{nav.suggestions.cur}}" onClick="{{nav.suggestions.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#6866E0,#4B49B8)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13l7-7M9 3.2l.5 1.3 1.3.5-1.3.5L9 6.8l-.5-1.3L7.2 5l1.3-.5zM12.4 7.6l.4 1 1 .4-1 .4-.4 1-.4-1-1-.4 1-.4z"></path></svg></span><span style="flex:1">Suggestions</span></button><button class="{{nav.pricing.cls}}" aria-current="{{nav.pricing.cur}}" onClick="{{nav.pricing.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#3BB466,#288F4D)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.6V3.5a1 1 0 0 1 1-1h5.1l5 5a1 1 0 0 1 0 1.4l-4.2 4.2a1 1 0 0 1-1.4 0z"></path><circle cx="5.6" cy="5.6" r=".9"></circle></svg></span><span style="flex:1">Pricing</span></button><button class="{{nav.shots.cls}}" aria-current="{{nav.shots.cur}}" onClick="{{nav.shots.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#F57A35,#CE5619)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="4.2" y="1.8" width="7.6" height="12.4" rx="1.8"></rect><path d="M7 12h2"></path></svg></span><span style="flex:1">Screenshots</span></button><button class="{{nav.notif.cls}}" aria-current="{{nav.notif.cur}}" onClick="{{nav.notif.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#F0565B,#CC3338)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11V7.5a4 4 0 0 1 8 0V11l1.2 1.4H2.8zM6.6 13.6a1.5 1.5 0 0 0 2.8 0"></path></svg></span><span style="flex:1">Notifications</span></button><button class="{{nav.pro.cls}}" aria-current="{{nav.pro.cur}}" onClick="{{nav.pro.pick}}"><span class="sico sm" style="background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4L2.2 6.3l4-.6z"></path></svg></span><span style="flex:1">Atlas Pro</span></button><button class="{{nav.privacy.cls}}" aria-current="{{nav.privacy.cur}}" onClick="{{nav.privacy.pick}}"><span class="sico sm" style="background:linear-gradient(180deg,#4A4A50,#2C2C30)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><span style="flex:1">Privacy &amp; Data</span></button></nav>
+<main class="sx-main">
+<sc-if value="{{is.general}}" hint-placeholder-val="{{true}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#8E8E96,#6B6B73)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2"></circle><path d="M8 1.8v1.7M8 12.5v1.7M1.8 8h1.7M12.5 8h1.7M3.6 3.6l1.2 1.2M11.2 11.2l1.2 1.2M12.4 3.6l-1.2 1.2M4.8 11.2l-1.2 1.2"></path></svg></span><div class="sr-t"><span class="t-2">General</span><span class="sr-s" style="font-size:12px">How Atlas looks, where it lives, and how careful it is before pushing.</span></div></div><div class="sx-bd scroll"><span class="sgh">Appearance</span><div class="sg"><div class="sr"><div class="sr-t"><span>Appearance</span></div><div class="seg" role="radiogroup"><button role="radio" aria-checked="{{sg.appear_0.aria}}" class="{{sg.appear_0.cls}}" onClick="{{sg.appear_0.pick}}">Match System</button><button role="radio" aria-checked="{{sg.appear_1.aria}}" class="{{sg.appear_1.cls}}" onClick="{{sg.appear_1.pick}}">Light</button><button role="radio" aria-checked="{{sg.appear_2.aria}}" class="{{sg.appear_2.cls}}" onClick="{{sg.appear_2.pick}}">Dark</button></div></div></div><span class="sgh">Menu bar and Dock</span><div class="sg"><div class="sr"><div class="sr-t"><span>Show Atlas in the menu bar</span><span class="sr-s">What’s running and what needs you, one click away.</span></div><button role="switch" aria-checked="{{sw.mb.aria}}" class="{{sw.mb.cls}}" onClick="{{sw.mb.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Keep running when the window is closed</span><span class="sr-s">Pushes and Autopilot finish, and Atlas keeps checking for reviews and Apple’s answers.</span></div><button role="switch" aria-checked="{{sw.keep.aria}}" class="{{sw.keep.cls}}" onClick="{{sw.keep.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Show in the Dock</span></div><button class="selb" aria-haspopup="menu">Only while a window is open<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Animate the menu bar icon while working</span><span class="sr-s">Follows Reduce Motion.</span></div><button role="switch" aria-checked="{{sw.anim.aria}}" class="{{sw.anim.cls}}" onClick="{{sw.anim.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Open Atlas at login</span><span class="sr-s">Starts in the menu bar, with no window.</span></div><button role="switch" aria-checked="{{sw.login.aria}}" class="{{sw.login.cls}}" onClick="{{sw.login.tog}}"></button></div></div><span class="sgh">Checking App Store Connect</span><div class="sg"><div class="sr"><div class="sr-t"><span>Check for reviews, status and reports</span></div><button class="selb" aria-haspopup="menu">Every hour<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div></div><span class="sgf">Apple publishes analytics once a day, so reports are read each morning whatever you choose here.</span><span class="sgh">Before pushing</span><div class="sg"><div class="sr"><div class="sr-t"><span>Confirm before pushing</span><span class="sr-s">Review &amp; Push always opens first. This adds a final “Push 26 changes?”</span></div><div class="seg" role="radiogroup"><button role="radio" aria-checked="{{sg.confirm_0.aria}}" class="{{sg.confirm_0.cls}}" onClick="{{sg.confirm_0.pick}}">Always</button><button role="radio" aria-checked="{{sg.confirm_1.aria}}" class="{{sg.confirm_1.cls}}" onClick="{{sg.confirm_1.pick}}">Over 50 changes</button><button role="radio" aria-checked="{{sg.confirm_2.aria}}" class="{{sg.confirm_2.cls}}" onClick="{{sg.confirm_2.pick}}">Never</button></div></div><div class="sr"><div class="sr-t"><span>Confirm before discarding changes</span></div><button role="switch" aria-checked="{{sw.discard.aria}}" class="{{sw.discard.cls}}" onClick="{{sw.discard.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Ask before pushing price increases</span><span class="sr-s">Shows how many subscribers would be asked to agree.</span></div><button role="switch" aria-checked="{{sw.raise.aria}}" class="{{sw.raise.cls}}" onClick="{{sw.raise.tog}}"></button></div></div></div></sc-if>
+<sc-if value="{{is.accounts}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#3D86F7,#2869D2)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="5" cy="8" r="2.6"></circle><path d="M7.6 8h6.2M11.2 8v2.2M13.4 8v1.6"></path></svg></span><div class="sr-t"><span class="t-2">Accounts</span><span class="sr-s" style="font-size:12px">The App Store Connect keys Atlas uses. They stay in this Mac’s Keychain.</span></div></div><div class="sx-bd scroll"><span class="sgh">App Store Connect keys</span><div class="sg"><div class="sr" style="align-items:flex-start"><span class="kav">NS</span><div class="sr-t" style="gap:3px"><span style="display:flex;align-items:center;gap:6px"><b style="font-weight:600">Northpier Studio</b><span class="pill p-acc">In use</span></span><span class="sr-s mono">Issuer 69a6de7f-3c2e-47e3-e053-5b8c7c11a4d1</span><span class="sr-s mono">Key 2X9R4HXF34 · Team key</span><span class="kline" style="color:var(--ok)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"></path></svg><span style="color:var(--label)">Admin: can manage apps and read Sales and Trends</span></span><span class="kline" style="color:var(--ok)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"></path></svg><span style="color:var(--label)">Connected · 6 apps · checked just now</span></span></div><div style="display:flex;gap:6px"><button class="btn sm ">Test Connection</button><button class="btn sm dng" onClick="{{rmAsk}}">Remove…</button></div></div><div class="sr" style="align-items:flex-start"><span class="kav">BA</span><div class="sr-t" style="gap:3px"><span style="display:flex;align-items:center;gap:6px"><b style="font-weight:600">Brightline Apps</b></span><span class="sr-s mono">Issuer 5e1f0a42-8d7b-4c19-9f6e-27b3d0c8e915</span><span class="sr-s mono">Key Q7MZ3K8PLA · Team key</span><span class="kline" style="color:var(--warn)"><b style="width:11px;text-align:center">!</b><span style="color:var(--label)">App Manager: can’t read Sales and Trends, so price suggestions use purchasing power only</span></span></div><div style="display:flex;gap:6px"><button class="btn sm ">Test Connection</button><button class="btn sm dng" onClick="{{rmAsk}}">Remove…</button></div></div><sc-if value="{{rmOn}}"><div class="inl" role="alertdialog" aria-label="Remove key"><b style="font-weight:600">Remove Brightline Apps?</b><span class="sr-s" style="color:var(--label)">Its 2 apps leave Atlas, and 3 changes that weren’t pushed are discarded. The key is deleted from this Mac’s Keychain. Nothing changes in App Store Connect.</span><div style="display:flex;justify-content:flex-end;gap:6px"><button class="btn sm" onClick="{{rmNo}}">Cancel</button><button class="btn sm dng" onClick="{{rmNo}}">Remove Key</button></div></div></sc-if></div><div style="display:flex;gap:8px;align-items:center;padding-top:6px"><button class="btn"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"></path></svg>Add Another Key…</button><span class="sgf" style="padding:0">More than one account is part of Atlas Pro.</span></div><span class="sgh">Sales and analytics</span><div class="sg"><div class="sr"><div class="sr-t"><span>Vendor number · Northpier Studio</span><span class="sr-s"><span style="color:var(--ok)">Sales readable with key 2X9R4HXF34 (Admin)</span></span></div><input class="fld mono" style="width:120px" aria-label="Vendor number" value="85912345"></div><div class="sr"><div class="sr-t"><span>Vendor number · Brightline Apps</span><span class="sr-s">Needs a key with the Admin, Finance or Sales role.</span></div><input class="fld mono" style="width:120px" aria-label="Vendor number" placeholder="8 digits" disabled></div><div class="sr"><div class="sr-t"><span>Reports by app</span><span class="sr-s">Which apps Atlas asks Apple to make reports for.</span></div><button class="btn sm ">Open in Analytics</button></div></div><span class="sgf">Find the vendor number in App Store Connect → Payments and Financial Reports, under your team name.</span><span class="sgf" style="padding-top:8px">Removing a key removes its apps from Atlas. Nothing changes in App Store Connect.</span></div></sc-if>
+<sc-if value="{{is.assistants}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#9B55E3,#7A33C4)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8l1.3 3.4 3.4 1.3-3.4 1.3L8 11.2 6.7 7.8 3.3 6.5l3.4-1.3z"></path><path d="M12.4 10.6l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z"></path></svg></span><div class="sr-t"><span class="t-2">AI Assistants</span><span class="sr-s" style="font-size:12px">Where suggestions come from, and what an assistant may and may not do.</span></div></div><div class="sx-bd scroll"><span class="sgh">Where suggestions come from</span><div class="sg" role="radiogroup" aria-label="Where suggestions come from" style="overflow:hidden"><button role="radio" aria-checked="{{src.mcp.aria}}" class="{{src.mcp.cls}}" onClick="{{src.mcp.pick}}" style="border-radius:0;padding:9px 12px;align-items:flex-start"><span class="rdo" aria-hidden="true" style="margin-top:1px"></span><span class="sr-t" style="text-align:left"><span>Your AI assistant</span><span class="sr-s">Claude Code, Claude for Mac, Cursor or another assistant you already use, on its own plan. No API key here.</span></span><sc-if value="{{as.pill}}"><span class="pill p-ok">Connected</span></sc-if></button><button role="radio" aria-checked="{{src.key.aria}}" class="{{src.key.cls}}" onClick="{{src.key.pick}}" style="border-radius:0;padding:9px 12px;align-items:flex-start"><span class="rdo" aria-hidden="true" style="margin-top:1px"></span><span class="sr-t" style="text-align:left"><span>An API key</span><span class="sr-s">Atlas asks the provider directly from this Mac. You pay the provider for what you use.</span></span></button><sc-if value="{{src.key.on}}"><div class="sr" style="padding-left:38px"><div class="sr-t"><span>Provider and key</span><span class="sr-s" style="color:var(--ok)">Key checked just now</span></div><button class="selb" aria-haspopup="menu">Anthropic<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button><input class="fld mono" style="width:190px" aria-label="API key" value="sk-ant-••••••••••••••••7Qx2"><button class="btn sm ">Check Key</button></div></sc-if><button role="radio" aria-checked="{{src.none.aria}}" class="{{src.none.cls}}" onClick="{{src.none.pick}}" style="border-radius:0;padding:9px 12px;align-items:flex-start"><span class="rdo" aria-hidden="true" style="margin-top:1px"></span><span class="sr-t" style="text-align:left"><span>Built-in only</span><span class="sr-s">Atlas’s own checks, and Apple’s translation on this Mac. Free and private; no keyword work.</span></span></button></div><sc-if value="{{src.mcp.on}}"><span class="sgh">Connect an assistant</span><sc-if value="{{as.none}}"><ol class="stgs" aria-label="How it works"><li><b>1</b>Choose the assistant you use</li><li><b>2</b>Click Connect</li><li><b>3</b>Atlas checks that it works</li></ol></sc-if><sc-if value="{{as.srvOff}}"><div class="sg"><div class="sr"><div class="sr-t"><span class="twarn">Connections are turned off</span><span class="sr-s">Your assistants stay in the list, and can’t reach Atlas until you turn this on.</span></div><button class="btn" onClick="{{sw.server.tog}}">Turn On</button></div></div></sc-if><div class="{{pairCls}}"><sc-for list="{{as.list}}" as="a" hint-placeholder-count="4"><div class="sr" style="flex-wrap:wrap;min-height:52px"><span class="aslogo" aria-hidden="true" style="background:{{a.bg}}">{{a.ch}}</span><div class="sr-t"><span class="b">{{a.name}}</span><span class="{{a.stCls}}">{{a.st}}</span></div><sc-if value="{{a.canConnect}}"><button class="btn sm tint" onClick="{{a.connect}}">Connect</button></sc-if><sc-if value="{{a.isBusy}}"><span class="stgsp" aria-hidden="true"></span><button class="btn" disabled="{{a.isBusy}}">Connecting…</button></sc-if><sc-if value="{{a.isOn}}"><span class="pill p-ok">✓ Connected</span><button class="btn" onClick="{{a.off}}">Disconnect…</button></sc-if><sc-if value="{{a.notInst}}"><button class="btn" onClick="{{a.get}}">{{a.getBtn}}</button></sc-if><sc-if value="{{a.isBusy}}"><ol class="stgk" aria-label="Progress"><sc-for list="{{a.steps}}" as="k" hint-placeholder-count="3"><li class="{{k.cls}}"><i aria-hidden="true">{{k.mark}}</i>{{k.t}}</li></sc-for></ol></sc-if><sc-if value="{{a.showTry}}"><div class="stgt"><span class="t-c" style="flex:1;min-width:0">{{a.tryTxt}}</span><button class="btn sm" onClick="{{a.test}}">{{a.testBtn}}</button></div></sc-if><sc-if value="{{a.asked}}"><div class="stgt red"><span class="t-c" style="flex:1;min-width:0">{{a.askTxt}}</span><button class="btn sm" onClick="{{a.cancelOff}}">Cancel</button><button class="btn sm dng" onClick="{{a.confirmOff}}">Disconnect</button></div></sc-if></div></sc-for></div><span class="sgf">Atlas adds itself to the assistant for you: nothing to copy or type. Assistants read and suggest. They never see your .p8 key and can’t push.</span><div class="sg" style="margin-top:6px"><div class="sr"><div class="sr-t"><span>Advanced</span><span class="sr-s">Turn connections off, or set up another assistant by hand.</span></div><button class="btn sm" onClick="{{as.togAdv}}" aria-expanded="{{as.adv}}">{{as.advBtn}}</button></div><sc-if value="{{as.adv}}"><div class="sr"><div class="sr-t"><span>Let assistants connect</span><span class="sr-s"><span class="{{srvCls}}">{{srvTxt}}</span></span></div><button role="switch" aria-checked="{{sw.server.aria}}" class="{{sw.server.cls}}" onClick="{{sw.server.tog}}"></button></div><div class="sr" style="flex-direction:column;align-items:stretch;gap:6px"><div class="sr-t"><span>Another assistant, by hand</span><span class="sr-s">For any app that supports MCP: in its MCP settings, add a server named “atlas” with this command, then restart it.</span></div><div style="display:flex;align-items:center;gap:8px"><code class="mono" style="flex:1;min-width:0;padding:6px 10px;border-radius:8px;background:var(--content);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">/Applications/Atlas.app/Contents/MacOS/atlas-mcp</code><button class="btn sm" onClick="{{as.copy}}">{{as.copyBtn}}</button></div></div></sc-if></div><span class="sgh">Assistants may suggest</span><div class="sg"><div class="sr"><span class="lockr" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><div class="sr-t"><span>Read apps, listings, prices and app information</span><span class=sr-s>On while the server runs.</span></div><span class="sr-s">Always</span></div><div class="sr"><div class="sr-t"><span>Store text</span><span class="sr-s">Listing text, translations, keywords and What’s New.</span></div><button role="switch" aria-checked="{{sw.may_store.aria}}" class="{{sw.may_store.cls}}" onClick="{{sw.may_store.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Screenshot templates and captions</span></div><button role="switch" aria-checked="{{sw.may_shots.aria}}" class="{{sw.may_shots.cls}}" onClick="{{sw.may_shots.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Prices</span><span class="sr-s">Always refused for apps set to “Keep my prices”.</span></div><button role="switch" aria-checked="{{sw.may_prices.aria}}" class="{{sw.may_prices.cls}}" onClick="{{sw.may_prices.tog}}"></button></div><div class="sr"><div class="sr-t"><span>App Information answers</span><span class="sr-s">Age rating, accessibility, App Privacy. You accept each one.</span></div><button role="switch" aria-checked="{{sw.may_info.aria}}" class="{{sw.may_info.cls}}" onClick="{{sw.may_info.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Replies to reviews</span></div><button role="switch" aria-checked="{{sw.may_reviews.aria}}" class="{{sw.may_reviews.cls}}" onClick="{{sw.may_reviews.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Event and header artwork</span><span class="sr-s">Drawn by Claude Design from the app’s design project.</span></div><button role="switch" aria-checked="{{sw.may_art.aria}}" class="{{sw.may_art.cls}}" onClick="{{sw.may_art.tog}}"></button></div></div><span class="sgh">Assistants never</span><div class="sg"><div class="sr"><span style="color:var(--err)" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><div class="sr-t"><span>Push anything to App Store Connect</span></div></div><div class="sr"><span style="color:var(--err)" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><div class="sr-t"><span>Accept a suggestion for you</span></div></div><div class="sr"><span style="color:var(--err)" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><div class="sr-t"><span>See your .p8 key, or an API key</span></div></div></div><span class="sgh">Claude Design</span><div class="sg"><div class="sr"><div class="sr-t"><span>Lumen Journal</span><span class="sr-s">Design project “Lumen” · connected Nov 3</span></div><button class="btn sm ">Change…</button></div><div class="sr"><div class="sr-t"><span>Habitat — Plant Care</span><span class="sr-s">Not connected. Artwork uses Atlas’s templates.</span></div><button class="btn sm ">Connect…</button></div></div><span class="sgf">Claude Design draws screenshots, headers and event artwork in each app’s own brand.</span><span class="sgh">Activity</span><div class="sg"><div class="sr"><div class="sr-t"><span>What assistants asked for</span><span class="sr-s">2 calls were refused this week, each with its reason.</span></div><button class="btn sm ">Show Activity…</button></div></div></sc-if></div></sc-if>
+<sc-if value="{{is.suggestions}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#6866E0,#4B49B8)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13l7-7M9 3.2l.5 1.3 1.3.5-1.3.5L9 6.8l-.5-1.3L7.2 5l1.3-.5zM12.4 7.6l.4 1 1 .4-1 .4-.4 1-.4-1-1-.4 1-.4z"></path></svg></span><div class="sr-t"><span class="t-2">Suggestions</span><span class="sr-s" style="font-size:12px">How Atlas writes, what it checks by itself, and what it may accept for you.</span></div></div><div class="sx-bd scroll"><span class="sgh">Writing</span><div class="sg"><div class="sr"><div class="sr-t"><span>Source language</span><span class="sr-s">Other languages are suggested from this one.</span></div><button class="selb" aria-haspopup="menu">English (U.S.)<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Tone</span></div><button class="selb" aria-haspopup="menu">Warm and simple<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr" style="flex-direction:column;align-items:stretch;gap:6px"><div class="sr-t"><span>Never translated</span><span class="sr-s">Names that stay as they are in every language.</span></div><div style="display:flex;flex-wrap:wrap;gap:5px"><span class="gch">Lumen<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><span class="gch">Lumen Plus<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><span class="gch">Face ID<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><span class="gch">iCloud<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><span class="gch">Weekly Reflections<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg></span><button class="btn sm"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"></path></svg>Add Term</button></div></div></div><span class="sgh">Atlas’s own checks</span><div class="sg"><div class="sr"><div class="sr-t"><span>Text that is too long or gets cut off</span></div><button role="switch" aria-checked="{{sw.chk_len.aria}}" class="{{sw.chk_len.cls}}" onClick="{{sw.chk_len.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Words repeated between name, subtitle and keywords</span><span class="sr-s">Apple indexes each word once.</span></div><button role="switch" aria-checked="{{sw.chk_rep.aria}}" class="{{sw.chk_rep.cls}}" onClick="{{sw.chk_rep.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Findings from Analytics</span><span class="sr-s">A page that converts worse than average becomes a suggestion.</span></div><button role="switch" aria-checked="{{sw.chk_an.aria}}" class="{{sw.chk_an.cls}}" onClick="{{sw.chk_an.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Translate on this Mac when no assistant is connected</span><span class="sr-s">Apple’s translation. Free and private.</span></div><button role="switch" aria-checked="{{sw.chk_tr.aria}}" class="{{sw.chk_tr.cls}}" onClick="{{sw.chk_tr.tog}}"></button></div></div><span class="sgh">Accepting</span><div class="sg"><div class="sr"><div class="sr-t"><span>Ask before Accept All Languages and Accept All Pages</span><span class="sr-s">Shows what will be accepted, with a chance to untick.</span></div><button role="switch" aria-checked="{{sw.askall.aria}}" class="{{sw.askall.cls}}" onClick="{{sw.askall.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Accept right away: translations in languages I’ve accepted before</span><span class="sr-s">They still wait in Review &amp; Push.</span></div><button role="switch" aria-checked="{{sw.auto_tr.aria}}" class="{{sw.auto_tr.cls}}" onClick="{{sw.auto_tr.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Accept right away: captions shortened to fit</span></div><button role="switch" aria-checked="{{sw.auto_cap.aria}}" class="{{sw.auto_cap.cls}}" onClick="{{sw.auto_cap.tog}}"></button></div></div><span class="sgh">Never accepted for you</span><div class="sg"><div class="sr"><span class="lockr" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><div class="sr-t"><span>Prices</span></div><span class="sr-s">Always</span></div><div class="sr"><span class="lockr" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><div class="sr-t"><span>App Privacy answers and the age rating</span></div><span class="sr-s">Always</span></div><div class="sr"><span class="lockr" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><div class="sr-t"><span>App Compliance</span><span class=sr-s>Trader status, ICP filing number, licences.</span></div><span class="sr-s">Always</span></div></div><span class="sgf">These have legal or money consequences. Atlas suggests, and you accept each one.</span></div></sc-if>
+<sc-if value="{{is.pricing}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#3BB466,#288F4D)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.6V3.5a1 1 0 0 1 1-1h5.1l5 5a1 1 0 0 1 0 1.4l-4.2 4.2a1 1 0 0 1-1.4 0z"></path><circle cx="5.6" cy="5.6" r=".9"></circle></svg></span><div class="sr-t"><span class="t-2">Pricing</span><span class="sr-s" style="font-size:12px">Defaults for new apps and for prices by country.</span></div></div><div class="sx-bd scroll"><span class="sgh">New apps</span><div class="sg"><div class="sr"><div class="sr-t"><span>Pricing mode</span><span class="sr-s">Each app can still switch from its Pricing section.</span></div><button class="selb" aria-haspopup="menu">Show suggestions<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Use sales data for suggestions</span><span class="sr-s">Sales and Trends and App Analytics, when the key’s role can read them.</span></div><button role="switch" aria-checked="{{sw.p_sales.aria}}" class="{{sw.p_sales.cls}}" onClick="{{sw.p_sales.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Base country</span></div><button class="selb" aria-haspopup="menu">United States · USD<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Rounding</span></div><button class="selb" aria-haspopup="menu">Each currency’s usual ending<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div></div><span class="sgh">Prices by country</span><div class="sg"><div class="sr"><div class="sr-t"><span>Based on</span></div><button class="selb" aria-haspopup="menu">World Bank price levels<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>When a country has no data</span><span class="sr-s">World Bank → region median → Apple’s equalized price</span></div><button class="btn sm ">Edit…</button></div><div class="sr"><div class="sr-t"><span>Strength</span><span class="sr-s">How far prices move toward purchasing power.</span></div><span class="sld" role="slider" aria-label="Strength" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" tabindex="0"><i></i></span><span class="tn" style="width:38px;text-align:right">100%</span></div><div class="sr"><div class="sr-t"><span>Only lower prices</span><span class="sr-s">Never above Apple’s equalized price.</span></div><button role="switch" aria-checked="{{sw.p_disc.aria}}" class="{{sw.p_disc.cls}}" onClick="{{sw.p_disc.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Lowest and highest, relative to the base country</span></div><span class="tn sr-s">30% · 150%</span><button class="btn sm ">Edit…</button></div><div class="sr"><div class="sr-t"><span>Never raise a price people already pay</span><span class="sr-s">Applies to every strategy.</span></div><button role="switch" aria-checked="{{sw.p_never.aria}}" class="{{sw.p_never.cls}}" onClick="{{sw.p_never.tog}}"></button></div></div><span class="sgh">Price data</span><div class="sg"><div class="sr"><div class="sr-t"><span>Bundled with Atlas</span><span class="sr-s">Apr 30, 2026 · Big Mac Jan 2026 · World Bank 2024 · IMF Apr 2026</span></div><button class="btn sm ">Update Price Data</button></div></div><span class="sgh">Proceeds</span><div class="sg"><div class="sr"><div class="sr-t"><span>Apple’s commission</span><span class="sr-s">Shown next to customer prices.</span></div><button class="selb" aria-haspopup="menu">15% · Small Business Program<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div></div></div></sc-if>
+<sc-if value="{{is.shots}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#F57A35,#CE5619)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="4.2" y="1.8" width="7.6" height="12.4" rx="1.8"></rect><path d="M7 12h2"></path></svg></span><div class="sr-t"><span class="t-2">Screenshots</span><span class="sr-s" style="font-size:12px">The Simulator, Autopilot and artwork.</span></div></div><div class="sx-bd scroll"><span class="sgh">Simulator</span><div class="sg"><div class="sr"><div class="sr-t"><span>Xcode</span><span class="sr-s"><span class="mono">/Applications/Xcode.app</span></span></div><button class="btn sm ">Choose…</button></div><div class="sr"><div class="sr-t"><span>Tries for each screen</span><span class="sr-s">Claude Code keeps the best one.</span></div><button class="selb" aria-haspopup="menu">3<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Quit the Simulator when a run ends</span></div><button role="switch" aria-checked="{{sw.s_quit.aria}}" class="{{sw.s_quit.cls}}" onClick="{{sw.s_quit.tog}}"></button></div></div><span class="sgh">Autopilot</span><div class="sg"><div class="sr"><div class="sr-t"><span>Choose the look for me</span><span class="sr-s">One stop instead of two: you only review and push.</span></div><button role="switch" aria-checked="{{sw.s_look.aria}}" class="{{sw.s_look.cls}}" onClick="{{sw.s_look.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Let me pick the captures myself</span><span class="sr-s">Adds a stop after capturing.</span></div><button role="switch" aria-checked="{{sw.s_pick.aria}}" class="{{sw.s_pick.cls}}" onClick="{{sw.s_pick.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Keep earlier templates</span></div><button class="selb" aria-haspopup="menu">The last 5<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div></div><span class="sgh">Artwork</span><div class="sg"><div class="sr"><div class="sr-t"><span>Words in event artwork</span><span class="sr-s">Off: the App Store writes the name over the image, so one pair works in every language.</span></div><button role="switch" aria-checked="{{sw.s_words.aria}}" class="{{sw.s_words.cls}}" onClick="{{sw.s_words.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Also make moving versions</span><span class="sr-s">A loop of up to 30 seconds. Takes longer.</span></div><button role="switch" aria-checked="{{sw.s_motion.aria}}" class="{{sw.s_motion.cls}}" onClick="{{sw.s_motion.tog}}"></button></div></div><span class="sgf">These are the defaults. Each run and each event can still choose.</span></div></sc-if>
+<sc-if value="{{is.notif}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#F0565B,#CC3338)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11V7.5a4 4 0 0 1 8 0V11l1.2 1.4H2.8zM6.6 13.6a1.5 1.5 0 0 0 2.8 0"></path></svg></span><div class="sr-t"><span class="t-2">Notifications</span><span class="sr-s" style="font-size:12px">What Atlas tells you about while you’re doing something else.</span></div></div><div class="sx-bd scroll"><sc-if value="{{nOk}}"><div class="ban b-neu" style="margin-top:8px"><span class="ck ok" aria-hidden="true">✓</span><span style="flex:1">Notifications from Atlas are allowed.</span><button class="btn sm">Open System Settings…</button></div></sc-if><sc-if value="{{nBlocked}}"><div class="ban b-warn" style="margin-top:8px"><span class="ck warn" aria-hidden="true">!</span><span style="flex:1"><b style="font-weight:600">Notifications are turned off for Atlas in System Settings.</b> Nothing below reaches you until they’re allowed. The menu bar icon still shows a dot.</span><button class="btn sm pri">Open System Settings…</button></div></sc-if><span class="sgh">Tell me when</span><div class="sg"><div class="sr"><div class="sr-t"><span>Something needs me</span><span class="sr-s">Autopilot or Claude Design is waiting for a choice.</span></div><button role="switch" aria-checked="{{sw.n_need.aria}}" class="{{sw.n_need.cls}}" onClick="{{sw.n_need.tog}}"></button></div><div class="sr"><div class="sr-t"><span>App Review changes a version’s or an event’s status</span></div><button role="switch" aria-checked="{{sw.n_rev.aria}}" class="{{sw.n_rev.cls}}" onClick="{{sw.n_rev.tog}}"></button></div><div class="sr"><div class="sr-t"><span>A push finishes</span><span class="sr-s">A push that fails always tells you.</span></div><button role="switch" aria-checked="{{sw.n_push.aria}}" class="{{sw.n_push.cls}}" onClick="{{sw.n_push.tog}}"></button></div><div class="sr"><div class="sr-t"><span>New reviews</span></div><button class="selb" aria-haspopup="menu">3 stars or lower<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div><div class="sr"><div class="sr-t"><span>Analytics has something new</span></div><button class="selb" aria-haspopup="menu">Once a week<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6l3-3 3 3M5 10l3 3 3-3"></path></svg></button></div></div><span class="sgh">How</span><div class="sg"><div class="sr"><div class="sr-t"><span>Play a sound</span></div><button role="switch" aria-checked="{{sw.n_snd.aria}}" class="{{sw.n_snd.cls}}" onClick="{{sw.n_snd.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Show a dot on the menu bar icon</span></div><button role="switch" aria-checked="{{sw.n_dot.aria}}" class="{{sw.n_dot.cls}}" onClick="{{sw.n_dot.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Show the count on the Dock icon</span><span class="sr-s">What needs you, not what’s suggested.</span></div><button role="switch" aria-checked="{{sw.n_badge.aria}}" class="{{sw.n_badge.cls}}" onClick="{{sw.n_badge.tog}}"></button></div></div></div></sc-if>
+<sc-if value="{{is.pro}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(135deg,#1590F6 0%,#0A5CF2 55%,#0846C4 100%)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4L2.2 6.3l4-.6z"></path></svg></span><div class="sr-t"><span class="t-2">Atlas Pro</span><span class="sr-s" style="font-size:12px">Your plan.</span></div></div><div class="sx-bd scroll"><sc-if value="{{isPro}}"><div class="plan" style="margin-top:8px"><span class="pmark"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4L2.2 6.3l4-.6z"></path></svg></span><div class="sr-t"><b style="font-size:16px;line-height:20px;font-weight:700">Atlas Pro · Yearly</b><span style="opacity:.92">Renews November 2, 2027 · $59.99 a year · billed by the App Store</span></div><button class="btn">Manage Subscription…</button></div></sc-if><sc-if value="{{isFree}}"><div class="plan free" style="margin-top:8px"><span class="pmark"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4L2.2 6.3l4-.6z"></path></svg></span><div class="sr-t"><b style="font-size:16px;line-height:20px;font-weight:700">Atlas Free</b><span class="sr-s" style="font-size:12px">Free does it one at a time. Pro does it all at once.</span></div><button class="btn pri">See Atlas Pro…</button></div></sc-if><span class="sgh">{{incHead}}</span><div class="sg"><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Every app and every account</span><span class=sr-s>Free: 1 app, 1 account</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Accept All Languages, Accept All Pages, Translate All</span><span class=sr-s>Free: one at a time</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>All 14 screenshot templates on every device</span><span class=sr-s>Free: 3 templates, iPhone and iPad</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Autopilot, and artwork from Claude Design</span><span class=sr-s>Screenshots, App Preview, headers, event images</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Recommended prices for 175 countries</span><span class=sr-s>Setting any price yourself is free</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Retention messages and offers</span></div></div><div class="sr"><span class="{{incCls}}" aria-hidden="true">{{incMark}}</span><div class="sr-t"><span>Suggested replies to reviews, and Reply to All</span><span class=sr-s>Free: read, translate and reply by hand</span></div></div></div><span class="sgf">AI runs on your own assistant or API key, so Pro’s price never includes AI usage. If Pro ends, everything you made stays and stays editable.</span><div style="display:flex;gap:8px;padding-top:10px"><button class="btn">Restore Purchases</button><button class="btn">Redeem a Code…</button></div></div></sc-if>
+<sc-if value="{{is.privacy}}" hint-placeholder-val="{{false}}"><div class="sx-hd"><span class="sico" style="background:linear-gradient(180deg,#4A4A50,#2C2C30)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.8"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></span><div class="sr-t"><span class="t-2">Privacy &amp; Data</span><span class="sr-s" style="font-size:12px">What leaves this Mac, and what Atlas keeps on it.</span></div></div><div class="sx-bd scroll"><span class="sgh">What leaves this Mac</span><div class="sg"><div class="sr" style="align-items:flex-start"><span style="width:190px;flex:none;font-weight:600">To Apple</span><span class="sr-t"><span class="sr-s" style="color:var(--label)">What you push, signed on this Mac with your key and sent straight to App Store Connect.</span></span></div><div class="sr" style="align-items:flex-start"><span style="width:190px;flex:none;font-weight:600">To your AI assistant</span><span class="sr-t"><span class="sr-s" style="color:var(--label)">Only what it asks for through the local server: text, captures, prices. Never a key.</span></span></div><div class="sr" style="align-items:flex-start"><span style="width:190px;flex:none;font-weight:600">To an AI provider, with an API key</span><span class="sr-t"><span class="sr-s" style="color:var(--label)">The text a suggestion is being written for, from this Mac to the provider you chose.</span></span></div><div class="sr" style="align-items:flex-start"><span style="width:190px;flex:none;font-weight:600">To Atlas’s developer</span><span class="sr-t"><span class="sr-s" style="color:var(--label)">Nothing, unless you turn on a switch below.</span></span></div></div><span class="sgh">Help improve Atlas</span><div class="sg"><div class="sr"><div class="sr-t"><span>Share crash reports</span></div><button role="switch" aria-checked="{{sw.pv_crash.aria}}" class="{{sw.pv_crash.cls}}" onClick="{{sw.pv_crash.tog}}"></button></div><div class="sr"><div class="sr-t"><span>Share how features are used</span><span class="sr-s">Counts only: no app names, text or prices.</span></div><button role="switch" aria-checked="{{sw.pv_use.aria}}" class="{{sw.pv_use.cls}}" onClick="{{sw.pv_use.tog}}"></button></div></div><span class="sgh">Kept on this Mac</span><div class="sg"><div class="sr"><div class="sr-t"><span>Activity</span><span class="sr-s">Every push, every suggestion accepted, every call an assistant made.</span></div><button class="btn sm ">Show…</button><button class="btn sm ">Export…</button></div><div class="sr"><div class="sr-t"><span>Reports and captures</span><span class="sr-s">412 MB · read again from Apple or the Simulator when needed.</span></div><button class="btn sm ">Clear…</button></div><div class="sr"><div class="sr-t"><span>“Don’t ask again” choices</span><span class="sr-s">3 confirmations are turned off.</span></div><button class="btn sm ">Reset</button></div></div><div style="padding-top:12px"><button class="btn dng">Remove All Keys and Data…</button></div></div></sc-if>
+</main>
+<sc-if value="{{wz.open}}" hint-placeholder-val="{{false}}"><div class="scrim"></div>
+<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="wz-t" style="top:44px;width:600px;max-height:calc(100% - 64px)">
+  <div style="padding:18px 22px 12px;display:flex;flex-direction:column;gap:10px;flex:none">
+    <div style="display:flex;align-items:center;gap:10px"><span class="aslogo" aria-hidden="true" style="background:{{wz.bg}}">{{wz.ch}}</span><span class="t-2" id="wz-t" style="flex:1">{{wz.title}}</span><span class="sr-s">{{wz.stepTxt}}</span></div>
+    <ol class="wzst" aria-label="Steps"><sc-for list="{{wz.steps}}" as="k" hint-placeholder-count="3"><li class="{{k.cls}}"><i aria-hidden="true">{{k.mark}}</i>{{k.t}}</li></sc-for></ol>
+  </div>
+  <div class="scroll" style="padding:4px 22px 16px;display:flex;flex-direction:column;gap:12px;min-height:0">
+    <sc-if value="{{wz.isFolder}}">
+      <div style="display:flex;flex-direction:column;gap:3px"><span class="t-3">Where is Lumen Journal’s project?</span><span class="t-c l2">The folder on this Mac with the app’s code, the one you open in Xcode. {{wz.name}} reads it so its suggestions match what the app really does. It never changes your files.</span></div>
+      <sc-if value="{{wz.noFolder}}">
+        <div class="{{wz.dropCls}}" role="button" tabindex="0" aria-label="Drop the project folder here, or choose it" onClick="{{wz.choose}}" onDragOver="{{wz.over}}" onDragEnter="{{wz.over}}" onDragLeave="{{wz.leave}}" onDrop="{{wz.drop}}"><span class="wzfi" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.8 4.2a1.2 1.2 0 0 1 1.2-1.2h3l1.4 1.6H13a1.2 1.2 0 0 1 1.2 1.2v6a1.2 1.2 0 0 1-1.2 1.2H3a1.2 1.2 0 0 1-1.2-1.2z"></path></svg></span><span class="t-hl">{{wz.dropTxt}}</span><sc-if value="{{wz.notDrag}}"><span class="t-c l2">from Finder, or from the title of the Xcode window</span><span class="btn" style="margin-top:4px">Choose Folder…</span></sc-if></div>
+        <sc-if value="{{wz.wrong}}"><div class="ban b-warn"><span class="ck warn" aria-hidden="true">!</span><span style="flex:1"><b>“Downloads” has no Xcode project for Lumen Journal.</b> Choose the folder that holds Lumen.xcodeproj, or a folder above it.</span></div></sc-if>
+        <div class="sg"><div class="sr"><span class="wzfi sm" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.8 4.2a1.2 1.2 0 0 1 1.2-1.2h3l1.4 1.6H13a1.2 1.2 0 0 1 1.2 1.2v6a1.2 1.2 0 0 1-1.2 1.2H3a1.2 1.2 0 0 1-1.2-1.2z"></path></svg></span><div class="sr-t"><span><b>Lumen</b> <span class="sr-s">· found on this Mac</span></span><span class="sr-s mono">~/Developer/Lumen</span><span class="sr-s">Lumen.xcodeproj · opened in Xcode yesterday</span></div><button class="btn" onClick="{{wz.useSug}}">Use This Folder</button></div></div>
+      </sc-if>
+      <sc-if value="{{wz.hasFolder}}">
+        <div class="sg"><div class="sr"><span class="wzfi sm" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.8 4.2a1.2 1.2 0 0 1 1.2-1.2h3l1.4 1.6H13a1.2 1.2 0 0 1 1.2 1.2v6a1.2 1.2 0 0 1-1.2 1.2H3a1.2 1.2 0 0 1-1.2-1.2z"></path></svg></span><div class="sr-t"><span class="b">Lumen</span><span class="sr-s mono">~/Developer/Lumen</span></div><button class="btn" onClick="{{wz.change}}">Change…</button></div><div class="sr" style="flex-direction:column;align-items:stretch;gap:6px"><div style="display:flex;align-items:center;gap:8px"><span class="ck ok" aria-hidden="true">✓</span><span class="t-c">Xcode project found: Lumen.xcodeproj</span></div><div style="display:flex;align-items:center;gap:8px"><span class="ck ok" aria-hidden="true">✓</span><span class="t-c">It’s the same app: dev.northpier.lumen</span></div><div style="display:flex;align-items:center;gap:8px"><span class="ck ok" aria-hidden="true">✓</span><span class="t-c">{{wz.name}} may read this folder. It can’t write to it.</span></div></div></div>
+      </sc-if>
+      <span class="sgf" style="padding:0">Your other apps can get their folders later, in Settings → AI Assistants.</span>
+    </sc-if>
+    <sc-if value="{{wz.isBusy}}">
+      <div style="display:flex;flex-direction:column;gap:3px"><span class="t-3">Connecting {{wz.name}}…</span><span class="t-c l2">Atlas is doing the setup. There is nothing to type or copy; this takes a few seconds.</span></div>
+      <ol class="stgk" style="background:var(--fill-1);padding:12px 14px;gap:9px;font-size:13px" aria-label="Progress"><sc-for list="{{wz.prog}}" as="k" hint-placeholder-count="3"><li class="{{k.cls}}"><i aria-hidden="true">{{k.mark}}</i>{{k.t}}</li></sc-for></ol>
+    </sc-if>
+    <sc-if value="{{wz.isHello}}">
+      <div style="display:flex;flex-direction:column;gap:3px"><span class="t-3">{{wz.name}} says hello</span><span class="t-c l2">This message was written by {{wz.name}} on your Mac and came to Atlas through the new connection. If you can read it, everything works.</span></div>
+      <sc-if value="{{wz.typing}}"><div class="wzmsg"><span class="aslogo" aria-hidden="true" style="background:{{wz.bg}};width:26px;height:26px;border-radius:7px;font-size:11px">{{wz.ch}}</span><div class="wztyp" role="status" aria-label="{{wz.name}} is writing"><i></i><i></i><i></i></div></div></sc-if><sc-if value="{{wz.said}}"><div class="wzmsg"><span class="aslogo" aria-hidden="true" style="background:{{wz.bg}};width:26px;height:26px;border-radius:7px;font-size:11px">{{wz.ch}}</span><div class="wzbub said"><span class="t-f l2 b">{{wz.name}} · just now</span><span>Hi! I’m connected to Atlas and I can see <b>Lumen Journal</b>: version 1.4, 12 languages, 3 subscriptions.</span><span>I also read your project in <span class="mono" style="font-size:12px">~/Developer/Lumen</span>. It has weekly reflections and a mood calendar that the App Store page doesn’t mention yet.</span><span>Want me to suggest a new subtitle? You decide what to accept, and I can never push anything myself.</span></div></div></sc-if>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="sgh" style="padding:0">Things you can ask {{wz.name}}, in your own words</span><div style="display:flex;flex-wrap:wrap;gap:6px"><span class="chip wzc">“Translate my page to Polish”</span><span class="chip wzc">“Write What’s New for 1.4”</span><span class="chip wzc">“Suggest prices for Brazil”</span></div><span class="sgf" style="padding:0">Or use the purple Autopilot button at the top of any section: it asks for you.</span></div>
+    </sc-if>
+    <sc-if value="{{wz.isFail}}">
+      <div style="display:flex;flex-direction:column;gap:3px"><span class="t-3">{{wz.name}} didn’t answer</span><span class="t-c l2">Atlas added itself to {{wz.name}}, and then waited 30 seconds without hearing back. Nothing is broken; it’s usually one of these.</span></div>
+      <div class="sg"><div class="sr"><div class="sr-t"><span>{{wz.name}} was already open</span><span class="sr-s">It only notices Atlas when it starts. Atlas can restart it for you.</span></div><button class="btn" onClick="{{wz.retry}}">Restart and Try Again</button></div><div class="sr"><div class="sr-t"><span>You haven’t signed in to {{wz.name}} yet</span><span class="sr-s">Open it once, sign in, then try again.</span></div><button class="btn" onClick="{{wz.noop}}">Open {{wz.name}}</button></div><div class="sr"><div class="sr-t"><span>Still nothing?</span><span class="sr-s">Help has the steps to check, one by one.</span></div><button class="btn" onClick="{{wz.noop}}">Open Help</button></div></div>
+    </sc-if>
+  </div>
+  <div style="padding:12px 18px 16px;display:flex;align-items:center;gap:8px;border-top:.5px solid var(--sep);flex:none">
+    <sc-if value="{{wz.canCancel}}"><button class="btn" onClick="{{wz.close}}">Cancel</button></sc-if><sc-if value="{{wz.isBusy}}"><span class="t-c l2">Keep this window open.</span></sc-if>
+    <span style="flex:1"></span>
+    <sc-if value="{{wz.isFolder}}"><button class="btn plain" onClick="{{wz.skip}}">Connect Without a Project</button><button class="btn pri" disabled="{{wz.noFolder}}" onClick="{{wz.next}}">Connect</button></sc-if>
+    <sc-if value="{{wz.isFail}}"><button class="btn pri" onClick="{{wz.retry}}">Try Again</button></sc-if>
+    <sc-if value="{{wz.isHello}}"><button class="btn" onClick="{{wz.close}}">Done</button><button class="btn pri" onClick="{{wz.first}}">Ask for a First Suggestion</button></sc-if>
+  </div>
+</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene": {"editor": "enum", "default": "set-general", "options": ["set-general", "set-accounts", "set-accounts-remove", "set-assistants", "set-assistants-new", "set-assistants-busy", "set-assistants-done", "set-assistants-adv", "set-wiz-folder", "set-wiz-drag", "set-wiz-wrong", "set-wiz-picked", "set-wiz-busy", "set-wiz-typing", "set-wiz-hello", "set-wiz-fail", "set-assistants-off", "set-assistants-key", "set-assistants-none", "set-suggestions", "set-pricing", "set-shots", "set-notif", "set-notif-blocked", "set-pro", "set-free", "set-privacy"], "section": "Prototype"}, "appearance": {"editor": "enum", "default": "light", "options": ["light", "dark"], "section": "Prototype"}, "frameH": {"editor": null, "default": 0}, "$preview": {"width": 860, "height": 640}}'>
+
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = this.sceneState((p || {}).scene); }
+  componentDidUpdate(prev) { const p = this.props || {}; if (prev && prev.scene !== p.scene) this.setState(this.sceneState(p.scene)); }
+  sceneState(sc) { const S = {"set-general": {}, "set-accounts": {"pane": "accounts"}, "set-accounts-remove": {"pane": "accounts", "rm": true}, "set-assistants": {"pane": "assistants"}, "set-assistants-off": {"pane": "assistants", "sw": {"server": false}}, "set-assistants-new": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}}, "set-assistants-busy": {"pane": "assistants", "con": {"cc": "b2", "cursor": "found"}}, "set-assistants-done": {"pane": "assistants", "con": {"cursor": "found"}, "fresh": "cc"}, "set-assistants-adv": {"pane": "assistants", "adv": true}, "set-wiz-folder": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "folder"}}, "set-wiz-drag": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "folder", "over": true}}, "set-wiz-wrong": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "folder", "wrong": true}}, "set-wiz-picked": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "folder", "folder": true}}, "set-wiz-busy": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "busy", "at": 2, "folder": true}}, "set-wiz-typing": {"pane": "assistants", "con": {"cursor": "found"}, "fresh": "cc", "wiz": {"k": "cc", "step": "hello", "folder": true, "typing": true}}, "set-wiz-hello": {"pane": "assistants", "con": {"cursor": "found"}, "fresh": "cc", "wiz": {"k": "cc", "step": "hello", "folder": true}}, "set-wiz-fail": {"pane": "assistants", "con": {"cc": "found", "cursor": "found"}, "wiz": {"k": "cc", "step": "fail", "folder": true}}, "set-assistants-key": {"pane": "assistants", "src": "key"}, "set-assistants-none": {"pane": "assistants", "src": "none"}, "set-suggestions": {"pane": "suggestions"}, "set-pricing": {"pane": "pricing"}, "set-shots": {"pane": "shots"}, "set-notif": {"pane": "notif"}, "set-notif-blocked": {"pane": "notif", "nBlocked": true}, "set-pro": {"pane": "pro"}, "set-free": {"pane": "pro", "pro": false}, "set-privacy": {"pane": "privacy"}}; return Object.assign({ pane: 'general', sw: {}, sg: {}, src: 'mcp', con: {}, wiz: null, adv: false, ask: null, fresh: null, tested: null, copied: false, rm: false, pro: true, nBlocked: false }, S[sc] || {}); }
+  renderVals() {
+    const P = this.props || {}; const s = this.state; const dark = P.appearance === 'dark';
+    const SW = {"mb": true, "keep": true, "anim": true, "login": false, "discard": true, "raise": true, "server": true, "may_store": true, "may_shots": true, "may_prices": true, "may_info": true, "may_reviews": true, "may_art": true, "chk_len": true, "chk_rep": true, "chk_an": true, "chk_tr": true, "askall": true, "auto_tr": false, "auto_cap": false, "p_sales": true, "p_disc": true, "p_never": false, "s_quit": true, "s_look": false, "s_pick": false, "s_words": false, "s_motion": false, "n_need": true, "n_rev": true, "n_push": true, "n_snd": false, "n_dot": true, "n_badge": true, "pv_crash": false, "pv_use": false}; const SG = {"appear": [3, 0], "confirm": [3, 1]}; const PN = ["general", "accounts", "assistants", "suggestions", "pricing", "shots", "notif", "pro", "privacy"];
+    const sw = {}; Object.keys(SW).forEach((k) => { const on = k in s.sw ? s.sw[k] : SW[k]; sw[k] = { cls: on ? 'sw on' : 'sw', aria: on ? 'true' : 'false', tog: () => this.setState((x) => ({ sw: Object.assign({}, x.sw, { [k]: !on }) })) }; });
+    const sg = {}; Object.keys(SG).forEach((k) => { const cur = k in s.sg ? s.sg[k] : SG[k][1]; for (let i = 0; i < SG[k][0]; i++) sg[k + '_' + i] = { cls: i === cur ? 'on' : '', aria: i === cur ? 'true' : 'false', pick: () => this.setState((x) => ({ sg: Object.assign({}, x.sg, { [k]: i }) })) }; });
+    const nav = {}; const is = {}; PN.forEach((k) => { nav[k] = { cls: k === s.pane ? 'nvi on' : 'nvi', cur: k === s.pane ? 'page' : 'false', pick: () => this.setState({ pane: k, rm: false }) }; is[k] = k === s.pane; });
+    const src = {}; ['mcp', 'key', 'none'].forEach((k) => { src[k] = { on: s.src === k, cls: s.src === k ? 'rad on' : 'rad', aria: s.src === k ? 'true' : 'false', pick: () => this.setState({ src: k }) }; });
+    const srv = 'server' in s.sw ? s.sw.server : true;
+    const C = Object.assign({ cc: 'on', app: 'found', cursor: 'on', vs: 'none' }, s.con || {}); const anyOn = Object.keys(C).some(function (k) { return C[k] === 'on'; });
+    const setC = (k, v, more) => this.setState((x) => Object.assign({ con: Object.assign({}, x.con || {}, { [k]: v }) }, more || {}));
+    const connect = (k) => { setC(k, 'b1'); setTimeout(() => setC(k, 'b2'), 1100); setTimeout(() => setC(k, 'b3'), 2300); setTimeout(() => setC(k, 'on', { fresh: k }), 3400); };
+    const AS = [['cc', 'Claude Code', 'C', '#D97757', 'Claude Code', 'last used today at 10:43'], ['app', 'Claude for Mac', 'C', '#B5563C', 'Claude', 'not used yet'], ['cursor', 'Cursor', 'Cu', '#3A3A3C', 'Cursor', 'last used Oct 22'], ['vs', 'VS Code · GitHub Copilot', 'VS', '#2478C5', 'VS Code', 'not used yet']];
+    const w = s.wiz; const wA = w ? AS.filter(function (x) { return x[0] === w.k; })[0] : null; const setW = (o) => this.setState((x) => ({ wiz: x.wiz ? Object.assign({}, x.wiz, o) : null }));
+    const wRun = () => { setW({ step: 'busy', at: 1 }); setTimeout(() => setW({ at: 2 }), 1200); setTimeout(() => setW({ at: 3 }), 2500); setTimeout(() => { this.setState((x) => x.wiz ? { wiz: Object.assign({}, x.wiz, { step: 'hello', typing: true }), fresh: x.wiz.k, con: Object.assign({}, x.con || {}, { [x.wiz.k]: 'on' }) } : null); try { window.dispatchEvent(new CustomEvent('atlas:connected')); } catch (e) {} }, 3800); setTimeout(() => setW({ typing: false }), 3800 + (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1500)); };
+    const wSi = w ? { folder: 0, busy: 1, fail: 1, hello: 2 }[w.step] : 0;
+    const wz = !w ? { open: false, steps: [], prog: [] } : { open: true, name: wA[1], ch: wA[2], bg: wA[3], title: 'Connect ' + wA[1], stepTxt: 'Step ' + (wSi + 1) + ' of 3',
+      steps: ['Project folder', 'Connect', 'Say hello'].map(function (t, i) { return { t: t, cls: i < wSi ? 'done' : i === wSi ? 'now' : '', mark: i < wSi ? '✓' : String(i + 1) }; }),
+      isFolder: w.step === 'folder', isBusy: w.step === 'busy', isHello: w.step === 'hello', typing: w.step === 'hello' && !!w.typing, said: w.step === 'hello' && !w.typing, isFail: w.step === 'fail', canCancel: w.step === 'folder' || w.step === 'fail',
+      noFolder: !w.folder, hasFolder: !!w.folder, wrong: !!w.wrong && !w.folder, notDrag: !w.over, dropCls: w.over ? 'wzdrop over' : 'wzdrop', dropTxt: w.over ? 'Drop to use this folder' : 'Drag the project folder here',
+      over: (e) => { if (e && e.preventDefault) e.preventDefault(); if (!w.over) setW({ over: true }); }, leave: () => setW({ over: false }), drop: (e) => { if (e && e.preventDefault) e.preventDefault(); setW({ over: false, folder: true, wrong: false }); },
+      choose: () => setW({ folder: true, wrong: false }), useSug: () => setW({ folder: true, wrong: false }), change: () => setW({ folder: false }),
+      prog: ['Adding Atlas to ' + wA[1], 'Starting ' + wA[1] + (w.folder ? ' in ~/Developer/Lumen' : ''), 'Waiting for its first message'].map(function (t, i) { const at = w.at || 1; return { t: t, cls: i + 1 < at ? 'done' : i + 1 === at ? 'now' : '', mark: i + 1 < at ? '✓' : String(i + 1) }; }),
+      next: wRun, skip: wRun, retry: wRun, noop: function () {}, close: () => this.setState({ wiz: null }), first: () => this.setState({ wiz: null, tested: w.k }) };
+    const asList = AS.map((x) => { const k = x[0]; const st = C[k]; const busy = st === 'b1' || st === 'b2' || st === 'b3'; const at = busy ? +st.charAt(1) : 0; const fresh = s.fresh === k && st === 'on'; const tested = s.tested === k;
+      return { name: x[1], ch: x[2], bg: x[3], isOn: st === 'on', isBusy: busy, canConnect: st === 'found', notInst: st === 'none', asked: s.ask === k && st === 'on', showTry: fresh && s.ask !== k, getBtn: 'Get ' + x[4] + '…',
+        st: st === 'on' ? (srv ? (fresh ? 'Connected just now · reads ~/Developer/Lumen' : 'Connected · ' + x[5]) : 'Can’t connect while connections are off') : busy ? 'This takes a few seconds' : st === 'found' ? 'Found on this Mac' : 'Not installed on this Mac', stCls: st === 'on' && srv ? 'sr-s tok' : 'sr-s',
+        steps: ['Adding Atlas to ' + x[1], 'Waiting for ' + x[1] + ' to answer', 'Checking that it can read Lumen Journal'].map(function (t, i) { return { t: t, cls: i + 1 < at ? 'done' : i + 1 === at ? 'now' : '', mark: i + 1 < at ? '✓' : String(i + 1) }; }),
+        connect: () => this.setState({ wiz: { k: k, step: 'folder' } }), off: () => this.setState({ ask: k }), cancelOff: () => this.setState({ ask: null }), confirmOff: () => setC(k, 'found', { ask: null, fresh: null }),
+        askTxt: x[1] + ' stops suggesting. What it already suggested stays in Atlas.', tryTxt: tested ? 'A test suggestion arrived in Store Page, marked as a test. It works.' : 'Try it: ask ' + x[1] + ' “Suggest a better subtitle for Lumen Journal”, or send a test from here.', testBtn: tested ? 'Sent ✓' : 'Send a Test Suggestion', test: () => this.setState({ tested: k }),
+        get: function () {} }; });
+    return { wz: wz, as: { pill: s.src === 'mcp' && anyOn && srv, list: asList, none: !anyOn, srvOff: !srv, adv: !!s.adv, advBtn: s.adv ? 'Hide' : 'Show', togAdv: () => this.setState({ adv: !s.adv }), copy: () => this.setState({ copied: true }), copyBtn: s.copied ? 'Copied ✓' : 'Copy' }, theme: 'alx ' + (dark ? 'alx-d' : 'alx-l'), H: P.frameH > 0 ? P.frameH + 'px' : '100vh', sw: sw, sg: sg, nav: nav, is: is, src: src,
+      srvTxt: srv ? 'On · only on this Mac, and only while Atlas is open' : 'Off. Paired assistants stay paired, and can’t connect.', srvCls: srv ? '' : 'twarn',
+      pairCls: srv ? 'sg' : 'sg dim', ccTxt: srv ? 'Connected · last call 10:43' : 'Paired · can’t connect while the server is off',
+      rmOn: s.rm, rmAsk: () => this.setState({ rm: true }), rmNo: () => this.setState({ rm: false }),
+      nOk: !s.nBlocked, nBlocked: s.nBlocked, isPro: s.pro, isFree: !s.pro, incHead: s.pro ? 'Included in your plan' : 'What Pro adds', incCls: s.pro ? 'ck ok' : 'ck', incMark: s.pro ? '✓' : '+' };
+  }
+}
+</script>
+</body>
+</html>

@@ -18,7 +18,8 @@ struct WorkspaceToolbarTitle: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.title3.weight(.semibold))
+                .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("workspace.title")
             HStack(spacing: 0) {
@@ -44,12 +45,16 @@ struct WorkspaceToolbarTitle: View {
                 }
             }
             .font(.subheadline)
+            .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("workspace.status")
         }
         .lineLimit(1)
         .truncationMode(.tail)
-        .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
+        // Its whole width, up to the cap: a status that grows after the
+        // toolbar sized the item (“Nothing waiting” once Pricing has read
+        // its products) isn't cut to the old width.
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 

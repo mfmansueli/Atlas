@@ -42,7 +42,7 @@ struct ImageLoadingTile: View {
             .frame(width: 84, height: 180)
         ImageLoadingTile(controlSize: .mini)
             .frame(width: 24, height: 24)
-            .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
     }
     .padding()
 }

@@ -23,7 +23,7 @@ struct AIStartLabel: View {
         } icon: {
             Image(systemName: "sparkles")
         }
-        .foregroundStyle(Palette.machineTranslated)
+        .foregroundStyle(Palette.ai)
     }
 }
 

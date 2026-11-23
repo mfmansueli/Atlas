@@ -18,7 +18,7 @@ struct ReviewThemeCard: View {
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(summary.countText)
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .fixedSize()
             }
@@ -34,7 +34,7 @@ struct ReviewThemeCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Button(summary.buttonTitle, action: action)
-                .controlSize(.small)
+                .controlSize(.regular)
                 .buttonBorderShape(.capsule)
                 .disabled(!summary.isButtonEnabled)
                 .accessibilityIdentifier("reviews.theme.action.\(summary.id)")

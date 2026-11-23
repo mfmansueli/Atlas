@@ -7,13 +7,14 @@ import SwiftUI
 
 /// An assistant's answer on a compliance card: who suggested it, the
 /// answer, why, and Evidence, Dismiss and Accept. Accepting gives the same
-/// answer as the card's own buttons.
+/// answer as the card's own buttons, and settles the box (effect 5).
 struct ComplianceSuggestionBox: View {
     let viewModel: AppInformationViewModel
     let suggestion: ComplianceSuggestion
 
     @State private var showsEvidence = false
-    @Environment(\.colorSchemeContrast) private var contrast
+    @State private var isSettling = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var identifier: String { "appInformation.compliance.\(suggestion.rule.rawValue).suggestion" }
 
@@ -47,17 +48,17 @@ struct ComplianceSuggestionBox: View {
                 Spacer(minLength: 0)
                 Button(String(localized: "Dismiss")) { viewModel.dismissComplianceSuggestion(for: suggestion.rule) }
                     .accessibilityIdentifier("\(identifier).dismiss")
-                Button(String(localized: "Accept")) { viewModel.acceptComplianceSuggestion(for: suggestion.rule) }
-                    .buttonStyle(.borderedProminent)
+                Button(String(localized: "Accept"), action: accept)
+                    .rowActionButton()
                     .accessibilityIdentifier("\(identifier).accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.machineTranslatedTint, in: shape)
-        .overlay(shape.strokeBorder(Palette.machineTranslatedMark.opacity(contrast == .increased ? 0.8 : 0.35), lineWidth: 1))
+        // No arrival: the answer comes with the card's other details.
+        .suggestionSurface(isSettling: isSettling, arrivalKey: identifier, arrivedAt: nil)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(identifier)
     }
@@ -81,7 +82,12 @@ struct ComplianceSuggestionBox: View {
         )
     }
 
-    private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
+    private func accept() {
+        let rule = suggestion.rule
+        AcceptSettle.perform(reduceMotion: reduceMotion) {
+            isSettling = true
+        } commit: {
+            viewModel.acceptComplianceSuggestion(for: rule)
+        }
     }
 }

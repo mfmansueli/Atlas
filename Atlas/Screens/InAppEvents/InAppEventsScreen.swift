@@ -57,7 +57,7 @@ struct InAppEventsScreen: View {
         case .idle, .loading:
             HStack(alignment: .top, spacing: 14) {
                 ForEach(0..<3, id: \.self) { _ in
-                    SkeletonBlock(height: 230, cornerRadius: 18)
+                    SkeletonBlock(height: 230, cornerRadius: Radius.popover)
                 }
             }
             .accessibilityIdentifier("events.loading")

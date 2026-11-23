@@ -19,7 +19,7 @@ struct GuidedTemplateNotInRun: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("autopilot.guided.look.template.notInRun")
             Button(preview.addTitle) { studio.addTemplatePreviewDevice(preview.device) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .fixedSize()
                 .accessibilityIdentifier("autopilot.guided.look.template.addDevice")
         }

@@ -68,7 +68,7 @@ struct AssetLibrarySheet: View {
                 .disabled(model.selection.isEmpty || model.isDeleting)
                 .accessibilityIdentifier("assetLibrary.selectNone")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     @ViewBuilder
@@ -80,7 +80,7 @@ struct AssetLibrarySheet: View {
                 .accessibilityIdentifier("assetLibrary.loading")
         case let .failed(reason):
             VStack(spacing: Spacing.small) {
-                Text("Couldn’t read the library").font(.headline)
+                Text("Couldn’t read the library").font(.body.weight(.semibold))
                 Text(reason).font(.callout).foregroundStyle(Palette.label2).multilineTextAlignment(.center).textSelection(.enabled)
                 Button("Try Again") { Task { await model.load() } }
             }
@@ -104,9 +104,9 @@ struct AssetLibrarySheet: View {
                         }
                     }
                 }
-                .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
                 }
                 .accessibilityIdentifier("assetLibrary.list")
             }
@@ -119,7 +119,7 @@ struct AssetLibrarySheet: View {
                 ProgressView().controlSize(.small)
                 Text(deleting)
             } else if let notice = model.notice {
-                Text(notice).foregroundStyle(model.deleteErrors.isEmpty ? Palette.label : Palette.danger)
+                Text(notice).foregroundStyle(model.deleteErrors.isEmpty ? Palette.label : Palette.err)
             } else if model.phase == .loaded {
                 Text(model.summaryTitle).foregroundStyle(Palette.label2)
             }

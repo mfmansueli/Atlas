@@ -45,7 +45,7 @@ struct GuidedReviewArtwork: View {
     private func missingView(_ missing: GuidedArtworkMissing) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Label(missing.title, systemImage: "exclamationmark.triangle.fill")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .foregroundStyle(Palette.label)
                 .symbolRenderingMode(.multicolor)
                 .accessibilityIdentifier("autopilot.guided.review.artworkMissing.title")

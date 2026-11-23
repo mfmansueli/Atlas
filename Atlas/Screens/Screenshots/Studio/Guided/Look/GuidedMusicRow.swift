@@ -21,7 +21,7 @@ struct GuidedMusicRow: View {
         }
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text("App Preview music")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .frame(width: 150, alignment: .leading)
             StudioSegmentedControl(
                 label: String(localized: "App Preview music"), options: options,
@@ -57,7 +57,7 @@ struct GuidedMusicRow: View {
             }
         }
         .menuStyle(.button)
-        .controlSize(.small)
+        .controlSize(.regular)
         .fixedSize()
         .accessibilityIdentifier("autopilot.guided.look.musicMore")
     }

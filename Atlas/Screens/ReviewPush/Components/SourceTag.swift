@@ -27,7 +27,7 @@ struct SourceTag: View {
             .accessibilityLabel(Text(source.isAssistant ? "Proposed by \(source.title)" : "Suggested by \(source.title)"))
         } else {
             Text(source.title)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
         }

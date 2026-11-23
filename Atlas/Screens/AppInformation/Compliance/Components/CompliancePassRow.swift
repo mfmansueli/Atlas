@@ -20,7 +20,7 @@ struct CompliancePassRow: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(report.passTitle(for: rule))
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityIdentifier("appInformation.compliance.\(rule.rawValue).title")
                 Text(report.detail(for: rule))
                     .font(.subheadline)

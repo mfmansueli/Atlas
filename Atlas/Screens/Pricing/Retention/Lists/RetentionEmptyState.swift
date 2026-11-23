@@ -14,7 +14,7 @@ struct RetentionEmptyState: View {
         Card(padding: Spacing.xxLarge) {
             VStack(spacing: Spacing.small) {
                 Text("No retention message yet")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text(text)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)

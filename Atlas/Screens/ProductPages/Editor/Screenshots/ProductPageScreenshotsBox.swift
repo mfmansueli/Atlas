@@ -21,7 +21,7 @@ struct ProductPageScreenshotsBox: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
                 Text("Screenshots and App Previews")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Picker("Device", selection: $viewModel.device) {
                     ForEach(ProductPageDevice.allCases) { device in

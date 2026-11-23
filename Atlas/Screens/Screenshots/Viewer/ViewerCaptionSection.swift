@@ -32,7 +32,7 @@ struct ViewerCaptionSection: View {
                         .padding(.top, Spacing.xxSmall)
                     Text(fit.label)
                         .font(.subheadline.weight(fit.fits ? .regular : .medium))
-                        .foregroundStyle(fit.fits ? Palette.label2 : Palette.danger)
+                        .foregroundStyle(fit.fits ? Palette.label2 : Palette.err)
                         .accessibilityIdentifier("screenshots.viewer.fit")
                 }
                 Text(caption.provenance.title)

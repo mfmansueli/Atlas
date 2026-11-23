@@ -60,7 +60,7 @@ struct ReviewCreationRows: View {
             if let message = creation.blockingMessage {
                 Label(message, systemImage: "exclamationmark.octagon.fill")
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .padding(.leading, 26)
             }
         }
@@ -87,7 +87,7 @@ struct ReviewCreationRows: View {
                     Text(field.oldValue.isEmpty ? String(localized: "Empty") : field.oldValue)
                         .layoutPriority(field.oldValue.isEmpty ? 1 : -1)
                     Image(systemName: "arrow.right")
-                        .font(.caption2)
+                        .font(.footnote)
                         .accessibilityLabel(Text("to"))
                     Text(field.newValue.isEmpty ? String(localized: "Empty") : field.newValue)
                 }

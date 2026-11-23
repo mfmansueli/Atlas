@@ -16,7 +16,7 @@ struct ScreenshotHandSelectionBar: View {
         HStack(spacing: Spacing.xSmall) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(viewModel.handSelectionTitle(item))
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .lineLimit(1)
                 Text(viewModel.handOrigin(of: item.cell))
                     .font(.subheadline)
@@ -66,7 +66,7 @@ struct ScreenshotHandSelectionBar: View {
             .accessibilityLabel(Text("Deselect"))
             .accessibilityIdentifier("screenshots.hand.deselect")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.horizontal, Spacing.small)
         .padding(.vertical, Spacing.xSmall)
         .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))

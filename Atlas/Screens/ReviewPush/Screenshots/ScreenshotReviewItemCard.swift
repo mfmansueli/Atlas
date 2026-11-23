@@ -30,7 +30,7 @@ struct ScreenshotReviewItemCard: View {
                     viewModel.discardImage(item)
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.footnote.weight(.bold))
                         .frame(width: 16, height: 16)
                         .contentShape(Circle())
                 }
@@ -53,7 +53,7 @@ struct ScreenshotReviewItemCard: View {
         }
         .padding(Spacing.xSmall)
         .overlay {
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                 .strokeBorder(Palette.separator2, lineWidth: 0.5)
         }
         .opacity(viewModel.isChecked(item) ? 1 : 0.55)
@@ -75,7 +75,7 @@ struct ScreenshotReviewItemCard: View {
                 old.accessibilityLabel(Text("Live now"))
             }
             Image(systemName: "arrow.right")
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label3)
                 .accessibilityLabel(Text("becomes"))
             if item.content == .delete {

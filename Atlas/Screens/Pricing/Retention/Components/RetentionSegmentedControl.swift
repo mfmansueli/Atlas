@@ -41,13 +41,13 @@ struct RetentionSegmentedControl<Value: Hashable>: View {
                     .lineLimit(1)
                 if segment.hasWarning {
                     Circle()
-                        .fill(Palette.warning)
+                        .fill(Palette.warn)
                         .frame(width: 6, height: 6)
                         .accessibilityHidden(true)
                 }
                 if let badge = segment.badge {
                     Text(badge)
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.accentText)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
@@ -62,7 +62,7 @@ struct RetentionSegmentedControl<Value: Hashable>: View {
                 if isSelected {
                     Capsule()
                         .fill(colorScheme == .dark ? Palette.fill3 : Color.white)
-                        .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.12), radius: 1, y: 0.5)
+                        .depth(colorScheme == .dark ? .flat : .card)
                 }
             }
             .contentShape(Capsule())

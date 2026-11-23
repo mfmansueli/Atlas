@@ -29,7 +29,7 @@ struct TranslationProgressBanner: View {
             Button("Cancel") {
                 translation.cancel()
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("storePage.cancelTranslation")
         }
         .padding(.horizontal, Spacing.medium)

@@ -26,7 +26,7 @@ struct PriceBreakdownSteps: View {
                 ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                         Text(index + 1, format: .number)
-                            .font(.caption.monospacedDigit())
+                            .font(.footnote.monospacedDigit())
                             .foregroundStyle(Palette.label2)
                             .frame(width: 12, alignment: .trailing)
                         Text(step)

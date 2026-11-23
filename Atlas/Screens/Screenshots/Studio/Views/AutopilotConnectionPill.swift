@@ -17,7 +17,7 @@ struct AutopilotConnectionPill: View {
         Button(action: action) {
             HStack(spacing: Spacing.xSmall) {
                 Circle()
-                    .fill(isConnected ? Palette.positive : Palette.label3)
+                    .fill(isConnected ? Palette.ok : Palette.label3)
                     .frame(width: 7, height: 7)
                 Text(title).foregroundStyle(Palette.label)
                 Text(status).foregroundStyle(Palette.label2)

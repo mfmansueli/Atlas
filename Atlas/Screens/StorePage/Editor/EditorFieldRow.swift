@@ -29,7 +29,7 @@ struct EditorFieldRow: View {
                 viewModel.focusRequest = nil
             }
             if let message = validation.message {
-                InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.danger)
+                InlineMessage(text: message, systemImage: "exclamationmark.triangle", tint: Palette.err)
                     .font(.subheadline)
                     .accessibilityIdentifier("storePage.fieldError.\(field.rawValue)")
             }
@@ -72,7 +72,7 @@ struct EditorFieldRow: View {
         .background(Palette.raised, in: shape)
         .overlay {
             shape.strokeBorder(
-                suggestion == nil ? Palette.separator : Palette.machineTranslatedMark.opacity(0.55),
+                suggestion == nil ? Palette.separator : Palette.aiMark.opacity(0.55),
                 lineWidth: suggestion == nil ? 0.5 : 1
             )
         }
@@ -81,7 +81,7 @@ struct EditorFieldRow: View {
     }
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: 12, style: .continuous)
+        RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
     }
 
     private var suggestion: FieldSuggestion? { viewModel.shownSuggestion(field, in: locale) }
@@ -102,7 +102,7 @@ struct EditorFieldRow: View {
                 .font(.subheadline.weight(.semibold))
                 .fixedSize()
             Text(field.whereShown(version: viewModel.content?.version.versionString))
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -154,7 +154,7 @@ struct EditorFieldRow: View {
                     Pill(text: counter.text, style: .danger)
                 } else {
                     Text(counter.text)
-                        .font(.caption2.monospaced())
+                        .font(.footnote.monospaced())
                         .foregroundStyle(Palette.label2)
                 }
             }

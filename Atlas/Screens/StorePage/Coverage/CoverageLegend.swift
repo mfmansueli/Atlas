@@ -16,8 +16,8 @@ struct CoverageLegend: View {
             Label("Filled", systemImage: "checkmark")
                 .foregroundStyle(Palette.label2)
             swatch(Text("Missing"), foreground: Palette.label3, background: .clear, outlined: true)
-            swatch(Text("Over the limit"), foreground: Palette.danger, background: Palette.dangerTint)
-            swatch(Text("Machine-translated"), foreground: Palette.machineTranslated, background: Palette.machineTranslatedTint)
+            swatch(Text("Over the limit"), foreground: Palette.err, background: Palette.errTint)
+            swatch(Text("Machine-translated"), foreground: Palette.ai, background: Palette.aiSurface)
             swatch(
                 HStack(spacing: Spacing.xxSmall) {
                     UnsavedDot(size: 6)

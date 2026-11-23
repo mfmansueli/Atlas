@@ -18,7 +18,7 @@ struct AssistantEvidencePopover: View {
         VStack(alignment: .leading, spacing: Spacing.small + 2) {
             SourceTag(source: .assistant(client: evidence.client))
             Text(title)
-                .font(.headline)
+                .font(.body.weight(.semibold))
             Text(evidence.summary)
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
@@ -50,7 +50,7 @@ struct AssistantEvidencePopover: View {
     private var evidenceList: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("EVIDENCE")
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.bottom, Spacing.xxSmall)
             ForEach(evidence.evidence, id: \.self) { line in
@@ -67,7 +67,7 @@ struct AssistantEvidencePopover: View {
     private func couldNotSeeBox(_ text: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Palette.warningMark)
+                .foregroundStyle(Palette.warnMark)
                 .accessibilityHidden(true)
             Text("**Couldn’t see:** \(text)")
                 .font(.callout)
@@ -75,7 +75,7 @@ struct AssistantEvidencePopover: View {
         }
         .padding(Spacing.small + 2)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
     }
 }
 

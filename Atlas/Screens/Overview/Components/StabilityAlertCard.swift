@@ -26,8 +26,8 @@ struct StabilityAlertCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warningMark).accessibilityHidden(true)
-                Text(report.headline ?? "").font(.headline).lineLimit(3)
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark).accessibilityHidden(true)
+                Text(report.headline ?? "").font(.body.weight(.semibold)).lineLimit(3)
                 Spacer(minLength: Spacing.small)
             }
             Text(detail).font(.callout).foregroundStyle(Palette.label2).lineLimit(3)
@@ -44,10 +44,10 @@ struct StabilityAlertCard: View {
                         .accessibilityIdentifier("overview.stability.pause")
                 }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(Spacing.medium)
-        .background(Palette.warningTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("overview.stability")
         .confirmationDialog(
@@ -58,7 +58,10 @@ struct StabilityAlertCard: View {
             Button("Pause Phased Release", action: onPause)
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Automatic updates stop reaching more people until you resume; anyone can still download it from the App Store. A release can stay paused for up to 30 days in all.")
+            Text("""
+            Automatic updates stop reaching more people until you resume; anyone can still download it from the App Store. \
+            A release can stay paused for up to 30 days in all.
+            """)
         }
     }
 

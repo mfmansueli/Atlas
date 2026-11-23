@@ -23,7 +23,7 @@ struct ConnectStepMark: View {
             if state == .done {
                 Image(systemName: "checkmark")
                     .font(.system(size: size * 0.5, weight: .bold))
-                    .foregroundStyle(Palette.done)
+                    .foregroundStyle(Palette.ok)
             } else {
                 Text(verbatim: "\(number)")
                     .font(.system(size: size * 0.58, weight: .bold))
@@ -39,7 +39,7 @@ struct ConnectStepMark: View {
         switch state {
         case .later: Palette.fill3
         case .now: Palette.accent
-        case .done: Palette.positive.opacity(0.16)
+        case .done: Palette.ok.opacity(0.16)
         }
     }
 

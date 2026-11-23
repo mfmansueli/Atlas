@@ -79,7 +79,7 @@ struct RetentionImageSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 RetentionArtworkView(image: image)
                     .aspectRatio(CGFloat(max(1, image.pixelWidth)) / CGFloat(max(1, image.pixelHeight)), contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 HStack {
                     Text(image.name)
                         .font(.callout.weight(.semibold))
@@ -93,7 +93,7 @@ struct RetentionImageSheet: View {
                 }
                 Text(image.problems.first?.message ?? image.detail)
                     .font(.subheadline)
-                    .foregroundStyle(image.fits ? Palette.label2 : Palette.danger)
+                    .foregroundStyle(image.fits ? Palette.label2 : Palette.err)
                     .lineLimit(2)
             }
             .padding(Spacing.xSmall)

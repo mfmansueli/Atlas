@@ -15,21 +15,21 @@ struct WelcomePoint: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
                 .fill(LinearGradient(colors: WelcomeHeader.gradient, startPoint: .top, endPoint: .bottom))
                 .frame(width: 28, height: 28)
                 .overlay {
                     Image(systemName: systemImage)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.body.weight(.medium))
                         .foregroundStyle(.white)
                 }
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.body.weight(.semibold))
                 if showsDetail {
                     Text(detail)
-                        .font(.system(size: 13))
+                        .font(.body)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -39,7 +39,7 @@ struct WelcomePoint: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .accessibilityElement(children: .combine)
     }
 }

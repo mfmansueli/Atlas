@@ -17,7 +17,7 @@ struct PageShotsLookSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Look").font(.headline)
+            Text("Look").font(.body.weight(.semibold))
             option(
                 isOn: look == .same, title: String(localized: "The same template as the default page"), detail: sameNote,
                 id: "pages.shots.look.same"

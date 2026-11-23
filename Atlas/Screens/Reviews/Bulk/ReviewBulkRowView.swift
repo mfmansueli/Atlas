@@ -27,10 +27,10 @@ struct ReviewBulkRowView: View {
                         FlagTile(regionCode: row.territory)
                     }
                     Text(row.languageName)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(ReviewText.reviews(row.reviewIDs.count))
-                        .font(.caption.monospacedDigit())
+                        .font(.footnote.monospacedDigit())
                         .foregroundStyle(Palette.label2)
                 }
                 Text(row.text)
@@ -43,8 +43,8 @@ struct ReviewBulkRowView: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
-        .background(isOn ? Palette.machineTranslatedTint : Palette.fill1, in: shape)
-        .overlay(shape.strokeBorder(isOn ? Palette.machineTranslatedMark.opacity(0.35) : Palette.separator, lineWidth: isOn ? 1 : 0.5))
+        .background(isOn ? Palette.aiSurface : Palette.fill1, in: shape)
+        .overlay(shape.strokeBorder(isOn ? Palette.aiMark.opacity(0.35) : Palette.separator, lineWidth: isOn ? 1 : 0.5))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.bulk.row.\(row.languageCode)")
     }

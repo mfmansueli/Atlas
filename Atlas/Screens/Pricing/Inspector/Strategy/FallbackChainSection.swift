@@ -27,7 +27,7 @@ struct FallbackChainSection: View {
                 ForEach(Array(steps.enumerated()), id: \.element) { position, step in
                     HStack(spacing: Spacing.xSmall) {
                         Text(position + 2, format: .number)
-                            .font(.caption.monospacedDigit())
+                            .font(.footnote.monospacedDigit())
                             .foregroundStyle(Palette.label2)
                         Text(step.title(chosen: strategy.indexSource)).font(.callout)
                         Spacer(minLength: Spacing.xSmall)
@@ -50,7 +50,7 @@ struct FallbackChainSection: View {
                         }
                     }
                     .fixedSize()
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("pricing.fallback.add")
                 }
             }

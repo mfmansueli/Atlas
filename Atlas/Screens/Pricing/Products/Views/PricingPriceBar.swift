@@ -14,7 +14,7 @@ struct PricingPriceBar: View {
         [
             (card.equalizedCount, Palette.fill3),
             (card.customCount, Palette.label3),
-            (card.suggestedCount, Palette.suggestionBadge),
+            (card.suggestedCount, Palette.aiFill),
             (card.queuedCount, Palette.accent),
         ].filter { $0.count > 0 }
     }

@@ -169,7 +169,7 @@ struct IntroductoryOfferSheet: View {
             ForEach(currentProblems, id: \.self) { problem in
                 Text(problem.message)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

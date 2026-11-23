@@ -21,11 +21,11 @@ struct ProductPageKeywordsBox: View {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 if isPending { UnsavedDot(size: 6) }
                 Text("Search Keywords")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if viewModel.defaultPage.hasApprovedVersion, !available.isEmpty {
                     Text("\(chosen.filter(available.contains).count) of \(available.count) chosen")
-                        .font(.caption2.monospacedDigit())
+                        .font(.footnote.monospacedDigit())
                         .foregroundStyle(Palette.label2)
                         .accessibilityIdentifier("pages.keywords.count")
                 }
@@ -80,7 +80,7 @@ struct ProductPageKeywordsBox: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Choose Keywords…") { viewModel.revealedKeywordLocales.insert(locale) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(!viewModel.canEdit(page))
                     .accessibilityIdentifier("pages.keywords.choose")
             }

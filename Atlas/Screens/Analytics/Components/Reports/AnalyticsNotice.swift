@@ -19,23 +19,23 @@ struct AnalyticsNotice: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.small) {
             Image(systemName: tone == .warning ? "exclamationmark.triangle.fill" : "info.circle")
-                .foregroundStyle(tone == .warning ? Palette.warningMark : Palette.label2)
+                .foregroundStyle(tone == .warning ? Palette.warnMark : Palette.label2)
                 .accessibilityHidden(true)
             Text(text)
                 .font(.callout)
                 .lineLimit(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if let secondary {
-                Button(secondary.title, action: secondary.action).controlSize(.small)
+                Button(secondary.title, action: secondary.action).controlSize(.regular)
             }
             if let primary {
-                Button(primary.title, action: primary.action).controlSize(.small)
+                Button(primary.title, action: primary.action).controlSize(.regular)
             }
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
         .background(
-            tone == .warning ? Palette.warningTint : Palette.fill1,
+            tone == .warning ? Palette.warnTint : Palette.fill1,
             in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
         )
         .accessibilityElement(children: .contain)

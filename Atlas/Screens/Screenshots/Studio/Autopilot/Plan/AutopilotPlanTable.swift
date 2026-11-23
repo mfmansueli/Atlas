@@ -169,11 +169,11 @@ struct AutopilotPlanTable: View {
                     .accessibilityIdentifier("autopilot.plan.name.\(tag)")
                 if let origin = screen.origin {
                     Text(origin.tag)
-                        .font(.caption2.weight(.medium))
+                        .font(.footnote.weight(.medium))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 1)
-                        .foregroundStyle(origin == .person ? Palette.label2 : Palette.machineTranslatedMark)
-                        .background(origin == .person ? Palette.fill1 : Palette.machineTranslatedTint, in: Capsule())
+                        .foregroundStyle(origin == .person ? Palette.label2 : Palette.aiMark)
+                        .background(origin == .person ? Palette.fill1 : Palette.aiSurface, in: Capsule())
                         .accessibilityIdentifier("autopilot.plan.origin.\(tag)")
                 }
             }

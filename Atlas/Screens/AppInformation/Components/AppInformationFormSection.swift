@@ -26,6 +26,8 @@ struct AppInformationFormSection<Content: View, Trailing: View>: View {
             VStack(alignment: .leading, spacing: 0) {
                 content()
             }
+            // Rows hold row-sized (24 pt) controls (README — Design system §5).
+            .controlSize(.regular)
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card - 2, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: Radius.card - 2, style: .continuous)

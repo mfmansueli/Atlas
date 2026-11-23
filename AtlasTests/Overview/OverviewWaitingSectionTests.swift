@@ -7,7 +7,7 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// The Overview's "suggestions waiting for you": one row per section, in the
+/// The Overview's "suggestions to review": one row per section, in the
 /// design's order, saying where the suggestions are or that it's reviewed.
 @Suite("Overview waiting rows")
 struct OverviewWaitingSectionTests {
@@ -45,6 +45,12 @@ struct OverviewWaitingSectionTests {
         #expect(rows[0].detail == "Text in 1 language, including 1 new page")
         #expect(rows[0].accessibilityText == "Open Store Page, 1 suggestion to review")
         #expect(rows[2].detail == "Prices that likely hold people back")
+    }
+
+    @Test func theListSaysHowManyAreWaiting() {
+        #expect(OverviewWaitingSection.title(total: 65) == "65 suggestions to review")
+        #expect(OverviewWaitingSection.title(total: 1) == "1 suggestion to review")
+        #expect(OverviewWaitingSection.title(total: 0) == "Nothing to review")
     }
 
     @Test func whatEachSectionChanges() {

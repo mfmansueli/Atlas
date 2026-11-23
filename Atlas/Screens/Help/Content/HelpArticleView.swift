@@ -20,7 +20,7 @@ struct HelpArticleView: View {
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("help.article.title")
             Text(article.summary)
-                .font(.title3)
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("help.article.summary")
@@ -35,7 +35,7 @@ struct HelpArticleView: View {
             if !related.isEmpty {
                 Divider()
                 Text("Related")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                 HStack(spacing: Spacing.small) {
                     ForEach(related) { other in

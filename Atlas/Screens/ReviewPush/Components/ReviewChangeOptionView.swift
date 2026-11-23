@@ -30,7 +30,7 @@ struct ReviewChangeOptionView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(option.isEnabled ? Palette.label : Palette.label2)
                 Text(option.note)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -45,7 +45,7 @@ struct PriceHistogramView: View {
     @ViewBuilder
     private var heading: some View {
         Text("Distance from Apple’s equalized price")
-            .font(.headline)
+            .font(.body.weight(.semibold))
         Text(histogram.summary)
             .font(.callout)
             .foregroundStyle(Palette.label2)

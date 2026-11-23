@@ -25,7 +25,7 @@ struct InAppEventReviewList: View {
             ForEach(items) { item in
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Image(systemName: symbol(item))
-                        .foregroundStyle(item.state == .missing ? Palette.label2 : Palette.positive)
+                        .foregroundStyle(item.state == .missing ? Palette.label2 : Palette.ok)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(item.text)
@@ -46,7 +46,7 @@ struct InAppEventReviewList: View {
             ForEach(warnings) { warning in
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(warning.text)
@@ -59,11 +59,11 @@ struct InAppEventReviewList: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     if let date = warning.suggestedDates[.publishStart] {
                         Button(InAppEventsViewModel.showFromTitle(date)) { viewModel.applySuggestedDates(warning.suggestedDates, of: event) }
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("events.review.warning.\(warning.id).fix")
                     } else if viewModel.datesEditProblem(of: event) == nil {
                         Button("Change Dates…") { viewModel.focusedDateField = warning.warning.field }
-                            .controlSize(.small)
+                            .controlSize(.regular)
                             .accessibilityIdentifier("events.review.warning.\(warning.id).fix")
                     }
                 }
@@ -95,7 +95,7 @@ struct InAppEventReviewList: View {
                 app: viewModel.app, event: event, deepLink: viewModel.deepLink(of: event), kind: .makeItWork,
                 identifier: "events.review.linkNotClaimed.fix"
             )
-            .controlSize(.small)
+            .controlSize(.regular)
         case let .need(need):
             switch need {
             case .deepLink:
@@ -121,7 +121,7 @@ struct InAppEventReviewList: View {
             if let date = item.suggestedDates[.publishStart] {
                 fixButton(InAppEventsViewModel.showFromTitle(date), item) { viewModel.applySuggestedDates(item.suggestedDates, of: event) }
                 Button("Fix…") { viewModel.focusedDateField = need.dateField }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .accessibilityIdentifier("events.review.\(item.id).change")
             } else {
                 fixButton(String(localized: "Fix…"), item) { viewModel.focusedDateField = need.dateField }
@@ -131,7 +131,7 @@ struct InAppEventReviewList: View {
 
     private func fixButton(_ title: String, _ item: InAppEventReviewItem, action: @escaping () -> Void) -> some View {
         Button(title, action: action)
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("events.review.\(item.id).fix")
     }
 }

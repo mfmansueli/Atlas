@@ -55,7 +55,7 @@ struct SubmitEventRow: View {
             if preflight.blocks {
                 ForEach(preflight.missing) { item in
                     Label(item.text, systemImage: "xmark.circle.fill")
-                        .foregroundStyle(Palette.warning)
+                        .foregroundStyle(Palette.warn)
                         .accessibilityIdentifier("submit.event.\(event.id).missing.\(item.id)")
                 }
                 HStack(spacing: Spacing.small) {
@@ -66,12 +66,12 @@ struct SubmitEventRow: View {
             }
             ForEach(preflight.reviewTime) { warning in
                 Label(warning.text, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .accessibilityIdentifier("submit.event.\(event.id).reviewTime.\(warning.id)")
             }
             ForEach(preflight.warnings, id: \.self) { warning in
                 Label(warning, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .accessibilityIdentifier("submit.event.\(event.id).warning")
             }
             if let build = preflight.newerBuild {
@@ -95,7 +95,7 @@ struct SubmitEventRow: View {
             }
         }
         .font(.subheadline)
-        .controlSize(.small)
+        .controlSize(.regular)
         .fixedSize(horizontal: false, vertical: true)
     }
 

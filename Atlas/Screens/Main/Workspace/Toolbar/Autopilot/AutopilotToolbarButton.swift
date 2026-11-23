@@ -119,15 +119,20 @@ struct AutopilotToolbarButton: View {
             .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) { popover }
             .sheet(item: presentedProposals) { proposals in
                 ScreenshotProposalsSheet(viewModel: proposals)
+                    .pageControlSize()
             }
             .confirmationDialog("Cancel the run?", isPresented: $isConfirmingCancel) {
                 Button("Cancel Run", role: .destructive) { onCancelRun?() }
                 Button("Keep Running", role: .cancel) {}
             } message: {
-                Text("What it made so far is dropped; the captures stay for the next start.")
+                if case .capturing = state {
+                    Text("Screenshots it already made stay as suggestions.")
+                } else {
+                    Text("What it made so far is dropped; the captures stay for the next start.")
+                }
             }
             .sheet(isPresented: $isShowingFailure, onDismiss: onForgetFailure) {
-                if let failedRunID { ClaudeCodeRunOutputSheet(runID: failedRunID) }
+                if let failedRunID { ClaudeCodeRunOutputSheet(runID: failedRunID).pageControlSize() }
             }
             // A run that ends by itself shows the check for about 2 s.
             .onChange(of: state) { old, new in
@@ -214,7 +219,12 @@ struct AutopilotToolbarButton: View {
                 Button {
                     onAction(item.action)
                 } label: {
-                    Label(item.isPro ? String(localized: "\(item.title) · PRO") : item.title, systemImage: item.action.systemImage)
+                    Label {
+                        Text(item.isPro ? String(localized: "\(item.title) · PRO") : item.title)
+                        if let note = item.note { Text(note) }
+                    } icon: {
+                        Image(systemName: item.action.systemImage)
+                    }
                 }
                 .disabled(!item.isEnabled)
             }
@@ -304,6 +314,8 @@ struct AutopilotToolbarButton: View {
             if failedRunID != nil { isShowingFailure = true } else { isShowingPopover = true }
         case .running:
             if isScreenshotRun { onOpenRun() } else { isShowingPopover = true }
+        case .capturing:
+            onOpenRun()
         case .idle, .autoReplyOn:
             if let primary { onAction(primary.action) }
         }

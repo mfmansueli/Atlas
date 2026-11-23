@@ -19,7 +19,7 @@ struct AppInformationPreviewPane: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(spacing: Spacing.small) {
                 Text("On the App Store")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Picker("Preview", selection: $showsSuggested) {
                     Text("Now").tag(false)
@@ -59,9 +59,9 @@ struct AppInformationPreviewPane: View {
             .font(.subheadline)
             .padding(Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.content, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: Radius.popover, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5)
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel(Text("Preview on the App Store"))
@@ -107,20 +107,20 @@ struct AppInformationPreviewPane: View {
         let chips = accessibilityChips(family)
         return VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(family.name)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Palette.label2)
             if chips.isEmpty {
                 Text("No details provided")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
             } else {
                 FlowLayout(spacing: Spacing.xxSmall) {
                     ForEach(chips, id: \.value) { chip in
                         Text(chip.value)
-                            .font(.caption2)
+                            .font(.footnote)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 1)
-                            .background(Palette.fill2, in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+                            .background(Palette.fill2, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                             .modifier(AppStorePreviewHighlight(isOn: chip.isSuggested))
                     }
                 }

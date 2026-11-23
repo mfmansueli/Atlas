@@ -70,12 +70,12 @@ struct MenuBarMenuView: View {
         if snapshot.jobs.isEmpty {
             VStack(alignment: .leading, spacing: 5) {
                 Text(snapshot.quietTitle)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(snapshot.connectionProblem == nil ? Palette.label : Palette.danger)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(snapshot.connectionProblem == nil ? Palette.label : Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("menuBar.quietTitle")
                 Text(snapshot.checkLine)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)
@@ -92,7 +92,7 @@ struct MenuBarMenuView: View {
 
     private func header(_ title: LocalizedStringKey) -> some View {
         Text(title)
-            .font(.system(size: 11, weight: .semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)
             .padding(.horizontal, 10)
             .padding(.top, 8)

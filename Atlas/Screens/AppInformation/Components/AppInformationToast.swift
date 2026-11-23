@@ -31,7 +31,7 @@ struct AppInformationToast: View {
             RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
                 .strokeBorder(Palette.separator2, lineWidth: 0.5)
         }
-        .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+        .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.toast")
         .task(id: text) {

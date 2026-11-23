@@ -40,7 +40,7 @@ struct KeyAssistantSettingsSection: View {
             if let errorText {
                 Text(errorText)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
             }
         }
         .sheet(isPresented: $isSettingUp) {
@@ -87,7 +87,7 @@ struct KeyAssistantSettingsSection: View {
             Button("Choose Another Folder…") {
                 if let url = ProjectFolderPicker.choose() { keyAssistant.setProjectFolder(url) }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         Toggle(isOn: Binding(get: { configuration.readsReviews }, set: { isOn in keyAssistant.update { $0.readsReviews = isOn } })) {
             SettingsRowLabel(title: "Read customer reviews", caption: String(localized: "The latest App Store reviews, to learn what people praise."))
@@ -109,7 +109,7 @@ struct KeyAssistantSettingsSection: View {
             Button("Remove Key…", role: .destructive) { isConfirmingRemove = true }
                 .accessibilityIdentifier("settings.ai.key.remove")
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     private func models(_ configuration: KeyAssistantConfiguration) -> [KeyAssistantModel] {

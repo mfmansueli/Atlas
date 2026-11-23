@@ -16,7 +16,7 @@ struct AssistantLaunchedRunsList: View {
         if !runs.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("STARTED FROM ATLAS")
-                    .font(.caption2.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 VStack(spacing: 0) {
                     ForEach(Array(runs.enumerated()), id: \.element.id) { index, run in
@@ -43,7 +43,7 @@ struct AssistantLaunchedRunsList: View {
                     .controlSize(.mini)
             } else {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.warning)
+                    .foregroundStyle(Palette.warn)
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 1) {
@@ -52,7 +52,7 @@ struct AssistantLaunchedRunsList: View {
                     .lineLimit(1)
                 TimelineView(.periodic(from: run.startedAt, by: 1)) { context in
                     Text(detail(run, at: context.date))
-                        .font(.caption2.monospaced())
+                        .font(.footnote.monospaced())
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -69,7 +69,7 @@ struct AssistantLaunchedRunsList: View {
                     .accessibilityIdentifier("assistant.runs.stop")
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .padding(.horizontal, 10)
         .padding(.vertical, Spacing.xSmall)
         .accessibilityElement(children: .contain)

@@ -37,12 +37,12 @@ struct AssistantSetupTestStep: View {
             HStack(spacing: Spacing.small) {
                 promptText
                 Button("Copy") { Self.copy(AssistantSetupViewModel.testPrompt) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
             }
             if viewModel.isConnected {
                 connectedBox
                 Text("Things to ask next")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                     .padding(.top, Spacing.xxSmall)
                 thingsToAskList
             } else {
@@ -86,7 +86,7 @@ struct AssistantSetupTestStep: View {
                         .font(.callout)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Start Test") { Task { await viewModel.startTest() } }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                         .accessibilityIdentifier("assistantSetup.launch.startTest")
                 }
                 .padding(Spacing.medium)
@@ -142,8 +142,8 @@ struct AssistantSetupTestStep: View {
     private var connectedBox: some View {
         HStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.title3)
-                .foregroundStyle(Palette.positive)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(Palette.ok)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Connected")
@@ -170,12 +170,12 @@ struct AssistantSetupTestStep: View {
                         Text(item.prompt)
                             .font(.callout)
                         Text(item.detail)
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     Button("Copy") { Self.copy(item.prompt) }
-                        .controlSize(.small)
+                        .controlSize(.regular)
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, Spacing.xSmall)

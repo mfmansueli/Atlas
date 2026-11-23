@@ -38,8 +38,8 @@ struct FitMeter: View {
     private var tint: Color {
         switch value.tone {
         case .fits: Palette.label3
-        case .shrinks: Palette.warningMark
-        case .overflows: Palette.dangerMark
+        case .shrinks: Palette.warnMark
+        case .overflows: Palette.errMark
         case .empty: .clear
         }
     }

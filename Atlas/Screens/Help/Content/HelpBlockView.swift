@@ -44,7 +44,7 @@ struct HelpBlockView: View {
             styled(text)
                 .padding(Spacing.medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.fill1, in: RoundedRectangle(cornerRadius: 8))
+                .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field))
                 .accessibilityIdentifier("help.note")
         case let .table(header, rows):
             HelpTableView(header: header, rows: rows)

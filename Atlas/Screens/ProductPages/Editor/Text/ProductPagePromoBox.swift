@@ -23,7 +23,7 @@ struct ProductPagePromoBox: View {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 if isPending { UnsavedDot(size: 6) }
                 Text("Promotional Text")
-                    .font(.headline)
+                    .font(.body.weight(.semibold))
                 Text("Above the description. The only words a page can change.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -43,7 +43,7 @@ struct ProductPagePromoBox: View {
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.xSmall)
             .background(Palette.content, in: shape)
-            .overlay(shape.strokeBorder(isOver ? Palette.danger : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
+            .overlay(shape.strokeBorder(isOver ? Palette.err : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
             .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
             .disabled(!viewModel.canEdit(page))
             .accessibilityLabel(Text("Promotional Text, \(ProductPageChangeBuilder.localeName(locale))"))
@@ -92,7 +92,7 @@ struct ProductPagePromoBox: View {
                 .accessibilityIdentifier("pages.promo.counter")
         } else {
             Text(label)
-                .font(.caption2.monospaced())
+                .font(.footnote.monospaced())
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("pages.promo.counter")
         }

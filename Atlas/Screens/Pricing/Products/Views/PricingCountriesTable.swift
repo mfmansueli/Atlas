@@ -19,7 +19,7 @@ struct PricingCountriesTable: View {
                     Text("Suggested").gridColumnAlignment(.trailing)
                     Text(verbatim: "%").gridColumnAlignment(.trailing)
                 }
-                .font(.caption2.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 Divider()
                 ForEach(suggestion.countries) { country in
@@ -30,11 +30,11 @@ struct PricingCountriesTable: View {
                         Text(country.now)
                             .foregroundStyle(Palette.label2)
                         Text(country.suggested)
-                            .foregroundStyle(Palette.machineTranslated)
+                            .foregroundStyle(Palette.ai)
                         Text(country.change)
                             .foregroundStyle(Palette.label2)
                     }
-                    .font(.caption.monospacedDigit())
+                    .font(.footnote.monospacedDigit())
                     .lineLimit(1)
                     .accessibilityElement(children: .combine)
                 }
@@ -48,7 +48,7 @@ struct PricingCountriesTable: View {
             }
         }
         .padding(Spacing.medium)
-        .background(Palette.content, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Palette.content, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.card.countries")
     }

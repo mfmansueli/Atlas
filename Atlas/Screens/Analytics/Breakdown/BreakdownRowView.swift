@@ -51,7 +51,7 @@ struct BreakdownRowView: View {
         .overlay(alignment: .trailing) {
             if let onOpenPage {
                 Button("Open Page", action: onOpenPage)
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .help(Text("Open in Custom Product Pages"))
                     .accessibilityLabel(Text("Open this product page"))
                     .accessibilityIdentifier("analytics.breakdown.openPage.\(row.id)")

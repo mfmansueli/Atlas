@@ -94,10 +94,10 @@ struct KeyAssistantSetupKeyStep: View {
                 }
             case let .works(text):
                 Label(text, systemImage: "checkmark.circle.fill")
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
             case let .rejected(text):
                 Label(text, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
             }
         }
         .font(.subheadline)

@@ -32,7 +32,7 @@ struct GuidedThisMacCard: View {
                     .foregroundStyle(check.summaryIsWarning ? Palette.label : Palette.label2)
                     .accessibilityIdentifier("autopilot.mac.summary")
                 Button("Check Again") { studio.checkSimulators() }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .disabled(simulators.working != nil || simulators.state == .checking)
                     .accessibilityIdentifier("autopilot.mac.check")
             }
@@ -62,7 +62,7 @@ struct GuidedThisMacCard: View {
             if let failure = simulators.failure {
                 Text(failure)
                     .font(.subheadline)
-                    .foregroundStyle(Palette.danger)
+                    .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("autopilot.mac.failure")
             }
@@ -82,12 +82,12 @@ struct GuidedThisMacCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("autopilot.mac.message")
             Button(button) { studio.installHelperAndCheck() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("autopilot.mac.helper")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, Spacing.small)
-        .background(isWarning ? Palette.warningTint.opacity(0.18) : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
+        .background(isWarning ? Palette.warnTint.opacity(0.18) : Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner))
     }
 
     private func rows(_ check: GuidedMacCheck) -> some View {
@@ -126,7 +126,7 @@ struct GuidedThisMacCard: View {
             if isFine {
                 Image(systemName: "checkmark")
                     .font(.callout.weight(.bold))
-                    .foregroundStyle(Palette.positive)
+                    .foregroundStyle(Palette.ok)
                     .accessibilityLabel(Text("Ready"))
             }
         }
@@ -174,13 +174,13 @@ struct GuidedThisMacCard: View {
             EmptyView()
         } else if let platform = status?.platformToInstall {
             Button("Install the \(platform) Simulator") { studio.installSimulator(for: display) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(simulators.working != nil)
                 .help(Text("Downloads it with xcodebuild -downloadPlatform \(platform) (several GB), then makes the simulator."))
                 .accessibilityIdentifier("autopilot.mac.install")
         } else if case .canMake = status {
             Button("Make the Simulator") { studio.makeSimulator(for: display) }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .disabled(simulators.working != nil)
                 .accessibilityIdentifier("autopilot.mac.make")
         } else if watchesDuo {
@@ -195,21 +195,21 @@ struct GuidedThisMacCard: View {
         switch simulators.duo.state {
         case .closed, .notRunning, .unknown:
             Button("Open Now") { opensDuo = true }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .help(Text("Atlas starts iPhone Duo if it isn’t running and presses Open in its window in Device Hub."))
                 .accessibilityIdentifier("autopilot.mac.openDuo")
         case .needsAccessibility:
             Button("Open Accessibility Settings") { AccessibilitySettings.open() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("autopilot.mac.accessibility")
         case .helperCantOpen:
             Button("Save the Helper Again…") { studio.installHelperAndCheck() }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .accessibilityIdentifier("autopilot.mac.duoHelper")
         case .noHelper, .oldHelper, .failed, .couldntOpen, .stuck:
             if DeviceHub.url != nil {
                 Button("Open in Device Hub") { DeviceHub.open(udid: simulators.inventory?.simulator(for: .iPhoneDuo)?.udid) }
-                    .controlSize(.small)
+                    .controlSize(.regular)
                     .help(Text(DeviceHub.openingSteps))
                     .accessibilityIdentifier("autopilot.mac.deviceHub")
             }

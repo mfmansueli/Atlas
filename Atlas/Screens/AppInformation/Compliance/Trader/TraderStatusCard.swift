@@ -52,7 +52,7 @@ struct TraderStatusCard: View {
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
                     Text("NOW")
-                        .font(.caption2.weight(.semibold))
+                        .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(width: 74, alignment: .leading)
                     Text("Not declared")
@@ -62,8 +62,8 @@ struct TraderStatusCard: View {
                 }
                 GridRow {
                     Text(showsBuiltInSuggestion ? "SUGGESTED" : "AS A TRADER")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(showsBuiltInSuggestion ? Palette.machineTranslated : Palette.label2)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(showsBuiltInSuggestion ? Palette.ai : Palette.label2)
                         .frame(width: 74, alignment: .leading)
                     Text("Trader, with these details")
                         .font(.callout)
@@ -75,7 +75,7 @@ struct TraderStatusCard: View {
                     viewModel.setTraderDetail(text, for: field)
                 }
                 Text("Prepared from your team’s name and App Review’s contact. Apple’s API doesn’t share your address: add it yourself.")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -95,14 +95,14 @@ struct TraderStatusCard: View {
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("appInformation.compliance.trader.accept")
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(showsBuiltInSuggestion ? Palette.machineTranslatedTint : Palette.fill1, in: boxShape)
+        .background(showsBuiltInSuggestion ? Palette.aiSurface : Palette.fill1, in: boxShape)
         .overlay {
-            boxShape.strokeBorder(showsBuiltInSuggestion ? Palette.machineTranslatedMark.opacity(0.35) : Palette.separator, lineWidth: 1)
+            boxShape.strokeBorder(showsBuiltInSuggestion ? Palette.aiMark.opacity(0.35) : Palette.separator, lineWidth: 1)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.compliance.trader.question")
@@ -134,7 +134,7 @@ struct TraderStatusCard: View {
                 }
                 ExternalLinkButton(title: String(localized: "Open App Store Connect"), url: viewModel.appStoreConnectComplianceURL)
             }
-            .controlSize(.small)
+            .controlSize(.regular)
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
@@ -168,7 +168,7 @@ struct TraderStatusCard: View {
         HStack {
             Spacer(minLength: 0)
             ExternalLinkButton(title: String(localized: "Open App Store Connect"), url: viewModel.appStoreConnectComplianceURL)
-                .controlSize(.small)
+                .controlSize(.regular)
         }
     }
 }

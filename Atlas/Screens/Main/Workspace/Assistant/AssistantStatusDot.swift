@@ -25,15 +25,15 @@ struct AssistantStatusDot: View {
     private var color: Color {
         if let tone {
             switch tone {
-            case .good: return Palette.positive
-            case .attention: return Palette.warningMark
-            case .problem: return Palette.dangerMark
+            case .good: return Palette.ok
+            case .attention: return Palette.warnMark
+            case .problem: return Palette.errMark
             }
         }
         return switch status {
         case .notSetUp: Palette.label3
-        case .waiting: Palette.warningMark
-        case .connected, .ready: Palette.positive
+        case .waiting: Palette.warnMark
+        case .connected, .ready: Palette.ok
         }
     }
 }

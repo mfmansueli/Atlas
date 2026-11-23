@@ -41,7 +41,7 @@ struct PrivacyLinkageLine: View {
             .buttonStyle(.borderless)
             .labelsHidden()
             .fixedSize()
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityLabel(Text(title))
             .accessibilityIdentifier("appInformation.appPrivacy.type.\(type.rawValue).\(isTracking ? "tracking" : "linked")")
         }

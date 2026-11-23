@@ -24,8 +24,8 @@ struct ScreenshotHandCurrentImage: View {
                 }
             }
             .frame(width: width, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
             if let label {
                 Pill(text: label, style: .outline)
                     .fixedSize()

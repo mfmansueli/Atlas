@@ -59,7 +59,7 @@ struct ProductPageTestAskingView: View {
             if let askedAt = run?.variantRequest?.askedAt {
                 TimelineView(.periodic(from: askedAt, by: 1)) { context in
                     Text(ClaudeCodeRunStatusView.duration(context.date.timeIntervalSince(askedAt)))
-                        .font(.caption.monospacedDigit())
+                        .font(.footnote.monospacedDigit())
                         .foregroundStyle(Palette.label2)
                 }
                 .help(Text("Since it was asked for"))
@@ -106,7 +106,7 @@ struct ProductPageTestAskingView: View {
     private func icon(_ state: ProductPageTestAskingStep.State) -> some View {
         switch state {
         case .done:
-            Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.positive)
+            Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.ok)
         case .current:
             ProgressView().controlSize(.mini)
         case .upcoming:
@@ -144,7 +144,7 @@ struct ProductPageTestAskingView: View {
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(step.date.formatted(date: .omitted, time: .standard))
-                            .font(.caption2.monospacedDigit())
+                            .font(.footnote.monospacedDigit())
                             .foregroundStyle(Palette.label2)
                     }
                 }
@@ -168,7 +168,7 @@ struct ProductPageTestAskingView: View {
             Button("Start Claude Code Again") {
                 Task { await model.continueAsking(center: center, launcher: launcher) }
             }
-            .controlSize(.small)
+            .controlSize(.regular)
             .accessibilityIdentifier("ppo.startAgain")
         }
         .accessibilityElement(children: .contain)
@@ -183,7 +183,7 @@ struct ProductPageTestAskingView: View {
             NSPasteboard.general.setString(AutopilotPrompt.continuing(run, appName: model.plan.appName), forType: .string)
             copiedPrompt = true
         }
-        .controlSize(.small)
+        .controlSize(.regular)
         .help(Text("The prompt that continues \(model.plan.appName)’s run, to paste in your assistant"))
         .accessibilityIdentifier("ppo.copyPrompt")
     }

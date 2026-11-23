@@ -38,11 +38,11 @@ struct AutopilotRecordingPlayer: View {
                     seek: player.seek(to:), scrubbing: player.scrub
                 ) {
                     Text("RAW")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.footnote.weight(.bold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 7)
                         .frame(height: 18)
-                        .background(Color(red: 0xE5 / 255, green: 0x48 / 255, blue: 0x4D / 255), in: Capsule())
+                        .background(Palette.errMark, in: Capsule())
                 }
                 AutopilotRecordingBar(
                     pieces: studio.recordingPieces(run), seconds: player.seconds,
@@ -79,13 +79,13 @@ struct AutopilotRecordingPlayer: View {
                 Circle()
                     .fill(.black.opacity(0.45))
                     .frame(width: 56, height: 56)
-                    .overlay(Image(systemName: "play.fill").font(.system(size: 22)).foregroundStyle(.white).offset(x: 2))
+                    .overlay(Image(systemName: "play.fill").font(.title.weight(.semibold)).foregroundStyle(.white).offset(x: 2))
                     .accessibilityHidden(true)
             }
         }
         .padding(7)
         .background(Color(white: 0.11), in: RoundedRectangle(cornerRadius: outer, style: .continuous))
-        .shadow(color: .black.opacity(0.25), radius: 15, y: 10)
+        .depth(.popover)
         .contentShape(Rectangle())
     }
 }
