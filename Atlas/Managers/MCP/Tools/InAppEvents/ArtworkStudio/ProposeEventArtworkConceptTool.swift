@@ -41,7 +41,7 @@ struct ProposeEventArtworkConceptTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "eventId": MCPToolDefinition.string("The event's id."),
                 "name": MCPToolDefinition.string("The concept's name, two or three words, e.g. Snowfall Path."),
-                "why": MCPToolDefinition.string("One sentence for the person: the idea, and why it reads at card size."),
+                "why": MCPToolDefinition.shortWhy("One sentence for the person: the idea, and why it reads at card size."),
                 "pick": ["type": "boolean", "description": "True on the concept you'd choose. Default false."],
                 "cardHtml": MCPToolDefinition.string("The card as a full HTML page, 16:9."),
                 "detailsHtml": MCPToolDefinition.string("The details image as a full HTML page, 9:16."),

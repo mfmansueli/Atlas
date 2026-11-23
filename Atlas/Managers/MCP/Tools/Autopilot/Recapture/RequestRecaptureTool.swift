@@ -55,7 +55,7 @@ struct RequestRecaptureTool: MCPTool {
                     ),
                 ],
                 "moments": ["type": "array", "items": ["type": "string"], "description": "App Preview moments to record again, by screen id."],
-                "reason": MCPToolDefinition.string("Why they need redoing, in a sentence the person reads, e.g. the phrases were rewritten."),
+                "reason": MCPToolDefinition.shortWhy("Why they need redoing, in a sentence the person reads, e.g. the phrases were rewritten."),
                 "evidence": MCPToolDefinition.string("What shows it: a file or commit, e.g. d038b58."),
             ],
             required: ["appId", "reason"]

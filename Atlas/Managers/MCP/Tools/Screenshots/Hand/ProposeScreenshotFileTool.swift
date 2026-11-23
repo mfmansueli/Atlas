@@ -36,7 +36,7 @@ struct ProposeScreenshotFileTool: MCPTool {
                 "displayType": MCPToolDefinition.string("iphone, iphone_duo, ipad, mac, watch or vision_pro."),
                 "position": ["type": "integer", "description": "The screenshot it replaces, from 1. Leave it out to add it after the last one."],
                 "fileId": MCPToolDefinition.string("The fileId the upload link returned."),
-                "reason": MCPToolDefinition.string("Why, in a sentence or two the person reads before accepting."),
+                "reason": MCPToolDefinition.shortWhy("Why, for the person to read before accepting."),
             ],
             required: ["appId", "locale", "displayType", "fileId", "reason"]
         ),

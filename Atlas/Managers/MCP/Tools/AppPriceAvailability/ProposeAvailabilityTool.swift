@@ -23,7 +23,7 @@ struct ProposeAvailabilityTool: MCPTool {
         "preOrderReleaseDate": MCPToolDefinition.string("First availability only: offer a pre-order until this release date, YYYY-MM-DD."),
         "makeAvailable": ["type": "array", "items": ["type": "string"], "description": "Territories to start selling in, e.g. [\"CHN\"]."],
         "makeUnavailable": ["type": "array", "items": ["type": "string"], "description": "Territories to stop selling in."],
-        "reason": MCPToolDefinition.string("Why, in a sentence the person can check."),
+        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person can check."),
         "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. README.md:30 — “Available in the US and Canada”"],
     ]
 
