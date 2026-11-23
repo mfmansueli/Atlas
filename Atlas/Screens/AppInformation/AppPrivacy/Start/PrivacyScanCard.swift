@@ -62,8 +62,10 @@ struct PrivacyScanCard: View {
                 ClaudeCodeRunStatusView(run: launched)
             }
             HStack(spacing: Spacing.small) {
-                Button("Start Scan", action: startScan)
-                    .buttonStyle(.borderedProminent)
+                // Starts AI work inside the page: secondary, sparkles and a
+                // purple label (README — Design system §4).
+                Button(action: startScan) { AIStartLabel(String(localized: "Start Scan")) }
+                    .buttonStyle(.bordered)
                     .disabled(launched?.isActive == true || !launcher.canStart)
                     .accessibilityIdentifier("appInformation.appPrivacy.startScan")
                 Button("Copy Prompt") { viewModel.copyPrompt() }

@@ -83,7 +83,7 @@ struct SubmitWhatsNewRow: View {
     }
 
     private func accept(_ suggestion: FieldSuggestion) {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept(suggestion)

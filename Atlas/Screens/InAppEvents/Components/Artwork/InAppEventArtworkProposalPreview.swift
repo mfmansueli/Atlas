@@ -32,9 +32,7 @@ struct InAppEventArtworkProposalPreview: View {
                 InAppEventArtworkOverlay(image: image, kind: kind, texts: texts)
                     .scaleEffect(scale, anchor: .topLeading)
                     .frame(width: width, height: full.height * scale, alignment: .topLeading)
-                    .modifier(SuggestionArrival(
-                        key: "eventArt.\(path)", arrivedAt: madeAt, shape: Rectangle(), edgePass: false, window: ArrivalLedger.imageWindow
-                    ))
+                    .aiArrivedImage(key: "eventArt.\(path)", arrivedAt: madeAt)
                     .transition(.opacity)
             } else {
                 ImageLoadingTile(isLoading: phase.isLoading, systemImage: isVideo ? "film" : "photo")

@@ -48,7 +48,7 @@ struct ScreenshotHandProposalCard: View {
                     .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: Spacing.xSmall) {
                     Spacer()
-                    Button("Dismiss") { Task { await viewModel.dismissHandProposal(proposal) } }
+                    Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion) { Task.immediate { await viewModel.dismissHandProposal(proposal) } } }
                         .accessibilityIdentifier("screenshots.hand.proposal.dismiss")
                     Button("Accept", action: accept)
                         .rowActionButton()
@@ -70,7 +70,7 @@ struct ScreenshotHandProposalCard: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             Task.immediate { await viewModel.acceptHandProposal(proposal) }

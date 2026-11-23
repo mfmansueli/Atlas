@@ -125,7 +125,7 @@ struct PricingProductCardView: View {
                 Button(isExpanded ? "Hide Countries" : "Show Countries", action: onToggleCountries)
                     .accessibilityIdentifier("pricing.card.countriesToggle")
                 Spacer(minLength: Spacing.small)
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("pricing.card.dismiss")
                 // A row action (README — Design system §4): tinted, so the
                 // banner's Accept All stays the one filled button.
@@ -141,13 +141,13 @@ struct PricingProductCardView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, Spacing.small)
         .background(isSettling ? Palette.fill1 : Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
-        .modifier(AcceptSettle(isSettling: isSettling))
+        .aiDecided(isSettling: isSettling)
         .task(id: isSettling) {
             // Still here a while later: the prices weren't queued (an
             // error, the paywall closed), so it takes clicks again.
             guard isSettling else { return }
             try? await Task.sleep(for: .seconds(3))
-            withAnimation(MotionTiming.acceptTint) { isSettling = false }
+            withAnimation(MotionTiming.base.animation) { isSettling = false }
         }
         .accessibilityElement(children: .contain)
     }
@@ -157,7 +157,7 @@ struct PricingProductCardView: View {
             onAccept()
             return
         }
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()

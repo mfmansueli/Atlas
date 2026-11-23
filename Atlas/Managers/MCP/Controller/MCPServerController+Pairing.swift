@@ -41,17 +41,13 @@ extension MCPServerController {
     }
 
     /// Cancel: a client that never connected isn't paired, and its token
-    /// stops working. One that did stays paired, and the sheet closing is
-    /// its first connection's glint.
+    /// stops working. One that did stays paired.
     func cancelPairing() {
-        if pendingPairing?.isConnected == true { firstConnectionGlint.arm() }
         pendingPairing = nil
     }
 
-    /// Done, after the client connected: as the sheet closes, the
-    /// Autopilot button glints the first time (effect 6).
+    /// Done, after the client connected: the sheet closes.
     func finishPairing() {
-        if pendingPairing?.isConnected == true { firstConnectionGlint.arm() }
         pendingPairing = nil
     }
 
@@ -125,11 +121,8 @@ extension MCPServerController {
     }
 
     /// A paired client sent a request at `date`: remembered for its row.
-    /// Its very first one arms the Autopilot button's glint, unless the
-    /// pairing sheet is still open: that arms it as it closes.
     func noteSeen(_ clientID: MCPPairedClient.ID, at date: Date, workingDirectory: String? = nil) {
         guard let index = pairedClients.firstIndex(where: { $0.id == clientID }) else { return }
-        if pairedClients[index].lastSeenAt == nil, pendingPairing == nil { firstConnectionGlint.arm() }
         seenThisLaunch.insert(clientID)
         pairedClients[index].lastSeenAt = date
         if let workingDirectory { pairedClients[index].workingDirectory = workingDirectory }

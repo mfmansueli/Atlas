@@ -38,7 +38,7 @@ struct ReviewCard: View {
         }
         // A reply sent by hand takes the suggestion's place in the accept's
         // spring (effect 5), as does Undo giving it back.
-        .animation(AcceptSettle.commitAnimation(reduceMotion: reduceMotion), value: viewModel.sentNow.contains(review.id))
+        .animation(AIDecided.commitAnimation(reduceMotion: reduceMotion), value: viewModel.sentNow.contains(review.id))
         .padding(.horizontal, 14)
         .padding(.vertical, Spacing.medium)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))

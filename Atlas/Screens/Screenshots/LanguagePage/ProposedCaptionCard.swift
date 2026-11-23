@@ -50,7 +50,7 @@ struct ProposedCaptionCard: View {
             if let gloss = caption.layers?.gloss { GlossLine(gloss: gloss) }
             HStack(spacing: Spacing.small) {
                 Spacer()
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("screenshots.page.caption.dismiss")
                 Button("Use and Edit", action: onUseAndEdit)
                     .accessibilityIdentifier("screenshots.page.caption.useAndEdit")
@@ -64,9 +64,9 @@ struct ProposedCaptionCard: View {
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
-        .modifier(SuggestionArrival(key: caption.id, arrivedAt: caption.receivedAt, shape: shape))
+        .aiArrived(key: caption.id, arrivedAt: caption.receivedAt)
         .id(caption.id)
-        .modifier(AcceptSettle(isSettling: isSettling))
+        .aiDecided(isSettling: isSettling)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.page.caption.\(caption.slot)")
     }
@@ -76,7 +76,7 @@ struct ProposedCaptionCard: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()

@@ -70,7 +70,7 @@ struct ReviewSuggestionBox: View {
                     Button("Don’t Send", action: onDontSend)
                         .accessibilityIdentifier("reviews.suggestion.dontSend.\(review.id)")
                 } else {
-                    Button("Dismiss", action: onDismiss)
+                    Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                         .accessibilityIdentifier("reviews.suggestion.dismiss.\(review.id)")
                 }
                 Button("Edit…", action: onEdit)
@@ -89,12 +89,12 @@ struct ReviewSuggestionBox: View {
         .padding(.vertical, 10)
         .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
         .overlay(shape.strokeBorder(isSettling ? Palette.separator : Palette.aiMark.opacity(0.35), lineWidth: isSettling ? 0.5 : 1))
-        .modifier(SuggestionArrival(key: arrivalKey, arrivedAt: suggestion.date, shape: shape))
-        .modifier(AcceptSettle(isSettling: isSettling))
+        .aiArrived(key: arrivalKey, arrivedAt: suggestion.date)
+        .aiDecided(isSettling: isSettling)
         .onChange(of: isSending) { _, sending in
             // Still here once it stopped sending: it didn't go.
             if !sending, isSettling {
-                withAnimation(MotionTiming.acceptTint) { isSettling = false }
+                withAnimation(MotionTiming.base.animation) { isSettling = false }
             }
         }
         .accessibilityElement(children: .contain)
@@ -112,7 +112,7 @@ struct ReviewSuggestionBox: View {
     /// (`ReviewCard` animates that); the send doesn't wait for the check.
     private func send() {
         if !reduceMotion {
-            withAnimation(MotionTiming.acceptTint) { isSettling = true }
+            withAnimation(MotionTiming.base.animation) { isSettling = true }
         }
         onSend()
     }

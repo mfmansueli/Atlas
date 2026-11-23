@@ -71,7 +71,7 @@ struct InAppEventDatesSuggestionView: View {
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .help("Keep your dates")
                     .accessibilityIdentifier("events.details.dates.alternative.dismiss")
                 Button("Accept", action: accept)
@@ -91,7 +91,7 @@ struct InAppEventDatesSuggestionView: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()

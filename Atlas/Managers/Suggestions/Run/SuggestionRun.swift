@@ -96,9 +96,12 @@ struct SuggestionRun: Identifiable, Hashable, Sendable {
 
     // MARK: - Text
 
-    /// "Suggesting everything · 9 of 18".
+    /// "Suggesting everything · 9 of 18"; above 20, "Suggesting everything
+    /// · 38% · 97 of 255" (`AIProgress`).
     var progressText: String {
-        String(localized: "Suggesting everything · \(received) of \(total)")
+        let progress = AIProgress(done: received, total: total)
+        guard progress.total > AIProgress.countLimit else { return String(localized: "Suggesting everything · \(received) of \(total)") }
+        return String(localized: "Suggesting everything · \(progress.label)", comment: "kind:progress-step")
     }
 
     /// The card's title.

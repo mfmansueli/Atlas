@@ -71,12 +71,12 @@ struct AssistantConnectHelloStep: View {
                 .padding(.horizontal, 14)
                 .padding(.vertical, 11)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.aiSurface, in: TypingIndicator.bubble)
-                .overlay(TypingIndicator.bubble.strokeBorder(Palette.aiEdge, lineWidth: 1))
+                .background(Palette.aiSurface, in: AIWorkingStep.bubble)
+                .overlay(AIWorkingStep.bubble.strokeBorder(Palette.aiEdge, lineWidth: 1))
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("settings.connect.hello")
             } else {
-                TypingIndicator(label: String(localized: "\(name) is writing…"))
+                AIWorkingStep(text: String(localized: "\(name) is writing…"))
                 Spacer(minLength: 0)
             }
         }

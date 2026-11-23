@@ -119,11 +119,9 @@ struct PricingProductsView: View {
                         onOpen: { Task { await viewModel.openDetails(productID: product.id) } },
                         setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product))
                     )
-                    .overlay {
-                        // Effect 1 on the card being captured, the only
-                        // working light on screen.
-                        if viewModel.reviewShotState(for: product).isWorking { CardWorkingLight() }
-                    }
+                    // Effect 2: the spark sits still on the card being
+                    // captured.
+                    .aiWorking(viewModel.reviewShotState(for: product).isWorking)
                 } else if let message = viewModel.productErrors[product.id] {
                     unavailable(product, message: message)
                 } else {

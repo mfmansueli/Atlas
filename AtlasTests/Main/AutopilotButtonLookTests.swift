@@ -92,13 +92,15 @@ struct AutopilotButtonLookTests {
         #expect(failed.announcementKey == "failed:Claude Code ended early")
     }
 
-    @Test func theStarsTwinkleEveryCycleAndTheLightCrossesEveryPass() {
-        #expect(AutopilotSparkle.twinkle(at: 0) == 0)
-        #expect(abs(AutopilotSparkle.twinkle(at: AutopilotSparkle.cycle / 2) - 1) < 0.0001)
-        #expect(abs(AutopilotSparkle.twinkle(at: AutopilotSparkle.cycle)) < 0.0001)
-        #expect(AutopilotEdgeLight.bandCenter(at: 0) == -0.5)
-        #expect(abs(AutopilotEdgeLight.bandCenter(at: AutopilotEdgeLight.pass / 2) - 0.5) < 0.0001)
-        #expect(AutopilotEdgeLight.pass == 2.2)
-        #expect(AutopilotSparkle.cycle == 1.5)
+    /// Motion v2: nothing runs round the button; needing you it nudges
+    /// once as it starts waiting, then stays still.
+    @Test func needingYouNudgesOnceAsItStarts() {
+        #expect(AutopilotButtonLook(state: .needsYou("Choose the Look"), done: nil, runProgress: nil).isNeedingYou)
+        #expect(!AutopilotButtonLook(state: .running("Working"), done: nil, runProgress: nil).isNeedingYou)
+        #expect(AINeedsYou.nudges(from: false, to: true, reduceMotion: false))
+        #expect(!AINeedsYou.nudges(from: true, to: true, reduceMotion: false))
+        #expect(!AINeedsYou.nudges(from: true, to: false, reduceMotion: false))
+        #expect(!AINeedsYou.nudges(from: false, to: true, reduceMotion: true))
+        #expect(AINeedsYou.scale == 1.06)
     }
 }

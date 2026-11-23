@@ -46,7 +46,7 @@ struct InAppEventSuggestionCard: View {
             }
             HStack(spacing: Spacing.small) {
                 Spacer(minLength: 0)
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("events.suggestion.dismiss")
                 Button("Accept", action: accept)
                     .rowActionButton()
@@ -66,7 +66,7 @@ struct InAppEventSuggestionCard: View {
     private var arrivalKey: String { "\(suggestion.id)|\(suggestion.date.timeIntervalSinceReferenceDate)" }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()

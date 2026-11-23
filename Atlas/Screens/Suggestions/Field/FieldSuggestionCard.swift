@@ -43,9 +43,9 @@ struct FieldSuggestionCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(isSettling ? Palette.raised : Palette.aiSurface, in: shape)
         .overlay(shape.strokeBorder(edge, lineWidth: isSettling ? 0.5 : 1))
-        .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.arrivedAt, shape: shape))
+        .aiArrived(key: suggestion.id, arrivedAt: suggestion.arrivedAt)
         .id(suggestion.id)
-        .modifier(AcceptSettle(isSettling: isSettling))
+        .aiDecided(isSettling: isSettling)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Suggestion for \(fieldTitle) from \(suggestion.source.title)"))
         .accessibilityIdentifier("suggestion.card")
@@ -56,7 +56,7 @@ struct FieldSuggestionCard: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()
@@ -116,7 +116,7 @@ struct FieldSuggestionCard: View {
                 .font(.footnote.monospacedDigit())
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Button("Dismiss", action: onDismiss)
+            Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                 .accessibilityIdentifier("suggestion.dismiss")
             if canUseAndEdit {
                 Button("Use and Edit", action: onUseAndEdit)

@@ -8,8 +8,9 @@ import SwiftUI
 
 /// The requests sent from asking buttons, one at a time for each app
 /// (board 56). Sending one turns the app's asking buttons to "Claude Code Is
-/// Working…", flies a token from the button to the toolbar's Assistant
-/// button, and makes that button say Working…; when the run ends, the
+/// Working…", sends the spark from the button to the toolbar's Autopilot
+/// button and back down to the button (effect 1, Trail), and makes the
+/// Autopilot button say Working…; when the run ends, the
 /// window's toast says what was suggested and where.
 @MainActor
 @Observable
@@ -21,15 +22,17 @@ final class AssistantAskCenter {
     /// The last ask that ended with something to say, for the toast.
     private(set) var finished: AssistantAskFinish?
 
-    /// The toolbar's Assistant button, where the token lands.
+    /// The toolbar's Autopilot button, where the spark goes first.
     @ObservationIgnored let toolbarAnchor = AskAnchor()
     /// Draws the flight from one frame on screen to the other in a window;
     /// false when it can't, so the toolbar works at once. Tests give
     /// their own.
     @ObservationIgnored var fly: @MainActor (_ from: CGRect?, _ to: CGRect?, _ window: NSWindow?) -> Bool
-    /// How long the token takes before the toolbar says Working….
-    @ObservationIgnored var landing: Duration = .milliseconds(Int(AskTokenPath.landing * 1000))
-    /// The last token in the air, until it lands (tests wait for it).
+    /// How long the spark takes to reach the toolbar, which then says
+    /// Working….
+    @ObservationIgnored var landing: Duration = .milliseconds(Int(TrailPath.toolbarLanding * 1000))
+    /// The last spark on its way, until it reaches the toolbar (tests wait
+    /// for it).
     @ObservationIgnored private(set) var flight: Task<Void, Never>?
     /// Says the send out loud.
     @ObservationIgnored var announce: @MainActor (String) -> Void = { AccessibilityNotification.Announcement($0).post() }
@@ -71,7 +74,7 @@ final class AssistantAskCenter {
         return true
     }
 
-    /// The token landed: the toolbar works.
+    /// The spark reached the toolbar: it works.
     private func arrive(_ id: AssistantAsk.ID, appID: StoreApp.ID) {
         guard asks[appID]?.id == id else { return }
         asks[appID]?.phase = .working

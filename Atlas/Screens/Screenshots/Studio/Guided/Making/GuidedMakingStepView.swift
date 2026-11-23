@@ -54,9 +54,10 @@ struct GuidedMakingStepView: View {
                         .font(.title2.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                         .accessibilityIdentifier("autopilot.guided.title")
-                    ProgressView(value: progress.fraction)
-                        .accessibilityLabel(Text(progress.title))
-                        .accessibilityValue(Text("\(Int((progress.fraction * 100).rounded())) percent"))
+                    // Effect 2: a stepped bar for counted units; without
+                    // them only its start shows.
+                    // VoiceOver reads the count in the line below.
+                    AIProgressBar(value: progress.fraction, isWorking: progress.isCounted, height: 4)
                         .accessibilityIdentifier("autopilot.guided.making.progress")
                     Text(progress.line)
                         .font(.callout)
@@ -173,10 +174,7 @@ struct GuidedMakingStepView: View {
                             .frame(height: height, alignment: .bottom)
                             // Each new capture fades in as it lands (effect 2,
                             // no edge pass).
-                            .modifier(SuggestionArrival(
-                                key: "capture.\(capture.id)", arrivedAt: capture.receivedAt, shape: Rectangle(),
-                                edgePass: false, window: ArrivalLedger.imageWindow
-                            ))
+                            .aiArrivedImage(key: "capture.\(capture.id)", arrivedAt: capture.receivedAt)
                         }
                     }
                 }
