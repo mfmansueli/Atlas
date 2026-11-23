@@ -213,7 +213,7 @@ actor MCPBridge {
             } catch {
                 if !Task.isCancelled { log("The event stream closed: \(error.localizedDescription)") }
             }
-            if ended { await self.streamEnded(sessionID: sessionID) }
+            if ended { self.streamEnded(sessionID: sessionID) }
         }
     }
 

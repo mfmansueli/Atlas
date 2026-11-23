@@ -155,12 +155,11 @@ struct BackgroundWorkTests {
 
     @Test func aRefusedKeyIsCantConnectUntilACheckWorks() async {
         let work = work { [now] in now }
-        var answer: String? = "App Store Connect rejected this key (401)."
-        work.checkHandler = { answer }
+        work.checkHandler = { "App Store Connect rejected this key (401)." }
         await work.check()
         #expect(work.iconState == .cantConnect)
         #expect(work.snapshot.quietTitle == "App Store Connect rejected this key (401).")
-        answer = nil
+        work.checkHandler = { nil }
         await work.check()
         #expect(work.iconState == .idle)
     }

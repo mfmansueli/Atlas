@@ -336,7 +336,7 @@ struct AutopilotToolbarButton: View {
 
     /// What VoiceOver says when the state changes: "Autopilot, making
     /// screenshots, 5 of 10 captures".
-    static func announcement(_ stateText: String) -> String {
+    nonisolated static func announcement(_ stateText: String) -> String {
         String(localized: "Autopilot, \(stateText.replacingOccurrences(of: " · ", with: ", "))")
     }
 

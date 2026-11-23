@@ -19,6 +19,7 @@ struct UnitTestHostTests {
 
     /// A test build isn't signed like the person's app, so every Keychain
     /// read would ask for their login password.
+    @MainActor
     @Test func theHostKeepsKeysAndSecretsInMemory() {
         #expect(AtlasApp.secretStore is InMemorySecretStore)
         #expect(AtlasApp.credentialsStore is DebugCredentialsStore)

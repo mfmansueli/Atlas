@@ -21,7 +21,7 @@ struct InfoPlistKeyCard: View {
     @Environment(PushHistory.self) private var history: PushHistory?
     @State private var builds: [EncryptionKeyBuild] = []
 
-    static let snippet = EncryptionKeyAnswer.snippet(value: .no, code: nil)
+    nonisolated static let snippet = EncryptionKeyAnswer.snippet(value: .no, code: nil)
 
     private var app: StoreApp { viewModel.app }
 

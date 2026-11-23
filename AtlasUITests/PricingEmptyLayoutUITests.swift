@@ -9,15 +9,16 @@ import XCTest
 /// the empty state. Their wrapping texts once gave the page a minimum
 /// height of thousands of points, so the window's whole content was
 /// centered and cut off at the top, the sidebar's app menu with it.
+@MainActor
 final class PricingEmptyLayoutUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    override func setUp() {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         app.terminate()
     }
 

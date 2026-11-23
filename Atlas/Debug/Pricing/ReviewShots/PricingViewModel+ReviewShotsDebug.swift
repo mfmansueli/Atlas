@@ -66,7 +66,7 @@ extension PricingViewModel {
         case .accepted:
             debugSuggest(monthly)
             acceptReviewShot(for: monthly)
-            try? useCapture(for: [annual])
+            _ = try? useCapture(for: [annual])
             _ = lifetime
         }
         refreshReviewShots()

@@ -59,7 +59,13 @@ struct ProSettingsPane: View {
             }
         }
         .formStyle(.grouped)
-        .offerCodeRedemption(isPresented: $isRedeeming)
+        .offerCodeRedemption(options: [], isPresented: $isRedeeming) { result in
+            guard case let .success(.verified(transaction)) = result else { return }
+            Task {
+                await transaction.finish()
+                await pro.entitlements.refreshStatus()
+            }
+        }
         .task { await pro.entitlements.loadOffers() }
     }
 

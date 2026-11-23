@@ -32,13 +32,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             .overlay {
                 if look.isWorking { AutopilotEdgeLight() }
             }
-            .keyframeAnimator(initialValue: 1.0, trigger: doneCount) { content, scale in
-                content.scaleEffect(scale)
-            } keyframes: { _ in
-                // One small bounce, 0.45 s; none with Reduce Motion.
-                CubicKeyframe(bounces ? 1.07 : 1, duration: 0.2)
-                CubicKeyframe(1, duration: 0.25)
-            }
+            .modifier(AutopilotDoneBounce(trigger: doneCount, bounces: bounces))
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: look)
     }
 

@@ -143,7 +143,7 @@ struct RenderEventArtworkTool: MCPTool {
         if let art = InAppEventArtworkInspector.jpeg(still, maxPixel: previewPixels) {
             images.append(MCPToolOutcome.ImageContent(data: art, mimeType: "image/jpeg"))
         }
-        if let laid = await InAppEventArtworkOverlayRenderer.render(still, kind: kind, texts: texts),
+        if let laid = InAppEventArtworkOverlayRenderer.render(still, kind: kind, texts: texts),
            let overlay = InAppEventArtworkInspector.jpeg(laid, maxPixel: previewPixels)
         {
             images.append(MCPToolOutcome.ImageContent(data: overlay, mimeType: "image/jpeg"))

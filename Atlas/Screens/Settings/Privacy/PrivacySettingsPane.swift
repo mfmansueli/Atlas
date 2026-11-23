@@ -95,7 +95,7 @@ struct PrivacySettingsPane: View {
         return String(localized: "\(size) · made again when needed.")
     }
 
-    static func confirmationsCaption(_ count: Int) -> String {
+    nonisolated static func confirmationsCaption(_ count: Int) -> String {
         switch count {
         case 0: String(localized: "Every confirmation is on.")
         case 1: String(localized: "1 confirmation is turned off.")
