@@ -20,7 +20,7 @@ struct ProductPageTestProposalCard: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: Spacing.small) {
                 Image(systemName: "testtube.2").foregroundStyle(Palette.label2).accessibilityHidden(true)
-                Text("Proposed test · \(proposal.placement.title)").font(.callout.weight(.semibold))
+                Text("Suggested test · \(proposal.placement.title)").font(.callout.weight(.semibold))
                 Spacer(minLength: Spacing.small)
                 Button("Dismiss", action: onDismiss)
                     .controlSize(.regular)
@@ -35,8 +35,11 @@ struct ProductPageTestProposalCard: View {
             .padding(.vertical, Spacing.small)
             .background(Palette.fill1)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text(proposal.name).font(.callout.weight(.semibold))
-                    .accessibilityIdentifier("review.extras.testProposal.name")
+                HStack(spacing: Spacing.xSmall) {
+                    Text(proposal.name).font(.callout.weight(.semibold))
+                        .accessibilityIdentifier("review.extras.testProposal.name")
+                    if let confidence = proposal.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 Text(proposal.summary + " · " + treatmentLine)
                     .font(.subheadline).foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -49,6 +52,7 @@ struct ProductPageTestProposalCard: View {
                         .font(.subheadline).foregroundStyle(Palette.label2)
                         .labelStyle(.titleAndIcon)
                 }
+                if let details = proposal.layers?.details { SuggestionDetailsDisclosure(details: details) }
             }
             .padding(.horizontal, Spacing.medium)
             .padding(.vertical, Spacing.small)

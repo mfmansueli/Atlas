@@ -17,7 +17,7 @@ struct AccessibilityPageView: View {
                 title: AppInformationPage.accessibility.title,
                 subtitle: AppInformationPage.accessibility.summary(appName: viewModel.app.name, version: nil)
             ) {
-                Pill(text: String(localized: "Voluntary for now · required later"))
+                Pill(text: String(localized: "Voluntary · Required later"))
                 ExternalLinkButton(title: String(localized: "About the Labels"), url: AccessibilityFeature.overviewURL)
                     .controlSize(.regular)
                     .accessibilityIdentifier("appInformation.accessibility.about")
@@ -28,7 +28,7 @@ struct AccessibilityPageView: View {
             case .idle, .loading:
                 grid(Array(0..<4)) { _ in AccessibilitySkeletonCard() }
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text("Loading accessibility declarations"))
+                    .accessibilityLabel(Text("Reading accessibility labels from Apple…"))
                     .accessibilityIdentifier("appInformation.accessibility.loading")
             case let .failed(message):
                 AccessibilityLoadErrorView(message: message, requestLine: viewModel.accessibilityErrorLine) {
@@ -85,7 +85,7 @@ struct AccessibilityPageView: View {
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
-        .help(String(localized: "Declare for a device App Store Connect doesn’t list for this app"))
+        .help(String(localized: "Adds a device App Store Connect doesn’t list"))
         .accessibilityIdentifier("appInformation.accessibility.otherDevices")
     }
 }

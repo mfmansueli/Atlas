@@ -74,7 +74,7 @@ extension TemplateEditorViewModel {
     var starterSheetNote: String {
         let title = templateTitle
         return String(
-            localized: "Every template renders all of \(title)’s languages and devices. Switching keeps captions and captures, and starts a new template version you can undo from History."
+            localized: "Every template covers all of \(title)’s languages and devices. Switching keeps captions and captures; undo it in History."
         )
     }
 

@@ -62,7 +62,7 @@ enum InAppEventLinkClaim: Hashable, Sendable {
         case .noDeepLink, .reading:
             nil
         case .noFolder:
-            String(localized: "Atlas can’t tell whether \(appName) opens this link: choose \(appName)’s project folder, and Atlas reads which links it claims.")
+            String(localized: "Choose \(appName)’s project folder so Atlas can check whether \(appName) opens this link.")
         case let .unreadable(reason):
             String(localized: "Atlas can’t tell whether \(appName) opens this link. \(reason)")
         case let .notClaimed(what):

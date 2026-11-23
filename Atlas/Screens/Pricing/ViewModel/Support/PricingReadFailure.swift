@@ -19,6 +19,6 @@ enum PricingReadFailure {
     /// "Couldn’t read Atlas Pro Yearly’s prices. App Store Connect had a
     /// problem on its side."
     static func text(productName: String) -> String {
-        String(localized: "Couldn’t read \(productName)’s prices. App Store Connect had a problem on its side.")
+        String(localized: "Apple couldn’t send \(productName)’s prices. Try again in a minute.")
     }
 }

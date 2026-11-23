@@ -43,7 +43,7 @@ struct PricingViewModelProductsTests {
         let before = model.openPriceSuggestionCount
 
         await model.acceptPriceSuggestion(productID: open.id)
-        #expect(model.toast?.text == "Prices for \(open.product.name) accepted. They’re waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "Accepted prices for \(open.product.name). In Review & Push.")
         #expect(model.toast?.canUndo == true)
         #expect(!pricingChanges(queue).isEmpty)
         #expect(model.card(for: open.product)?.suggestion == nil)
@@ -62,7 +62,7 @@ struct PricingViewModelProductsTests {
         await model.acceptAllPriceSuggestions()
         #expect(model.openPriceSuggestionCount == 0)
         #expect(!pricingChanges(queue).isEmpty)
-        let expected = count == 1 ? "accepted. They’re waiting in Review & Push, top right." : "Accepted prices for \(count) products. They’re waiting in Review & Push, top right."
+        let expected = count == 1 ? ". In Review & Push." : "Accepted prices for \(count) products, now in Review & Push."
         #expect(model.toast?.text.hasSuffix(expected) == true)
     }
 
@@ -102,8 +102,8 @@ struct PricingViewModelProductsTests {
         let model = await loaded()
         let count = model.openPriceSuggestionCount
         let expected = count == 1
-            ? "Price suggestions for 1 product. See it below, or accept it here."
-            : "Price suggestions for \(count) products. See each one below, or accept them together."
+            ? "Price suggestions for 1 product. Review below or accept here."
+            : "Price suggestions for \(count) products. Review below or accept all here."
         #expect(model.priceSuggestionsBannerText == expected)
     }
 }

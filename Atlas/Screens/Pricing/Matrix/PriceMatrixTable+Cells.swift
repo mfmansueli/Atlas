@@ -110,16 +110,16 @@ extension PriceMatrixTable {
             .lineLimit(1)
     }
 
-    /// “Brazil, current R$ 219,90, proposed R$ 109,90, down 50 percent,
-    /// recommended, medium confidence”.
+    /// “Brazil, current R$ 219,90, suggested R$ 109,90, down 50 percent,
+    /// medium confidence”. The Suggested status isn't repeated after the price.
     func rowLabel(_ row: PricingRow) -> String {
         var parts = [row.territory.name, String(localized: "current \(row.currency.format(row.current.customerPrice))")]
         if let change = row.change {
-            parts.append(String(localized: "proposed \(row.currency.format(change.new))"))
+            parts.append(String(localized: "suggested \(row.currency.format(change.new))"))
             parts.append(change.direction == .increase
                 ? String(localized: "up \(abs(change.percent)) percent")
                 : String(localized: "down \(abs(change.percent)) percent"))
-            parts.append(row.status.title.lowercased())
+            if row.status != .recommended { parts.append(row.status.title.lowercased()) }
         } else if let recommendation = row.recommendation, !recommendation.isUnchanged, !row.isBase {
             parts.append(String(localized: "suggested \(row.currency.format(recommendation.price.customerPrice))"))
         }

@@ -94,7 +94,7 @@ struct AutoReplyKeyWritingTests {
     @Test func withoutEitherItSaysWhy() async {
         let center = center()
         await center.writeReplies(app: app, reviews: store(), launcher: launcher(), keyAssistant: nil)
-        #expect(center.archive(for: app.id).writeProblem?.contains("no API key is set up") == true)
+        #expect(center.archive(for: app.id).writeProblem?.contains("add an API key") == true)
     }
 
     @Test func anUnreadableAnswerSaysSo() async throws {

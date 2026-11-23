@@ -47,7 +47,7 @@ enum PriceIndexSource: String, CaseIterable, Codable, Hashable, Sendable, Identi
     var summary: String {
         switch self {
         case .bigMac:
-            "The raw index, not GDP-adjusted. Easy to explain; few countries and milder discounts. "
+            "Raw index, not GDP-adjusted. Easy to explain; fewer countries, milder discounts. "
                 + "The euro area is one entry shared by 21 territories."
         case .worldBank:
             "Price level ratio of PPP conversion factor to market exchange rate. Broadest coverage and deeper discounts "

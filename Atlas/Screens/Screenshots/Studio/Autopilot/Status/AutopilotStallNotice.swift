@@ -33,7 +33,7 @@ struct AutopilotStallNotice: View {
                     .accessibilityIdentifier("autopilot.stall.lastWords")
             }
             HStack(spacing: Spacing.small) {
-                Button(canStart ? String(localized: "Continue") : String(localized: "Copy the Prompt to Continue")) {
+                Button(canStart ? String(localized: "Continue") : String(localized: "Copy Prompt to Continue")) {
                     studio.continueRun()
                 }
                 .buttonStyle(.borderedProminent)
@@ -69,6 +69,6 @@ struct AutopilotStallNotice: View {
         if canStart { return AutopilotStall.continueNote(for: run) }
         return studio.didCopyPrompt
             ? String(localized: "Copied. Paste it into Claude Code in the app’s folder.")
-            : String(localized: "Copies the prompt that continues the run: paste it into Claude Code in the app’s folder.")
+            : String(localized: "Paste it into Claude Code, in the app’s folder, to continue.")
     }
 }

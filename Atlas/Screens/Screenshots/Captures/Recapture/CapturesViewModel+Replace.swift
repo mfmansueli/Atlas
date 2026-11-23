@@ -31,8 +31,11 @@ extension CapturesViewModel {
         let captures: [ScreenshotCapture]
         do {
             captures = try await screenshots.services.importCaptures([CaptureReplacement.item(url, size: size, in: cell)], for: screenshots.app)
-        } catch {
+        } catch let error as CaptureImportError {
             errorMessage = error.localizedDescription
+            return
+        } catch {
+            errorMessage = AppleErrorCopy(String(localized: "The capture wasn’t replaced.", comment: "kind:error"), error: error).text
             return
         }
         captures.forEach { document.captures.add($0) }

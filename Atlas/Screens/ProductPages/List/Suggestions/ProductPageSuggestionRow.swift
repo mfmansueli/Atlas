@@ -56,9 +56,12 @@ struct ProductPageSuggestionRow: View {
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(suggestion.name)
-                .font(.callout.weight(.semibold))
-                .accessibilityIdentifier("pages.suggestion.\(suggestion.id).name")
+            HStack(spacing: Spacing.xSmall) {
+                Text(suggestion.name)
+                    .font(.callout.weight(.semibold))
+                    .accessibilityIdentifier("pages.suggestion.\(suggestion.id).name")
+                if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
+            }
             Text(suggestion.audience)
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
@@ -80,6 +83,7 @@ struct ProductPageSuggestionRow: View {
                 .controlSize(.regular)
                 .accessibilityIdentifier("pages.suggestion.\(suggestion.id).show")
             }
+            if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
     }
 

@@ -94,11 +94,11 @@ struct ReviewPushToolbarButton: View {
 
     private var help: String {
         guard let sending else { return String(localized: "Review & Push (⇧⌘P)") }
-        return String(localized: "Pushing · \(sending.sent) of \(sending.total) sent. Click to see the progress (⇧⌘P).")
+        return String(localized: "Pushing · \(sending.sent) of \(sending.total) sent. Click for progress (⇧⌘P).")
     }
 
     private var accessibilityValue: String {
-        if let sending { return String(localized: "Pushing, \(sending.sent) of \(sending.total) sent") }
+        if let sending { return String(localized: "Pushing \(sending.sent) of \(sending.total)") }
         if isUpToDate { return String(localized: "Up to date") }
         return count == 1 ? String(localized: "1 change ready") : String(localized: "\(count) changes ready")
     }

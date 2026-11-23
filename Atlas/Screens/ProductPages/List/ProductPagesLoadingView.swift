@@ -14,7 +14,7 @@ struct ProductPagesLoadingView: View {
             HStack(spacing: Spacing.small) {
                 ProgressView()
                     .controlSize(.small)
-                Text("Reading \(appName)’s product pages from App Store Connect…")
+                Text("Reading \(appName)’s product pages…")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }

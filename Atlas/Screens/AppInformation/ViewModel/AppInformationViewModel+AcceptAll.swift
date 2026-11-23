@@ -93,8 +93,8 @@ extension AppInformationViewModel {
     func acceptSuggestions(onPage page: AppInformationPage) {
         let batch = visibleSuggestions(on: page)
         let text = batch.count == 1
-            ? String(localized: "Accepted 1 on \(page.title). It’s waiting in Review & Push, top right.")
-            : String(localized: "Accepted \(batch.count) on \(page.title). They’re waiting in Review & Push, top right.")
+            ? String(localized: "Accepted 1 on \(page.title). In Review & Push.")
+            : String(localized: "Accepted \(batch.count) on \(page.title). In Review & Push.")
         accept(batch, toast: text)
     }
 

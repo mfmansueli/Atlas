@@ -160,7 +160,7 @@ struct ClaudeCodeRunStatusView: View {
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
             .accessibilityIdentifier("claudeCode.run.denials")
-            Text("Runs from Atlas only read the project and use Atlas’s tools. To allow more, continue the same run in Terminal.")
+            Text("Runs from Atlas can only read the project and use Atlas’s tools. For more, continue in Terminal.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -232,12 +232,12 @@ struct ClaudeCodeRunStatusView: View {
 
     private func terminalNote(for failure: ClaudeCodeRunFailure) -> String {
         if terminalUnavailable {
-            return String(localized: "Claude Code’s link isn’t set up on this Mac yet. Copy the prompt and run claude in \(run.displayDirectory).")
+            return String(localized: "Claude Code isn’t linked on this Mac. Copy the prompt and run claude in \(run.displayDirectory).")
         }
         if case .notLoggedIn = failure {
-            return String(localized: "Open in Terminal starts Claude Code in \(run.displayDirectory) with this prompt typed in; press Return after /login.")
+            return String(localized: "Open in Terminal starts Claude Code in \(run.displayDirectory) with the prompt ready. Press Return after /login.")
         }
-        return String(localized: "Open in Terminal starts Claude Code in \(run.displayDirectory) with this prompt typed in, so you can watch it.")
+        return String(localized: "Open in Terminal runs Claude Code in \(run.displayDirectory) with this prompt, so you can watch.")
     }
 
     // MARK: - Buttons

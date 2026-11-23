@@ -32,7 +32,7 @@ enum PushNotice: Hashable, Sendable {
         case .rateLimited:
             String(localized: "App Store Connect's hourly limit was reached")
         case .apiError:
-            String(localized: "App Store Connect returned an error")
+            String(localized: "App Store Connect returned an error. Try again.")
         case let .partialFailure(failed, total):
             String(localized: "\(failed) of \(total) changes failed to push")
         }

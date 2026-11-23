@@ -18,7 +18,7 @@ extension ScreenshotsViewModel {
             groups.append(SetsGroup(
                 kind: .restored, title: String(localized: "Restored · Not Rendered"), count: matrix.restoredLocales.count,
                 rows: matrix.restoredLocales.compactMap(row(for:)),
-                note: String(localized: "Atlas leaves these alone until you choose Use Template Again in Locales.")
+                note: String(localized: "Untouched until you choose Use Template Again in Locales.")
             ))
         }
         let primaryName = context.primaryLocale.name

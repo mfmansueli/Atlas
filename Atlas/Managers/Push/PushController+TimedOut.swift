@@ -10,7 +10,7 @@ extension PushController {
     /// waiting (on Alba, a new custom product page took over a minute), so
     /// it says so instead of "Not sent".
     static let timedOutText = String(localized: """
-    Apple didn’t answer in time, so it may have gone through. Refresh to see before you retry.
+    Apple didn’t answer; it may have gone through. Refresh before you retry.
     """)
 
     /// After Apple's own error for a server failure (5xx): Apple's servers

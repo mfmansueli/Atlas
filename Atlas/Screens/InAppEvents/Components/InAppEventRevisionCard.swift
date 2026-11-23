@@ -32,6 +32,7 @@ struct InAppEventRevisionCard: View {
                     .font(.body.weight(.semibold))
                 SuggestionSourceTag(source: .assistant(client: revision.source))
                 Spacer(minLength: 0)
+                if let confidence = revision.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             Text(revision.why)
                 .font(.callout)
@@ -41,6 +42,7 @@ struct InAppEventRevisionCard: View {
             ForEach(revision.fields) { field in
                 fieldRows(field)
             }
+            if let gloss = revision.layers?.gloss { GlossLine(gloss: gloss) }
             if let over = revision.overLimit {
                 InlineMessage.warning(String(localized: "\(over.field.title) is \(over.count) characters; the limit is \(over.field.limit)."))
                     .font(.subheadline)
@@ -59,6 +61,7 @@ struct InAppEventRevisionCard: View {
                     .accessibilityIdentifier("events.revision.accept")
             }
             .controlSize(.regular)
+            if let details = revision.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)

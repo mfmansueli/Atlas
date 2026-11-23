@@ -83,7 +83,7 @@ struct AddOfferCodesSheet: View {
     var body: some View {
         OfferSheetChrome(
             title: kind == .custom ? String(localized: "Custom code for “\(offer.name)”") : String(localized: "One-time codes for “\(offer.name)”"),
-            detail: String(localized: "\(offer.termsSummary). It waits in Review & Push; nothing changes in App Store Connect until you push."),
+            detail: String(localized: "\(offer.termsSummary). Nothing changes until you push."),
             footnote: offer.codesSummary,
             identifier: id,
             problems: problems,

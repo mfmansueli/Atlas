@@ -112,7 +112,7 @@ extension AutopilotCenter {
                 run.problems[index].resolution = .solvedByAtlas
             }
             for display in Set(solved.map(\.target.displayType)) {
-                let text = String(localized: "\(display.deviceName): its simulator can be captured now, so its screens go on")
+                let text = String(localized: "\(display.deviceName): simulator ready, its screens continue")
                 run.appendLog(text, kind: .event, at: now())
             }
         }
@@ -130,7 +130,7 @@ extension AutopilotCenter {
         }
         guard started else { return }
         update(appID) { run in
-            let text = String(localized: "\(display.deviceName): no simulator yet, Atlas is making it on \(runtime ?? display.simulatorPlatform)")
+            let text = String(localized: "\(display.deviceName): making its simulator on \(runtime ?? display.simulatorPlatform)")
             run.appendLog(text, kind: .command, at: now())
         }
     }

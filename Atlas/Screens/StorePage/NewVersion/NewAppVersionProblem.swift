@@ -26,9 +26,9 @@ enum NewAppVersionProblem: Hashable, Sendable {
         case let .unknownPlatform(platform):
             String(localized: "The app has no \(platform) version. Add the platform in App Store Connect first.")
         case let .inProgress(version, state) where state.isEditable:
-            String(localized: "Version \(version) is still being prepared. Edit it, or change its number in App Store Connect: there’s one version in progress at a time.")
+            String(localized: "Only one version can be in progress: \(version). Edit it, or change its number in App Store Connect.")
         case let .inProgress(version, state):
-            String(localized: "Version \(version) is \(state.title). A new version can be created once it’s released.")
+            String(localized: "Version \(version) is \(state.title). Create a new version after it’s released.")
         case let .notHigher(latest):
             String(localized: "Use a number higher than \(latest), the latest version.")
         }

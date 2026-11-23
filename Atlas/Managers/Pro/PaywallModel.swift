@@ -55,9 +55,9 @@ final class PaywallModel: Identifiable {
     var offersProblem: String? {
         guard offers.isEmpty, !entitlements.isLoadingOffers else { return nil }
         if entitlements.offersUnreachable {
-            return String(localized: "The App Store didn’t answer, so the plans aren’t shown. Check the connection and try again.")
+            return String(localized: "The App Store didn’t answer. Check your connection and try again.")
         }
-        return String(localized: "The App Store answered without Atlas Pro’s plans: they aren’t on sale yet. Try again later.")
+        return String(localized: "Atlas Pro’s plans aren’t on sale yet. Try again later.")
     }
 
     func load() async {
@@ -82,7 +82,7 @@ final class PaywallModel: Identifiable {
             phase = back
         case .pending:
             phase = back
-            message = String(localized: "The purchase is waiting for approval. Pro starts by itself when it comes through.")
+            message = String(localized: "Purchase waiting for approval. Pro starts when it’s approved.")
         case let .failed(reason):
             phase = back
             message = reason

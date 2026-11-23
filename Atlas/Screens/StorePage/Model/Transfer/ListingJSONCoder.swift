@@ -45,7 +45,7 @@ enum ListingJSONCoder {
         do {
             payload = try JSONDecoder().decode(Payload.self, from: data)
         } catch {
-            throw ListingTransferError.unreadable(detail: error.localizedDescription)
+            throw ListingTransferError.unreadable(detail: AppleErrorCopy.details(for: error))
         }
         let entries = payload.locales.keys.sorted().flatMap { code in
             (payload.locales[code] ?? [:]).sorted { order($0.key) < order($1.key) }.map { name, value in

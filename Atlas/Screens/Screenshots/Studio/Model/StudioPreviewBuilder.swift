@@ -100,8 +100,8 @@ struct StudioPreviewBuilder {
         guard let set = own ?? primarySet else {
             preview.note = String(localized: "Live now · no \(display.title) screenshots")
             preview.emptyText = display == .watch
-                ? String(localized: "No Apple Watch screenshots yet. The product page shows the iPhone set until there are some.")
-                : String(localized: "No Apple Vision Pro screenshots yet. App Store Connect needs at least one before you can submit for visionOS.")
+                ? String(localized: "No Apple Watch screenshots yet; the product page shows the iPhone set.")
+                : String(localized: "No Apple Vision Pro screenshots yet. Add at least one to submit for visionOS.")
             return
         }
         let fellBack = own == nil && locale != primaryLocale.code
@@ -134,7 +134,7 @@ struct StudioPreviewBuilder {
     static func searchNote(on display: ScreenshotDisplayType, hasShots: Bool) -> String {
         if display == .watch {
             return String(
-                localized: "Apple Watch screenshots don’t show in search results on iPhone. People see them on the product page, under “Apple Watch”."
+                localized: "Apple Watch screenshots show only on the product page, under “Apple Watch”, not in iPhone search."
             )
         }
         return hasShots
@@ -215,7 +215,7 @@ struct StudioPreviewBuilder {
             preview.note = String(localized: "New set · no \(display.title) screenshots")
             preview.emptyText = run.map { !$0.plan.displayTypes.contains(display) } == true
                 ? String(localized: "Not in this set: \(display.title) was turned off in the Autopilot plan.")
-                : String(localized: "Not in this set yet. Run Autopilot with \(display.title) in the plan to make its screenshots.")
+                : String(localized: "Not in this set yet. Add \(display.title) to the Autopilot plan and run it.")
             return
         }
         preview.shots = cells.map { cell in
@@ -226,7 +226,7 @@ struct StudioPreviewBuilder {
             )
         }
         if display == .watch {
-            preview.note = String(localized: "New set · real captures in every language, no captions: the watch screen is too small for them")
+            preview.note = String(localized: "New set · real captures in every language, no captions (too small on the watch)")
         } else {
             let parts = [String(localized: "New set"), newSetName, String(localized: "each screen in its own window")]
             preview.note = parts.compactMap(\.self).joined(separator: " · ")

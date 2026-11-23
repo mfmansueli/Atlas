@@ -27,16 +27,16 @@ struct OffersView: View {
                     }
                     table(report)
                     Text("""
-                    Paid afterwards = people whose first charge at the regular price came after the offer. \
-                    An offer shows a rate once its first people reach the regular price. From Apple’s subscription event report: every subscriber.
+                    Paid afterwards: people charged the regular price after the offer. A rate shows once the first \
+                    people reach it. Covers every subscriber.
                     """)
                     .font(.subheadline).foregroundStyle(Palette.label2).lineLimit(3)
                 } else {
                     ContentUnavailableView(
                         "No offers in this period", systemImage: "gift",
                         description: Text("""
-                        Introductory offers, offer codes, promotional, win-back and retention offers show here once Apple’s \
-                        subscription event report counts one.
+                        Introductory, promotional, win-back and retention offers and offer codes show here once Apple \
+                        counts one.
                         """)
                     )
                     .frame(maxWidth: .infinity)

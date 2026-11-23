@@ -25,6 +25,7 @@ struct ProductPageTestProposer {
         var startsTest = false
         var reason: String
         var evidence: [String] = []
+        var layers: SuggestionLayers?
     }
 
     enum Outcome: Hashable, Sendable {
@@ -84,7 +85,8 @@ struct ProductPageTestProposer {
         let proposal = ProductPageTestProposal(
             id: ProductPageTestProposal.makeID(), name: name, placement: input.placement, trafficProportion: traffic,
             treatment: treatment, locales: locales, startsTest: input.startsTest,
-            reason: input.reason.trimmingCharacters(in: .whitespacesAndNewlines), evidence: input.evidence, client: client, receivedAt: now
+            reason: input.reason.trimmingCharacters(in: .whitespacesAndNewlines), evidence: input.evidence, client: client, receivedAt: now,
+            layers: input.layers
         )
         return .queued(proposal, asksForVariant: asksForVariant, notes: notes)
     }
@@ -133,10 +135,8 @@ struct ProductPageTestProposer {
         if reason.isEmpty {
             return .refused(code: "no_reason", reason: String(localized: "Send reason: why this test, in a sentence the person reads."))
         }
-        if reason.count > ProductPageTestProposal.maxReason {
-            return .refused(
-                code: "too_long", reason: String(localized: "reason is \(reason.count) characters; keep it to \(ProductPageTestProposal.maxReason).")
-            )
+        if let refusal = AssistantTextLimits.whyRefusal(reason, field: "reason") {
+            return .refused(code: "too_long", reason: refusal)
         }
         let name = input.name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if name.count > ProductPageTestProposal.maxName {
@@ -149,8 +149,8 @@ struct ProductPageTestProposer {
         let name = test.name ?? test.id
         if test.isDraft {
             return String(localized: """
-            “\(name)” is a draft in App Store Connect, and it runs one test at a time. Propose deleting it first \
-            (action: deleteDraft, testId: \(test.id)) and send this again: the test then waits for that delete.
+            “\(name)” is a draft, and App Store Connect runs one test at a time. Suggest deleting it first \
+            (action: deleteDraft, testId: \(test.id)), then resend. The test waits for the delete.
             """)
         }
         return String(localized: """

@@ -77,13 +77,10 @@ struct AppAvailabilitySetupSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("Set Up Availability")
                 .font(.title2.weight(.semibold))
-            Text("""
-            Where \(model.app.name) will be sold. App Store Connect can’t remove an availability once it’s set up; you \
-            can turn countries and regions on and off here afterwards.
-            """)
-            .font(.callout)
-            .foregroundStyle(Palette.label2)
-            .fixedSize(horizontal: false, vertical: true)
+            Text("Where \(model.app.name) will be sold. It can’t be removed once set up; turn countries on or off here later.")
+                .font(.callout)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -107,7 +104,7 @@ struct AppAvailabilitySetupSheet: View {
         if !isEverywhere {
             AppTerritoryChecklist(territories: territories, selection: $selection)
         }
-        Toggle("Make it available in new countries and regions automatically", isOn: $availableInNewTerritories)
+        Toggle("Add new countries and regions automatically", isOn: $availableInNewTerritories)
             .accessibilityIdentifier("pricing.availabilitySetup.newTerritories")
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             Toggle("Offer for pre-order", isOn: $offersPreOrder)
@@ -120,13 +117,10 @@ struct AppAvailabilitySetupSheet: View {
                     displayedComponents: .date
                 )
                 .accessibilityIdentifier("pricing.availabilitySetup.releaseDate")
-                Text("""
-                People can order it now and download it on its release date. Only for an app that isn’t released yet; \
-                App Review approves it first.
-                """)
-                .font(.subheadline)
-                .foregroundStyle(Palette.label2)
-                .fixedSize(horizontal: false, vertical: true)
+                Text("People order now and download on release day. Only for unreleased apps; App Review approves it first.")
+                    .font(.subheadline)
+                    .foregroundStyle(Palette.label2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         ForEach(problems, id: \.self) { problem in

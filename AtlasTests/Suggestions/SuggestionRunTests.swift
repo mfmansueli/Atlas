@@ -57,7 +57,7 @@ struct SuggestionRunTests {
         let store = store()
         let run = store.startRun(appID: appID, client: "Claude Code", plan: [])
         #expect(run.phase == .finished)
-        #expect(run.finishedText == "Claude Code looked at everything and found nothing new to suggest.")
+        #expect(run.finishedText == "Claude Code found nothing new to suggest.")
     }
 
     @Test func arrivalsCountTowardTheRunAndNotTheAsk() throws {

@@ -45,7 +45,7 @@ struct ProductPageChosenFilesTests {
     @Test func aSetHasUpToTenScreenshots() {
         let eleven = (1...11).map { file("\($0).png", 1320, 2868) }
         #expect(ProductPageFileCheck.problems(eleven, device: .iPhone) == [
-            "A set has up to 10 screenshots, and 11 were chosen. Choose 10 or fewer.",
+            "11 screenshots chosen. A set takes up to 10.",
         ])
     }
 
@@ -79,7 +79,7 @@ struct ProductPageChosenFilesTests {
         #expect(files.map(\.fileName) == ["3.png"])
         #expect(FileManager.default.fileExists(atPath: files[0].path))
         #expect(files[0].checksum == ScreenshotPNG.checksum(Data("3.png".utf8)))
-        #expect(model.toast?.text == "1 screenshot added to “\(page.name)” in \(ProductPageChangeBuilder.localeName("en-US")). It’s waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "1 screenshot added to “\(page.name)” in \(ProductPageChangeBuilder.localeName("en-US")). In Review & Push.")
         #expect(model.filesProblem == nil)
     }
 

@@ -98,9 +98,9 @@ struct NewInAppEventTests {
         let event = makeEvent()
         let problems = event.problems(takenReferenceNames: ["  spring reset 2027 "])
         #expect(problems.count == 1)
-        #expect(problems.first?.hasPrefix("Another event already has the reference name “Spring Reset 2027”") == true)
+        #expect(problems.first?.hasPrefix("“Spring Reset 2027” is taken by another event") == true)
         var long = event
         long.referenceName = String(repeating: "r", count: 65)
-        #expect(long.problem == "The reference name is over 64 characters.")
+        #expect(long.problem == "Shorten the reference name to 64 characters.")
     }
 }

@@ -116,8 +116,8 @@ extension ReleaseViewModel {
             carried += failure.eventIDs.map(name)
             let what = carried.isEmpty ? "" : String(localized: " with \(carried.formatted(.list(type: .and)))")
             lines.append(String(localized: """
-            Nothing went to App Review. App Store Connect keeps the review submission as a draft\(what). Fix what it names, \
-            or untick the event, and Submit again: Atlas sends that same draft, without the events you untick.
+            Nothing went to App Review. The submission stays a draft\(what). Fix what it names or untick the event, then \
+            Submit again.
             """))
         } else {
             lines.append(String(localized: "Nothing went to App Review."))

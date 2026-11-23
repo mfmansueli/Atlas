@@ -17,7 +17,7 @@ extension ComplianceReport {
         if let common = chinaDetail(for: .securityAssessment) { return common }
         switch securityAssessmentAnswer {
         case true?:
-            return String(localized: "Your answer: \(appName) has features that need a Security Assessment. In App Store Connect, upload the screenshot from the National Internet Security Management Service Platform that shows it passed and the report with your company’s seal, then mark it as declared.")
+            return String(localized: "Your answer: \(appName) needs a Security Assessment. In App Store Connect, add the screenshot showing it passed and the sealed report, then mark it as declared.")
         case false?:
             return String(localized: "Your answer: \(appName) has nothing that needs a Security Assessment. Answer No in App Store Connect, then mark it as declared.")
         case nil:
@@ -28,7 +28,7 @@ extension ComplianceReport {
     var aiContentDetail: String {
         if let common = chinaDetail(for: .aiGeneratedContent) { return common }
         guard let answer = aiContentAnswer else {
-            return String(localized: "Apple asks every app whether it offers AI generation or synthetic content in China mainland: chatbots, image or video generation, voice or face changes. A Yes takes the approved filing of its model or algorithm. Apps already there have until \(Self.chinaDeclarationDeadline).")
+            return String(localized: "In China mainland, Apple asks if the app offers AI generation or synthetic content: chatbots, image or video, voice or face changes. Yes needs an approved filing. Apps there have until \(Self.chinaDeclarationDeadline).")
         }
         guard answer.offersAI else {
             return String(localized: "Your answer: \(appName) doesn’t offer AI generation in China mainland. Answer No in App Store Connect, then mark it as declared.")
@@ -50,8 +50,8 @@ extension ComplianceReport {
         if answers.declared.contains(rule) { return String(localized: "You marked it as declared in App Store Connect.") }
         guard answersNoForWhereItSells(rule) else { return nil }
         if stopsSellingInChina {
-            return String(localized: "China mainland comes off \(appName)’s availability when you push, but App Store Connect still asks. Answer No there, since it’s geoblocked in China mainland, then mark it as declared.")
+            return String(localized: "China mainland comes off \(appName)’s availability when you push. In App Store Connect, still answer No, then mark it as declared.")
         }
-        return String(localized: "App Store Connect asks every app, even one not sold in China mainland. \(appName) isn’t sold there, so answer No in App Store Connect, then mark it as declared.")
+        return String(localized: "App Store Connect asks every app. \(appName) isn’t sold in China mainland, so answer No there, then mark it as declared.")
     }
 }

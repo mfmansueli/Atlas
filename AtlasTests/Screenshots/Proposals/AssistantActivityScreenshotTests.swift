@@ -22,7 +22,7 @@ struct AssistantActivityScreenshotTests {
         )
         #expect(activity.isVisible)
         #expect(activity.proposalCount == 3)
-        #expect(activity.title == "3 proposals")
+        #expect(activity.title == "3 suggestions")
         #expect(activity.apps.map(\.appID) == ["1", "2"])
         #expect(activity.rows.map(\.appID) == ["1", "2", "3"])
         #expect(activity.reviewCount == 1)
@@ -36,7 +36,7 @@ struct AssistantActivityScreenshotTests {
         let activity = AssistantActivity(workingClient: nil, changes: [], screenshotProposals: ["1": ["Claude Code"]])
         #expect(activity.isVisible)
         #expect(activity.reviewCount == 0)
-        #expect(activity.title == "1 proposal")
+        #expect(activity.title == "1 suggestion")
     }
 
     @Test func staysWhileTheProposalsSheetIsOpen() {

@@ -56,7 +56,7 @@ struct CaptureImportSessionTests {
 
     @Test func liveScreenshotsWarnAboutCaptionsTheyMayHave() {
         let session = CaptureImportSession(source: .appStoreConnect, location: "App Store Connect", rows: [])
-        #expect(session.warning?.hasPrefix("These are the screenshots live in App Store Connect.") == true)
+        #expect(session.warning?.hasPrefix("Live screenshots from App Store Connect.") == true)
         #expect(session.title == "App Store Connect · 0 live screenshots")
     }
 }

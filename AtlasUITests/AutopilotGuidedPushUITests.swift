@@ -51,7 +51,7 @@ final class AutopilotGuidedPushUITests: XCTestCase {
         reject.click()
         XCTAssertTrue(waitUntil(timeout: 30) { approveAll.isEnabled })
         approveAll.click()
-        XCTAssertTrue(app.staticTexts["Couldn’t put it in Review & Push"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Couldn’t add it to Review & Push. Try again."].waitForExistence(timeout: 10))
         XCTAssertTrue(element("autopilot.guided.sheet").exists)
         XCTAssertFalse(element("review.sheet").exists)
         attachScreenshot("Review · nothing to push")

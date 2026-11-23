@@ -86,7 +86,7 @@ final class TemplateEditorViewModel {
     /// from an accepted proposal and nothing is edited on top of it.
     var assistantNote: (client: String, text: String)? {
         guard !hasUnsavedEdits, let current = history?.current, let client = current.assistant else { return nil }
-        return (client, String(localized: "Proposed by \(client) · \(current.date.formatted(date: .omitted, time: .shortened))"))
+        return (client, String(localized: "Suggested by \(client) · \(current.date.formatted(date: .omitted, time: .shortened))"))
     }
 
     var applier: TemplateOperationApplier { TemplateOperationApplier(fonts: screenshots.fonts) }

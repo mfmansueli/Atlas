@@ -220,7 +220,7 @@ extension ProductPagesViewModel {
             let builder = builder
             queue.discardAll { builder.isChange($0, of: page.id) }
             queue.upsert(builder.deleteChange(of: page))
-            show(String(localized: "“\(page.name)” is deleted when you push. It’s waiting in Review & Push, top right."), undo: undo)
+            show(String(localized: "“\(page.name)” is deleted when you push. In Review & Push."), undo: undo)
         }
         if selectedPageID == pageID { selectedPageID = nil }
     }
@@ -257,7 +257,7 @@ extension ProductPagesViewModel {
         save(draft)
         isNewPagePresented = false
         open(draft.id)
-        show(String(localized: "“\(draft.name)” is a draft in Atlas. Nothing is in App Store Connect until you push."), undo: nil)
+        show(String(localized: "“\(draft.name)” is a draft. Nothing reaches App Store Connect until you push."), undo: nil)
         return draft
     }
 }

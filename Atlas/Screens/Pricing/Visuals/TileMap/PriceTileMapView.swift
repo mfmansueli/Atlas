@@ -38,14 +38,11 @@ struct PriceTileMapView: View {
                 }
                 .frame(width: mapSize.width)
                 tiles(map, visible: visible)
-                Text("""
-                One tile per territory, placed near where it is, so Singapore and Luxembourg stay as easy to spot as Brazil. \
-                Colors use proposed prices where there are any, otherwise current ones.
-                """)
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .frame(maxWidth: 700, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+                Text("One tile per territory, roughly where it is, so small ones stay visible. Colors show suggested prices, else current.")
+                    .font(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .frame(maxWidth: 700, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, Spacing.large)
             .padding(.top, Spacing.small)

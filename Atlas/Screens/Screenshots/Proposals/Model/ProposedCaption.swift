@@ -17,6 +17,8 @@ struct ProposedCaption: Identifiable, Hashable, Sendable {
     /// The proposal's why.
     var reason: String
     var receivedAt: Date
+    /// The proposal's details and how sure, with this caption's gloss.
+    var layers: SuggestionLayers?
 
     var id: String { Self.makeID(proposalID: proposalID, key: item.key) }
 

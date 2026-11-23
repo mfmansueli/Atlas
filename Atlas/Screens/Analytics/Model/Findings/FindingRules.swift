@@ -62,11 +62,11 @@ enum FindingRules {
     private static func stepWhy(_ stage: FunnelStage) -> String {
         switch stage {
         case .impressions, .pageViews:
-            String(localized: "In search and browse people see the icon, the name, the subtitle and the first three screenshots. Those carry this step.")
+            String(localized: "Search and browse show the icon, name, subtitle and first three screenshots.")
         case .downloads:
-            String(localized: "On the page people read the first lines of the description, look at the screenshots and check the ratings.")
+            String(localized: "On the page: first lines, screenshots, ratings.")
         case .trials:
-            String(localized: "After downloading, people meet the paywall: its text and the trial it offers carry this step.")
+            String(localized: "After download comes the paywall: its text and trial carry this step.")
         case .paid:
             String(localized: "At the end of a trial the price decides. Check it against each country’s purchasing power.")
         }
@@ -90,7 +90,7 @@ enum FindingRules {
             var causes: [String] = []
             switch context.textState(for: row.id) {
             case .machineTranslated: causes.append(String(localized: "The \(locale?.name ?? "") page is machine-translated."))
-            case .noPage: causes.append(String(localized: "There’s no page in its language: it shows the \(locale?.name ?? "") one."))
+            case .noPage: causes.append(String(localized: "No page in its language; it shows \(locale?.name ?? "")."))
             case .written, nil: break
             }
             var second: FindingAction?
@@ -100,8 +100,7 @@ enum FindingRules {
             }
             let why = causes.isEmpty
                 ? String(localized: """
-                Its page and screenshots are in its own language, so look at what they say: the first lines and the first three \
-                screenshots.
+                Its page is in its own language. Check the first lines and first three screenshots.
                 """)
                 : causes.joined(separator: " ")
             return AnalyticsFinding(
@@ -133,7 +132,7 @@ enum FindingRules {
             let ratio = price.ratio.formatted(.number.precision(.fractionLength(1)))
             return AnalyticsFinding(
                 id: "territory.paid.\(row.code)", source: .builtIn,
-                title: String(localized: "\(row.name) converts trials to paid less often than \(name)’s average."),
+                title: String(localized: "\(row.name) converts fewer trials than \(name)’s average"),
                 why: String(localized: "The \(price.productName) price there is \(ratio)× the purchasing-power price."),
                 numbers: [
                     FindingNumber(
@@ -164,11 +163,11 @@ enum FindingRules {
         else { return nil }
         return AnalyticsFinding(
             id: "retention.early", source: .builtIn,
-            title: String(localized: "\(AnalyticsText.wholePercent(share.value)) of cancellations come before the first renewal, and no retention message is live."),
+            title: String(localized: "\(AnalyticsText.wholePercent(share.value)) cancel before first renewal; no retention message"),
             why: String(
                 localized: """
-                People decide right before they’re charged the full price for the first time. A message and an offer reach them \
-                when they tap Cancel Subscription.
+                People decide right before the first full-price charge. A message and offer reach them at Cancel \
+                Subscription.
                 """
             ),
             numbers: [

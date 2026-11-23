@@ -25,8 +25,7 @@ struct KeyAssistantSettingsSection: View {
                     SettingsRowLabel(
                         title: "API key",
                         caption: String(localized: """
-                        Generate Store Page suggestions with your own key from Anthropic, OpenAI or Google Gemini, without \
-                        an assistant. It doesn’t read code.
+                        Get Store Page suggestions with your Anthropic, OpenAI or Google Gemini key. It doesn’t read code.
                         """)
                     )
                     Spacer()
@@ -90,7 +89,7 @@ struct KeyAssistantSettingsSection: View {
             .controlSize(.regular)
         }
         Toggle(isOn: Binding(get: { configuration.readsReviews }, set: { isOn in keyAssistant.update { $0.readsReviews = isOn } })) {
-            SettingsRowLabel(title: "Read customer reviews", caption: String(localized: "The latest App Store reviews, to learn what people praise."))
+            SettingsRowLabel(title: "Read customer reviews", caption: String(localized: "Latest App Store reviews, for what people praise."))
         }
         .accessibilityIdentifier("settings.ai.key.reviews")
         Toggle(isOn: Binding(get: { configuration.usesKeyForTranslations }, set: setUsesForTranslations)) {

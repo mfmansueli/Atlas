@@ -64,11 +64,11 @@ struct ProductPagesTable: View {
     private var footer: String {
         let rate = String(localized: "Download rate is downloads out of page views.")
         guard let through = viewModel.numbersThrough else {
-            return String(localized: "The numbers come from Analytics once its reports have arrived. \(rate)")
+            return String(localized: "Numbers come from Analytics once its reports arrive. \(rate)")
         }
         let day = through.formatted(.dateTime.month(.abbreviated).day())
         return String(localized: """
-        Last 28 days, data through \(day), the same numbers as Analytics → Break It Down → Product Page. \(rate)
+        Last 28 days, through \(day), as in Analytics → Break It Down → Product Page. \(rate)
         """)
     }
 }

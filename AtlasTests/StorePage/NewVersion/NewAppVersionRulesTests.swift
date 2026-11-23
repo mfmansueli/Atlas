@@ -76,7 +76,7 @@ struct NewAppVersionRulesTests {
         let inReview = [Self.version("2.0", .waitingForReview), Self.version("1.9", .readyForDistribution)]
         let problem = NewAppVersionRules.problem(for: NewAppVersion(versionString: "2.1", platform: "IOS"), in: inReview)
         #expect(problem == .inProgress(versionString: "2.0", state: .waitingForReview))
-        #expect(problem?.message == "Version 2.0 is Waiting for Review. A new version can be created once it’s released.")
+        #expect(problem?.message == "Version 2.0 is Waiting for Review. Create a new version after it’s released.")
         #expect(!NewAppVersionRules.canCreate(in: inReview))
     }
 

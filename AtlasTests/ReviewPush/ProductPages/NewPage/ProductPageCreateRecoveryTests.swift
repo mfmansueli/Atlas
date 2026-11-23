@@ -75,7 +75,7 @@ struct ProductPageCreateRecoveryTests {
         let controller = try await push(transport)
 
         let text = try #require(failureText(controller))
-        #expect(text.hasPrefix("UNEXPECTED_ERROR"))
+        #expect(text.contains("\nDetails: UNEXPECTED_ERROR"))
         #expect(text.contains("may still be making it"))
         #expect(!text.contains(PushController.serverFailureText))
         #expect(transport.log.count { $0 == "create page" } == 1)
@@ -116,7 +116,7 @@ struct ProductPageCreateRecoveryTests {
         let controller = try await push(transport)
 
         let text = try #require(failureText(controller))
-        #expect(text.contains("hasn’t finished its first version"))
+        #expect(text.contains("Apple is still making “Private diary”."))
         #expect(controller.items.first?.mayHaveMadePage == "Private diary")
         #expect(!transport.log.contains("create version"))
 

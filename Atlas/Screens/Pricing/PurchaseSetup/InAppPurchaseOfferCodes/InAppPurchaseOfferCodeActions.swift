@@ -61,7 +61,7 @@ struct InAppPurchaseOfferCodeActions: View {
             .accessibilityIdentifier("pricing.iapOfferActions.confirm")
             Button("Cancel", role: .cancel) {}
         } message: { _ in
-            Text("Once you push, those codes stop redeeming, and they can’t be turned back on. People who redeemed one keep their purchase.")
+            Text("After you push, these codes stop working permanently. People who redeemed one keep their purchase.")
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.iapOfferActions")

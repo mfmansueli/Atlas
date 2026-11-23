@@ -12,7 +12,7 @@ struct KeyAssistantSetupTestStep: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Atlas sends a small test request to \(viewModel.vendor.title): one subtitle for \(viewModel.appName), in English. Nothing is changed.")
+            Text("Sends \(viewModel.vendor.title) one test request: an English subtitle for \(viewModel.appName). Nothing changes.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             switch viewModel.testState {

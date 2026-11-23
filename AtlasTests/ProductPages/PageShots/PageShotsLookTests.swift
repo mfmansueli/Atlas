@@ -81,7 +81,7 @@ struct PageShotsLookTests {
         studio.claudeRunEnded(Test.session(id))
         let run = studio.run(Test.key)
         #expect(run?.design?.claudeRunID == nil)
-        #expect(run?.design?.problem?.contains("before it sent a look") == true)
+        #expect(run?.design?.problem?.contains("stopped before sending a look") == true)
         #expect(run?.stage == .plan)
     }
 

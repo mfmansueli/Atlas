@@ -103,7 +103,7 @@ final class AutopilotRunChoiceUITests: XCTestCase {
         XCTAssertTrue(tag.waitForExistence(timeout: 5))
         XCTAssertEqual(text(of: tag), "Added by you")
         XCTAssertFalse(element("autopilot.plan.form").exists)
-        XCTAssertTrue(text(of: element("autopilot.plan.addScreensNote")).hasPrefix("New screens go after screen 6"))
+        XCTAssertTrue(text(of: element("autopilot.plan.addScreensNote")).hasPrefix("Adds screens after screen 6"))
         reveal(tag)
         attachScreenshot("Plan · Added by you")
     }
@@ -196,7 +196,7 @@ final class AutopilotRunChoiceUITests: XCTestCase {
         XCTAssertEqual(text(of: tag), "Added by you")
         XCTAssertFalse(element("autopilot.plan.origin.5").exists, "Not in the set")
         XCTAssertTrue(text(of: element("autopilot.plan.addScreensNote.watch")).hasPrefix("New screens go after screen 5 on Apple Watch"))
-        XCTAssertTrue(text(of: element("autopilot.plan.addScreensNote")).hasPrefix("New screens go after screen 5 on iPhone and iPad"))
+        XCTAssertTrue(text(of: element("autopilot.plan.addScreensNote")).hasPrefix("Adds screens after screen 5 on iPhone and iPad"))
     }
 
     func testWatchSuggestionsAreAddedToTheWatch() {

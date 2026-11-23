@@ -315,7 +315,7 @@ struct IPhoneDuoTests {
         #expect(how.contains("report one problem with affectsDevice: true saying which"))
         #expect(ScreenshotDisplayType.allCases.filter(\.simulatorStartsClosed) == [.iPhoneDuo])
         // By hand only when Atlas can't: its own window has the poses.
-        #expect(DeviceHub.openingSteps.hasPrefix("In iPhone Duo’s window in Device Hub, choose Open in the poses at the bottom"))
+        #expect(DeviceHub.openingSteps.hasPrefix("In Device Hub, pick the Open pose or drag iPhone Duo’s hinge fully open"))
         #expect(DeviceHub.bundleIdentifier == "com.apple.dt.Devices")
         let link = DeviceHub.windowLink(for: "9F1D621D-9735-4702-9F15-4D2792E475BA")
         #expect(link?.absoluteString == "devices://device/open?id=9F1D621D-9735-4702-9F15-4D2792E475BA")
@@ -334,7 +334,7 @@ struct IPhoneDuoTests {
         #expect(how.contains("next_step gives you its screens again once it's ready"))
         #expect(!how.contains("Restart iPhone Duo in Device Hub"))
         // By hand only when the helper can't look at it.
-        #expect(DeviceHub.restartSteps.hasPrefix("If its inner display shows only a spinner, shut it down there"))
+        #expect(DeviceHub.restartSteps.hasPrefix("Only a spinner? In Device Hub: shut it down"))
         #expect(!DeviceHub.openingSteps.contains("spinner"))
     }
 
@@ -342,8 +342,8 @@ struct IPhoneDuoTests {
         try AutopilotCenter.checkSize(Self.inner, for: .iPhoneDuo)
         try AutopilotCenter.checkSize(Self.inner.rotated, for: .iPhoneDuo)
         let outer = #expect(throws: AutopilotError.self) { try AutopilotCenter.checkSize(Self.outer, for: .iPhoneDuo) }
-        #expect(outer?.message.hasPrefix("A 1398 × 2034 capture is iPhone Duo’s cover display. This screen is one of its open screenshots") == true)
-        #expect(outer?.message.contains("capture the inner display, 2007 × 2853 or 2853 × 2007, with the Duo open") == true)
+        #expect(outer?.message.hasPrefix("A 1398 × 2034 capture is iPhone Duo’s cover display. This open screenshot needs the inner display") == true)
+        #expect(outer?.message.contains("needs the inner display, 2007 × 2853 or 2853 × 2007, Duo open") == true)
         // A closed screen takes it.
         try AutopilotCenter.checkSize(Self.outer, for: .iPhoneDuo, duoPose: .closed)
         let phone = #expect(throws: AutopilotError.self) { try AutopilotCenter.checkSize(PixelSize(width: 1320, height: 2868), for: .iPhoneDuo) }

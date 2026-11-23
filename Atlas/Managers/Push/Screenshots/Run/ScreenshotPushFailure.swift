@@ -34,15 +34,15 @@ enum ScreenshotPushFailure: Error, Hashable, Sendable {
             : String(localized: "Nothing was added to the set.")
         switch self {
         case let .part(part, count, timedOut, detail):
-            if timedOut { return String(localized: "Upload timed out on part \(part) of \(count). \(stays)") }
-            return String(localized: "Upload failed on part \(part) of \(count) (\(detail)). \(stays)")
+            if timedOut { return String(localized: "Part \(part) of \(count) timed out. \(stays)") }
+            return String(localized: "Part \(part) of \(count) failed (\(detail)). \(stays) Try again.")
         case let .processing(code):
             let outcome = replaces ? String(localized: "The live screenshot stays.") : String(localized: "Nothing was added to the set.")
             return String(localized: "Apple couldn’t process the image (\(code)). \(outcome)")
         case let .keepingCopy(detail):
             return String(localized: "Couldn’t keep a copy of the live screenshot (\(detail)), so it wasn’t replaced.")
         case .liveStillProcessing:
-            return String(localized: "The live screenshot is still processing in App Store Connect, so it wasn’t replaced. Try again in a few minutes.")
+            return String(localized: "Not replaced: the live screenshot is still processing. Try again in a few minutes.")
         case .image:
             return String(localized: "The image couldn’t be made. \(stays)")
         case .setFull:

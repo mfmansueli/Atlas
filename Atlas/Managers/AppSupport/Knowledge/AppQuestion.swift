@@ -39,7 +39,7 @@ enum AppQuestion: String, Codable, CaseIterable, Hashable, Sendable {
     var why: String {
         switch self {
         case .previewStory: "Atlas records the App Preview along this story."
-        case .movingMoments: "Each moment of the App Preview has to show something moving; these are the ones to film."
+        case .movingMoments: "The moments to film. Each must show something moving."
         case .soundMood: "It chooses the App Preview's music."
         case .difference: "Screenshots, headers and store texts lead with it."
         case .voice: "Captions and store texts are written in it."

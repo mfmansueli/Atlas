@@ -35,6 +35,7 @@ struct ProposedCaptionCard: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.ai)
                 SuggestionSourceTag(source: caption.source)
+                if let confidence = caption.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             if !caption.reason.isEmpty {
                 Text(caption.reason)
@@ -46,6 +47,7 @@ struct ProposedCaptionCard: View {
                 text(String(localized: "NOW"), current.isEmpty ? String(localized: "Empty") : current, isEmpty: current.isEmpty)
                 text(String(localized: "SUGGESTED"), caption.item.headline, isSuggested: true)
             }
+            if let gloss = caption.layers?.gloss { GlossLine(gloss: gloss) }
             HStack(spacing: Spacing.small) {
                 Spacer()
                 Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
@@ -57,6 +59,7 @@ struct ProposedCaptionCard: View {
                     .accessibilityIdentifier("screenshots.page.caption.accept")
             }
             .controlSize(.regular)
+            if let details = caption.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)

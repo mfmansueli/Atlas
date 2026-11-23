@@ -66,7 +66,7 @@ struct ScreenshotProposalsViewModelTests {
         await model.acceptTemplate()
         #expect(services.storedDocument?.history?.currentNumber == 5)
         #expect(try model.status(of: #require(model.selected)) == .accepted)
-        #expect(try model.outcome(of: #require(model.selected)) == "Accepted. It’s template v5 now, and the changed renders are waiting in Review & Push.")
+        #expect(try model.outcome(of: #require(model.selected)) == "Accepted as template v5. Changed renders wait in Review & Push.")
     }
 
     @Test func rejectingATemplateChangesNothing() async throws {
@@ -138,7 +138,7 @@ struct ScreenshotProposalsViewModelTests {
 
         let key = LocaleSlot(locale: "de-DE", slot: 1)
         let accepted = try #require(screen.document?.captions.caption(locale: key.locale, slot: key.slot))
-        #expect(accepted.provenance.title.hasPrefix("Proposed by Claude Code · "))
+        #expect(accepted.provenance.title.hasPrefix("Suggested by Claude Code · "))
 
         screen.captions.select(key)
         screen.captions.setHeadline("Deine Woche im Blick")

@@ -36,7 +36,7 @@ struct AnalyticsSettingsSheet: View {
                         ForEach(AnalyticsRefreshMode.allCases) { Text($0.title).tag($0) }
                     }
                 } footer: {
-                    Text("Reports stay on this Mac, and everything is worked out here. Apple’s numbers are always 1 to 2 days behind.")
+                    Text("Reports stay and are analyzed on this Mac. Apple’s numbers are 1 to 2 days behind.")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -69,8 +69,8 @@ struct AnalyticsSettingsSheet: View {
             if store.settings.keyCannotReadSales || focus == .salesRole {
                 Label {
                     Text("""
-                    Your key’s role can’t read sales. Keys with the Admin, Finance or Sales role can: add one in Settings → \
-                    Account, or change this key’s role in Users and Access.
+                    Needs an Admin, Finance or Sales key: add one in Settings → Account, or change this key’s role in \
+                    Users and Access.
                     """)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark)
@@ -85,12 +85,10 @@ struct AnalyticsSettingsSheet: View {
         } footer: {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("""
-                Trials, paid starts, renewals, cancellations and proceeds come from Sales and Trends, which needs your team’s \
-                vendor number. Store-page numbers work without it.
+                Trials, paid starts, renewals, cancellations and proceeds need your vendor number.
                 """)
                 Text("""
-                Where to find it: in App Store Connect, open Payments and Financial Reports and select Reports. The vendor \
-                number is at the top left, under your legal entity’s name.
+                App Store Connect → Payments and Financial Reports → Reports: top left, under your legal entity’s name.
                 """)
                 Button("Open Payments and Financial Reports") { NSWorkspace.shared.open(Self.reportsURL) }
                     .buttonStyle(.link)
@@ -132,7 +130,7 @@ struct AnalyticsSettingsSheet: View {
     /// Inline, so it says what happens before anything does.
     private func confirmation(for app: (id: StoreApp.ID, name: String)) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Apple stops making new reports for \(app.name) from tomorrow. What’s already downloaded stays on this Mac. To start again, ask again and wait 1 to 2 days.")
+            Text("Apple stops new reports for \(app.name) from tomorrow. Downloaded ones stay here. Restarting takes 1 to 2 days.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             HStack {

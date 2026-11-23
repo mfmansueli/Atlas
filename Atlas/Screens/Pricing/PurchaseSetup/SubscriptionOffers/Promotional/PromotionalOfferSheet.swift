@@ -33,8 +33,7 @@ struct PromotionalOfferSheet: View {
         OfferSheetChrome(
             title: String(localized: "Promotional offer"),
             detail: String(localized: """
-            For people who subscribe to \(subscription.name) now or did before, offered by your app with StoreKit. It \
-            waits in Review & Push; nothing changes in App Store Connect until you push.
+            For current and past \(subscription.name) subscribers, offered by your app with StoreKit. Nothing changes until you push.
             """),
             footnote: String(localized: "Up to 10 per subscription. Your app offers it by its identifier."),
             identifier: Self.id,

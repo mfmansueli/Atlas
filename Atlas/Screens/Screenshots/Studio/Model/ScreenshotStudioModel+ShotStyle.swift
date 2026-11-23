@@ -62,8 +62,7 @@ extension ScreenshotStudioModel {
     var shotTemplatePickerNote: String {
         let inBrand = shotStyleBrand.map { String(localized: " in \($0)") } ?? ""
         return String(localized: """
-        From each template you pick, \(shotStyleDesigner) makes one screenshot direction\(inBrand), and you choose one \
-        of them. Each template is previewed with \(app.name)’s captions and captures.
+        \(shotStyleDesigner) makes one direction\(inBrand) per template you pick, with \(app.name)’s captions and captures. You choose one.
         """)
     }
 

@@ -56,7 +56,7 @@ struct ReportEncryptionKeyToolTests {
         confirm()
         let outcome = try await report(Self.added)
         #expect(outcome.result["status"] == "saved")
-        #expect(outcome.result["shows"] == "Added in project.pbxproj (Lumen) — builds uploaded from now on answer it")
+        #expect(outcome.result["shows"] == "Added in project.pbxproj (Lumen) · future builds answer it")
         #expect(outcome.result["warning"] == nil)
         let saved = try #require(keys.report(for: lumen))
         #expect(saved.status == .added)
@@ -145,7 +145,7 @@ struct ReportEncryptionKeyToolTests {
         let key = try #require(result["infoPlistKey"])
         #expect(key["state"] == "inferred")
         #expect(key["present"] == true)
-        #expect(key["how"]?.stringValue?.contains("this is inferred") == true)
+        #expect(key["how"]?.stringValue?.contains("Inferred only") == true)
         #expect(key["expected"]?["settledBy"] == "build")
         #expect(key["next"]?.stringValue?.contains("Inferred from the uploads only") == true)
     }

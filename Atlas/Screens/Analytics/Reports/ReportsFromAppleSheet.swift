@@ -14,7 +14,7 @@ struct ReportsFromAppleSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Text("Reports from Apple").font(.title2.weight(.semibold))
-            Text("Analytics reads these for \(viewModel.app.name). Apple makes each one daily; reports marked “a sample” count only people who share analytics with developers.")
+            Text("Made daily for \(viewModel.app.name). “A sample” counts only people who share analytics.")
                 .foregroundStyle(Palette.label2)
                 .lineLimit(3)
             AnalyticsBox {
@@ -87,7 +87,7 @@ struct ReportsFromAppleSheet: View {
                 status = String(localized: "Ready · through \(AnalyticsText.day(last.date))") + (kind.isSample ? String(localized: " · a sample") : "")
                 ready = true
             case .noRows:
-                status = String(localized: "No rows yet — Apple has sent the report, empty")
+                status = String(localized: "Apple sent this report empty")
                 ready = false
             case .asked:
                 status = asked.map { String(localized: "Asked \(AnalyticsText.day($0)) — expected by \(AnalyticsText.day($0.addingTimeInterval(2 * 86400)))") }

@@ -93,7 +93,7 @@ final class InAppEventsViewModel {
             readAgain.schedule(at: settled.readAgainAt, now: now()) { [weak self] in _ = await self?.load(force: true) }
             return true
         } catch {
-            if state.value == nil { state = .failed(error.localizedDescription) }
+            if state.value == nil { state = .failed(AppleErrorCopy(String(localized: "Events didn’t load.", comment: "kind:error"), error: error).text) }
             return false
         }
     }

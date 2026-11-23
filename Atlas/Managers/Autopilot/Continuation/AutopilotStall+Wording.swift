@@ -41,11 +41,11 @@ extension AutopilotStall {
         let left = Self.workLeft(in: run)
         switch self {
         case .handedBack:
-            return String(localized: "It’s Claude Code’s turn again. Continue starts it where the run is.")
+            return String(localized: "Claude Code’s turn. Continue restarts it where the run is.")
         case .notRunning:
-            return String(localized: "Paused when Atlas closed, with \(left). Continue picks it up where it is.")
+            return String(localized: "Paused when Atlas closed, with \(left). Continue resumes it.")
         case .ended, .quiet:
-            return String(localized: "Claude Code isn’t working on this run, with \(left). Continue picks it up where it stopped.")
+            return String(localized: "Claude Code isn’t working on this run, with \(left). Continue resumes it.")
         }
     }
 
@@ -63,15 +63,15 @@ extension AutopilotStall {
     static func continueNote(for run: AutopilotRun) -> String {
         switch run.stage {
         case .design:
-            String(localized: "Continue starts Claude Code again where the run is: the directions that arrived stay.")
+            String(localized: "Continue restarts Claude Code here; directions already in stay.")
         case .localize:
-            String(localized: "Continue starts Claude Code again where the run is: it writes the captions that are missing or too long.")
+            String(localized: "Continue restarts Claude Code here to write missing or too-long captions.")
         case .watchPreview:
-            String(localized: "Continue starts Claude Code again where the run is: it makes the App Preview changes you asked for.")
+            String(localized: "Continue restarts Claude Code here to make your App Preview changes.")
         default:
             String(localized: """
-            Continue starts Claude Code again where the run is: what’s captured stays, and a device this Mac can’t run \
-            becomes one problem for the device, so the rest goes on.
+            Continue restarts Claude Code here. Captures stay; a device this Mac can’t run becomes one problem, and \
+            the rest goes on.
             """)
         }
     }

@@ -49,9 +49,8 @@ struct AutoReplySettingsSheet: View {
             Form {
                 Section {
                     Text("""
-                    Atlas checks \(appName)’s reviews every hour while it’s running, in the menu bar too. Claude writes each \
-                    reply in the review’s language. A reply is public, under the review, so you choose which ones may go out \
-                    by themselves.
+                    Atlas checks \(appName)’s reviews hourly while running, even from the menu bar. Replies are in the review’s language \
+                    and public, so you choose which go out by themselves.
                     """)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
@@ -89,8 +88,8 @@ struct AutoReplySettingsSheet: View {
                             .accessibilityIdentifier("autoReply.example")
                     }
                     Text("""
-                    Replies never mention prices, offers, other apps or dates for new features, and never ask for a better rating. \
-                    One that would isn’t sent: it waits, with the reason.
+                    Replies never mention prices, offers, other apps or new-feature dates, or ask for a better rating. A reply that would \
+                    waits, with the reason.
                     """)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -101,7 +100,7 @@ struct AutoReplySettingsSheet: View {
                         HStack(spacing: Spacing.small) {
                             ProChip()
                             Text(
-                                "Replying automatically is part of Pro. Writing replies one at a time, or asking for a suggested one, stays free."
+                                "Automatic replies are part of Pro. Writing or suggesting single replies stays free."
                             )
                             .font(.callout)
                             .fixedSize(horizontal: false, vertical: true)

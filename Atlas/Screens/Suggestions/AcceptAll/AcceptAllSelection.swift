@@ -55,7 +55,7 @@ struct AcceptAllSelection: Equatable, Sendable {
 
     var subtitle: String {
         let count = kind.countText(totalCount, groups: groups.count)
-        return String(localized: "\(count). Untick anything you don’t want. Accepted suggestions wait in Review & Push; the App Store doesn’t change until you push.")
+        return String(localized: "\(count). Untick any you don’t want. They wait in Review & Push; nothing is sent yet.")
     }
 
     /// "23 selected in 5 languages".

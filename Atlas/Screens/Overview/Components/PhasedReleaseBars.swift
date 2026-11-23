@@ -20,7 +20,7 @@ struct PhasedReleaseBars: View {
                 }
             }
             Text(isPaused
-                ? String(localized: "Phased release paused on day \(day) of \(PhasedRelease.dayCount)")
+                ? String(localized: "Paused · day \(day) of \(PhasedRelease.dayCount)")
                 : String(localized: "Day \(day) of \(PhasedRelease.dayCount) · \(PhasedRelease.percentage(day: day))% of automatic updates"))
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)

@@ -32,7 +32,7 @@ struct CaptureDropZoneView: View {
                         identifier: "captures.source.live"
                     ) { captures.useLiveScreenshots() }
                 }
-                Text("App Review guideline 2.3 asks that screenshots show the app in use, so a capture must be a real screenshot. Take them in each language for the best result; a locale without its own uses \(captures.screenshots.context.primaryLocale.name) and is flagged “UI not localized”.")
+                Text("App Review guideline 2.3: screenshots must show the app in use, so captures are real screenshots. A locale without its own uses \(captures.screenshots.context.primaryLocale.name), flagged “UI not localized”.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)
@@ -85,7 +85,7 @@ struct CaptureDropZoneView: View {
             Text(title)
                 .font(.title3.weight(.semibold))
                 .accessibilityIdentifier("captures.dropTitle")
-            Text("Locale folders like \(Text(verbatim: "de-DE/").monospaced()), fastlane names like \(Text(verbatim: "iPhone 17 Pro Max-03_Search.png").monospaced()), and Xcode test result attachments are matched to locale, display type and slot for you.")
+            Text("Atlas matches locale folders like \(Text(verbatim: "de-DE/").monospaced()), fastlane names like \(Text(verbatim: "iPhone 17 Pro Max-03_Search.png").monospaced()) and Xcode test attachments to locale, display type and slot.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)

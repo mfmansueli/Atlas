@@ -32,7 +32,7 @@ struct ProductPageAppPreviewsTests {
             "“x.mov” isn’t a MOV, MP4 or M4V video Atlas can read.",
         ])
         let four = (1...4).map { Self.video("\($0).mov", 1200, 1600) }
-        #expect(ProductPageVideoCheck.problems(four, device: .iPad) == ["A set has up to 3 App Previews, and 4 were chosen. Choose 3 or fewer."])
+        #expect(ProductPageVideoCheck.problems(four, device: .iPad) == ["4 App Previews chosen. A set takes up to 3."])
     }
 
     @Test func chosenVideosWaitInReviewAndPushAsOneChange() async throws {
@@ -51,7 +51,7 @@ struct ProductPageAppPreviewsTests {
         #expect(model.queuedAppPreviews(of: page, locale: "en-US", device: .iPhone)?.count == 2)
         #expect(model.queuedScreenshots(of: page, locale: "en-US", device: .iPhone) == nil)
         #expect(model.builder.edits(for: page.id, in: queue.changes).appPreviews["en-US"]?[.iPhone]?.count == 2)
-        #expect(model.toast?.text == "2 App Previews added to “\(page.name)” in English (U.S.). They’re waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "2 App Previews added to “\(page.name)” in English (U.S.). In Review & Push.")
     }
 
     @Test func aWrongVideoIsRefusedAndNothingIsQueued() async throws {

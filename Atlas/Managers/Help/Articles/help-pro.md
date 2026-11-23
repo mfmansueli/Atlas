@@ -17,4 +17,4 @@ related: assistant
 | Recommended prices and retention offers | — | ✓ |
 | Suggested replies and Reply to All | — | ✓ |
 
-> AI runs on your own assistant or API key, so Pro’s price never includes AI usage. If Pro ends, what you made stays and stays editable.
+> Pro’s price excludes assistant usage: you bring your own. If Pro ends, your work stays editable.

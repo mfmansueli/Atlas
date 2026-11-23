@@ -54,7 +54,7 @@ enum ScreenshotUploadStatus: Hashable, Sendable {
         case .queued: String(localized: "Queued")
         case .keepingCopy: String(localized: "Keeping a copy…")
         case .reserving: String(localized: "Reserving…")
-        case let .uploading(fraction): String(localized: "Uploading \(Int((fraction * 100).rounded()))%")
+        case let .uploading(fraction): String(localized: "Pushing \(Int((fraction * 100).rounded()))%")
         case .committing: String(localized: "Committing…")
         case .done: String(localized: "Done · Apple is processing")
         case .failed: String(localized: "Failed")

@@ -17,7 +17,7 @@ struct ConnectTrustNote: View {
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .help(Text("Each request carries a short-lived token (ES256, 15 minutes) signed on this Mac with the private key."))
+        .help(Text("Each request uses a 15-minute ES256 token signed on this Mac."))
         .accessibilityElement(children: .combine)
     }
 }

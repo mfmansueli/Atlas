@@ -62,8 +62,8 @@ struct PageShotsLanguagesSection: View {
         var text = others == 0
             ? String(localized: "Every language gets the page’s own screenshots.")
             : others == 1
-            ? String(localized: "The other language keeps showing the default page’s screenshots.")
-            : String(localized: "The other \(others) languages keep showing the default page’s screenshots.")
+            ? String(localized: "The other language keeps the default page’s screenshots.")
+            : String(localized: "The other \(others) languages keep the default page’s screenshots.")
         if waiting > 0 {
             text += " " + (waiting == 1
                 ? String(localized: "1 has no captions yet.")

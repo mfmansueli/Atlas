@@ -316,7 +316,7 @@ final class PageShotsStudio {
             guard run.stage == .planning else { return }
             run.stage = .plan
             guard let plan = run.plan else {
-                run.problem = String(localized: "Claude Code stopped before it sent a plan. Ask it again.")
+                run.problem = String(localized: "\(MCPClientKind.claudeCode.title) sent no plan. Ask it again.")
                 return
             }
             let missing = run.languages.count - plan.completeLocales(among: run.languages).count
@@ -333,7 +333,8 @@ final class PageShotsStudio {
             update(key) { run in
                 run.stage = run.images.isEmpty ? .plan : .result
                 run.changeRequest = nil
-                run.problem = String(localized: "Claude Code stopped before it changed the set. The set is as it was.")
+                let assistant = run.plan?.source ?? MCPClientKind.claudeCode.title
+                run.problem = String(localized: "\(assistant) stopped. The set is unchanged.")
             }
         }
     }

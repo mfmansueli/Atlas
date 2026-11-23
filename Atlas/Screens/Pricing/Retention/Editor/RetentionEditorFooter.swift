@@ -44,7 +44,7 @@ struct RetentionEditorFooter: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("retention.notice")
             }
-            Text("After you push, Apple reviews the message and the offers before subscribers see them. Test it by canceling a sandbox subscription.")
+            Text("After the push, App Review checks the message and offers. Test it by canceling a sandbox subscription.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -63,7 +63,7 @@ struct RetentionEditorFooter: View {
             Button(done ? String(localized: "Translated") : String(localized: "Translate All"), action: translate)
                 .disabled(!model.canTranslate)
                 .help(done
-                    ? String(localized: "Every language has its words. Change the \(model.sourceLocale.name) ones and Translate All again.")
+                    ? String(localized: "All languages have text. Edit \(model.sourceLocale.name) and Translate All again.")
                     : String(localized: "Translates the header and message from \(model.sourceLocale.name) with \(preferences.provider.title)"))
                 .accessibilityIdentifier("retention.translateAll")
         }
@@ -79,6 +79,6 @@ struct RetentionEditorFooter: View {
     private func queueHelp(isQueued: Bool) -> String {
         if isQueued { return String(localized: "Takes it out of Review & Push; your edits stay here") }
         if !model.hasChangesToQueue { return String(localized: "Nothing changed since App Store Connect’s") }
-        return model.problems.first?.message ?? String(localized: "Waits in Review & Push; it goes to App Review when you push")
+        return model.problems.first?.message ?? String(localized: "In Review & Push. Goes to App Review when you push.")
     }
 }

@@ -33,7 +33,7 @@ struct AIFilingFields: View {
                 .frame(maxWidth: 320)
                 .accessibilityLabel(Text("Registered filing name"))
                 .accessibilityIdentifier("appInformation.compliance.ai.name")
-            Toggle(String(localized: "It’s another company’s model or algorithm"), isOn: binding(\.usesAnotherCompanysModel))
+            Toggle(String(localized: "Another company’s model or algorithm"), isOn: binding(\.usesAnotherCompanysModel))
                 .accessibilityIdentifier("appInformation.compliance.ai.thirdParty")
             if filing.usesAnotherCompanysModel {
                 TextField(String(localized: "Company that owns it"), text: binding(\.technologyOwner))

@@ -17,6 +17,9 @@ struct CaptionProposalItem: Codable, Hashable, Sendable, Identifiable {
     var subhead: String?
     /// Nil while it waits.
     var decision: Decision?
+    /// What the headline means in English, for a language the person may
+    /// not read ("Means: …").
+    var gloss: String?
 
     enum Decision: String, Codable, Hashable, Sendable {
         case accepted

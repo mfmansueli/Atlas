@@ -38,7 +38,7 @@ struct NewLanguagesSheet: View {
                     }
                     .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator, lineWidth: 1))
-                    Text("Suggest Everything includes these too, so one prompt drafts every new page.")
+                    Text("Suggest Everything drafts these pages too, in one prompt.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                 }

@@ -88,8 +88,18 @@ struct AppStoreConnectErrorTests {
         #expect(AppStoreConnectError(statusCode: 409, body: body) == .rejected(statusCode: 409, code: "C", detail: "Top."))
     }
 
-    @Test func messageAppendsApplesDetail() throws {
+    @Test func messagePutsApplesDetailUnderDetails() throws {
         let message = try #require(AppStoreConnectError.forbidden(detail: "Missing role.").errorDescription)
-        #expect(message.hasSuffix(" Missing role."))
+        #expect(message == "This API key isn't allowed to do that. Team keys need the Admin or App Manager role.\nDetails: Missing role.")
+    }
+
+    @Test func aServerFailureSaysToTryAgainAndKeepsApplesTextInDetails() {
+        let error = AppStoreConnectError.server(statusCode: 503, code: "UNEXPECTED_ERROR", detail: "Try later.")
+        #expect(error.errorDescription == "App Store Connect had a problem (503). Try again in a minute.\nDetails: Try later.")
+    }
+
+    @Test func aRefused4xxRequestIsNotCalledAProblemOnApplesSide() {
+        let error = AppStoreConnectError.server(statusCode: 400, code: "PARAMETER_ERROR", detail: nil)
+        #expect(error.errorDescription == "App Store Connect refused the request (400).")
     }
 }

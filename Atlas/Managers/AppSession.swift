@@ -45,7 +45,7 @@ final class AppSession {
         do {
             keys = try store.loadAll()
         } catch {
-            loadErrorMessage = error.localizedDescription
+            loadErrorMessage = AppleErrorCopy(String(localized: "Your keys couldn’t be read from the Keychain.", comment: "kind:error"), error: error).text
         }
         if let data = defaults?.data(forKey: Key.checks),
            let saved = try? JSONDecoder().decode([String: KeyAccessCheck].self, from: data)

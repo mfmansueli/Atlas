@@ -33,7 +33,7 @@ struct SuggestionsSettingsPane: View {
                 }
                 .accessibilityIdentifier("settings.tone")
                 VStack(alignment: .leading, spacing: Spacing.small) {
-                    SettingsRowLabel(title: "Never translated", caption: String(localized: "Names that stay as they are in every language."))
+                    SettingsRowLabel(title: "Never translated", caption: String(localized: "Names kept in every language."))
                     GlossaryEditor(glossary: $translation.glossary)
                 }
                 .padding(.vertical, Spacing.xxSmall)
@@ -52,7 +52,7 @@ struct SuggestionsSettingsPane: View {
                 Toggle(isOn: Binding(get: { !preferences.acceptsAllWithoutAsking }, set: { preferences.acceptsAllWithoutAsking = !$0 })) {
                     SettingsRowLabel(
                         title: "Ask before Accept All Languages and Accept All Pages",
-                        caption: String(localized: "Shows what will be accepted, with a chance to untick.")
+                        caption: String(localized: "Lists what gets accepted; untick any.")
                     )
                 }
                 .toggleStyle(.switch)
@@ -65,7 +65,7 @@ struct SuggestionsSettingsPane: View {
             } header: {
                 Text("Never accepted for you")
             } footer: {
-                Text("These have legal or money consequences. Atlas suggests, and you accept each one.")
+                Text("Legal or money consequences: Atlas suggests, you accept each one.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }

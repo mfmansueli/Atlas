@@ -138,14 +138,14 @@ struct SuggestionRunCard: View {
     private var footerText: String {
         switch run.phase {
         case .waiting, .running:
-            return String(localized: "Review and accept while it works. Nothing is pushed until Review & Push.")
+            return String(localized: "Accept as they arrive. Nothing is sent until you push.")
         case .stopped:
-            return String(localized: "Anything \(run.client) sends now is refused. What arrived stays.")
+            return String(localized: "\(run.client)’s new suggestions are refused. Earlier ones stay.")
         case .finished:
             guard toReviewCount > 0 else { return String(localized: "Everything from this run is reviewed.") }
             return toReviewCount == 1
-                ? String(localized: "1 still to review. Accept All takes it; a toast offers Undo.")
-                : String(localized: "\(toReviewCount) still to review. Accept All takes them all; a toast offers Undo.")
+                ? String(localized: "1 still to review. Accept All can be undone.")
+                : String(localized: "\(toReviewCount) still to review. Accept All can be undone.")
         }
     }
 }

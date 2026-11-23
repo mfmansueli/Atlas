@@ -69,7 +69,7 @@ enum AnalyticsMCPJSON {
     }
 
     static func finding(_ finding: AnalyticsFinding, state: AnalyticsFindingsState) -> JSONValue {
-        [
+        var json: [String: JSONValue] = [
             "id": .string(finding.id),
             "source": .string(finding.source.title),
             "area": .string(finding.area.rawValue),
@@ -78,6 +78,8 @@ enum AnalyticsMCPJSON {
             "howSure": .string(finding.surenessDetail),
             "isNew": .bool(state.isNew(finding)),
         ]
+        if let details = finding.details { json["details"] = .string(details) }
+        return .object(json)
     }
 
     private static func rounded(_ value: Double) -> Double {

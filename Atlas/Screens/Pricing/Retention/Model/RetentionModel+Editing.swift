@@ -134,9 +134,9 @@ extension RetentionModel {
         case .written:
             return nil
         case .translated:
-            return String(localized: "Translated by Atlas from \(sourceLocale.name) · edit it here if you like")
+            return String(localized: "Translated from \(sourceLocale.name) · edit it here")
         case let .assistant(client):
-            return String(localized: "Written by \(client) · edit it here if you like")
+            return String(localized: "Written by \(client) · edit it here")
         }
     }
 
@@ -163,7 +163,7 @@ extension RetentionModel {
         do {
             libraryState = try await .loaded(services.libraryImages(for: app))
         } catch {
-            libraryState = .failed(error.localizedDescription)
+            libraryState = .failed(AppleErrorCopy(String(localized: "The Asset Library didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

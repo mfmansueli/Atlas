@@ -17,15 +17,15 @@ struct GuidedLocalizeCard: Hashable, Sendable {
         guard let extras = run.extrasProgress, !extras.isFinished else {
             return GuidedLocalizeCard(
                 title: String(localized: "Checking every image"),
-                detail: String(localized: "Captions that don’t fit are shortened by \(client). Every change is listed in the review.")
+                detail: String(localized: "\(client) shortens captions that don’t fit. The review lists each change.")
             )
         }
         let plan = run.plan
         if !extras.isArtworkDone {
             let detail = plan.alsoMakes.makesMotion
                 ? String(localized: """
-                Every language’s \(AutopilotArtworkMotion.loopSeconds)-second loop is drawn frame by frame on this Mac and \
-                checked, a few minutes each. Every caption is in.
+                Each language’s \(AutopilotArtworkMotion.loopSeconds)-second loop is drawn and checked on this Mac, a \
+                few minutes each. Every caption is in.
                 """)
                 : String(localized: "Every language’s image is drawn and checked. Every caption is in.")
             return GuidedLocalizeCard(title: plan.alsoMakes.artworkSize.artworkTitle, detail: detail)

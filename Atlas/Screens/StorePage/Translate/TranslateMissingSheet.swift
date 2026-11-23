@@ -46,8 +46,8 @@ struct TranslateMissingSheet: View {
                             appID: viewModel.app.id,
                             appName: viewModel.app.name,
                             explanation: String(localized: """
-                            Claude Code translates the missing fields and proposes them. They appear in the coverage grid as they \
-                            arrive, tagged with who proposed them, and wait for you in Review & Push.
+                            Claude Code translates the missing fields. Its suggestions appear in the coverage grid, \
+                            tagged with its name, and wait in Review & Push.
                             """),
                             onRetried: { launchedRunID = $0 },
                             identifierPrefix: "storePage.translate"
@@ -72,7 +72,7 @@ struct TranslateMissingSheet: View {
                         toneAndGlossary
                         availabilityMessages
                         locales
-                        Text("You accept or reject each suggestion. Accepted text stays tagged “machine-translated” until someone reviews it.")
+                        Text("You accept or dismiss each one. Accepted text stays tagged “machine-translated” until reviewed.")
                             .font(.footnote)
                             .foregroundStyle(Palette.label2)
                     }

@@ -51,7 +51,7 @@ struct ReviewShotsPreviewSheet: View {
                     Button {
                         let accepted = viewModel.acceptAllReviewShots()
                         viewModel.sayReviewShots(
-                            String(localized: "Accepted \(accepted.count) review screenshots. They’re in Review & Push; nothing has uploaded.")
+                            String(localized: "Accepted \(accepted.count) review screenshots. Nothing is sent yet.")
                         ) { [viewModel] in
                             viewModel.undoReviewShots(accepted)
                         }
@@ -130,7 +130,7 @@ struct ReviewShotsPreviewSheet: View {
                         .accessibilityIdentifier("pricing.reviewShots.preview.dismiss")
                     Button("Accept") {
                         viewModel.acceptReviewShot(for: product)
-                        let text = String(localized: "\(product.name): review screenshot accepted. It’s in Review & Push.")
+                        let text = String(localized: "\(product.name): review screenshot accepted. In Review & Push.")
                         viewModel.sayReviewShots(text) { [viewModel] in
                             viewModel.undoReviewShot(for: product)
                         }

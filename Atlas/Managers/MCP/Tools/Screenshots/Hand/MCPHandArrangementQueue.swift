@@ -22,7 +22,7 @@ enum MCPHandArrangementQueue {
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "locale": MCPToolDefinition.string("The language, e.g. de-DE."),
         "displayType": MCPToolDefinition.string("iphone, iphone_duo, ipad, mac, watch or vision_pro."),
-        "reason": MCPToolDefinition.string("Why, in a sentence or two the person reads before accepting."),
+        "reason": MCPToolDefinition.shortWhy("Why, for the person to read before accepting."),
         "evidence": ["type": "array", "items": evidenceSchema],
     ]
 

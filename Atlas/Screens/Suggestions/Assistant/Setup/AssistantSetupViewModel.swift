@@ -6,7 +6,7 @@
 import Foundation
 import Observation
 
-/// "Set Up Your AI Assistant": first how, an assistant over MCP or an API
+/// "Set Up Your Assistant": first how, an assistant over MCP or an API
 /// key. With an assistant: pick the client, see the local server (turned on
 /// as the step opens) and choose what assistants may do, copy the snippet
 /// with a token made for

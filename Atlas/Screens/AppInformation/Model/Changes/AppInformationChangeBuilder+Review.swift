@@ -91,7 +91,7 @@ extension AppInformationChangeBuilder {
         let missing = requiredContactFields.filter { values.text($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         guard !missing.isEmpty else { return nil }
         let names = missing.map { $0.title.lowercased() }.formatted(.list(type: .and))
-        return String(localized: "Add the contact’s \(names): App Store Connect needs a first name, last name, phone and email to create the review details.")
+        return String(localized: "Add the contact’s \(names). App Store Connect needs a full name, phone and email.")
     }
 
     // MARK: - Reading

@@ -44,7 +44,7 @@ struct EventArtworkViewerTopBar: View {
             EventArtworkViewerToggle(
                 title: String(localized: "App Store Text"),
                 isOn: Binding { flow.viewer?.showsText ?? true } set: { flow.viewer?.showsText = $0 },
-                help: String(localized: "Show the name and description the App Store puts over the image"),
+                help: String(localized: "Show the App Store’s name and description over the image"),
                 identifier: "events.art.viewer.text", isNarrow: isNarrow
             )
             EventArtworkViewerToggle(

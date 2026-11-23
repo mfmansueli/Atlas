@@ -47,7 +47,7 @@ enum GuidedNextStop: Hashable, Sendable {
     /// anywhere, so no minutes.
     static func line(for run: AutopilotRun, progress: GuidedRunProgress) -> String {
         if run.waitsOnlyOnProblems {
-            return String(localized: "Next for you: what’s above, now. The run waits until you retry or leave out each part; then it goes on by itself.")
+            return String(localized: "Your turn: retry or leave out each part above. Then the run goes on by itself.")
         }
         let stop = next(after: run)
         let minutes = minutes(to: stop, run: run, progress: progress)

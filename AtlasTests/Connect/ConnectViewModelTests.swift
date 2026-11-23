@@ -174,7 +174,8 @@ struct ConnectViewModelTests {
     @Test func savingFailureIsShown() async {
         let vm = filledModel { _, _ in throw KeychainError(status: errSecDuplicateItem) }
         await vm.connect()
-        #expect(vm.failure == .other(KeychainError(status: errSecDuplicateItem).errorDescription ?? ""))
+        let error = KeychainError(status: errSecDuplicateItem)
+        #expect(vm.failure == .other(AppleErrorCopy(summary: "Try again.", details: AppleErrorCopy.details(for: error)).text))
     }
 
     @Test func checkingTheKeyShowsProgressAndBlocksASecondClick() async {

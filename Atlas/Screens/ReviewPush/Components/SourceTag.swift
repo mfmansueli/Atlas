@@ -24,7 +24,7 @@ struct SourceTag: View {
             .padding(.vertical, 2)
             .overlay(Capsule().strokeBorder(Palette.separator2, lineWidth: 1))
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(source.isAssistant ? "Proposed by \(source.title)" : "Suggested by \(source.title)"))
+            .accessibilityLabel(Text("Suggested by \(source.title)"))
         } else {
             Text(source.title)
                 .font(.footnote)

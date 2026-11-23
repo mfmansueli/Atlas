@@ -39,10 +39,7 @@ struct GuidedThisMacCard: View {
             switch simulators.state {
             case .oldHelper:
                 helperBanner(
-                    String(localized: """
-                    The helper on this Mac is older than Atlas, so it can’t check the simulators before Start. \
-                    Save it again; it takes a few seconds.
-                    """),
+                    String(localized: "The helper is too old to check simulators before Start. Save it again; it takes seconds."),
                     button: String(localized: "Save the Helper Again…"), isWarning: true
                 )
             case .noHelper:
@@ -159,10 +156,7 @@ struct GuidedThisMacCard: View {
         case .unknown, .closed, .notRunning, .closedForScreens:
             return detail + " · " + String(localized: "closed: Atlas opens it when the run needs it")
         case .needsAccessibility:
-            return String(localized: """
-            Closed. Allow Atlas in Privacy & Security › Accessibility once, and it opens iPhone Duo itself; \
-            it only presses Open in Device Hub.
-            """)
+            return String(localized: "Closed. Allow Atlas once in Privacy & Security › Accessibility; it only presses Open in Device Hub.")
         default:
             return detail + " · " + simulators.duo.state.summary
         }
@@ -196,7 +190,7 @@ struct GuidedThisMacCard: View {
         case .closed, .notRunning, .unknown:
             Button("Open Now") { opensDuo = true }
                 .controlSize(.regular)
-                .help(Text("Atlas starts iPhone Duo if it isn’t running and presses Open in its window in Device Hub."))
+                .help(Text("Starts iPhone Duo if needed and presses Open in Device Hub."))
                 .accessibilityIdentifier("autopilot.mac.openDuo")
         case .needsAccessibility:
             Button("Open Accessibility Settings") { AccessibilitySettings.open() }

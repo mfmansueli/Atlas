@@ -59,7 +59,7 @@ struct TerritoryTab: View {
             ContentUnavailableView(
                 "No Territory Selected",
                 systemImage: "globe",
-                description: Text("Select a territory in the table to see its breakdown and compare sources.")
+                description: Text("Select a territory to see its breakdown and compare sources.")
             )
             .padding(.top, Spacing.xxxLarge)
         }

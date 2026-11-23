@@ -48,7 +48,7 @@ struct AssistantSetupLaunchStep: View {
                     Button(title) { Task { await launcher.installHelper() } }
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier("assistantSetup.launch.install")
-                    Text("Opens a Save panel in the right folder. Just click Save.")
+                    Text("Opens a Save panel in the right folder. Click Save.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 } else {
@@ -60,7 +60,7 @@ struct AssistantSetupLaunchStep: View {
                 InlineMessage.error(error)
                     .font(.subheadline)
             }
-            Text("macOS runs the helper outside Atlas’s sandbox, and only when you start something here. Delete it from the folder any time.")
+            Text("The helper runs outside Atlas’s sandbox, only when you start something here. Delete it from the folder any time.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -126,7 +126,7 @@ struct AssistantSetupLaunchStep: View {
             .padding(.horizontal, Spacing.medium)
             .padding(.vertical, 10)
             .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
-            Text("Claude Code starts here, so it can read the code and git history. It never writes to the project, and it can’t push to App Store Connect.")
+            Text("Claude Code starts here to read the code and git history. It never writes to the project and can’t push.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

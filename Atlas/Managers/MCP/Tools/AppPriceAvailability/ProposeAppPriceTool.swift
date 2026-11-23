@@ -29,7 +29,7 @@ struct ProposeAppPriceTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "price": ["type": ["number", "string"], "description": "e.g. 2.99, or 0 / \"free\"."],
                 "territory": MCPToolDefinition.string("The base territory, e.g. USA or US."),
-                "reason": MCPToolDefinition.string("Why this price, in a sentence the person can check."),
+                "reason": MCPToolDefinition.shortWhy("Why this price, in a sentence the person can check."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. README.md:12 — “Free with Pro upgrade”"],
             ],
             required: ["appId", "price"]

@@ -59,8 +59,7 @@ struct StabilityAlertCard: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("""
-            Automatic updates stop reaching more people until you resume; anyone can still download it from the App Store. \
-            A release can stay paused for up to 30 days in all.
+            The update stops reaching more people until you resume. Anyone can still download it. Pauses can total 30 days.
             """)
         }
     }

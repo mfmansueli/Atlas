@@ -52,7 +52,7 @@ struct OfferTermsFields: View {
             Text("Offer")
         } footer: {
             note(fixesTerms
-                ? String(localized: "App Store Connect doesn’t let an offer’s type or duration change. To change them, delete it and add another.")
+                ? String(localized: "An offer’s type and duration can’t change. Delete it and add another.")
                 : draft.terms.summary)
         }
         .onChange(of: draft.mode) { draft.fit(period: period) }
@@ -72,13 +72,13 @@ struct OfferTermsFields: View {
                         .foregroundStyle(Palette.label2)
                 }
             } label: {
-                Text(draft.mode == .payAsYouGo ? "Price each period in the United States" : "Price in the United States")
+                Text(draft.mode == .payAsYouGo ? "US price per period" : "Price (United States)")
             }
             OfferTerritoryPricesEditor(prices: $draft.territoryPriceTexts, identifier: identifier)
         } header: {
             Text("Price")
         } footer: {
-            note(String(localized: "Every other country or region gets the price Apple equalizes with it, unless you set its own here."))
+            note(String(localized: "Other countries and regions get Apple’s automatic price unless you set one here."))
         }
     }
 

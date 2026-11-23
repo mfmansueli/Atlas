@@ -13,7 +13,7 @@ struct PrivacyChecklistIntro: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Fill the questionnaire in App Store Connect in the order it asks. Keep this window on the left and Safari on the right.")
+            Text("Answer in the order App Store Connect asks. Atlas on the left, Safari on the right.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {

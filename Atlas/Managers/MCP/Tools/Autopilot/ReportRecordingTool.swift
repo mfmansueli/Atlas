@@ -45,7 +45,7 @@ struct ReportRecordingTool: MCPTool {
                         [
                             "screen": MCPToolDefinition.string("The screen's id from the plan."),
                             "start_s": ["type": "number"], "end_s": ["type": "number"],
-                            "reason": MCPToolDefinition.string("Why it works, in a few words."),
+                            "reason": MCPToolDefinition.shortWhy("Why it works, in a few words."),
                             "use": ["type": "boolean"],
                         ],
                         required: ["screen", "start_s", "end_s"]

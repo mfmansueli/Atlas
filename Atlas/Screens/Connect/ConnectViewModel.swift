@@ -93,7 +93,7 @@ final class ConnectViewModel {
 
     /// The file couldn't even be read (permissions, not UTF-8, …).
     func importFailed(_ error: any Error) {
-        importErrorMessage = error.localizedDescription
+        importErrorMessage = AppleErrorCopy(String(localized: "The key file couldn’t be read.", comment: "kind:error"), error: error).text
     }
 
     func removeKey() {

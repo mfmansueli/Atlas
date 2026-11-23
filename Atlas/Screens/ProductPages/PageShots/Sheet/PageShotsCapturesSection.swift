@@ -30,8 +30,8 @@ struct PageShotsCapturesSection: View {
                 }
             } else {
                 Text("""
-                \(assistant) runs the app in the Simulator and captures the screens that should show something else for this \
-                page. It takes longer. The default page’s captures don’t change.
+                \(assistant) recaptures the screens this page needs in the Simulator. It takes longer; the default \
+                page’s captures stay.
                 """)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -50,7 +50,7 @@ struct PageShotsCapturesSection: View {
             HStack(spacing: Spacing.small) {
                 ProgressView().controlSize(.small)
                 Text(recapture.captures.isEmpty
-                    ? String(localized: "\(assistant) is capturing screens in the Simulator.")
+                    ? String(localized: "\(assistant) is capturing screens…")
                     : String(localized: "\(assistant) is capturing · \(recapture.slots.count) screens so far"))
                     .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)

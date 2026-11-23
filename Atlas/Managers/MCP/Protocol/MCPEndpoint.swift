@@ -77,10 +77,22 @@ enum MCPEndpoint {
         "\(host):\(port)"
     }
 
+    /// How to write what the person reads on a card (mcp-copy-changes §2),
+    /// right after the instructions' second sentence.
+    static let voice = """
+    Everything you write for the person (titles, why, details, review themes, notes) is shown on a card in Atlas, so \
+    write it the way Atlas writes: short, plain, second person, result first. Titles: what changes, at most 8 words \
+    ("Lifetime: $79.99 → $59.99"). Why: the strongest evidence, one sentence, one number, at most 110 characters \
+    ("9 of your last 220 reviews call it too expensive."). Everything else goes in details. Don't describe yourself or \
+    how you worked ("I analysed…", "Claude found…"); say what you found. Words: suggestion, push, Review & Push. Never: \
+    simply, just, easily, seamlessly, powerful, leverage, magic, please, successfully, "!". Round numbers people read; \
+    exact ones in details.
+    """
+
     /// What `initialize` tells the assistant about the server.
     static let instructions = """
     Atlas manages the App Store Connect data of the person's apps: store listings, subscription prices \
-    and app information. Read with the list_ and get_ tools. Change things with the propose_ tools: each \
+    and app information. Read with the list_ and get_ tools. \(voice) Change things with the propose_ tools: each \
     proposal is validated like a manual edit and queued in Atlas, where the person reviews and pushes \
     it. You can't push, and nothing reaches App Store Connect until the person does. When a proposal is \
     refused, the reason says how to fix it. Read only what you need: whole answers can outgrow what you take in at \

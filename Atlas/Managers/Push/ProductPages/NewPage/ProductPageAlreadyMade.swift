@@ -16,8 +16,7 @@ struct ProductPageAlreadyMade: LocalizedError, Equatable {
 
     var errorDescription: String? {
         String(localized: """
-        “\(name)” is already in App Store Connect, from an earlier push. Open Custom Product Pages: Atlas turns the draft \
-        into that page and queues what it still needs.
+        “\(name)” is already in App Store Connect. Open Custom Product Pages to link the draft and queue what’s missing.
         """)
     }
 

@@ -20,7 +20,7 @@ struct ProductPageSubmitSheet: View {
                 Text("Submit “\(page.name)” for Review")
                     .font(.title3.weight(.semibold))
                     .accessibilityIdentifier("pages.submit.title")
-                Text("The page goes to App Review by itself. \(viewModel.app.name)’s version and its default page don’t change.")
+                Text("Only the page goes to App Review. \(viewModel.app.name)’s version and default page stay.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -34,10 +34,10 @@ struct ProductPageSubmitSheet: View {
                     Banner(
                         kind: .info,
                         title: String(localized: "Only you submit."),
-                        message: String(localized: "An assistant can prepare a page and suggest what’s on it, and can’t push it or send it to Apple.")
+                        message: String(localized: "An assistant can prepare a page, not push or submit it.")
                     )
                     if let error = viewModel.submitError {
-                        Banner(kind: .apiError, title: String(localized: "The page wasn’t submitted."), message: error, isInline: true)
+                        Banner(kind: .apiError, title: error.summary, message: error.details, isInline: true)
                             .accessibilityIdentifier("pages.submit.error")
                     }
                 }
@@ -75,7 +75,7 @@ struct ProductPageSubmitSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Make the page visible when it’s approved")
                         .font(.callout)
-                    Text("Off: it’s approved and stays hidden until you turn Visible on. That needs no review.")
+                    Text("Off: approved but hidden until you turn Visible on, with no review.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)

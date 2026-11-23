@@ -34,23 +34,23 @@ final class IPhoneDuoRowUITests: XCTestCase {
         let note = element("autopilot.plan.duoNote")
         XCTAssertTrue(note.waitForExistence(timeout: 5), "The screens show the iPhone Duo row")
         reveal(note)
-        XCTAssertTrue(text(of: note).hasPrefix("Each screenshot shows the Duo unfolded with the folded cover beside it: "), text(of: note))
-        XCTAssertTrue(text(of: note).hasSuffix(" per language, both states in one image."), text(of: note))
+        XCTAssertTrue(text(of: note).hasPrefix("Unfolded with the cover beside it: "), text(of: note))
+        XCTAssertTrue(text(of: note).hasSuffix(" per language, both in one image."), text(of: note))
         XCTAssertTrue(element("autopilot.plan.duoScreens.both").isSelected)
         XCTAssertTrue(element("autopilot.plan.duoBoth.sideBySide").isSelected)
         attachScreenshot("Plan · iPhone Duo side by side")
 
         tap("autopilot.plan.duoBoth.separate")
-        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Each screen unfolded, then folded: ") }, text(of: note))
+        XCTAssertTrue(waitUntil { self.text(of: note).range(of: "unfolded, then folded: ", options: .caseInsensitive) != nil }, text(of: note))
         XCTAssertTrue(element("autopilot.plan.duoBoth.separate").isSelected)
 
         tap("autopilot.plan.duoScreens.cover")
-        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Folded: the app on the cover display, placed on the 2007 × 2853 canvas.") })
+        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Folded: the cover display on the 2007 × 2853 canvas.") })
         XCTAssertFalse(element("autopilot.plan.duoBoth").exists, "Only both has a way to show them")
 
         tap("autopilot.plan.duoScreens.inner")
         XCTAssertTrue(waitUntil {
-            self.text(of: note) == "Unfolded, as Apple requires: the inner display at 2007 × 2853. Atlas opens the Duo in Device Hub for each capture."
+            self.text(of: note) == "Unfolded, as Apple requires: inner display at 2007 × 2853. Device Hub opens the Duo per capture."
         }, text(of: note))
         attachScreenshot("Plan · iPhone Duo inner")
     }

@@ -66,7 +66,7 @@ extension ReviewsViewModel {
             undo = ReviewReplyUndo(reviewID: review.id, sent: reply, previous: review.reply)
             toast = ToastMessage(text: Self.sentText(territory: review.territoryName), canUndo: true)
         } catch {
-            replyErrors[review.id] = error.localizedDescription
+            replyErrors[review.id] = AppleErrorCopy(String(localized: "The reply wasn’t sent.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -82,12 +82,12 @@ extension ReviewsViewModel {
         if editingID == review.id { editingID = nil }
     }
 
-    /// "Reply sent to Germany. It shows under the review on the App
-    /// Store, usually within a day."
+    /// "Reply sent to Germany. It shows on the App Store, usually within
+    /// a day."
     static func sentText(territory: String) -> String {
         territory.isEmpty
-            ? String(localized: "Reply sent. It shows under the review on the App Store, usually within a day.")
-            : String(localized: "Reply sent to \(territory). It shows under the review on the App Store, usually within a day.")
+            ? String(localized: "Reply sent. It shows on the App Store, usually within a day.")
+            : String(localized: "Reply sent to \(territory). It shows on the App Store, usually within a day.")
     }
 
     /// Undo on the toast: the reply comes off the App Store, or the one it
@@ -106,7 +106,7 @@ extension ReviewsViewModel {
             }
             sentNow.remove(undo.reviewID)
         } catch {
-            replyErrors[undo.reviewID] = String(localized: "The reply couldn’t be taken back: \(error.localizedDescription)")
+            replyErrors[undo.reviewID] = AppleErrorCopy(String(localized: "The reply couldn’t be taken back.", comment: "kind:error"), error: error).text
         }
     }
 

@@ -18,10 +18,10 @@ enum AutopilotShotStyle: String, Codable, CaseIterable, Hashable, Sendable {
     /// The most templates a plan picks; a fourth replaces the last.
     static let maximumTemplates = 3
 
-    /// "Claude proposes 3", "From templates", "Keep template v4".
+    /// "Claude suggests 3", "From templates", "Keep template v4".
     func title(design: String, version: Int?) -> String {
         switch self {
-        case .free: String(localized: "\(design) proposes 3")
+        case .free: String(localized: "\(design) suggests 3")
         case .templates: String(localized: "From templates")
         case .keep: version.map { String(localized: "Keep template v\($0)") } ?? String(localized: "Keep the template")
         }
@@ -32,16 +32,16 @@ enum AutopilotShotStyle: String, Codable, CaseIterable, Hashable, Sendable {
         let inBrand = brand.map { String(localized: " in \($0)") } ?? ""
         switch self {
         case .free:
-            return String(localized: "\(design) designs 3 directions of its own\(inBrand). You choose one.")
+            return String(localized: "\(design) designs 3 directions\(inBrand). You choose one.")
         case .templates:
             let count = TemplateStarter.allCases.count
             return String(localized: """
-            Pick up to 3 of the \(count) templates (a 4th replaces the last). \(design) makes one direction from each\(inBrand). \
-            \(picked) of 3 picked.
+            Pick up to 3 of \(count) templates; a 4th replaces the last. \(design) makes a direction from \
+            each\(inBrand). \(picked) of 3 picked.
             """)
         case .keep:
             let name = version.map { String(localized: "template v\($0)") } ?? String(localized: "template")
-            return String(localized: "Your current \(name) stays; only the captures and captions are new. No direction to choose.")
+            return String(localized: "Keeps your current \(name), with new captures and captions.")
         }
     }
 

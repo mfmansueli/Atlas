@@ -24,7 +24,7 @@ struct EventArtworkSheet: View {
                     .lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("events.art.title")
-                Text("Claude makes the event card and the event details image as a matching pair. They are drawn while you keep working.")
+                Text("Claude makes the event card and details image as a matching pair while you keep working.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)

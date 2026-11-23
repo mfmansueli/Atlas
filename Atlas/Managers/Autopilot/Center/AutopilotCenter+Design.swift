@@ -77,9 +77,9 @@ extension AutopilotCenter {
             let what = if run.revision != nil {
                 String(localized: "\(client) read the brief and is making your changes")
             } else if run.directionsLeft == 1 {
-                String(localized: "\(client) read the brief and is designing the last direction")
+                String(localized: "\(client) is designing the last direction")
             } else {
-                String(localized: "\(client) read the brief and is designing \(run.directionsLeft) directions")
+                String(localized: "\(client) is designing \(run.directionsLeft) directions")
             }
             run.appendLog(what, kind: .command, at: now())
         }

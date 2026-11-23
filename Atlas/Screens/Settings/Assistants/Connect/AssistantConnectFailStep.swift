@@ -33,7 +33,7 @@ struct AssistantConnectFailStep: View {
                 )
                 Divider()
                 reason(
-                    title: String(localized: "You haven’t signed in to \(name) yet"),
+                    title: String(localized: "Not signed in to \(name) yet"),
                     detail: model.assistant == .claudeCode
                         ? String(localized: "Open it once in Terminal, sign in, then try again.")
                         : String(localized: "Open it once, sign in, then try again."),
@@ -44,7 +44,7 @@ struct AssistantConnectFailStep: View {
                 Divider()
                 reason(
                     title: String(localized: "Still nothing?"),
-                    detail: String(localized: "Help has the steps to check, one by one."),
+                    detail: String(localized: "Help lists the steps to check."),
                     button: String(localized: "Open Help"),
                     identifier: "help",
                     action: openHelp
@@ -71,11 +71,11 @@ struct AssistantConnectFailStep: View {
         model.assistant == .claudeCode
             ? (
                 String(localized: "Claude Code took too long to start"),
-                String(localized: "The first start after an update can be slow. Atlas can start it again for you.")
+                String(localized: "The first start after an update can be slow. Atlas can restart it.")
             )
             : (
                 String(localized: "\(name) was already open"),
-                String(localized: "It only notices Atlas when it starts. Atlas can restart it for you.")
+                String(localized: "It sees Atlas only at startup. Atlas can restart it.")
             )
     }
 

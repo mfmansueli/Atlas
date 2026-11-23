@@ -32,7 +32,7 @@ extension ProductPageTestRun {
         do {
             data = try await environment.fileData(treatmentFile)
         } catch {
-            throw ProductPageTestFailure.file(detail: error.localizedDescription)
+            throw ProductPageTestFailure.file(detail: AppleErrorCopy.details(for: error) ?? "")
         }
         let library = environment.library
         let libraryID = try await libraryID()

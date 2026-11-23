@@ -26,16 +26,15 @@ extension ProductPagesViewModel {
         switch confirmation {
         case .hide:
             return String(localized: """
-            Its link keeps working and opens the default page. Searches for its keywords show the default page too. Turn \
-            Visible back on at any time; that needs no review.
+            Its link and keywords lead to the default page. Turn Visible on again any time, with no review.
             """)
         case let .delete(pageID):
             if page(pageID)?.isDraft == true {
-                return String(localized: "It’s only in Atlas, so nothing changes in App Store Connect. Its suggestions and changes go with it.")
+                return String(localized: "Only in Atlas, with its suggestions and changes. App Store Connect doesn’t change.")
             }
             return String(localized: """
-            Its link stops leading here for good and opens the default page. Its keywords go back to the default page. The \
-            page’s numbers stay in Analytics. This can’t be undone once it’s pushed.
+            Its link and keywords move to the default page for good. Numbers stay in Analytics. This can’t be undone \
+            once pushed.
             """)
         case let .discard(pageID):
             let undone = discardedParts(pageID)
@@ -45,7 +44,7 @@ extension ProductPagesViewModel {
                 ? String(localized: "The page goes back to what is in App Store Connect: \(list) is undone.")
                 : String(localized: "The page goes back to what is in App Store Connect: \(list) are undone.")
         case let .moveKeyword(_, _, _, fromName):
-            return String(localized: "A keyword leads to one page. “\(fromName)” stops being shown for it once this page is approved and visible.")
+            return String(localized: "Keywords lead to one page: “\(fromName)” loses it once this one is visible.")
         }
     }
 

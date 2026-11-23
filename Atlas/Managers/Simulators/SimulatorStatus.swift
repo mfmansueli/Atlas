@@ -40,7 +40,7 @@ enum SimulatorStatus: Hashable, Sendable {
         case let .ready(simulator, runtime):
             return "\(simulator) · \(runtime)"
         case let .canMake(deviceType, _, runtime, _):
-            return String(localized: "No \(deviceType) simulator yet. It can be made on \(runtime) in a few seconds.")
+            return String(localized: "No \(deviceType) simulator yet. Atlas can make it on \(runtime) in seconds.")
         case let .needsRuntime(platform, minimum, installed):
             let needs = minimum.map { String(localized: "Needs the \(platform) \($0) simulator or later.") }
                 ?? String(localized: "Needs the \(platform) simulator.")
@@ -49,7 +49,7 @@ enum SimulatorStatus: Hashable, Sendable {
                 : String(localized: "This Mac has \(installed.formatted(.list(type: .and))).")
             return needs + " " + has
         case let .needsNewerXcode(deviceName):
-            return String(localized: "This Xcode doesn’t have the \(deviceName) simulator; it needs a newer Xcode.")
+            return String(localized: "The \(deviceName) simulator needs a newer Xcode.")
         }
     }
 }

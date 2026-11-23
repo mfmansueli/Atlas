@@ -69,7 +69,7 @@ struct AppAvailabilityCard: View {
                 onReview: model.onOpenReview
             )
         } else {
-            Text("Choose where \(model.app.name) will be available. It can be offered for pre-order before its release.")
+            Text("Choose where \(model.app.name) is sold. Pre-orders are possible before release.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             Button("Set Up Availability…") { model.isAvailabilitySheetPresented = true }

@@ -58,7 +58,7 @@ struct ProductPageLinkCard: View {
                 .controlSize(.regular)
                 .environment(\.layoutDirection, .leftToRight)
             } else {
-                Text("Apple makes the link when the page is first pushed.")
+                Text("Apple makes the link on the first push.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .accessibilityIdentifier("pages.link.none")
@@ -96,7 +96,7 @@ struct ProductPageLinkCard: View {
 
     private var visibleDetail: String {
         guard page.state.isApproved, !page.isDraft else {
-            return String(localized: "Decided when you submit. A page can’t be visible before it’s approved.")
+            return String(localized: "Set when you submit. Hidden until approved.")
         }
         return viewModel.isVisible(page)
             ? String(localized: "People with the link, and searches for its keywords, see this page.")
@@ -135,7 +135,7 @@ struct ProductPageLinkCard: View {
     private func checkLine(_ result: ProductPageDeepLinkCheck.Result) -> some View {
         switch result {
         case .empty:
-            Text("Optional. People who already have \(viewModel.app.name) tap Open and land on this part of the app.")
+            Text("Optional. Where people who have \(viewModel.app.name) land when they tap Open.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

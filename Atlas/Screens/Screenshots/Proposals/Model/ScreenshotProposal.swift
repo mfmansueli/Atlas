@@ -27,6 +27,8 @@ struct ScreenshotProposal: Codable, Hashable, Sendable, Identifiable {
     var captions: [CaptionProposalItem]
     var status: ScreenshotProposalStatus
     var decidedAt: Date?
+    /// Details and how sure, beside the why; nil in proposals saved before.
+    var layers: SuggestionLayers?
 
     enum Kind: String, Codable, Hashable, Sendable {
         case template
@@ -34,20 +36,22 @@ struct ScreenshotProposal: Codable, Hashable, Sendable, Identifiable {
     }
 
     static func template(
-        id: String, client: String, receivedAt: Date, title: String, reason: String, proposal: TemplateProposal
+        id: String, client: String, receivedAt: Date, title: String, reason: String, proposal: TemplateProposal,
+        layers: SuggestionLayers? = nil
     ) -> ScreenshotProposal {
         ScreenshotProposal(
             id: id, client: client, receivedAt: receivedAt, title: title, reason: reason, kind: .template,
-            template: proposal, captions: [], status: .waiting
+            template: proposal, captions: [], status: .waiting, layers: layers
         )
     }
 
     static func captions(
-        id: String, client: String, receivedAt: Date, title: String, reason: String, items: [CaptionProposalItem]
+        id: String, client: String, receivedAt: Date, title: String, reason: String, items: [CaptionProposalItem],
+        layers: SuggestionLayers? = nil
     ) -> ScreenshotProposal {
         ScreenshotProposal(
             id: id, client: client, receivedAt: receivedAt, title: title, reason: reason, kind: .captions,
-            template: nil, captions: items, status: .waiting
+            template: nil, captions: items, status: .waiting, layers: layers
         )
     }
 

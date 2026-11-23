@@ -34,7 +34,9 @@ struct FieldSuggestionCard: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             header
             values
+            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
             actions
+            if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
@@ -75,6 +77,7 @@ struct FieldSuggestionCard: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("suggestion.reason")
+            if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
         }
     }
 
@@ -136,7 +139,11 @@ struct FieldSuggestionCard: View {
             target: SuggestionTarget(.storePage(locale: "en-US"), field: "subtitle"),
             value: "Private diary, mood & prompts",
             reason: "“Private” is the word people praise most in your last 220 reviews (41 times).",
-            source: .assistant(client: "Claude Code")
+            source: .assistant(client: "Claude Code"),
+            layers: SuggestionLayers(
+                details: "41 of 220 reviews since 1.2 use “private”; it’s the most praised word, ahead of “calm” (17).",
+                confidence: .fairlySure
+            )
         ),
         current: "Mood journal & prompts",
         suggested: "Private diary, mood & prompts",

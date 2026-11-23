@@ -7,7 +7,7 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// "Set Up Your AI Assistant": the four steps against an in-memory MCP
+/// "Set Up Your Assistant": the four steps against an in-memory MCP
 /// server, from choosing a client to its first call, or finishing without
 /// testing.
 @MainActor

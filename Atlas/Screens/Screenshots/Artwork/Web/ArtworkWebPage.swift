@@ -85,7 +85,7 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
         do {
             return try JSONDecoder().decode(ArtworkWebMeasure.self, from: data)
         } catch {
-            throw ArtworkWebError.scriptFailed(error.localizedDescription)
+            throw ArtworkWebError.scriptFailed(AppleErrorCopy.details(for: error) ?? "")
         }
     }
 
@@ -205,7 +205,7 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
         do {
             return try await webView.callAsyncJavaScript(script, arguments: arguments, in: nil, contentWorld: .defaultClient) as? String
         } catch {
-            throw ArtworkWebError.scriptFailed(error.localizedDescription)
+            throw ArtworkWebError.scriptFailed(AppleErrorCopy.details(for: error) ?? "")
         }
     }
 
@@ -235,11 +235,11 @@ final class ArtworkWebPage: NSObject, WKNavigationDelegate {
     }
 
     func webView(_: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
-        finishLoading(navigation, ArtworkWebError.loadFailed(error.localizedDescription))
+        finishLoading(navigation, ArtworkWebError.loadFailed(AppleErrorCopy.details(for: error) ?? ""))
     }
 
     func webView(_: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) {
-        finishLoading(navigation, ArtworkWebError.loadFailed(error.localizedDescription))
+        finishLoading(navigation, ArtworkWebError.loadFailed(AppleErrorCopy.details(for: error) ?? ""))
     }
 
     func webViewWebContentProcessDidTerminate(_: WKWebView) {

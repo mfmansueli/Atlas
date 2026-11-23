@@ -24,9 +24,9 @@ struct EncryptionKeyAskButton: View {
                 help: { client in String(localized: "Ask \(client) to add \(EncryptionKeyAnswer.key) = \(answer.value.rawValue) to \(app.name)’s project") },
                 explanation: { client in
                     String(localized: """
-                    \(client) finds \(app.name)’s app target and adds \(EncryptionKeyAnswer.key) = \(answer.value.rawValue) the way \
-                    the project is set up, then says here where. It commits only when the project’s instructions say so, and \
-                    never pushes or uploads: builds you upload from then on answer the question.
+                    \(client) adds \(EncryptionKeyAnswer.key) = \(answer.value.rawValue) to \(app.name)’s app target and \
+                    shows where. It commits only if your project says so, and never pushes or uploads. Later builds \
+                    answer the question.
                     """)
                 },
                 identifier: "appInformation.export.addKey",

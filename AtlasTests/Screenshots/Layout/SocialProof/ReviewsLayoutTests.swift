@@ -73,7 +73,7 @@ struct ReviewsLayoutTests {
         let check = checks.first { $0.kind == .reviews }
         #expect(check?.status == .warning)
         #expect(check?.blocksPush == false)
-        #expect(check?.text == "No 5-star App Store reviews in Japan yet, so this slot shows its capture instead of reviews")
+        #expect(check?.text == "No 5-star App Store reviews in Japan yet; this slot shows its capture")
         #expect(checks.contains { $0.kind == .capturePresent }, "Its capture is checked like any other")
         let unread = layout(.japanese, reviews: .none)
         #expect(unread.device != nil, "Not looked up yet: the capture too")

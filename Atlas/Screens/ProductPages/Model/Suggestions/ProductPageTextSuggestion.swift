@@ -27,6 +27,9 @@ struct ProductPageTextSuggestion: Identifiable, Codable, Hashable, Sendable {
     /// `keywords`, with a ref). Optional, so suggestions kept before it
     /// still read.
     var evidence: [SuggestionEvidence]?
+    /// Details, how sure and a gloss, beside the reason; nil in
+    /// suggestions kept before.
+    var layers: SuggestionLayers?
 
     var id: String { "\(pageID).\(locale)" }
 

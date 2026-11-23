@@ -243,7 +243,7 @@ struct ProductPagesSectionView: View {
     private func suggestPages(_ viewModel: ProductPagesViewModel) {
         guard let launcher else { return }
         guard viewModel.canMakePages else {
-            let text = String(localized: "No more pages can be made now: the app has as many as Apple allows, or it’s offline.")
+            let text = String(localized: "Can’t make more pages: Apple’s limit is reached, or you’re offline.")
             navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
             return
         }

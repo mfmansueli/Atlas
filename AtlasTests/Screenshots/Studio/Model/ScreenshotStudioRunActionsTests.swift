@@ -59,7 +59,7 @@ struct ScreenshotStudioRunActionsTests {
         let captures = run.captures(for: problem.target)
         #expect(captures.count == 1)
         let capture = try #require(captures.first)
-        #expect(capture.notes == "Uploaded by hand")
+        #expect(capture.notes == "Added by hand")
         #expect(capture.pixelSize == size)
         #expect(run.problems.first?.resolution == .uploadedByHand)
         #expect(model.notice == nil)

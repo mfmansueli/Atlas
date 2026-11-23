@@ -85,7 +85,7 @@ struct PricingOffersView: View {
         .buttonBorderShape(.capsule)
         .disabled(!canAdd)
         .help(canAdd
-            ? String(localized: "A free trial or a lower price for new subscribers, queued in Review & Push.")
+            ? String(localized: "Adds a free trial or lower price for new subscribers.")
             : String(localized: "It has an introductory offer."))
         .accessibilityIdentifier("pricing.offers.new")
     }

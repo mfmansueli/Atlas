@@ -54,7 +54,7 @@ struct PushControllerAppPriceAvailabilityTests {
             Issue.record("Expected a failure, got \(item.status)")
             return
         }
-        #expect(message.contains("Paid Applications agreement to be active"))
+        #expect(message.contains("Paid prices need the Paid Applications agreement"))
         #expect(message.contains("FORBIDDEN_ERROR — The Paid Applications agreement is not in effect."))
         #expect(queue.change(id: price.id) != nil)
     }

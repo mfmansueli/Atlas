@@ -30,7 +30,7 @@ struct WinBackSettingsFields: View {
                 Text("Left at most \(settings.eligibility.sinceLastSubscribed.upperBound) months ago")
             }
             .accessibilityIdentifier("\(identifier).sinceMaximum")
-            Toggle("Wait between win-back offers", isOn: hasWait)
+            Toggle("Wait between offers", isOn: hasWait)
                 .accessibilityIdentifier("\(identifier).hasWait")
             if let wait = settings.eligibility.waitMonths {
                 Stepper(value: Binding { wait } set: { settings.eligibility.waitMonths = $0 }, in: months) {
@@ -47,7 +47,7 @@ struct WinBackSettingsFields: View {
             DatePicker("Starts", selection: $settings.startDate, displayedComponents: .date)
                 .disabled(startIsFixed)
                 .accessibilityIdentifier("\(identifier).start")
-            Toggle("Ends on a date", isOn: hasEnd)
+            Toggle("End date", isOn: hasEnd)
                 .accessibilityIdentifier("\(identifier).hasEnd")
             if let end = settings.endDate {
                 DatePicker("Ends", selection: Binding { end } set: { settings.endDate = $0 }, displayedComponents: .date)
@@ -73,7 +73,7 @@ struct WinBackSettingsFields: View {
         } header: {
             Text("Where Apple shows it")
         } footer: {
-            note(String(localized: "When someone can get more than one win-back offer, Apple shows a high-priority one first."))
+            note(String(localized: "Apple shows high-priority win-back offers first."))
         }
     }
 

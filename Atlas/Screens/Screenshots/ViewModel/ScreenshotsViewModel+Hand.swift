@@ -65,7 +65,7 @@ extension ScreenshotsViewModel {
             ? String(localized: "\(locale.name) will use the \(primaryLocaleName) screenshots once you push.")
             : String(localized: "\(locale.name) uses the \(primaryLocaleName) screenshots.")
         let detail = String(localized: """
-        It has no \(displayType.title) screenshots of its own, so the App Store shows the \(primaryLocaleName) ones in \(locale.name).
+        No \(displayType.title) screenshots of its own, so \(locale.name) shows the \(primaryLocaleName) ones.
         """)
         return (title, detail)
     }
@@ -104,7 +104,7 @@ extension ScreenshotsViewModel {
                 return String(localized: "Copied from \(name) · \(state)")
             }
             return cell.hand?.isAdded == true
-                ? String(localized: "Uploaded by you: \(file.fileName) · \(state)")
+                ? String(localized: "Added by you: \(file.fileName) · \(state)")
                 : String(localized: "Replaced by you with \(file.fileName) · \(state)")
         case .render:
             return String(localized: "Made by Atlas from the template and its caption · \(state)")
@@ -159,8 +159,8 @@ extension ScreenshotsViewModel {
         let codes = scope == .every ? ownLocales(on: displayType).map(\.code) : [here.code]
         let count = await editHand(codes, displayType: displayType, toast: { count in
             count > 1
-                ? String(localized: "Replaced screenshot \(position + 1) in \(count) languages. It’s waiting in Review & Push.")
-                : String(localized: "Replaced screenshot \(position + 1) in \(here.name). It’s waiting in Review & Push.")
+                ? String(localized: "Replaced screenshot \(position + 1) in \(count) languages. In Review & Push.")
+                : String(localized: "Replaced screenshot \(position + 1) in \(here.name). In Review & Push.")
         }, edit: { code, set in
             if code == here.code, let id = Self.resolve(item.id, in: set) { return set.replace(id, with: file) }
             return set.replace(position: position, with: file)
@@ -241,7 +241,7 @@ extension ScreenshotsViewModel {
             files.append(file)
         }
         guard !files.isEmpty else {
-            notice = String(localized: "Atlas couldn’t read the \(primary.name) screenshots to copy them. Try again once they’ve loaded.")
+            notice = String(localized: "Couldn’t copy the \(primary.name) screenshots. Try again once they load.")
             return
         }
         await editHand([here.code], displayType: displayType, toast: { _ in
@@ -273,8 +273,8 @@ extension ScreenshotsViewModel {
         }
         guard total > 0 else { return }
         let text = languages.count == 1
-            ? String(localized: "Imported \(total) screenshots into 1 language. They’re waiting in Review & Push.")
-            : String(localized: "Imported \(total) screenshots into \(languages.count) languages. They’re waiting in Review & Push.")
+            ? String(localized: "Imported \(total) screenshots into 1 language. In Review & Push.")
+            : String(localized: "Imported \(total) screenshots into \(languages.count) languages. In Review & Push.")
         await commitHand(document, before: before, toast: text)
     }
 

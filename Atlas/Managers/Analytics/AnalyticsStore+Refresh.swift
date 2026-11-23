@@ -29,7 +29,8 @@ extension AnalyticsStore {
             update(appID) { $0.keyCannotAsk = true }
             setActivity(.idle, for: appID)
         } catch {
-            setActivity(.failed(error.localizedDescription), for: appID)
+            let copy = AppleErrorCopy(String(localized: "Apple wasn’t asked for reports.", comment: "kind:error"), error: error)
+            setActivity(.failed(copy.text), for: appID)
         }
     }
 
@@ -40,7 +41,7 @@ extension AnalyticsStore {
             turnOff(appID)
             return nil
         } catch {
-            return error.localizedDescription
+            return AppleErrorCopy(String(localized: "Reports weren’t stopped.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -65,7 +66,7 @@ extension AnalyticsStore {
                 } catch is CancellationError {
                     throw CancellationError()
                 } catch {
-                    reportsError = error.localizedDescription
+                    reportsError = AppleErrorCopy(String(localized: "Some reports didn’t load.", comment: "kind:error"), error: error).text
                 }
                 if let setting = try? await services.gracePeriod(appID: appID) { setGracePeriod(setting, for: appID) }
             } else if record(for: appID).askedOn != nil {
@@ -77,7 +78,8 @@ extension AnalyticsStore {
             update(appID) { $0.lastChecked = now() }
             setActivity(.idle, for: appID)
         } catch {
-            setActivity(.failed(error.localizedDescription), for: appID)
+            let copy = AppleErrorCopy(String(localized: "Analytics didn’t load.", comment: "kind:error"), error: error)
+            setActivity(.failed(copy.text), for: appID)
         }
     }
 
@@ -107,7 +109,8 @@ extension AnalyticsStore {
         } catch AppStoreConnectError.forbidden {
             setSalesProblem(keyCannotRead: true, error: nil)
         } catch {
-            setSalesProblem(keyCannotRead: settings.keyCannotReadSales, error: error.localizedDescription)
+            let copy = AppleErrorCopy(String(localized: "Sales didn’t load.", comment: "kind:error"), error: error)
+            setSalesProblem(keyCannotRead: settings.keyCannotReadSales, error: copy.text)
         }
     }
 

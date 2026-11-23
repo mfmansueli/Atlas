@@ -71,14 +71,14 @@ extension PricingViewModel {
         return ids
     }
 
-    /// “Capture 14 is now Lumen Plus Monthly’s review screenshot. It’s in
-    /// Review & Push.”
+    /// “Capture 14 is now Lumen Plus Monthly’s review screenshot. In Review
+    /// & Push.”
     func useCaptureToast(for products: [PricingProduct]) -> String {
         let capture = setup.paywallCapture.map { String(localized: "Capture \($0.number)") } ?? String(localized: "The capture")
         if products.count == 1, let product = products.first {
-            return String(localized: "\(capture) is now \(product.name)’s review screenshot. It’s in Review & Push.")
+            return String(localized: "\(capture) is now \(product.name)’s review screenshot. In Review & Push.")
         }
-        return String(localized: "\(capture) is now the review screenshot for \(products.count) products. They’re in Review & Push.")
+        return String(localized: "\(capture) is the review screenshot for \(products.count) products. In Review & Push.")
     }
 
     // MARK: - An assistant's images
@@ -108,7 +108,7 @@ extension PricingViewModel {
         let id = reviewShotChangeID(for: product)
         guard var change = queue.change(id: id) else { return }
         if setup.details.details(for: id)?.isFromAssistant == true {
-            change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
+            change.awaitingAcceptance = String(localized: "Accept it here or in Pricing.")
             queue.upsert(change)
         } else {
             queue.discard(id: id)

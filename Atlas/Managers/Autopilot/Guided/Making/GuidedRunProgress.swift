@@ -63,7 +63,7 @@ struct GuidedRunProgress: Hashable, Sendable {
         let left = capturing + AutopilotEstimate.recordingMinutes(for: run.plan)
         return GuidedRunProgress(
             title: String(localized: "Starting \(client)"), fraction: 0.02,
-            line: String(localized: "\(client) opens the project and starts Simulator") + aboutLeft(left),
+            line: String(localized: "\(client) opens the project, starts Simulator") + aboutLeft(left),
             minutesLeft: left > 0 ? left : nil, isCounted: false
         )
     }
@@ -81,8 +81,8 @@ struct GuidedRunProgress: Hashable, Sendable {
         if run.waitsOnlyOnProblems {
             let waiting = total - done
             let line = waiting == 1
-                ? String(localized: "\(done) of \(total) captures · 1 waits on you")
-                : String(localized: "\(done) of \(total) captures · \(waiting) wait on you")
+                ? String(localized: "\(done) of \(total) captures · 1 needs you")
+                : String(localized: "\(done) of \(total) captures · \(waiting) need you")
             return GuidedRunProgress(title: String(localized: "Capturing in Simulator"), fraction: fraction(done, total), line: line)
         }
         // The pace from this start's first capture (building the app and
@@ -125,7 +125,7 @@ struct GuidedRunProgress: Hashable, Sendable {
         let left = AutopilotEstimate.captureMinutes(for: run.plan) + recordingMinutesLeft(run)
         return GuidedRunProgress(
             title: String(localized: "Picking the screens"), fraction: 0.04,
-            line: String(localized: "\(client) reads the project and picks the screens that show the app best") + aboutLeft(left),
+            line: String(localized: "\(client) picks the app’s best screens") + aboutLeft(left),
             minutesLeft: left, isCounted: false
         )
     }

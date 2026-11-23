@@ -93,7 +93,7 @@ final class KeyAssistantSetupViewModel {
             keyState = .works(Self.worksText(vendor, models: models))
         } catch {
             guard vendor == self.vendor else { return }
-            keyState = .rejected(error.localizedDescription)
+            keyState = .rejected(AIProviderError.message(for: error, what: String(localized: "The key couldn’t be checked.", comment: "kind:error")))
         }
     }
 
@@ -107,7 +107,7 @@ final class KeyAssistantSetupViewModel {
                 .formatted(.number.precision(.fractionLength(1)))
             testState = .works(String(localized: "\(model.name) answered in \(seconds) s with a subtitle: “\(answer.text)”."))
         } catch {
-            testState = .failed(error.localizedDescription)
+            testState = .failed(AIProviderError.message(for: error, what: String(localized: "The test request didn’t get an answer.", comment: "kind:error")))
         }
     }
 

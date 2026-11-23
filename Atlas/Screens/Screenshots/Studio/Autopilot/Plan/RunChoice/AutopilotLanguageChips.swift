@@ -41,7 +41,7 @@ struct AutopilotLanguageChips: View {
         // Not .disabled: that dims it, so the one language always in
         // the run looked left out.
         .allowsHitTesting(!isPrimary)
-        .help(isPrimary ? Text("Always in the run: picks and the design start from it") : Text(name))
+        .help(isPrimary ? Text("Always included: picks and design start from it") : Text(name))
         .accessibilityValue(Text(isOn ? "On" : "Off"))
         .accessibilityAddTraits(isOn ? .isSelected : [])
         .accessibilityIdentifier("autopilot.plan.language.\(code)")

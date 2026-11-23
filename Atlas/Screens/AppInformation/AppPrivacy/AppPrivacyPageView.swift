@@ -37,7 +37,7 @@ struct AppPrivacyPageView: View {
         .fileImporter(isPresented: $viewModel.isImporterPresented, allowedContentTypes: [.json]) { result in
             switch result {
             case let .success(url): viewModel.importFile(at: url)
-            case let .failure(error): viewModel.say(error.localizedDescription)
+            case let .failure(error): viewModel.say(AppleErrorCopy(String(localized: "The file couldn’t be opened.", comment: "kind:error"), error: error).text)
             }
         }
         .fileExporter(

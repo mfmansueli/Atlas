@@ -20,7 +20,7 @@ extension ArtworkChecker {
         if input.roles.contains(.search), ArtworkTextLength.isLongForSearch(line, locale: locale) {
             checks.append(ArtworkCheck(
                 kind: .searchHeadlineLength,
-                text: String(localized: "\(input.place): ‘\(line)’ is \(length). A search headline reads best in 3 to 5 words, about 32 characters.")
+                text: String(localized: "\(input.place): ‘\(line)’ is \(length). Aim for 3 to 5 words, about 32 characters.")
             ))
         }
         if input.roles.contains(.header), ArtworkTextLength.isLongForHeader(line, locale: locale) {
@@ -74,7 +74,7 @@ extension ArtworkChecker {
             guard median < ArtworkContrast.minimumEdgeRatio else { continue }
             checks.append(ArtworkCheck(
                 kind: .edgeContrast,
-                text: String(localized: "\(input.place): in \(mode) its edges melt into the App Store page (\(Self.ratioTitle(median))), so it has no visible edge.")
+                text: String(localized: "\(input.place): in \(mode) it has no visible edge against the App Store page (\(Self.ratioTitle(median))).")
             ))
         }
         return checks

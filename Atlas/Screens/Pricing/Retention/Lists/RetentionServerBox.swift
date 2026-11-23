@@ -50,14 +50,10 @@ struct RetentionServerBox: View {
     private var details: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("""
-            Your server picks the message for each subscriber the moment they tap Cancel, and can suggest switching plan \
-            (for example to annual) or sign a promotional offer. It has 700 ms to answer; if it doesn’t, Apple shows the \
-            messages set here.
+            Your server picks each subscriber’s message at Cancel, and can suggest another plan or sign a promotional offer. Past 700 ms, \
+            Apple shows these messages.
             """)
-            Text("""
-            Needs access from Apple and a performance test in the sandbox before it goes live. Uses the Retention \
-            Messaging API, not the App Store Connect key Atlas uses.
-            """)
+            Text("Needs access from Apple and a sandbox performance test before going live. Uses the Retention Messaging API, not your App Store Connect key.")
             HStack(spacing: Spacing.small) {
                 if let url = Self.requestAccessURL {
                     Link(destination: url) {

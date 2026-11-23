@@ -155,12 +155,11 @@ struct AssistantConnection: Hashable, Sendable {
             }
             return String(localized: "\(place) Open it in \(appFolder) to read \(appName)’s code.")
         case let .connectedUnsure(folder):
-            guard let folder else { return String(localized: "It didn’t say which folder it works in. Choose \(appName)’s project folder so Atlas knows.") }
+            guard let folder else { return String(localized: "Its folder is unknown. Choose \(appName)’s project folder.") }
             return String(localized: "It works in \(folder). If that’s \(appName)’s project, choose it as the app’s folder.")
         case let .refused(date, _):
             return String(localized: """
-            Atlas turned its access token away \(Self.ago(date, now: now)): it’s from an older pairing. \
-            Reconnect gives it a new one.
+            Refused \(Self.ago(date, now: now)): its token is from an older pairing. Reconnect gives it a new one.
             """)
         case .readyToStart:
             let start = appFolder.map { String(localized: "Atlas starts it in \($0)") }
@@ -211,9 +210,9 @@ struct AssistantConnection: Hashable, Sendable {
         parts.compactMap(\.self).joined(separator: " · ")
     }
 
-    /// "just now", "2 minutes ago".
+    /// "a moment ago", "2 minutes ago".
     static func ago(_ date: Date, now: Date) -> String {
-        guard now.timeIntervalSince(date) >= 60 else { return String(localized: "just now") }
+        guard now.timeIntervalSince(date) >= 60 else { return String(localized: "a moment ago") }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: date, relativeTo: now)

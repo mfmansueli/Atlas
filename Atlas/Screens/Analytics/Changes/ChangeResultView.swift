@@ -23,7 +23,7 @@ struct ChangeResultView: View {
             if change.kind == .prices {
                 Card {
                     Text("Price changes have their own results").font(.body.weight(.semibold))
-                    Text("Pricing → Results measures a price change per territory: starts and proceeds, 28 days before against 28 days after.")
+                    Text("Pricing → Results: starts and proceeds per territory, 28 days before and after.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                     Button("Open Pricing", action: onOpenPricing)
@@ -31,7 +31,7 @@ struct ChangeResultView: View {
             } else if let result {
                 content(result)
             } else {
-                Text("Apple’s reports don’t cover the days around this change, or the step it’s measured on isn’t available.")
+                Text("Apple’s reports miss this change’s dates or measured step.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }
@@ -72,15 +72,15 @@ struct ChangeResultView: View {
             Card(padding: Spacing.medium) {
                 MeterBar(fraction: Double(day) / Double(ResultsEvaluator.windowDays), tint: Palette.accent)
                 Text("Day \(day) of \(ResultsEvaluator.windowDays) · final on \(AnalyticsText.day(ends))").font(.subheadline).monospacedDigit().foregroundStyle(Palette.label2)
-                Text("An early read. The result is final on \(AnalyticsText.day(ends)), after 28 days; early numbers often move.")
+                Text("Early read; numbers often move until \(AnalyticsText.day(ends)).")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }
         case .noBefore:
-            note(String(localized: "Apple’s reports don’t reach back to the 28 days before this change, so there’s nothing to compare with."))
+            note(String(localized: "Nothing to compare: Apple has no data from the 28 days before."))
         case .final:
             if result.isTooFew {
-                note(String(localized: "Too few to tell a real change from chance: \(counts(result.main.before)) before, \(counts(result.main.after)) after."))
+                note(String(localized: "Too few to tell from chance: \(counts(result.main.before)) before, \(counts(result.main.after)) after."))
             }
         }
         if let old = change.oldValue, let new = change.newValue {
@@ -104,8 +104,7 @@ struct ChangeResultView: View {
             .overlay { RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5) }
         }
         Text("""
-        Seasonality, featuring and your own marketing also move these numbers. This is the same before-and-after as Pricing → \
-        Results, which measures price changes per territory; here every other kind of change is measured on the step it should move.
+        Seasonality, featuring and marketing also move these numbers. Prices are measured in Pricing → Results.
         """)
         .font(.subheadline)
         .foregroundStyle(Palette.label2)

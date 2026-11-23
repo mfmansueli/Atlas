@@ -26,6 +26,7 @@ struct InAppEventSuggestionCard: View {
                     .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SuggestionSourceTag(source: .assistant(client: suggestion.source))
+                if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             if let fallbackNote {
                 Text(fallbackNote)
@@ -38,6 +39,7 @@ struct InAppEventSuggestionCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("events.suggestion.why")
             }
+            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
             if let over = suggestion.overLimit {
                 InlineMessage.warning(String(localized: "\(over.field.title) is \(over.count) characters; the limit is \(over.field.limit). Accept it and shorten it."))
                     .font(.subheadline)
@@ -52,6 +54,7 @@ struct InAppEventSuggestionCard: View {
             }
             .controlSize(.regular)
             .buttonBorderShape(.capsule)
+            if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)

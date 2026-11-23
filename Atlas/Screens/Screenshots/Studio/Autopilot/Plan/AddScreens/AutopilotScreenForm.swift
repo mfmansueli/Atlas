@@ -32,7 +32,7 @@ struct AutopilotScreenForm: View {
                 }
                 GridRow {
                     Color.clear.frame(width: 1, height: 1)
-                    Toggle(String(localized: "Let \(client) work out the steps and add them to \(studio.uiTestsName(on: display))"), isOn: draft.worksOutSteps)
+                    Toggle(String(localized: "Let \(client) write steps for \(studio.uiTestsName(on: display))"), isOn: draft.worksOutSteps)
                         .toggleStyle(.checkbox)
                         .accessibilityIdentifier("autopilot.plan.form.worksOutSteps")
                 }
@@ -69,14 +69,14 @@ struct AutopilotScreenForm: View {
 
     private func stepsPlaceholder(_ display: ScreenshotDisplayType) -> String {
         display == .watch
-            ? String(localized: "e.g. scroll the crown to Today → tap the mood ring")
-            : String(localized: "e.g. tab “Insights” → wait for the chart")
+            ? String(localized: "Scroll crown to Today → tap mood ring")
+            : String(localized: "Tab “Insights” → wait for the chart")
     }
 
     /// Where the new screen is captured.
     private func captureNote(_ display: ScreenshotDisplayType) -> String {
         display == .watch
-            ? String(localized: "Captured on Apple Watch, paired with the iPhone simulator, like the other watch screens. No caption.")
-            : String(localized: "Captured on iPhone and iPad like the other screens.")
+            ? String(localized: "Captured on Apple Watch paired with the iPhone simulator. No caption.")
+            : String(localized: "Captured on iPhone and iPad, like the rest.")
     }
 }

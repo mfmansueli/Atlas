@@ -62,7 +62,7 @@ struct RetentionPreview: View {
     }
 
     private var note: String {
-        var note = String(localized: "Apple’s own words around your message are shown by the system in each language.")
+        var note = String(localized: "Apple’s words around it appear in each person’s language.")
         if message.kind == .offer { note += " " + String(localized: "People who aren’t eligible for an offer see the message alone.") }
         return note
     }

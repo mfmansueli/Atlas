@@ -56,7 +56,7 @@ struct GuidedSheetHeader: View {
                 Button("Hide · Keeps Going") { studio.isAutopilotPresented = false }
                     .buttonBorderShape(.capsule)
                     .keyboardShortcut(.cancelAction)
-                    .help(Text("Autopilot keeps going. You’ll get a notification when it needs you."))
+                    .help(Text("Autopilot keeps going and notifies you when needed."))
                     .accessibilityIdentifier("autopilot.guided.hide")
             }
         }

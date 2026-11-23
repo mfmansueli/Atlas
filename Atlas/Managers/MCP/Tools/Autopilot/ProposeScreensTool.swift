@@ -37,7 +37,7 @@ struct ProposeScreensTool: MCPTool {
                     "items": MCPToolDefinition.schema(
                         [
                             "name": MCPToolDefinition.string("The screen's name, e.g. Insights."),
-                            "reason": MCPToolDefinition.string("Why it shows the app well, in a sentence."),
+                            "reason": MCPToolDefinition.shortWhy("Why it shows the app well, in a sentence."),
                             "evidence": MCPToolDefinition.string("The file, target or commit that shows it."),
                             "steps": MCPToolDefinition.string("How to reach it from launch, e.g. tab “Insights” → wait for the mood chart."),
                             "caption": MCPToolDefinition.string("The primary language's headline, 3–6 words. Left out on Apple Watch."),

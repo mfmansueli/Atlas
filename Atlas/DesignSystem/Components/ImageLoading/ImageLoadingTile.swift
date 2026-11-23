@@ -30,7 +30,7 @@ struct ImageLoadingTile: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isLoading ? Text("Loading image") : Text("No image"))
+        .accessibilityLabel(isLoading ? Text("Image, loading") : Text("No image"))
     }
 }
 

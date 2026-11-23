@@ -54,7 +54,7 @@ struct PreviewReviewToolsTests {
         fixtures.center.install(remaking)
         let busy = try await fixtures.call(NextStepTool(), ["run": "run-debug"]).result
         #expect(busy["action"] == "wait")
-        #expect(busy["reason"] == "Atlas is making the App Preview again.")
+        #expect(busy["reason"] == "Atlas is remaking the App Preview.")
     }
 
     // MARK: - revise_app_preview

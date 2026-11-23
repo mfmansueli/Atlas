@@ -54,7 +54,7 @@ struct SubscriptionsView: View {
                     products
                     territories
                 }
-                Text("Trial → paid counts trials that ended in this period. Rates with ▲ ▼ ≈ compare with \(appName)’s rate across all trials. Days follow Apple’s sales reports (Pacific Time).")
+                Text("Trial → paid: trials ended in this period. ▲ ▼ ≈ compare with \(appName)’s overall rate. Pacific Time.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

@@ -71,14 +71,14 @@ extension AutopilotStripContent {
             pillStyle: .decrease,
             text: pushed
                 ? String(localized: "Apple is processing the new files; the live page changes within minutes.")
-                : String(localized: "Everything is approved and waiting in Review & Push, top right. Push it from there."),
+                : String(localized: "All approved. Push it from Review & Push."),
             primary: .runAutopilot,
             primaryTitle: String(localized: "New Run…"),
             secondary: .open
         )
     }
 
-    private static let reviewText = String(localized: "Everything is made and checked. Review it, then approve it.")
+    private static let reviewText = String(localized: "Made and checked. Review, then approve.")
 
     /// "Choose the look: the screenshot looks and headers are ready."
     private static func chooseText(_ run: AutopilotRun) -> String {
@@ -101,8 +101,7 @@ extension AutopilotStripContent {
             pill: isSetUp ? nil : String(localized: "New"),
             pillStyle: .accent,
             text: String(localized: """
-            Make new screenshots, an App Preview and header artwork in 3 short steps. Autopilot does the rest and asks \
-            you only to choose the look and to review.
+            New screenshots, App Preview and header artwork in 3 steps. You choose the look and review; Autopilot does the rest.
             """),
             primary: isSetUp ? .open : .runAutopilot,
             primaryTitle: isSetUp ? String(localized: "Continue Setup…") : String(localized: "Start…")

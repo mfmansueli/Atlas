@@ -130,7 +130,7 @@ struct PaywallSheet: View {
             } else {
                 HStack(spacing: Spacing.small) {
                     ProgressView().controlSize(.small)
-                    Text("Asking the App Store for the plans…").font(.callout).foregroundStyle(Palette.label2)
+                    Text("Getting plans from the App Store…").font(.callout).foregroundStyle(Palette.label2)
                 }
                 .frame(maxWidth: .infinity, minHeight: 120, alignment: .center)
             }

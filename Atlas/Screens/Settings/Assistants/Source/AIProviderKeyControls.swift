@@ -67,7 +67,7 @@ struct AIProviderKeyControls: View {
             keyErrorMessage = nil
             checkRequests += 1
         } catch {
-            keyErrorMessage = error.localizedDescription
+            keyErrorMessage = AppleErrorCopy(String(localized: "The key wasn’t saved to the Keychain.", comment: "kind:error"), error: error).text
         }
     }
 

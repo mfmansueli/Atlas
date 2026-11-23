@@ -30,7 +30,7 @@ struct PrivacyScanCard: View {
                     AssistantChip(name: String(localized: "Not connected"), monogram: "CC")
                 }
             }
-            Text("Your assistant runs in \(viewModel.appShortName)’s repository and reads it: privacy manifests, dependencies, Info.plist, entitlements and code that sends data off the device. It proposes answers with evidence; you review each one here.")
+            Text("Your assistant reads \(viewModel.appShortName)’s code, privacy manifests, dependencies, Info.plist and entitlements, then suggests answers with evidence. You review each one here.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -83,7 +83,7 @@ struct PrivacyScanCard: View {
         guard let folder = launcher.projectFolder(for: viewModel.app.id) else {
             return String(localized: "Atlas starts Claude Code in \(viewModel.appShortName)’s project folder, which it asks for once.")
         }
-        return String(localized: "Atlas starts Claude Code in \(ProjectFolderPath.abbreviated(folder)). Its answers arrive here as it proposes them.")
+        return String(localized: "Starts Claude Code in \(ProjectFolderPath.abbreviated(folder)). Answers appear here as they come.")
     }
 
     private func startScan() {
@@ -112,7 +112,7 @@ struct PrivacyScanCard: View {
                     ProgressView()
                         .controlSize(.small)
                         .accessibilityHidden(true)
-                    Text("Copied. Waiting for \(session?.displayName ?? MCPClientKind.claudeCode.title) to start the scan…")
+                    Text("Copied. Waiting for \(session?.displayName ?? MCPClientKind.claudeCode.title) to scan…")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                 }

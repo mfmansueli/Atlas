@@ -75,7 +75,7 @@ struct PricingFilterBar: View {
     private var strategyChip: some View {
         if viewModel.strategy.strategy.isCustom, !matrix.isReadOnly {
             Pill(text: String(localized: "Custom strategy"), systemImage: "slider.horizontal.3", isProminent: true)
-            Button("Back to Recommended") { viewModel.resetStrategy() }
+            Button("Back to Suggested") { viewModel.resetStrategy() }
                 .buttonStyle(.link)
                 .accessibilityIdentifier("pricing.backToRecommended")
         }

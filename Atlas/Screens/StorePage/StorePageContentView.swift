@@ -52,7 +52,9 @@ struct StorePageContentView: View {
         .fileImporter(isPresented: $viewModel.isImporterPresented, allowedContentTypes: ListingTransferFormat.importableContentTypes) { result in
             switch result {
             case let .success(url): viewModel.importFile(at: url)
-            case let .failure(error): viewModel.notice = error.localizedDescription
+            case let .failure(error):
+                let what = String(localized: "The file couldn’t be opened.", comment: "kind:error")
+                viewModel.notice = AppleErrorCopy(what, error: error).text
             }
         }
         .fileExporter(

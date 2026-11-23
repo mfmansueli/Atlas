@@ -41,7 +41,7 @@ struct PricePointStepper: View {
                         RoundedRectangle(cornerRadius: Radius.badge).strokeBorder(Palette.separator2, lineWidth: 0.5)
                     }
             }
-            .accessibilityLabel(String(localized: "Proposed price for \(territoryName)"))
+            .accessibilityLabel(String(localized: "Suggested price for \(territoryName)"))
             .accessibilityValue(value)
             .accessibilityHint(String(localized: "Shows the price breakdown"))
             .accessibilityAdjustableAction { direction in

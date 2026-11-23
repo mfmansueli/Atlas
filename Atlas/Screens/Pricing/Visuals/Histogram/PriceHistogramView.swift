@@ -26,14 +26,11 @@ struct PriceHistogramView: View {
                     bars
                     labels
                 }
-                Text("""
-                Territories bucketed by how far the proposed price (or the current one where nothing is proposed) sits \
-                from Apple’s equalized price. Teal is below equalized, orange above.
-                """)
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .frame(maxWidth: 680, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+                Text("How far each territory’s suggested or current price sits from Apple’s automatic price. Teal is below, orange above.")
+                    .font(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .frame(maxWidth: 680, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, Spacing.xxLarge)
             .padding(.vertical, Spacing.medium + 2)

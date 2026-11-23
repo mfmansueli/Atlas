@@ -109,7 +109,7 @@ struct InAppEventArtworkPush: Hashable, Sendable {
         note(response.rateLimit)
         let reservation = try InAppEventArtworkRequests.reservation(in: response.data)
         for (index, operation) in reservation.operations.enumerated() {
-            progress(String(localized: "Uploading \(kind.name) · part \(index + 1) of \(reservation.operations.count)"))
+            progress(String(localized: "Pushing \(kind.name) · part \(index + 1) of \(reservation.operations.count)"))
             try await uploads.upload(operation, data: data) { _ in }
         }
         let commitRequest = InAppEventArtworkRequests.commit(id: reservation.id, isVideo: isVideo, previewFrameTimeCode: previewFrameTimeCode)

@@ -138,7 +138,7 @@ struct SuggestionRun: Identifiable, Hashable, Sendable {
     /// The toast once it's over: "Claude Code sent 18 suggestions: Store
     /// Page 5 · General 1 · Age Rating 6 · Accessibility 5 · App Review 1."
     var finishedText: String {
-        guard received > 0 else { return String(localized: "\(client) looked at everything and found nothing new to suggest.") }
+        guard received > 0 else { return String(localized: "\(client) found nothing new to suggest.") }
         let areas = rows.filter { $0.arrived > 0 }.map { "\($0.page.title) \($0.arrived.formatted())" }.joined(separator: " · ")
         return received == 1
             ? String(localized: "\(client) sent 1 suggestion: \(areas).")

@@ -28,7 +28,7 @@ struct AssistantActivitySheet: View {
             .padding(Spacing.large)
             Divider()
             if server.log.isEmpty {
-                Text("Every call an assistant makes shows here: what it read, proposed, or was refused, and why.")
+                Text("Every assistant call shows here: what it read, suggested or was refused, and why.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .padding(Spacing.large)

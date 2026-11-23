@@ -25,7 +25,7 @@ struct PricingModeOption: View {
                     HStack(spacing: Spacing.xSmall) {
                         Text(mode.title).font(.body.weight(.semibold))
                         if mode == .showSuggestions {
-                            Pill(text: String(localized: "Recommended"))
+                            Pill(text: String(localized: "Suggested"))
                         }
                     }
                     Text(description)
@@ -60,8 +60,8 @@ struct PricingModeOption: View {
 
     private var description: String {
         switch mode {
-        case .keepPrices: String(localized: "Translate only. Prices stay as they are, and Atlas never proposes a change.")
-        case .showSuggestions: String(localized: "See a suggested price per territory with its reason. Nothing changes until you apply it.")
+        case .keepPrices: String(localized: "Translate only. Atlas never suggests a price change.")
+        case .showSuggestions: String(localized: "See each territory’s suggested price and why. Nothing changes until you apply it.")
         case .applyRecommended: String(localized: "Fill every territory with its suggestion now. You review everything before it’s pushed.")
         }
     }

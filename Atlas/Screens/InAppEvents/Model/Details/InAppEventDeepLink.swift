@@ -28,7 +28,7 @@ enum InAppEventDeepLink {
             return String(localized: "The deep link isn’t a valid URL. \(example(appName: appName))")
         }
         if scheme(of: link) == "http" {
-            return String(localized: "Links that start with http:// open in Safari, not in the app. Use https:// (a universal link) or the app’s own scheme.")
+            return String(localized: "http:// links open in Safari, not the app. Use https:// (a universal link) or the app’s own scheme.")
         }
         return nil
     }

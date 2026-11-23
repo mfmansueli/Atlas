@@ -35,7 +35,7 @@ enum StudioShotChip: Hashable, Sendable {
         switch self {
         case let .fallback(language): String(localized: "No screenshots in this language: the App Store shows \(language).")
         case .new: String(localized: "New in this set; it isn’t on the App Store until you push.")
-        case .shortened: String(localized: "The caption was shortened to fit two lines.")
+        case .shortened: String(localized: "Caption shortened to fit two lines.")
         }
     }
 }

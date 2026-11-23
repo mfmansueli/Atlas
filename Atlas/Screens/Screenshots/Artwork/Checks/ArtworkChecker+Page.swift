@@ -60,8 +60,7 @@ extension ArtworkChecker {
             checks.append(ArtworkCheck(
                 kind: .page, severity: .error,
                 text: String(localized: """
-                \(input.place): \(missing.count) of the page’s phrases aren’t in \(input.locale.name) yet, so they don’t \
-                read in it. Write them in Captions.
+                \(input.place): \(missing.count) of the page’s phrases aren’t in \(input.locale.name) yet. Write them in Captions.
                 """)
             ))
         }

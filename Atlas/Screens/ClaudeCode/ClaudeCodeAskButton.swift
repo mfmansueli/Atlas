@@ -95,7 +95,7 @@ struct ClaudeCodeAskButton: View {
         }
         let client = client
         let ask = AssistantAsk(appID: app.id, client: client, subject: subject ?? purpose.askSubject)
-        let finished = done?(client) ?? String(localized: "\(client) finished \(ask.subject). What it suggests is marked in purple.")
+        let finished = done?(client) ?? String(localized: "\(client) finished \(ask.subject). Its suggestions are marked in purple.")
         let sent = askCenter.send(ask, from: anchor, reduceMotion: reduceMotion) { run in
             AssistantAskCenter.endingText(run, client: client, done: finished)
         }
@@ -139,7 +139,7 @@ struct ClaudeCodeAskButton: View {
                     launcher.shownRunID = run.id
                 }, onDismiss: { isPresented = false })
             } else if copied {
-                Text("Atlas can’t start your assistant. Paste this into \(client); its proposals show up here and in Review & Push.")
+                Text("Atlas can’t start your assistant. Paste this into \(client); its suggestions appear here and in Review & Push.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

@@ -7,7 +7,8 @@ import Foundation
 
 /// What can go wrong talking to App Store Connect, with the message the UI
 /// shows. HTTP failures carry the first `detail` Apple sent back, if any,
-/// followed by the reasons in its associated errors.
+/// followed by the reasons in its associated errors, on a "Details:" line
+/// after Atlas's sentence.
 enum AppStoreConnectError: LocalizedError, Equatable {
     /// The `.p8` contents aren't a P-256 private key.
     case invalidPrivateKey
@@ -44,23 +45,25 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .invalidPrivateKey:
-            String(localized: "The private key couldn't be read. Choose the AuthKey .p8 file you downloaded from App Store Connect.")
+            String(localized: "Can't read this private key. Choose the AuthKey .p8 file from App Store Connect.")
         case .unauthorized:
-            String(localized: "App Store Connect rejected this API key. Check the Issuer ID and Key ID, and that the key hasn't been revoked.")
+            String(localized: "App Store Connect rejected this key. Check the Issuer ID, Key ID, and that it isn't revoked.")
         case let .forbidden(detail):
             Self.message(String(localized: "This API key isn't allowed to do that. Team keys need the Admin or App Manager role."), detail: detail)
         case let .notFound(detail):
-            Self.message(String(localized: "App Store Connect couldn't find that resource."), detail: detail)
+            Self.message(String(localized: "App Store Connect couldn't find that resource. Refresh and try again."), detail: detail)
         case .rateLimited:
             String(localized: "App Store Connect's hourly request limit was reached. Try again in a few minutes.")
         case let .rejected(statusCode, code, detail):
             Self.message(String(localized: "App Store Connect refused the change (\(code ?? String(statusCode)))."), detail: detail)
+        case let .server(statusCode, _, detail) where statusCode >= 500:
+            Self.message(String(localized: "App Store Connect had a problem (\(statusCode)). Try again in a minute."), detail: detail)
         case let .server(statusCode, _, detail):
-            Self.message(String(localized: "App Store Connect returned an error (\(statusCode))."), detail: detail)
+            Self.message(String(localized: "App Store Connect refused the request (\(statusCode))."), detail: detail)
         case .invalidResponse:
-            String(localized: "App Store Connect sent a response that isn't HTTP.")
+            String(localized: "App Store Connect sent an answer Atlas can’t read. Try again.")
         case .unexpectedPayload:
-            String(localized: "App Store Connect sent data in an unexpected format.")
+            String(localized: "App Store Connect sent an unexpected answer. Try again later.")
         }
     }
 
@@ -139,8 +142,9 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     /// What precedes an event's id in a reason: "In-App Event ".
     static let eventMarker = "In-App Event "
 
+    /// The error template: Atlas's sentence, then Apple's own words on a
+    /// "Details:" line, never run into the sentence.
     private static func message(_ summary: String, detail: String?) -> String {
-        guard let detail, !detail.isEmpty else { return summary }
-        return "\(summary) \(detail)"
+        AppleErrorCopy(summary: summary, details: detail).text
     }
 }

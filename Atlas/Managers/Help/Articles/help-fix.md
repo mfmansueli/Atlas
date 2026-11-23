@@ -9,7 +9,7 @@ related: connect, assistant
 ---
 ## The key was refused
 
-The key was revoked in App Store Connect, or the Issuer ID or Key ID doesn’t match the .p8 file. Make a new key and add it in Settings → Accounts.
+The key was revoked, or its IDs don’t match the .p8 file. Make a new key and add it in Settings → Accounts.
 
 ## Atlas can’t read sales
 

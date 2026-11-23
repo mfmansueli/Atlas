@@ -18,8 +18,8 @@ struct StrategyInspector: View {
                 HStack(spacing: Spacing.small) {
                     Text("Strategy").font(.body.weight(.semibold))
                     Spacer()
-                    Pill(text: isCustom ? String(localized: "Custom") : String(localized: "Recommended"))
-                        .accessibilityLabel(isCustom ? String(localized: "Custom strategy") : String(localized: "Recommended strategy"))
+                    Pill(text: isCustom ? String(localized: "Custom") : String(localized: "Suggested"))
+                        .accessibilityLabel(isCustom ? String(localized: "Custom strategy") : String(localized: "Suggested strategy"))
                     Button {
                         viewModel.isInspectorPresented = false
                     } label: {
@@ -32,7 +32,7 @@ struct StrategyInspector: View {
                     Button {
                         viewModel.resetStrategy()
                     } label: {
-                        Label("Back to Recommended", systemImage: "arrow.uturn.backward")
+                        Label("Back to Suggested", systemImage: "arrow.uturn.backward")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonBorderShape(.capsule)

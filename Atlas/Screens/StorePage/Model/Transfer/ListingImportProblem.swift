@@ -56,12 +56,10 @@ enum ListingImportProblem: Hashable, Sendable {
         return "\(lead) " + String(localized: "Did you mean \(options)?") + " \(skipped)"
     }
 
-    /// "French subtitle is 33 characters; the limit is 30. Skipped."
+    /// "French subtitle: 33 of 30 characters. Skipped."
     private func overLimitMessage(key: ListingFieldKey, count: Int, limit: ListingTextLimit) -> String {
         let subject = "\(key.locale.name) \(key.field.sentenceTitle)"
-        return key.field == .keywords
-            ? String(localized: "\(subject) are \(count) \(limit.unit.name); the limit is \(limit.maximum). Skipped.")
-            : String(localized: "\(subject) is \(count) \(limit.unit.name); the limit is \(limit.maximum). Skipped.")
+        return String(localized: "\(subject): \(count) of \(limit.maximum) \(limit.unit.name). Skipped.")
     }
 
     private static func skipped(_ count: Int, of noun: Noun) -> String {

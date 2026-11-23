@@ -70,15 +70,15 @@ extension ScreenshotStudioModel {
     /// one to Lumen, and you choose 1 of the results. 3 of 3 picked."
     var headerTemplatesNote: String {
         let count = headerTemplatePicks.count
-        let lead = String(localized: "Pick up to 3 (a 4th replaces the last). \(headerDesignerName) adapts each one to \(app.name), and you choose 1 of the results. ")
+        let lead = String(localized: "Pick up to 3; a 4th replaces the last. \(headerDesignerName) fits each to \(app.name), then you choose 1. ")
         return lead + (count > 0 ? String(localized: "\(count) of 3 picked.") : String(localized: "Pick at least one."))
     }
 
     /// Go freely's line.
     var headerFreeText: String {
         String(localized: """
-        \(headerDesignerName) studies \(app.name) and proposes 3 concepts of its own, each a different metaphor from the \
-        app’s world. You see them in the Design step as they arrive, with a still of each to choose from.
+        \(headerDesignerName) suggests 3 concepts for \(app.name), each a metaphor from \
+        the app’s world. Pick one from their stills in the Design step.
         """)
     }
 
@@ -88,7 +88,7 @@ extension ScreenshotStudioModel {
         let look = appSupport?.profile(for: app.id)?.look
         let primary = run?.plan.primaryLocale ?? ""
         let subtitle = storeTexts.subtitle(for: primary, primary: primary) ?? ""
-        let does = look?.whatItDoes ?? (subtitle.isEmpty ? String(localized: "Read from the App Store page and the project") : subtitle)
+        let does = look?.whatItDoes ?? (subtitle.isEmpty ? String(localized: "From the App Store page and project") : subtitle)
         var lookParts: [String] = []
         if let personality = look?.personality { lookParts.append(personality) }
         if let icon = look?.iconDescription { lookParts.append(String(localized: "Icon: \(icon)")) }

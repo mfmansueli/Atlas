@@ -26,7 +26,7 @@ struct AnalyticsWaitingView: View {
                 .accessibilityHidden(true)
             Text("Apple is preparing the reports")
                 .font(.title2.weight(.semibold))
-            Text("They usually arrive in 1 to 2 days. Asked on \(AnalyticsText.day(asked)), so expect them around \(AnalyticsText.day(expected)). Atlas checks every morning and lets you know when they’re here.")
+            Text("Asked \(AnalyticsText.day(asked)); expected around \(AnalyticsText.day(expected)). Atlas checks every morning and tells you.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
@@ -35,13 +35,13 @@ struct AnalyticsWaitingView: View {
             AnalyticsSetupSteps(steps: [
                 .init(
                     title: String(localized: "Asked Apple"),
-                    detail: String(localized: "\(AnalyticsText.day(asked)) · ongoing reports, plus a one-time snapshot of earlier data so comparisons can start right away"),
+                    detail: String(localized: "\(AnalyticsText.day(asked)) · ongoing reports, plus earlier data to compare right away"),
                     state: .done
                 ),
                 .init(title: String(localized: "Apple prepares the first reports"), detail: String(localized: "1 to 2 days"), state: .current),
                 .init(
                     title: String(localized: "Atlas downloads them"),
-                    detail: String(localized: "Every morning from then on. Numbers are always 1 to 2 days behind.")
+                    detail: String(localized: "Every morning after. Numbers are 1 to 2 days behind.")
                 ),
             ])
             if let errorMessage { InlineMessage.error(errorMessage) }
@@ -51,7 +51,7 @@ struct AnalyticsWaitingView: View {
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("analytics.setup.waiting.checked")
             HStack(spacing: Spacing.medium) {
-                Text("Everything else in Atlas works as usual meanwhile.")
+                Text("The rest of Atlas works as usual.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                 Button("Check Now", action: onCheck)

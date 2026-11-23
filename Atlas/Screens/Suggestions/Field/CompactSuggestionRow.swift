@@ -30,6 +30,7 @@ struct CompactSuggestionRow: View {
                     .foregroundStyle(Palette.ai)
                     .accessibilityIdentifier("suggestion.value")
                 SuggestionSourceTag(source: suggestion.source)
+                if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
                 Spacer(minLength: Spacing.small)
                 Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("suggestion.dismiss")
@@ -43,6 +44,8 @@ struct CompactSuggestionRow: View {
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("suggestion.reason")
+            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
+            if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)

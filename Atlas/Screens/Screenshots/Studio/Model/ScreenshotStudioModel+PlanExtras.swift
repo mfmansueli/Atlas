@@ -23,8 +23,8 @@ extension ScreenshotStudioModel {
     /// screenshots. Each waits in Review & Push."
     func extrasNote(client: String) -> String {
         let made = designProject.map { _ in
-            String(localized: "Made by \(extrasDesigner(client: client)) in the chosen direction and checked like the screenshots. Each waits in Review & Push.")
-        } ?? String(localized: "Made by Atlas’s starters in the chosen direction and checked like the screenshots. Each waits in Review & Push.")
+            String(localized: "Made by \(extrasDesigner(client: client)) in the chosen direction and checked. Each waits in Review & Push.")
+        } ?? String(localized: "From Atlas’s starters in your direction, checked like the screenshots. Each waits in Review & Push.")
         return made + " " + Self.shownOnNote
     }
 
@@ -33,8 +33,7 @@ extension ScreenshotStudioModel {
 
     /// Under the artwork size: why two images.
     static let artworkSizeNote = String(localized: """
-    Two images let each do its job; one image keeps them identical. Make only the header or only search results to \
-    leave the other place as it is.
+    Two images each fit their place; one keeps both identical. Make only one to leave the other as it is.
     """)
 
     func artworkDetail(client: String) -> String {
@@ -42,15 +41,14 @@ extension ScreenshotStudioModel {
         let search = AutopilotArtworkKind.search.pixelSize.title
         let wide = AutopilotArtworkKind.wide.pixelSize.title
         return String(localized: """
-        \(extrasDesigner(client: client)) designs them from the same direction: search results show the app doing its core task with a \
-        3–5 word headline in each language, the header one feeling or outcome with little or no text. Apple supports \(header) (21:9) \
-        for the header and \(search) (3:2) for search results, or one \(wide) (16:9) image for both. Make only one of them \
-        and the other place keeps what it shows now.
+        \(extrasDesigner(client: client)) designs both in one direction. Search results: the app’s core task, 3–5 word \
+        headline per language. Header: one feeling or outcome, little or no text. \(header) (21:9) header, \(search) \
+        (3:2) search, or one \(wide) (16:9) for both. Make only one and the other keeps what it shows.
         """)
     }
 
     func appPreviewDetail(client: String) -> String {
-        String(localized: "A 15–30 s video from real Simulator recordings of the plan’s screens, with captions and an end card in the chosen direction. \(client) records, \(extrasDesigner(client: client)) styles it, Atlas assembles and checks it.")
+        String(localized: "A 15–30 s Simulator video of the plan’s screens, with captions and an end card. \(client) records, \(extrasDesigner(client: client)) styles, Atlas assembles and checks.")
     }
 
     /// "English (U.S.) only · other languages show it", "Every language (15)".

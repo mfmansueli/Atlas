@@ -151,7 +151,7 @@ struct AnalyticsStoreTests {
         #expect(store.salesError == nil)
         services.salesError = AppStoreConnectError.server(statusCode: 400, detail: "Invalid vendor number")
         await store.refreshSales(services: services)
-        #expect(store.salesError?.contains("Invalid vendor number") == true)
+        #expect(store.salesError == "Sales didn’t load. Apple refused the request. See Details.\nDetails: HTTP 400 — Invalid vendor number")
         // Another vendor number starts over.
         store.setVendorNumber("85099999")
         #expect(store.salesState == .waiting)

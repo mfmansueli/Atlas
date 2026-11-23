@@ -44,8 +44,7 @@ extension AutopilotCenter {
     /// the set to make one from.
     static func noCapturesRefusal(appName: String) -> String {
         String(localized: """
-        \(appName) has no captures to redo yet: import them in Atlas → Screenshots → Captures, or capture the set with \
-        Run Autopilot….
+        \(appName) has no captures yet. Import them in Atlas → Screenshots → Captures, or use Run Autopilot….
         """)
     }
 
@@ -64,12 +63,12 @@ extension AutopilotCenter {
         let base: AutopilotRun
         if madeFromCaptures {
             guard let fromCaptures else {
-                throw AutopilotError(String(localized: "This app has no Autopilot run or captures to redo: capture the set with Run Autopilot… first."))
+                throw AutopilotError(String(localized: "No captures to redo yet. Capture the set with Run Autopilot… first."))
             }
             base = fromCaptures.run(id: makeID(), appID: appID, uploadToken: Self.makeToken(), now: now())
         } else {
             guard let saved = runs[appID]?.stage == .plan ? replacedRun(for: appID) : runs[appID], saved.stage == .ready else {
-                throw AutopilotError(String(localized: "This app has no Autopilot run yet: captures are redone in a run that made them."))
+                throw AutopilotError(String(localized: "No Autopilot run yet. Only a run can redo its own captures."))
             }
             base = saved
         }
@@ -77,7 +76,7 @@ extension AutopilotCenter {
         if runs[appID]?.stage == .plan { cancelPlan(for: appID) }
         if madeFromCaptures { install(base) }
         guard let run = runs[appID], run.stage == .ready else {
-            throw AutopilotError(String(localized: "This app has no Autopilot run yet: captures are redone in a run that made them."))
+            throw AutopilotError(String(localized: "No Autopilot run yet. Only a run can redo its own captures."))
         }
         let ordered = run.plan.targets.filter(Set(targets).contains)
         var recapture = AutopilotRecapture(
@@ -233,7 +232,7 @@ extension AutopilotCenter {
             guard run.stage == .localize, let recapture = run.recapture else { return }
             run.stage = .ready
             run.finishedAt = now()
-            run.appendLog(String(localized: "Redid \(recapture.title): ready in Review & Push, where only the images they change go"), kind: .event, at: now())
+            run.appendLog(String(localized: "Redid \(recapture.title) · only changed images wait in Review & Push"), kind: .event, at: now())
         }
     }
 

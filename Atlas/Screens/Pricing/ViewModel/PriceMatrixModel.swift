@@ -24,7 +24,7 @@ final class PriceMatrixModel {
     var sortOrder: [KeyPathComparator<PricingRow>] = []
     var selection: Set<PricingRow.ID> = []
     var popover: PricingPopover?
-    /// Whether every territory follows the strategy, as after Apply Recommended Prices….
+    /// Whether every territory follows the strategy, as after Apply Suggested Prices….
     private(set) var isFollowing: Bool
     /// When the queued changes take effect; read from the queue, so it
     /// survives navigating away.

@@ -34,7 +34,7 @@ struct FirstSyncProgress: Equatable, Sendable {
     var summary: String {
         let nothingChanges = String(localized: "Nothing is changed in App Store Connect.")
         guard let appCount else {
-            return String(localized: "Atlas is reading your team and its apps.") + " " + nothingChanges
+            return String(localized: "Reading your team and its apps.") + " " + nothingChanges
         }
         let found = switch (appCount, teamName) {
         case let (1, team?): String(localized: "Found 1 app in \(team).")
@@ -43,8 +43,8 @@ struct FirstSyncProgress: Equatable, Sendable {
         case let (count, nil): String(localized: "Found \(count) apps.")
         }
         let reading = appCount == 1
-            ? String(localized: "Atlas is reading its store page, screenshots and prices.")
-            : String(localized: "Atlas is reading their store pages, screenshots and prices.")
+            ? String(localized: "Reading its store page, screenshots and prices.")
+            : String(localized: "Reading their store pages, screenshots and prices.")
         return [found, reading, nothingChanges].joined(separator: " ")
     }
 

@@ -19,7 +19,7 @@ struct AIProviderErrorTests {
     @Test func aRejectionCarriesTheProvidersMessage() {
         let error = AIProviderError(vendor: .openAI, statusCode: 404, body: Data(#"{"error":{"message":"The model does not exist."}}"#.utf8))
         #expect(error == .rejected(.openAI, statusCode: 404, message: "The model does not exist."))
-        #expect(error.errorDescription == "OpenAI returned an error (404). The model does not exist.")
+        #expect(error.errorDescription == "OpenAI failed with error 404. Try again in a minute.\nDetails: The model does not exist.")
     }
 
     @Test func geminiAnswersAWrongKeyWith400() {
@@ -30,8 +30,20 @@ struct AIProviderErrorTests {
         #expect(AIProviderError(vendor: .openAI, statusCode: 400, body: body) != .unauthorized(.openAI))
     }
 
+    @Test func aFailedRequestShowsTheProvidersSentenceAsItIs() {
+        let message = AIProviderError.message(for: AIProviderError.rateLimited(.openAI), what: "The key couldn’t be checked.")
+        #expect(message == "OpenAI’s rate limit was reached. Try again in a minute.")
+    }
+
+    @Test func aFailedRequestPutsTheSystemsWordsUnderDetails() {
+        let error = URLError(.badServerResponse)
+        let message = AIProviderError.message(for: error, what: "The key couldn’t be checked.")
+        #expect(message.hasPrefix("The key couldn’t be checked. Try again in a minute.\nDetails: "))
+        #expect(message.hasSuffix("(URLError \(error.code.rawValue))"))
+    }
+
     @Test func aRejectionWithoutABodyKeepsTheStatus() {
         let error = AIProviderError(vendor: .anthropic, statusCode: 413, body: Data())
-        #expect(error.errorDescription == "Anthropic returned an error (413).")
+        #expect(error.errorDescription == "Anthropic failed with error 413. Try again in a minute.")
     }
 }

@@ -174,7 +174,7 @@ struct AppSidebar: View {
             ContentUnavailableView(
                 "No apps",
                 systemImage: "square.dashed",
-                description: Text("This team doesn't have any apps in App Store Connect yet.")
+                description: Text("This team has no apps in App Store Connect yet.")
             )
         }
     }

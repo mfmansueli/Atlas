@@ -26,6 +26,7 @@ struct ComplianceSuggestionBox: View {
                     .font(.callout.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("\(identifier).answer")
+                if let confidence = suggestion.evidence.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             if case let .trader(details) = suggestion.answer {
                 TraderDetailsGrid(details: details)
@@ -55,6 +56,7 @@ struct ComplianceSuggestionBox: View {
                     .accessibilityIdentifier("\(identifier).accept")
             }
             .controlSize(.regular)
+            if let details = suggestion.evidence.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
