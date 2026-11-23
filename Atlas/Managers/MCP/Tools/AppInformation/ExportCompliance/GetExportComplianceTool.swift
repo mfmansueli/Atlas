@@ -11,6 +11,9 @@ import Foundation
 /// API takes (the build's `usesNonExemptEncryption`, a new declaration and
 /// the build's link to one; not the declaration's documents).
 struct GetExportComplianceTool: MCPTool {
+    var keys = EncryptionKeyStore.shared
+    var projects = EncryptionKeyProjectCenter.shared
+
     let definition = MCPToolDefinition(
         name: "get_export_compliance",
         title: "Read Export Compliance",
@@ -23,7 +26,14 @@ struct GetExportComplianceTool: MCPTool {
         waiting in Review & Push and an open suggestion. App Store Connect's API takes the build's \
         usesNonExemptEncryption, a new encryption declaration and the build's link to one: \
         propose_export_compliance queues them. It doesn't take the declaration's documents, which the person \
-        uploads in App Store Connect when Apple asks.
+        uploads in App Store Connect when Apple asks. answersFromBuild is true when the answers are only what the \
+        build's flag implies (false reads as exempt: it can't tell exempt encryption from none). infoPlistKey says \
+        whether builds answer the question themselves through ITSAppUsesNonExemptEncryption: state reported \
+        (report_encryption_key), readInProject (Atlas read the app target), inferred (the newest uploads arrived \
+        answered, which an answer given per build in App Store Connect also does) or unknown; present, value, how \
+        Atlas knows, the last report, expected (the value, build settings and Info.plist lines once the answer is \
+        settled), canAdd with whyNot, and next: Add It to the Project on the page starts Claude Code to add it, or \
+        add it yourself in the project and report it with report_encryption_key.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
@@ -49,7 +59,10 @@ struct GetExportComplianceTool: MCPTool {
                 "declaration": MCPExportComplianceState.json(state.queuedDeclaration),
             ],
             "note": .string(Self.note),
+            "answersFromBuild": .bool(state.answersAreFromBuild),
         ]
+        let builds = await context.workspace.services.appInformation.recentBuilds(for: app)
+        result["infoPlistKey"] = state.infoPlistKeyJSON(report: keys.report(for: app.id), project: projects.state(for: app.id), builds: builds)
         result["build"] = export.buildID.map { id in
             [
                 "id": .string(id),

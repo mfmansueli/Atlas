@@ -34,6 +34,12 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// project folder only), and bump its build number. Never archives or
     /// uploads.
     case deepLinkWork
+    /// Add It to the Project on Export Compliance: read the project and
+    /// add the export compliance key to the app target (its build settings
+    /// or Info.plist), check it with plutil or xcodebuild's settings, and
+    /// commit only when the project's own instructions say so. Never
+    /// builds, archives, uploads or pushes.
+    case encryptionKey
     /// Make Review Screenshots… in Pricing: read the project, build the
     /// app, open its paywall in a simulator and upload each capture to the
     /// review screenshot link. Never changes the project.
@@ -48,7 +54,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         switch self {
         case .atlasOnly: []
         case .readProject, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
-        case .deepLinkWork, .reviewShotsStoreKit: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
+        case .deepLinkWork, .reviewShotsStoreKit, .encryptionKey: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
 
@@ -92,6 +98,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                 + Self.uploadRules(port: port, path: MCPEndpoint.pageShotsPath)
         case .deepLinkWork:
             return atlas + reading + ["Edit", "Write"] + Self.linkCommands
+        case .encryptionKey:
+            return atlas + reading + ["Edit", "Write"] + Self.keyCommands
         case .reviewShots, .reviewShotsStoreKit:
             // Captures go to the review screenshot link, and nowhere else.
             let capturing = atlas + reading + Self.linkCommands + ["Bash(xcrun xcresulttool:*)"]
@@ -120,6 +128,21 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         "Bash(echo:*)",
     ]
 
+    /// What adding the export compliance key may run: check the Info.plist
+    /// and the target's build settings, and commit the change when the
+    /// project's own instructions say changes are committed.
+    static let keyCommands = [
+        "Bash(plutil -lint *)",
+        "Bash(plutil -p *)",
+        "Bash(xcodebuild -list*)",
+        "Bash(xcodebuild -showBuildSettings*)",
+        "Bash(xcodebuild -project * -list*)",
+        "Bash(xcodebuild -project * -showBuildSettings*)",
+        "Bash(xcodebuild -workspace * -showBuildSettings*)",
+        "Bash(git add:*)",
+        "Bash(git commit:*)",
+    ]
+
     /// What a deep link run may never do: send a build to App Store
     /// Connect.
     static let uploadCommands = [
@@ -142,6 +165,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .autopilot: ["Bash(xcrun simctl io * screenConfig*)"]
         case .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit:
             Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
+        case .encryptionKey:
+            Self.uploadCommands + ["Bash(xcodebuild archive*)", "Bash(xcodebuild * archive*)", "Bash(git push:*)"]
         }
     }
 
@@ -164,7 +189,9 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             "Never push or change App Store Connect directly; everything goes through Atlas's tools, and the person reviews it there.",
             "If something you need is refused or missing, say so in one sentence in your last message and finish.",
         ]
-        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit].contains(self) {
+        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .encryptionKey, .pageCaptures, .reviewShots, .reviewShotsStoreKit]
+            .contains(self)
+        {
             lines.append(
                 "Find files with Glob and Grep and read them with Read. Run each allowed command on its own: "
                     + "a pipe, ;, && or cd in front of it is refused."
@@ -226,6 +253,15 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                     + "message which files you changed. Never commit or push."
             )
         }
+        if self == .encryptionKey {
+            lines.append(
+                "You may edit and write files in this project only, to add the export compliance key to the app target's "
+                    + "build settings or Info.plist: change nothing else. To check it you may also run plutil -lint, plutil -p, "
+                    + "xcodebuild -list and xcodebuild -showBuildSettings, each on its own; never build, archive, export or "
+                    + "upload. Commit (git add and git commit of the files you changed) only when the project's own "
+                    + "instructions, such as its CLAUDE.md, say changes are committed. Never push."
+            )
+        }
         if self == .autopilot {
             lines.append(
                 "For screenshots you may also run xcodebuild, xcrun simctl, xcrun xcresulttool, open -a Simulator, mkdir, ls, sleep and echo, "
@@ -282,6 +318,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck: String(localized: "In-App Event deep link check")
         case .deepLinkWork: String(localized: "In-App Event deep link fix")
+        case .encryptionKey: String(localized: "Export compliance key")
         case .pageCaptures: String(localized: "Product page captures")
         case .reviewShots: String(localized: "Pricing review screenshots")
         case .reviewShotsStoreKit: String(localized: "Pricing review screenshots with StoreKit")
@@ -297,6 +334,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .eventArtwork: String(localized: "Reading the project, and uploads of its art to Atlas")
         case .deepLinkCheck: String(localized: "Reading the project, xcodebuild and xcrun simctl; never uploads")
         case .deepLinkWork: String(localized: "Also edits files in the project folder; never uploads")
+        case .encryptionKey: String(localized: "Edits the app target’s build settings or Info.plist; never builds, uploads or pushes")
         case .pageCaptures: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of captures to Atlas")
         case .reviewShots: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of review screenshots to Atlas")
         case .reviewShotsStoreKit: String(localized: "Also adds a StoreKit configuration in the project folder; never uploads a build")

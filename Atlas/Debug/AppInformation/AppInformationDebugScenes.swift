@@ -51,11 +51,11 @@ enum AppInformationDebugScenes {
         "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested",
         "info-comp-outside-china", "a11y-empty", "a11y-loading", "a11y-error", "a11y-editor", "a11y-editor-watch", "a11y-draft", "a11y-published",
         "a11y-pending", "a11y-nolive", "a11y-url", "a11y-review", "a11y-pushing",
-    ] + privacyIDs
+    ] + privacyIDs + encryptionKeyIDs
 
     @MainActor
     static func view(for id: String) -> AnyView? {
-        if id.hasPrefix("info-") { return infoScene(id) }
+        if id.hasPrefix("info-") { return encryptionKeyScene(id) ?? infoScene(id) }
         switch id {
         case "a11y-empty": return accessibilityScene(.neverDeclared)
         case "a11y-loading": return accessibilityScene(DebugAppInformationServices(accessibilityDelay: .seconds(24 * 60 * 60)))

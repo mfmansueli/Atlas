@@ -49,16 +49,21 @@ enum AppInformationPage: String, CaseIterable, Identifiable, Hashable, Sendable 
         }
     }
 
-    /// In the page's bar: what it changes on the App Store.
-    func whereShown(appName: String) -> String {
-        switch self {
+    /// In the page's bar: what it changes on the App Store. Export
+    /// Compliance says whether `version` is on the App Store yet, so
+    /// "Not on the App Store" isn't read as the app's state.
+    func whereShown(appName: String, version: StorePageVersion? = nil) -> String {
+        if self == .exportCompliance, let version, !version.state.isLive {
+            return String(localized: "Version \(version.versionString) isn’t on the App Store yet. These answers never show there.")
+        }
+        return switch self {
         case .general: String(localized: "On the App Store: the category under the name, and the Information section.")
         case .appCompliance: String(localized: "Partly on the App Store: a trader’s details show on \(appName)’s page in the EU.")
         case .ageRating: String(localized: "On the App Store: the age under the name, such as 4+.")
         case .accessibility: String(localized: "On the App Store: the Accessibility section lists what \(appName) supports.")
         case .appPrivacy: String(localized: "On the App Store: the App Privacy section.")
         case .appReview: String(localized: "Not on the App Store. Only App Review reads it.")
-        case .exportCompliance: String(localized: "Not on the App Store.")
+        case .exportCompliance: String(localized: "Never shown on the App Store: App Store Connect asks it per build.")
         }
     }
 }

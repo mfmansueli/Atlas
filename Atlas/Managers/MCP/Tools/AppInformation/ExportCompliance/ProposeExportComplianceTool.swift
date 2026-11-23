@@ -79,7 +79,9 @@ struct ProposeExportComplianceTool: MCPTool {
         let declaration = plan.flatMap {
             builder.declarationChange($0, export: state.export, source: source, dependsOn: encryption.map(\.id))
         }
-        let isUnchanged = answers == state.answers
+        // Answers only implied by the build's flag aren't anyone's: the same
+        // ones from an assistant still show, for the person to confirm.
+        let isUnchanged = answers == state.answers && !state.answersAreFromBuild
             && encryption?.requests == state.queuedEncryption?.requests
             && declaration?.requests == state.queuedDeclaration?.requests
         if isUnchanged {

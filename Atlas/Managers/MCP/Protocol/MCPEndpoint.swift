@@ -157,7 +157,9 @@ enum MCPEndpoint {
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. \
     Only stopping sales in China mainland becomes a change in Review & Push. Export compliance comes from the code's \
     use of encryption: get_export_compliance, then propose_export_compliance queues the build's answer and any \
-    encryption declaration in Review & Push. Submitting a version for App Review and releasing it are the \
+    encryption declaration in Review & Push. Once that answer is settled, the export compliance key in the app \
+    target (get_export_compliance's infoPlistKey.expected) answers it for every build: when you add it in the \
+    project, or find it there, report it with report_encryption_key; never push or upload. Submitting a version for App Review and releasing it are the \
     person's: read where it stands with get_release (phase, builds, What's New, phased release, submission, \
     possibleActions) and propose submit (build, release type, phased release, encryption, events), release, \
     pause, resume or complete the phased release, cancel the submission or resubmit with propose_release_action, \

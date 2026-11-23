@@ -27,6 +27,12 @@ struct MCPExportComplianceState {
         notes.exportAnswers ?? export.declaredAnswers ?? ExportComplianceAnswers(usesNonExemptEncryption: export.usesNonExemptEncryption)
     }
 
+    /// The answers are only what the build's flag implies: nobody answered
+    /// them, and no declaration has them.
+    var answersAreFromBuild: Bool {
+        notes.exportAnswers == nil && export.declaredAnswers == nil && export.usesNonExemptEncryption != nil
+    }
+
     static func load(_ app: StoreApp, in context: MCPToolContext) async throws -> MCPExportComplianceState {
         let services = context.workspace.services.appInformation
         let content = try await services.content(for: app, versionID: nil)

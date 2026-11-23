@@ -27,6 +27,10 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     case deepLinkCheck(eventID: String)
     /// Make It Work…: the app opens an event's deep link.
     case deepLinkWork(eventID: String)
+    /// Add It to the Project on Export Compliance: the Info.plist key (or
+    /// build setting) that answers the export compliance question for
+    /// every build.
+    case encryptionKey
     /// Make Screenshots for This Page…: a custom product page's own set.
     case pageScreenshots(pageName: String)
     /// Its three looks (A new look from Claude Design), in a session of
@@ -66,6 +70,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .eventArtworkConcepts: String(localized: "In-App Event artwork")
         case .deepLinkCheck: String(localized: "Check an event’s deep link")
         case .deepLinkWork: String(localized: "Make an event’s deep link work")
+        case .encryptionKey: String(localized: "Add the export compliance key")
         case let .pageScreenshots(pageName): String(localized: "Screenshots for “\(pageName)”")
         case let .pageLooks(pageName): String(localized: "Looks for “\(pageName)”")
         case let .pageCaptures(pageName): String(localized: "Captures for “\(pageName)”")
@@ -82,6 +87,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case let .ask(area): area
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
+        case .encryptionKey: String(localized: "Export compliance key")
         case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Product page screenshots")
         case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply, .hello, .reviewScreenshots: title
         }
@@ -95,6 +101,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .eventArtwork, .eventArtworkConcepts: .eventArtwork
         case .deepLinkCheck: .deepLinkCheck
         case .deepLinkWork: .deepLinkWork
+        case .encryptionKey: .encryptionKey
         case .pageCaptures: .pageCaptures
         case let .reviewScreenshots(addsStoreKit): addsStoreKit ? .reviewShotsStoreKit : .reviewShots
         case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks, .autoReply: .readProject

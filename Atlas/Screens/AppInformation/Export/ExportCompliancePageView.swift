@@ -39,6 +39,9 @@ struct ExportCompliancePageView: View {
                         }
                     }
                 }
+                if viewModel.exportAnswersAreFromBuild, let build = viewModel.content?.export.buildNumber {
+                    fromBuildNote(build: build)
+                }
                 if let declaration = viewModel.queuedDeclaration {
                     Text("\(declaration.title): \(declaration.newValue), waiting in Review & Push.")
                         .font(.subheadline)
@@ -52,11 +55,30 @@ struct ExportCompliancePageView: View {
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }
-                InfoPlistKeyCard()
+                InfoPlistKeyCard(viewModel: viewModel)
             }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("appInformation.exportCompliance")
         }
+    }
+
+    /// The answers come only from the build's flag, which can't tell
+    /// exempt encryption from none at all: say so, instead of claiming the
+    /// app uses no encryption.
+    private func fromBuildNote(build: String) -> some View {
+        Label {
+            Text("""
+            From build \(build)’s answer. App Store Connect keeps only that the app uses no encryption that needs documents: \
+            exempt encryption, such as HTTPS, or none at all. Change the answers if they’re not right.
+            """)
+        } icon: {
+            Image(systemName: "info.circle")
+        }
+        .font(.subheadline)
+        .foregroundStyle(Palette.label2)
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("appInformation.export.fromBuild")
     }
 
     private func assistantBanner(_ evidence: AssistantEvidence) -> some View {

@@ -30,6 +30,11 @@ struct DebugAppInformationServices: AppInformationServices {
     /// Lumen's 1.4 still says © 2025 and has no contact phone, which 1.3's
     /// App Review details had: what the built-in suggestions find.
     var hasOutdatedDetails = false
+    /// Lumen's content in place of the sample, e.g. a first version in
+    /// Prepare for Submission (`info-export-first`).
+    var lumenContent: AppInformationContent?
+    /// The newest uploads Export Compliance reads, newest first.
+    var sampleBuilds: [EncryptionKeyBuild] = []
     let notes: any AppInformationNotesStore
     let privacy: any PrivacyWorksheetStore
     let secrets: any SecretStore
@@ -76,6 +81,7 @@ struct DebugAppInformationServices: AppInformationServices {
         guard app.id == DebugFixtures.AppID.lumen else {
             return DebugAppInformationContent.released(app, versionString: DebugSummaries.storePage(for: app.id).versionString ?? "1.0")
         }
+        if let lumenContent { return lumenContent }
         var content = DebugAppInformationContent.lumen(versionID: versionID)
         if hasOutdatedDetails, content.isVersionEditable {
             content.general.copyright = "© 2025 Northpier Studio"
@@ -96,6 +102,10 @@ struct DebugAppInformationServices: AppInformationServices {
     func previousReview(for app: StoreApp, content: AppInformationContent) async -> AppInformationBuiltInSuggestions.PreviousReview? {
         guard app.id == DebugFixtures.AppID.lumen, content.isVersionEditable else { return nil }
         return AppInformationBuiltInSuggestions.PreviousReview(versionString: "1.3", review: DebugAppInformationContent.review)
+    }
+
+    func recentBuilds(for app: StoreApp) async -> [EncryptionKeyBuild] {
+        app.id == DebugFixtures.AppID.lumen ? sampleBuilds : []
     }
 
     func accessibility(for app: StoreApp) async throws -> AccessibilityContent {
