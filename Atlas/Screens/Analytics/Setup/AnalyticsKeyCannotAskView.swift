@@ -36,11 +36,11 @@ struct AnalyticsKeyCannotAskView: View {
                 ),
                 .init(
                     title: String(localized: "Make a key with the Admin role"),
-                    detail: String(localized: "Or ask your Account Holder or an Admin to make one")
+                    detail: String(localized: "Or ask your Account Holder or an Admin")
                 ),
                 .init(
                     title: String(localized: "Add it to Atlas"),
-                    detail: String(localized: "Settings → Accounts. Then come back here and ask again.")
+                    detail: String(localized: "Add it in Settings → Accounts, then ask again.")
                 ),
             ])
             HStack(spacing: Spacing.small) {
@@ -55,11 +55,10 @@ struct AnalyticsKeyCannotAskView: View {
     }
 
     private var explanation: String {
-        let key = keyID.map { String(localized: "Atlas uses key \($0), which isn’t an Admin key.") }
-            ?? String(localized: "The key Atlas uses isn’t an Admin key.")
+        let key = keyID.map { String(localized: "Key \($0) isn’t an Admin key.") }
+            ?? String(localized: "This key isn’t an Admin key.")
         let rule = String(localized: """
-        Apple lets only Admin keys ask for analytics reports. Once they exist, keys with the Admin, Finance or Sales role can \
-        read them.
+        Only Admin keys can ask for reports; Admin, Finance and Sales keys can read them.
         """)
         return key + " " + rule
     }

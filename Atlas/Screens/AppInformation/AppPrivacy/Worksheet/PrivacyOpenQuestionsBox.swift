@@ -22,7 +22,7 @@ struct PrivacyOpenQuestionsBox: View {
                 Spacer(minLength: Spacing.small)
                 Text(open == 0
                     ? String(localized: "All answered")
-                    : String(localized: "\(open) of \(questions.count) open · answer them before the worksheet counts as done"))
+                    : String(localized: "\(open) of \(questions.count) open · answer them to finish the worksheet"))
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.trailing)

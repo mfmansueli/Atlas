@@ -40,7 +40,7 @@ struct NoSubscriptionsView: View {
                 // loop like the whole view's size did.
                 .fixedSize(horizontal: true, vertical: false)
                 // Its own row: a fourth button made the row wider than the view.
-                Button("Create an In-App Purchase Instead…") { viewModel.setup.isNewInAppPurchaseSheetPresented = true }
+                Button("New In-App Purchase…") { viewModel.setup.isNewInAppPurchaseSheetPresented = true }
                     .buttonStyle(.link)
                     .accessibilityIdentifier("pricing.createInAppPurchase")
                 if !viewModel.queuedNewProducts.isEmpty {
@@ -59,8 +59,8 @@ struct NoSubscriptionsView: View {
     private var description: String {
         viewModel.queuedNewProducts.isEmpty
             ? String(localized: """
-            Create one here or ask your assistant to set up the ones the app’s code sells. They wait in Review & \
-            Push, and the push creates them with their texts, availability and starting price.
+            Create one here, or ask your assistant for the ones the code sells. Pushing creates them with texts, availability and starting \
+            price.
             """)
             : String(localized: "Push to create them, then refresh to set their prices here.")
     }

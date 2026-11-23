@@ -94,7 +94,7 @@ struct StorePageSuggestionsTests {
         #expect(model.visibleSuggestions(in: .englishUS).count == 2)
 
         model.acceptAllSuggestions(in: .englishUS)
-        #expect(model.toast?.text == "Accepted 2 in English. They’re waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "Accepted 2 in English, waiting in Review & Push.")
         #expect(model.value(.promotionalText, in: .englishUS) == "Weekly reflections are here: every Sunday.")
         #expect(model.visibleSuggestions(in: .englishUS).isEmpty)
 
@@ -135,7 +135,7 @@ struct StorePageSuggestionsTests {
         model.useAndEditSuggestion(suggest(.subtitle, in: .englishUS, "Private diary, mood & prompts"))
         #expect(model.focusRequest == ListingFieldKey(.englishUS, .subtitle))
         #expect(model.provenance(.subtitle, in: .englishUS)?.isForEditing == true)
-        #expect(model.toast?.text == "Copied into the field. Edit it there; your version goes to Review & Push.")
+        #expect(model.toast?.text == "Copied into the field. Your edit goes to Review & Push.")
         #expect(model.toast?.canUndo == true)
     }
 

@@ -19,6 +19,8 @@ struct PageShotsPlan: Codable, Hashable, Sendable {
     /// Who wrote it: "Claude Code".
     var source: String
     var madeAt: Date
+    /// Details and how sure, beside the reason; nil in plans saved before.
+    var layers: SuggestionLayers?
 
     /// The languages every screen has a caption in.
     func completeLocales(among locales: [String]) -> [String] {

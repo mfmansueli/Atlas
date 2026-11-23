@@ -58,14 +58,14 @@ extension AppPrivacyViewModel {
         let date = now()
         update { $0.markPublished(at: date) }
         let day = date.formatted(date: .abbreviated, time: .omitted)
-        say(String(localized: "Marked as published in App Store Connect on \(day). Atlas will flag the worksheet if a later scan changes these answers."))
+        say(String(localized: "Marked as published on \(day). A scan that changes these answers flags the worksheet."))
     }
 
     /// "Marked as published in App Store Connect on Oct 26, 2026. …".
     var publishedText: String? {
         guard case let .published(date) = worksheet.status else { return nil }
         let day = date.formatted(date: .abbreviated, time: .omitted)
-        return String(localized: "Marked as published in App Store Connect on \(day). A copy of these answers is kept; a later scan that changes them flags the worksheet.")
+        return String(localized: "Marked as published on \(day). A copy is kept; a scan that changes these answers flags the worksheet.")
     }
 
     /// "Tile with Safari": App Store Connect opens in Safari, and this

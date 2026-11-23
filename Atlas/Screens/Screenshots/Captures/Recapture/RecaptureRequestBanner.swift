@@ -29,8 +29,8 @@ struct RecaptureRequestBanner: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(isAccepting)
                 .help(request.page == nil
-                    ? Text("Opens a run for just these captures and starts Claude Code on it. Nothing is pushed.")
-                    : Text("Lets Claude Code capture these screens again for the page. Nothing is pushed."))
+                    ? Text("Claude Code recaptures only these. Nothing is pushed.")
+                    : Text("Claude Code captures these screens again. Nothing is pushed."))
                 .accessibilityIdentifier("screenshots.recaptureRequest.accept")
             }
         }

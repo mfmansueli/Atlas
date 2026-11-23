@@ -114,7 +114,7 @@ struct InAppEventArtworkFilesTests {
         // Apple takes 5 to 30 seconds.
         let refusals = InAppEventArtworkChecker.checks(file, kind: .card, look: nil).filter(\.isRefusal)
         #expect(refusals.map(\.text) == [
-            "The video is 0.5 seconds; Apple takes 5 to 30 seconds for event videos, played on repeat. Make it a seamless loop in that range.",
+            "Event videos must be 5 to 30 seconds and loop; this one is 0.5 seconds. Make a seamless loop in that range.",
         ])
         let loop = try await EventArtworkTestFiles.movie(width: 1920, height: 1080, fps: 30, frames: 153, in: directory, name: "loop.mov")
         let loopFile = try #require(await InAppEventArtworkInspector.inspect(loop))

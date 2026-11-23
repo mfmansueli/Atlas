@@ -20,7 +20,7 @@ struct LiveUnixScriptRunner: UnixScriptRunning {
         do {
             task = try NSUserUnixTask(url: script)
         } catch {
-            return UnixScriptExit(taskError: error.localizedDescription)
+            return UnixScriptExit(taskError: AppleErrorCopy(String(localized: "The helper couldn’t start.", comment: "kind:error"), error: error).text)
         }
         let input = Pipe()
         let output = Pipe()
@@ -39,7 +39,8 @@ struct LiveUnixScriptRunner: UnixScriptRunning {
         let taskError: String? = await withTaskCancellationHandler {
             await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
                 task.execute(withArguments: arguments) { error in
-                    continuation.resume(returning: error?.localizedDescription)
+                    let what = String(localized: "The helper stopped with an error.", comment: "kind:error")
+                    continuation.resume(returning: error.map { AppleErrorCopy(what, error: $0).text })
                 }
             }
         } onCancel: {

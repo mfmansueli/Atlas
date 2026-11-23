@@ -35,7 +35,7 @@ struct AutopilotHeaderStyleTests {
         #expect(AutopilotHeaderTemplate.guess(categories: []) == .night)
         let guess = AutopilotHeaderRecommendation.guess(categories: ["Lifestyle"], client: "Claude Code")
         #expect(!guess.isFromScan)
-        let text = "Recommended for Lumen: Day to Night. It suits Lifestyle apps. Claude Code gives its own reason once it has read the project."
+        let text = "Suggested for Lumen: Day to Night. It suits Lifestyle apps. Claude Code gives its own reason once it has read the project."
         #expect(guess.text(appName: "Lumen") == text)
     }
 
@@ -49,7 +49,7 @@ struct AutopilotHeaderStyleTests {
         let recommendation = try #require(look.headerRecommendation)
         #expect(recommendation.template == .window)
         #expect(recommendation.isFromScan)
-        #expect(recommendation.text(appName: "Lumen") == "Recommended for Lumen: Window View. People write in Lumen at night, by a window.")
+        #expect(recommendation.text(appName: "Lumen") == "Suggested for Lumen: Window View. People write in Lumen at night, by a window.")
         #expect(AppLookProfile.mcp(["fonts": []]) == nil, "A look that says nothing")
     }
 

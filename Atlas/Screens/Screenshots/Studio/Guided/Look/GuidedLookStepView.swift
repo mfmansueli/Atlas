@@ -47,14 +47,14 @@ struct GuidedLookStepView: View {
 
     private var plan: AutopilotPlan { run.plan }
 
-    /// "Claude designs in Northpier Brand. You’ll choose between its
-    /// proposals before anything is localized."
+    /// "Claude designs in Northpier Brand. You pick one before anything is
+    /// localized."
     private var subtitle: String {
         let designer = studio.shotStyleDesigner
         let lead = studio.shotStyleBrand.map { String(localized: "\(designer) designs in \($0).") }
             ?? String(localized: "\(designer) designs from the app’s icon and theme.")
         guard GuidedPlanTimeline.hasLookToChoose(plan) else { return lead }
-        return lead + " " + String(localized: "You’ll choose between its proposals before anything is localized.")
+        return lead + " " + String(localized: "You pick one before anything is localized.")
     }
 
     // MARK: - Screenshots
@@ -94,7 +94,7 @@ struct GuidedLookStepView: View {
                 )
                 GuidedOptionCard(
                     title: String(localized: "Let \(designer) go freely"),
-                    text: String(localized: "It studies \(studio.app.name) and proposes 3 ideas of its own"),
+                    text: String(localized: "It suggests 3 ideas of its own for \(studio.app.name)"),
                     isSelected: extras.artworkStyle == .free,
                     identifier: "autopilot.guided.look.headerStyle.free",
                     action: { studio.setArtworkStyle(.free) }

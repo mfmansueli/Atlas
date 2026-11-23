@@ -66,11 +66,8 @@ struct ScreenshotImportFolderSheet: View {
 
     private var explanation: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            Text("""
-            Name the folders by language (as fastlane does), with the device in the folder or file name. Atlas matches \
-            each file to its language, device and position.
-            """)
-            .font(.callout)
+            Text("Name folders by language, as fastlane does. Put the device in the folder or file name.")
+                .font(.callout)
             Text("""
             \(viewModel.app.name) screenshots/
               de-DE/iphone-6.9/01.png … 05.png

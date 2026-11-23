@@ -62,8 +62,8 @@ struct ReviewShotsBanner: View {
     private func missingText(_ count: Int) -> String {
         let app = ReviewShotsAskPrompt.shortName(viewModel.app.name)
         return count == 1
-            ? String(localized: "1 product needs a review screenshot, and Screenshots has no capture of the paywall. Autopilot can open \(app) in Simulator and capture it.")
-            : String(localized: "\(count) products need a review screenshot, and Screenshots has no capture of the paywall. Autopilot can open \(app) in Simulator and capture each plan.")
+            ? String(localized: "1 product needs a review screenshot. Autopilot can open \(app) in Simulator and capture it.")
+            : String(localized: "\(count) products need a review screenshot. Autopilot can open \(app) in Simulator and capture each plan.")
     }
 
     // MARK: - Arrived
@@ -74,7 +74,7 @@ struct ReviewShotsBanner: View {
                 .foregroundStyle(Palette.ai)
                 .accessibilityHidden(true)
             let maker = client ?? MCPClientKind.claudeCode.title
-            Text("Review screenshots for \(products.count) products, made by \(maker) in Simulator. Check each one below; nothing uploads until you push.")
+            Text("\(maker) made review screenshots for \(products.count) products. Check each below; nothing is sent until you push.")
                 .font(.callout)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -95,7 +95,7 @@ struct ReviewShotsBanner: View {
     private func acceptAll() {
         let accepted = viewModel.acceptAllReviewShots()
         viewModel.sayReviewShots(
-            String(localized: "Accepted \(accepted.count) review screenshots. They’re in Review & Push; nothing has uploaded.")
+            String(localized: "Accepted \(accepted.count) review screenshots. Nothing is sent yet.")
         ) { [viewModel] in
             viewModel.undoReviewShots(accepted)
         }
@@ -170,10 +170,7 @@ struct ReviewShotsBanner: View {
                     .font(.callout.weight(.semibold))
                 Group {
                     Text("· \(app).storekit, with \(ListFormatter.localizedString(byJoining: plans)) at the U.S. prices in Pricing")
-                    Text("""
-                    · Set in the Run options of the scheme Atlas uses. Apple: its products never upload to App Store Connect \
-                    or appear in App Store-signed apps
-                    """)
+                    Text("· Set in the Run options of Atlas’s scheme. Apple: its products never reach App Store Connect or App Store-signed apps")
                     Text("· \(client) shows you the change in its own window before it saves it")
                 }
                 .font(.subheadline)
@@ -202,9 +199,8 @@ struct ReviewShotsBanner: View {
 
     private func noPricesText(app: String, count: Int) -> String {
         String(localized: """
-        \(app) asked the App Store for its \(count) products and got nothing back. That happens while the products \
-        aren’t fully set up in App Store Connect, or before the Paid Apps agreement is active. App Review would see an \
-        empty paywall, so nothing was captured.
+        The App Store returned none of \(app)’s \(count) products, so nothing was captured. Finish setting them up in App Store Connect, \
+        or activate the Paid Apps agreement.
         """)
     }
 

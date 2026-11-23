@@ -37,7 +37,7 @@ struct ChinaDeclarationTests {
         #expect(report.state(of: .aiGeneratedContent) == .toEnter)
         #expect(report.securityAssessmentAnswer == false)
         #expect(report.aiContentAnswer == AIContentAnswer(offersAI: false))
-        #expect(report.detail(for: .securityAssessment).contains("even one not sold in China mainland"))
+        #expect(report.detail(for: .securityAssessment).contains("isn’t sold in China mainland, so answer No there"))
         #expect(report.refusal(for: .aiGeneratedContent) == nil)
         #expect(Support.report(ComplianceContent(territories: nil)).chinaDeclarations == .notSoldInChina)
 
@@ -99,7 +99,7 @@ struct ChinaDeclarationTests {
         #expect(report.state(of: .securityAssessment) == .toEnter)
         #expect(report.state(of: .aiGeneratedContent) == .toEnter)
         #expect(report.securityAssessmentAnswer == false)
-        #expect(report.detail(for: .aiGeneratedContent).contains("App Store Connect still asks. Answer No there"))
+        #expect(report.detail(for: .aiGeneratedContent).contains("In App Store Connect, still answer No"))
         #expect(report.refusal(for: .aiGeneratedContent) != nil)
     }
 

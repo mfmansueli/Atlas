@@ -54,13 +54,21 @@ extension ScreenshotPushRun {
             return .cancelled
         case let error as AppStoreConnectError:
             if error == .unauthorized || error == .invalidPrivateKey { stopReason = String(localized: "Not sent · the API key was refused") }
-            return .failed(ScreenshotPushFailure.request(detail: Self.describe(error)).text(replaces: replaces))
+            return .failed(Self.notPushed(error, replaces: replaces))
         case let error as URLError where Self.offlineCodes.contains(error.code):
             stopReason = String(localized: "Not sent · offline")
             return .notSent(String(localized: "Not sent · offline"))
         default:
-            return .failed(ScreenshotPushFailure.request(detail: Self.describe(error)).text(replaces: replaces))
+            return .failed(Self.notPushed(error, replaces: replaces))
         }
+    }
+
+    /// A row's whole message for an error that isn't Atlas's own: what
+    /// happened, what stays, then Apple's text after "Details:".
+    static func notPushed(_ error: any Error, replaces: Bool) -> String {
+        let copy = AppleErrorCopy(String(localized: "The image wasn’t pushed.", comment: "kind:error"), error: error)
+        let summary = ScreenshotPushFailure.request(detail: copy.summary).text(replaces: replaces)
+        return AppleErrorCopy(summary: summary, details: copy.details).text
     }
 
     /// An error as one short sentence ending in a period.

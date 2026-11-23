@@ -233,7 +233,7 @@ struct AutopilotCenterConceptsTests {
         center.install(start)
         center.takeRecommendedConcept(appID)
         #expect(run?.art == "A")
-        #expect(run?.log.last?.text == "Took Claude’s recommended header, Moonrise: It ties the header to the icon right next to it.")
+        #expect(run?.log.last?.text == "Took Claude’s suggested header, Moonrise: It ties the header to the icon right next to it.")
     }
 
     // MARK: - The loop
@@ -299,7 +299,7 @@ struct AutopilotCenterConceptsTests {
         center.finishMaking(appID, extras: Self.madeLoops, readyLine: "Ready")
         #expect(run?.stage == .watchPreview)
         #expect(run?.loopReview?.approvedAt == nil)
-        #expect(run?.log.last?.text == "Header loop v1 needs a look: a check didn’t pass, so it isn’t approved as made")
+        #expect(run?.log.last?.text == "Header loop v1 needs a look: a check failed, so it wasn’t auto-approved")
         #expect(run?.watchTitle == "Watch the header loop")
         #expect(run?.approveTitle == "Approve Header Loop")
     }

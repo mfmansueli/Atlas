@@ -75,7 +75,7 @@ struct BreakdownTableTests {
         #expect(german.detail == "2 territories")
         // Türkiye has no page of its own: it sees the primary one.
         #expect(table.row("en-US")?.totals.impressions == 62300)
-        #expect(table.footer.contains("Apple reports by territory"))
+        #expect(table.footer.contains("A language sums the territories"))
     }
 
     @Test func sourcesHaveNoSalesAndSayWhy() throws {
@@ -85,7 +85,7 @@ struct BreakdownTableTests {
         #expect(search.totals.proceeds == nil)
         #expect(search.startRate == .missing)
         #expect(search.detail != nil)
-        #expect(table.footer.contains("doesn’t link subscriptions to a source"))
+        #expect(table.footer.contains("doesn’t split starts and proceeds by source"))
         #expect(!BreakdownDimension.source.hasSales)
     }
 

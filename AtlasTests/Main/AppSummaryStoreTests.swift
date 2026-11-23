@@ -44,7 +44,7 @@ struct AppSummaryStoreTests {
         let store = makeStore()
         pricing.error = AppStoreConnectError.rateLimited
         await store.load(lumen)
-        #expect(store.pricing[lumen.id]?.errorMessage == AppStoreConnectError.rateLimited.errorDescription)
+        #expect(store.pricing[lumen.id]?.errorMessage == "Prices didn’t load. Apple’s hourly limit was reached. Try again in a few minutes.\nDetails: HTTP 429")
         pricing.error = nil
         await store.load(lumen)
         #expect(store.pricing[lumen.id]?.value == .empty)

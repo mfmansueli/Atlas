@@ -29,8 +29,8 @@ struct AccountsSalesSection: View {
             Text("Sales and analytics")
         } footer: {
             Text("""
-            Find the vendor number in App Store Connect → Payments and Financial Reports, under your team name. Removing a key \
-            removes its apps from Atlas. Nothing changes in App Store Connect.
+            Vendor number: App Store Connect → Payments and Financial Reports, under your team name. Removing a key removes \
+            its apps from Atlas only.
             """)
             .font(.subheadline)
             .foregroundStyle(Palette.label2)

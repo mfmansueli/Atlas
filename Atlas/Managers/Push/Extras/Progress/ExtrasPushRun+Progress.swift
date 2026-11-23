@@ -38,12 +38,12 @@ extension ExtrasPushRun {
             return preparingDetail(of: item)
         case let .uploading(fraction):
             let percent = Int((min(1, max(0, fraction)) * 100).rounded(.down))
-            guard activity.totalBytes > 0 else { return String(localized: "Uploading \(percent)%") }
+            guard activity.totalBytes > 0 else { return String(localized: "Pushing \(percent)%") }
             let sent = Int64(activity.sentBytes).formatted(.byteCount(style: .file))
             let total = Int64(activity.totalBytes).formatted(.byteCount(style: .file))
-            return String(localized: "Uploading \(percent)% · \(sent) of \(total)")
+            return String(localized: "Pushing \(percent)% · \(sent) of \(total)")
         case .processing:
-            if activity.checks > 1 { return String(localized: "Apple is processing it · \(inStep) · checked \(activity.checks) times") }
+            if activity.checks > 1 { return String(localized: "Apple is processing · \(inStep) · \(activity.checks) checks") }
             return String(localized: "Apple is processing it · \(inStep)")
         case .placing:
             if case .appPreview = item.kind { return String(localized: "Placing it first in App Previews") }
@@ -58,10 +58,10 @@ extension ExtrasPushRun {
     /// an App Preview checks there's room.
     private func preparingDetail(of item: ExtrasPushItem) -> String {
         if refData == nil || libraryIDs[item.appID] == nil {
-            return String(localized: "Getting ready: reading Apple’s sizes and the app’s asset library")
+            return String(localized: "Reading Apple’s sizes and asset library…")
         }
-        if case .appPreview = item.kind { return String(localized: "Getting ready: checking its App Previews have room") }
-        return String(localized: "Getting ready: finding where it goes")
+        if case .appPreview = item.kind { return String(localized: "Checking room in App Previews…") }
+        return String(localized: "Finding where it goes…")
     }
 
     /// "6:12 so far · about 18 min left"; nil before the push starts.
@@ -111,14 +111,14 @@ extension ExtrasPushRun {
     /// next uploads as soon as one is placed."
     var roomTitle: String? {
         guard isRunning, waitsForRoom, !isCancelling, pausedUntil == nil else { return nil }
-        return String(localized: "\(activities.count) files are with Apple; the next uploads as soon as one is placed.")
+        return String(localized: "\(activities.count) files with Apple. The next goes when one is placed.")
     }
 
     /// While the hourly budget is used up: when it goes on.
     var pauseTitle: String? {
         guard let pausedUntil else { return nil }
         let time = pausedUntil.formatted(date: .omitted, time: .shortened)
-        return String(localized: "Paused until \(time): App Store Connect’s hourly request limit is used up. It goes on by itself.")
+        return String(localized: "Hourly request limit reached. Resumes by itself at \(time).")
     }
 
     /// After Cancel Remaining: what still finishes.
@@ -127,8 +127,8 @@ extension ExtrasPushRun {
         let count = activities.count
         if count == 0 { return String(localized: "Cancelling…") }
         return count == 1
-            ? String(localized: "Cancelling: the item in flight finishes, the rest won’t go.")
-            : String(localized: "Cancelling: the \(count) items in flight finish, the rest won’t go.")
+            ? String(localized: "Cancelling after the current item.")
+            : String(localized: "Cancelling after the \(count) current items.")
     }
 
     /// "0:42", "1:02:05".

@@ -15,7 +15,7 @@ struct ProductPageTestProposalNote: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("Proposed by \(proposal.client)").font(.callout.weight(.semibold))
+            Text("Suggested by \(proposal.client)").font(.callout.weight(.semibold))
             Text(proposal.reason)
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)

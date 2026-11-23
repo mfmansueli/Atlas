@@ -103,7 +103,7 @@ final class GenerateSuggestionsModel {
                 phase = .ready
                 return .cancelled
             }
-            phase = .failed(error.localizedDescription)
+            phase = .failed(AIProviderError.message(for: error, what: String(localized: "The suggestions weren’t made.", comment: "kind:error")))
             return .failed
         }
         suggestions.beginRequest(appID: appID, area: area, client: client, prompt: plan.title)

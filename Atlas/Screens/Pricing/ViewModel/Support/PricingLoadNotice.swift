@@ -6,7 +6,7 @@
 import Foundation
 
 /// Which workspace banner a failed pricing read deserves: offline, the
-/// hourly limit, or Apple's error text. A cancelled read (the section was
+/// hourly limit, or what didn't load with Apple's text in Details. A cancelled read (the section was
 /// left while it loaded) deserves none: nothing went wrong.
 enum PricingLoadNotice {
     private static let offlineCodes: Set<URLError.Code> = [
@@ -20,7 +20,7 @@ enum PricingLoadNotice {
             let hour = calendar.dateInterval(of: .hour, for: now)?.start ?? now
             return .rateLimited(resumeAt: hour.addingTimeInterval(3600))
         }
-        return .apiError(error.localizedDescription)
+        return .apiError(AppleErrorCopy(String(localized: "Prices didn’t load.", comment: "kind:error"), error: error).text)
     }
 
     /// The task was cancelled, or URLSession stopped the request for it

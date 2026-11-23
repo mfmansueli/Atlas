@@ -99,7 +99,7 @@ enum BackgroundNeedsBuilder {
         for (index, proposal) in facts.releaseProposals.enumerated() {
             suggestions.append(BackgroundNeed(
                 id: "release-proposal-\(facts.appID)-\(index)",
-                title: String(localized: "\(proposal.client) proposes: \(proposal.title)"),
+                title: String(localized: "\(proposal.client) suggests: \(proposal.title)"),
                 detail: prefix + String(localized: "Confirm or dismiss it on the version card"),
                 destination: .version(appID: facts.appID),
                 isSuggestion: true

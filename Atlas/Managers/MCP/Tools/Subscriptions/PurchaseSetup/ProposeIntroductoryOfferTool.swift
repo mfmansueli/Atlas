@@ -37,7 +37,7 @@ struct ProposeIntroductoryOfferTool: MCPTool {
         ],
         "startDate": MCPToolDefinition.string("Optional first day, yyyy-MM-dd."),
         "endDate": MCPToolDefinition.string("Optional last day, yyyy-MM-dd."),
-        "reason": MCPToolDefinition.string("Why, in a sentence the person reads in Review & Push."),
+        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person reads in Review & Push."),
         "evidence": [
             "type": "array",
             "items": ["type": "string"],

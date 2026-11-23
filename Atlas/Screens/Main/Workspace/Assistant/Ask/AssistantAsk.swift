@@ -34,7 +34,7 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
     /// "Sent to Claude Code: Store Page. The Autopilot button in the
     /// toolbar shows it’s working."
     var announcement: String {
-        String(localized: "Sent to \(client): \(spokenSubject). The Autopilot button in the toolbar shows it’s working.")
+        String(localized: "Sent to \(client): \(spokenSubject). The Autopilot button shows progress.")
     }
 
     /// The asking buttons' title meanwhile: "Claude Code Is Working…".
@@ -52,6 +52,6 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
 
     /// What the toolbar's popover says about it.
     var popoverText: String {
-        String(localized: "\(client) is working on \(subject). What it suggests will show up in purple.")
+        String(localized: "\(client) is working on \(subject). Suggestions show in purple.")
     }
 }

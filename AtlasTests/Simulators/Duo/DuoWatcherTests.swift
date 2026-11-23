@@ -96,7 +96,7 @@ struct DuoWatcherTests {
         #expect(duo.state == .open)
         #expect(await duo.look(mayStart: true) == nil)
         #expect(Self.calls("open-duo", in: runner) == 1)
-        #expect(DuoWatcher.Event.pressedOpen.logText == "iPhone Duo was closed: Atlas opened it in Device Hub")
+        #expect(DuoWatcher.Event.pressedOpen.logText == "Opened iPhone Duo in Device Hub")
     }
 
     @Test func onceItsOpenedItSaysSoOnce() async {
@@ -127,7 +127,7 @@ struct DuoWatcherTests {
         #expect(duo.state == .needsAccessibility)
         #expect(Self.calls("accessibility", in: runner) == 1, "macOS asks once")
         #expect(duo.state.waitsForPerson)
-        #expect(duo.state.summary.contains("allow Atlas in Privacy & Security › Accessibility"))
+        #expect(duo.state.summary.contains("Allow Atlas in Privacy & Security › Accessibility"))
 
         runner.statuses["open-duo"] = nil
         #expect(await duo.look(mayStart: true) == .pressedOpen)

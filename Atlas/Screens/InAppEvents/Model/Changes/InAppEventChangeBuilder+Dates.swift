@@ -32,8 +32,7 @@ extension InAppEventChangeBuilder {
         }
         guard !event.schedules.isEmpty, event.schedules.allSatisfy({ !$0.territories.isEmpty }) else {
             return String(localized: """
-            Atlas doesn’t know which countries or regions “\(name)” shows in, so it can’t send new dates without changing those too. \
-            Change its dates in App Store Connect.
+            Atlas doesn’t know where “\(name)” shows, so it can’t change its dates. Change them in App Store Connect.
             """)
         }
         let dates = event.schedules.map(InAppEventDates.init)
@@ -42,8 +41,7 @@ extension InAppEventChangeBuilder {
         }
         guard Set(dates).count == 1 else {
             return String(localized: """
-            “\(name)” has different dates in different countries or regions. Atlas changes one set for all of them, so change these \
-            in App Store Connect.
+            “\(name)” has different dates per country or region. Change them in App Store Connect.
             """)
         }
         return nil

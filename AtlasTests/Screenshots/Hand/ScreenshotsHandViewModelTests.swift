@@ -50,7 +50,7 @@ struct ScreenshotsHandViewModelTests {
         #expect(services.storedDocument?.handSets?.count == 1)
         #expect(items(model)[1].cell.state == .handReplaced)
         #expect(model.handRevision == 1)
-        #expect(model.captionToast?.text == "Replaced screenshot 2 in Japanese. It’s waiting in Review & Push.")
+        #expect(model.captionToast?.text == "Replaced screenshot 2 in Japanese. In Review & Push.")
         #expect(model.captionToast?.actionTitle == "Review & Push")
     }
 
@@ -134,7 +134,7 @@ struct ScreenshotsHandViewModelTests {
         await model.importHandFolder([row], mode: .replace)
         #expect(model.ownCount(locale: "ja", displayType: .iPhone) == 2)
         #expect(items(model).count == 7)
-        #expect(model.captionToast?.text == "Imported 2 screenshots into 1 language. They’re waiting in Review & Push.")
+        #expect(model.captionToast?.text == "Imported 2 screenshots into 1 language. In Review & Push.")
     }
 
     @Test func anAssistantsFileIsAcceptedIntoItsPlace() async throws {

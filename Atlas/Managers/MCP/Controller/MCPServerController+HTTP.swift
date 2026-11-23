@@ -169,6 +169,9 @@ extension MCPServerController {
         if let kind = tool.definition.proposalKind, !allows(kind) { return .failed(kind.refusal, target: target) }
         guard let workspace else { return .failed(MCPToolError.notConnected.localizedDescription, target: target) }
         if let refusal = ProAssistantGate.refusal(forTool: tool.definition.name, isPro: isPro()) { return .failed(refusal, target: target) }
+        if let refusal = AssistantTextCheck.refusal(arguments.values, schema: tool.definition.inputSchema) {
+            return .refused(refusal, target: target)
+        }
         do {
             let context = MCPToolContext(
                 workspace: workspace,

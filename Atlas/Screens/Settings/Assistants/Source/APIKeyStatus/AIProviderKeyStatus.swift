@@ -23,7 +23,9 @@ enum AIProviderKeyStatus: Equatable, Sendable {
         case AIProviderError.unauthorized: self = .rejected(vendor)
         case let error as URLError where Self.offlineCodes.contains(error.code):
             self = .unchecked(vendor, reason: String(localized: "You’re offline. Check again when this Mac is back online."))
-        default: self = .unchecked(vendor, reason: error.localizedDescription)
+        default:
+            let what = String(localized: "The key couldn’t be checked.", comment: "kind:error")
+            self = .unchecked(vendor, reason: AIProviderError.message(for: error, what: what))
         }
     }
 
@@ -46,7 +48,7 @@ enum AIProviderKeyStatus: Equatable, Sendable {
         case let .connected(check):
             String(localized: "Kept in this Mac’s Keychain. \(check.vendor.title) accepted it, so translations can use it.")
         case let .rejected(vendor):
-            String(localized: "\(vendor.title) answered that the key is wrong, revoked or has no access. Paste a working key to replace it.")
+            String(localized: "\(vendor.title) rejected the key: wrong, revoked or no access. Paste a working key.")
         case let .unchecked(_, reason): reason
         }
     }

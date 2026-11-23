@@ -69,7 +69,7 @@ struct NewAppVersionChangeBuilder {
             requests: [Self.request(for: version, appID: appID)],
             createdAt: date
         )
-        let detail = String(localized: "A new \(version.platformTitle) version in Prepare for Submission. Once it’s pushed, edit its texts on the Store Page.")
+        let detail = String(localized: "New \(version.platformTitle) version, in Prepare for Submission. Edit its texts after the push.")
         change.creation = PendingCreation(
             id: id,
             title: String(localized: "Create version \(version.versionString)"),

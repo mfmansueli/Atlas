@@ -128,7 +128,7 @@ struct AutopilotToolbarButton: View {
                 if case .capturing = state {
                     Text("Screenshots it already made stay as suggestions.")
                 } else {
-                    Text("What it made so far is dropped; the captures stay for the next start.")
+                    Text("Its work so far is dropped. Captures stay for next time.")
                 }
             }
             .sheet(isPresented: $isShowingFailure, onDismiss: onForgetFailure) {
@@ -239,7 +239,7 @@ struct AutopilotToolbarButton: View {
         }
         Section {
             if activity.proposalCount > 0 {
-                Button(activity.proposalCount == 1 ? String(localized: "1 Proposal to Review…") : String(localized: "\(activity.proposalCount) Proposals to Review…")) {
+                Button(activity.proposalCount == 1 ? String(localized: "1 Suggestion to Review…") : String(localized: "\(activity.proposalCount) Suggestions to Review…")) {
                     reviewProposals()
                 }
             }

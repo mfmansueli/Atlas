@@ -101,7 +101,7 @@ struct PricingStrategyTests {
     }
 
     @Test func methodTitles() {
-        #expect(PricingMethod.allCases.map(\.title) == ["Recommended", "Apple equalization", "Price index", "Custom regional tiers"])
+        #expect(PricingMethod.allCases.map(\.title) == ["Suggested", "Apple equalization", "Price index", "Custom regional tiers"])
     }
 
     // MARK: - Tiers

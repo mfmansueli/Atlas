@@ -71,7 +71,7 @@ struct InAppEventSchedulesCheckTests {
         await model.load()
         let publish = try #require(model.settings(of: event, format: Self.gmt).first { $0.key == "publish" })
         #expect(publish.isProblem)
-        #expect(publish.value.hasPrefix("Was set to show from"), "\(publish.value)")
+        #expect(publish.value.hasPrefix("Show time "), "\(publish.value)")
         #expect(publish.value.contains(Self.gmt.dayAndTime(Data.day(-1), now: Data.now)))
     }
 

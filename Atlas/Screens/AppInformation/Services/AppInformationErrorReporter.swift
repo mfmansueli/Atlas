@@ -19,12 +19,11 @@ enum AppInformationErrorReporter {
             case .notFound: break
             default: push?.report(.apiError(error.pushFailureText))
             }
-            return error.errorDescription ?? error.localizedDescription
         }
         if let error = error as? URLError, offlineCodes.contains(error.code) {
             push?.report(.offline)
         }
-        return error.localizedDescription
+        return AppleErrorCopy(String(localized: "App information didn’t load.", comment: "kind:error"), error: error).text
     }
 
     /// The line under "Couldn't load accessibility declarations.": the
@@ -42,8 +41,8 @@ enum AppInformationErrorReporter {
             case .rateLimited: parts.append("429")
             case .invalidPrivateKey, .invalidResponse, .unexpectedPayload: parts.append(error.errorDescription ?? "")
             }
-        } else {
-            parts.append(error.localizedDescription)
+        } else if let details = AppleErrorCopy.details(for: error) {
+            parts.append(details)
         }
         return (parts + ["GET \(request)"]).joined(separator: " · ")
     }

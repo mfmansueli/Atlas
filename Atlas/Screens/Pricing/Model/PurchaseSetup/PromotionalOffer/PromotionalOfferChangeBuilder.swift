@@ -53,7 +53,7 @@ struct PromotionalOfferChangeBuilder {
         change.creation = PendingCreation(
             id: id,
             title: String(localized: "Add the promotional offer “\(offer.trimmedName)” to \(subscription.name)"),
-            detail: String(localized: "Your app offers it to the subscribers it chooses, signed by your server, with the identifier \(offer.trimmedIdentifier)."),
+            detail: String(localized: "Your app offers it to chosen subscribers, signed by your server, as \(offer.trimmedIdentifier)."),
             source: source,
             fields: SubscriptionOfferChanges.fields(fields, source: source, evidence: evidence)
         )

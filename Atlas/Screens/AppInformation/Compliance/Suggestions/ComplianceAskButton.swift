@@ -15,11 +15,11 @@ struct ComplianceAskButton: View {
             app: app,
             purpose: ComplianceAskPrompt.purpose,
             prompt: ComplianceAskPrompt.text(app: app.name),
-            help: { client in String(localized: "Ask \(client) to suggest App Compliance answers from the project") },
+            help: { client in String(localized: "Asks \(client) to suggest answers from the project") },
             explanation: { client in
                 String(localized: """
-                \(client) reads \(app.name)’s project and suggests answers. Each one waits on its card until you \
-                accept it; you still enter them in App Store Connect.
+                \(client) reads \(app.name)’s project and suggests answers. Accept each, then enter it in App Store \
+                Connect.
                 """)
             },
             identifier: "appInformation.compliance.ask"

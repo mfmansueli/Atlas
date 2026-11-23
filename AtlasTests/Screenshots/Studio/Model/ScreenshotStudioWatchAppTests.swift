@@ -32,7 +32,7 @@ struct ScreenshotStudioWatchAppTests {
         #expect(model.studio.planFoundText == "Found in Lumen Journal 1.4 on App Store Connect: its build has an Apple Watch app.")
         #expect(model.studio.planDevices(plan) == [.iPhone, .iPhoneDuo, .iPad, .watch])
         #expect(model.studio.planDeviceDetail(.watch, plan: plan)
-            == "422 × 514 · Ultra 3 · required: the 1.4 build has an Apple Watch app. You’ll need to upload these by hand before submitting.")
+            == "422 × 514 · Ultra 3 · required: the 1.4 build has an Apple Watch app. Add these by hand before submitting.")
     }
 
     @Test func withAVisionOSVersionTooBothAreNamed() async {

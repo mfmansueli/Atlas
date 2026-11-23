@@ -50,8 +50,8 @@ struct ProSettingsPane: View {
                 }
             } footer: {
                 Text("""
-                AI runs on your own assistant or API key, so Pro’s price never includes AI usage. If Pro ends, everything you made \
-                stays and stays editable.
+                Assistant use runs on your own plan or API key, never in Pro’s price. If Pro ends, all your work stays \
+                editable.
                 """)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -90,7 +90,7 @@ struct ProSettingsPane: View {
             title: "Autopilot, and artwork from Claude",
             free: String(localized: "Screenshots, App Preview, headers, event images")
         ),
-        Included(title: "Recommended prices for 175 countries", free: String(localized: "Setting any price yourself is free")),
+        Included(title: "Suggested prices for 175 countries", free: String(localized: "Setting any price yourself is free")),
         Included(title: "Retention messages and offers", free: nil),
         Included(
             title: "Suggested replies to reviews, and Reply to All",

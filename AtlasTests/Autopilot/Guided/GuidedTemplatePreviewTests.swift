@@ -82,7 +82,7 @@ struct GuidedTemplatePreviewTests {
         #expect(preview.items.allSatisfy { $0.hasCapture && !$0.showsPrimaryInterface && !$0.borrowsIPad })
         #expect(preview.items.allSatisfy { $0.job.layout.canvas.pixelSize == PixelSize(width: 1320, height: 2868) })
         #expect(preview.sizeTitle == "iPhone 6.9″ · 1320 × 2868")
-        #expect(preview.note.hasPrefix("The App Store scales this set down for smaller iPhones"))
+        #expect(preview.note.hasPrefix("One size covers all iPhones"))
         #expect(preview.items[2].label == "3 · \(data.slotNames[2])")
     }
 
@@ -98,7 +98,7 @@ struct GuidedTemplatePreviewTests {
         let preview = builder().preview(.arcade, on: .iPad, locale: .arabic)
         let allShowPrimary = preview.items.allSatisfy(\.showsPrimaryInterface)
         #expect(allShowPrimary)
-        #expect(preview.note.contains("Lumen’s iPad interface isn’t captured in Arabic yet"), "\(preview.note)")
+        #expect(preview.note.contains("Lumen’s iPad interface isn’t in Arabic yet"), "\(preview.note)")
         let german = builder().preview(.arcade, on: .iPad, locale: .german)
         #expect(!german.items.contains { $0.showsPrimaryInterface })
         #expect(!german.note.contains("isn’t captured"))
@@ -131,7 +131,7 @@ struct GuidedTemplatePreviewTests {
     @Test func macNotInTheRunIsOnlyAPreviewUntilAdded() {
         let preview = builder(withMac, plan: StudioDebugRuns.everyDevicePlan).preview(.arcade, on: .mac, locale: .englishUS)
         #expect(!preview.isInRun)
-        #expect(preview.notInRunText == "Mac isn’t in this run yet, so this is only a preview. Add it and Autopilot captures and makes these screenshots too.")
+        #expect(preview.notInRunText == "Mac isn’t in this run; this is a preview. Add it to have Autopilot make these too.")
         #expect(preview.addTitle == "Add Mac to the Run")
         var plan = StudioDebugRuns.everyDevicePlan
         plan.setPlans(.mac, true)
@@ -178,14 +178,14 @@ struct GuidedTemplatePreviewTests {
         #expect(preview.isWatch)
         #expect(preview.items.map(\.name) == DebugEveryDevice.watchScreens.map(\.name))
         #expect(preview.items.allSatisfy { $0.job.layout.isFullBleed && $0.job.layout.lines.isEmpty })
-        #expect(preview.note.contains("no template is applied: this is what people will see"))
+        #expect(preview.note.contains("no template applies. People see this with any template"))
     }
 
     @Test func appleWatchWithoutCapturesSaysWhenTheyCome() {
         let preview = builder(plan: StudioDebugRuns.everyDevicePlan).preview(.arcade, on: .watch, locale: .englishUS)
         #expect(preview.items.count == DebugEveryDevice.watchScreens.count, "The plan's watch screens")
         #expect(!preview.items.contains { $0.hasCapture })
-        #expect(preview.note.contains("watch screens show here once Autopilot captures them"))
+        #expect(preview.note.contains("watch screens show here once captured"))
     }
 
     // MARK: - Without captures
@@ -196,7 +196,7 @@ struct GuidedTemplatePreviewTests {
         let preview = builder(document).preview(.cinema, on: .iPhone, locale: .englishUS)
         #expect(preview.items.count == 5)
         #expect(!preview.items.contains { $0.hasCapture })
-        #expect(preview.note.contains("no captures yet"))
+        #expect(preview.note.contains("Empty until Autopilot captures the screens."))
     }
 
     // MARK: - New templates

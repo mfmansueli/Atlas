@@ -17,7 +17,7 @@ struct AssistantConnectProgressStep: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             AssistantConnectStepTitle(
                 title: String(localized: "Connecting \(model.assistant.title)…"),
-                detail: String(localized: "Atlas is doing the setup. There is nothing to type or copy; this takes a few seconds.")
+                detail: String(localized: "Setting up. Nothing to type or copy; this takes a few seconds.")
             )
             VStack(alignment: .leading, spacing: 9) {
                 ForEach(AssistantConnectModel.Progress.allCases, id: \.self) { line in
@@ -63,8 +63,7 @@ struct AssistantConnectProgressStep: View {
                 Text("Atlas needs its helper to start Claude Code")
                     .font(.callout.weight(.semibold))
                 Text("""
-                The sandbox doesn’t let Atlas start programs itself. Install Helper… opens a Save panel in the right folder: just \
-                click Save, and Connect goes on.
+                Install Helper… opens a Save panel in the right folder. Click Save and Connect continues.
                 """)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)

@@ -23,7 +23,7 @@ struct TemplateHistoryRowView: View {
                 if let assistant = row.assistant {
                     HStack(spacing: Spacing.xxSmall) {
                         MonogramTag(client: assistant)
-                        Text("Proposed by \(assistant) · accepted by you")
+                        Text("Suggested by \(assistant) · accepted by you")
                             .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                     }

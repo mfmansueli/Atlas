@@ -27,7 +27,7 @@ struct PrivacyExplainSheet: View {
             TextField(
                 String(localized: "Reason"),
                 text: $reason,
-                prompt: Text("e.g. Diagnostics are turned off with sendDefaultPii = false"),
+                prompt: Text("Diagnostics are off: sendDefaultPii = false"),
                 axis: .vertical
             )
             .lineLimit(3...6)
@@ -55,7 +55,7 @@ struct PrivacyExplainSheet: View {
     private var declaredBy: String {
         let sdks = viewModel.worksheet.manifestDeclarations[type] ?? []
         guard !sdks.isEmpty else {
-            return String(localized: "The reason is kept with the worksheet, and the cross-check stops flagging it.")
+            return String(localized: "Saved with the worksheet. The cross-check stops flagging it.")
         }
         let names = sdks.formatted(.list(type: .and))
         return String(localized: "\(names) declares it in a privacy manifest. The reason is kept with the worksheet.")

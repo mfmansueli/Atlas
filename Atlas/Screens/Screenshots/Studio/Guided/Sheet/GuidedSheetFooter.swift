@@ -28,7 +28,7 @@ struct GuidedSheetFooter: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("autopilot.guided.footer.text")
                 if step == .making || step == .choose, studio.stall != nil {
-                    Button(launcher?.canStart == true ? String(localized: "Continue") : String(localized: "Copy the Prompt to Continue")) {
+                    Button(launcher?.canStart == true ? String(localized: "Continue") : String(localized: "Copy Prompt to Continue")) {
                         studio.continueRun()
                     }
                     .buttonStyle(.borderedProminent)
@@ -50,7 +50,7 @@ struct GuidedSheetFooter: View {
         case .make:
             return GuidedMakeSummary.sentence(plan)
         case .look:
-            return String(localized: "Everything here can be changed later with Ask for Changes.")
+            return String(localized: "Change any of this later with Ask for Changes.")
         case .plan:
             if let simulators = launcher?.simulators {
                 let check = GuidedMacCheck(run: run, state: simulators.state)
@@ -69,10 +69,10 @@ struct GuidedSheetFooter: View {
             if run.waitsOnlyOnProblems {
                 // Nothing is in when the problems hold every capture.
                 return run.capturedCount == 0
-                    ? String(localized: "The run waits on you: it goes on once you decide what’s above.")
-                    : String(localized: "Everything else is in. The run goes on once you decide what’s left above.")
+                    ? String(localized: "The run waits for your decision above.")
+                    : String(localized: "Everything else is done. Decide what’s left above to continue.")
             }
-            if !run.openProblems.isEmpty { return String(localized: "A problem needs you before this part goes on; the rest keeps going.") }
+            if !run.openProblems.isEmpty { return String(localized: "This part waits on a problem. The rest keeps going.") }
             return String(localized: "You can close this window; Autopilot keeps going.")
         case .choose:
             return chooseHint
@@ -82,7 +82,7 @@ struct GuidedSheetFooter: View {
             if run.stage == .watchPreview, approved == parts {
                 return String(localized: "Making the last changes before Approve All.")
             }
-            return String(localized: "\(approved) of \(parts) approved. Approve All puts them in Review & Push; nothing is sent until you push.")
+            return String(localized: "\(approved) of \(parts) approved. Approve All adds them to Review & Push. Nothing is sent yet.")
         case .done:
             return ""
         }
@@ -155,7 +155,7 @@ struct GuidedSheetFooter: View {
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
                 .disabled(!studio.canApproveAllGuided || push == nil)
-                .help(Text("Approves every part and puts the set in Review & Push, top right, where you push it."))
+                .help(Text("Approves every part and adds the set to Review & Push."))
                 .accessibilityIdentifier("autopilot.guided.approveAll")
         case .done:
             EmptyView()

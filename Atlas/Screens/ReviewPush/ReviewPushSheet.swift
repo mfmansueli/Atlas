@@ -84,7 +84,7 @@ struct ReviewPushSheet: View {
                 ContentUnavailableView(
                     "Nothing to push",
                     systemImage: "checkmark.circle",
-                    description: Text("Edits and accepted suggestions from every section collect here until you push them.")
+                    description: Text("Edits and accepted suggestions wait here until you push them.")
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .accessibilityIdentifier("review.empty")

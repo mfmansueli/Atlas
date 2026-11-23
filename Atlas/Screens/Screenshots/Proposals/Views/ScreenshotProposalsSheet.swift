@@ -42,7 +42,7 @@ struct ScreenshotProposalsSheet: View {
                     }
                 }
                 if viewModel.proposals.isEmpty {
-                    Text("Nothing yet. Proposals show here as assistants send them.")
+                    Text("No suggestions yet. They show here as assistants send them.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                         .padding(Spacing.medium)
@@ -73,7 +73,7 @@ struct ScreenshotProposalsSheet: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("proposals.detail")
         } else {
-            ContentUnavailableView("No proposal selected", systemImage: "tray")
+            ContentUnavailableView("No suggestion selected", systemImage: "tray")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }

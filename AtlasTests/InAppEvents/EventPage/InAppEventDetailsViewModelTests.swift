@@ -50,7 +50,7 @@ struct InAppEventDetailsViewModelTests {
         event.deepLink = nil
         let model = await makeModel([event])
         #expect(model.reviewItems(of: event).map(\.id) == ["deepLink"])
-        #expect(model.footerText == "To submit: add a deep link. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: add a deep link. No new version needed.")
         #expect(model.footerButton?.isEnabled == false)
 
         model.setDetail(.deepLink, to: "lumen://challenge/winter", of: event)
@@ -59,7 +59,7 @@ struct InAppEventDetailsViewModelTests {
         #expect(model.detailValue(.deepLink, of: event) == "lumen://challenge/winter")
         #expect(model.reviewItems(of: event).map(\.state) == [.queued])
         // It's there once pushed.
-        #expect(model.footerText == "To submit: push its changes. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: push its changes. No new version needed.")
 
         // Back to App Store Connect's value: nothing waits.
         model.setDetail(.deepLink, to: "", of: event)
@@ -104,7 +104,7 @@ struct InAppEventDetailsViewModelTests {
         claims.pin(.read(folder: "/Lumen", claims: ProjectLinkClaims(schemes: [], targets: ["Lumen"])), for: Data.app.id)
         #expect(model.linkClaim(of: Self.ready) == .notClaimed("lumen://"))
         #expect(model.reviewItems(of: Self.ready).map(\.id) == ["linkNotClaimed"])
-        #expect(model.footerText == "To submit: make Lumen Journal open its deep link. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: make Lumen Journal open its deep link. No new version needed.")
         #expect(model.footerButton?.isEnabled == false)
 
         claims.pin(.read(folder: "/Lumen", claims: ProjectLinkClaims(schemes: ["lumen"], targets: ["Lumen"])), for: Data.app.id)

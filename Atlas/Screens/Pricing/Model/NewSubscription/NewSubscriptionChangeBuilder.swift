@@ -207,8 +207,8 @@ struct NewSubscriptionChangeBuilder {
             ? String(localized: "a new group, \(subscription.group.referenceName)")
             : subscription.group.referenceName
         return String(localized: """
-        A \(subscription.period.title) subscription for \(app.name) in \(group), available in every country or region. \
-        Add its review screenshot in App Store Connect before you submit it.
+        A \(subscription.period.title) subscription for \(app.name) in \(group), sold everywhere. Add its review screenshot in App Store \
+        Connect before submitting.
         """)
     }
 

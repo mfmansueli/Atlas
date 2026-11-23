@@ -33,11 +33,11 @@ enum IntroductoryOfferProblem: Hashable, Sendable {
                 ? String(localized: "This offer runs for \(range.lowerBound) period.")
                 : String(localized: "A pay as you go offer runs for \(range.lowerBound) to \(range.upperBound) periods.")
         case .missingPrice:
-            return String(localized: "Enter what the offer costs in the United States, in US dollars.")
+            return String(localized: "Enter the offer’s US price, in US dollars.")
         case .invalidPrice:
             return String(localized: "Enter a price in US dollars, above zero and with up to two decimals.")
         case let .notBelowSubscriptionPrice(price):
-            return String(localized: "An introductory price is below the subscription’s own (\(price) in the United States).")
+            return String(localized: "Set a price below the subscription’s \(price) in the United States.")
         case .noTerritories:
             return String(localized: "Choose at least one country or region.")
         case let .unknownTerritories(ids):
@@ -47,10 +47,7 @@ enum IntroductoryOfferProblem: Hashable, Sendable {
         case .startsInThePast:
             return String(localized: "The offer can’t start before today.")
         case let .alreadyHasOne(summary):
-            return String(localized: """
-            It already has an introductory offer (\(summary)). App Store Connect runs one at a time in each country or \
-            region; end or delete that one in App Store Connect first.
-            """)
+            return String(localized: "It already has an introductory offer (\(summary)). End or delete it in App Store Connect first.")
         }
     }
 }

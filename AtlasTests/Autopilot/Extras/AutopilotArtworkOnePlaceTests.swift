@@ -115,7 +115,7 @@ struct AutopilotArtworkOnePlaceTests {
         let motion = AutopilotArtworkBrief(moving).rows.first { $0.title == "Motion · 20-second loop" }?.text
         #expect(motion?.contains("float") == false, "The header alone has no phone to float")
         #expect(!ScreenshotStudioModel.artworkMotionNote(moving).contains("float"))
-        #expect(ScreenshotStudioModel.artworkMotionNote(moving).hasSuffix("Apple plays it on repeat, muted, at 21:9."))
+        #expect(ScreenshotStudioModel.artworkMotionNote(moving).hasSuffix("Apple loops it muted at 21:9."))
 
         let search = AutopilotArtworkBrief(AutopilotExtras(makesArtwork: true, artworkSize: .searchOnly))
         #expect(search.rows.map(\.title) == ["Search results · 3:2", "Safe area", "The app’s own look", "About the app", "Still image", "Words"])

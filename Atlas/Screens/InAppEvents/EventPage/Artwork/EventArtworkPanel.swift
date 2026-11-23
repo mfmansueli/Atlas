@@ -149,7 +149,7 @@ struct EventArtworkPanel: View {
                 }
                 if state.showsAddMotion {
                     Button("Make Them Move", action: actions.addMotion)
-                        .help("Claude animates these concepts as they are: a 20-second loop for the card and the details page.")
+                        .help("Adds a 20-second loop to the card and details page")
                         .accessibilityIdentifier("events.art.addMotion")
                 }
                 if state.showsView {

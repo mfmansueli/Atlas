@@ -50,7 +50,7 @@ struct StoreKitProStore: ProStore {
                 return .failed(String(localized: "The purchase didn’t finish."))
             }
         } catch {
-            return .failed(error.localizedDescription)
+            return .failed(AppleErrorCopy(String(localized: "The purchase didn’t finish.", comment: "kind:error"), error: error).text)
         }
     }
 

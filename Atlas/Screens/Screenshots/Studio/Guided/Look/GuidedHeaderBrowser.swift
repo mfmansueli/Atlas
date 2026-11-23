@@ -35,7 +35,7 @@ struct GuidedHeaderBrowser: View {
                 picks: picks,
                 text: picks.isEmpty
                     ? String(localized: "Nothing picked yet. Preview a scene above, then Add to My Picks.")
-                    : String(localized: "\(studio.headerDesignerName) makes one header from each pick, fitted to \(studio.app.name). You choose one after it’s made."),
+                    : String(localized: "\(studio.headerDesignerName) makes a \(studio.app.name) header from each pick; you choose one."),
                 emptyHeight: 57,
                 identifier: "autopilot.guided.look.scene.tray",
                 name: \.name,

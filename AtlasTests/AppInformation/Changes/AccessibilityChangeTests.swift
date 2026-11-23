@@ -69,9 +69,9 @@ struct AccessibilityChangeTests {
         let option = try #require(change.option)
         #expect(!option.isOn)
         #expect(!option.isEnabled)
-        #expect(option.disabledReason == "Apple Vision Pro has no live version yet, so this is saved as a draft. Publish it after 1.4 is released.")
+        #expect(option.disabledReason == "Saved as a draft: Apple Vision Pro has no live version. Publish it after 1.4 is released.")
         #expect(change.pushRequests.count == 1)
-        #expect(option.footnote?.text(count: 2) == "2 declarations publish immediately when pushed")
+        #expect(option.footnote?.text(count: 2) == "2 declarations go live when pushed")
     }
 
     @Test func answeringNoSendsEveryFeatureOff() throws {

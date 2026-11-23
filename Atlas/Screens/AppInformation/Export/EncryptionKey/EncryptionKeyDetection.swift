@@ -84,7 +84,7 @@ enum EncryptionKeyDetection: Hashable, Sendable {
     var headline: String? {
         switch self {
         case let .reported(report): report.headline
-        case let .inProject(key): String(localized: "In \(key.whereText) — builds uploaded from now on answer it")
+        case let .inProject(key): String(localized: "In \(key.whereText) · future builds answer it")
         case .inferred: String(localized: "Builds already answer it")
         case .notInProject, .missing, .unknown: nil
         }
@@ -97,18 +97,18 @@ enum EncryptionKeyDetection: Hashable, Sendable {
             return report.places.isEmpty ? nil : report.places.map(\.text).joined(separator: "\n")
         case let .inProject(key):
             let code = key.code.map { String(localized: ", code \($0)") } ?? ""
-            return String(localized: "\(EncryptionKeyAnswer.key) = \(key.value.rawValue)\(code). Atlas read it in the project folder.")
+            return String(localized: "\(EncryptionKeyAnswer.key) = \(key.value.rawValue)\(code), read from the project folder.")
         case let .inferred(value, builds):
             let list = builds.formatted(.list(type: .and))
             let they = builds.count == 1 ? String(localized: "Build \(list) arrived") : String(localized: "Builds \(list) arrived")
             return String(localized: """
-            \(they) with the encryption answer already set (\(value.meaning)), which is what the key does. An answer given \
-            in App Store Connect for each build looks the same, and Atlas hasn’t checked the project: this is inferred.
+            \(they) with the encryption answer set (\(value.meaning)), as the key would. Inferred only: a per-build \
+            answer in App Store Connect looks the same.
             """)
         case let .notInProject(targets):
             let names = targets.formatted(.list(type: .and))
             return String(localized: """
-            Atlas didn’t find the key in \(names)’s Release build settings or Info.plist. Settings in .xcconfig files aren’t read.
+            No key in \(names)’s Release build settings or Info.plist. .xcconfig files aren’t read.
             """)
         case let .missing(build?):
             return String(localized: "Build \(build) is still waiting for its encryption answer, so the key isn’t in it.")

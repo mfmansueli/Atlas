@@ -111,7 +111,7 @@ struct InAppEventsViewModelTests {
         let model = await makeModel()
         model.localeCode = "ja"
         #expect(model.suggestion?.name == "冬")
-        #expect(model.fallbackNote == "Not localized yet: people who read Japanese see the event in English (U.S.).")
+        #expect(model.fallbackNote == "Not translated yet. Japanese readers see English (U.S.).")
         model.acceptSuggestion()
         #expect(model.text(.name) == "冬")
         #expect(model.text(.longDescription) == "Long ja")
@@ -133,7 +133,7 @@ struct InAppEventsViewModelTests {
         #expect(store.open(for: Data.app.id).map(\.eventID) == ["winter", "winter", "winter"])
         #expect(model.suggestedCount == 3)
         model.acceptAllLanguages()
-        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. They’re waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. In Review & Push.")
         let prefix = "inAppEvents.\(Data.app.id).winter."
         #expect(queue.changes(for: Data.app.id).map { String($0.id.dropFirst(prefix.count)) }.sorted() == [
             "de-DE.longDescription", "de-DE.name", "de-DE.shortDescription", "ja.new", "ko.new",
@@ -198,14 +198,14 @@ struct InAppEventsViewModelTests {
         let model = await makeModel()
         var event = NewInAppEvent(now: Data.now)
         event.referenceName = "Winter Reflection 2026"
-        #expect(model.problem(for: event)?.hasPrefix("Another event already has the reference name “Winter Reflection 2026”") == true)
+        #expect(model.problem(for: event)?.hasPrefix("“Winter Reflection 2026” is taken by another event") == true)
         #expect(!model.add(event))
         event.referenceName = "Spring Reset 2027"
         event.purchaseRequirement = .inAppPurchase
         event.deepLink = "lumen://spring"
         #expect(model.add(event))
         // Queued, the name is taken too.
-        #expect(model.problem(for: event)?.hasPrefix("Another event already has the reference name") == true)
+        #expect(model.problem(for: event)?.hasSuffix("is taken by another event. Choose another name.") == true)
         event.referenceName = "Summer 2027"
         event.eventStart = Data.day(-1)
         event.eventEnd = Data.day(3)
@@ -241,7 +241,7 @@ struct InAppEventsViewModelTests {
     @Test func theFooterSaysWhatADraftStillNeeds() async {
         store.add([Data.suggestion("ja")], for: Data.app.id)
         let model = await makeModel()
-        #expect(model.footerText == "To submit: accept or write every language. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: accept or write every language. No new version needed.")
         #expect(model.footerButton?.title == "Submit Event…")
         #expect(model.footerButton?.isEnabled == false)
         model.versionString = "1.4"
@@ -257,12 +257,12 @@ struct InAppEventsViewModelTests {
         let services = FakeInAppEventsServices([ready])
         let model = await makeModel(services)
         model.pageLocales = ["en-US"]
-        #expect(model.footerText == "Ready. Events can go to App Review on their own, without a new version.")
+        #expect(model.footerText == "Ready. Submit it without a new version.")
         #expect(model.footerButton?.isEnabled == true)
         let release = FakeReleaseServices()
         await model.submitSelectedEvent(using: release, platform: "IOS")
         #expect(release.submittedEvents == [["winter"]])
-        #expect(model.toast?.text == "“Winter Reflection Challenge” is submitted. App Review usually takes about a day.")
+        #expect(model.toast?.text == "“Winter Reflection Challenge” submitted. App Review usually takes a day.")
         #expect(services.readCount == 2)
 
         release.refuses = true

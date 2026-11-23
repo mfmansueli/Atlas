@@ -128,7 +128,7 @@ struct AutoReplyCenterTests {
         let services = FakeReviewsServices()
         await center.sendDue(app: app, reviews: store, services: services)
         #expect(services.sent.isEmpty)
-        #expect(center.sendingHold(for: app.id, reviews: store)?.contains("send yourself") == true)
+        #expect(center.sendingHold(for: app.id, reviews: store)?.contains("your first reply") == true)
 
         store.markReplySentByHand()
         await center.sendDue(app: app, reviews: store, services: services)

@@ -50,20 +50,20 @@ struct AssistantSuggestionCTA: View {
 
     private var title: String {
         if case let .waiting(client) = status { return String(localized: "Finish connecting \(client)") }
-        return String(localized: "Get more suggestions from your own AI assistant")
+        return String(localized: "Get more suggestions from your assistant")
     }
 
     private var message: String {
         switch area {
         case .storePage:
             String(localized: """
-            Connect Claude Code or another MCP client, or add an API key, and Atlas can suggest What’s New, \
-            promotional text and subtitles in every language. You review each one here.
+            Connect Claude Code, another MCP client or an API key to get What’s New, promotional text and subtitles in every \
+            language.
             """)
         case .appInformation:
             String(localized: """
-            Connect Claude Code or another MCP client and it can answer these from your code: categories, App Review \
-            notes, age rating and accessibility. You review each one here.
+            Connect Claude Code or another MCP client to answer categories, App Review notes, age rating and accessibility \
+            from your code.
             """)
         }
     }

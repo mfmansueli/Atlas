@@ -81,7 +81,7 @@ extension AppPrivacyViewModel {
     func acceptAllHighConfidence() {
         var accepted = 0
         update { accepted = $0.acceptAllHighConfidence() }
-        say(String(localized: "Accepted \(accepted) high-confidence suggestions. Conflicts and types with an open question were left for you."))
+        say(String(localized: "Accepted \(accepted) suggestions marked Sure. Conflicts and open questions wait for you."))
     }
 
     func keepYours(_ type: PrivacyDataType) {

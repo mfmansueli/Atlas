@@ -49,8 +49,8 @@ extension ProductPagesViewModel {
             return ProductPageSubmitCheck(
                 id: "screenshots", title: title,
                 detail: String(localized: """
-                In every language, on every device. Search results show a page’s first screenshots, not its text, so for its \
-                keywords it looks just like the default page. Make its own with Make Screenshots for This Page… before you submit.
+                In every language, on every device. Search shows screenshots first, so it looks like the default page. \
+                Use Make Screenshots for This Page… before you submit.
                 """) + brief,
                 isFine: false
             )

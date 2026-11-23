@@ -88,7 +88,7 @@ struct NewInAppPurchaseSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("New in-app purchase")
                 .font(.title2.weight(.semibold))
-            Text("For \(appName). It waits in Review & Push; nothing is created in App Store Connect until you push.")
+            Text("For \(appName). Nothing is created in App Store Connect until you push.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -116,7 +116,7 @@ struct NewInAppPurchaseSheet: View {
         } header: {
             Text("In-app purchase")
         } footer: {
-            note("The product ID is what \(appName)’s code buys. It can’t be changed or used again. Family Sharing can’t be turned off once it’s on.")
+            note("The product ID is what \(appName)’s code buys; it can’t change or be reused. Family Sharing, once on, stays on.")
         }
     }
 
@@ -145,25 +145,25 @@ struct NewInAppPurchaseSheet: View {
                         .foregroundStyle(Palette.label2)
                 }
             } label: {
-                Text("Price in the United States")
+                Text("Price (United States)")
             }
             .id(NewSubscriptionField.price)
             problemText(for: .price)
         } header: {
             Text("Price")
         } footer: {
-            note("Every other country or region gets Apple’s equalized price, and the purchase is available everywhere.")
+            note("Other countries and regions get Apple’s automatic price. It’s sold everywhere.")
         }
     }
 
     private var reviewSection: some View {
         Section {
-            field(.reviewNote, text: $draft.reviewNote, prompt: String(localized: "Optional: how App Review finds the purchase"), isMultiline: true)
+            field(.reviewNote, text: $draft.reviewNote, prompt: String(localized: "How App Review reaches it (optional)"), isMultiline: true)
             ReviewScreenshotSlot(appID: appID, file: $draft.reviewScreenshot)
         } header: {
             Text("App Review")
         } footer: {
-            note("The review screenshot shows App Review the purchase in the app. Without it the purchase stays in Missing Metadata.")
+            note("Shows App Review the purchase in the app. Without it, it stays in Missing Metadata.")
         }
     }
 

@@ -165,8 +165,7 @@ struct VersionCard: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             Text("""
-            App Review wrote what it needs in App Store Connect. Read it there and reply there; the fix itself, such as the demo \
-            account, can be made here.
+            Read and reply to App Review in App Store Connect. Make the fix, such as the demo account, here.
             """)
             .font(.callout)
             .lineLimit(4)

@@ -54,8 +54,7 @@ struct SuggestEverythingPopover: View {
                 coverage
             }
             Text("""
-            Fields you’ve changed are left alone, and suggestions you haven’t reviewed stay. Built-in suggestions don’t \
-            need the assistant and are already here.
+            Fields you changed and unreviewed suggestions stay. Built-in suggestions are already here.
             """)
             .font(.footnote)
             .foregroundStyle(Palette.label2)
@@ -73,7 +72,7 @@ struct SuggestEverythingPopover: View {
     /// The prompt to paste, copied.
     private var copied: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("\(run.client) reads the project and suggests the fields below. Paste this prompt into it; suggestions show up here as they arrive, and nothing changes until you accept them.")
+            Text("Paste this prompt into \(run.client) to get suggestions for the fields below. Nothing changes until you accept them.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -87,7 +86,7 @@ struct SuggestEverythingPopover: View {
                 .accessibilityIdentifier("everything.prompt")
             HStack(alignment: .top, spacing: Spacing.small) {
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Copied to the clipboard. Shortcut in \(run.client):")
+                    Text("Copied. Shortcut in \(run.client):")
                         .font(.subheadline)
                     Text(MCPPrompt.suggestAll.slashCommand)
                         .font(.subheadline.monospaced())
@@ -170,9 +169,9 @@ struct SuggestEverythingPopover: View {
     static func busyText(_ request: AssistantSuggestionRequest) -> String {
         let area = request.area.title
         guard let total = request.total else {
-            return String(localized: "\(request.client) is still sending \(area) suggestions. Those keep coming; this run skips the fields they cover.")
+            return String(localized: "\(request.client) is still sending \(area) suggestions. This run skips those fields.")
         }
-        return String(localized: "\(request.client) is still sending \(area) suggestions (\(request.received) of \(total)). Those keep coming; this run skips the fields they cover.")
+        return String(localized: "\(request.client) is still sending \(area) suggestions (\(request.received) of \(total)). This run skips those fields.")
     }
 }
 

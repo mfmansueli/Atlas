@@ -21,7 +21,7 @@ extension ScreenshotPushRun {
             if let halt = haltStatus {
                 items[index].status = halt
             } else if notDone {
-                items[index].status = .notSent(String(localized: "Not deleted: an image in this set didn’t go, so nothing was taken out."))
+                items[index].status = .notSent(String(localized: "Not deleted: an image in this set didn’t go."))
             } else if processing {
                 items[index].status = .notSent(String(localized: "Not deleted yet: Apple is still processing the new images. Push again in a few minutes."))
             } else {
@@ -88,7 +88,7 @@ extension ScreenshotPushRun {
                 sets[groupID]?.order = desired
             } catch {
                 failure = Self.describe(error)
-                sets[groupID]?.note = String(localized: "The set couldn’t be put in order: \(Self.describe(error))")
+                sets[groupID]?.note = String(localized: "Couldn’t reorder the set: \(Self.describe(error)) Push again to retry.")
             }
         }
         for index in orderItems where items[index].status == .queued {

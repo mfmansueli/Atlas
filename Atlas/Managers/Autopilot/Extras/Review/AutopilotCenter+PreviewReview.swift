@@ -36,7 +36,7 @@ extension AutopilotCenter {
                 if watchesLoop {
                     let line = run.plan.stopsToWatchPreview
                         ? String(localized: "Header loop v\(run.loopReview?.version ?? 1) ready to watch")
-                        : String(localized: "Header loop v\(run.loopReview?.version ?? 1) needs a look: a check didn’t pass, so it isn’t approved as made")
+                        : String(localized: "Header loop v\(run.loopReview?.version ?? 1) needs a look: a check failed, so it wasn’t auto-approved")
                     run.appendLog(line, kind: run.plan.stopsToWatchPreview ? .event : .problem, at: now())
                 }
             } else {

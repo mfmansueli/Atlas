@@ -89,7 +89,7 @@ struct AssistantConnectionTests {
         let refused = connection(.refused(date: Self.refused.date, client: "Claude Code"))
         #expect(refused.title == "Claude Code can’t connect")
         #expect(refused.statusTitle == "Can’t connect")
-        #expect(refused.detail(now: Self.now).hasPrefix("Atlas turned its access token away 2 minutes ago: it’s from an older pairing."))
+        #expect(refused.detail(now: Self.now).hasPrefix("Refused 2 minutes ago: its token is from an older pairing."))
         #expect(refused.actions == [.reconnect])
         #expect(refused.tone == .problem)
         // Nothing to paste a prompt into, unless Atlas starts Claude Code.

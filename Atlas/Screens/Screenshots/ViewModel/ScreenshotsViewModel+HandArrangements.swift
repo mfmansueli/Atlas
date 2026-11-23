@@ -55,7 +55,7 @@ extension ScreenshotsViewModel {
             changed = set
         case .failure(.lastPrimary):
             notice = String(localized: """
-            \(context.primaryLocale.name) is the primary language, and Apple needs at least one \(arrangement.displayType.title) screenshot in it.
+            Apple needs at least one \(arrangement.displayType.title) screenshot in \(context.primaryLocale.name), the primary language.
             """)
             return
         case .failure(.unchanged):
@@ -75,7 +75,7 @@ extension ScreenshotsViewModel {
         case .removal:
             String(localized: "Screenshots \(arrangement.numbers) will be deleted in \(name) when you push.")
         case .order:
-            String(localized: "\(name)’s screenshots are in \(arrangement.client)’s order. It’s waiting in Review & Push.")
+            String(localized: "\(name)’s screenshots are in \(arrangement.client)’s order. In Review & Push.")
         }
         await commit(document)
         handRevision += 1

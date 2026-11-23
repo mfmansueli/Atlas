@@ -18,8 +18,7 @@ enum ClaudeCodeFolderPicker {
         panel.allowsMultipleSelection = false
         panel.prompt = String(localized: "Choose")
         panel.message = String(localized: """
-        Choose \(appName)’s project folder. Claude Code starts there, so it can read the code and git history; \
-        it never changes it.
+        Choose \(appName)’s project folder. Claude Code reads its code and git history there, and never changes them.
         """)
         if let suggestion { panel.directoryURL = URL(filePath: suggestion, directoryHint: .isDirectory) }
         guard panel.runModal() == .OK else { return nil }

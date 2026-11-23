@@ -11,7 +11,7 @@ import SwiftUI
 struct SecurityAssessmentChecklist: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("Upload in App Store Connect:")
+            Text("Add in App Store Connect:")
                 .font(.subheadline.weight(.semibold))
             Label {
                 Text("""

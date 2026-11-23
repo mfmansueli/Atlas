@@ -40,7 +40,7 @@ final class WorkspaceNavigator {
     /// Set by Activity's "Restore Previous Values": Review & Push opens once
     /// Activity has closed (macOS shows one sheet at a time).
     var opensReviewAfterActivity = false
-    /// "Set Up Your AI Assistant" (the Assistant button, the overview, the
+    /// "Set Up Your Assistant" (the Assistant button, the overview, the
     /// suggestion bars).
     var isAssistantSetupPresented = false
     /// The method the setup sheet opens on, e.g. an assistant from "Add an

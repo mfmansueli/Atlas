@@ -35,7 +35,7 @@ struct PageShotsMakingStep: View {
                 }
                 tiles
                 Spacer(minLength: 0)
-                Text("Close this window whenever you like. Autopilot keeps going, and the page shows it.")
+                Text("Close this window any time. Autopilot keeps going.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }

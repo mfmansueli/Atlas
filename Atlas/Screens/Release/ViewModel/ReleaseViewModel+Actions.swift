@@ -41,7 +41,7 @@ extension ReleaseViewModel {
             await load()
             onChanged()
         } catch {
-            actionError = error.localizedDescription
+            actionError = AppleErrorCopy(String(localized: "App Store Connect didn’t make the change.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -52,12 +52,12 @@ extension ReleaseViewModel {
         case .cancelSubmission:
             guard let submission = status.submission else { throw ReleaseActionError.nothingToAct }
             try await services.release.cancelSubmission(submission.id)
-            return String(localized: "Submission canceled. \(version) is back to Prepare for Submission; nothing you edited is lost.")
+            return String(localized: "Submission canceled. \(version) is back to Prepare for Submission, edits kept.")
         case .releaseNow:
             try await services.release.release(versionID: status.version.id)
             return status.phased == nil
-                ? String(localized: "Releasing \(version). It’s on the App Store as soon as Apple has processed it.")
-                : String(localized: "Releasing \(version). Phased release starts today: 1% of automatic updates on day 1.")
+                ? String(localized: "Releasing \(version). It’s live once Apple processes it.")
+                : String(localized: "Releasing \(version). Phased release: 1% of automatic updates today.")
         case .pause, .resume:
             guard let phased = status.phased else { throw ReleaseActionError.nothingToAct }
             try await services.release.setPhasedRelease(phased.id, to: action == .pause ? .paused : .active)

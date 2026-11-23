@@ -49,7 +49,7 @@ enum RetentionAskKind: Hashable {
         switch self {
         case .draft, .draftOne: String(localized: "Ask \(client) to draft a retention message from \(app)’s features, in your voice")
         case .shorten: String(localized: "Ask \(client) for a shorter version that fits Apple’s limits")
-        case .image: String(localized: "Ask \(client) to make an image for the message with Claude")
+        case .image: String(localized: "Ask \(client) to make an image for the message")
         }
     }
 
@@ -57,16 +57,13 @@ enum RetentionAskKind: Hashable {
         switch self {
         case .draft, .draftOne:
             String(localized: """
-            \(client) reads \(app)’s project and listing and proposes a message in your voice; Atlas translates \
-            it. It waits in Review & Push; nothing reaches App Store Connect until you push.
+            \(client) drafts a message in your voice from \(app)’s project and listing. Atlas translates it. Nothing is sent until you \
+            push.
             """)
         case .shorten:
-            String(localized: "\(client) proposes a shorter version; it waits in Review & Push with the message.")
+            String(localized: "\(client) writes a shorter version and adds it to Review & Push.")
         case .image:
-            String(localized: """
-            \(client) makes a 3840 × 1000 image with Claude and hands it to Atlas. It’s added to the \
-            Asset Library when you push the message.
-            """)
+            String(localized: "\(client) makes a 3840 × 1000 image. It joins the Asset Library when you push the message.")
         }
     }
 }

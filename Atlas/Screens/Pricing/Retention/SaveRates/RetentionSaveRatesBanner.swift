@@ -14,11 +14,8 @@ struct RetentionSaveRatesBanner: View {
         AnalyticsNotice(
             tone: .info,
             text: report.isEmpty
-                ? String(localized: """
-                No one has opened Cancel Subscription yet. Save rates show here from Analytics once Apple counts the first \
-                people, up to 4 days later.
-                """)
-                : String(localized: "Save rates are from Analytics: the last \(report.period.length) days, through \(AnalyticsText.day(report.period.last.date)). Apple completes each day up to 4 days later."),
+                ? String(localized: "No one has opened Cancel Subscription yet. Save rates show here up to 4 days after the first.")
+                : String(localized: "Save rates for \(report.period.length) days through \(AnalyticsText.day(report.period.last.date)), from Analytics. Days finish up to 4 days late."),
             primary: (String(localized: "Open in Analytics"), onOpen),
             identifier: "retention.saveRates.banner"
         )

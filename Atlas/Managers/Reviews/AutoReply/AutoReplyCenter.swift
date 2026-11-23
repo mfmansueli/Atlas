@@ -180,7 +180,7 @@ final class AutoReplyCenter {
             notifier.post(
                 .needsYou,
                 title: String(localized: "A \(review.rating)★ review needs your reply"),
-                body: String(localized: "\(who): “\(quote)”. Claude drafted a reply and is waiting for you: \(reason)."),
+                body: String(localized: "\(who): “\(quote)”. A draft reply waits for you: \(reason)."),
                 identifier: "autoreply.\(app.id).\(review.id)", category: .autoReplyNeedsYou, userInfo: userInfo
             )
         case .drafted:

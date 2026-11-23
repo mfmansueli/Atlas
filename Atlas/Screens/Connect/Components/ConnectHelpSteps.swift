@@ -14,7 +14,7 @@ struct ConnectHelpSteps: View {
         "In App Store Connect, open **Users and Access → Integrations → App Store Connect API**.",
         "Under **Team Keys**, generate a key with the **Admin** or **App Manager** role. Price suggestions also read Sales and Trends when the role allows it.",
         "Copy the **Issuer ID** shown above the keys table, and the new key’s **Key ID**.",
-        "Download the `.p8` file. Apple offers the download only once, so keep a copy somewhere safe.",
+        "Download the `.p8` file and keep a copy. Apple offers it only once.",
     ]
 
     var body: some View {

@@ -24,7 +24,7 @@ struct AssistantPopoverContentTests {
     @Test func aRequestShowsItsTokensAndAge() {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         let fresh = KeyAssistantRequestLog(title: "Test request", tokens: 400, date: now.addingTimeInterval(-10))
-        #expect(AssistantPopoverContent.requestDetail(fresh, now: now) == "\(400.formatted()) tokens · just now")
+        #expect(AssistantPopoverContent.requestDetail(fresh, now: now) == "\(400.formatted()) tokens · a moment ago")
         let older = KeyAssistantRequestLog(title: "Store Page", tokens: 9400, date: now.addingTimeInterval(-120))
         #expect(AssistantPopoverContent.requestDetail(older, now: now).hasPrefix("\(KeyAssistantTokens.formatted(9400)) tokens · "))
     }

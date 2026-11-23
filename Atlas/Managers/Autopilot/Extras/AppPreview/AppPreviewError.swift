@@ -16,9 +16,11 @@ enum AppPreviewError: LocalizedError, Equatable {
     case noUsableMark
     /// Apple takes no App Preview for this device.
     case noSpec(ScreenshotDisplayType)
-    /// Reading the recording stopped partway.
+    /// Reading the recording stopped partway; the system's reason goes in
+    /// Details.
     case readerFailed(String)
-    /// Writing the App Preview stopped partway.
+    /// Writing the App Preview stopped partway; the system's reason goes in
+    /// Details.
     case writerFailed(String)
     /// A frame couldn't be drawn.
     case drawingFailed
@@ -42,13 +44,15 @@ enum AppPreviewError: LocalizedError, Equatable {
         case .noVideoTrack:
             String(localized: "The Simulator recording has no video in it. Record it again.")
         case .noUsableMark:
-            String(localized: "None of the planned screens was marked inside the recording, so there's nothing to cut. Mark each screen as it shows up.")
+            String(localized: "No screens are marked in the recording. Mark each planned screen as it appears.")
         case let .noSpec(display):
             String(localized: "App Store Connect takes no App Preview for \(display.title).")
         case let .readerFailed(reason):
-            String(localized: "Reading the Simulator recording stopped: \(reason)")
+            AppleErrorCopy(
+                summary: String(localized: "The Simulator recording couldn’t be read. Try again.", comment: "kind:error"), details: reason
+            ).text
         case let .writerFailed(reason):
-            String(localized: "Writing the App Preview stopped: \(reason)")
+            AppleErrorCopy(summary: String(localized: "The video couldn’t be made. Try again.", comment: "kind:error"), details: reason).text
         case .drawingFailed:
             String(localized: "A frame of the App Preview couldn't be drawn.")
         }

@@ -22,7 +22,7 @@ extension PriceColumn {
         .reason: String(localized: "Reason"),
         .factor: String(localized: "Factor"),
         .source: String(localized: "Source"),
-        .proposed: String(localized: "Proposed"),
+        .proposed: String(localized: "Suggested"),
         .change: String(localized: "Change"),
         .status: String(localized: "Status"),
         .pricing: String(localized: "Pricing"),

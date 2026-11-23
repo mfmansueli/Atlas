@@ -28,7 +28,7 @@ struct GuidedTemplateInterfaceMarkTests {
         let preview = try #require(model.studio.templatePreview(.arcade, plan: plan))
         let allMarked = preview.items.allSatisfy(\.showsPrimaryInterface)
         try #require(allMarked, "Lumen's iPad isn't captured in Arabic")
-        #expect(preview.note.contains("(marked)"), "\(preview.note)")
+        #expect(preview.note.contains("Marked screens show the"), "\(preview.note)")
 
         let items = model.studio.templateViewerItems(.arcade, plan: plan)
         #expect(!items.isEmpty)

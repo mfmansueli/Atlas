@@ -6,7 +6,8 @@
 import Foundation
 
 /// Why the AI provider didn't translate a field, as the batch shows it.
-/// HTTP failures carry the provider's own message when it sent one.
+/// HTTP failures carry the provider's own message when it sent one, on a
+/// "Details:" line after Atlas's sentence.
 enum AIProviderError: LocalizedError, Equatable {
     /// 401 or 403: a wrong or revoked key, or one without access.
     case unauthorized(AIProviderVendor)
@@ -51,10 +52,22 @@ enum AIProviderError: LocalizedError, Equatable {
         case let .cutOff(vendor):
             String(localized: "\(vendor.title)’s answer was cut off.")
         case let .rejected(vendor, statusCode, message):
-            [String(localized: "\(vendor.title) returned an error (\(statusCode))."), message].compactMap(\.self).joined(separator: " ")
+            // The provider's own words go under Details, never into the sentence.
+            AppleErrorCopy(summary: String(localized: "\(vendor.title) failed with error \(statusCode). Try again in a minute."), details: message).text
         case let .unreadableResponse(vendor):
-            String(localized: "\(vendor.title) sent an answer this app can’t read.")
+            String(localized: "\(vendor.title)’s answer couldn’t be read. Try again.")
         }
+    }
+
+    /// What a failed request shows: an AI provider's or a key's error in
+    /// Atlas's own sentence as it is, anything else (the network, the
+    /// system) through the error template with `what` as what happened, the
+    /// system's words under Details.
+    static func message(for error: any Error, what: String) -> String {
+        if error is AIProviderError || error is KeyAssistantKeyError, let description = (error as? LocalizedError)?.errorDescription {
+            return description
+        }
+        return AppleErrorCopy(what, error: error).text
     }
 
     private struct ErrorBody: Decodable {

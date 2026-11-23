@@ -42,7 +42,7 @@ enum ScreenshotCellState: Hashable, Sendable {
         case .noCaption: String(localized: "No caption")
         case .noCapture: String(localized: "No capture")
         case .fallback: String(localized: "English (U.S.)")
-        case .uploadedByHand: String(localized: "Uploaded by hand")
+        case .uploadedByHand: String(localized: "Added by hand")
         case .restored: String(localized: "Restored")
         case .empty: String(localized: "Nothing yet")
         case .handNew: String(localized: "New · not pushed")

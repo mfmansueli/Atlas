@@ -18,7 +18,8 @@ extension MCPServerController {
         do {
             try secrets.setSecret(token, named: client.secretName)
         } catch {
-            record(client: client.name, tool: "—", target: "", outcome: .refused, reason: error.localizedDescription)
+            let reason = AppleErrorCopy(String(localized: "The token wasn’t saved to the Keychain.", comment: "kind:error"), error: error)
+            record(client: client.name, tool: "—", target: "", outcome: .refused, reason: reason.text)
             return nil
         }
         tokens[client.id] = token

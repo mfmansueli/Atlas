@@ -48,15 +48,15 @@ struct ProductPageCreateTests {
             name: "Affirmations & Confidence", error: ProductPageCreateRecoveryTests.unexpected, pageSeen: false, looked: .seconds(110)
         )
         let text = failure.errorDescription ?? ""
-        #expect(text.hasPrefix("UNEXPECTED_ERROR — An unexpected error occurred"))
-        #expect(text.contains("“Affirmations & Confidence”"))
+        #expect(text.hasPrefix("“Affirmations & Confidence” isn’t in App Store Connect after"))
         #expect(text.contains("may still be making it"))
-        #expect(text.contains("instead of making another"))
+        #expect(text.contains("Atlas won’t make a duplicate.\nDetails: UNEXPECTED_ERROR — An unexpected error occurred"))
 
         let timedOut = ProductPageNotConfirmed(name: "A", error: URLError(.timedOut), pageSeen: true, looked: .zero)
-        #expect(timedOut.errorDescription?.hasPrefix("Apple didn’t answer in time.") == true)
-        #expect(timedOut.errorDescription?.contains("hasn’t finished its first version") == true)
-        #expect(ProductPageNotConfirmed(name: "A", error: nil, pageSeen: true, looked: .zero).errorDescription?.hasPrefix("“A”") == true)
+        #expect(timedOut.errorDescription?.hasPrefix("Apple is still making “A”.") == true)
+        #expect(timedOut.errorDescription?.hasSuffix("\nDetails: Apple didn’t answer in time.") == true)
+        let seen = ProductPageNotConfirmed(name: "A", error: nil, pageSeen: true, looked: .zero).errorDescription
+        #expect(seen == "Apple is still making “A”. Retry in a few minutes; Atlas continues with that page, not a new one.")
     }
 
     @Test func aStepIsNamedByWhatItWrites() {

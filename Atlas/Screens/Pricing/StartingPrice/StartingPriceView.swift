@@ -16,12 +16,9 @@ struct StartingPriceView: View {
             Label("\(viewModel.selectedProduct?.name ?? "") has no price yet", systemImage: "tag")
         } description: {
             if let queued = viewModel.queuedStartingPrice {
-                Text("Its starting price, \(queued.newValue), waits in Review & Push, top right.")
+                Text("Its starting price, \(queued.newValue), waits in Review & Push.")
             } else {
-                Text("""
-                Set its price in the United States; every other country or region gets Apple’s equalized price, \
-                which you can change here after the push.
-                """)
+                Text("Set its US price. Other countries and regions get Apple’s automatic price; change them here after the push.")
             }
         } actions: {
             HStack(spacing: Spacing.small) {

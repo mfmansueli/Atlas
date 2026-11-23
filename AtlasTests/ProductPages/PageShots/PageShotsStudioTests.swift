@@ -46,7 +46,7 @@ struct PageShotsStudioTests {
 
         studio.claudeRunEnded(Test.session(id))
         #expect(studio.run(Test.key)?.stage == .plan)
-        #expect(studio.run(Test.key)?.problem == "Claude Code stopped before it sent a plan. Ask it again.")
+        #expect(studio.run(Test.key)?.problem == "Claude Code sent no plan. Ask it again.")
 
         let second = UUID()
         studio.asked(Test.key, claudeRunID: second, change: nil)
@@ -138,7 +138,7 @@ struct PageShotsStudioTests {
         let run = try #require(studio.run(Test.key))
         #expect(run.stage == .result)
         #expect(run.images.count == 2)
-        #expect(run.problem == "Claude Code stopped before it changed the set. The set is as it was.")
+        #expect(run.problem == "Claude Code stopped. The set is unchanged.")
     }
 
     @Test func runsComeBackAfterARelaunchAndWhatWasUnderWayStartsOver() {

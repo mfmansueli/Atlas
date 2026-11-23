@@ -49,7 +49,7 @@ struct ProductPagePromoBox: View {
             .accessibilityLabel(Text("Promotional Text, \(ProductPageChangeBuilder.localeName(locale))"))
             .accessibilityIdentifier("pages.promo")
             if text.isEmpty, suggestion == nil {
-                Text("\(ProductPageChangeBuilder.localeName(locale)) uses the default page’s promotional text. Write one here to change it for this page only.")
+                Text("\(ProductPageChangeBuilder.localeName(locale)): default page’s promotional text. Write one for this page.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

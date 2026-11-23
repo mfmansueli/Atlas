@@ -18,7 +18,7 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "productId": MCPToolDefinition.string("The subscription's or in-app purchase's product ID (or App Store Connect id); a queued one's too."),
         "file": MCPToolDefinition.string(MCPReviewScreenshotArgument.description),
-        "reason": MCPToolDefinition.string("Optional: what it shows, e.g. the paywall with the yearly plan selected."),
+        "reason": MCPToolDefinition.shortWhy("Optional: what it shows, e.g. the paywall with the yearly plan selected."),
         "planShown": MCPToolDefinition.string(
             "Optional: only the name of the plan selected in it, e.g. Monthly, even when it's another product's plan: Atlas says so."
         ),

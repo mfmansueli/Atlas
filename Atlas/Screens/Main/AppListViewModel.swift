@@ -64,7 +64,7 @@ final class AppListViewModel {
             lastSyncedAt = .now
             if selectedApp == nil { selectedAppID = apps.first?.id }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "Apps didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 

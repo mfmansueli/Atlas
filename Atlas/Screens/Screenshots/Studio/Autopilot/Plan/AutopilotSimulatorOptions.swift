@@ -44,7 +44,7 @@ struct AutopilotSimulatorOptions: View {
             isOn: planBinding(\.simulator.grantsPermissions), identifier: "autopilot.plan.permissions"
         )
         ForEach(plan.simulator.extraCommands, id: \.self) { command in
-            fixRow(String(localized: "Command added by a fix"), detail: command, isCommand: true, identifier: "autopilot.plan.extraCommand") {
+            fixRow(String(localized: "Command from a fix"), detail: command, isCommand: true, identifier: "autopilot.plan.extraCommand") {
                 studio.removeFixCommand(command)
             }
         }
@@ -105,7 +105,7 @@ struct AutopilotSimulatorOptions: View {
             ? String(localized: "\(client) finds the app’s sample-data switch")
             : plan.simulator.sampleDataSteps
         guard plan.capturesEachLanguage else { return finds }
-        return String(localized: "Entries, names and places in the capture’s language, not just the interface; \(finds)")
+        return String(localized: "Entries, names and places in the capture’s language, not only the interface; \(finds)")
     }
 
     /// Sample data, in each language whenever the app is captured in each

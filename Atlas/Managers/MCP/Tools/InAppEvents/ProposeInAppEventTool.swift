@@ -47,7 +47,7 @@ struct ProposeInAppEventTool: MCPTool {
                 "properties": ["name": ["type": "string"], "shortDescription": ["type": "string"], "longDescription": ["type": "string"]],
             ],
         ],
-        "reason": MCPToolDefinition.string("Why this event, in a sentence or two the person reads before pushing."),
+        "reason": MCPToolDefinition.shortWhy("Why this event, for the person to read before pushing."),
         "evidence": [
             "type": "array", "items": ["type": "string"],
             "description": "Where it comes from, e.g. Alba/Streaks/StreakChallenge.swift:14 — the January streak challenge.",

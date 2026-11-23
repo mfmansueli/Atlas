@@ -127,7 +127,7 @@ final class ReleaseViewModel {
                 await loadDetails(of: loaded)
             }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "The version didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 

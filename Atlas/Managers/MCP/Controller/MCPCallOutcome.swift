@@ -14,7 +14,7 @@ enum MCPCallOutcome: String, Codable, Sendable {
     var title: String {
         switch self {
         case .read: String(localized: "Read")
-        case .proposed: String(localized: "Proposed")
+        case .proposed: String(localized: "Suggested")
         case .refused: String(localized: "Refused")
         }
     }

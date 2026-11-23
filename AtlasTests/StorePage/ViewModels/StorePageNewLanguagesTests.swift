@@ -45,8 +45,7 @@ struct StorePageNewLanguagesTests {
         #expect(model.isNewLanguage(.polish))
         #expect(!model.isNewLanguage(.german))
         #expect(model.newLanguagesBannerText == """
-        Lumen Journal’s 2.0 build supports 3 more languages than its App Store page: Polish, Turkish, Hebrew. People who use them \
-        see the English page.
+        3 languages in Lumen Journal’s 2.0 build have no store page: Polish, Turkish, Hebrew. Their speakers see the English page.
         """)
         #expect(model.addAllLanguagesTitle == "Add All 3")
         #expect(model.newLanguageTitle(.polish) == "Polish isn’t on the App Store yet")
@@ -58,7 +57,7 @@ struct StorePageNewLanguagesTests {
         let model = await makeModel()
         #expect(model.newLanguageText(.hebrew) == """
         Lumen Journal’s 2.0 build is translated into Hebrew (Localizable.xcstrings: 401 of 418 strings (95%); right to left; tested \
-        in LumenUITests). People who use Hebrew see the English page today. Claude Code drafted the page below.
+        in LumenUITests), but Hebrew users see the English page today. Claude Code drafted the page below.
         """)
         #expect(model.newLanguageText(.turkish).hasSuffix("Connect an assistant or an AI provider to draft its text."))
     }
@@ -80,7 +79,7 @@ struct StorePageNewLanguagesTests {
         #expect(model.pendingLocales.isEmpty)
         #expect(model.addedLanguages == [.polish, .turkish, .hebrew])
         #expect(model.toast?.text == """
-        Added Polish, Turkish, Hebrew. The pages are created in App Store Connect when you push; their drafted text is in each tab.
+        Added Polish, Turkish, Hebrew. Drafted text is in each tab; the pages are created when you push.
         """)
         #expect(model.toast?.canUndo == true)
         let change = try #require(queue.change(id: newPageID(.polish, at: .version)))
@@ -108,7 +107,7 @@ struct StorePageNewLanguagesTests {
         #expect(model.editorLocale == .polish)
         #expect(model.pendingLocales == [.turkish, .hebrew])
         #expect(model.toast?.text == """
-        Added Polish. The page is created in App Store Connect when you push; accept or edit the drafted text below.
+        Added Polish. Review the drafted text below; the page is created when you push.
         """)
     }
 

@@ -18,7 +18,7 @@ enum AppAvailabilityProblem: Hashable, Sendable {
         case .noTerritory:
             String(localized: "Choose at least one country or region.")
         case .invalidReleaseDate:
-            String(localized: "The release date isn’t a date like 2026-12-20.")
+            String(localized: "Enter the release date like 2026-12-20.")
         case let .releaseDateTooSoon(earliest):
             String(localized: "A pre-order’s release date is at least \(AppAvailabilityRules.preOrderMinimumDays) days away: \(earliest) or later.")
         case let .releaseDateTooLate(latest):

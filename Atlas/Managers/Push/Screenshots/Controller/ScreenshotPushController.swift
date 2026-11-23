@@ -185,7 +185,7 @@ final class ScreenshotPushController {
             plans[app.id] = plan.isEmpty ? nil : plan
             loadErrors[app.id] = nil
         } catch {
-            loadErrors[app.id] = error.localizedDescription
+            loadErrors[app.id] = AppleErrorCopy(String(localized: "Screenshots didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 

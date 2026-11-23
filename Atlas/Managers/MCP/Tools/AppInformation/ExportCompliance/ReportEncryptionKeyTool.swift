@@ -35,7 +35,7 @@ struct ReportEncryptionKeyTool: MCPTool {
         "complianceCode": MCPToolDefinition.string("With YES: ITSEncryptionExportComplianceCode, the approved declaration's codeValue."),
         "where": ["type": "array", "items": place, "description": "Each place the key is set; at least one unless couldNotAdd."],
         "commit": MCPToolDefinition.string("The commit you made, when the project's instructions say changes are committed."),
-        "reason": MCPToolDefinition.string("With couldNotAdd: why, in a sentence the person can act on."),
+        "reason": MCPToolDefinition.shortWhy("With couldNotAdd: why, in a sentence the person can act on."),
         "notes": MCPToolDefinition.string("Anything else the person should know, e.g. what the key said before."),
     ]
 

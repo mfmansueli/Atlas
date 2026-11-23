@@ -21,7 +21,7 @@ enum PriceChangeStatus: String, CaseIterable, Hashable, Sendable {
         case .unchanged: "Unchanged"
         case .increase: "Increase"
         case .decrease: "Decrease"
-        case .recommended: "Recommended"
+        case .recommended: "Suggested"
         case .editedManually: "Edited manually"
         case .custom: "Custom"
         case .scheduled: "Scheduled"

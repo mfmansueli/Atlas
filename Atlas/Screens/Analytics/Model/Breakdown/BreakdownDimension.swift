@@ -37,16 +37,15 @@ enum BreakdownDimension: String, Hashable, Sendable, CaseIterable, Identifiable,
     var emptyText: String {
         switch self {
         case .referrer:
-            String(localized: "No app or website sent five or more people in this period, so Apple left them all out.")
+            String(localized: "No app or website sent five or more people, Apple’s minimum.")
         case .campaign:
             String(localized: """
-            No campaign link brought five or more people in this period. Make links in App Store Connect → App Analytics → \
-            Campaigns, and add their ct token where you share the app.
+            No campaign link brought five or more people. Make links in App Store Connect → App Analytics → Campaigns.
             """)
         case .productPage:
-            String(localized: "No product page had five or more people in this period, so Apple left them all out.")
+            String(localized: "No product page had five or more people, Apple’s minimum.")
         case .territory, .language, .source, .device:
-            String(localized: "Nothing to split yet: Apple left out every row with fewer than five people in this period.")
+            String(localized: "Nothing to split yet: Apple hides rows with fewer than five people.")
         }
     }
 

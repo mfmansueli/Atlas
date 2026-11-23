@@ -65,7 +65,7 @@ struct AppListViewModelTests {
         await vm.load()
         services.error = AppStoreConnectError.rateLimited
         await vm.load()
-        #expect(vm.errorMessage == AppStoreConnectError.rateLimited.errorDescription)
+        #expect(vm.errorMessage == "Apps didn’t load. Apple’s hourly limit was reached. Try again in a few minutes.\nDetails: HTTP 429")
         #expect(vm.apps == [bruma])
         #expect(!vm.isLoading)
     }

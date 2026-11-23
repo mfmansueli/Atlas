@@ -23,7 +23,7 @@ struct InAppEventMediaCard: View {
     var body: some View {
         Card {
             HStack(spacing: Spacing.small) {
-                Text("Proposed images and video")
+                Text("Suggested images and video")
                     .font(.body.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -71,7 +71,7 @@ struct InAppEventMediaCard: View {
                 path: proposal.push.path, isVideo: proposal.push.isVideo, kind: proposal.kind, texts: overlayTexts(proposal)
             )
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text(proposal.isAwaitingAcceptance ? "Proposed by \(proposal.source.title)" : "Accepted · in Review & Push")
+                Text(proposal.isAwaitingAcceptance ? "Suggested by \(proposal.source.title)" : "Accepted · in Review & Push")
                     .font(.callout.weight(.semibold))
                 Text(proposal.push.fileName)
                     .font(.subheadline)

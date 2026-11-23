@@ -16,7 +16,7 @@ struct ProductPagesEmptyView: View {
                 Text("A page for each audience")
                     .font(.title2.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
-                Text("A custom product page is another version of \(appName)’s App Store page with a link of its own. \(appName) has none yet.")
+                Text("Another version of \(appName)’s App Store page, with its own link. \(appName) has none yet.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -36,11 +36,11 @@ struct ProductPagesEmptyView: View {
                     "photo.on.rectangle",
                     title: String(localized: "Change what they see first."),
                     text: String(localized: """
-                    Screenshots, App Previews and promotional text, in each language. The name, icon and description stay the same.
+                    Screenshots, App Previews and promotional text per language. Name, icon, description stay.
                     """)
                 )
             }
-            Text("Up to 70 pages. Each one goes to App Review by itself, with no new version of the app.")
+            Text("Up to 70 pages, each reviewed alone, with no new app version.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

@@ -25,8 +25,8 @@ struct InAppDraftRefusal: LocalizedError, Equatable, Sendable {
         }
         let version = latestVersion.map { String(localized: "Version \($0)") } ?? String(localized: "The current version")
         return String(localized: """
-        \(version) of these texts is \(Self.title(of: latestState)), so App Store Connect won’t take new ones yet. \
-        Push again once App Review is done, or after removing it from review in App Store Connect. (\(apple))
+        \(version) of these texts is \(Self.title(of: latestState)). Push again after App Review, or remove it from \
+        review in App Store Connect first. (\(apple))
         """)
     }
 

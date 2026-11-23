@@ -79,8 +79,8 @@ struct AppAvailabilityChangeBuilder {
             createdAt: date
         )
         let detail = String(localized: """
-        Where \(app.name) is sold. App Store Connect can’t remove an availability once it’s set up: change countries \
-        and regions one at a time here after the push.
+        Where \(app.name) is sold. Availability can’t be removed once set up; after the push, change it here one country or region at a \
+        time.
         """)
         change.creation = PendingCreation(
             id: id,

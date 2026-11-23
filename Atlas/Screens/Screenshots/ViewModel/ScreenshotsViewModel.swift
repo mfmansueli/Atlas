@@ -142,7 +142,7 @@ final class ScreenshotsViewModel {
             errorMessage = nil
             live = try await services.liveScreenshots(for: app, context: context)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "Screenshots didn’t load.", comment: "kind:error"), error: error).text
         }
         await rebuild()
     }
@@ -322,7 +322,7 @@ final class ScreenshotsViewModel {
             let next = Self.nextVersionString(after: context.version.versionString)
             return .noVersion(
                 title: String(localized: "No version to push to."),
-                message: String(localized: "Version \(context.version.versionString) is live. Screenshots can only change with a version that’s being prepared, so create \(next) in App Store Connect. You can keep editing; renders wait here.")
+                message: String(localized: "Version \(context.version.versionString) is live. Create \(next) in App Store Connect to change screenshots. Renders wait here.")
             )
         }
         guard tab == .sets, hasTemplate, let first = matrix.failedCells.first else { return nil }

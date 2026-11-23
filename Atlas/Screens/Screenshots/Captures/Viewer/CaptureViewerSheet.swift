@@ -162,7 +162,7 @@ struct CaptureViewerSheet: View {
                 }
             }
             .disabled(viewModel.studio.autopilot?.recaptureRefusal(appID: viewModel.app.id) != nil)
-            .help(viewModel.studio.autopilot?.recaptureRefusal(appID: viewModel.app.id).map { Text($0) } ?? Text("A run for just this capture"))
+            .help(viewModel.studio.autopilot?.recaptureRefusal(appID: viewModel.app.id).map { Text($0) } ?? Text("Redoes only this capture"))
             .accessibilityIdentifier("captures.viewer.captureAgain")
             Button("Done") { captures.viewed = nil }
                 .keyboardShortcut(.defaultAction)

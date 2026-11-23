@@ -36,7 +36,7 @@ struct MarkCapturesStaleTool: MCPTool {
                         required: ["locale"]
                     ),
                 ],
-                "reason": MCPToolDefinition.string("What changed, in a sentence the person reads."),
+                "reason": MCPToolDefinition.shortWhy("What changed, in a sentence the person reads."),
                 "evidence": MCPToolDefinition.string("What shows it: a file or commit."),
             ],
             required: ["appId", "targets", "reason"]

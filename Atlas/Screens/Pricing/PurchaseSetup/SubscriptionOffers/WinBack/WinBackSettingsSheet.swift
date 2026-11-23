@@ -35,7 +35,7 @@ struct WinBackSettingsSheet: View {
     var body: some View {
         OfferSheetChrome(
             title: String(localized: "Edit “\(offer.referenceName)”"),
-            detail: String(localized: "\(offer.terms.summary). Its terms and prices stay; to change them, delete it and add another."),
+            detail: String(localized: "\(offer.terms.summary). To change terms or prices, delete it and add another."),
             footnote: String(localized: "Offer ID: \(offer.offerID)"),
             identifier: Self.id,
             problems: problems(settings),

@@ -37,7 +37,7 @@ struct PricingModeMenu: View {
 
     static func description(of mode: PricingMode) -> String {
         switch mode {
-        case .keepPrices: String(localized: "Translate only. Atlas never proposes a price change.")
+        case .keepPrices: String(localized: "Translate only. No price suggestions.")
         case .showSuggestions: String(localized: "A suggested price per territory. Nothing changes until you apply.")
         case .applyRecommended: String(localized: "Fill every territory with its suggestion, then review before pushing.")
         }

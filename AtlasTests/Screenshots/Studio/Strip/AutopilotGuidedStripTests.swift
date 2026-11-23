@@ -27,7 +27,7 @@ struct AutopilotGuidedStripTests {
         #expect(strip.pill == "New")
         #expect(strip.primaryTitle == "Start…")
         #expect(strip.primary == .runAutopilot)
-        #expect(strip.text.hasPrefix("Make new screenshots, an App Preview and header artwork in 3 short steps."))
+        #expect(strip.text.hasPrefix("New screenshots, App Preview and header artwork in 3 steps."))
     }
 
     @Test func withoutAnAssistantItStillOffersTheSetup() {
@@ -89,7 +89,7 @@ struct AutopilotGuidedStripTests {
 
         let review = Self.strip(StudioDebugGuided.ready(approved: []))
         #expect(review.kind == .yourTurn)
-        #expect(review.text == "Everything is made and checked. Review it, then approve it.")
+        #expect(review.text == "Made and checked. Review, then approve.")
         #expect(review.primaryTitle == "Review…")
         #expect(review.secondary == .runAutopilot, "A set the person won't push can be dropped for a new run")
         #expect(review.secondaryTitle == "New Run…")
@@ -101,7 +101,7 @@ struct AutopilotGuidedStripTests {
         let strip = Self.strip(StudioDebugGuided.ready(approved: GuidedReviewPart.allCases, approvedAll: true))
         #expect(strip.title == "Approved")
         #expect(strip.pill == "In Review & Push")
-        #expect(strip.text.contains("top right"))
+        #expect(strip.text.contains("Review & Push"))
         #expect(strip.primary == .runAutopilot)
     }
 

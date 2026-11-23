@@ -25,9 +25,9 @@ struct NoVersionView: View {
                 .font(.title3.weight(.semibold))
             Group {
                 if let queued {
-                    Text("Version \(queued.versionString) waits in Review & Push. Once it’s pushed, its What’s New, description, keywords and other version texts open here.")
+                    Text("Version \(queued.versionString) waits in Review & Push. Push it to edit its version texts here.")
                 } else {
-                    Text("Version \(live) is live and read-only. To change What’s New, the description, keywords and other version texts, create version \(next).")
+                    Text("Version \(live) is live and read-only. Create version \(next) to edit version texts.")
                 }
             }
             .font(.callout)

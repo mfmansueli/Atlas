@@ -378,9 +378,9 @@ extension ScreenshotStudioModel {
     /// Review & Push, top right."
     static func approvedToastText(_ plan: AutopilotPlan?) -> String {
         guard let plan, let what = GuidedMakeSummary.pushed(plan) else {
-            return String(localized: "Approved: the new set waits in Review & Push, top right.")
+            return String(localized: "Approved: the new set waits in Review & Push.")
         }
-        return String(localized: "Approved: \(what) wait in Review & Push, top right.")
+        return String(localized: "Approved: \(what) wait in Review & Push.")
     }
 
     /// Open Review & Push… and Show Progress… at Done: the app-wide Review

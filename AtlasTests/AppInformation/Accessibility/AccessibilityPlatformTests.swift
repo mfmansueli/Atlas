@@ -18,7 +18,7 @@ struct AccessibilityPlatformTests {
         #expect(DeviceFamily.mac.unavailableFeatures == [.largerText])
         #expect(DeviceFamily.vision.unavailableFeatures.isEmpty)
         #expect(AccessibilityFeature.voiceControl.unavailableReason(on: .appleWatch)
-            == "Voice Control isn’t available on Apple Watch, so Apple doesn’t ask about it here.")
+            == "Apple doesn’t ask about Voice Control on Apple Watch.")
     }
 
     @Test func familiesComeFromPlatformsAndDeclarationsInTheCardsOrder() {

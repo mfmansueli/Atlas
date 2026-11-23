@@ -37,7 +37,7 @@ struct FindingsView: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 1) {
                 Text("What to try next").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
-                Text("From Atlas’s rules and your assistant, on the last 28 days. Each one opens the section where the fix is made.")
+                Text("Last 28 days, from Atlas’s rules and your assistant. Each opens its section.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -59,9 +59,9 @@ struct FindingsView: View {
             Label("No findings yet", systemImage: "lightbulb")
         } description: {
             if let first {
-                Text("Findings need a full 28 days to compare. \(viewModel.dataset.appName) has \(days); the first ones come around \(first).")
+                Text("Findings need a full 28 days. \(viewModel.dataset.appName) has \(days); the first come around \(first).")
             } else {
-                Text("Findings need a full 28 days to compare.")
+                Text("Findings need a full 28 days.")
             }
         }
         .frame(maxWidth: .infinity, minHeight: 300)
@@ -72,7 +72,7 @@ struct FindingsView: View {
     private var openList: some View {
         let findings = viewModel.openFindings
         if findings.isEmpty {
-            Text("Nothing open. New findings appear when Apple’s next reports change something.")
+            Text("Nothing open. New findings come with Apple’s next reports.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("analytics.findings.empty")
@@ -83,8 +83,8 @@ struct FindingsView: View {
                 finding: finding,
                 isNew: viewModel.findings.isNew(finding),
                 state: waiting == 0 ? nil : waiting == 1
-                    ? String(localized: "1 change in \(finding.area.title) is waiting in Review & Push, top right.")
-                    : String(localized: "\(waiting) changes in \(finding.area.title) are waiting in Review & Push, top right.")
+                    ? String(localized: "1 change in \(finding.area.title) is waiting in Review & Push.")
+                    : String(localized: "\(waiting) changes in \(finding.area.title) are waiting in Review & Push.")
             ) {
                 viewModel.dismiss(finding)
             } onSecondAction: {
@@ -99,7 +99,7 @@ struct FindingsView: View {
     private var actedList: some View {
         let findings = viewModel.actedFindings
         if findings.isEmpty {
-            Text("Nothing yet. A finding moves here once you’ve opened its section and pushed a change there; its result follows after 28 days.")
+            Text("Nothing yet. Push a change from a finding’s section; its result shows after 28 days.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
         }

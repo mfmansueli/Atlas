@@ -93,7 +93,7 @@ struct ScreenshotStudioRunChoiceTests {
         studio.setReusesCaptures(true)
         let reused = try studio.capturesNote(#require(center.run(for: appID)?.plan), client: "Claude Code")
         #expect(reused.hasPrefix("Version 1.3 · iPhone and iPad in 12 languages, with your picks. Faster, but shows the app as it was on"))
-        #expect(reused.hasSuffix("iPhone Duo has no earlier captures, so it’s captured now."))
+        #expect(reused.hasSuffix("iPhone Duo: no earlier captures, so captured now."))
 
         studio.setMakesScreenshots(false)
         #expect(try studio.capturesNote(#require(center.run(for: appID)?.plan), client: "Claude Code")
@@ -125,7 +125,7 @@ struct ScreenshotStudioRunChoiceTests {
         let added = try #require(center.run(for: appID)?.plan.screens.last)
         #expect(added == AutopilotScreen(id: "insights", name: "Insights", origin: .person, worksOutSteps: true))
         #expect(studio.screenDraft == nil)
-        #expect(studio.addScreensNote.hasPrefix("New screens go after screen 6 on iPhone and iPad."))
+        #expect(studio.addScreensNote.hasPrefix("Adds screens after screen 6 on iPhone and iPad."))
     }
 
     @Test func tenScreensDisableAdding() async {
@@ -134,7 +134,7 @@ struct ScreenshotStudioRunChoiceTests {
         let (model, center) = await screenshots(full)
         let studio = model.studio
         #expect(studio.plansMaximumScreens)
-        #expect(studio.addScreensNote == "Apple allows up to 10 screenshots per device. Remove a screen to add another.")
+        #expect(studio.addScreensNote == "Apple allows 10 screenshots per device. Remove one to add another.")
         studio.screenDraft = AutopilotScreenDraft(name: "Insights")
         studio.addDraftScreen()
         #expect(center.run(for: appID)?.plan.screens.count == 10)

@@ -466,6 +466,6 @@ extension AppWorkspaceView {
     private func cancelReviewShots() {
         if let runID = askCenter.ask(for: app.id)?.runID { launcher.stop(runID) }
         reviewShots.clear(appID: app.id)
-        navigator.toast = WorkspaceToast(message: ToastMessage(text: String(localized: "Run cancelled. Screenshots it already made stay as suggestions.")))
+        navigator.toast = WorkspaceToast(message: ToastMessage(text: String(localized: "Run cancelled. Finished screenshots stay as suggestions.")))
     }
 }

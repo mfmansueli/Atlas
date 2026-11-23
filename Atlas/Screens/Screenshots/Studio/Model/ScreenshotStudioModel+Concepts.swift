@@ -98,14 +98,14 @@ extension ScreenshotStudioModel {
     static func conceptScopeNote(_ run: AutopilotRun) -> String {
         let what = run.hasDirections
             ? (run.plan.makesScreenshots
-                ? String(localized: "A note changes the screenshot directions and every header concept: colors, type, layout and what they show.")
-                : String(localized: "A note changes the App Preview’s look and every header concept: colors, type, layout and what they show."))
-            : String(localized: "A note changes every header concept: colors, type, layout and what they show.")
+                ? String(localized: "Notes change screenshot directions and every header concept: colors, type, layout, content.")
+                : String(localized: "Notes change the App Preview’s look and every header concept: colors, type, layout, content."))
+            : String(localized: "Notes change every header concept: colors, type, layout, content.")
         var line = what + " " + String(localized: "Ask for Changes… on a concept changes only that one.")
         if run.animatesEachConcept {
-            line += " " + String(localized: "Its loop is made again from the changes. After Localize and check you watch the one you chose in every language.")
+            line += " " + String(localized: "Remade with your changes. After Localize and check, watch your pick in each language.")
         } else if run.makesHeaderLoop {
-            line += " " + String(localized: "The loop comes after Localize and check: you watch it and can ask for changes then.")
+            line += " " + String(localized: "You watch and adjust the loop after Localize and check.")
         }
         return line
     }

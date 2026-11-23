@@ -18,7 +18,7 @@ struct AutopilotStripContentTests {
         let strip = Self.strip(nil, assistant: nil)
         #expect(strip.kind == .needsAssistant)
         #expect(strip.pill == "Needs an assistant")
-        #expect(strip.text.hasPrefix("Capturing runs Lumen Journal in Simulator through an assistant that can use Xcode"))
+        #expect(strip.text.hasPrefix("Capturing needs an assistant that uses Xcode (Claude Code, Codex, Cursor) to run Lumen Journal in Simulator."))
         #expect(strip.primary == .setUpAssistant)
         #expect(strip.secondary == .importCaptures)
         #expect(!strip.showsConnections)
@@ -134,7 +134,7 @@ struct AutopilotStripContentTests {
         #expect(strip.title == "Autopilot is waiting for you")
         #expect(strip.pill == "Your turn")
         #expect(strip.pillStyle == .machineTranslated)
-        #expect(strip.text == "Pick the best captures for 5 screens. Claude Code’s picks are already selected.")
+        #expect(strip.text == "Pick captures for 5 screens. Claude Code’s picks are selected.")
         #expect(strip.primary == .open)
         #expect(strip.progress == nil)
     }
@@ -143,7 +143,7 @@ struct AutopilotStripContentTests {
     func choosingNamesWhoMadeTheDirections(design: Bool, designer: String) {
         let strip = Self.strip(StudioDebugRuns.run(.choose, design: design))
         #expect(strip.kind == .yourTurn)
-        #expect(strip.text == "Choose one of 3 directions from \(designer).")
+        #expect(strip.text == "Pick from \(designer)’s 3 directions.")
     }
 
     // MARK: - Ready

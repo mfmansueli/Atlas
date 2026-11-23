@@ -51,8 +51,8 @@ struct AppPrivacyHeader: View {
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
             Text("""
-            **A worksheet, not a sync.** App Store Connect has no API for App Privacy, so Atlas can’t read or change the answers \
-            there. Build them here, then copy them in with the checklist. The privacy URLs do sync, through Review & Push.
+            **A worksheet, not a push.** Apple has no App Privacy API. Build answers here, then copy them into App Store \
+            Connect with the checklist. Privacy URLs go through Review & Push.
             """)
             .font(.callout)
             .foregroundStyle(Palette.label2)

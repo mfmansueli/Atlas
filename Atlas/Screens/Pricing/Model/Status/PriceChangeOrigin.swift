@@ -7,7 +7,7 @@ import Foundation
 
 /// Who proposed a price change.
 enum PriceChangeOrigin: Hashable, Sendable {
-    /// A suggestion applied, or Apply Recommended Prices.
+    /// A suggestion applied, or Apply Suggested Prices.
     case recommended
     /// The stepper, a nearby point, a bulk action or "Use this".
     case manual

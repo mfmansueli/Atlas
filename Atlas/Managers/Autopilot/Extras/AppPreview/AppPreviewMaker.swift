@@ -68,7 +68,7 @@ enum AppPreviewMaker {
             let headline = headlines[segment.screenID] ?? ""
             let fit = styler.captionFit(for: headline)
             guard !fit.isEmpty, !fit.fits else { return nil }
-            return String(localized: "The caption “\(headline)” doesn't fit the App Preview's band on two lines and is cut off. Shorten it.")
+            return String(localized: "“\(headline)” doesn't fit the App Preview's band on two lines. Shorten it.")
         }
     }
 }

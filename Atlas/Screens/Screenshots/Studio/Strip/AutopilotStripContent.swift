@@ -61,7 +61,7 @@ struct AutopilotStripContent: Hashable, Sendable {
                 kind: .needsAssistant,
                 title: String(localized: "Screenshot Autopilot"),
                 pill: String(localized: "Needs an assistant"),
-                text: String(localized: "Capturing runs \(appName) in Simulator through an assistant that can use Xcode, such as Claude Code, Codex or Cursor. Without one, import your captures by hand; design and localizing still work."),
+                text: String(localized: "Capturing needs an assistant that uses Xcode (Claude Code, Codex, Cursor) to run \(appName) in Simulator. Without one, import captures; design and localizing still work."),
                 primary: .setUpAssistant,
                 secondary: .importCaptures
             )
@@ -150,16 +150,16 @@ struct AutopilotStripContent: Hashable, Sendable {
         let client = run.client ?? String(localized: "The assistant")
         let screens = run.plan.screens.count
         let text = switch stage {
-        case .pick: String(localized: "Pick the best captures for \(screens) screens. \(client)’s picks are already selected.")
+        case .pick: String(localized: "Pick captures for \(screens) screens. \(client)’s picks are selected.")
         case .watchPreview where run.watchesAppPreview && run.watchesHeaderLoop(design: run.designKind):
-            String(localized: "Watch the App Preview and the header loop, then approve them or ask for changes.")
+            String(localized: "Watch the App Preview and header loop. Approve or ask for changes.")
         case .watchPreview where run.watchesHeaderLoop(design: run.designKind):
-            String(localized: "Watch the header loop, then approve it or ask \(designer(run)) for changes.")
+            String(localized: "Watch the header loop. Approve or ask \(designer(run)) for changes.")
         case .watchPreview where run.reviser != nil:
-            String(localized: "Watch the App Preview, then approve it or ask \(designer(run)) for changes.")
+            String(localized: "Watch the App Preview. Approve or ask \(designer(run)) for changes.")
         case .watchPreview: String(localized: "Watch the App Preview, then approve it.")
         case .choose where run.usesConcepts: String(localized: "Choose \(run.choicesTitle) from \(designer(run)).")
-        default: String(localized: "Choose one of \(run.directions.count) directions from \(designer(run)).")
+        default: String(localized: "Pick from \(designer(run))’s \(run.directions.count) directions.")
         }
         return AutopilotStripContent(
             kind: .yourTurn,

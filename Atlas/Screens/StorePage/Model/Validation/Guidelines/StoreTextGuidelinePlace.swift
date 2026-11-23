@@ -72,8 +72,8 @@ nonisolated enum StoreTextGuidelinePlace: String, Hashable, Sendable, CaseIterab
         switch (self, kind) {
         case (.eventText, .pricing):
             String(localized: """
-            Prices and currencies vary by region and can change apart from the event: say what happens in the event \
-            instead. Whether it needs an in-app purchase is the event's purchase requirement, not its text.
+            Say what happens in the event; prices vary by region and can change. A needed in-app purchase goes in the \
+            purchase requirement, not the text.
             """)
         case (.eventText, .unverifiableClaim):
             String(localized: "Say what happens in the event instead of ranking it.")
@@ -81,8 +81,8 @@ nonisolated enum StoreTextGuidelinePlace: String, Hashable, Sendable, CaseIterab
             String(localized: "Write the name in title case and the descriptions in sentence case, with one punctuation mark at a time.")
         case (.retentionMessage, .pricing):
             String(localized: """
-            Every subscriber sees it, also those an offer isn't for: say what they keep by staying. What they lose by \
-            canceling is fine when it's factual; offers are set as retention offers, not in the text.
+            Every subscriber sees it, so say what they keep by staying. Factual losses from canceling are fine. Set \
+            offers as retention offers, not in the text.
             """)
         case (.retentionMessage, .unverifiableClaim):
             String(localized: "Say what the subscription gives instead, without superlatives or statistics you can't support.")
@@ -102,28 +102,25 @@ nonisolated enum StoreTextGuidelinePlace: String, Hashable, Sendable, CaseIterab
         switch self {
         case .eventText:
             String(localized: """
-            In-App Event texts follow Apple's In-App Events guidance (Guideline 2.3.13): no specific prices or \
-            discounts (App Review rejects them; whether the event needs a purchase is its purchase requirement), \
-            no claims that can't be verified such as “the best” or “#1”, no all capitals or repeated punctuation, no \
-            other platforms (2.3.10), no placeholder text (2.1) and “For Kids” only in the Kids Category (2.3.8). The \
-            name is the event's real name in title case, not a call to action or the event type; the descriptions \
-            are in sentence case and about the event, not the app in general. A text that breaks a rule is refused \
-            with the reason.
+            In-App Event texts follow Apple’s In-App Events guidance (Guideline 2.3.13): no specific prices or discounts \
+            (App Review rejects them; set a needed purchase as the purchase requirement), no unverifiable claims like \
+            “the best” or “#1”, no all capitals or repeated punctuation, no other platforms (2.3.10), no placeholder \
+            text (2.1), and “For Kids” only in the Kids Category (2.3.8). The name is the event’s real name in title \
+            case, not a call to action or the event type. Descriptions use sentence case and describe the event, not the \
+            app. Texts that break a rule are refused with the reason.
             """)
         case .retentionMessage:
             String(localized: """
-            Retention messages follow App Store Connect's content guidelines: no offers, discounts or prices such as \
+            Retention messages follow App Store Connect’s content guidelines: no offers, discounts or prices like \
             “$9.99”, “50% off” or “one month free” (App Review rejects them: every subscriber sees the message), no \
-            unverifiable claims or statistics such as “the best app” or “92% of parents”, nothing coercive, no all \
-            capitals or repeated exclamation marks, no other platforms (2.3.10) and no placeholder text (2.1). What a \
-            subscriber loses by canceling is fine when it's factual, and so is announcing upcoming content. A text \
-            that breaks a rule is refused with the reason.
+            unverifiable claims or statistics like “the best app” or “92% of parents”, nothing coercive, no all capitals \
+            or repeated exclamation marks, no other platforms (2.3.10) and no placeholder text (2.1). Factual losses \
+            from canceling and upcoming content are fine. Texts that break a rule are refused with the reason.
             """)
         case .reviewReply:
             String(localized: """
-            Replies follow Guideline 5.6.1: respectful, about what the reviewer wrote, with no personal information, \
-            spam or marketing (no prices, discounts or promo codes) and no placeholder text. A reply that breaks one is \
-            skipped with the reason.
+            Replies follow Guideline 5.6.1: respectful and about the review. No personal information, spam, marketing \
+            (prices, discounts, promo codes) or placeholder text. Replies that break a rule are skipped with the reason.
             """)
         }
     }
@@ -138,13 +135,12 @@ nonisolated enum StoreTextGuidelinePlace: String, Hashable, Sendable, CaseIterab
                 app more generally; don't use the description to promote the app or its services.
                 """,
                 """
-                No specific prices: “Including specific pricing will lead to rejection by App Review.” Whether the \
-                event needs an in-app purchase is set as its purchase requirement.
+                No specific prices: “Including specific pricing will lead to rejection by App Review.” Set a needed \
+                in-app purchase as the purchase requirement.
                 """,
                 """
-                Event name: the event's actual name, up to 30 characters, in title case; not a call to action or \
-                tagline, not generic terms or the event type (the badge shows it). Short (≤50) and long (≤120) \
-                descriptions in sentence case.
+                Event name: its real name, up to 30 characters, in title case. No call to action, tagline, generic terms \
+                or event type (the badge shows it). Short (≤50) and long (≤120) descriptions: sentence case.
                 """,
                 "No claims that can't be verified (“the best”, “#1”) or extra words such as “game event”; no all capitals or repeated punctuation.",
                 "2.3.10, 2.1(a) and 2.3.8: no other platforms, no placeholder text, “For Kids” only in the Kids Category.",
@@ -152,8 +148,8 @@ nonisolated enum StoreTextGuidelinePlace: String, Hashable, Sendable, CaseIterab
         case .retentionMessage:
             [
                 """
-                No promotional offers, discounts or specific prices (“$9.99”, “50% off”, “one month free”): every \
-                subscriber sees the text, also those an offer isn't for, and App Review rejects it.
+                No promotional offers, discounts or specific prices (“$9.99”, “50% off”, “one month free”). Every \
+                subscriber sees the text, and App Review rejects it.
                 """,
                 """
                 Factual losses are fine (“You'll lose access to downloaded content when your subscription ends”), and \

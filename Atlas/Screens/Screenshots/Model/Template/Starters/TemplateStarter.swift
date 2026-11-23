@@ -108,14 +108,10 @@ enum TemplateStarter: String, Codable, Hashable, Sendable, CaseIterable, Identif
         case .highlight: String(localized: "Every line sits on its own tilted marker, with a purple phone and a laurel on slot 1.")
         case .socialProof:
             String(localized: """
-            A light kicker over a heavy headline on ink, lilac and mist. Big tilted phones bleed off the edge; slot 2 is real \
-            App Store reviews; slot 3 has an illustration and slot 5 a hand holding the phone.
+            A light kicker over a heavy headline on ink, lilac and mist, with big tilted phones. Slot 2 shows real App Store reviews.
             """)
         case .arcade:
-            String(localized: """
-            Huge white caps on electric blue, big straight phones that run off the bottom, hand-drawn marks and props. Slot 3 \
-            stacks two phones, and one figure spans slots 4 and 5.
-            """)
+            String(localized: "Huge white caps on electric blue, big phones running off the bottom, hand-drawn marks and props.")
         }
     }
 

@@ -27,9 +27,14 @@ struct PricingLoadNoticeTests {
             == .rateLimited(resumeAt: hour.addingTimeInterval(3600)))
     }
 
-    @Test func applesErrorsStillShow() {
+    @Test func applesErrorsShowInAtlasWordsWithAppleTextInDetails() {
         let error = AppStoreConnectError.server(statusCode: 500, code: "UNEXPECTED_ERROR", detail: nil)
-        #expect(PricingLoadNotice.notice(for: error) == .apiError(error.localizedDescription))
+        guard case let .apiError(text) = PricingLoadNotice.notice(for: error) else {
+            Issue.record("Expected an API error banner")
+            return
+        }
+        #expect(text.hasPrefix("Prices didn’t load. Apple didn’t answer. Try again in a minute.\nDetails: "))
+        #expect(text == AppleErrorCopy("Prices didn’t load.", error: error).text)
     }
 
     #if DEBUG

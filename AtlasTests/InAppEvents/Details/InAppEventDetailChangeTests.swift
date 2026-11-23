@@ -38,7 +38,7 @@ struct InAppEventDetailChangeTests {
         ("alba events", "The deep link isn’t a valid URL. Use a universal link (https://alba.app/event) or the app’s own scheme (alba://event)."),
         ("https://", "The deep link isn’t a valid URL. Use a universal link (https://alba.app/event) or the app’s own scheme (alba://event)."),
         ("1alba://x", "The deep link isn’t a valid URL. Use a universal link (https://alba.app/event) or the app’s own scheme (alba://event)."),
-        ("http://alba.app/events", "Links that start with http:// open in Safari, not in the app. Use https:// (a universal link) or the app’s own scheme."),
+        ("http://alba.app/events", "http:// links open in Safari, not the app. Use https:// (a universal link) or the app’s own scheme."),
     ] as [(String, String?)])
     func aDeepLinkIsCheckedLikeAppStoreConnect(link: String, problem: String?) {
         #expect(InAppEventDeepLink.problem(link, appName: "Alba") == problem)

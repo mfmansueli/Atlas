@@ -85,8 +85,8 @@ struct AutopilotAddScreensFooter: View {
 
     private var askPlaceholder: String {
         display == .watch
-            ? String(localized: "Ask for a watch screen, e.g. “one that shows today’s mood”")
-            : String(localized: "Ask for a screen, e.g. “one that shows the streak”")
+            ? String(localized: "Watch screen showing today’s mood")
+            : String(localized: "A screen that shows the streak")
     }
 
     /// The set's buttons keep their identifiers; Apple Watch's end in
@@ -102,7 +102,7 @@ struct AutopilotAddScreensFooter: View {
                 Text(studio.suggestBusyText(client: client, on: display))
                     .accessibilityIdentifier("autopilot.plan.suggestions.busyText")
                 if studio.didCopySuggestPrompt {
-                    Text("The prompt is copied: paste it into \(client).")
+                    Text("Prompt copied. Paste it into \(client).")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }

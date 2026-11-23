@@ -62,7 +62,7 @@ struct ProductPageTestAskingStep: Hashable, Identifiable {
             )
         } else {
             ProductPageTestAskingStep(
-                id: "render", title: String(localized: "Atlas renders it in \(count) languages and checks it"),
+                id: "render", title: String(localized: "Renders and checks it in \(count) languages"),
                 detail: String(localized: "Apple’s rules, safe area and contrast, like the current image"), state: .upcoming
             )
         }

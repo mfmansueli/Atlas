@@ -63,8 +63,8 @@ struct PageShotsLookSection: View {
         let name = flow.defaultTemplateName
         let app = flow.app.name
         return name.isEmpty
-            ? String(localized: "The page looks like \(app), with a different story.")
-            : String(localized: "\(name). The page looks like \(app), with a different story.")
+            ? String(localized: "Looks like \(app), tells a different story.")
+            : String(localized: "\(name). Looks like \(app), tells a different story.")
     }
 
     private func option(isOn: Bool, title: String, detail: String, id: String, action: @escaping () async -> Void) -> some View {

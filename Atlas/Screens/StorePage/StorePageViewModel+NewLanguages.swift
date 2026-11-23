@@ -114,11 +114,11 @@ extension StorePageViewModel {
         let list = names.joined(separator: ", ")
         if names.count == 1 {
             return String(localized: """
-            \(buildName) supports 1 more language than its App Store page: \(list). People who use it see the \(primaryLanguageName) page.
+            1 language in \(buildName) has no store page: \(list). Its speakers see the \(primaryLanguageName) page.
             """)
         }
         return String(localized: """
-        \(buildName) supports \(names.count) more languages than its App Store page: \(list). People who use them see the \
+        \(names.count) languages in \(buildName) have no store page: \(list). Their speakers see the \
         \(primaryLanguageName) page.
         """)
     }
@@ -144,8 +144,8 @@ extension StorePageViewModel {
         let drafted = drafter(of: locale).map { String(localized: "\($0) drafted the page below.") }
             ?? String(localized: "Connect an assistant or an AI provider to draft its text.")
         return String(localized: """
-        \(buildName) is translated into \(locale.name)\(evidence). People who use \(locale.name) see the \(primaryLanguageName) page \
-        today. \(drafted)
+        \(buildName) is translated into \(locale.name)\(evidence), but \(locale.name) users see the \
+        \(primaryLanguageName) page today. \(drafted)
         """)
     }
 
@@ -186,8 +186,8 @@ extension StorePageViewModel {
         }
         let fields = Set(drafted.map(\.target.field)).count
         return fields == 1
-            ? String(localized: "\(name) drafted 1 field; it waits in its tab for you.")
-            : String(localized: "\(name) drafted \(fields) fields; they wait in its tab for you.")
+            ? String(localized: "\(name) drafted 1 field. It’s in its tab.")
+            : String(localized: "\(name) drafted \(fields) fields. They’re in its tab.")
     }
 
     /// "Found in Lumen Journal 1.4: Localizable.xcstrings in the Xcode
@@ -238,7 +238,7 @@ extension StorePageViewModel {
     /// "Create Page" on a suggested language's tab.
     func createPage(_ locale: StoreLocale) {
         addLanguages([locale], toast: String(localized: """
-        Added \(locale.name). The page is created in App Store Connect when you push; accept or edit the drafted text below.
+        Added \(locale.name). Review the drafted text below; the page is created when you push.
         """))
     }
 
@@ -257,8 +257,8 @@ extension StorePageViewModel {
         commit(edited)
         let names = added.map(\.name).joined(separator: ", ")
         let message = text ?? (added.count == 1
-            ? String(localized: "Added \(names). The page is created in App Store Connect when you push; its drafted text is in its tab.")
-            : String(localized: "Added \(names). The pages are created in App Store Connect when you push; their drafted text is in each tab."))
+            ? String(localized: "Added \(names). Drafted text is in its tab; the page is created when you push.")
+            : String(localized: "Added \(names). Drafted text is in each tab; the pages are created when you push."))
         suggestionUndo = nil
         addedLanguagesUndo = added
         toast = ToastMessage(text: message, canUndo: true)

@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// The four steps of "Set Up Your AI Assistant".
+/// The four steps of "Set Up Your Assistant".
 enum AssistantSetupStep: Int, CaseIterable, Identifiable, Comparable, Sendable {
     case assistant = 1
     case server

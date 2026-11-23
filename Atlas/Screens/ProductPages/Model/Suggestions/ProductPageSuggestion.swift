@@ -37,6 +37,9 @@ struct ProductPageSuggestion: Identifiable, Codable, Hashable, Sendable {
     /// has this suggestion's ID as its page; the draft made from it takes
     /// them as its own (`ProductPagesStore.save`). Optional, like `start`.
     var notOfferedTexts: [ProductPageTextSuggestion]?
+    /// Details and how sure, beside the reason; nil in suggestions kept
+    /// before.
+    var layers: SuggestionLayers?
 
     /// "Analytics · Brazil: 4% open the page": one pill for each piece of
     /// evidence, so several wrap instead of making one pill wider than the

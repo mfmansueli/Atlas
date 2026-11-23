@@ -142,7 +142,7 @@ final class ScreenshotsPushUITests: XCTestCase {
     func testTheRestoreSceneOpensOnGerman() {
         launch(scene: "shots-act-restore")
         XCTAssertTrue(element("restore.sheet").waitForExistence(timeout: 20))
-        let note = "Restoring takes German out of re-rendering until you choose Use Template Again, so the next push doesn’t replace these again."
+        let note = "Restoring stops re-rendering German until you choose Use Template Again, so the next push keeps these."
         XCTAssertTrue(app.staticTexts[note].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Queue 10 Screenshots for Review"].exists)
     }

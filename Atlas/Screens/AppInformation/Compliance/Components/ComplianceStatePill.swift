@@ -14,9 +14,9 @@ struct ComplianceStatePill: View {
     var body: some View {
         switch state {
         case .needsAnswer:
-            Pill(text: String(localized: "Needs your answer"), style: .warning)
+            Pill(text: String(localized: "Needs answer"), style: .warning)
         case .toEnter:
-            Pill(text: String(localized: "Enter in App Store Connect"), style: .accent)
+            Pill(text: String(localized: "To enter"), style: .accent)
         case .notPushed:
             Pill(text: String(localized: "Not pushed"), style: .accent)
         case .passes:

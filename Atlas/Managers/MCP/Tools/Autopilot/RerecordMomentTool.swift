@@ -31,7 +31,7 @@ struct RerecordMomentTool: MCPTool {
                 "locale": MCPToolDefinition.string("The take's locale."),
                 "start_s": ["type": "number", "description": "When the screen has settled in the take, in seconds."],
                 "end_s": ["type": "number", "description": "When the moment ends in the take, in seconds."],
-                "reason": MCPToolDefinition.string("Why this take works, in a short sentence."),
+                "reason": MCPToolDefinition.shortWhy("Why this take works, in a short sentence."),
             ],
             required: ["appId", "moment_id"]
         ),

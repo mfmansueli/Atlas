@@ -354,7 +354,10 @@ final class AssistantConnectModel: Identifiable {
         do {
             try connector.config.addAtlas(to: assistant, token: token, bridgePath: server.bridgePath)
         } catch {
-            return fail(.couldNotAdd(error.localizedDescription))
+            // Atlas's own reasons read as they are; the system's go through the error template.
+            let ownReason = error is AssistantConfigProblem || error is AssistantConfigFile.Problem
+            let what = String(localized: "Atlas couldn’t add itself to \(assistant.title).", comment: "kind:error")
+            return fail(.couldNotAdd(ownReason ? error.localizedDescription : AppleErrorCopy(what, error: error).text))
         }
         progress = .starting
         let folderURL: URL? = folder.map { path in grantedURL.map(Self.folderURL) ?? URL(filePath: path, directoryHint: .isDirectory) }
@@ -367,7 +370,7 @@ final class AssistantConnectModel: Identifiable {
         step = .hello
         let time = now().formatted(date: .omitted, time: .shortened)
         hello = Hello(
-            text: String(localized: "\(assistant.title) connected to Atlas at \(time) and asked for its tools. It can read \(appName) now."),
+            text: String(localized: "\(assistant.title) connected at \(time). It can read \(appName) now."),
             date: now(),
             isFromAssistant: false
         )

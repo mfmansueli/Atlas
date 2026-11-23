@@ -28,12 +28,11 @@ struct PrivacyChecklistFooter: View {
         } else if viewModel.canMarkPublished {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Text("""
-                Done in App Store Connect and published there? Atlas saves today’s date and a copy of these answers, so it can tell \
-                you when a later scan changes them.
+                Published there? Atlas saves today’s date and these answers, and warns you if a later scan changes them.
                 """)
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
-                Button(String(localized: "Mark as Published in App Store Connect"), action: viewModel.markPublished)
+                Button(String(localized: "Mark as Published"), action: viewModel.markPublished)
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("appInformation.appPrivacy.checklist.markPublished")
             }

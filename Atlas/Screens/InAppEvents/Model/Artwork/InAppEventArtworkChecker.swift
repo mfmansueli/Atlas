@@ -41,8 +41,7 @@ enum InAppEventArtworkChecker {
         if !file.isVideo {
             if file.hasAlpha {
                 checks.append(.warning(String(localized: """
-                The image has an alpha channel. Apple doesn't say event media may be transparent: flatten it onto its \
-                background before proposing it.
+                The image has transparency, which Apple may not accept for event media. Flatten it onto its background first.
                 """)))
             }
             if let model = file.colorModel, model != "RGB" {
@@ -81,15 +80,13 @@ enum InAppEventArtworkChecker {
         }
         if let codec = file.codec, !InAppEventArtworkRules.knownVideoCodecs.contains(codec) {
             checks.append(.warning(String(localized: """
-            The video is encoded as “\(codec)”. Apple doesn't name codecs for event videos; H.264, HEVC or ProRes 422 \
-            HQ are the safe choice.
+            The video uses “\(codec)”. Apple names no codecs for event videos; H.264, HEVC or ProRes 422 HQ are safe.
             """)))
         }
         if let seconds = file.seconds, !InAppEventArtworkRules.videoSeconds.contains(seconds) {
             let length = seconds < 10 ? String(format: "%.1f", seconds) : String(Int(seconds.rounded()))
             checks.append(.refusal(String(localized: """
-            The video is \(length) seconds; Apple takes 5 to 30 seconds for event videos, played on repeat. Make it a \
-            seamless loop in that range.
+            Event videos must be 5 to 30 seconds and loop; this one is \(length) seconds. Make a seamless loop in that range.
             """)))
         }
         for audio in file.audio {
@@ -117,14 +114,13 @@ enum InAppEventArtworkChecker {
         if !look.text.isEmpty {
             let words = look.text.prefix(4).map { "“\($0)”" }.joined(separator: ", ")
             checks.append(.warning(String(localized: """
-            The art has text in it (\(words)). Apple asks for none, especially the event's or the app's name: it lays the \
-            badge, name and description over it in each language.
+            The art has text (\(words)). Apple asks for none: it adds the badge, name and description in each language.
             """)))
         }
         if look.isLowerPartBusy {
             checks.append(.warning(String(localized: """
-            The lower part is busy (\(Int((look.lowerBusyness * 100).rounded()))% sharp edges): Apple lays the event's name \
-            there, so keep it calm or darker for the white text to read.
+            The lower part is busy (\(Int((look.lowerBusyness * 100).rounded()))% sharp edges). Apple puts the event’s name \
+            there in white: keep it calm or darker.
             """)))
         }
         return checks

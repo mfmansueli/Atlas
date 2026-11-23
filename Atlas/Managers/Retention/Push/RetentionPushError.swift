@@ -28,7 +28,7 @@ enum RetentionPushError: LocalizedError, Hashable {
         case let .noPricePoint(price, nearest):
             Self.noPricePointText(price: price, nearest: nearest)
         case .cannotUpload:
-            String(localized: "The image can’t be uploaded to the Asset Library from here.")
+            String(localized: "The image can’t be added to the Asset Library from here.")
         case let .imageMissing(fileName):
             String(localized: "\(fileName) isn’t on this Mac anymore. Choose the image again.")
         case let .imageRefused(state, details):
@@ -37,8 +37,8 @@ enum RetentionPushError: LocalizedError, Hashable {
             String(localized: "Apple is still processing the image. Push again in a few minutes.")
         case let .submissionRefused(detail):
             String(localized: """
-            App Store Connect didn’t open a review submission\(detail.map { ": \($0)" } ?? ""). If one is being prepared for \
-            the app, submit or cancel it in App Store Connect, then push again.
+            App Store Connect didn’t open a review submission\(detail.map { ": \($0)" } ?? ""). Submit or cancel the one in progress \
+            there, then push again.
             """)
         }
     }

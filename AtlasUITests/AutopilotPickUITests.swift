@@ -80,7 +80,7 @@ final class AutopilotPickUITests: XCTestCase {
         again.click()
         let note = element("autopilot.moment.recordAgainNote.1")
         XCTAssertTrue(note.waitForExistence(timeout: 5))
-        XCTAssertEqual(text(of: note), "Claude Code will record “Week” again before the design step. The rest of the recording stays.")
+        XCTAssertEqual(text(of: note), "Claude Code re-records “Week” before design. The rest stays.")
         attachScreenshot("Pick · record again")
     }
 
@@ -88,7 +88,7 @@ final class AutopilotPickUITests: XCTestCase {
         app.launch(debugScene: "st-pick-duo")
         let card = element("autopilot.pick.duo.0")
         XCTAssertTrue(card.waitForExistence(timeout: 20))
-        XCTAssertEqual(text(of: element("autopilot.pick.note")), "Same moments as iPhone, on the inner and cover displays. Click to see them full size.")
+        XCTAssertEqual(text(of: element("autopilot.pick.note")), "Same moments as iPhone, on the inner and cover displays. Click for full size.")
         attachScreenshot("Pick · iPhone Duo")
     }
 

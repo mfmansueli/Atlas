@@ -35,7 +35,7 @@ struct StarterPickerView: View {
 
     private var intro: String {
         let summary = viewModel.captureSummary
-        let rest = String(localized: "One template renders every locale the same way; you can change everything afterwards. Previewed with sample captions.")
+        let rest = String(localized: "One template renders every locale alike; change anything later. Shown with sample captions.")
         return summary.isEmpty ? rest : summary + " " + rest
     }
 }

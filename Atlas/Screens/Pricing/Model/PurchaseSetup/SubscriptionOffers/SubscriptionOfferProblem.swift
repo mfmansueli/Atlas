@@ -67,7 +67,7 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
         case let .invalidIdentifier(label):
             String(localized: "The \(label) takes letters, digits, “_” and “.”, up to 64 characters, and can’t be changed later.")
         case let .identifierTaken(label, value):
-            String(localized: "The subscription has an offer with the \(label) “\(value)” already.")
+            String(localized: "Another offer already uses the \(label) “\(value)”.")
         case let .tooMany(kind, limit):
             String(localized: "A subscription has up to \(limit) active \(kind.groupTitle.lowercased()).")
         case .subscriptionNotCreated:
@@ -99,7 +99,7 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
         case .inAppPurchaseNotCreated:
             String(localized: "The in-app purchase waits in Review & Push. Push it first, then add the offer code.")
         case let .inAppPurchaseOfferCodeNameTaken(name):
-            String(localized: "The in-app purchase has an offer code named “\(name)” already.")
+            String(localized: "Another offer code is already named “\(name)”.")
         case let .tooManyInAppPurchaseOfferCodes(limit):
             String(localized: "An in-app purchase has up to \(limit) active offer codes.")
         case .noSpenderEligibility:
@@ -107,7 +107,7 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
         case .invalidInAppPurchaseOfferPrice:
             String(localized: "Enter a price in US dollars: zero for free, or more with up to two decimals.")
         case let .notBelowPurchasePrice(price):
-            String(localized: "An offer code’s price is below the in-app purchase’s own (\(price) in the United States).")
+            String(localized: "Set a price below the in-app purchase’s \(price) in the United States.")
         }
     }
 }

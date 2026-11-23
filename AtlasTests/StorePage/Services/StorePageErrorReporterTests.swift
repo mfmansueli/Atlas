@@ -38,9 +38,17 @@ struct StorePageErrorReporterTests {
         #expect(push.notice == nil)
     }
 
-    @Test func otherErrorsOnlyReturnTheirText() {
-        let message = StorePageErrorReporter.report(CocoaError(.fileReadCorruptFile), to: push)
+    @Test func otherErrorsSayWhatHappenedAndKeepTheirTextInDetails() {
+        let error = CocoaError(.fileReadCorruptFile)
+        let message = StorePageErrorReporter.report(error, to: push)
         #expect(push.notice == nil)
-        #expect(message == CocoaError(.fileReadCorruptFile).localizedDescription)
+        #expect(message.hasPrefix("This section didn’t load. Try again.\nDetails: "))
+        #expect(message.contains(error.localizedDescription))
+    }
+
+    @Test func applesErrorIsNeverTheMessage() {
+        let error = AppStoreConnectError.server(statusCode: 503, detail: nil)
+        let message = StorePageErrorReporter.report(error, to: push)
+        #expect(message == "This section didn’t load. Apple didn’t answer. Try again in a minute.\nDetails: HTTP 503")
     }
 }

@@ -96,7 +96,7 @@ struct QueuedVersionPlaceholder: Hashable, Sendable {
         var versionString: String
 
         var errorDescription: String? {
-            String(localized: "Version \(versionString) isn’t in App Store Connect yet, so its texts wait. Push the version first.")
+            String(localized: "Version \(versionString) isn’t in App Store Connect yet. Push it first, then its texts.")
         }
     }
 

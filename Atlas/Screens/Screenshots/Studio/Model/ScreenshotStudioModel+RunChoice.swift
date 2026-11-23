@@ -144,8 +144,8 @@ extension ScreenshotStudioModel {
         if !uncovered.isEmpty {
             let names = uncovered.map(\.shortTitle).formatted(.list(type: .and))
             text += " " + (uncovered.count == 1
-                ? String(localized: "\(names) has no earlier captures, so it’s captured now.")
-                : String(localized: "\(names) have no earlier captures, so they’re captured now."))
+                ? String(localized: "\(names): no earlier captures, so captured now.")
+                : String(localized: "\(names): no earlier captures, so captured now."))
         }
         if plan.makesScreenshots, plan.screens.contains(where: { $0.origin != nil }) {
             text += " " + String(localized: "New screens in the plan are captured now.")

@@ -29,8 +29,8 @@ struct NewSubscriptionOfferMenu: View {
         .buttonBorderShape(.capsule)
         .disabled(!canAdd)
         .help(canAdd
-            ? String(localized: "A promotional offer, a win-back offer or an offer code, queued in Review & Push.")
-            : String(localized: "Atlas couldn’t read this subscription’s offers from App Store Connect yet."))
+            ? String(localized: "Adds a promotional offer, win-back offer or offer code to Review & Push.")
+            : String(localized: "Offers haven’t loaded from App Store Connect yet."))
         .accessibilityIdentifier("pricing.offers.newMenu")
     }
 }

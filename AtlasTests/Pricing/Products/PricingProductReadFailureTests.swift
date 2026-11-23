@@ -48,7 +48,7 @@ struct PricingProductReadFailureTests {
 
         #expect(model.areProductsLoaded)
         #expect(model.card(for: monthly) == nil)
-        #expect(model.productErrors[monthlyID] == "Couldn’t read \(monthly.name)’s prices. App Store Connect had a problem on its side.")
+        #expect(model.productErrors[monthlyID] == "Apple couldn’t send \(monthly.name)’s prices. Try again in a minute.")
         #expect(model.unreadProductIDs == [monthlyID])
         // The other products show, and no banner repeats Apple's text.
         #expect(model.productMatrices[annualID] != nil)

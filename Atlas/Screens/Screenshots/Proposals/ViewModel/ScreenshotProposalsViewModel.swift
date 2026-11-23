@@ -54,7 +54,7 @@ final class ScreenshotProposalsViewModel: Identifiable {
         do {
             try await adopt(services.loadDocument(for: app, primaryLocale: primaryLocale))
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "The suggestions didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -116,9 +116,9 @@ final class ScreenshotProposalsViewModel: Identifiable {
         switch proposal.status {
         case .waiting: nil
         case .accepted where proposal.kind == .template:
-            String(localized: "Accepted. It’s template v\(currentVersion ?? 0) now, and the changed renders are waiting in Review & Push.")
+            String(localized: "Accepted as template v\(currentVersion ?? 0). Changed renders wait in Review & Push.")
         case .accepted:
-            String(localized: "Accepted. The captions keep the “Proposed by \(proposal.client)” tag until someone edits them.")
+            String(localized: "Accepted. Captions keep the “Suggested by \(proposal.client)” tag until edited.")
         case .partlyAccepted: String(localized: "Partly accepted. Rejected captions stay as they were.")
         case .rejected: String(localized: "Rejected. Nothing changed.")
         }

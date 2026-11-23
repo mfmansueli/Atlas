@@ -36,9 +36,9 @@ enum NewSubscriptionProblem: Hashable, Sendable {
         case .invalidProductID:
             String(localized: "A product ID can only have letters, digits, periods and underscores.")
         case let .productIDTaken(id):
-            String(localized: "“\(id)” is already used. Product IDs can’t be used twice, even after a product is deleted.")
+            String(localized: "“\(id)” is taken. Product IDs can’t be reused, even after deletion.")
         case let .groupExists(name):
-            String(localized: "The app already has a group named “\(name)”. Choose it instead of a new one.")
+            String(localized: "A group named “\(name)” already exists. Choose it instead.")
         case .invalidPrice:
             String(localized: "Enter a price in US dollars, above zero and with up to two decimals.")
         }

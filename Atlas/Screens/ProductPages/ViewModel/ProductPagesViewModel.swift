@@ -49,7 +49,7 @@ final class ProductPagesViewModel {
     /// Screenshot sets by localization ID.
     var screenshotSets: [String: LoadState<[LiveScreenshotSet]>] = [:]
     var isSubmitting = false
-    var submitError: String?
+    var submitError: AppleErrorCopy?
     /// Push and Submit… pressed: once that page's changes are pushed,
     /// Submit for Review opens on it. By name, since a draft's ID changes
     /// when it's made.
@@ -101,7 +101,8 @@ final class ProductPagesViewModel {
             pruneChosenFiles()
             queueVisibleWhenApproved()
         } catch {
-            if state.value == nil { state = .failed(error.localizedDescription) } else { readFailure = error.localizedDescription }
+            let text = AppleErrorCopy(String(localized: "Product pages didn’t load.", comment: "kind:error"), error: error).text
+            if state.value == nil { state = .failed(text) } else { readFailure = text }
         }
     }
 

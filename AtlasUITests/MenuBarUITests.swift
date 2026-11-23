@@ -109,7 +109,7 @@ final class MenuBarUITests: XCTestCase {
         let quit = app.buttons["stillRunning.quitWhenClosed"]
         XCTAssertTrue(quit.waitForExistence(timeout: 10))
         quit.click()
-        XCTAssertEqual(lastAction(), "Quit When I Close the Window")
+        XCTAssertEqual(lastAction(), "Quit When Window Closes")
     }
 
     func testGlyphsInEveryState() {

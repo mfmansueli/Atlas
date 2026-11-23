@@ -12,9 +12,8 @@ struct RetentionIntroBanner: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.medium) {
             Text("""
-            Apple shows one message from you on its Confirm Cancellation screen, on iOS and iPadOS 15.1, macOS 14 and \
-            visionOS 1 or later. The Cancel button always stays, and the message is marked as coming from you. \
-            Messages and offers go through App Review.
+            Apple shows one message, marked as yours, on Confirm Cancellation (iOS and iPadOS 15.1, macOS 14, visionOS 1 or later). Cancel \
+            always stays. App Review checks messages and offers.
             """)
             .font(.callout)
             .fixedSize(horizontal: false, vertical: true)

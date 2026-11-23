@@ -32,10 +32,7 @@ struct InAppPurchaseOfferCodeSheet: View {
     var body: some View {
         OfferSheetChrome(
             title: String(localized: "Offer code"),
-            detail: String(localized: """
-            \(purchase.name) for free or at a lower price, for people who redeem a code: in the App Store, in your app or \
-            by link. It waits in Review & Push; nothing changes in App Store Connect until you push.
-            """),
+            detail: String(localized: "\(purchase.name) free or at a lower price, with a code. Nothing changes until you push."),
             footnote: String(localized: "Up to \(NewInAppPurchaseOfferCode.activePerPurchase) active offer codes per in-app purchase."),
             identifier: Self.id,
             problems: problems(current),

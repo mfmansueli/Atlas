@@ -31,14 +31,14 @@ struct AppPriceAvailabilityRefusal: LocalizedError, Hashable, Sendable {
         let cause = switch kind {
         case .price:
             String(localized: """
-            Apple refused the app’s price. A paid price needs the Paid Applications agreement to be active in App Store \
-            Connect → Business (Free needs only the Free Apps agreement), and the key needs the Admin or App Manager role.
+            Apple refused the price. Paid prices need the Paid Applications agreement in App Store Connect → Business; \
+            free needs Free Apps. Use an Admin or App Manager key.
             """)
         case .availability:
             String(localized: """
-            Apple refused the app’s availability. If it was set up in App Store Connect meanwhile, discard this change, \
-            refresh Pricing and change countries and regions one at a time. A pre-order is only for an app that isn’t \
-            released yet, with a release date Apple accepts.
+            Apple refused the availability. If you changed it in App Store Connect, discard this and refresh Pricing; \
+            otherwise change one country or region at a time. Pre-orders need an unreleased app and a release date \
+            Apple accepts.
             """)
         }
         return appleText.isEmpty ? cause : "\(cause) \(appleText)"

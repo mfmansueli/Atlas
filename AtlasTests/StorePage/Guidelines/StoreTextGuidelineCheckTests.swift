@@ -151,7 +151,7 @@ struct StoreTextGuidelineCheckTests {
         let reason = [kids].assistantReason
         #expect(reason.hasSuffix("Leave it out unless the app is in the Kids Category."))
         #expect([kids].assistantNote.hasPrefix("App Review would reject it: "))
-        #expect([kids].assistantNote.hasSuffix(" Propose a version without it."))
+        #expect([kids].assistantNote.hasSuffix(" Suggest a version without it."))
     }
 
     @Test func everyRuleIsInTheAssistantsRules() {

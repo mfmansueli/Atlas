@@ -76,7 +76,7 @@ struct LocaleEditorView: View {
             viewModel.acceptAllSuggestions(in: model.current)
         } onAskFirst: {
             preferences.acceptsAllWithoutAsking = false
-            viewModel.toast = ToastMessage(text: String(localized: "Accept All Languages will show you the suggestions first again."))
+            viewModel.toast = ToastMessage(text: String(localized: "Accept All Languages shows the suggestions first again."))
         } trailing: {
             if model.currentEntry?.isNewPage == true {
                 Pill(text: String(localized: "New page"), style: .accent)

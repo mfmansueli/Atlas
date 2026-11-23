@@ -63,11 +63,11 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
         planText.map { String(localized: "Review screenshot · \($0)") } ?? String(localized: "Review screenshot")
     }
 
-    /// “Captured in Simulator on iPhone 17 Pro, English (U.S.), just now.
+    /// “Captured in Simulator on iPhone 17 Pro, English (U.S.), a moment ago.
     /// Monthly is selected and shows $4.99.”
     func capturedLine(now: Date = .now) -> String {
         let when = now.timeIntervalSince(madeAt) < 60
-            ? String(localized: "just now")
+            ? String(localized: "a moment ago")
             : madeAt.formatted(.relative(presentation: .named, unitsStyle: .wide))
         let place = [device, language].compactMap(\.self).joined(separator: ", ")
         var line = place.isEmpty ? String(localized: "Captured in Simulator \(when).") : String(localized: "Captured in Simulator on \(place), \(when).")

@@ -167,7 +167,7 @@ final class PricingViewModel {
             startLoadingProducts()
         } catch {
             guard generation == loadGeneration else { return }
-            catalogState = .failed(error.localizedDescription)
+            catalogState = .failed(AppleErrorCopy(String(localized: "Products didn’t load.", comment: "kind:error"), error: error).text)
             reportLoadError(error)
         }
     }
@@ -211,7 +211,14 @@ final class PricingViewModel {
             // Apple's server failing on this product is said on it, not in
             // a banner: the other products' prices are fine.
             let isProductFailure = PricingReadFailure.isProductFailure(error)
-            sheetError = isProductFailure ? PricingReadFailure.text(productName: product.name) : error.localizedDescription
+            // Atlas's own reasons (no price yet) keep their sentence.
+            sheetError = if isProductFailure {
+                PricingReadFailure.text(productName: product.name)
+            } else if error is PricingSheetError {
+                error.localizedDescription
+            } else {
+                AppleErrorCopy(String(localized: "Prices didn’t load.", comment: "kind:error"), error: error).text
+            }
             needsStartingPrice = (error as? PricingSheetError)?.offersStartingPrice == true
             hasNoPrice = error is PricingSheetError && !needsStartingPrice
             if !(error is PricingSheetError), !isProductFailure { reportLoadError(error) }
@@ -406,7 +413,7 @@ final class PricingViewModel {
             if selectedOfferID == nil { selectedOfferID = (list.first { $0.kind == .promotional } ?? list.first)?.id }
         } catch {
             guard selectedProductID == product.id else { return }
-            offers = .failed(error.localizedDescription)
+            offers = .failed(AppleErrorCopy(String(localized: "Offers didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

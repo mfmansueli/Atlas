@@ -47,7 +47,7 @@ struct PricingStrategy: Hashable, Sendable, Codable {
 
     var isRecommended: Bool { method == .recommended }
 
-    /// "Custom" in the inspector, with Back to Recommended.
+    /// "Custom" in the inspector, with Back to Suggested.
     var isCustom: Bool { !isRecommended }
 
     /// The chosen index, then the fallbacks without repeating it.
@@ -78,7 +78,7 @@ struct PricingStrategy: Hashable, Sendable, Codable {
         self = next
     }
 
-    /// Back to Recommended, keeping the base territory.
+    /// Back to Suggested, keeping the base territory.
     mutating func resetToRecommended() {
         self = Self.recommended(baseTerritoryID: baseTerritoryID)
     }

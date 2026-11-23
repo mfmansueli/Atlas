@@ -31,7 +31,7 @@ struct GuidedTemplatePreview: Hashable {
     /// Autopilot captures and makes these screenshots too."
     var notInRunText: String {
         let title = GuidedTemplatePreviewDevices.title(device)
-        return String(localized: "\(title) isn’t in this run yet, so this is only a preview. Add it and Autopilot captures and makes these screenshots too.")
+        return String(localized: "\(title) isn’t in this run; this is a preview. Add it to have Autopilot make these too.")
     }
 
     /// "Add Mac to the Run".

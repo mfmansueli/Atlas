@@ -68,8 +68,8 @@ struct ProductPageSuggestionDetails: View {
         if !texts.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text(texts.count == 1
-                    ? "This text wasn’t offered, so accepting leaves that language with the default page’s."
-                    : "These texts weren’t offered, so accepting leaves those languages with the default page’s.")
+                    ? "No text offered: that language keeps the default page’s."
+                    : "No texts offered: those languages keep the default page’s.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

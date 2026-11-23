@@ -23,7 +23,7 @@ struct PageShotsMakeButton: View {
         }
         .controlSize(.regular)
         .disabled(isLocked || !viewModel.canChange || viewModel.makePageShotsFlow == nil)
-        .help(Text("Autopilot makes a set for this page only, from the default page’s screens. The default page doesn’t change."))
+        .help(Text("Makes this page’s own set from the default page’s screens. The default page stays."))
         .accessibilityIdentifier("pages.screenshots.make")
     }
 

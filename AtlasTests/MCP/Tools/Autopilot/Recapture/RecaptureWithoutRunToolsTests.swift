@@ -124,7 +124,7 @@ struct RecaptureWithoutRunToolsTests {
         let fixtures = Self.fixtures(opens: true, document: .empty(primary: "en-US"))
         let outcome = try await fixtures.call(RequestRecaptureTool(), Self.japanese)
         #expect(outcome.result["status"] == "refused")
-        #expect(outcome.result["reason"]?.stringValue?.contains("has no captures to redo yet") == true)
+        #expect(outcome.result["reason"]?.stringValue?.contains("has no captures yet.") == true)
     }
 
     @Test func theTextsSayItWorksWithoutASavedRun() {

@@ -433,7 +433,7 @@ final class PushController {
             if showsOfflineNotice { notice = .offline }
             return (.notSent(String(localized: "Offline")), String(localized: "Offline"))
         }
-        return (.failed(error.localizedDescription), nil)
+        return (.failed(Self.failureText(error)), nil)
     }
 
     /// One Activity record per app that had something sent or refused.

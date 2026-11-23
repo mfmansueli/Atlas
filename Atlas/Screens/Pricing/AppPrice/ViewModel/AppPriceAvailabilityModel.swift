@@ -52,7 +52,7 @@ final class AppPriceAvailabilityModel {
         do {
             price = try await .loaded(services.appPrice(for: app))
         } catch {
-            price = .failed(error.localizedDescription)
+            price = .failed(AppleErrorCopy(String(localized: "The price didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -61,7 +61,7 @@ final class AppPriceAvailabilityModel {
         do {
             availability = try await .loaded(services.availability(for: app))
         } catch {
-            availability = .failed(error.localizedDescription)
+            availability = .failed(AppleErrorCopy(String(localized: "Availability didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -72,7 +72,7 @@ final class AppPriceAvailabilityModel {
         do {
             territories = try await .loaded(services.territories())
         } catch {
-            territories = .failed(error.localizedDescription)
+            territories = .failed(AppleErrorCopy(String(localized: "Countries and regions didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -90,7 +90,7 @@ final class AppPriceAvailabilityModel {
         do {
             ladders[territoryID] = try await .loaded(services.pricePoints(for: app, territoryID: territoryID))
         } catch {
-            ladders[territoryID] = .failed(error.localizedDescription)
+            ladders[territoryID] = .failed(AppleErrorCopy(String(localized: "Price points didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

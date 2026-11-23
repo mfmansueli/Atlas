@@ -49,8 +49,7 @@ extension PageShotsStudio {
         if replaced == nil, candidates.count >= PageShotsDesign.candidateCount {
             let names = candidates.map { "“\($0.name)”" }.formatted(.list(type: .and))
             return String(localized: """
-            There are \(PageShotsDesign.candidateCount) looks already: \(names). Send one again with the same name to \
-            change it.
+            \(PageShotsDesign.candidateCount) looks exist: \(names). To change one, resend it with the same name.
             """)
         }
         update(key) { run in
@@ -75,7 +74,8 @@ extension PageShotsStudio {
         update(run.key) { run in
             run.design?.claudeRunID = nil
             if run.design?.candidates.isEmpty == true {
-                run.design?.problem = String(localized: "Claude Code stopped before it sent a look. Ask it again, or choose a template.")
+                let assistant = run.plan?.source ?? MCPClientKind.claudeCode.title
+                run.design?.problem = String(localized: "\(assistant) stopped before sending a look. Ask again, or choose a template.")
             }
         }
         return true

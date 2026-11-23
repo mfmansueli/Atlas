@@ -30,10 +30,7 @@ struct OfferCodeSheet: View {
     var body: some View {
         OfferSheetChrome(
             title: String(localized: "Offer code"),
-            detail: String(localized: """
-            Free time or a lower price for \(subscription.name) that people redeem with a code: in the App Store, in your \
-            app or by link. It waits in Review & Push; nothing changes in App Store Connect until you push.
-            """),
+            detail: String(localized: "Free time or a lower price on \(subscription.name), with a code. Nothing changes until you push."),
             footnote: String(localized: "Up to 10 active offer codes per subscription."),
             identifier: Self.id,
             problems: problems(current),

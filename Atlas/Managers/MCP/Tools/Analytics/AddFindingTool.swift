@@ -8,15 +8,15 @@ import Foundation
 struct AddFindingTool: MCPTool {
     var store = AnalyticsStore.shared
 
-    static let titleLimit = 140
-    static let whyLimit = 400
-
     let definition = MCPToolDefinition(
         name: "add_finding",
         title: "Add an Analytics finding",
         description: """
         Adds a finding to an app's Analytics → What to Try, marked as yours: one thing the numbers say is worth changing. \
-        Give `title` (what you saw, one sentence, ≤140 characters), `why` (the likely cause and why the fix helps, ≤400), \
+        Give `title` (what changes or what you saw, result first, at most \(AssistantTextLimits.titleWords) words and \
+        \(AssistantTextLimits.titleCharacters) characters, e.g. “Trial → paid fell to 21% in Germany”), `why` (the strongest \
+        evidence, one sentence, one number, at most \(AssistantTextLimits.why) characters), optional `details` (the cause \
+        and the rest of the numbers, shown on demand, at most \(AssistantTextLimits.details)), \
         `area` (storePage, screenshots, pricing, retention, inAppTexts, productPages, stability or billing: the section \
         where the fix is made), `howSure` (the counts and range behind it, from the get_analytics_ tools; say when a number \
         is small), `read` (what you read for it: the tools, reports or files, shown under the finding) and up to three \
@@ -29,8 +29,11 @@ struct AddFindingTool: MCPTool {
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-                "title": MCPToolDefinition.string("What you saw, in one sentence."),
-                "why": MCPToolDefinition.string("The likely cause, and why the fix should help."),
+                "title": MCPToolDefinition.string(
+                    "What changes or what you saw, result first: at most \(AssistantTextLimits.titleWords) words and \(AssistantTextLimits.titleCharacters) characters."
+                ),
+                "why": MCPToolDefinition.why("The strongest evidence, with one number."),
+                "details": MCPToolDefinition.detailsProperty,
                 "area": MCPToolDefinition.string("storePage, screenshots, pricing, retention, inAppTexts, productPages, stability or billing."),
                 "read": [
                     "type": "array", "description": "What you read for it, e.g. get_analytics_retention, Retention Messaging, PaywallView.swift.",
@@ -54,11 +57,12 @@ struct AddFindingTool: MCPTool {
         let title = try arguments.string("title").trimmingCharacters(in: .whitespacesAndNewlines)
         let why = try arguments.string("why").trimmingCharacters(in: .whitespacesAndNewlines)
         let howSure = try arguments.string("howSure").trimmingCharacters(in: .whitespacesAndNewlines)
+        let details = try arguments.optionalString("details")
         let locale = try arguments.optionalString("locale")
         let territory = try arguments.optionalString("territory").map { $0.uppercased() }
-        if let reason = refusal(title: title, why: why, howSure: howSure, locale: locale, territory: territory, app: app) {
-            return .refused(reason, target: target)
-        }
+        let refused = Self.textRefusal(title: title, why: why, details: details)
+            ?? refusal(howSure: howSure, locale: locale, territory: territory, app: app)
+        if let refused { return .refused(refused, target: target) }
         let id = try arguments.optionalString("id") ?? "assistant.\(UUID().uuidString.prefix(8).lowercased())"
         var action = try Self.action(area: arguments.string("area"), locale: locale, territory: territory)
         if case .productPage = action, let page = try arguments.optionalString("page") { action = .productPage(name: page) }
@@ -67,7 +71,7 @@ struct AddFindingTool: MCPTool {
             AnalyticsFinding(
                 id: id, source: .assistant(context.clientName), title: title, why: why, numbers: Self.numbers(arguments),
                 sureness: Self.sureness(arguments), surenessDetail: howSure,
-                action: action, date: store.now(), read: read.map { Array($0.prefix(8)) }
+                action: action, date: store.now(), read: read.map { Array($0.prefix(8)) }, details: details
             ),
             for: app.id
         )
@@ -79,13 +83,16 @@ struct AddFindingTool: MCPTool {
     }
 
     /// Why the finding can't be kept, in words the assistant can act on.
-    private func refusal(title: String, why: String, howSure: String, locale: String?, territory: String?, app: StoreApp) -> String? {
-        if title.isEmpty || title.count > Self.titleLimit {
-            return "title has \(title.count) characters; it needs 1 to \(Self.titleLimit)."
-        }
-        if why.isEmpty || why.count > Self.whyLimit {
-            return "why has \(why.count) characters; it needs 1 to \(Self.whyLimit)."
-        }
+    /// A title, why or details over the house limits (README-DS §9).
+    static func textRefusal(title: String, why: String, details: String?) -> String? {
+        if let refusal = AssistantTextLimits.titleRefusal(title, field: "title") { return refusal }
+        if why.isEmpty { return "why is empty: give the strongest evidence, with one number." }
+        if let refusal = AssistantTextLimits.whyRefusal(why, field: "why") { return refusal }
+        if let details { return AssistantTextLimits.detailsRefusal(details, field: "details") }
+        return nil
+    }
+
+    private func refusal(howSure: String, locale: String?, territory: String?, app: StoreApp) -> String? {
         if howSure.isEmpty { return "howSure is empty: give the counts behind the finding." }
         if store.setup(for: app.id) != .ready {
             return "Analytics has no numbers for \(app.name) yet, so there is nothing a finding could rest on."

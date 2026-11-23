@@ -26,7 +26,7 @@ struct InAppPurchaseOffersView: View {
                 ContentUnavailableView {
                     Label("No offer codes yet", systemImage: "tag")
                 } description: {
-                    Text("People redeem an offer code to get \(purchase.name) for free or at a lower price: in the App Store, in your app or by link.")
+                    Text("An offer code gets people \(purchase.name) free or for less, in the App Store, your app or by link.")
                 } actions: {
                     newOfferCodeButton
                         .fixedSize(horizontal: true, vertical: false)
@@ -73,8 +73,8 @@ struct InAppPurchaseOffersView: View {
         .buttonBorderShape(.capsule)
         .disabled(!canAdd)
         .help(canAdd
-            ? String(localized: "The in-app purchase for free or at a lower price with a code, queued in Review & Push.")
-            : String(localized: "Atlas couldn’t read this in-app purchase’s offer codes from App Store Connect yet."))
+            ? String(localized: "Adds an offer code, free or lower price, to Review & Push.")
+            : String(localized: "Offer codes haven’t loaded from App Store Connect yet."))
         .accessibilityIdentifier("pricing.iapOffers.new")
     }
 

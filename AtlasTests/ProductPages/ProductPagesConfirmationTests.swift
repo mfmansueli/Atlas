@@ -22,7 +22,7 @@ struct ProductPagesConfirmationTests {
         let confirmation = try #require(model.confirmation)
         #expect(confirmation == .hide(pageID: PageID.prompts))
         #expect(model.confirmationTitle(confirmation) == "Hide “Prompts”?")
-        #expect(model.confirmationMessage(confirmation).hasPrefix("Its link keeps working and opens the default page."))
+        #expect(model.confirmationMessage(confirmation).hasPrefix("Its link and keywords lead to the default page."))
         #expect(model.confirmationButton(confirmation) == "Hide Page")
         #expect(!model.isDestructive(confirmation))
         model.confirm(confirmation)
@@ -34,7 +34,7 @@ struct ProductPagesConfirmationTests {
         let model = await ProductPagesTestModel.make()
         let confirmation = ProductPageConfirmation.delete(pageID: PageID.year)
         #expect(model.confirmationTitle(confirmation) == "Delete “Year in review”?")
-        #expect(model.confirmationMessage(confirmation).hasSuffix("This can’t be undone once it’s pushed."))
+        #expect(model.confirmationMessage(confirmation).hasSuffix("This can’t be undone once pushed."))
         #expect(model.isDestructive(confirmation))
         model.confirm(confirmation)
         #expect(model.page(PageID.year) == nil)
@@ -46,7 +46,7 @@ struct ProductPagesConfirmationTests {
     @Test func deletingADraftIsAtOnce() async {
         let model = await ProductPagesTestModel.make()
         let confirmation = ProductPageConfirmation.delete(pageID: PageID.privateDiary)
-        #expect(model.confirmationMessage(confirmation).hasPrefix("It’s only in Atlas, so nothing changes in App Store Connect."))
+        #expect(model.confirmationMessage(confirmation).hasPrefix("Only in Atlas, with its suggestions and changes."))
         model.confirm(confirmation)
         #expect(model.page(PageID.privateDiary) == nil)
         #expect(model.queue.changes(for: Sample.appID, section: .productPages).isEmpty)
@@ -85,7 +85,7 @@ struct ProductPagesConfirmationTests {
         let model = await ProductPagesTestModel.make()
         let confirmation = ProductPageConfirmation.moveKeyword("journal", locale: "en-US", fromPageID: PageID.prompts, fromName: "Prompts")
         #expect(model.confirmationTitle(confirmation) == "Move “journal” to this page?")
-        #expect(model.confirmationMessage(confirmation).contains("“Prompts” stops being shown for it"))
+        #expect(model.confirmationMessage(confirmation).contains("“Prompts” loses it once this one is visible"))
         #expect(model.confirmationButton(confirmation) == "Move Keyword")
     }
 }

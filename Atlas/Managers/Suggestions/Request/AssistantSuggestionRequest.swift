@@ -70,7 +70,7 @@ struct AssistantSuggestionRequest: Hashable, Sendable {
     /// the suggestions are.
     var askFinishedText: String {
         received == 1
-            ? String(localized: "\(client) finished \(area.title): 1 suggestion, marked in purple on its field. Nothing changes until you accept it.")
-            : String(localized: "\(client) finished \(area.title): \(received) suggestions, marked in purple on the fields. Nothing changes until you accept them.")
+            ? String(localized: "\(client) finished \(area.title): 1 suggestion, in purple. Nothing changes until you accept it.")
+            : String(localized: "\(client) finished \(area.title): \(received) suggestions, in purple. Nothing changes until you accept them.")
     }
 }

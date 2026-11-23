@@ -62,23 +62,21 @@ extension TemplateEditorViewModel {
     /// The note under the slot's controls.
     var slotNote: String {
         if slotLayout == .hero {
-            return String(localized: "Hero: a 6% larger headline, room for a subhead and a slightly smaller device. Slot 1 is the one people see first.")
+            return String(localized: "Hero: 6% larger headline, a subhead and a slightly smaller device. People see slot 1 first.")
         }
         if slotLayout == .pair {
             return String(localized: """
-            Two phones: this slot’s capture is in front, and the capture before it sits behind, higher up and partly off the \
-            edge. Both phones keep their real shape; the canvas crops what runs off.
+            Two phones: this slot’s capture in front, the previous one behind, higher and partly off the edge. The canvas crops what runs off.
             """)
         }
         if slotLayout == .quotes {
             return String(localized: """
-            Reviews: no device. Three real 5-star App Store reviews in this language sit under the headline, with the \
-            reviewer’s name. Where a language has fewer than three, Atlas uses the primary language’s and marks them \
-            for you to approve. Without any, the slot shows its capture like the others.
+            Reviews: three real 5-star reviews in this language, with names, under the headline. Fewer \
+            than three: the primary language’s, marked for you to approve. None: the capture.
             """)
         }
         return hasSlotOverrides
-            ? String(localized: "This slot overrides the template where listed. Everything else follows the template.")
-            : String(localized: "Follows the template. Change a value here to override it for this slot only.")
+            ? String(localized: "Listed values override the template for this slot.")
+            : String(localized: "Follows the template. Change a value to override it here only.")
     }
 }

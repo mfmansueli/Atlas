@@ -69,7 +69,7 @@ struct AppInformationSuggestionsTests {
         #expect(vm.general?.copyright == "© \(year) Northpier Studio")
         #expect(vm.shownSuggestion(.copyright) == nil)
         #expect(vm.provenance(.copyright)?.line(currentValue: vm.suggestionValue(.copyright)) == "Accepted a built-in suggestion.")
-        #expect(vm.suggestionToast?.text == "Copyright accepted. It’s waiting in Review & Push, top right.")
+        #expect(vm.suggestionToast?.text == "Copyright accepted. In Review & Push.")
         #expect(vm.suggestionToast?.canUndo == true)
     }
 
@@ -111,7 +111,7 @@ struct AppInformationSuggestionsTests {
         #expect(vm.review?.notes == "Settings → Debug → Add Sample Week shows Weekly Reflections.")
         #expect(vm.suggestionCount(on: .appReview) == 0)
         #expect(vm.suggestionCount(on: .general) == 1)
-        #expect(vm.suggestionToast?.text == "Accepted 2 on App Review. They’re waiting in Review & Push, top right.")
+        #expect(vm.suggestionToast?.text == "Accepted 2 on App Review. In Review & Push.")
         #expect(vm.suggestionBar(for: .appReview, assistant: nil).countText == "All suggestions reviewed")
     }
 
@@ -120,7 +120,7 @@ struct AppInformationSuggestionsTests {
         try vm.useAndEditSuggestion(#require(vm.shownSuggestion(.contactPhone)))
         #expect(vm.focusRequest == .contactPhone)
         #expect(vm.provenance(.contactPhone)?.isForEditing == true)
-        #expect(vm.suggestionToast?.text == "Copied into the field. Edit it there; your version goes to Review & Push.")
+        #expect(vm.suggestionToast?.text == "Copied into the field. Your edit goes to Review & Push.")
         #expect(vm.suggestionToast?.canUndo == true)
     }
 

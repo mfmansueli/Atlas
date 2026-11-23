@@ -59,7 +59,7 @@ struct TemplateHistory: Codable, Hashable, Sendable {
             return .failure(TemplateRefusals(items: [TemplateRefusal(path: "", kind: .stale, reason: String(localized: "There’s no template yet."))]))
         }
         guard basedOn == current.number else {
-            let reason = String(localized: "The proposal is based on v\(basedOn), but the template is at v\(current.number) now.")
+            let reason = String(localized: "The suggestion is based on v\(basedOn); the template is now v\(current.number).")
             return .failure(TemplateRefusals(items: [TemplateRefusal(path: "", kind: .stale, reason: reason)]))
         }
         return applier.applying(operations, to: current.template).map { template in

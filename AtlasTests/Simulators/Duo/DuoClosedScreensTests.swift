@@ -78,7 +78,7 @@ struct DuoClosedScreensTests {
         #expect(runner.recordedArguments.contains(["shutdown-simulator", Self.udid]))
         #expect(runner.recordedArguments.contains(["boot-simulator", Self.udid]))
         #expect(DuoWatcher.Event.closed.logText
-            == "iPhone Duo was open and its closed screenshots are next: Atlas restarted it, which closes it")
+            == "Restarted iPhone Duo to close it for the closed screenshots")
 
         // Then only open ones are left: it's opened.
         #expect(await duo.look(mayStart: true, wants: .open) == .pressedOpen)

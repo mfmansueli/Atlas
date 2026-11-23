@@ -16,9 +16,9 @@ enum ProductPageSubmissionError: LocalizedError, Hashable, Sendable {
     var errorDescription: String? {
         switch self {
         case .sharedSubmission:
-            String(localized: "The page went to App Review with other items, so Atlas didn’t cancel it. Cancel it in App Store Connect, under App Review.")
+            String(localized: "Not canceled: it went with other items. Cancel it in App Store Connect, under App Review.")
         case .notWaiting:
-            String(localized: "The page isn’t waiting for review any more. App Review may have started on it.")
+            String(localized: "No longer waiting for review. App Review may have started.")
         }
     }
 }

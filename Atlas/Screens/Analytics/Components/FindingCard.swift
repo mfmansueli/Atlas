@@ -82,6 +82,7 @@ struct FindingCard: View {
                     .accessibilityIdentifier("analytics.finding.action")
             }
             .controlSize(.regular)
+            if let details = finding.details { SuggestionDetailsDisclosure(details: details) }
         }
         .accessibilityIdentifier("analytics.finding.\(finding.id)")
     }

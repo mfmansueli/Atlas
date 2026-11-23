@@ -21,7 +21,7 @@ struct ProductPagesListBanners: View {
                 kind: .offline,
                 title: String(localized: "You’re offline."),
                 message: String(localized: """
-                This is what Atlas read at \(readTime). Edits are kept on this Mac and can be pushed when you’re back.
+                As of \(readTime). Edits stay on this Mac until you can push.
                 """)
             ) {
                 Button("Try Again") {
@@ -45,7 +45,7 @@ struct ProductPagesListBanners: View {
             Banner(
                 kind: .warning,
                 title: String(localized: "\(viewModel.app.name) has \(viewModel.pageCount) pages, the most Apple allows."),
-                message: String(localized: "To make another, delete one first. Pages that are hidden or were rejected still count.")
+                message: String(localized: "Delete one to make another. Hidden and rejected pages count.")
             ) {
                 Button(viewModel.showsOnlyHiddenAndRejected ? "Show All Pages" : "Show Hidden and Rejected") {
                     viewModel.showsOnlyHiddenAndRejected.toggle()

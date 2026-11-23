@@ -48,21 +48,21 @@ struct WorkspaceAutopilotAsk: Equatable {
     private static func eventTexts(app: String) -> WorkspaceAutopilotAsk {
         WorkspaceAutopilotAsk(
             purpose: InAppEventsAskPrompt.purpose, prompt: InAppEventsAskPrompt.text(app: app),
-            subject: String(localized: "In-App Events · texts"), done: String(localized: "Done. The texts wait in In-App Events.")
+            subject: String(localized: "In-App Events · texts"), done: String(localized: "Done. Texts are in In-App Events.")
         )
     }
 
     private static func retention(app: String) -> WorkspaceAutopilotAsk {
         WorkspaceAutopilotAsk(
             purpose: RetentionAskPrompts.purpose, prompt: RetentionAskPrompts.draft(app: app),
-            subject: String(localized: "Pricing · retention offer"), done: String(localized: "Done. The message waits in Pricing, under Retention.")
+            subject: String(localized: "Pricing · retention offer"), done: String(localized: "Done. See Pricing, under Retention.")
         )
     }
 
     private static func replies(app: String) -> WorkspaceAutopilotAsk {
         WorkspaceAutopilotAsk(
             purpose: ReviewsAskPrompt.purpose, prompt: ReviewsAskPrompt.text(app: app),
-            subject: String(localized: "Reviews · replies"), done: String(localized: "Done. The replies wait under each review; nothing was sent.")
+            subject: String(localized: "Reviews · replies"), done: String(localized: "Done. Replies wait under each review; none sent.")
         )
     }
 
@@ -78,7 +78,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             app has, each in that language's own words. Describe only what this version does.
             """),
             subject: String(localized: "Store Page · What’s New"),
-            done: String(localized: "Done. What’s New waits in Store Page as a suggestion in every language.")
+            done: String(localized: "Done. What’s New is in Store Page, every language.")
         )
     }
 
@@ -93,7 +93,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             Leave the other languages: they're translated afterwards.
             """),
             subject: String(localized: "Store Page · \(which)"),
-            done: String(localized: "Done. The suggestions wait in Store Page, in \(which).")
+            done: String(localized: "Done. Suggestions for \(which) are in Store Page.")
         )
     }
 
@@ -107,7 +107,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             propose_ and suggest_ tools: the person reviews and pushes it. Don't push anything.
             """),
             subject: String(localized: "Store Page · \(question)"),
-            done: String(localized: "Done. What it suggests is marked in purple.")
+            done: String(localized: "Done. Suggestions are in purple.")
         )
     }
 
@@ -122,7 +122,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             for those.
             """),
             subject: String(localized: "Screenshots · captures to redo"),
-            done: String(localized: "Done. What to capture again waits in Screenshots for you to accept.")
+            done: String(localized: "Done. Recaptures to accept are in Screenshots.")
         )
     }
 
@@ -137,7 +137,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             rules with propose_event_texts and revise true. \(StoreTextGuidelinePlace.eventText.summary)
             """),
             subject: String(localized: "In-App Events · App Review check"),
-            done: String(localized: "Done. What it found waits on each event.")
+            done: String(localized: "Done. Findings are on each event.")
         )
     }
 
@@ -151,7 +151,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             each: what people there pay for apps like this, and the numbers. Never quote a rate marked tooFewToTell.
             """),
             subject: String(localized: "Pricing · prices"),
-            done: String(localized: "Done. The prices wait in Pricing as suggestions.")
+            done: String(localized: "Done. Price suggestions are in Pricing.")
         )
     }
 

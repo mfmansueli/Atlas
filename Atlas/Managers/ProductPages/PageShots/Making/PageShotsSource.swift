@@ -85,12 +85,11 @@ struct PageShotsSource {
     var problem: String? {
         if template == nil || slotCount == 0 {
             return String(localized: """
-            \(app.name) has no screenshots made in Atlas yet. Make the default page’s in Screenshots first: a page’s set \
-            uses its template and its screens.
+            \(app.name) has no Atlas screenshots. Make the default page’s set in Screenshots first.
             """)
         }
         if displays.isEmpty {
-            return String(localized: "\(app.name)’s screenshots have no iPhone or iPad captures yet. Add them in Screenshots first.")
+            return String(localized: "No iPhone or iPad captures for \(app.name) yet. Add them in Screenshots.")
         }
         return nil
     }

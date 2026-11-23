@@ -81,7 +81,7 @@ struct InAppPurchaseOfferCodeChangeBuilder {
         change.creation = PendingCreation(
             id: id,
             title: String(localized: "Add the offer code “\(code.trimmedName)” to \(purchase.name)"),
-            detail: String(localized: "People redeem it with a code in the App Store, in your app or with a link, and get the purchase at its price."),
+            detail: String(localized: "Redeemed in the App Store, your app or by link, for the offer price."),
             source: source,
             fields: SubscriptionOfferChanges.fields(fields, source: source, evidence: evidence)
         )
