@@ -43,7 +43,7 @@ struct ReleaseProposalBadgeTests {
             releaseProposals: [BackgroundAppFacts.ReleaseProposalFact(client: "Claude Code", title: "Release 1.4 now")]
         )
         let needs = BackgroundNeedsBuilder.needs(for: [facts], namesApps: false)
-        #expect(needs.map(\.title) == ["Claude Code proposes: Release 1.4 now", "2 suggestions to review"])
+        #expect(needs.map(\.title) == ["Claude Code suggests: Release 1.4 now", "2 suggestions to review"])
         #expect(needs.first?.detail == "Confirm or dismiss it on the version card")
         #expect(needs.first?.destination == .version(appID: lumen.id))
         #expect(needs.first?.isSuggestion == true)
@@ -75,7 +75,7 @@ struct ReleaseProposalBadgeTests {
         )
         work.library = [lumen]
         let lines = work.needs.filter { $0.id.hasPrefix("release-proposal-") }
-        #expect(lines.map(\.title) == ["Claude Code proposes: Release 1.4 now", "Codex proposes: Release 1.4 now"])
+        #expect(lines.map(\.title) == ["Claude Code suggests: Release 1.4 now", "Codex suggests: Release 1.4 now"])
     }
 }
 #endif

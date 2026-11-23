@@ -46,7 +46,7 @@ struct AssistantActivityTests {
         #expect(activity.isWorking)
         #expect(activity.client == "Claude Code")
         #expect(activity.title == "Claude Code")
-        #expect(activity.accessibilityLabel == "Claude Code is proposing changes")
+        #expect(activity.accessibilityLabel == "Claude Code is suggesting changes")
         #expect(activity.leadingClient == "Cursor")
     }
 

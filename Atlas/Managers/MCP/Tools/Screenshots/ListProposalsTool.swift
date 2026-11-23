@@ -45,7 +45,7 @@ struct ListProposalsTool: MCPTool {
                 "screenshotsError": .string(error.localizedDescription),
                 "releaseProposals": .array(release),
             ]
-            return .read(result, target: String(localized: "\(app.name) · Proposals"))
+            return .read(result, target: String(localized: "\(app.name) · Suggestions"))
         }
         var result: [String: JSONValue] = ["appId": .string(draft.app.id), "proposals": .array(Self.screenshotProposals(in: draft))]
         if let tests = draft.document.extras?.testProposals, !tests.isEmpty {

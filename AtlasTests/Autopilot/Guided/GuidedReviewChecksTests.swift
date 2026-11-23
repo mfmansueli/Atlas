@@ -224,7 +224,7 @@ struct GuidedReviewChecksTests {
         #expect(check.id == "proposal-p1")
         #expect(check.proposalID == "p1")
         #expect(check.state == .attention)
-        #expect(check.text == "Claude Code proposes: Captions back on their own screens")
+        #expect(check.text == "Claude Code suggests: Captions back on their own screens")
         #expect(check.details == ["Slots 2–4 carry each other's captions.", "German · \(run.plan.screens[1].name): “Die ganze Woche”"])
     }
 
