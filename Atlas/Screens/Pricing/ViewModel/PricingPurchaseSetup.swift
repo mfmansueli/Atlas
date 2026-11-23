@@ -18,6 +18,15 @@ final class PricingPurchaseSetup {
     var introductoryOfferTarget: PurchaseSetupTarget?
     /// The product Review Screenshot… is open for.
     var reviewScreenshotTarget: PurchaseSetupTarget?
+    /// The promotional offer, win-back offer or offer code sheet that's open.
+    var offerRoute: SubscriptionOfferRoute?
+    /// The one-time codes Save Codes… read, while its save panel is open.
+    var codesFile: OneTimeCodesFile?
+    /// Why Save Codes… couldn't read a batch's one-time codes.
+    var codesSaveError: String?
+    /// Reads one-time codes' CSV in place of the transport's client (DEBUG
+    /// scenes and tests).
+    @ObservationIgnored var codeValues: (any OneTimeCodeValuesReading)?
     /// Each product's offers and screenshot, by App Store Connect ID, once read.
     private(set) var extras: [String: PurchaseExtras] = [:]
     /// Set by the section: the push's transport, read when it's needed (the

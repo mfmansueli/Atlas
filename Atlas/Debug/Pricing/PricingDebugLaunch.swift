@@ -47,5 +47,10 @@ struct PricingDebugLaunch {
     var sheet: PricingDebugSheet?
     /// Where Lumen's review screenshots are (`rs-*`).
     var reviewShots: ReviewShotsDebugState?
+    /// Lumen Monthly has a promotional offer, a win-back offer and an
+    /// offer code in App Store Connect (`SubscriptionOffersSampleData`).
+    var hasSampleOffers = false
+    /// Opens an offer sheet on Lumen Monthly.
+    var offerSheet: SubscriptionOfferDebugSheet?
 }
 #endif

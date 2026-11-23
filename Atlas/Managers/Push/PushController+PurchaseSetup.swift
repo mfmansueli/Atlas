@@ -6,7 +6,8 @@
 import Foundation
 
 // A new in-app purchase's steps, a new subscription's or in-app purchase's
-// availability everywhere, a subscription's introductory offer and a
+// availability everywhere, a subscription's introductory offer, a
+// promotional offer, win-back offer or offer code with its prices, and a
 // product's App Review screenshot: each is one queued request the push
 // turns into the reads and writes it needs.
 extension PushController {
@@ -42,6 +43,14 @@ extension PushController {
                 update(index) { $0.progressNote = String(localized: "Introductory offer · \(made) of \(total)") }
             } note: { rateLimit in
                 noteRequest(rateLimit)
+            }
+            return true
+        }
+        if let write = SubscriptionOfferWrite(request) {
+            let id = try await write.send(via: transport) { noteRequest($0) }
+            update(index) { item in
+                item.createdID = id
+                item.createdIDs[write.resource.type] = id
             }
             return true
         }

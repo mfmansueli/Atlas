@@ -6,7 +6,9 @@
 import SwiftUI
 
 /// Pricing's Create In-App Purchase, Add Introductory Offer… and Review
-/// Screenshot… sheets, shown from the view model's `setup`.
+/// Screenshot… sheets, shown from the view model's `setup`, and the
+/// promotional offer, win-back offer and offer code sheets
+/// (`SubscriptionOfferSheets`).
 struct PurchaseSetupSheets: ViewModifier {
     @Bindable var viewModel: PricingViewModel
 
@@ -40,6 +42,7 @@ struct PurchaseSetupSheets: ViewModifier {
                     onAdd: { viewModel.queueReviewScreenshot($0, for: target) }
                 )
             }
+            .modifier(SubscriptionOfferSheets(viewModel: viewModel))
     }
 
     private func current(for target: PurchaseSetupTarget) -> PurchaseReviewScreenshotState? {

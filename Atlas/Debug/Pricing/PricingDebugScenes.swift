@@ -37,6 +37,14 @@ import SwiftUI
 /// - `new-iap`: Create In-App Purchase over Lumen's cards.
 /// - `intro-offer`: Add Introductory Offer… for Lumen Monthly.
 /// - `review-screenshot`: Review Screenshot… for Lumen Lifetime.
+/// - `offers-all`: Lumen Monthly's Offers tab with a promotional offer, a
+///   win-back offer and an offer code (its custom code and one-time codes)
+///   from App Store Connect, the offer code selected.
+/// - `promo-offer`, `promo-prices`, `winback-offer`, `winback-edit`,
+///   `offer-code`, `offer-code-custom`, `offer-code-batch`: New Promotional
+///   Offer…, Change Prices…, New Win-Back Offer…, Edit…, New Offer Code…,
+///   Add Custom Code… and Add One-Time Codes… on Lumen Monthly
+///   (`SubscriptionOfferDebugSheet`).
 /// - `rs-match`, `rs-none`, `rs-run`, `rs-arrived`, `rs-preview`,
 ///   `rs-fail-nav`, `rs-fail-price`, `rs-accepted`: Lumen's App Review
 ///   screenshots made for the person (`ReviewShotsDebugState`).
@@ -48,8 +56,8 @@ enum PricingDebugScenes {
         "pricing-nosales", "pricing-skeleton", "pricing-refresh", "pricing-nosubs", "iap",
         "custom", "custom-tune", "custom-compare", "custom-csv",
         "pricing-map", "pricing-hist", "schedule", "results", "results-waiting", "offers",
-        "pricing-products", "new-iap", "intro-offer", "review-screenshot",
-    ] + ReviewShotsDebugState.allCases.map(\.sceneID)
+        "pricing-products", "new-iap", "intro-offer", "review-screenshot", "offers-all",
+    ] + ReviewShotsDebugState.allCases.map(\.sceneID) + SubscriptionOfferDebugSheet.allCases.map(\.sceneID)
 
     @MainActor
     static func view(for id: String) -> AnyView? {
@@ -146,6 +154,17 @@ enum PricingDebugScenes {
     private static func setupScene(_ id: String) -> AnyView? {
         if let state = ReviewShotsDebugState(sceneID: id) {
             return scene(launch: PricingDebugLaunch(showsProducts: true, reviewShots: state))
+        }
+        if let sheet = SubscriptionOfferDebugSheet(rawValue: id) {
+            return scene(launch: PricingDebugLaunch(
+                productID: DebugPricingCatalog.lumenMonthlyID, tab: .offers, hasSampleOffers: true, offerSheet: sheet
+            ))
+        }
+        if id == "offers-all" {
+            return scene(launch: PricingDebugLaunch(
+                productID: DebugPricingCatalog.lumenMonthlyID, tab: .offers,
+                offerID: ExistingOfferCode.offerID(SubscriptionOffersSampleData.offerCode.id), hasSampleOffers: true
+            ))
         }
         let sheet: PricingDebugSheet? = switch id {
         case "new-iap": .newInAppPurchase

@@ -55,9 +55,11 @@ enum MCPTestFixtures {
         appInformation: (any AppInformationServices)? = nil,
         pricing: (any PricingServices)? = nil,
         glossary: TranslationGlossary = TranslationGlossary(),
-        commission: Commission = .smallBusiness
+        commission: Commission = .smallBusiness,
+        push: (any PushTransport)? = nil
     ) -> MCPWorkspace {
         var services = WorkspaceServices.debug
+        if let push { services.push = push }
         if let storePage { services.storePage = storePage }
         if let pricing { services.pricing = pricing }
         if let appInformation { services.appInformation = appInformation }

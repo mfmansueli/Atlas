@@ -390,6 +390,10 @@ final class PricingViewModel {
             // Pricing's services don't read introductory offers from App
             // Store Connect; the push's transport does.
             if !list.contains(where: { $0.kind == .introductory }) { list += await readIntroductoryOffers(for: product) }
+            // Promotional, win-back and offer code offers come with the
+            // extras the push's transport read.
+            let known = Set(list.map(\.id))
+            list += existingSubscriptionOffers(for: product).filter { !known.contains($0.id) }
             guard selectedProductID == product.id else { return }
             offers = .loaded(list)
             if selectedOfferID == nil { selectedOfferID = (list.first { $0.kind == .promotional } ?? list.first)?.id }

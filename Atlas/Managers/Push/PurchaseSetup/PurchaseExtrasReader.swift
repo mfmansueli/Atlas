@@ -5,11 +5,13 @@
 
 import Foundation
 
-/// Reads a product's introductory offers and App Review screenshot with
-/// the push's transport (the API client): `GET
-/// /v1/subscriptions/{id}/introductoryOffers` with their territories and
-/// price points, and the product's `appStoreReviewScreenshot`. Pricing's
-/// own services don't read either.
+/// Reads a product's introductory offers, promotional offers, win-back
+/// offers, offer codes and App Review screenshot with the push's transport
+/// (the API client): `GET /v1/subscriptions/{id}/introductoryOffers` with
+/// their territories and price points, the other offers with their prices
+/// (and an offer code's custom and one-time codes,
+/// `SubscriptionOffersReader`), and the product's `appStoreReviewScreenshot`.
+/// Pricing's own services don't read any of them.
 struct PurchaseExtrasReader: PurchaseExtrasReading {
     let transport: any PushTransport
 
@@ -26,6 +28,13 @@ struct PurchaseExtrasReader: PurchaseExtrasReading {
         if !product.isInAppPurchase {
             let read = try await PushPagedRead.resources(at: Self.introductoryOffersPath(subscriptionID: product.id), via: transport) { _ in }
             extras.introductoryOffers = read.data.compactMap { ExistingIntroductoryOffer(resource: $0, included: read.included) }
+            // An account that can't read them still sees the rest.
+            if let offers = try? await SubscriptionOffersReader(transport: transport).offers(subscriptionID: product.id) {
+                extras.promotionalOffers = offers.promotional
+                extras.winBackOffers = offers.winBack
+                extras.offerCodes = offers.codes
+                extras.offersRead = true
+            }
         }
         let owner: PurchaseReviewScreenshotOwner = product.isInAppPurchase ? .inAppPurchase : .subscription
         do {
