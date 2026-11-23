@@ -21,7 +21,8 @@ struct AddFindingTool: MCPTool {
         where the fix is made), `howSure` (the counts and range behind it, from the get_analytics_ tools; say when a number \
         is small), `read` (what you read for it: the tools, reports or files, shown under the finding) and up to three \
         `numbers` ({label, value, note}). Optional `locale` or `territory` (alpha-2) opens that section on the right \
-        language or country, and `page` a custom product page by name. Only say what the numbers support, and don't repeat a finding get_analytics_funnel already lists. `id` \
+        language or country, and `page` a custom product page by name. Only say what the numbers support, and don't repeat \
+        a finding get_analytics_funnel already lists. `id` \
         replaces a finding you added before. A finding changes nothing on the App Store: send the fix itself with the \
         propose_ and suggest_ tools.
         """,

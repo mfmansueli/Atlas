@@ -52,7 +52,10 @@ extension FindingRules {
             findings.append(AnalyticsFinding(
                 id: "retention.offerMessage", source: .builtIn,
                 title: String(localized: "Messages with an offer keep \(offerRate.text) of people at the cancel screen; text alone keeps \(textRate.text)."),
-                why: String(localized: "An offer gives people a reason to stay that words alone don’t. Try an offer in the text-only messages, starting with the subscription most people cancel."),
+                why: String(localized: """
+                An offer gives people a reason to stay that words alone don’t. \
+                Try an offer in the text-only messages, starting with the subscription most people cancel.
+                """),
                 numbers: [
                     FindingNumber(label: String(localized: "With an offer"), value: offerRate.text),
                     FindingNumber(label: String(localized: "Text only"), value: textRate.text),
@@ -87,7 +90,10 @@ extension FindingRules {
         return AnalyticsFinding(
             id: "billing.gracePeriod", source: .builtIn,
             title: String(localized: "\(AnalyticsText.count(report.lost)) subscribers left in 28 days because Apple couldn’t charge them."),
-            why: String(localized: "Billing Grace Period is off. With it on, people keep their subscription for 3, 16 or 28 days while Apple retries the charge, and more of them pay before they’d lose access."),
+            why: String(localized: """
+            Billing Grace Period is off. With it on, people keep their subscription for 3, 16 or 28 days while Apple retries the charge, \
+            and more of them pay before they’d lose access.
+            """),
             numbers: [
                 FindingNumber(label: String(localized: "Couldn’t be charged"), value: AnalyticsText.count(report.couldNotCharge)),
                 FindingNumber(label: String(localized: "Recovered"), value: AnalyticsText.count(report.recovered)),
@@ -142,7 +148,10 @@ extension FindingRules {
             return AnalyticsFinding(
                 id: "page.deletes.\(page)", source: .builtIn,
                 title: String(localized: "People who came through “\(page)” delete the app more: \(rate.text) within 30 days, against \(base.text) from the default page."),
-                why: String(localized: "The page may promise something the app’s first minutes don’t show. Compare its screenshots and text with what people see when they open the app."),
+                why: String(localized: """
+                The page may promise something the app’s first minutes don’t show. \
+                Compare its screenshots and text with what people see when they open the app.
+                """),
                 numbers: [
                     FindingNumber(label: String(localized: "Deleted in 30 days"), value: rate.text),
                     FindingNumber(label: String(localized: "Default page"), value: base.text),
@@ -192,7 +201,10 @@ extension FindingRules {
         return AnalyticsFinding(
             id: "stability.deletions.\(stability.latest.version)", source: .builtIn,
             title: String(localized: "People delete version \(stability.latest.version) more often than \(previous.version), and it doesn’t crash more."),
-            why: String(localized: "Something in what changed may put people off: a new screen, a paywall moved earlier, a feature removed. Look at the version’s reviews and what’s new."),
+            why: String(localized: """
+            Something in what changed may put people off: a new screen, a paywall moved earlier, a feature removed. \
+            Look at the version’s reviews and what’s new.
+            """),
             numbers: [
                 FindingNumber(label: String(localized: "Deletions per 1,000 active devices · \(stability.latest.version)"), value: AnalyticsText.perThousand(newRate)),
                 FindingNumber(label: previous.version, value: AnalyticsText.perThousand(oldRate)),

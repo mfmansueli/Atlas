@@ -13,7 +13,7 @@ import SwiftUI
 /// cubic-bezier(.1, .7, .3, 1), both 0.68 s; the fade the last 0.16 s).
 struct AskTokenPath: Equatable {
     let from: CGPoint
-    let to: CGPoint
+    let target: CGPoint
 
     /// After the click, before the token moves.
     static let delay: TimeInterval = 0.04
@@ -44,10 +44,10 @@ struct AskTokenPath: Equatable {
     func state(at elapsed: TimeInterval) -> State {
         let progress = min(1, max(0, elapsed / Self.duration))
         let across = Self.horizontal.value(at: progress)
-        let up = Self.vertical.value(at: progress)
-        let center = CGPoint(x: from.x + (to.x - from.x) * across, y: from.y + (to.y - from.y) * up)
+        let rise = Self.vertical.value(at: progress)
+        let center = CGPoint(x: from.x + (target.x - from.x) * across, y: from.y + (target.y - from.y) * rise)
         let opacity = elapsed < Self.fadeStart ? 1 : max(0, 1 - (elapsed - Self.fadeStart) / Self.fadeDuration)
-        return State(center: center, scale: 1 - 0.5 * up, opacity: opacity)
+        return State(center: center, scale: 1 - 0.5 * rise, opacity: opacity)
     }
 
     /// The ring `elapsed` seconds after the landing: how far it has grown

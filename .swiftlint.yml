@@ -40,6 +40,11 @@ function_body_length:
   warning: 80
   error: 120
 
+# A switch that maps each case to one value isn't complex: count the
+# branches around it, not its cases.
+cyclomatic_complexity:
+  ignores_case_statements: true
+
 function_parameter_count:
   warning: 6
   error: 8
@@ -58,6 +63,12 @@ identifier_name:
     - x
     - y
     - i
+    - x1   # x1…y2: a curve's control points (UnitBezier)
+    - y1
+    - x2
+    - y2
+    - rx   # rx, ry: an ellipse's radii (GlobeBand)
+    - ry
 
 # README — Design system: no loose colours, text sizes or radii in the UI.
 # Mockups of Apple's pages, screenshot templates and artwork keep their own.

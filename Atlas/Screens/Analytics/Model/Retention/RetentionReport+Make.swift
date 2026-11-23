@@ -120,7 +120,10 @@ extension RetentionReport {
         Dictionary(grouping: records) { $0[.subscription] }.compactMap { name, records -> SubscriptionRow? in
             let total = counts(records)
             guard !name.isEmpty, total.opened > 0 else { return nil }
-            return SubscriptionRow(name: name, opened: total.opened, stayed: total.stayed, rate: AnalyticsStatistics.rate(count: total.stayed, total: total.opened))
+            return SubscriptionRow(
+                name: name, opened: total.opened, stayed: total.stayed,
+                rate: AnalyticsStatistics.rate(count: total.stayed, total: total.opened)
+            )
         }
         .sorted { ($0.opened, $1.name) > ($1.opened, $0.name) }
     }

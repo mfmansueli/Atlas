@@ -166,11 +166,11 @@ struct ProductPageTestProposer {
     ) -> Result<(ProductPageTestTreatmentSource, [String], Bool), Refusal> {
         switch input.treatment {
         case "variant":
-            return variantTreatment(input, readiness: readiness)
+            variantTreatment(input, readiness: readiness)
         case "library":
-            return libraryTreatment(input).map { ($0.0, $0.1, false) }
+            libraryTreatment(input).map { ($0.0, $0.1, false) }
         default:
-            return .failure(Refusal(code: "unknown_treatment", reason: String(localized: """
+            .failure(Refusal(code: "unknown_treatment", reason: String(localized: """
             treatment is "variant" (the Autopilot run's variant for this placement) or "library" (images already in the app's \
             library, with assets [{locale, assetId}] from get_page_tests).
             """)))

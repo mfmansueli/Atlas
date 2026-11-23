@@ -32,7 +32,10 @@ struct FunnelMoreView: View {
                     AdaptiveGridLayout(minimumWidth: 110, spacing: Spacing.medium) {
                         figure(String(localized: "Installs"), AnalyticsText.count(afterDownload.installs))
                         figure(String(localized: "Deleted in 30 days"), afterDownload.deletedWithin30.text)
-                        figure(String(localized: "Sessions a week"), afterDownload.sessionsPerWeek.map { $0.formatted(.number.precision(.fractionLength(1))) } ?? "—")
+                        figure(
+                            String(localized: "Sessions a week"),
+                            afterDownload.sessionsPerWeek.map { $0.formatted(.number.precision(.fractionLength(1))) } ?? "—"
+                        )
                         figure(String(localized: "Added a widget"), afterDownload.widgetDevices > 0 ? afterDownload.widgetShare.text : "—")
                     }
                     .padding(.horizontal, Spacing.medium)

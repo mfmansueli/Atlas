@@ -28,26 +28,35 @@ struct EventArtworkPanelState: Hashable {
         case warning
     }
 
+    /// What a row's concept is doing.
+    enum RowState: Hashable {
+        case ready
+        case drawing
+        case waiting
+        case redrawing
+        case animating
+    }
+
+    /// The tag beside a row's name.
+    enum RowTag: Hashable {
+        case inUse
+        case updated
+        case pick
+    }
+
+    /// The event's own facts the panel follows.
+    struct EventFacts: Hashable {
+        var languages: Int
+        var canEdit: Bool
+        var isOver: Bool
+    }
+
     /// One concept in the rows, or a place for one still being drawn.
     struct Row: Hashable, Identifiable {
-        enum State: Hashable {
-            case ready
-            case drawing
-            case waiting
-            case redrawing
-            case animating
-        }
-
-        enum Tag: Hashable {
-            case inUse
-            case updated
-            case pick
-        }
-
         var id: String
         var concept: EventArtworkConcept?
-        var state: State
-        var tag: Tag?
+        var state: RowState
+        var tag: RowTag?
         var isPreviewed: Bool
 
         var isBusy: Bool { state != .ready }
@@ -103,11 +112,11 @@ struct EventArtworkPanelState: Hashable {
     // MARK: - Making
 
     static func make(
-        run: EventArtworkRun?, isChanging: Bool, usedIsQueued: Bool, missing: [InAppEventMedia.Kind], languages: Int, canEdit: Bool,
-        isOver: Bool, preview: EventArtworkConcept?
+        run: EventArtworkRun?, isChanging: Bool, usedIsQueued: Bool, missing: [InAppEventMedia.Kind], event: EventFacts,
+        preview: EventArtworkConcept?
     ) -> Self {
         let phase = phase(run: run, isChanging: isChanging, usedIsQueued: usedIsQueued, missing: missing)
-        var state = EventArtworkPanelState(phase: phase, languages: languages, canEdit: canEdit, isOver: isOver)
+        var state = EventArtworkPanelState(phase: phase, languages: event.languages, canEdit: event.canEdit, isOver: event.isOver)
         guard let run else { return state }
         state.revisingName = run.revising?.name
         state.usedName = run.used?.name
@@ -137,14 +146,14 @@ struct EventArtworkPanelState: Hashable {
 
     private static func rows(of run: EventArtworkRun, previewID: EventArtworkConcept.ID?, usedIsCurrent: Bool) -> [Row] {
         var rows = run.concepts.map { concept in
-            let state: Row.State = if concept.id == run.revisingID {
+            let state: RowState = if concept.id == run.revisingID {
                 .redrawing
             } else if (run.animatingIDs ?? []).contains(concept.id) {
                 .animating
             } else {
                 .ready
             }
-            let tag: Row.Tag? = if concept.id == run.usedConceptID, usedIsCurrent {
+            let tag: RowTag? = if concept.id == run.usedConceptID, usedIsCurrent {
                 .inUse
             } else if concept.revisedAt != nil {
                 .updated
@@ -232,7 +241,9 @@ struct EventArtworkPanelState: Hashable {
                 : String(localized: "Event card and event details, a matching pair for all \(languages) languages · in Review & Push")
         case .missing: return String(localized: "Needed to submit. Claude can make a matching pair from the event’s text.")
         case .complete:
-            return isOver ? String(localized: "As they were on the App Store.") : String(localized: "1920 × 1080 and 1080 × 1920 · the same pair in every language")
+            return isOver
+                ? String(localized: "As they were on the App Store.")
+                : String(localized: "1920 × 1080 and 1080 × 1920 · the same pair in every language")
         }
     }
 

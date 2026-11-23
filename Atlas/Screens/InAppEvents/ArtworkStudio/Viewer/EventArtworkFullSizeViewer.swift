@@ -83,7 +83,8 @@ struct EventArtworkFullSizeViewer: View {
             )
             if !viewer.isFull {
                 EventArtworkViewerBottomBar(
-                    flow: flow, viewer: viewer, locales: flow.viewerLocales(pageLocale: viewModel.localeCode, languages: viewModel.languages(of: event).map(\.code)),
+                    flow: flow, viewer: viewer,
+                    locales: flow.viewerLocales(pageLocale: viewModel.localeCode, languages: viewModel.languages(of: event).map(\.code)),
                     isNarrow: isNarrow, onUse: use
                 )
             }

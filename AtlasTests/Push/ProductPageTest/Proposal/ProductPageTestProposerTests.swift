@@ -111,7 +111,7 @@ struct ProductPageTestProposerTests {
         #expect(proposer.blockingTest?.id == "exp-draft")
     }
 
-    @Test func anotherPlatformsTestIsntInTheWay() throws {
+    @Test func anotherPlatformsTestIsntInTheWay() {
         let mac = ProductPageExperiment(id: "exp-mac", name: "Mac", platform: "MAC_OS", state: "APPROVED")
         #expect(Fixtures.proposer(tests: [mac]).blockingTest == nil)
     }
@@ -163,7 +163,7 @@ struct ProductPageTestProposerTests {
 
     // MARK: - What's sent
 
-    @Test func reasonTrafficAndTreatmentAreChecked() throws {
+    @Test func reasonTrafficAndTreatmentAreChecked() {
         #expect(refusal(Fixtures.proposer().propose(Fixtures.input(reason: "  ")))?.code == "no_reason")
         #expect(refusal(Fixtures.proposer().propose(Fixtures.input(reason: String(repeating: "a", count: 301))))?.code == "too_long")
         #expect(refusal(Fixtures.proposer().propose(Fixtures.input(name: String(repeating: "a", count: 65))))?.code == "too_long")

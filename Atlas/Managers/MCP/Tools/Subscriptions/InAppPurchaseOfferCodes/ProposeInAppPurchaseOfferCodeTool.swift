@@ -191,7 +191,7 @@ struct ProposeInAppPurchaseOfferCodeTool: MCPTool {
     /// The price, territories and prices set apart; throws for arguments
     /// that aren't usable at all.
     static func terms(from arguments: MCPToolArguments) throws -> InAppPurchaseOfferTerms {
-        guard let value = arguments.values["price"], let price = MCPPriceValue.decimal(from: value) else {
+        guard let value = arguments.values["price"], let price = MCPPriceValue.decimal(from: value, allowsFree: true) else {
             throw MCPToolError.invalidArgument(name: "price", expected: String(localized: "the offer code's price in US dollars, e.g. 0.99, or 0 for free"))
         }
         // The subscription tools' territory arguments, read the same way.

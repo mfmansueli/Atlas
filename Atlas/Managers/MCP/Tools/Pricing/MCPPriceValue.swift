@@ -22,8 +22,9 @@ enum MCPPriceValue {
 
     /// A price from a number or a numeric string ("109.90", or "109,90"
     /// with a comma as the only separator); nil for anything else or a
-    /// price that isn't positive.
-    static func decimal(from value: JSONValue) -> Decimal? {
+    /// price that isn't positive, unless `allowsFree` lets 0 through (a
+    /// free offer code).
+    static func decimal(from value: JSONValue, allowsFree: Bool = false) -> Decimal? {
         let amount: Decimal? = switch value {
         case let .int(whole): Decimal(whole)
         // Through its shortest text, so 109.9 stays 109.9 instead of
@@ -32,7 +33,7 @@ enum MCPPriceValue {
         case let .string(text): parse(text)
         default: nil
         }
-        guard let amount, amount > 0 else { return nil }
+        guard let amount, amount > 0 || (allowsFree && amount == 0) else { return nil }
         return amount
     }
 

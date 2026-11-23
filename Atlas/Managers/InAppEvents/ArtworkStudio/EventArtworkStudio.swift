@@ -102,34 +102,46 @@ final class EventArtworkStudio {
         guard runs[key] != nil else { return nil }
         update(key) { run in
             if let replaced, let index = run.concepts.firstIndex(where: { $0.id == replaced }) {
-                var revised = concept
-                revised.id = replaced
-                revised.isPick = run.concepts[index].isPick
-                revised.revisedAt = run.revisingID == replaced ? concept.arrivedAt : run.concepts[index].revisedAt
-                run.concepts[index] = revised
-                if run.revisingID == replaced {
-                    run.revisingID = nil
-                    run.revisionRequest = nil
-                    run.pickedID = replaced
-                    if run.step == .making { run.step = .check }
-                }
-                if var ids = run.animatingIDs, let at = ids.firstIndex(of: replaced) {
-                    ids.remove(at: at)
-                    run.animatingIDs = ids.isEmpty ? nil : ids
-                    if ids.isEmpty, run.step == .making { run.step = .choose }
-                }
+                Self.revise(&run, at: index, with: concept, replacing: replaced)
             } else {
-                var added = concept
-                if run.concepts.contains(where: { $0.id == added.id }) { added.id = run.nextConceptID }
-                if added.isPick { run.concepts.indices.forEach { run.concepts[$0].isPick = false } }
-                run.concepts.append(added)
-                if run.step == .making, run.revisingID == nil, run.isComplete { run.step = .choose }
+                Self.append(concept, to: &run)
             }
         }
         if key == watchedKey, runs[key]?.isHidden == true, runs[key]?.step != .making { update(key) { $0.isHidden = false } }
         let run = runs[key]
         if let run { onConceptArrived?(run) }
         return run
+    }
+
+    /// `concept` in place of the one at `index`, keeping its id and pick;
+    /// the run moves on once the revision or motion it waited for is in.
+    private static func revise(_ run: inout EventArtworkRun, at index: Int, with concept: EventArtworkConcept, replacing replaced: EventArtworkConcept.ID) {
+        var revised = concept
+        revised.id = replaced
+        revised.isPick = run.concepts[index].isPick
+        revised.revisedAt = run.revisingID == replaced ? concept.arrivedAt : run.concepts[index].revisedAt
+        run.concepts[index] = revised
+        if run.revisingID == replaced {
+            run.revisingID = nil
+            run.revisionRequest = nil
+            run.pickedID = replaced
+            if run.step == .making { run.step = .check }
+        }
+        if var ids = run.animatingIDs, let index = ids.firstIndex(of: replaced) {
+            ids.remove(at: index)
+            run.animatingIDs = ids.isEmpty ? nil : ids
+            if ids.isEmpty, run.step == .making { run.step = .choose }
+        }
+    }
+
+    /// A new concept, with a fresh id if it repeats one; the run moves on to
+    /// Choose once the last one is in.
+    private static func append(_ concept: EventArtworkConcept, to run: inout EventArtworkRun) {
+        var added = concept
+        if run.concepts.contains(where: { $0.id == added.id }) { added.id = run.nextConceptID }
+        if added.isPick { run.concepts.indices.forEach { run.concepts[$0].isPick = false } }
+        run.concepts.append(added)
+        if run.step == .making, run.revisingID == nil, run.isComplete { run.step = .choose }
     }
 
     /// Claude Code ended (finished, stopped or failed) while drawing: what

@@ -47,18 +47,32 @@ struct MainWindowBackground {
         for text in await checkProductPages() {
             navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
         }
-        if analytics.settings.refreshMode == .everyMorning {
-            for app in library.apps where analytics.isDue(app.id) {
-                await analytics.refresh(app.id, services: services.analytics)
-            }
-            for app in library.apps {
-                guard let report = StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())), report.isWorse else { continue }
-                AtlasNotifications.stability(report, appName: app.name, appID: app.id)
-            }
-            for appID in analytics.consumeArrivals() {
-                navigator.toast = .reportsArrived(appID: appID, appName: library.apps.first { $0.id == appID }?.name ?? appID)
-            }
+        if analytics.settings.refreshMode == .everyMorning { await checkAnalytics() }
+        await checkReviews()
+        await replyAutomatically()
+        let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
+        AtlasNotifications.analyticsFindings(findings, now: .now)
+        return nil
+    }
+
+    /// Apple's reports that are due, a version that got worse, and the
+    /// reports that arrived.
+    private func checkAnalytics() async {
+        for app in library.apps where analytics.isDue(app.id) {
+            await analytics.refresh(app.id, services: services.analytics)
         }
+        for app in library.apps {
+            guard let report = StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())), report.isWorse else { continue }
+            AtlasNotifications.stability(report, appName: app.name, appID: app.id)
+        }
+        for appID in analytics.consumeArrivals() {
+            navigator.toast = .reportsArrived(appID: appID, appName: library.apps.first { $0.id == appID }?.name ?? appID)
+        }
+    }
+
+    /// Reviews read again when what's kept is old, with a notice for the
+    /// new ones.
+    private func checkReviews() async {
         for app in library.apps {
             let known = Set(reviews.archive(for: app.id).reviews.map(\.id))
             await reviews.refreshIfStale(app, services: services.reviews)
@@ -67,10 +81,6 @@ struct MainWindowBackground {
             let arrived = reviews.archive(for: app.id).reviews.filter { !known.contains($0.id) }
             AtlasNotifications.newReviews(arrived, appName: app.name, appID: app.id)
         }
-        await replyAutomatically()
-        let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
-        AtlasNotifications.analyticsFindings(findings, now: .now)
-        return nil
     }
 
     /// Reply Automatically (board 58): Claude Code writes the new reviews'

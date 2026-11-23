@@ -60,7 +60,7 @@ struct AssistantConnectorTests {
 
     // MARK: - Claude Code's registration
 
-    @Test func registeringRemovesTheOldEntryThenAddsTheBridge() async throws {
+    @Test func registeringRemovesTheOldEntryThenAddsTheBridge() async {
         await launcher.refreshHelper()
         let problem = await launcher.registerAtlas(token: "al_t", bridgePath: "/A/atlas-mcp")
         #expect(problem == nil)

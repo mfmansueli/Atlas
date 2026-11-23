@@ -31,7 +31,7 @@ struct ProductPageTestReadinessTests {
         #expect(search.variantBlockReason == "There’s no search results variant yet.")
     }
 
-    @Test func pushedArtworkNoLongerWaits() throws {
+    @Test func pushedArtworkNoLongerWaits() {
         var extras = Fixtures.extras()
         for file in extras.artwork where file.kind == .header && file.locale != "fr-FR" {
             extras.pushedChecksums = (extras.pushedChecksums ?? [:]).merging([file.id: file.fileID]) { $1 }

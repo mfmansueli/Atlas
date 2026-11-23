@@ -107,7 +107,7 @@ struct InAppPurchaseOfferCodePushTests {
         #expect(controller.doneCount == 1)
         let prices = body(transport.sent[0])["included"] as? [[String: Any]] ?? []
         #expect(prices.compactMap { PushPagedRead.relationshipID("pricePoint", of: $0) } == ["p0", "j0"])
-        #expect(Self.owner.availabilityPath == "/v2/inAppPurchases/iap1/inAppPurchaseAvailability")
+        #expect(Self.owner.availabilityPath.hasPrefix("/v2/inAppPurchases/iap1/inAppPurchaseAvailability?"))
     }
 
     @Test func aPriceAppleDoesntHaveStopsThePush() async {

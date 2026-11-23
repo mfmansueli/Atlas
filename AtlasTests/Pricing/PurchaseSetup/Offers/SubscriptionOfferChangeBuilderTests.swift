@@ -54,7 +54,7 @@ struct SubscriptionOfferChangeBuilderTests {
         #expect(attributes["offerMode"] as? String == "PAY_AS_YOU_GO")
         #expect(attributes["duration"] as? String == "ONE_MONTH")
         #expect(attributes["numberOfPeriods"] as? Int == 3)
-        #expect(PushPagedRead.relationshipID("subscription", of: try data(request)) == "sub1")
+        #expect(try PushPagedRead.relationshipID("subscription", of: data(request)) == "sub1")
 
         let write = try #require(SubscriptionOfferWrite(request))
         #expect(write.resource == .promotional)
@@ -103,7 +103,7 @@ struct SubscriptionOfferChangeBuilderTests {
         #expect(request.method == .patch)
         #expect(request.path == "/v1/subscriptionPromotionalOffers/po1")
         #expect(SubscriptionOfferWrite(request)?.plan.usPrice == Decimal(string: "1.99"))
-        #expect(SubscriptionOfferWrite(try #require(change.restoreRequests.first))?.plan.usPrice == Decimal(string: "2.99"))
+        #expect(try SubscriptionOfferWrite(#require(change.restoreRequests.first))?.plan.usPrice == Decimal(string: "2.99"))
         #expect(change.conflictCheck?.expected == "2.99")
         #expect(change.conflictCheck?.path.hasPrefix("/v1/subscriptionPromotionalOffers/po1/prices") == true)
     }
@@ -162,7 +162,7 @@ struct SubscriptionOfferChangeBuilderTests {
         let sent = try attributes(request)
         #expect(Set(sent.keys) == ["priority", "endDate"])
         #expect(sent["endDate"] as? String == "2027-01-31")
-        let restored = try attributes(try #require(change.restoreRequests.first))
+        let restored = try attributes(#require(change.restoreRequests.first))
         #expect(restored["priority"] as? String == "NORMAL")
         #expect(restored["endDate"] is NSNull)
         #expect(change.conflictCheck?.expected == "NORMAL")
@@ -221,7 +221,7 @@ struct SubscriptionOfferChangeBuilderTests {
         let code = ExistingOfferCode(id: "oc1", name: "Podcast", eligibilities: [.new], mode: .freeTrial, duration: .oneMonth)
         let builder = OfferCodeChangeBuilder(app: Self.app)
         let custom = builder.customCodeChange(NewCustomCode(code: "LUMEN", numberOfCodes: 10), for: code, subscription: Self.monthly)
-        #expect(PushPagedRead.relationshipID("offerCode", of: try data(try #require(custom.requests.first))) == "oc1")
+        #expect(try PushPagedRead.relationshipID("offerCode", of: data(#require(custom.requests.first))) == "oc1")
         let batch = builder.oneTimeCodesChange(
             NewOneTimeCodes(numberOfCodes: 5, expirationDate: Self.start), for: code, subscription: Self.monthly
         )
@@ -245,7 +245,7 @@ struct SubscriptionOfferChangeBuilderTests {
 
         let one = builder.deactivation(of: .customCode(custom), in: code, subscription: Self.monthly)
         #expect(one.requests.first?.path == "/v1/subscriptionOfferCodeCustomCodes/cc1")
-        #expect(try data(try #require(one.requests.first))["type"] as? String == "subscriptionOfferCodeCustomCodes")
+        #expect(try data(#require(one.requests.first))["type"] as? String == "subscriptionOfferCodeCustomCodes")
         #expect(one.id != whole.id)
     }
 

@@ -150,6 +150,7 @@ struct OfferCodeChangeBuilder {
             case .oneTimeCodes: "subscriptionOfferCodeOneTimeUseCodes"
             }
         }
+
         /// The App Store Connect id the deactivation sends to.
         func resourceID(in code: ExistingOfferCode) -> String {
             switch self {

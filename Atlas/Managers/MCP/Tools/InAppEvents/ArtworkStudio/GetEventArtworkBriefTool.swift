@@ -77,8 +77,17 @@ struct GetEventArtworkBriefTool: MCPTool {
         ]
         if run.makesMotion { result["motionDirection"] = EventArtworkMotion.json }
         if let others = EventArtworkOtherEvents.json(studio.runs(for: app.id), except: event.id) { result["otherEvents"] = others }
-        var images: [MCPToolOutcome.ImageContent] = []
         if run.usesCapture { result["captures"] = await Self.captures(app: app, locale: run.primaryLocale, in: context) }
+        let images = await attachments(run: run, event: event, result: &result)
+        result["then"] = .string(Self.next(run))
+        return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .read)], images: images)
+    }
+
+    /// The images sent with the brief: the event's card to extend, the
+    /// concept being revised, and the concepts to make move; `result` says
+    /// what each is.
+    private func attachments(run: EventArtworkRun, event: InAppEvent, result: inout [String: JSONValue]) async -> [MCPToolOutcome.ImageContent] {
+        var images: [MCPToolOutcome.ImageContent] = []
         if run.style == .extendCard, loadsCard, let card = await Self.card(of: event) {
             images.append(MCPToolOutcome.ImageContent(data: card, mimeType: "image/jpeg"))
             result["existingCard"] = "attached: the event's card as it is on the App Store. Make the details image to match it."
@@ -86,25 +95,25 @@ struct GetEventArtworkBriefTool: MCPTool {
         if let revising = run.revising {
             result["revision"] = Self.revisionJSON(revising, request: run.revisionRequest ?? "")
             for kind in revising.kinds {
-                guard let still = revising.still(kind, locale: run.primaryLocale),
-                      let image = await InAppEventArtworkInspector.still(URL(filePath: still.path), isVideo: false),
-                      let jpeg = InAppEventArtworkInspector.jpeg(image, maxPixel: RenderEventArtworkTool.previewPixels)
-                else { continue }
-                images.append(MCPToolOutcome.ImageContent(data: jpeg, mimeType: "image/jpeg"))
+                if let jpeg = await Self.preview(revising.still(kind, locale: run.primaryLocale)) { images.append(jpeg) }
             }
         }
         if run.isAnimating {
             result["addMotion"] = .array(run.animating.map(Self.motionJSON))
             for concept in run.animating {
-                guard let still = concept.still(.card, locale: run.primaryLocale),
-                      let image = await InAppEventArtworkInspector.still(URL(filePath: still.path), isVideo: false),
-                      let jpeg = InAppEventArtworkInspector.jpeg(image, maxPixel: RenderEventArtworkTool.previewPixels)
-                else { continue }
-                images.append(MCPToolOutcome.ImageContent(data: jpeg, mimeType: "image/jpeg"))
+                if let jpeg = await Self.preview(concept.still(.card, locale: run.primaryLocale)) { images.append(jpeg) }
             }
         }
-        result["then"] = .string(Self.next(run))
-        return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .read)], images: images)
+        return images
+    }
+
+    /// A concept's still as a small JPEG to look at.
+    private static func preview(_ still: EventArtworkImage?) async -> MCPToolOutcome.ImageContent? {
+        guard let still,
+              let image = await InAppEventArtworkInspector.still(URL(filePath: still.path), isVideo: false),
+              let jpeg = InAppEventArtworkInspector.jpeg(image, maxPixel: RenderEventArtworkTool.previewPixels)
+        else { return nil }
+        return MCPToolOutcome.ImageContent(data: jpeg, mimeType: "image/jpeg")
     }
 
     static let noRun = """

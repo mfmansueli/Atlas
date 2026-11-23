@@ -91,7 +91,7 @@ struct PageTestsToolsTests {
         #expect(result["proposals"]?.arrayValue?.isEmpty == true)
     }
 
-    @Test func testsComeWithTheirTreatmentsWhenTheyArentOver() async throws {
+    @Test func pageTestsComeWithTheirTreatmentsWhenTheyArentOver() async throws {
         let placement = AssetLibraryPlacement(
             id: "p-1", placementType: ProductPageTestPlacement.header.placementType, placementGroup: "G", state: "APPROVED",
             asset: AssetLibraryAsset(id: "img-1", media: .image)
@@ -125,7 +125,7 @@ struct PageTestsToolsTests {
         await #expect(throws: MCPToolError.self) { try await setup.get(["testId": "exp-none"]) }
     }
 
-    @Test func testsThatCantBeReadSaySo() async throws {
+    @Test func pageTestsThatCantBeReadSaySo() async throws {
         let setup = setup(script: .init(listFails: true))
         await #expect(throws: MCPToolError.self) { try await setup.get() }
     }

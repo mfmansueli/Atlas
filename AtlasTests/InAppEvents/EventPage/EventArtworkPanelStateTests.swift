@@ -27,7 +27,8 @@ struct EventArtworkPanelStateTests {
         canEdit: Bool = true, isOver: Bool = false, preview: EventArtworkConcept.ID? = nil
     ) -> EventArtworkPanelState {
         EventArtworkPanelState.make(
-            run: run, isChanging: isChanging, usedIsQueued: usedIsQueued, missing: missing, languages: 12, canEdit: canEdit, isOver: isOver,
+            run: run, isChanging: isChanging, usedIsQueued: usedIsQueued, missing: missing,
+            event: .init(languages: 12, canEdit: canEdit, isOver: isOver),
             preview: preview.flatMap { id in run?.concepts.first { $0.id == id } }
         )
     }

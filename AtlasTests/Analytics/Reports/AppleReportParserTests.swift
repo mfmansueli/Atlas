@@ -50,6 +50,7 @@ struct AppleReportParserTests {
         // A column the file lacks reads as empty.
         #expect(record[.suggested].isEmpty)
     }
+
     // swiftlint:enable line_length
 
     @Test func anInstallMarksARecentDownloadByTheDateBeingFilledIn() {

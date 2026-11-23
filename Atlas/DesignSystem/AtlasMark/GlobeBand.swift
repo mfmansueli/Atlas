@@ -51,14 +51,14 @@ struct GlobeBand: Hashable, Sendable {
         return angle(on: half, at: (Double(index - 1) + local) * step)
     }
 
-    /// The part of `half` from `from` to `to` of its length (0…1), turned.
-    func path(_ half: Half, from: Double = 0, to: Double = 1) -> CGPath {
+    /// The part of `half` from `from` to `end` of its length (0…1), turned.
+    func path(_ half: Half, from: Double = 0, to end: Double = 1) -> CGPath {
         let path = CGMutablePath()
-        let start = theta(on: half, atLength: from), end = theta(on: half, atLength: to)
-        let steps = max(2, Int((abs(end - start) / .pi) * Double(Self.samples)))
+        let start = theta(on: half, atLength: from), finish = theta(on: half, atLength: end)
+        let steps = max(2, Int((abs(finish - start) / .pi) * Double(Self.samples)))
         let transform = CGAffineTransform(rotationAngle: rotation * .pi / 180)
         for step in 0...steps {
-            let theta = start + (end - start) * Double(step) / Double(steps)
+            let theta = start + (finish - start) * Double(step) / Double(steps)
             let point = point(theta: theta).applying(transform)
             if step == 0 { path.move(to: point) } else { path.addLine(to: point) }
         }

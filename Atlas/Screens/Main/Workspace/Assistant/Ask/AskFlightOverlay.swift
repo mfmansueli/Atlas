@@ -24,8 +24,8 @@ final class AskFlightOverlay {
             CGRect(x: rect.minX - frame.minX, y: frame.maxY - rect.maxY, width: rect.width, height: rect.height)
         }
         let from = local(source)
-        let to = local(target)
-        let path = AskTokenPath(from: CGPoint(x: from.midX, y: from.midY), to: CGPoint(x: to.midX, y: to.midY))
+        let landing = local(target)
+        let path = AskTokenPath(from: CGPoint(x: from.midX, y: from.midY), target: CGPoint(x: landing.midX, y: landing.midY))
         close()
         let panel = NSPanel(contentRect: frame, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
         panel.isOpaque = false
@@ -37,7 +37,7 @@ final class AskFlightOverlay {
         panel.collectionBehavior = [.transient, .ignoresCycle, .fullScreenAuxiliary]
         panel.setAccessibilityElement(false)
         panel.setAccessibilityHidden(true)
-        panel.contentView = NSHostingView(rootView: AskFlightView(path: path, target: to, start: .now))
+        panel.contentView = NSHostingView(rootView: AskFlightView(path: path, target: landing, start: .now))
         window.addChildWindow(panel, ordered: .above)
         self.panel = panel
         removal = Task { [weak self] in

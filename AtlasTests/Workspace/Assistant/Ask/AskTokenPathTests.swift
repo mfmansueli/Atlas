@@ -12,7 +12,7 @@ import Testing
 /// one ring.
 @Suite("AskTokenPath")
 struct AskTokenPathTests {
-    private let path = AskTokenPath(from: CGPoint(x: 937, y: 80), to: CGPoint(x: 1002, y: 26))
+    private let path = AskTokenPath(from: CGPoint(x: 937, y: 80), target: CGPoint(x: 1002, y: 26))
 
     @Test func itStartsOnTheButtonAndLandsOnTheToolbarAtHalfSize() {
         let start = path.state(at: 0)
@@ -29,9 +29,9 @@ struct AskTokenPathTests {
 
     @Test func itRisesBeforeItCrosses() {
         let early = path.state(at: AskTokenPath.duration * 0.3)
-        let up = (80 - early.center.y) / 54
+        let rise = (80 - early.center.y) / 54
         let across = (early.center.x - 937) / 65
-        #expect(up > 0.7)
+        #expect(rise > 0.7)
         #expect(across < 0.1)
     }
 

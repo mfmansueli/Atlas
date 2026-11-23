@@ -40,7 +40,9 @@ struct GetAnalyticsSubscribersTool: MCPTool {
         let average = all.trialToPaidFraction
         func split(_ dimension: ReportDimension) -> JSONValue {
             let events = reports.records(.subscriptionEvents).within(period)
-            let names = Set(events.map { dimension == .page ? ReportsArchive.pageName($0, defaultName: ProductPageNumbers.defaultPageName) ?? "" : $0[dimension] })
+            let names = Set(events.map { event in
+                dimension == .page ? ReportsArchive.pageName(event, defaultName: ProductPageNumbers.defaultPageName) ?? "" : event[dimension]
+            })
             return .array(names.filter { !$0.isEmpty }.sorted().map { name in
                 let counts = reports.subscribers(in: period) { record in
                     (dimension == .page ? ReportsArchive.pageName(record, defaultName: ProductPageNumbers.defaultPageName) ?? "" : record[dimension]) == name

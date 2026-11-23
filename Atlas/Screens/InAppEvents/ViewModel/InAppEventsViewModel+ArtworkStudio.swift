@@ -48,7 +48,7 @@ extension InAppEventsViewModel {
         let run = flow?.isStarted == true ? flow?.run : artworkRun(of: event)
         return EventArtworkPanelState.make(
             run: run, isChanging: flow?.isChanging ?? false, usedIsQueued: usedArtIsQueued(event), missing: missingArt(of: event),
-            languages: max(1, event.localizations.count), canEdit: event.state.isEditable, isOver: event.state.isOver,
+            event: .init(languages: max(1, event.localizations.count), canEdit: event.state.isEditable, isOver: event.state.isOver),
             preview: flow?.previewConcept
         )
     }

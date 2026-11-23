@@ -69,7 +69,10 @@ struct RetentionView: View {
                 AnalyticsColumns(titles: [String(localized: "Subscription"), String(localized: "Opened"), String(localized: "Save rate")], widths: [70, 110])
                 ForEach(report.subscriptions) { row in
                     Divider()
-                    AnalyticsColumns([AnyView(Text(row.name)), AnyView(Text(AnalyticsText.count(row.opened))), AnyView(RateLabel(rate: row.rate))], widths: [70, 110])
+                    AnalyticsColumns(
+                        [AnyView(Text(row.name)), AnyView(Text(AnalyticsText.count(row.opened))), AnyView(RateLabel(rate: row.rate))],
+                        widths: [70, 110]
+                    )
                 }
             }
             AnalyticsBox(title: String(localized: "How they stayed"), trailing: AnalyticsText.count(report.saves)) {

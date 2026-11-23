@@ -35,7 +35,8 @@ struct OfferCodesFields: View {
                 TextField("Code", text: Binding { custom.code } set: { customCode?.code = $0.uppercased() }, prompt: Text(verbatim: "PODCAST30"))
                     .accessibilityIdentifier("\(identifier).customCode")
                 Stepper(value: Binding { custom.numberOfCodes } set: { customCode?.numberOfCodes = $0 },
-                        in: SubscriptionOfferRules.numberOfCodes, step: 100) {
+                        in: SubscriptionOfferRules.numberOfCodes, step: 100)
+                {
                     Text("Redeems up to \(custom.numberOfCodes.formatted()) times")
                 }
                 .accessibilityIdentifier("\(identifier).customCount")
@@ -67,7 +68,8 @@ struct OfferCodesFields: View {
             }
             if let batch = oneTimeCodes {
                 Stepper(value: Binding { batch.numberOfCodes } set: { oneTimeCodes?.numberOfCodes = $0 },
-                        in: SubscriptionOfferRules.numberOfCodes, step: 100) {
+                        in: SubscriptionOfferRules.numberOfCodes, step: 100)
+                {
                     Text("\(batch.numberOfCodes.formatted()) codes")
                 }
                 .accessibilityIdentifier("\(identifier).oneTimeCount")

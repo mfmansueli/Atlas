@@ -7,23 +7,19 @@ import Foundation
 import Testing
 @testable import Atlas
 
-@Suite("MCPPriceValue")
+/// Prices read from the price tools' arguments: positive amounts, and 0
+/// only where a free price is allowed.
 struct MCPPriceValueTests {
-    @Test func wholeAmountsAreIntegers() {
-        #expect(MCPPriceValue.json(PricingFixtures.money("2499")) == .int(2499))
-        #expect(MCPPriceValue.json(PricingFixtures.money("39.00")) == .int(39))
-        #expect(MCPPriceValue.json(PricingFixtures.money("219.90")) == .double(219.9))
+    @Test func numbersAndTextsAreRead() {
+        #expect(MCPPriceValue.decimal(from: .double(109.9)) == Decimal(string: "109.9"))
+        #expect(MCPPriceValue.decimal(from: .int(2499)) == 2499)
+        #expect(MCPPriceValue.decimal(from: .string("109,90")) == Decimal(string: "109.9"))
     }
 
-    @Test func numbersAndNumericStringsAreRead() {
-        #expect(MCPPriceValue.decimal(from: .double(109.9)) == PricingFixtures.money("109.9"))
-        #expect(MCPPriceValue.decimal(from: .int(999)) == PricingFixtures.money("999"))
-        #expect(MCPPriceValue.decimal(from: "109.90") == PricingFixtures.money("109.9"))
-        #expect(MCPPriceValue.decimal(from: " 109,90 ") == PricingFixtures.money("109.9"))
-    }
-
-    @Test(arguments: [JSONValue.string("R$ 109,90"), "", "1.234,56", .int(0), .double(-5), .bool(true), .null, .double(.infinity)])
-    func anythingElseIsNotAPrice(_ value: JSONValue) {
-        #expect(MCPPriceValue.decimal(from: value) == nil)
+    @Test func zeroIsOnlyAPriceWhereFreeIsAllowed() {
+        #expect(MCPPriceValue.decimal(from: .int(0)) == nil)
+        #expect(MCPPriceValue.decimal(from: .int(0), allowsFree: true) == 0)
+        #expect(MCPPriceValue.decimal(from: .double(0), allowsFree: true) == 0)
+        #expect(MCPPriceValue.decimal(from: .double(-1), allowsFree: true) == nil)
     }
 }

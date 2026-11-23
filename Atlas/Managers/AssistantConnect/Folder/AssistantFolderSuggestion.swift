@@ -24,7 +24,7 @@ struct AssistantFolderSuggestion: Hashable, Sendable {
 
     /// "Lumen.xcodeproj · Claude Code worked here".
     var detail: String {
-        [projectName, source].compactMap { $0 }.joined(separator: " · ")
+        [projectName, source].compactMap(\.self).joined(separator: " · ")
     }
 
     /// A candidate folder and where it came from.
