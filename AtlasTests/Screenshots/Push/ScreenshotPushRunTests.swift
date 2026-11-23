@@ -146,7 +146,7 @@ struct ScreenshotPushRunTests {
         run.items[0].status = .uploading(0)
         run.noteSent(0, bytes: 256, of: 1024)
         #expect(run.items[0].status == .uploading(0.25))
-        #expect(run.items[0].status.stepTitle == "Uploading 25%")
+        #expect(run.items[0].status.stepTitle == "Pushing 25%")
         run.noteSent(0, bytes: 128, of: 1024)
         #expect(run.items[0].status == .uploading(0.25))
         run.noteSent(0, bytes: 4096, of: 1024)

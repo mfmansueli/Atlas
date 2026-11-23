@@ -245,7 +245,7 @@ struct GuidedRunProgressTests {
         #expect(run.waitsOnlyOnProblems)
         let done = run.totalCaptures - device.count
         let progress = GuidedRunProgress.make(run, now: Self.start.addingTimeInterval(10 * 60))
-        #expect(progress.line == "\(done) of \(run.totalCaptures) captures · \(device.count) wait on you")
+        #expect(progress.line == "\(done) of \(run.totalCaptures) captures · \(device.count) need you")
         #expect(progress.minutesLeft == nil)
         // The next stop is now, and the strip stops saying it's running.
         let next = GuidedNextStop.line(for: run, progress: progress)

@@ -161,7 +161,8 @@ struct GuidedReviewChecksTests {
         let checks = GuidedReviewChecks.checks(for: .artwork, run: StudioDebugHeaderStyle.headerNotMade)
         let made = Self.check("made", in: checks)
         #expect(made?.state == .attention)
-        #expect(made?.text.hasPrefix("Couldn’t render the header page") == true)
+        #expect(made?.text == "Not made. Make Again retries it.")
+        #expect(made?.details == ["Details: Couldn’t render the header page in English (U.S.): The page didn’t load"])
         #expect(Self.check("loop", in: checks)?.text == "\(AutopilotArtworkMotion.loopSeconds)-second loop · plays muted on repeat")
     }
 

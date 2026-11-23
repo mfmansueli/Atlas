@@ -56,15 +56,24 @@ extension ProductPageTestRun {
         return false
     }
 
-    /// A failure as a sentence for a row or the outcome.
-    static func text(for error: any Error) -> String {
-        if let failure = error as? ProductPageTestFailure { return failure.text }
-        if let error = error as? URLError, offlineCodes.contains(error.code) { return String(localized: "This Mac is offline.") }
-        if let error = error as? AppStoreConnectError, error == .unauthorized || error == .invalidPrivateKey {
-            return String(localized: "App Store Connect refused the API key.")
+    /// A failure as a sentence for a row or the outcome, then `more` (what
+    /// Atlas did about it). Apple's own text, if any, comes last, after
+    /// "Details:".
+    static func text(for error: any Error, then more: String? = nil) -> String {
+        let copy = copy(for: error)
+        let summary = [copy.summary, more].compactMap(\.self).filter { !$0.isEmpty }.joined(separator: " ")
+        return AppleErrorCopy(summary: summary, details: copy.details).text
+    }
+
+    static func copy(for error: any Error) -> AppleErrorCopy {
+        if let failure = error as? ProductPageTestFailure { return failure.copy }
+        if let error = error as? URLError, offlineCodes.contains(error.code) {
+            return AppleErrorCopy(summary: String(localized: "This Mac is offline."), details: nil)
         }
-        let text = describe(error)
-        return text.hasSuffix(".") ? text : text + "."
+        if let error = error as? AppStoreConnectError, error == .unauthorized || error == .invalidPrivateKey {
+            return AppleErrorCopy(summary: String(localized: "App Store Connect refused the API key."), details: nil)
+        }
+        return AppleErrorCopy(String(localized: "The test wasn’t pushed.", comment: "kind:error"), error: error)
     }
 
     /// Apple's code and detail when it sent them, e.g. "STATE_ERROR — …".

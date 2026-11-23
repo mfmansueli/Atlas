@@ -154,7 +154,7 @@ struct PreviewReviewToolsTests {
 
         fixtures.center.install(Self.asking)
         let busy = try await fixtures.call(SetAppPreviewMusicTool(), ["run": "run-debug", "track": "calm_piano"])
-        #expect(busy.result["reason"] == "Atlas is remaking the App Preview. Try in a moment.")
+        #expect(busy.result["reason"] == "Atlas is making the App Preview again. Try in a moment.")
         #expect(fixtures.run?.plan.alsoMakes.previewMusic == .standard)
     }
 

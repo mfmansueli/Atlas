@@ -16,7 +16,7 @@ struct BillingView: View {
     @State private var isConfirming = false
     @State private var duration = GracePeriodSetting.Duration.sixteenDays
     @State private var isTurningOn = false
-    @State private var failure: String?
+    @State private var failure: AppleErrorCopy?
 
     var body: some View {
         ScrollView {
@@ -48,7 +48,7 @@ struct BillingView: View {
                 identifier: "analytics.billing.gracePeriodNotice"
             )
         }
-        if let failure { InlineMessage.error(failure) }
+        if let failure { ErrorCopyMessage(copy: failure) }
         AdaptiveGridLayout(minimumWidth: 180, spacing: Spacing.medium) {
             AnalyticsStat(
                 label: String(localized: "Couldn’t be charged"), value: AnalyticsText.count(report.couldNotCharge),
@@ -125,7 +125,7 @@ struct BillingView: View {
             failure = nil
             isConfirming = false
         } catch {
-            failure = error.localizedDescription
+            failure = AppleErrorCopy(String(localized: "Billing Grace Period wasn’t turned on.", comment: "kind:error"), error: error)
             isConfirming = false
         }
     }

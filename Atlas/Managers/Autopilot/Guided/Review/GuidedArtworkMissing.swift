@@ -12,7 +12,8 @@ import Foundation
 struct GuidedArtworkMissing: Equatable {
     /// "Header artwork couldn’t be made".
     let title: String
-    /// Why, then what Make Again and Approve do.
+    /// What Make Again and Approve do, then the renderer's own reason after
+    /// "Details:", as the error template has it.
     let detail: String
 
     /// Nil while the artwork is in the set, or the run isn't ready.
@@ -21,11 +22,11 @@ struct GuidedArtworkMissing: Equatable {
         guard AutopilotCenter.artworkMissing(run, extras: extras) else { return nil }
         let size = run.plan.alsoMakes.artworkSize
         title = String(localized: "\(size.artworkTitle) couldn’t be made")
-        let reason = run.extrasProgress?.artworkProblem
-            .map { $0.hasSuffix(".") ? $0 : $0 + "." }
-            ?? String(localized: "None of it was saved with the set.")
-        detail = reason + " " + String(localized: """
+        let problem = run.extrasProgress?.artworkProblem
+        let next = String(localized: """
         Make Again rebuilds it from your choices, no new design. Or approve the rest without it.
         """)
+        let summary = problem == nil ? String(localized: "None of it was saved with the set.") + " " + next : next
+        detail = AppleErrorCopy(summary: summary, details: problem).text
     }
 }

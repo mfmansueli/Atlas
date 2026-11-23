@@ -18,13 +18,26 @@ enum ProductPageTestFailure: Error, Hashable, Sendable {
     case upload(detail: String)
 
     var text: String {
+        copy.text
+    }
+
+    /// The sentence, with the system's own words kept for Details where the
+    /// failure isn't Apple's or Atlas's.
+    var copy: AppleErrorCopy {
+        if case let .file(detail) = self {
+            return AppleErrorCopy(summary: String(localized: "The variant file couldn’t be read. Try again.", comment: "kind:error"), details: detail)
+        }
+        return AppleErrorCopy(summary: sentence, details: nil)
+    }
+
+    private var sentence: String {
         switch self {
         case let .placementRefused(placementType, detail):
             String(localized: "App Store Connect didn’t take \(ExtrasPushKind.name(ofPlacementType: placementType)) on the test’s treatment (\(detail)).")
         case let .noMatchingGroup(placementType, pixelSize, accepted):
             ExtrasPushFailure.noMatchingGroup(placementType: placementType, pixelSize: pixelSize, isVideo: false, accepted: accepted).text
-        case let .file(detail):
-            String(localized: "The variant couldn’t be read (\(detail)).")
+        case .file:
+            String(localized: "The variant file couldn’t be read. Try again.", comment: "kind:error")
         case let .processing(state, details):
             String(localized: "Apple couldn’t process the variant (\(details ?? state)).")
         case .processingTimedOut:

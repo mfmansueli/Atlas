@@ -79,7 +79,7 @@ struct FindingRulesTests {
         let findings = FindingRules.findings(dataset, context: context)
         let early = try #require(findings.first { $0.id == "retention.early" })
         #expect(early.action == .retention)
-        #expect(early.title.contains("before the first renewal"))
+        #expect(early.title.contains("before first renewal"))
         var live = context
         live.liveRetentionMessages = 1
         #expect(!FindingRules.findings(dataset, context: live).contains { $0.id == "retention.early" })

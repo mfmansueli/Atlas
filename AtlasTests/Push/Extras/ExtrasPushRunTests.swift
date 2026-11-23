@@ -156,7 +156,9 @@ struct ExtrasPushRunTests {
         let preview = Fixtures.preview()
         let run = await Fixtures.push([header, preview], environment: Fixtures.environment(library))
 
-        #expect(run.status(of: header) == .failed("STATE_ERROR.INVALID_STATE — The version can’t be edited."))
+        #expect(run.status(of: header) == .failed(
+            "The file wasn’t pushed. Apple refused the change. See Details.\nDetails: STATE_ERROR.INVALID_STATE — The version can’t be edited"
+        ))
         #expect(run.status(of: preview).isDone)
         #expect(run.title == "1 of 2 extras pushed")
         let before = library.log.count
@@ -313,7 +315,7 @@ struct ExtrasPushRunTests {
         #expect(ExtrasPushStatus.waiting.title == "Waiting")
         #expect(ExtrasPushStatus.preparing.title == "Getting ready")
         #expect(!ExtrasPushStatus.preparing.isFinished)
-        #expect(ExtrasPushStatus.uploading(0.426).title == "Uploading 42%")
+        #expect(ExtrasPushStatus.uploading(0.426).title == "Pushing 42%")
         #expect(ExtrasPushStatus.processing.title == "Processing")
         #expect(ExtrasPushStatus.placing.title == "Placing")
         #expect(ExtrasPushStatus.done(assetID: "a", placementIDs: []).title == "Done")

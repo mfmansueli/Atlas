@@ -178,14 +178,14 @@ struct GuidedTemplatePreviewTests {
         #expect(preview.isWatch)
         #expect(preview.items.map(\.name) == DebugEveryDevice.watchScreens.map(\.name))
         #expect(preview.items.allSatisfy { $0.job.layout.isFullBleed && $0.job.layout.lines.isEmpty })
-        #expect(preview.note.contains("no template is applied: this is what people will see"))
+        #expect(preview.note.contains("no template applies. People see this with any template"))
     }
 
     @Test func appleWatchWithoutCapturesSaysWhenTheyCome() {
         let preview = builder(plan: StudioDebugRuns.everyDevicePlan).preview(.arcade, on: .watch, locale: .englishUS)
         #expect(preview.items.count == DebugEveryDevice.watchScreens.count, "The plan's watch screens")
         #expect(!preview.items.contains { $0.hasCapture })
-        #expect(preview.note.contains("watch screens show here once Autopilot captures them"))
+        #expect(preview.note.contains("watch screens show here once captured"))
     }
 
     // MARK: - Without captures
@@ -196,7 +196,7 @@ struct GuidedTemplatePreviewTests {
         let preview = builder(document).preview(.cinema, on: .iPhone, locale: .englishUS)
         #expect(preview.items.count == 5)
         #expect(!preview.items.contains { $0.hasCapture })
-        #expect(preview.note.contains("no captures yet"))
+        #expect(preview.note.contains("Empty until Autopilot captures the screens."))
     }
 
     // MARK: - New templates

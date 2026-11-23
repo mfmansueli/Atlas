@@ -162,7 +162,7 @@ struct ProductPageTestRunTests {
             return
         }
         #expect(reason.contains("Couldn’t delete draft “Header: Interface vs Outcome”"))
-        #expect(reason.contains("delete it in App Store Connect before making another test"))
+        #expect(reason.contains("Delete it in App Store Connect before a new test."))
     }
 
     @Test func aRefusalAfterALanguageWasPlacedFailsOnlyThatLanguage() async throws {
@@ -220,7 +220,7 @@ struct ProductPageTestRunTests {
             return
         }
         #expect(reason.hasPrefix("No variant went on the treatment."))
-        #expect(run.status(of: "en-US").failureReason?.contains("doesn’t take a 3000 × 1000 image") == true)
+        #expect(run.status(of: "en-US").failureReason?.contains("not a 3000 × 1000 image") == true)
         #expect(!library.log.contains { $0.hasPrefix("reserve") })
         #expect(tester.log.last == "delete exp-1")
     }

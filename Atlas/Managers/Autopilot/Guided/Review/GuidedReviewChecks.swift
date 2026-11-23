@@ -230,7 +230,12 @@ enum GuidedReviewChecks {
         }
         var checks: [GuidedCheck] = []
         if let problem = progress?.artworkProblem {
-            checks.append(GuidedCheck(id: "made", text: problem, state: .attention))
+            checks.append(GuidedCheck(
+                id: "made",
+                text: String(localized: "Not made. Make Again retries it.", comment: "kind:error"),
+                state: .attention,
+                details: [String(localized: "Details: \(problem)", comment: "kind:error")]
+            ))
         } else {
             let total = plan.localeCodes.count
             let done = min(progress?.artworkDone ?? 0, total)

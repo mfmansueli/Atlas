@@ -24,15 +24,19 @@ struct ProductPageNotConfirmed: LocalizedError, Equatable {
         appleText = error.map(Self.appleText)
     }
 
+    /// What happened and what a retry does; Apple's text after "Details:".
     var errorDescription: String? {
-        let apple = appleText.map { ($0.hasSuffix(".") ? $0 : $0 + ".") + " " } ?? ""
+        AppleErrorCopy(summary: summary, details: appleText).text
+    }
+
+    private var summary: String {
         if pageSeen {
-            return apple + String(localized: """
+            return String(localized: """
             Apple is still making “\(name)”. Retry in a few minutes; Atlas continues with that page, not a new one.
             """)
         }
         let time = looked.formatted(.units(allowed: [.minutes, .seconds], width: .wide))
-        return apple + String(localized: """
+        return String(localized: """
         “\(name)” isn’t in App Store Connect after \(time); Apple may still be making it. Retry in a few minutes. \
         Atlas won’t make a duplicate.
         """)
@@ -41,6 +45,6 @@ struct ProductPageNotConfirmed: LocalizedError, Equatable {
     static func appleText(_ error: any Error) -> String {
         if let error = error as? AppStoreConnectError { return error.pushFailureText }
         if let error = error as? URLError, error.code == .timedOut { return String(localized: "Apple didn’t answer in time.") }
-        return error.localizedDescription
+        return AppleErrorCopy.details(for: error) ?? error.localizedDescription
     }
 }

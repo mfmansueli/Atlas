@@ -34,7 +34,7 @@ extension ProductPageTestRun {
             return await fill(experiment)
         } catch {
             stopRemaining()
-            return .failed(Self.text(for: error) + " " + String(localized: "Nothing was created."))
+            return .failed(Self.text(for: error, then: String(localized: "Nothing was created.")))
         }
     }
 
@@ -92,7 +92,7 @@ extension ProductPageTestRun {
         } catch {
             stopRemaining()
             let removal = await removeDraft(experiment)
-            return .failed(Self.text(for: error) + " " + removal)
+            return .failed(Self.text(for: error, then: removal))
         }
     }
 

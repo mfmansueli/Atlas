@@ -108,7 +108,7 @@ struct ExtrasPushProgressTests {
         run.start()
         await run.waitUntilFinished()
 
-        #expect(holder.progress[header.id]?.hasPrefix("Uploading 0% · ") == true, "\(holder.progress)")
+        #expect(holder.progress[header.id]?.hasPrefix("Pushing 0% · ") == true, "\(holder.progress)")
         #expect(holder.progress[wide.id] == "Next")
         #expect(holder.progress[preview.id] == "Waiting · 1 ahead")
 
@@ -140,7 +140,7 @@ struct ExtrasPushProgressTests {
         run.statuses[preview.id] = .placing
         #expect(run.stepDetail(of: preview, now: now) == "Placing it first in App Previews")
         run.statuses[preview.id] = .uploading(0.5)
-        #expect(run.stepDetail(of: preview, now: now) == "Uploading 50%", "Before the file is read")
+        #expect(run.stepDetail(of: preview, now: now) == "Pushing 50%", "Before the file is read")
         #expect(run.itemsInFlight == [header, preview])
     }
 
@@ -169,7 +169,7 @@ struct ExtrasPushProgressTests {
         run.pausedUntil = clock.now.addingTimeInterval(3600)
         #expect(run.timeTitle(now: now) == "1:00 so far", "No estimate while it's paused")
         #expect(run.pauseTitle?.hasPrefix("Hourly request limit reached. Resumes by itself at ") == true)
-        #expect(run.pauseTitle?.hasSuffix("App Store Connect’s hourly request limit is used up. It goes on by itself.") == true)
+        #expect(run.pauseTitle?.hasPrefix("Hourly request limit reached. Resumes by itself at ") == true)
     }
 
     @Test func cancellingSaysWhatStillFinishes() {

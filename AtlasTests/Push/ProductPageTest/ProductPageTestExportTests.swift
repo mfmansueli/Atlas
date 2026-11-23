@@ -53,7 +53,7 @@ struct ProductPageTestExportTests {
 
         #expect(steps.contains("open Lumen’s Product Page Optimization"))
         #expect(steps.contains("one treatment named “Outcome”"))
-        #expect(steps.contains("On the treatment’s Search Results tab, add “Search results – Outcome – …” in each language"))
+        #expect(steps.contains("On its Search Results tab, add “Search results – Outcome – …” for each language"))
         #expect(steps.contains("Leave the “Interface” images, the control, on"))
         let name = ProductPageTestExport.fileName(placement: .searchResults, variant: "Outcome", locale: "ja", fileExtension: "")
         #expect(name == "Search results – Outcome – ja.png")

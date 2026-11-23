@@ -127,7 +127,7 @@ struct DuoWatcherTests {
         #expect(duo.state == .needsAccessibility)
         #expect(Self.calls("accessibility", in: runner) == 1, "macOS asks once")
         #expect(duo.state.waitsForPerson)
-        #expect(duo.state.summary.contains("allow Atlas in Privacy & Security › Accessibility"))
+        #expect(duo.state.summary.contains("Allow Atlas in Privacy & Security › Accessibility"))
 
         runner.statuses["open-duo"] = nil
         #expect(await duo.look(mayStart: true) == .pressedOpen)

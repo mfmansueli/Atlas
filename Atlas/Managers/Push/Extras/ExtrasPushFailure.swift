@@ -39,7 +39,9 @@ enum ExtrasPushFailure: Error, Hashable, Sendable {
             let file = isVideo ? String(localized: "a \(pixelSize.title) video") : String(localized: "a \(pixelSize.title) image")
             guard !accepted.isEmpty else { return String(localized: "App Store Connect doesn’t take \(file) for \(place). Nothing was pushed.") }
             let sizes = accepted.map(\.title).formatted(.list(type: .or))
-            return String(localized: "\(place) takes \(sizes), not \(file). Nothing was pushed.")
+            // "the product page header" starts this sentence.
+            let opening = place.prefix(1).uppercased() + place.dropFirst()
+            return String(localized: "\(opening) takes \(sizes), not \(file). Nothing was pushed.")
         case let .part(part, count, timedOut, detail):
             if timedOut { return String(localized: "Part \(part) of \(count) timed out. Nothing was placed. Try again.") }
             return String(localized: "Part \(part) of \(count) failed (\(detail)). Nothing was placed. Try again.")
