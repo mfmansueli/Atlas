@@ -30,21 +30,39 @@ struct DesignTokensTests {
 
     // MARK: - Colour
 
-    @Test func everyColourMatchesInLightDarkAndHighContrast() throws {
+    /// Light and dark as the app resolves them from its asset catalogue.
+    @Test func everyColourMatchesInLightAndDark() throws {
         let colors = try section("color")
         #expect(colors.count >= 50)
-        let appearances: [(String, NSAppearance.Name)] = [
-            ("light", .aqua), ("dark", .darkAqua),
-            ("highContrastLight", .accessibilityHighContrastAqua), ("highContrastDark", .accessibilityHighContrastDarkAqua),
-        ]
+        let appearances: [(String, NSAppearance.Name)] = [("light", .aqua), ("dark", .darkAqua)]
         for (name, value) in colors {
             let variants = try #require(value as? [String: String], "\(name)")
-            let assetName = name == "accent" ? "AccentColor" : name
-            let color = try #require(NSColor(named: assetName, bundle: .main), "\(name) is a Color Set")
+            let color = try #require(NSColor(named: Self.assetName(name), bundle: .main), "\(name) is a Color Set")
             for (key, appearanceName) in appearances {
                 let expected = try #require(variants[key], "\(name).\(key)")
                 let actual = try #require(Self.hex(of: color, in: appearanceName))
                 #expect(Self.matches(actual, expected), "\(name).\(key): \(actual) in the asset catalogue, \(expected) in the JSON")
+            }
+        }
+    }
+
+    /// All four variants as the Color Sets write them. AppKit resolves the
+    /// high contrast ones only with Increase Contrast on, so they're read
+    /// from the catalogue's source next to this file.
+    @Test func everyColourMatchesTheColorSetsInAllFourVariants() throws {
+        let colors = try section("color")
+        let catalogue = URL(filePath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "Atlas/SupportFiles/Assets.xcassets")
+        let sets = try Self.colorSets(in: catalogue)
+        #expect(Set(sets.keys) == Set(colors.keys.map(Self.assetName)), "the JSON names every Color Set, and only those")
+        for (name, value) in colors {
+            let variants = try #require(value as? [String: String], "\(name)")
+            let source = try #require(sets[Self.assetName(name)], "\(name) is a Color Set")
+            for key in ["light", "dark", "highContrastLight", "highContrastDark"] {
+                let expected = try #require(variants[key], "\(name).\(key)")
+                let actual = try #require(source[key], "\(name).\(key) in the Color Set")
+                #expect(Self.matches(actual, expected), "\(name).\(key): \(actual) in the Color Set, \(expected) in the JSON")
             }
         }
     }
@@ -133,7 +151,7 @@ struct DesignTokensTests {
             "layout": MotionTiming.layout, "tick": MotionTiming.tick,
         ]
         for (name, token) in tokens {
-            let entry = try #require(motion[name] as? [String: Any], name)
+            let entry = try #require(motion[name] as? [String: Any], "motion.\(name)")
             #expect(Self.curve(entry) == token.curve, "motion.\(name) curve")
             if case .spring = token.curve { continue }
             #expect(entry["duration"] as? Double == token.duration, "motion.\(name) duration")
@@ -161,6 +179,55 @@ struct DesignTokensTests {
     }
 
     // MARK: - Helpers
+
+    private static func assetName(_ token: String) -> String {
+        token == "accent" ? "AccentColor" : token
+    }
+
+    /// Every `.colorset` under `catalogue`: its four variants as hex, a
+    /// missing dark falling back to light and a missing high contrast to
+    /// its plain variant, as the asset catalogue does.
+    private static func colorSets(in catalogue: URL) throws -> [String: [String: String]] {
+        var sets: [String: [String: String]] = [:]
+        let files = FileManager.default.enumerator(at: catalogue, includingPropertiesForKeys: nil)
+        while let url = files?.nextObject() as? URL {
+            guard url.pathExtension == "colorset" else { continue }
+            let data = try Data(contentsOf: url.appending(path: "Contents.json"))
+            let object = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            var variants: [String: String] = [:]
+            for entry in object?["colors"] as? [[String: Any]] ?? [] {
+                let looks = (entry["appearances"] as? [[String: String]] ?? []).compactMap { $0["value"] }.sorted()
+                let key = switch looks {
+                case []: "light"
+                case ["dark"]: "dark"
+                case ["high"]: "highContrastLight"
+                case ["dark", "high"]: "highContrastDark"
+                default: "other"
+                }
+                guard let components = (entry["color"] as? [String: Any])?["components"] as? [String: String] else { continue }
+                variants[key] = hex(components)
+            }
+            variants["dark"] = variants["dark"] ?? variants["light"]
+            variants["highContrastLight"] = variants["highContrastLight"] ?? variants["light"]
+            variants["highContrastDark"] = variants["highContrastDark"] ?? variants["dark"]
+            sets[url.deletingPathExtension().lastPathComponent] = variants
+        }
+        return sets
+    }
+
+    /// A Color Set's components ("0x7A", "0.541" or "255") as hex.
+    private static func hex(_ components: [String: String]) -> String {
+        func byte(_ text: String?) -> Int {
+            guard let text else { return 0 }
+            if text.hasPrefix("0x") { return Int(text.dropFirst(2), radix: 16) ?? 0 }
+            if text.contains(".") { return Int(((Double(text) ?? 0) * 255).rounded()) }
+            return Int(text) ?? 0
+        }
+        var text = String(format: "#%02X%02X%02X", byte(components["red"]), byte(components["green"]), byte(components["blue"]))
+        let alpha = Int(((Double(components["alpha"] ?? "1") ?? 1) * 255).rounded())
+        if alpha != 255 { text += String(format: "%02X", alpha) }
+        return text
+    }
 
     private static func curve(_ entry: [String: Any]) -> MotionCurve? {
         if let spring = entry["spring"] as? [String: Double], let response = spring["response"], let damping = spring["dampingFraction"] {

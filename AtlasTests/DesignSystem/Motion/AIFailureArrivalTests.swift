@@ -8,6 +8,7 @@ import Testing
 
 /// Effect 5 · Needs you, a failure: a new one slides in 4 pt and stays;
 /// the same one, none, or Reduce Motion stays still.
+@MainActor
 @Suite("AIFailureArrival")
 struct AIFailureArrivalTests {
     @Test func onlyANewFailureSlidesIn() {

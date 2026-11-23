@@ -28,7 +28,7 @@ struct TrailPathTests {
         let landed = path.state(at: path.duration)
         #expect(abs(landed.center.x - place.x) < 0.01)
         #expect(abs(landed.center.y - place.y) < 0.01)
-        #expect(landed.opacity == 0)
+        #expect(abs(landed.opacity) < 1e-9)
         #expect(abs(TrailPath.toolbarLanding - (TrailPath.delay + 0.7)) < 1e-9)
     }
 
@@ -58,12 +58,12 @@ struct TrailPathTests {
         #expect(path.legs == 1)
         let end = path.state(at: path.duration)
         #expect(abs(end.center.x - autopilot.x) < 0.01)
-        #expect(end.opacity == 0)
+        #expect(abs(end.opacity) < 1e-9)
     }
 
     @Test func itFadesOnlyInTheLastMoment() {
         let path = TrailPath(from: button, via: autopilot, to: place)
-        #expect(path.state(at: path.duration - TrailPath.fade).opacity == 1)
+        #expect(abs(path.state(at: path.duration - TrailPath.fade).opacity - 1) < 1e-9)
         #expect(abs(path.state(at: path.duration - TrailPath.fade / 2).opacity - 0.5) < 1e-6)
     }
 }
