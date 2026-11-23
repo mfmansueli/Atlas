@@ -26,23 +26,7 @@ extension ReleaseViewModel {
     /// One row per language of the version; empty for a first version,
     /// which has no What's New.
     var whatsNewRows: [WhatsNewRow] {
-        guard let content, !content.version.listingVersion.isFirstVersion else { return [] }
-        let builder = ListingChangeBuilder(appID: app.id, ids: content.ids, versionString: content.version.versionString)
-        let ordered = [content.primaryLocale] + content.locales.filter { $0 != content.primaryLocale }
-        return ordered.filter(content.locales.contains).map { locale in
-            let remote = content.texts[locale]?[.whatsNew] ?? ""
-            let queued = queue.change(id: builder.changeID(for: ListingFieldKey(locale, .whatsNew)))?.newValue
-            if let queued, !queued.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                return WhatsNewRow(locale: locale, text: queued, state: .notPushed)
-            }
-            if queued == nil, !remote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                return WhatsNewRow(locale: locale, text: remote, state: .written)
-            }
-            if let suggestion = suggestions.shown(for: .storePage(locale, .whatsNew), appID: app.id, currentValue: queued ?? remote) {
-                return WhatsNewRow(locale: locale, text: "", state: .suggested(suggestion))
-            }
-            return WhatsNewRow(locale: locale, text: "", state: .missing)
-        }
+        WhatsNewRow.rows(for: content, appID: app.id, queue: queue, suggestions: suggestions)
     }
 
     /// "What’s New · 11 of 12 languages".
@@ -180,6 +164,7 @@ extension ReleaseViewModel {
         }
         if let answer { saveEncryption(answer) }
         store.setEventIDs(plan.eventIDs, for: app.id)
+        proposals.settle(.submit, appID: app.id, versionID: plan.versionID)
         ReleaseNotifier.shared.requestAuthorization()
         onMessage(Self.submittedText(versionName, pushed: pushed))
         await load()

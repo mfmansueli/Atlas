@@ -833,7 +833,19 @@ call.
     session of its own (`PageShotsPrompt.looks` / `.captures`). DEBUG scenes `cp-shots-looks`,
     `cp-shots-looks-drawing`.
   - No other devices: custom product pages are iPhone and iPad only, and smaller sizes are scaled from 6.9″ and 13″.
-  - There is no tool to submit a version or release it: those are the person's.
+  - Submitting and releasing stay the person's. `get_release` reads, per platform, the version the version card
+    follows (phase, release type, phased release day and percentage, the review submission and its In-App Events,
+    builds, What's New per language, encryption answer, App Review information, events that could go with it,
+    what stops Submit, `possibleActions`, and a rejection note: App Review's message isn't in the API) and the
+    release proposals. `propose_release_action` proposes `submit` (build, release type and date, phased release,
+    encryption, events, checked like the Submit sheet), `release`, `pause_phased_release`,
+    `resume_phased_release`, `complete_phased_release`, `cancel_submission` or `resubmit`, with reason and evidence;
+    refused with why and what's possible when the state doesn't allow it (`ReleaseProposalRules`). It waits in
+    `ReleaseProposalStore` (`release-proposals.json`), one per app and platform, as a banner on the version card
+    (`ReleaseProposalBanner`): Confirm runs the card's own action (asking first where the card asks) or, for
+    submit, opens the Submit sheet with the choices; Dismiss settles it. `withdraw_release_action` takes back the
+    assistant's own. DEBUG scenes `rel-proposed-submit`, `rel-proposed-release`, `rel-proposed-pause`,
+    `rel-proposed-outdated`.
   - **Analytics:** `get_analytics_funnel`, `get_analytics_breakdown` (by territory, language, source, device or
     product page) and `get_analytics_subscriptions` read what Atlas downloaded; they never ask Apple. Every rate
     comes with its counts, its 90% range and `tooFewToTell` when it shouldn't be quoted, and `notes` say what's

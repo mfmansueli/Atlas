@@ -14,8 +14,13 @@ extension ReleaseViewModel {
     /// ended: ticked, each goes to App Review with the version once it has
     /// what App Store Connect needs.
     var offeredEvents: [InAppEvent] {
+        Self.offeredEvents(in: events, now: now())
+    }
+
+    /// The events among `events` that could go with the version at `now`.
+    static func offeredEvents(in events: [InAppEvent], now: Date) -> [InAppEvent] {
         events.filter { event in
-            event.state.isEditable && (event.schedule?.eventEnd.map { $0 > now() } ?? true)
+            event.state.isEditable && (event.schedule?.eventEnd.map { $0 > now } ?? true)
         }
     }
 

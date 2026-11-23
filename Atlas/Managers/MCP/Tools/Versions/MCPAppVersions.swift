@@ -110,7 +110,7 @@ struct MCPAppVersions {
 
     /// `{id, buildNumber, processingState, uploaded, expired, attached,
     /// usesNonExemptEncryption}`.
-    private static func json(_ build: ReleaseBuild, attached: Bool) -> JSONValue {
+    static func json(_ build: ReleaseBuild, attached: Bool) -> JSONValue {
         var object: [String: JSONValue] = [
             "id": .string(build.id),
             "buildNumber": .string(build.number),

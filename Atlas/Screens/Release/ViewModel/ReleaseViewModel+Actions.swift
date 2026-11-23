@@ -36,6 +36,7 @@ extension ReleaseViewModel {
         defer { busyAction = nil }
         do {
             let message = try await send(action, status: status)
+            proposals.settle(ReleaseProposal.Action(action), appID: app.id, versionID: status.version.id)
             if let message { onMessage(message) }
             await load()
             onChanged()

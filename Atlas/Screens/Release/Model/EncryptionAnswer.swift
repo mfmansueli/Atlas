@@ -59,4 +59,14 @@ enum EncryptionAnswer: String, CaseIterable, Identifiable, Hashable, Sendable {
         guard let uses else { return nil }
         self = uses ? .other : .exempt
     }
+
+    /// The answer `build` carries, else the one kept in App Information →
+    /// Export Compliance (`saved`). The build says only whether
+    /// documentation is needed; the saved answer says which kind, when the
+    /// two agree.
+    static func known(saved: EncryptionAnswer?, build: ReleaseBuild?) -> EncryptionAnswer? {
+        guard let build, let fromBuild = EncryptionAnswer(buildUsesNonExemptEncryption: build.usesNonExemptEncryption) else { return saved }
+        if let saved, saved.usesNonExemptEncryption == fromBuild.usesNonExemptEncryption { return saved }
+        return fromBuild
+    }
 }

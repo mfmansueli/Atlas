@@ -142,8 +142,12 @@ enum MCPEndpoint {
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. \
     Only stopping sales in China mainland becomes a change in Review & Push. Export compliance comes from the code's \
     use of encryption: get_export_compliance, then propose_export_compliance queues the build's answer and any \
-    encryption declaration in Review & Push. Submitting a version or an event for App Review and \
-    releasing it are the person's: there is no tool for either, and the tools only ever queue changes. Always tell \
-    the person what you couldn't see.
+    encryption declaration in Review & Push. Submitting a version for App Review and releasing it are the \
+    person's: read where it stands with get_release (phase, builds, What's New, phased release, submission, \
+    possibleActions) and propose submit (build, release type, phased release, encryption, events), release, \
+    pause, resume or complete the phased release, cancel the submission or resubmit with propose_release_action, \
+    with a reason; it waits on the version card until the person confirms it, and nothing is sent before. App \
+    Review's rejection message isn't in the API: ask the person for it. Withdraw yours with \
+    withdraw_release_action. Always tell the person what you couldn't see.
     """
 }

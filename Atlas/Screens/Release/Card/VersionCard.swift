@@ -26,6 +26,10 @@ struct VersionCard: View {
                     .font(.callout)
                     .accessibilityIdentifier("overview.version.error")
             }
+            // An assistant's proposal over MCP, waiting for the person.
+            if let proposal = viewModel.waitingProposal {
+                ReleaseProposalBanner(viewModel: viewModel, proposal: proposal, onSubmit: onSubmit)
+            }
             switch viewModel.phase {
             case nil:
                 EmptyView()

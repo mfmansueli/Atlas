@@ -68,6 +68,9 @@ final class ReleaseViewModel {
     @ObservationIgnored var linkClaims: ProjectLinkClaimsCenter = .shared
     /// The one more read once dates just pushed are no longer trusted.
     @ObservationIgnored let readAgain = InAppEventReadAgain()
+    /// What assistants proposed for the version over MCP, waiting on the
+    /// card for the person's Confirm.
+    @ObservationIgnored var proposals: ReleaseProposalStore = .shared
 
     /// `events` keeps the checks of the events' deep links, as In-App
     /// Events does.
@@ -202,12 +205,7 @@ final class ReleaseViewModel {
     /// The answer the chosen build carries, else the one kept in App
     /// Information → Export Compliance.
     var knownEncryption: EncryptionAnswer? {
-        let saved = EncryptionAnswer(services.appInformation.notes.notes(for: app.id).exportAnswers)
-        guard let build = selectedBuild, let fromBuild = EncryptionAnswer(buildUsesNonExemptEncryption: build.usesNonExemptEncryption) else { return saved }
-        // The build says only whether documentation is needed; the saved
-        // answer says which kind, when the two agree.
-        if let saved, saved.usesNonExemptEncryption == fromBuild.usesNonExemptEncryption { return saved }
-        return fromBuild
+        EncryptionAnswer.known(saved: EncryptionAnswer(services.appInformation.notes.notes(for: app.id).exportAnswers), build: selectedBuild)
     }
 
     var selectedBuild: ReleaseBuild? {

@@ -18,6 +18,8 @@ import SwiftUI
 /// - `rel-wait`, `rel-review`, `rel-pending` (approved, waiting for you),
 ///   `rel-phased` (day 3 of 7), `rel-paused`, `rel-rejected`, `rel-live`.
 /// - `rel-refused`: App Store Connect refuses every write.
+/// - `rel-proposed-*`: an assistant's proposal waiting on the card
+///   (`ReleaseProposalDebugScenes`).
 enum ReleaseDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugReleaseData
@@ -45,7 +47,7 @@ enum ReleaseDebugScenes {
             let launch = ReleaseDebugLaunch(opensSubmit: true, encryption: .exempt)
             return scene(.prepare, launch: launch, pendingChanges: [acceptedWhatsNew], isWhatsNewAccepted: true)
         default:
-            return nil
+            return ReleaseProposalDebugScenes.view(for: id)
         }
     }
 
