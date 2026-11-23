@@ -127,7 +127,7 @@ struct AutopilotCancelRunTests {
         var run = StudioDebugRuns.run(.localize)
         run.templateVersion = nil
         let before = AutopilotCancelRunButton.message(for: run)
-        #expect(before.contains("The captures and picks stay for the next start."))
+        #expect(before.contains("Captures and picks are kept."))
         #expect(before.contains("Nothing was sent to App Store Connect."))
         #expect(!before.contains("Template v"))
         run.templateVersion = 5
@@ -136,8 +136,8 @@ struct AutopilotCancelRunTests {
 
     @Test func cancellingWhileCapturingSaysTheCapturesStay() {
         let message = AutopilotCancelRunButton.message(for: AutopilotTestFixtures.run(.capture))
-        #expect(message.contains("Claude Code stops capturing"))
-        #expect(message.contains("The captures so far stay"))
+        #expect(message.contains("Capturing stops"))
+        #expect(message.contains("keeping its captures"))
     }
 }
 #endif

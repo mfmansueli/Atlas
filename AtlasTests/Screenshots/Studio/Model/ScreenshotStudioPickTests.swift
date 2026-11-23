@@ -25,7 +25,7 @@ struct ScreenshotStudioPickTests {
         #expect(model.studio.pickTabs(run) == [.screenshots, .recording])
         #expect(model.studio.currentPickTab(run) == .screenshots)
         #expect(model.studio.pickDevices(run) == [.phones])
-        #expect(model.studio.pickNote(run, device: .phones).contains("Click any capture to see it full size"))
+        #expect(model.studio.pickNote(run, device: .phones).contains("Click one to view or swap it"))
 
         // Only an App Preview: only the recording.
         var previewOnly = StudioDebugRuns.run(.pick)

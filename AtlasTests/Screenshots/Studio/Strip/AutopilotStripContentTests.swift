@@ -18,7 +18,7 @@ struct AutopilotStripContentTests {
         let strip = Self.strip(nil, assistant: nil)
         #expect(strip.kind == .needsAssistant)
         #expect(strip.pill == "Needs an assistant")
-        #expect(strip.text.hasPrefix("Capturing runs Lumen Journal in Simulator through an assistant that can use Xcode"))
+        #expect(strip.text.hasPrefix("Capturing needs an assistant that uses Xcode (Claude Code, Codex, Cursor) to run Lumen Journal in Simulator."))
         #expect(strip.primary == .setUpAssistant)
         #expect(strip.secondary == .importCaptures)
         #expect(!strip.showsConnections)

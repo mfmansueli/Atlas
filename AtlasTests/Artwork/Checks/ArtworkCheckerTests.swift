@@ -141,7 +141,7 @@ struct ArtworkCheckerTests {
         let image = try #require(Fixtures.solid(CGColor(red: 0.99, green: 0.99, blue: 0.99, alpha: 1)))
         let edges = checks(Fixtures.input(layout, line: "", image: image, template: template)).filter { $0.kind == .edgeContrast }
         #expect(edges.count == 1)
-        #expect(edges.first?.text.contains("in Light Mode its edges melt into the App Store page") == true)
+        #expect(edges.first?.text.contains("in Light Mode it has no visible edge against the App Store page") == true)
     }
 
     @Test func aBlackImageMeltsIntoTheDarkPage() throws {

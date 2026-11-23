@@ -42,7 +42,7 @@ struct StudioPreviewBuilderDevicesTests {
         #expect(preview.shots.map(\.label) == ["1 · Mood check-in", "2 · Today’s prompt"])
         #expect(preview.shots.allSatisfy { $0.chip == nil })
         #expect(preview.note == "Live now · 2 English captures, uploaded by hand")
-        #expect(preview.searchNote.hasPrefix("Apple Watch screenshots don’t show in search results"))
+        #expect(preview.searchNote.hasPrefix("Apple Watch screenshots show only on the product page"))
     }
 
     @Test func aWatchSetAtlasPushedSaysSo() {

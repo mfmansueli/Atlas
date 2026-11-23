@@ -125,7 +125,7 @@ struct ScreenshotStudioRunChoiceTests {
         let added = try #require(center.run(for: appID)?.plan.screens.last)
         #expect(added == AutopilotScreen(id: "insights", name: "Insights", origin: .person, worksOutSteps: true))
         #expect(studio.screenDraft == nil)
-        #expect(studio.addScreensNote.hasPrefix("New screens go after screen 6 on iPhone and iPad."))
+        #expect(studio.addScreensNote.hasPrefix("Adds screens after screen 6 on iPhone and iPad."))
     }
 
     @Test func tenScreensDisableAdding() async {

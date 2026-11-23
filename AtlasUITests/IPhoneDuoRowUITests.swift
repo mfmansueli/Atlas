@@ -35,17 +35,17 @@ final class IPhoneDuoRowUITests: XCTestCase {
         XCTAssertTrue(note.waitForExistence(timeout: 5), "The screens show the iPhone Duo row")
         reveal(note)
         XCTAssertTrue(text(of: note).hasPrefix("Unfolded with the cover beside it: "), text(of: note))
-        XCTAssertTrue(text(of: note).hasSuffix(" per language, both states in one image."), text(of: note))
+        XCTAssertTrue(text(of: note).hasSuffix(" per language, both in one image."), text(of: note))
         XCTAssertTrue(element("autopilot.plan.duoScreens.both").isSelected)
         XCTAssertTrue(element("autopilot.plan.duoBoth.sideBySide").isSelected)
         attachScreenshot("Plan · iPhone Duo side by side")
 
         tap("autopilot.plan.duoBoth.separate")
-        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Each screen unfolded, then folded: ") }, text(of: note))
+        XCTAssertTrue(waitUntil { self.text(of: note).range(of: "unfolded, then folded: ", options: .caseInsensitive) != nil }, text(of: note))
         XCTAssertTrue(element("autopilot.plan.duoBoth.separate").isSelected)
 
         tap("autopilot.plan.duoScreens.cover")
-        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Folded: the app on the cover display, placed on the 2007 × 2853 canvas.") })
+        XCTAssertTrue(waitUntil { self.text(of: note).hasPrefix("Folded: the cover display on the 2007 × 2853 canvas.") })
         XCTAssertFalse(element("autopilot.plan.duoBoth").exists, "Only both has a way to show them")
 
         tap("autopilot.plan.duoScreens.inner")

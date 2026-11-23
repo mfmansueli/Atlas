@@ -61,7 +61,7 @@ final class AssetLibraryModel: Identifiable {
         do {
             files = try await manager.assetLibraryFiles(appID: appID)
         } catch {
-            phase = .failed(Self.describe(error))
+            phase = .failed(AppleErrorCopy(String(localized: "The library didn’t load.", comment: "kind:error"), error: error).text)
             return
         }
         phase = .loaded
