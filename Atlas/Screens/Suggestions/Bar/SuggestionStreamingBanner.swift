@@ -14,15 +14,14 @@ struct SuggestionStreamingBanner: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             AssistantChip(name: request.client)
-            ProgressView()
-                .controlSize(.small)
+            // Effect 2: the spark sits still; only a counted bar moves.
+            AISpark(size: 13)
             Text(request.progressText)
                 .font(.callout)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if let fraction = request.fraction {
-                ProgressView(value: fraction)
+                AIProgressBar(value: fraction)
                     .frame(width: 140)
-                    .accessibilityHidden(true)
             }
         }
         .padding(.horizontal, Spacing.medium)

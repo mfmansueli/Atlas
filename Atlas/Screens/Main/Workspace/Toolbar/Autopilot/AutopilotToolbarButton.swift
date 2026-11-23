@@ -13,15 +13,15 @@ import SwiftUI
 /// connection, whose status popover (recent calls, proposals waiting) was
 /// the Assistant button's, and Settings….
 ///
-/// It's also the run's status, and it moves only while something really
-/// runs for the app (“While it works”): a light travels along its edge, the
-/// sparkle's stars twinkle, a 2 pt bar fills when the run counts its steps,
-/// and a green check draws itself when it's done. Needing the person it's
-/// solid purple with what it needs, and a click opens that step; a run that
-/// stopped says what stopped, and a click opens the reason. Reduce Motion
-/// keeps it all still. A request sent from an asking button lands on it
-/// (board 56). On Free, an action that's part of Pro shows PRO and opens
-/// the paywall.
+/// It's also the run's status (“While it works”, motion v2): the spark
+/// stays still and says what runs, a bar fills in steps when the run counts
+/// them, and a green check draws itself when it's done. Needing the person
+/// it's purple with what it needs and nudges once, and a click opens that
+/// step; a run that stopped says what stopped, never in purple, and a click
+/// opens the reason. Reduce Motion keeps it all still. A request sent from
+/// an asking button passes through it on its way to the place of the work
+/// (effect 1, Trail). On Free, an action that's part of Pro shows PRO and
+/// opens the paywall.
 ///
 /// A toolbar `Menu` draws only an image and a title, so the split is built
 /// by hand: a button with the animated label, and a menu with the arrow, on
@@ -81,8 +81,7 @@ struct AutopilotToolbarButton: View {
     @State private var isShowingFailure = false
     /// “Done · Store Page · German” while the check shows.
     @State private var doneText: String?
-    /// Bumped when a run is done: the button bounces once, the check stays
-    /// about 2 s.
+    /// Bumped when a run is done: the check stays about 2 s.
     @State private var doneCount = 0
 
     private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
@@ -97,16 +96,14 @@ struct AutopilotToolbarButton: View {
         withEvents(withPresentations(decorated))
     }
 
-    /// The split, drawn by `AutopilotButtonFace`. Once, after an assistant
-    /// first connects, a purple sheen crosses it (effect 6).
+    /// The split, drawn by `AutopilotButtonFace`.
     private var decorated: some View {
         AutopilotButtonFace(
-            look: look, title: primary?.title, isPro: primary?.isPro == true, isCompact: isCompact, doneCount: doneCount,
+            look: look, title: primary?.title, isPro: primary?.isPro == true, isCompact: isCompact,
             accessibilityLabel: accessibilityLabel, onMain: runPrimary
         ) {
             menu
         }
-        .modifier(AutopilotGlint())
     }
 
     private func withPresentations(_ content: some View) -> some View {

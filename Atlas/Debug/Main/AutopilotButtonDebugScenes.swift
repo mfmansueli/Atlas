@@ -12,7 +12,7 @@ import SwiftUI
 /// - `ap-btn`: idle, working, working with progress, done, needs you,
 ///   failed and Reply Automatically, one under another.
 /// - `ap-btn-cycle`: one button going round: working while its bar fills
-///   in steps, done for 2 s, idle, again.
+///   in steps, done for 2 s, idle, needing you (one nudge), again.
 enum AutopilotButtonDebugScenes {
     static let ids = ["ap-btn", "ap-btn-cycle"]
 
@@ -56,13 +56,13 @@ enum AutopilotButtonDebugScenes {
         }
     }
 
-    /// Working in ten steps of 0.6 s, done for 2 s, idle for 2 s.
+    /// Working in ten steps of 0.6 s, done for 2 s, idle for 2 s, then
+    /// needing the person (one nudge) for 2 s.
     private struct Cycle: View {
         @State private var look: AutopilotButtonLook = .idle
-        @State private var doneCount = 0
 
         var body: some View {
-            AutopilotButtonFace(look: look, title: "Suggest Texts…", doneCount: doneCount, accessibilityLabel: look.text ?? "Suggest Texts", onMain: {}, menu: {
+            AutopilotButtonFace(look: look, title: "Suggest Texts…", accessibilityLabel: look.text ?? "Suggest Texts", onMain: {}, menu: {
                 Button("Cancel Run…") {}
             })
             .fixedSize()
@@ -75,9 +75,10 @@ enum AutopilotButtonDebugScenes {
                         try? await Task.sleep(for: .milliseconds(600))
                     }
                     look = .done("Done · Store Page · German")
-                    doneCount += 1
                     try? await Task.sleep(for: AutopilotButtonLook.doneDuration)
                     look = .idle
+                    try? await Task.sleep(for: .seconds(2))
+                    look = .needsYou("Choose the Look")
                     try? await Task.sleep(for: .seconds(2))
                 }
             }

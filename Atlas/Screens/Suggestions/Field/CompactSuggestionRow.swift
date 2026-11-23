@@ -31,7 +31,7 @@ struct CompactSuggestionRow: View {
                     .accessibilityIdentifier("suggestion.value")
                 SuggestionSourceTag(source: suggestion.source)
                 Spacer(minLength: Spacing.small)
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("suggestion.dismiss")
                 Button("Accept", action: accept)
                     .rowActionButton()
@@ -47,9 +47,9 @@ struct CompactSuggestionRow: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
         .background(isSettling ? Palette.fill1 : Palette.aiSurface, in: shape)
-        .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.arrivedAt, shape: shape))
+        .aiArrived(key: suggestion.id, arrivedAt: suggestion.arrivedAt)
         .id(suggestion.id)
-        .modifier(AcceptSettle(isSettling: isSettling, checkAlignment: .trailing))
+        .aiDecided(isSettling: isSettling, checkAlignment: .trailing)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("suggestion.card")
     }
@@ -59,7 +59,7 @@ struct CompactSuggestionRow: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()

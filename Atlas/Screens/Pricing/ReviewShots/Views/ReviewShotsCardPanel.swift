@@ -95,7 +95,7 @@ struct ReviewShotsCardPanel: View {
                     .fixedSize(horizontal: false, vertical: true)
                 FlowLayout(spacing: Spacing.small) {
                     Button("Use This Capture") { useCapture(for: [product]) }
-                        .buttonStyle(.borderedProminent)
+                        .rowActionButton()
                         .accessibilityLabel(Text("Use \(capture.title) for \(product.name)"))
                         .accessibilityIdentifier("pricing.card.reviewShots.useCapture")
                     let others = viewModel.productsMissingReviewShot
@@ -133,10 +133,8 @@ struct ReviewShotsCardPanel: View {
     private func working(steps: [String], step: String?, client: String, plan: String) -> some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             HStack(spacing: Spacing.xSmall) {
-                Image(systemName: "sparkles")
-                    .foregroundStyle(Palette.ai)
-                    .symbolEffect(.breathe, isActive: !reduceMotion)
-                    .accessibilityHidden(true)
+                // Effect 2: the card's still spark (`aiWorking`) shows it
+                // works; nothing breathes here.
                 Text("\(client) is capturing the \(plan) plan")
                     .font(.callout.weight(.semibold))
             }
@@ -284,7 +282,7 @@ struct ReviewShotsCardPanel: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: { [viewModel, product] in
             viewModel.acceptReviewShot(for: product)
@@ -299,7 +297,7 @@ struct ReviewShotsCardPanel: View {
         let id = viewModel.reviewShotChangeID(for: product)
         guard let change = viewModel.queue.change(id: id) else { return }
         let details = viewModel.setup.details.details(for: id)
-        viewModel.dismissReviewShot(for: product)
+        AIDecided.dismiss(reduceMotion: reduceMotion) { viewModel.dismissReviewShot(for: product) }
         viewModel.sayReviewShots(
             String(localized: "Dismissed. \(product.name) still needs a review screenshot."), offersReview: false
         ) { [viewModel] in

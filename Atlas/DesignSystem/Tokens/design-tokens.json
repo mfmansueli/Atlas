@@ -1,0 +1,464 @@
+{
+  "$description": "Atlas design tokens (README — Design system, Rule zero). The same values as the README, the asset catalogue (Palette), Font+TextStyles (AtlasTextStyle), Spacing, Radius and MotionTiming; DesignTokensTests checks the Swift tokens against this file. Change the README first, then this file, then the module, then the screens. Colours are sRGB #RRGGBB or #RRGGBBAA.",
+  "color": {
+    "accent": {
+      "light": "#0071E3",
+      "dark": "#0A72E8",
+      "highContrastLight": "#0040DD",
+      "highContrastDark": "#0A64D6"
+    },
+    "accentText": {
+      "light": "#0066CC",
+      "dark": "#4DA3FF",
+      "highContrastLight": "#0040DD",
+      "highContrastDark": "#8CC4FF"
+    },
+    "accentTint": {
+      "light": "#0071E31F",
+      "dark": "#4DA3FF2E",
+      "highContrastLight": "#0040DD24",
+      "highContrastDark": "#8CC4FF38"
+    },
+    "ai": {
+      "light": "#7A35B0",
+      "dark": "#D4A3FF",
+      "highContrastLight": "#5C1E91",
+      "highContrastDark": "#E6C8FF"
+    },
+    "aiBusyTint": {
+      "light": "#9646D214",
+      "dark": "#C88CFF1A",
+      "highContrastLight": "#9646D224",
+      "highContrastDark": "#C88CFF2E"
+    },
+    "aiEdge": {
+      "light": "#9646D247",
+      "dark": "#C88CFF52",
+      "highContrastLight": "#5C1E91B2",
+      "highContrastDark": "#E6C8FFB2"
+    },
+    "aiFill": {
+      "light": "#8A3CD6",
+      "dark": "#B98CFF",
+      "highContrastLight": "#5C1E91",
+      "highContrastDark": "#E6C8FF"
+    },
+    "aiFillLabel": {
+      "light": "#FFFFFF",
+      "dark": "#1B0A2E",
+      "highContrastLight": "#FFFFFF",
+      "highContrastDark": "#000000"
+    },
+    "aiMark": {
+      "light": "#9B4FD6",
+      "dark": "#C48CFF",
+      "highContrastLight": "#7E36B8",
+      "highContrastDark": "#D4A8FF"
+    },
+    "aiSurface": {
+      "light": "#9646D21C",
+      "dark": "#C88CFF2B",
+      "highContrastLight": "#9646D22B",
+      "highContrastDark": "#C88CFF3D"
+    },
+    "brandBottom": {
+      "light": "#0A5CF2",
+      "dark": "#0A5CF2",
+      "highContrastLight": "#0A5CF2",
+      "highContrastDark": "#0A5CF2"
+    },
+    "brandTop": {
+      "light": "#1FC2FF",
+      "dark": "#1FC2FF",
+      "highContrastLight": "#1FC2FF",
+      "highContrastDark": "#1FC2FF"
+    },
+    "decrease": {
+      "light": "#00727C",
+      "dark": "#5CD6E0",
+      "highContrastLight": "#005660",
+      "highContrastDark": "#95EAF0"
+    },
+    "decreaseMark": {
+      "light": "#0096A5",
+      "dark": "#46CDDC",
+      "highContrastLight": "#007A87",
+      "highContrastDark": "#70DEE8"
+    },
+    "decreaseTint": {
+      "light": "#0096A51F",
+      "dark": "#46CDDC29",
+      "highContrastLight": "#0096A52E",
+      "highContrastDark": "#46CDDC3D"
+    },
+    "err": {
+      "light": "#C8102E",
+      "dark": "#FF7A70",
+      "highContrastLight": "#9E0020",
+      "highContrastDark": "#FFA8A2"
+    },
+    "errMark": {
+      "light": "#E0182D",
+      "dark": "#FF5A50",
+      "highContrastLight": "#B80020",
+      "highContrastDark": "#FF7A70"
+    },
+    "errTint": {
+      "light": "#D7001517",
+      "dark": "#FF5A5029",
+      "highContrastLight": "#D7001524",
+      "highContrastDark": "#FF5A503D"
+    },
+    "fill1": {
+      "light": "#0000000A",
+      "dark": "#FFFFFF0D",
+      "highContrastLight": "#00000012",
+      "highContrastDark": "#FFFFFF17"
+    },
+    "fill2": {
+      "light": "#00000012",
+      "dark": "#FFFFFF17",
+      "highContrastLight": "#0000001C",
+      "highContrastDark": "#FFFFFF24"
+    },
+    "fill3": {
+      "light": "#0000001F",
+      "dark": "#FFFFFF26",
+      "highContrastLight": "#0000002E",
+      "highContrastDark": "#FFFFFF38"
+    },
+    "heroBlue": {
+      "light": "#0B63D6",
+      "dark": "#0B63D6",
+      "highContrastLight": "#0040DD",
+      "highContrastDark": "#0B63D6"
+    },
+    "increase": {
+      "light": "#A84800",
+      "dark": "#FFA552",
+      "highContrastLight": "#7F3500",
+      "highContrastDark": "#FFC490"
+    },
+    "increaseMark": {
+      "light": "#E86E00",
+      "dark": "#FF9F40",
+      "highContrastLight": "#C25A00",
+      "highContrastDark": "#FFB060"
+    },
+    "increaseTint": {
+      "light": "#E86E0021",
+      "dark": "#FF963C2B",
+      "highContrastLight": "#E86E002E",
+      "highContrastDark": "#FF963C3D"
+    },
+    "label2": {
+      "light": "#6B6B70",
+      "dark": "#A3A3AA",
+      "highContrastLight": "#3D3D42",
+      "highContrastDark": "#D4D4DA"
+    },
+    "label3": {
+      "light": "#9A9AA0",
+      "dark": "#6E6E75",
+      "highContrastLight": "#5F5F66",
+      "highContrastDark": "#A8A8B0"
+    },
+    "ok": {
+      "light": "#1D7A3A",
+      "dark": "#5FD38A",
+      "highContrastLight": "#0F5A26",
+      "highContrastDark": "#8FE6AE"
+    },
+    "sectionAnalytics": {
+      "light": "#4B49B8",
+      "dark": "#4B49B8",
+      "highContrastLight": "#4B49B8",
+      "highContrastDark": "#4B49B8"
+    },
+    "sectionAnalyticsTop": {
+      "light": "#6866E0",
+      "dark": "#6866E0",
+      "highContrastLight": "#6866E0",
+      "highContrastDark": "#6866E0"
+    },
+    "sectionAppInformation": {
+      "light": "#6B6B73",
+      "dark": "#6B6B73",
+      "highContrastLight": "#6B6B73",
+      "highContrastDark": "#6B6B73"
+    },
+    "sectionAppInformationTop": {
+      "light": "#8E8E96",
+      "dark": "#8E8E96",
+      "highContrastLight": "#8E8E96",
+      "highContrastDark": "#8E8E96"
+    },
+    "sectionEvents": {
+      "light": "#C03B69",
+      "dark": "#C03B69",
+      "highContrastLight": "#C03B69",
+      "highContrastDark": "#C03B69"
+    },
+    "sectionEventsTop": {
+      "light": "#EC5B8D",
+      "dark": "#EC5B8D",
+      "highContrastLight": "#EC5B8D",
+      "highContrastDark": "#EC5B8D"
+    },
+    "sectionOverview": {
+      "light": "#2C2C30",
+      "dark": "#2C2C30",
+      "highContrastLight": "#2C2C30",
+      "highContrastDark": "#2C2C30"
+    },
+    "sectionOverviewTop": {
+      "light": "#4A4A50",
+      "dark": "#4A4A50",
+      "highContrastLight": "#4A4A50",
+      "highContrastDark": "#4A4A50"
+    },
+    "sectionPricing": {
+      "light": "#288F4D",
+      "dark": "#288F4D",
+      "highContrastLight": "#288F4D",
+      "highContrastDark": "#288F4D"
+    },
+    "sectionPricingTop": {
+      "light": "#3BB466",
+      "dark": "#3BB466",
+      "highContrastLight": "#3BB466",
+      "highContrastDark": "#3BB466"
+    },
+    "sectionProductPages": {
+      "light": "#0C848F",
+      "dark": "#0C848F",
+      "highContrastLight": "#0C848F",
+      "highContrastDark": "#0C848F"
+    },
+    "sectionProductPagesTop": {
+      "light": "#16A9B6",
+      "dark": "#16A9B6",
+      "highContrastLight": "#16A9B6",
+      "highContrastDark": "#16A9B6"
+    },
+    "sectionReviews": {
+      "light": "#D99700",
+      "dark": "#D99700",
+      "highContrastLight": "#D99700",
+      "highContrastDark": "#D99700"
+    },
+    "sectionReviewsTop": {
+      "light": "#F7BE1A",
+      "dark": "#F7BE1A",
+      "highContrastLight": "#F7BE1A",
+      "highContrastDark": "#F7BE1A"
+    },
+    "sectionScreenshots": {
+      "light": "#CE5619",
+      "dark": "#CE5619",
+      "highContrastLight": "#CE5619",
+      "highContrastDark": "#CE5619"
+    },
+    "sectionScreenshotsTop": {
+      "light": "#F57A35",
+      "dark": "#F57A35",
+      "highContrastLight": "#F57A35",
+      "highContrastDark": "#F57A35"
+    },
+    "sectionStorePage": {
+      "light": "#2869D2",
+      "dark": "#2869D2",
+      "highContrastLight": "#2869D2",
+      "highContrastDark": "#2869D2"
+    },
+    "sectionStorePageTop": {
+      "light": "#3D86F7",
+      "dark": "#3D86F7",
+      "highContrastLight": "#3D86F7",
+      "highContrastDark": "#3D86F7"
+    },
+    "separator2": {
+      "light": "#00000029",
+      "dark": "#FFFFFF29",
+      "highContrastLight": "#0000008C",
+      "highContrastDark": "#FFFFFF8C"
+    },
+    "skeleton": {
+      "light": "#00000012",
+      "dark": "#FFFFFF14",
+      "highContrastLight": "#0000001C",
+      "highContrastDark": "#FFFFFF24"
+    },
+    "stage": {
+      "light": "#E7E7EC",
+      "dark": "#0E0E10",
+      "highContrastLight": "#DADAE0",
+      "highContrastDark": "#000000"
+    },
+    "unsaved": {
+      "light": "#0071E3",
+      "dark": "#4DA3FF",
+      "highContrastLight": "#0040DD",
+      "highContrastDark": "#8CC4FF"
+    },
+    "viewerPanel": {
+      "light": "#202026EB",
+      "dark": "#202026EB",
+      "highContrastLight": "#202026EB",
+      "highContrastDark": "#202026EB"
+    },
+    "viewerStage": {
+      "light": "#0B0B0F",
+      "dark": "#0B0B0F",
+      "highContrastLight": "#0B0B0F",
+      "highContrastDark": "#0B0B0F"
+    },
+    "warn": {
+      "light": "#7A5600",
+      "dark": "#FFD34D",
+      "highContrastLight": "#5A3F00",
+      "highContrastDark": "#FFE28A"
+    },
+    "warnMark": {
+      "light": "#F5B400",
+      "dark": "#FFCC33",
+      "highContrastLight": "#D99A00",
+      "highContrastDark": "#FFD84D"
+    },
+    "warnTint": {
+      "light": "#FFBE0033",
+      "dark": "#FFCD3C26",
+      "highContrastLight": "#FFBE004C",
+      "highContrastDark": "#FFCD3C38"
+    }
+  },
+  "type": {
+    "display": {
+      "size": 32,
+      "lineHeight": 38,
+      "weight": "bold"
+    },
+    "largeTitle": {
+      "size": 26,
+      "lineHeight": 32,
+      "weight": "bold"
+    },
+    "title1": {
+      "size": 22,
+      "lineHeight": 28,
+      "weight": "semibold"
+    },
+    "title2": {
+      "size": 17,
+      "lineHeight": 22,
+      "weight": "semibold"
+    },
+    "title3": {
+      "size": 15,
+      "lineHeight": 20,
+      "weight": "semibold"
+    },
+    "headline": {
+      "size": 13,
+      "lineHeight": 16,
+      "weight": "semibold"
+    },
+    "body": {
+      "size": 13,
+      "lineHeight": 18,
+      "weight": "regular"
+    },
+    "callout": {
+      "size": 12,
+      "lineHeight": 16,
+      "weight": "regular"
+    },
+    "subheadline": {
+      "size": 11,
+      "lineHeight": 14,
+      "weight": "regular"
+    },
+    "footnote": {
+      "size": 10,
+      "lineHeight": 13,
+      "weight": "regular"
+    }
+  },
+  "spacing": {
+    "$note": "README §6: a 4 pt grid (4, 8, 12, 16, 20, 24, 32). tiny (2) and xSmall (6) are the app's two in-between steps for hairline gaps, kept as tokens.",
+    "tiny": 2,
+    "xxSmall": 4,
+    "xSmall": 6,
+    "small": 8,
+    "medium": 12,
+    "large": 16,
+    "xLarge": 20,
+    "xxLarge": 24,
+    "xxxLarge": 32
+  },
+  "radius": {
+    "flag": 4,
+    "badge": 4,
+    "menuRow": 6,
+    "field": 8,
+    "banner": 10,
+    "card": 12,
+    "popover": 16,
+    "sheet": 20
+  },
+  "motion": {
+    "fast": {
+      "duration": 0.15,
+      "curve": "easeOut"
+    },
+    "base": {
+      "duration": 0.25,
+      "curve": [
+        0.2,
+        0.7,
+        0.2,
+        1
+      ]
+    },
+    "slow": {
+      "duration": 0.4,
+      "curve": [
+        0.2,
+        0.7,
+        0.2,
+        1
+      ]
+    },
+    "step": {
+      "duration": 0.5,
+      "curve": [
+        0.65,
+        0,
+        0.35,
+        1
+      ]
+    },
+    "layout": {
+      "spring": {
+        "response": 0.35,
+        "dampingFraction": 0.8
+      }
+    },
+    "tick": {
+      "spring": {
+        "response": 0.45,
+        "dampingFraction": 0.6
+      }
+    },
+    "stagger": {
+      "delay": 0.07,
+      "limit": 6
+    },
+    "sweep": {
+      "duration": 2.8
+    },
+    "trailLeg": {
+      "duration": 0.7
+    }
+  }
+}

@@ -38,14 +38,14 @@ struct ProductPageSuggestionRow: View {
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, 10)
         .background(isSettling ? Palette.raised : Color.clear)
-        .modifier(SuggestionArrival(key: suggestion.id, arrivedAt: suggestion.createdAt, shape: Rectangle(), edgePass: false))
-        .modifier(AcceptSettle(isSettling: isSettling))
+        .aiArrived(key: suggestion.id, arrivedAt: suggestion.createdAt)
+        .aiDecided(isSettling: isSettling)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pages.suggestion.\(suggestion.id)")
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             viewModel.acceptPage(suggestion)
@@ -106,7 +106,7 @@ struct ProductPageSuggestionRow: View {
 
     private var actions: some View {
         HStack(spacing: Spacing.xSmall) {
-            Button("Dismiss") { viewModel.dismissPage(suggestion) }
+            Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion) { viewModel.dismissPage(suggestion) } }
                 .accessibilityIdentifier("pages.suggestion.\(suggestion.id).dismiss")
             Button("Accept", action: accept)
                 .rowActionButton()

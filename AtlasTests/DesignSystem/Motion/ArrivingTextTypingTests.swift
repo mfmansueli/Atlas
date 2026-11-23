@@ -6,8 +6,9 @@
 import Testing
 @testable import Atlas
 
-/// AI motions 3 (text arriving) and 7 (assistant is typing): their timing,
-/// as README — Design System §7 sets it.
+/// Effect 3 · Arrived, its text version (word by word with a caret), and
+/// Working without units: their timing, as README — Design System §7 sets
+/// it (motion v2).
 @MainActor
 @Suite("Motion · text arriving and typing")
 struct ArrivingTextTypingTests {
@@ -28,12 +29,19 @@ struct ArrivingTextTypingTests {
         #expect(halfway > 0.5 && halfway < 1)
     }
 
-    @Test func theDotsRiseInTurn() {
-        #expect(TypingIndicator.loop == 1.2)
-        #expect(TypingIndicator.lift(phase: 0.2, dot: 0) > 0.99)
-        #expect(TypingIndicator.lift(phase: 0.2, dot: 1) == 0)
-        #expect(TypingIndicator.lift(phase: 0.4, dot: 1) > 0.99)
-        #expect(TypingIndicator.lift(phase: 0.6, dot: 2) > 0.99)
-        #expect(TypingIndicator.lift(phase: 0.9, dot: 0) == 0)
+    @Test func theCaretFollowsTheWordsAndLeavesAfterTheLast() {
+        let total = ArrivingText.duration(wordCount: 5)
+        #expect(ArrivingText.caretOpacity(at: 0, total: total) == 0)
+        #expect(ArrivingText.caretOpacity(at: 0.1, total: total) == 1)
+        #expect(ArrivingText.caretOpacity(at: total, total: total) == 1)
+        #expect(abs(ArrivingText.caretOpacity(at: total + ArrivingText.caretFade / 2, total: total) - 0.5) < 1e-9)
+        #expect(ArrivingText.caretOpacity(at: total + ArrivingText.caretFade, total: total) == 0)
+    }
+
+    /// Working without units (the hello being written): no dots looping,
+    /// only the step's name, the same with Reduce Motion.
+    @Test func workingWithoutUnitsSaysOnlyTheStep() {
+        #expect(AIWorkingStep(text: "Claude Code is writing…").text == "Claude Code is writing…")
+        #expect(AIWorkingStep().text == "Writing…")
     }
 }

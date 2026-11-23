@@ -5,19 +5,18 @@
 
 import SwiftUI
 
-/// How the Autopilot split button looks: the main half with the animated
-/// label, a hairline, and the arrow's menu, on a Liquid Glass capsule
-/// (tinted purple while the run needs the person). While it works a light runs
-/// along the capsule's edge and a 2 pt bar shows counted progress; when a
-/// run is done the button bounces once. The toolbar button adds what it
-/// does; DEBUG scenes show every look.
+/// How the Autopilot split button looks: the main half with its label, a
+/// hairline, and the arrow's menu, on a Liquid Glass capsule (filled
+/// purple while the run needs the person). Motion v2 (README — Design
+/// system §7): while it works nothing runs round it; the spark is still and
+/// a bar shows counted progress in steps with its soft sweep (effect 2);
+/// starting to need the person it nudges once (effect 5). The toolbar
+/// button adds what it does; DEBUG scenes show every look.
 struct AutopilotButtonFace<MenuContent: View>: View {
     let look: AutopilotButtonLook
     var title: String?
     var isPro = false
     var isCompact = false
-    /// Bumped when a run is done: one bounce.
-    var doneCount = 0
     /// What VoiceOver says for the main half.
     var accessibilityLabel = ""
     let onMain: () -> Void
@@ -29,11 +28,8 @@ struct AutopilotButtonFace<MenuContent: View>: View {
         split
             .background { glass }
             .overlay(alignment: .bottomLeading) { progressLine }
-            .overlay {
-                if look.isWorking { AutopilotEdgeLight() }
-            }
-            .modifier(AutopilotDoneBounce(trigger: doneCount, bounces: bounces))
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: look)
+            .aiNeedsYou(look.isNeedingYou)
+            .animation(reduceMotion ? nil : MotionTiming.base.animation, value: look)
     }
 
     /// The toolbar's other buttons' height: Review & Push's prominent glass
@@ -53,7 +49,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             .accessibilityLabel(Text(accessibilityLabel))
             .accessibilityIdentifier("workspace.autopilot.main")
             Rectangle()
-                .fill(isNeedingYou ? Color.white.opacity(0.35) : Palette.separator)
+                .fill(look.isNeedingYou ? Color.white.opacity(0.35) : Palette.separator)
                 .frame(width: 0.5, height: 18)
                 .accessibilityHidden(true)
             Menu {
@@ -61,7 +57,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(isNeedingYou ? Color.white : Palette.label2)
+                    .foregroundStyle(look.isNeedingYou ? Color.white : Palette.label2)
                     .frame(width: 30, height: Self.height)
                     .contentShape(Rectangle())
             }
@@ -74,7 +70,8 @@ struct AutopilotButtonFace<MenuContent: View>: View {
         }
     }
 
-    /// Liquid Glass, tinted purple while the run needs the person.
+    /// Liquid Glass, tinted purple (aiFill) while the run needs the person:
+    /// the one purple fill.
     private var glass: some View {
         Capsule()
             .fill(.clear)
@@ -82,26 +79,17 @@ struct AutopilotButtonFace<MenuContent: View>: View {
     }
 
     private var glassStyle: Glass {
-        isNeedingYou ? .clear.tint(Palette.aiFill.opacity(0.6)).interactive() : .regular.interactive()
+        look.isNeedingYou ? .clear.tint(Palette.aiFill.opacity(0.6)).interactive() : .regular.interactive()
     }
 
     /// Inside the bottom of the main half, while a run counts its steps.
     @ViewBuilder
     private var progressLine: some View {
         if let progress = look.progress {
-            AutopilotProgressLine(value: progress)
+            AIProgressBar(value: progress)
                 .padding(.leading, 12)
                 .padding(.trailing, 36)
-                .padding(.bottom, 3)
+                .padding(.bottom, 2)
         }
-    }
-
-    private var bounces: Bool {
-        !reduceMotion && doneCount > 0
-    }
-
-    private var isNeedingYou: Bool {
-        if case .needsYou = look { return true }
-        return false
     }
 }

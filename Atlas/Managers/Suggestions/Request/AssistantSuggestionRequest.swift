@@ -46,10 +46,15 @@ struct AssistantSuggestionRequest: Hashable, Sendable {
         return received >= total
     }
 
-    /// "Sending suggestions · 2 of 4", or "· 2 so far" without a total.
+    /// "Sending suggestions · 2 of 4" (above 20, "· 38% · 97 of 255", as
+    /// `AIProgress` counts), or "· 2 so far" without a total.
     var progressText: String {
-        if let total { return String(localized: "Sending suggestions · \(received) of \(max(total, received))") }
-        return String(localized: "Sending suggestions · \(received) so far")
+        guard let total else { return String(localized: "Sending suggestions · \(received) so far") }
+        let progress = AIProgress(done: received, total: max(total, received))
+        guard progress.total > AIProgress.countLimit else {
+            return String(localized: "Sending suggestions · \(received) of \(max(total, received))")
+        }
+        return String(localized: "Sending suggestions · \(progress.label)", comment: "kind:progress-step")
     }
 
     /// For the banner's bar; nil without a total.

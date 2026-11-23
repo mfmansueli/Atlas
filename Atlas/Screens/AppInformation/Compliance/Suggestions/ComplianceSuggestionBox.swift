@@ -46,8 +46,10 @@ struct ComplianceSuggestionBox: View {
                         .accessibilityIdentifier("\(identifier).evidence")
                 }
                 Spacer(minLength: 0)
-                Button(String(localized: "Dismiss")) { viewModel.dismissComplianceSuggestion(for: suggestion.rule) }
-                    .accessibilityIdentifier("\(identifier).dismiss")
+                Button(String(localized: "Dismiss")) {
+                    AIDecided.dismiss(reduceMotion: reduceMotion) { viewModel.dismissComplianceSuggestion(for: suggestion.rule) }
+                }
+                .accessibilityIdentifier("\(identifier).dismiss")
                 Button(String(localized: "Accept"), action: accept)
                     .rowActionButton()
                     .accessibilityIdentifier("\(identifier).accept")
@@ -84,7 +86,7 @@ struct ComplianceSuggestionBox: View {
 
     private func accept() {
         let rule = suggestion.rule
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             viewModel.acceptComplianceSuggestion(for: rule)

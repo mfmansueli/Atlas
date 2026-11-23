@@ -201,8 +201,16 @@ struct ClaudeCodeRunStatusView: View {
                         .accessibilityIdentifier("claudeCode.run.terminal")
                 }
                 if failure.canRetry {
-                    Button(failure.needsFolder ? String(localized: "Choose Folder…") : String(localized: "Try Again"), action: retry)
-                        .accessibilityIdentifier("claudeCode.run.retry")
+                    // Trying again starts the assistant: the AI start look
+                    // (sparkles, purple label), never filled.
+                    Button(action: retry) {
+                        if failure.needsFolder {
+                            Text("Choose Folder…")
+                        } else {
+                            AIStartLabel(String(localized: "Try Again"))
+                        }
+                    }
+                    .accessibilityIdentifier("claudeCode.run.retry")
                 }
                 Button(copied == .prompt ? String(localized: "Copied") : String(localized: "Copy Prompt")) { copy(run.prompt, as: .prompt) }
                     .accessibilityIdentifier("claudeCode.run.copyPrompt")

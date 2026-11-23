@@ -70,6 +70,7 @@ struct AppWorkspaceView: View {
                 .scrollEdgeEffectStyle(.hard, for: .top)
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
+        // The toast, or else what arrived out of sight: “3 new below”.
         .overlay(alignment: .bottom) {
             if let toast = navigator.toast {
                 ActionToast(message: toast.message) {
@@ -81,6 +82,8 @@ struct AppWorkspaceView: View {
                 }
                 .padding(Spacing.large)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else {
+                NewArrivalsBelowNotice().padding(Spacing.large)
             }
         }
         .animation(.default, value: navigator.toast?.id)

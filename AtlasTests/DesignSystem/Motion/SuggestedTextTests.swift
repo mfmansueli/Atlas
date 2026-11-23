@@ -7,7 +7,7 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// Effect 3 on a suggestion's text: its words arrive only when the card
+/// Effect 3 (Arrived) on a suggestion's text: its words arrive only when the card
 /// itself arrives (the same key and date in `ArrivalLedger`), never for a
 /// suggestion that was already there or has no date.
 @MainActor
@@ -34,7 +34,7 @@ struct SuggestedTextTests {
     @Test func onceTheCardHasArrivedItsTextDoesntArriveAgain() {
         let ledger = ArrivalLedger()
         let now = Date.now
-        #expect(ledger.claim(key: "sg_1", arrivedAt: now))
+        #expect(ledger.claim(key: "sg_1", arrivedAt: now) != nil)
         #expect(!SuggestedText.isArriving(arrivalKey: "sg_1", arrivedAt: now, ledger: ledger))
         #expect(SuggestedText.isArriving(arrivalKey: "sg_2", arrivedAt: now, ledger: ledger))
     }

@@ -17,6 +17,8 @@ struct ActionToast: View {
     var onAction: () -> Void = {}
     let onDismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "checkmark.circle.fill")
@@ -27,7 +29,8 @@ struct ActionToast: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("toast.text")
             if message.canUndo {
-                Button("Undo", action: onUndo)
+                // What comes back slides down into its place (effect 4).
+                Button("Undo") { AIDecided.undo(reduceMotion: reduceMotion, commit: onUndo) }
                     .controlSize(.regular)
                     .accessibilityIdentifier("toast.undo")
             }

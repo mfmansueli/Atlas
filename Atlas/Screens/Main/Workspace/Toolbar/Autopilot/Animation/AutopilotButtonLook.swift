@@ -5,10 +5,10 @@
 
 import Foundation
 
-/// What the toolbar's Autopilot button draws (board 57, “While it works”):
-/// still while idle, needing the person or stopped; the light along its
-/// edge and the twinkling sparkle only while something really runs for the
-/// app, with a bar when the run counts its steps; and a green check for
+/// What the toolbar's Autopilot button draws (board 57, “While it works”,
+/// with motion v2, board 68): the still spark and what runs while
+/// something really runs for the app, with a stepped bar when the run counts
+/// its steps; filled purple when it needs the person; and a green check for
 /// about 2 s once it's done. Pure, from the button's state.
 enum AutopilotButtonLook: Equatable {
     /// The purple sparkle and the section's action.
@@ -16,8 +16,8 @@ enum AutopilotButtonLook: Equatable {
     /// What runs, and its progress (0–1) when it's counted; nil draws no
     /// bar rather than a made-up one.
     case working(String, progress: Double?)
-    /// Like `working`, with its bar, but without the edge light: the card
-    /// it works on has it, and one light shows at a time.
+    /// Like `working`, with its bar, while the spark sits on the card it
+    /// works on (Make Review Screenshots…).
     case counting(String, progress: Double)
     /// “Done · Store Page · German”, after a run ended by itself.
     case done(String)
@@ -51,9 +51,16 @@ enum AutopilotButtonLook: Equatable {
         }
     }
 
-    /// The light runs and the stars twinkle.
+    /// Something runs for the app. Motion v2: the spark stays still; only
+    /// a counted bar moves.
     var isWorking: Bool {
         if case .working = self { return true }
+        return false
+    }
+
+    /// Filled purple, saying what it needs; it nudges once as it starts.
+    var isNeedingYou: Bool {
+        if case .needsYou = self { return true }
         return false
     }
 

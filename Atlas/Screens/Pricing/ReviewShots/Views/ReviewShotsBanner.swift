@@ -34,6 +34,7 @@ struct ReviewShotsBanner: View {
                 }
             }
         }
+        .aiFailureArrival(key: failureKey(run?.phase))
     }
 
     // MARK: - Missing, no capture
@@ -240,8 +241,19 @@ struct ReviewShotsBanner: View {
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+        // A failure is amber, never purple (README — Design system, state
+        // colours).
+        .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         .accessibilityElement(children: .contain)
+    }
+
+    /// The stop on screen, so a new one slides in (effect 5); nil while
+    /// the run hasn't stopped.
+    private func failureKey(_ phase: ReviewShotsRun.Phase?) -> String? {
+        switch phase {
+        case .paywallNotFound?: "paywallNotFound"
+        case .noPrices?: "noPrices"
+        default: nil
+        }
     }
 }

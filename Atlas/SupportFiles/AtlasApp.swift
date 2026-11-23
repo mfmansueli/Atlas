@@ -140,6 +140,9 @@ struct AtlasApp: App {
             SidebarCommands()
             HelpCommands()
             QuitCommands()
+            #if DEBUG
+            DesignSystemCatalogCommands()
+            #endif
         }
 
         Settings {
@@ -173,6 +176,16 @@ struct AtlasApp: App {
         }
         .defaultSize(width: 900, height: 640)
         .commandsRemoved()
+
+        #if DEBUG
+        // Rule zero: the design system drawn by itself (Debug → Design
+        // System Catalog…, ⌥⌘D).
+        Window("Design System Catalog", id: DesignSystemCatalogCommands.windowID) {
+            DesignSystemCatalogView()
+        }
+        .defaultSize(width: 1000, height: 760)
+        .commandsRemoved()
+        #endif
     }
 
     /// The menu bar icon, the window that hides instead of closing, the

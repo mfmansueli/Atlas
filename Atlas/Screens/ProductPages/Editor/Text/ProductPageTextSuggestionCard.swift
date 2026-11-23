@@ -66,7 +66,7 @@ struct ProductPageTextSuggestionCard: View {
                     .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Dismiss") { viewModel.dismissText(suggestion) }
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion) { viewModel.dismissText(suggestion) } }
                     .accessibilityIdentifier("pages.textSuggestion.dismiss")
                 Button("Use and Edit") { viewModel.useAndEdit(suggestion) }
                     .accessibilityIdentifier("pages.textSuggestion.useAndEdit")
@@ -89,7 +89,7 @@ struct ProductPageTextSuggestionCard: View {
     private var arrivalKey: String { "\(suggestion.id)|\(suggestion.text)" }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             viewModel.acceptText(suggestion)

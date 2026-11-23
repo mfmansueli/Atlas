@@ -50,7 +50,7 @@ struct InAppEventRevisionCard: View {
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Dismiss", action: onDismiss)
+                Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
                     .accessibilityIdentifier("events.revision.dismiss")
                 Button("Use and Edit", action: onUseAndEdit)
                     .accessibilityIdentifier("events.revision.useAndEdit")
@@ -74,7 +74,7 @@ struct InAppEventRevisionCard: View {
     }
 
     private func accept() {
-        AcceptSettle.perform(reduceMotion: reduceMotion) {
+        AIDecided.accept(reduceMotion: reduceMotion) {
             isSettling = true
         } commit: {
             onAccept()
