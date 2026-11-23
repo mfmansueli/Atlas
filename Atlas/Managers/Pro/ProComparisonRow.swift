@@ -31,7 +31,7 @@ struct ProComparisonRow: Hashable, Sendable, Identifiable {
             ),
             ProComparisonRow(feature: String(localized: "Built-in checks and suggestions"), free: yes, pro: yes),
             ProComparisonRow(
-                feature: String(localized: "Suggestions from your AI assistant"),
+                feature: String(localized: "Suggestions from your assistant"),
                 free: String(localized: "One at a time"), pro: String(localized: "One at a time or all at once")
             ),
             ProComparisonRow(feature: String(localized: "Accept All Languages, Translate All"), free: none, pro: yes),
@@ -41,7 +41,7 @@ struct ProComparisonRow: Hashable, Sendable, Identifiable {
                 free: String(localized: "3 templates · iPhone and iPad"), pro: String(localized: "14 templates · every device")
             ),
             ProComparisonRow(feature: String(localized: "Autopilot"), free: none, pro: yes),
-            ProComparisonRow(feature: String(localized: "Recommended prices for 175 countries"), free: none, pro: yes),
+            ProComparisonRow(feature: String(localized: "Suggested prices for 175 countries"), free: none, pro: yes),
             ProComparisonRow(feature: String(localized: "Retention messages and offers"), free: none, pro: yes),
         ]
     }

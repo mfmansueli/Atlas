@@ -33,8 +33,7 @@ struct WinBackOfferSheet: View {
         OfferSheetChrome(
             title: String(localized: "Win-back offer"),
             detail: String(localized: """
-            For people who used to subscribe to \(subscription.name): Apple shows it in your app, in Settings and, if you \
-            like, on the App Store. It waits in Review & Push; nothing changes in App Store Connect until you push.
+            For past \(subscription.name) subscribers, in your app, Settings and optionally the App Store. Nothing changes until you push.
             """),
             footnote: String(localized: "Apple shows people the win-back offers they’re eligible for."),
             identifier: Self.id,

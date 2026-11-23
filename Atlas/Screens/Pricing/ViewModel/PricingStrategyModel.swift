@@ -127,6 +127,6 @@ final class PricingStrategyModel {
     /// snapshot is the newest data; say so instead of pretending to fetch.
     func updateIndexData() {
         let date = PricingText.date(snapshot.snapshotDate)
-        updateMessage = String(localized: "You have the newest index data Atlas bundles (\(date)). It’s approximate; new editions arrive with app updates.")
+        updateMessage = String(localized: "Newest bundled index data (\(date)). Approximate; new editions come with app updates.")
     }
 }

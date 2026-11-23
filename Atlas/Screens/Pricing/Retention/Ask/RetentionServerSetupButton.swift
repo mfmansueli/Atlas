@@ -19,7 +19,7 @@ struct RetentionServerSetupButton: View {
 
     var body: some View {
         Button("Set Up with Claude Code…", action: setUp)
-            .help("Claude Code adds the endpoint to your server and runs Apple’s sandbox test; you approve each step")
+            .help("Adds the endpoint and runs Apple’s sandbox test. You approve each step.")
             .accessibilityIdentifier("retention.server.setUp")
             .popover(isPresented: $copied, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: Spacing.small) {

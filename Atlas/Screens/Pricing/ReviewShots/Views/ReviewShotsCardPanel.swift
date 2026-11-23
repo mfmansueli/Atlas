@@ -27,7 +27,7 @@ struct ReviewShotsCardPanel: View {
             case let .missing(capture):
                 missing(capture: capture)
             case let .failed(remote):
-                warning(remote.title, detail: String(localized: "Apple refused the last upload. Choose another one."))
+                warning(remote.title, detail: String(localized: "Apple refused the last screenshot. Choose another."))
             case let .queued(text):
                 queued(text)
             case let .working(steps, step, client, plan):
@@ -51,7 +51,7 @@ struct ReviewShotsCardPanel: View {
             warning(
                 String(localized: "Review screenshot missing"),
                 detail: capture == nil
-                    ? String(localized: "App Review needs a picture of the purchase screen. Until it has one, this stays in Missing Metadata.")
+                    ? String(localized: "App Review needs a screenshot of the purchase screen. Until then, it stays in Missing Metadata.")
                     : String(localized: "Screenshots already has a capture of the paywall.")
             )
             if let capture {
@@ -101,7 +101,7 @@ struct ReviewShotsCardPanel: View {
                     let others = viewModel.productsMissingReviewShot
                     if others.count >= 2 {
                         Button(String(localized: "Use for All \(others.count)")) { useCapture(for: others) }
-                            .help(String(localized: "One image for \(others.count) products. Apple asks that it clearly shows each one."))
+                            .help(String(localized: "One image for \(others.count) products. It must clearly show each."))
                             .accessibilityIdentifier("pricing.card.reviewShots.useForAll")
                     }
                 }
@@ -289,7 +289,7 @@ struct ReviewShotsCardPanel: View {
         } commit: { [viewModel, product] in
             viewModel.acceptReviewShot(for: product)
             isSettling = false
-            viewModel.sayReviewShots(String(localized: "\(product.name): review screenshot accepted. It’s in Review & Push.")) {
+            viewModel.sayReviewShots(String(localized: "\(product.name): review screenshot accepted. In Review & Push.")) {
                 viewModel.undoReviewShot(for: product)
             }
         }
@@ -309,6 +309,6 @@ struct ReviewShotsCardPanel: View {
 
     private func undo() {
         viewModel.undoReviewShot(for: product)
-        viewModel.sayReviewShots(String(localized: "Undone. Nothing was uploaded."), offersReview: false)
+        viewModel.sayReviewShots(String(localized: "Undone. Nothing was sent."), offersReview: false)
     }
 }

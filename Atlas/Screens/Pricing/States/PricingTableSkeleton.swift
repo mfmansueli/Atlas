@@ -42,7 +42,7 @@ struct PricingTableSkeleton: View {
         .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
         .clipped()
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(String(localized: "Loading prices"))
+        .accessibilityLabel(String(localized: "Reading prices from Apple…"))
         .accessibilityIdentifier("pricing.skeleton")
     }
 }

@@ -17,10 +17,7 @@ struct NewSubscriptionAskButton: View {
             prompt: NewSubscriptionAskPrompt.text(app: app.name),
             help: { client in String(localized: "Ask \(client) to set up the subscriptions \(app.name)’s code sells") },
             explanation: { client in
-                String(localized: """
-                \(client) reads \(app.name)’s project and proposes the subscriptions it sells. They wait \
-                in Review & Push as its proposals; nothing reaches App Store Connect until you push.
-                """)
+                String(localized: "\(client) suggests the subscriptions \(app.name)’s code sells. They wait in Review & Push until you push.")
             },
             identifier: "pricing.newSubscription.ask"
         )

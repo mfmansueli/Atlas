@@ -56,7 +56,7 @@ struct PriceScheduleSheet: View {
                 startCard
                 keepCard
                 if consent.isEmpty {
-                    Text("No increases in this push, so no subscriber has to agree to anything.")
+                    Text("No increases, so no subscriber has to agree.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                 } else {

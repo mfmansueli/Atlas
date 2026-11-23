@@ -48,7 +48,7 @@ extension AutoReplyCenter {
             }
             let added = store.add(kept, for: app.id)
             received(added, flags: flags, reviews: store.archive(for: app.id), app: app)
-            update(app.id) { $0.writeProblem = kept.isEmpty ? String(localized: "Couldn’t write a reply: the answer had none.") : nil }
+            update(app.id) { $0.writeProblem = kept.isEmpty ? String(localized: "Couldn’t write a reply: the answer was empty. Try again.") : nil }
         } catch {
             update(app.id) { $0.writeProblem = String(localized: "Couldn’t write a reply with your API key: \(error.localizedDescription)") }
         }

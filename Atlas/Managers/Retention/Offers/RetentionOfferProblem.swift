@@ -26,7 +26,7 @@ enum RetentionOfferProblem: Hashable, Sendable {
         case .invalidPrice:
             String(localized: "Enter the price in the United States in US dollars, e.g. 2.49.")
         case let .priceNotLower(usual):
-            String(localized: "An offer’s price should be lower than the usual \(usual).")
+            String(localized: "Set a price below the usual \(usual).")
         case .termUnavailable:
             String(localized: "Pay as you go repeats the subscription’s billing period; choose a whole number of periods.")
         case .invalidPaidMonths:
@@ -34,7 +34,7 @@ enum RetentionOfferProblem: Hashable, Sendable {
         case .invalidWaitMonths:
             String(localized: "The wait between offers must be 2 to 24 months.")
         case let .offerIDTaken(offerID):
-            String(localized: "The subscription already has an offer with the ID \(offerID).")
+            String(localized: "Another offer already uses the ID \(offerID).")
         }
     }
 }

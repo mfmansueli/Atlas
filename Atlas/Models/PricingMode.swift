@@ -24,18 +24,18 @@ enum PricingMode: String, CaseIterable, Identifiable, Codable, Sendable {
         switch self {
         case .keepPrices: String(localized: "Keep my prices")
         case .showSuggestions: String(localized: "Show suggestions")
-        case .applyRecommended: String(localized: "Apply recommended prices")
+        case .applyRecommended: String(localized: "Apply suggested prices")
         }
     }
 
     var summary: String {
         switch self {
         case .keepPrices:
-            String(localized: "Only translate. Prices stay as they are and Atlas never proposes a change.")
+            String(localized: "Translate only. Prices stay as they are, with no suggestions.")
         case .showSuggestions:
-            String(localized: "See a suggested price, its reason and confidence for every territory. Nothing changes until you apply it.")
+            String(localized: "Suggested price, reason and confidence per territory. Nothing changes until you apply it.")
         case .applyRecommended:
-            String(localized: "Fill every territory with its suggested price and review the changes before anything is pushed.")
+            String(localized: "Every territory gets its suggested price. Review before you push.")
         }
     }
 

@@ -39,7 +39,7 @@ struct RetentionOfferSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("New retention offer")
                     .font(.title2.weight(.semibold))
-                Text("Shown only to people about to cancel. Apple decides who’s eligible, and shows each person the best of your offers for that subscription.")
+                Text("Only for people about to cancel. Apple picks who’s eligible and shows each the best offer.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -56,7 +56,7 @@ struct RetentionOfferSheet: View {
                         .background(Palette.fill2, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                         .accessibilityIdentifier("retention.offerSheet.summary")
                 }
-                Text("Up to \(RetentionLimits.offersPerSubscription) retention offers per subscription. They appear in transactions as offer type 5, so you can see how many people stayed.")
+                Text("Up to \(RetentionLimits.offersPerSubscription) per subscription. Transactions show them as offer type 5, so you can count who stayed.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

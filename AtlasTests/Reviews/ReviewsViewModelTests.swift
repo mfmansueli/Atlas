@@ -95,7 +95,7 @@ struct ReviewsViewModelTests {
         // It has a reply now, but stays where the person was looking.
         #expect(model.shownReviews.map(\.id).contains("de1"))
         #expect(model.sentNow == ["de1"])
-        #expect(model.toast?.text == "Reply sent to Germany. It shows under the review on the App Store, usually within a day.")
+        #expect(model.toast?.text == "Reply sent to Germany. It shows on the App Store, usually within a day.")
         #expect(model.count(for: .needsReply) == 3)
     }
 

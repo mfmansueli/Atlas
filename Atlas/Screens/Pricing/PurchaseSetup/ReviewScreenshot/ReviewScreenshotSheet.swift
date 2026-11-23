@@ -24,7 +24,7 @@ struct ReviewScreenshotSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("Review screenshot")
                     .font(.title2.weight(.semibold))
-                Text("For \(target.name). It waits in Review & Push; nothing is uploaded until you push.")
+                Text("For \(target.name). Nothing is sent until you push.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -67,10 +67,7 @@ struct ReviewScreenshotSheet: View {
     }
 
     private var footer: String {
-        let what = String(localized: """
-        A screenshot of the purchase as the app shows it, usually the paywall. App Review looks at it before \
-        approving the product.
-        """)
+        let what = String(localized: "The purchase as the app shows it, usually the paywall. App Review checks it before approving.")
         guard let current else { return what }
         switch current {
         case .missing:

@@ -69,7 +69,7 @@ struct IntroductoryOfferSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("Introductory offer")
                 .font(.title2.weight(.semibold))
-            Text("For new subscribers of \(target.name). It waits in Review & Push; nothing changes in App Store Connect until you push.")
+            Text("For new \(target.name) subscribers. Nothing changes until you push.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -119,12 +119,12 @@ struct IntroductoryOfferSheet: View {
                         .foregroundStyle(Palette.label2)
                 }
             } label: {
-                Text(offer.mode == .payAsYouGo ? "Price each period in the United States" : "Price in the United States")
+                Text(offer.mode == .payAsYouGo ? "US price per period" : "Price (United States)")
             }
         } header: {
             Text("Price")
         } footer: {
-            note(String(localized: "Every other country or region gets the price Apple equalizes with it."))
+            note(String(localized: "Other countries and regions get Apple’s automatic price."))
         }
     }
 
@@ -147,12 +147,12 @@ struct IntroductoryOfferSheet: View {
 
     private var datesSection: some View {
         Section {
-            Toggle("Starts on a date", isOn: $hasStart)
+            Toggle("Start date", isOn: $hasStart)
                 .accessibilityIdentifier("pricing.introductoryOffer.hasStart")
             if hasStart {
                 DatePicker("Starts", selection: $start, displayedComponents: .date)
             }
-            Toggle("Ends on a date", isOn: $hasEnd)
+            Toggle("End date", isOn: $hasEnd)
                 .accessibilityIdentifier("pricing.introductoryOffer.hasEnd")
             if hasEnd {
                 DatePicker("Ends", selection: $end, displayedComponents: .date)
@@ -160,7 +160,7 @@ struct IntroductoryOfferSheet: View {
         } header: {
             Text("When")
         } footer: {
-            note(String(localized: "Without dates it starts once it’s pushed and runs until you end it."))
+            note(String(localized: "Without dates, it runs from the push until you end it."))
         }
     }
 

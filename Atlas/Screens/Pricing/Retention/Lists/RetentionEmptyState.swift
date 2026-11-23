@@ -42,9 +42,8 @@ struct RetentionEmptyState: View {
         let groups = Set(model.subscriptions.map(\.groupName))
         let what = groups.count == 1 ? groups.first ?? "" : String(localized: "the subscription")
         return String(localized: """
-        Subscribers who tap Cancel Subscription see only Apple’s Confirm Cancellation screen. A message reminds them \
-        what \(what) gives them, and a retention offer can keep them at a lower price. Apple’s early results: about \
-        1.4 more of every 100 stay with a message, 5.5 with an offer.
+        Remind people who tap Cancel Subscription what \(what) gives them, or offer a lower price. Apple’s early results: 1.4 more in 100 \
+        stay with a message, 5.5 with an offer.
         """)
     }
 }

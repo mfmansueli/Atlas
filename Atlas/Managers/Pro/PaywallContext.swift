@@ -41,11 +41,11 @@ enum PaywallContext: Hashable, Sendable {
         case .acceptAllPages: String(localized: "Accept All Pages is part of Pro")
         case .translateAll: String(localized: "Translate All is part of Pro")
         case .autopilot: String(localized: "Autopilot is part of Pro")
-        case .recommendedPrices: String(localized: "Recommended prices are part of Pro")
+        case .recommendedPrices: String(localized: "Suggested prices are part of Pro")
         case .retention: String(localized: "Retention is part of Pro")
         case .secondApp: String(localized: "More than one app is part of Pro")
         case .template: String(localized: "This template is part of Pro")
-        case .eventArtwork: String(localized: "Event artwork from Claude is part of Pro")
+        case .eventArtwork: String(localized: "Event artwork is part of Pro")
         case .menu: nil
         }
     }
@@ -53,32 +53,23 @@ enum PaywallContext: Hashable, Sendable {
     var detail: String? {
         switch self {
         case let .acceptAllLanguages(suggestions, languages):
-            String(localized: """
-            Accept \(suggestions) suggestions in \(languages) languages in one step. Accepting one suggestion, or one language, \
-            at a time stays free.
-            """)
+            String(localized: "Accept \(suggestions) suggestions in \(languages) languages at once. One at a time stays free.")
         case let .acceptAllPages(suggestions, pages):
-            String(localized: "Accept \(suggestions) suggestions on \(pages) pages in one step. Accepting them one at a time stays free.")
+            String(localized: "Accept \(suggestions) suggestions on \(pages) pages at once. One at a time stays free.")
         case let .translateAll(languages):
-            String(localized: "Translate what’s missing in \(languages) languages in one step. Writing or translating one language at a time stays free.")
+            String(localized: "Translate what’s missing in \(languages) languages at once. One language at a time stays free.")
         case .autopilot:
-            String(localized: """
-            Screenshots, the App Preview and header artwork in every language, made while you do something else. Editing \
-            screenshots yourself stays free.
-            """)
+            String(localized: "Screenshots, App Preview and header artwork in every language, made in the background. Editing yourself stays free.")
         case let .recommendedPrices(countries):
-            String(localized: "Set \(countries) prices for local purchasing power in one step, previewed country by country. Setting any price yourself stays free.")
+            String(localized: "Set \(countries) prices for local purchasing power at once, previewed per country. Your own prices stay free.")
         case .retention:
             String(localized: "Messages and offers for people who are about to cancel, in every language.")
         case .secondApp:
-            String(localized: "Work on all your apps and App Store Connect accounts in one window. Your first app stays free, with everything you made in it.")
+            String(localized: "All your apps and App Store Connect accounts in one window. Your first app, and its work, stays free.")
         case .template:
-            String(localized: """
-            All 14 templates on every device: Mac, iPad, iPhone Duo, Vision Pro and Apple Watch. Three templates on \
-            iPhone and iPad stay free.
-            """)
+            String(localized: "All 14 templates for every device: Mac, iPad, iPhone Duo, Vision Pro, Apple Watch. 3 iPhone and iPad templates stay free.")
         case .eventArtwork:
-            String(localized: "An event card and details image as a matching pair, three concepts to choose from. Choosing your own files stays free.")
+            String(localized: "A matching event card and details image, in three concepts. Using your own files stays free.")
         case .menu: nil
         }
     }
@@ -91,7 +82,7 @@ enum PaywallContext: Hashable, Sendable {
             String(localized: "Accept \(suggestions) Suggestions…")
         case .translateAll: String(localized: "Translate All…")
         case .autopilot: String(localized: "Start Autopilot…")
-        case .recommendedPrices: String(localized: "Accept Recommended Prices")
+        case .recommendedPrices: String(localized: "Accept Suggested Prices")
         case .retention: String(localized: "Open Retention")
         case .secondApp: String(localized: "Open the App")
         case .template: String(localized: "Use the Template")

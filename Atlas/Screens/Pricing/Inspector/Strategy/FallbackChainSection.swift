@@ -14,7 +14,7 @@ struct FallbackChainSection: View {
         let strategy = model.strategy
         InspectorSection(.fallback, in: model) {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text("Fills the gaps where the chosen index has no data. \(model.fallbackCount) territories use a fallback.")
+                Text("Covers territories the index lacks. \(model.fallbackCount) use a fallback.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

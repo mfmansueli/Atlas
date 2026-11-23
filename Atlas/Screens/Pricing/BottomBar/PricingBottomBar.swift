@@ -87,11 +87,11 @@ struct PricingBottomBar: View {
             } label: {
                 Label(matrix.schedule.buttonTitle, systemImage: "calendar")
             }
-            .help("When these price changes start, and whether existing subscribers keep their price")
+            .help("Choose when changes start and if subscribers keep prices")
             .accessibilityIdentifier("pricing.schedule")
         }
         if viewModel.mode != .applyRecommended {
-            Button("Apply Recommended Prices…") { Task { await viewModel.applyRecommendedPrices() } }
+            Button("Apply Suggested Prices…") { Task { await viewModel.applyRecommendedPrices() } }
                 .buttonStyle(.borderedProminent)
                 .disabled(matrix.isLoadingLadders)
                 .accessibilityIdentifier("pricing.applyRecommended")

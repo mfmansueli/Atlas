@@ -61,7 +61,7 @@ struct PricingWhatPeoplePay: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
-            Text("Prices as the App Store shows them, with tax. Apple adjusts equalized prices when exchange rates move; prices you set stay as set.")
+            Text("App Store prices, with tax. Apple’s automatic prices follow exchange rates; prices you set stay.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

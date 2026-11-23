@@ -97,8 +97,8 @@ extension ReviewsViewModel {
             bulkPlan = remaining.rows.isEmpty ? nil : remaining
             bulkSelection.formIntersection(Set(remaining.rows.map(\.languageCode)))
             errorMessage = sent == 0
-                ? String(localized: "The replies couldn’t be sent: \(failure)")
-                : String(localized: "\(ReviewText.replies(sent)) sent; the rest couldn’t be: \(failure)")
+                ? String(localized: "The replies couldn’t be sent: \(failure) Try again.")
+                : String(localized: "\(ReviewText.replies(sent)) sent; the rest couldn’t be: \(failure) Send the rest again.")
         } else {
             bulkPlan = nil
         }

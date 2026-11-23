@@ -29,8 +29,8 @@ enum RecommendationConfidence: Int, CaseIterable, Comparable, Hashable, Sendable
     /// The suggestion popover's note.
     var note: String {
         switch self {
-        case .low: "Purchasing power only. Your sales here are too few to say more."
-        case .medium: "Backed by your sales, not by a price test. Expect more starts; Results will show how many."
+        case .low: "Purchasing power only; too few sales here to say more."
+        case .medium: "Based on your sales, not a price test. Results show how many more starts."
         case .high: "Backed by an earlier price change in this territory."
         }
     }

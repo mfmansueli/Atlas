@@ -148,7 +148,7 @@ struct SubscriptionOfferActions: View {
         case .deleteWinBack:
             String(localized: "Once you push, Apple stops showing it. People who redeemed it keep it.")
         case .deactivate:
-            String(localized: "Once you push, those codes stop redeeming, and they can’t be turned back on. People who redeemed one keep their offer.")
+            String(localized: "After you push, these codes stop working permanently. People who redeemed one keep their offer.")
         }
     }
 

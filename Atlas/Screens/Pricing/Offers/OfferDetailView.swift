@@ -130,9 +130,8 @@ struct OfferDetailView: View {
 
     private var footnote: String {
         String(localized: """
-        Offer prices follow each territory’s subscription price and snap to its price points, so when a territory’s \
-        price drops its offer drops too. The \(min(shownCount, prices.count)) territories with the most page views are \
-        shown here; all \(prices.count) are pushed.
+        Offer prices follow each territory’s subscription price, so they drop when it drops. Showing the \(min(shownCount, prices.count)) \
+        territories with the most page views; all \(prices.count) are pushed.
         """)
     }
 }

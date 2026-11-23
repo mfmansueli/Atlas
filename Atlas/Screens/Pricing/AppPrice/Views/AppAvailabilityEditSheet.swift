@@ -36,14 +36,14 @@ struct AppAvailabilityEditSheet: View {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     Text("Countries and Regions")
                         .font(.title2.weight(.semibold))
-                    Text("Where \(model.app.name) is sold. Each country or region you turn on or off waits in Review & Push.")
+                    Text("Where \(model.app.name) is sold. Each change waits in Review & Push.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 AppTerritoryChecklist(territories: territories, selection: $selection)
                 if availability.availableInNewTerritories != nil {
-                    Text("Whether new countries and regions get it is set in App Store Connect: Apple’s API can’t change it.")
+                    Text("Change this for new countries and regions in App Store Connect. Atlas can’t.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)

@@ -86,8 +86,8 @@ extension ReviewsViewModel {
     /// Store, usually within a day."
     static func sentText(territory: String) -> String {
         territory.isEmpty
-            ? String(localized: "Reply sent. It shows under the review on the App Store, usually within a day.")
-            : String(localized: "Reply sent to \(territory). It shows under the review on the App Store, usually within a day.")
+            ? String(localized: "Reply sent. It shows on the App Store, usually within a day.")
+            : String(localized: "Reply sent to \(territory). It shows on the App Store, usually within a day.")
     }
 
     /// Undo on the toast: the reply comes off the App Store, or the one it

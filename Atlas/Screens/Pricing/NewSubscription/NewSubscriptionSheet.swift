@@ -123,7 +123,7 @@ struct NewSubscriptionSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text("New subscription")
                 .font(.title2.weight(.semibold))
-            Text("For \(appName). It waits in Review & Push; nothing is created in App Store Connect until you push.")
+            Text("For \(appName). Nothing is created in App Store Connect until you push.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -151,7 +151,7 @@ struct NewSubscriptionSheet: View {
         } header: {
             Text("Group")
         } footer: {
-            note("Customers have one subscription of a group at a time and can move between them, like Monthly and Annual.")
+            note("People hold one subscription per group and can switch, like Monthly to Annual.")
         }
     }
 
@@ -170,7 +170,7 @@ struct NewSubscriptionSheet: View {
         } header: {
             Text("Subscription")
         } footer: {
-            note("The product ID is what \(appName)’s code buys. It can’t be changed or used again. Family Sharing can’t be turned off once it’s on.")
+            note("The product ID is what \(appName)’s code buys; it can’t change or be reused. Family Sharing, once on, stays on.")
         }
     }
 
@@ -199,23 +199,20 @@ struct NewSubscriptionSheet: View {
                         .foregroundStyle(Palette.label2)
                 }
             } label: {
-                Text("Price in the United States")
+                Text("Price (United States)")
             }
             .id(NewSubscriptionField.price)
             problemText(for: .price)
         } header: {
             Text("Starting price")
         } footer: {
-            note("""
-            Every other country or region gets Apple’s equalized price, and the subscription is available \
-            everywhere. Change the prices in Pricing after the push.
-            """)
+            note("Available everywhere, at Apple’s automatic prices outside the US. Change prices in Pricing after the push.")
         }
     }
 
     private var reviewSection: some View {
         Section {
-            field(.reviewNote, text: $draft.reviewNote, prompt: String(localized: "Optional: how App Review finds the paywall"), isMultiline: true)
+            field(.reviewNote, text: $draft.reviewNote, prompt: String(localized: "Tap Upgrade on the home screen"), isMultiline: true)
             ReviewScreenshotSlot(appID: appID, file: $draft.reviewScreenshot)
         } header: {
             Text("App Review")
@@ -228,7 +225,7 @@ struct NewSubscriptionSheet: View {
         HStack(spacing: Spacing.small) {
             Text(draft.reviewScreenshot == nil
                 ? "Add its review screenshot here or later, before you submit it."
-                : "The push uploads its review screenshot too.")
+                : "The push sends its review screenshot too.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -51,7 +51,7 @@ struct InAppPurchaseOfferPriceFields: View {
                             .foregroundStyle(Palette.label2)
                     }
                 } label: {
-                    Text("Price in the United States")
+                    Text("Price (United States)")
                 }
                 OfferTerritoryPricesEditor(prices: $draft.territoryPriceTexts, identifier: identifier)
             }
@@ -65,8 +65,8 @@ struct InAppPurchaseOfferPriceFields: View {
     private var footer: String {
         let now = purchase.basePriceText.map { String(localized: "\(purchase.name) costs \($0) in the United States. ") } ?? ""
         return isFree
-            ? String(localized: "\(now)People who redeem a code get it for free.")
-            : String(localized: "\(now)Every other country or region gets the price Apple equalizes with it, unless you set its own here.")
+            ? String(localized: "\(now)With a code, it’s free.")
+            : String(localized: "\(now)Other countries and regions get Apple’s automatic price unless you set one here.")
     }
 
     private var territorySection: some View {

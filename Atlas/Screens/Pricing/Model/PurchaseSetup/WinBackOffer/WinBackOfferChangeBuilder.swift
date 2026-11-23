@@ -61,7 +61,7 @@ struct WinBackOfferChangeBuilder {
         change.creation = PendingCreation(
             id: id,
             title: String(localized: "Add the win-back offer “\(offer.trimmedName)” to \(subscription.name)"),
-            detail: String(localized: "Apple shows it to people who used to subscribe to \(subscription.name) and are eligible."),
+            detail: String(localized: "Apple shows it to eligible past \(subscription.name) subscribers."),
             source: source,
             fields: SubscriptionOfferChanges.fields(fields, source: source, evidence: evidence)
         )

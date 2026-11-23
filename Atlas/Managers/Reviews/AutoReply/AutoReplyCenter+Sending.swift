@@ -16,7 +16,7 @@ extension AutoReplyCenter {
         if !isPro() { return String(localized: "Replies go out by themselves with Pro.") }
         if rule.isPaused { return String(localized: "Paused: new replies are drafted and wait for you.") }
         if reviews.settings.sentReplyByHandAt == nil {
-            return String(localized: "Nothing goes out by itself until a reply you send yourself has reached the App Store.")
+            return String(localized: "Nothing goes out by itself until your first reply reaches the App Store.")
         }
         if sentToday(for: appID) >= rule.dailyCap {
             return String(localized: "\(rule.dailyCap) sent today, the most a day: the rest go tomorrow.")

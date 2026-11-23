@@ -17,8 +17,8 @@ enum PurchaseReviewScreenshotProblem: LocalizedError, Hashable, Sendable {
             String(localized: "“\(fileName)” isn’t a PNG or JPEG image Atlas can read.")
         case let .tooSmall(size):
             String(localized: """
-            The image is \(size.width) × \(size.height) pixels. Use a screenshot of the purchase as the app shows it, \
-            at least \(PurchaseReviewScreenshotFile.minimumSide) pixels on each side.
+            The image is \(size.width) × \(size.height) pixels. Use a purchase screenshot at least \
+            \(PurchaseReviewScreenshotFile.minimumSide) pixels per side.
             """)
         }
     }

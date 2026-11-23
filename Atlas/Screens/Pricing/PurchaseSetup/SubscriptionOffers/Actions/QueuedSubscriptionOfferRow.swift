@@ -25,7 +25,7 @@ struct QueuedSubscriptionOfferRow: View {
                     .foregroundStyle(Palette.err)
                     .lineLimit(2)
             } else if change.source != .you {
-                Text("Proposed by \(change.source.title)")
+                Text("Suggested by \(change.source.title)")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
