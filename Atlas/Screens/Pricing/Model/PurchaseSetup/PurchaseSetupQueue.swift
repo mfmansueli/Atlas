@@ -101,5 +101,6 @@ struct PurchaseSetupQueue {
     static func isSetup(_ change: PendingChange) -> Bool {
         NewSubscriptionChangeBuilder.owns(change) || NewInAppPurchaseChangeBuilder.owns(change)
             || IntroductoryOfferChangeBuilder.owns(change) || PurchaseReviewScreenshotChangeBuilder.owns(change)
+            || SubscriptionOfferChanges.owns(change)
     }
 }

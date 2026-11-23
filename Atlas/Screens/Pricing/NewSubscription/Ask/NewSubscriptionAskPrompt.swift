@@ -22,7 +22,10 @@ enum NewSubscriptionAskPrompt {
         with propose_subscription: its group, reference name, the product ID exactly as the code uses it, duration, \
         display name and description, and a starting price in US dollars (the paywall's or the .storekit file's \
         when there is one). Propose a lifetime unlock or other one-time purchase with propose_in_app_purchase, and \
-        a free trial or intro price the paywall promises with propose_introductory_offer. Every product needs an \
+        a free trial or intro price the paywall promises with propose_introductory_offer. For a subscription App \
+        Store Connect has, propose the promotional offers (by the identifier the code passes to StoreKit), win-back \
+        offers and offer codes the code or its marketing uses with propose_promotional_offer, propose_win_back_offer \
+        and propose_offer_code. Every product needs an \
         App Review screenshot of the paywall: send the image to get_subscriptions' reviewScreenshotUploadURL and \
         pass its fileId as reviewScreenshot, or later with propose_purchase_review_screenshot. Pass evidence as \
         "file:line — finding". Don't propose what's already there. \

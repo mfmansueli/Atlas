@@ -3,7 +3,7 @@ id: pricing
 group: listing
 title: Pricing by country
 summary: What your subscriptions and purchases cost in 175 countries and regions.
-keywords: pricing, price, prices, subscription, subscriptions, in-app purchase, country, countries, purchasing power, keep my prices, show suggestions, raise, increase, consent, review screenshot, app review, paywall, missing metadata, make review screenshots, storekit
+keywords: pricing, price, prices, subscription, subscriptions, in-app purchase, country, countries, purchasing power, keep my prices, show suggestions, raise, increase, consent, review screenshot, app review, paywall, missing metadata, make review screenshots, storekit, offer, offers, introductory offer, free trial, promotional offer, win-back offer, offer code, custom code, one-time codes, discount
 showMe: section:subscriptionPricing
 related: analytics, pro
 ---
@@ -11,6 +11,17 @@ related: analytics, pro
 - **Show suggestions** recommends a price per country from what people there can afford and how your app sells.
 
 Raising a price that people already pay asks them to agree. Atlas says how many before you push.
+
+## Offers
+
+A subscription’s **Offers** tab lists its offers in App Store Connect and the ones waiting in Review & Push. Each offer is a free period, pay as you go (a lower price each period) or pay up front (one lower price). You set the price in the United States, and every other country or region gets the equalized price unless you give it its own.
+
+- **Add Introductory Offer…**: a free trial or a lower price for new subscribers.
+- **New Offer** > **Promotional Offer…**: for people who subscribe now or did before. Your app offers it with StoreKit, by the identifier its code uses. **Change Prices…** gives it new prices; **Delete…** removes it.
+- **New Offer** > **Win-Back Offer…**: Apple shows it to people who used to subscribe, chosen by how long they paid and when they left. You can also let Apple promote it on the App Store. **Edit…** changes who gets it, its dates and its priority.
+- **New Offer** > **Offer Code…**: people redeem it with a code. A **custom code** is one word they type, such as PODCAST30. **One-time codes** are unique codes Apple makes. Once Apple has made them, **Save Codes…** saves them as a CSV file. **Deactivate…** turns off a code for good.
+
+Your assistant can propose all of these too, and you review them in Review & Push. Nothing reaches App Store Connect until you push.
 
 ## Review screenshots
 

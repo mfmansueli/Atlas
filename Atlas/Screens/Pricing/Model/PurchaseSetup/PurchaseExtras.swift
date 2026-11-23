@@ -6,10 +6,17 @@
 import Foundation
 
 /// What a product has in App Store Connect beside its prices: a
-/// subscription's introductory offers (one per territory) and its or an
-/// in-app purchase's App Review screenshot.
+/// subscription's introductory offers (one per territory), promotional
+/// offers, win-back offers and offer codes, and its or an in-app
+/// purchase's App Review screenshot.
 struct PurchaseExtras: Hashable, Sendable {
     var introductoryOffers: [ExistingIntroductoryOffer] = []
+    var promotionalOffers: [ExistingPromotionalOffer] = []
+    var winBackOffers: [ExistingWinBackOffer] = []
+    var offerCodes: [ExistingOfferCode] = []
+    /// False when the promotional offers, win-back offers and offer codes
+    /// couldn't be read (an in-app purchase has none to read).
+    var offersRead = false
     var reviewScreenshot: PurchaseReviewScreenshotState = .missing
 
     /// The offers grouped by their terms.

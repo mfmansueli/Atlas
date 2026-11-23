@@ -5,8 +5,11 @@
 
 import SwiftUI
 
-/// The Offers tab: the subscription's offers grouped by kind, and the
-/// selected one's prices, which follow each territory's subscription price.
+/// The Offers tab: the subscription's offers grouped by kind, the offer
+/// changes waiting in Review & Push, and the selected one's actions
+/// (`SubscriptionOfferActions`) and prices, which follow each territory's
+/// subscription price. New Offer adds a promotional offer, win-back offer
+/// or offer code; Add Introductory Offer… an introductory offer.
 struct PricingOffersView: View {
     @Bindable var viewModel: PricingViewModel
     let matrix: PriceMatrixModel
@@ -18,13 +21,16 @@ struct PricingOffersView: View {
                 ProgressView()
                     .controlSize(.small)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case let .loaded(offers) where offers.isEmpty:
+            case let .loaded(offers) where offers.isEmpty && viewModel.queuedSubscriptionOffers.isEmpty:
                 ContentUnavailableView {
                     Label("No offers yet", systemImage: "tag")
                 } description: {
                     Text("Introductory, promotional and win-back offers and offer codes for this subscription appear here.")
                 } actions: {
-                    addIntroductoryOfferButton
+                    HStack(spacing: Spacing.small) {
+                        addIntroductoryOfferButton
+                        NewSubscriptionOfferMenu(viewModel: viewModel, product: matrix.product)
+                    }
                 }
                 .accessibilityIdentifier("pricing.offers.none")
             case let .loaded(offers):
@@ -33,7 +39,10 @@ struct PricingOffersView: View {
                         .frame(width: 250)
                     Divider()
                     if let offer = viewModel.selectedOffer {
-                        OfferDetailView(offer: offer, prices: matrix.offerPrices(for: offer))
+                        VStack(spacing: 0) {
+                            SubscriptionOfferActions(viewModel: viewModel, product: matrix.product, offerID: offer.id)
+                            OfferDetailView(offer: offer, prices: matrix.offerPrices(for: offer))
+                        }
                     } else {
                         Text("Select an offer")
                             .foregroundStyle(Palette.label2)
@@ -54,8 +63,7 @@ struct PricingOffersView: View {
         .accessibilityIdentifier("pricing.offers")
     }
 
-    /// Add Introductory Offer… for a subscription without one; other
-    /// offers are edited in App Store Connect for now.
+    /// Add Introductory Offer… for a subscription without one.
     private var addIntroductoryOfferButton: some View {
         let canAdd = viewModel.canAddIntroductoryOffer(to: matrix.product)
             && viewModel.offers.value?.contains { $0.kind == .introductory } != true
@@ -69,7 +77,7 @@ struct PricingOffersView: View {
         .disabled(!canAdd)
         .help(canAdd
             ? String(localized: "A free trial or a lower price for new subscribers, queued in Review & Push.")
-            : String(localized: "It has an introductory offer. Edit other offers in App Store Connect for now."))
+            : String(localized: "It has an introductory offer."))
         .accessibilityIdentifier("pricing.offers.new")
     }
 
@@ -97,9 +105,21 @@ struct PricingOffersView: View {
                     }
                 }
             }
-            addIntroductoryOfferButton
-                .padding(.top, Spacing.xSmall)
-                .selectionDisabled()
+            let queued = viewModel.queuedSubscriptionOffers
+            if !queued.isEmpty {
+                Section("Waiting in Review & Push") {
+                    ForEach(queued) { change in
+                        QueuedSubscriptionOfferRow(change: change)
+                            .selectionDisabled()
+                    }
+                }
+            }
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                addIntroductoryOfferButton
+                NewSubscriptionOfferMenu(viewModel: viewModel, product: matrix.product)
+            }
+            .padding(.top, Spacing.xSmall)
+            .selectionDisabled()
         }
         // Rows hold row-sized (24 pt) controls.
         .controlSize(.regular)

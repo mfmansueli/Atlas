@@ -6,9 +6,10 @@
 import Foundation
 
 /// `get_subscriptions`: an app's subscription groups with their
-/// subscriptions, its in-app purchases (each with its introductory offer and
-/// App Review screenshot), and the new subscriptions and in-app purchases
-/// waiting in Review & Push, so an assistant proposes only what's missing.
+/// subscriptions (each with its introductory offer, promotional offers,
+/// win-back offers, offer codes and App Review screenshot), its in-app
+/// purchases, and the new subscriptions and in-app purchases waiting in
+/// Review & Push, so an assistant proposes only what's missing.
 struct GetSubscriptionsTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "get_subscriptions",
@@ -16,11 +17,14 @@ struct GetSubscriptionsTool: MCPTool {
         description: """
         Reads what an app sells in App Store Connect: each subscription group (id, referenceName) with its \
         subscriptions (id, productId, name, duration, state, price in the United States, introductoryOffer, \
-        reviewScreenshot), its in-app purchases (type, state, reviewScreenshot), and the new subscriptions (queued) \
-        and in-app purchases (queuedInAppPurchases) already waiting in Review & Push. reviewScreenshot.state \
-        MISSING keeps a product in Missing Metadata. Use it before propose_subscription, propose_in_app_purchase, \
-        propose_introductory_offer and propose_purchase_review_screenshot; reviewScreenshotUploadURL is where \
-        review screenshots go first, and offerDurations lists the durations each offer mode takes.
+        promotionalOffers, winBackOffers and offerCodes with every attribute, their territories, US price, custom \
+        codes and one-time code batches, queuedOffers waiting in Review & Push, reviewScreenshot), its in-app \
+        purchases (type, state, reviewScreenshot), and the new subscriptions (queued) and in-app purchases \
+        (queuedInAppPurchases) already waiting in Review & Push. reviewScreenshot.state MISSING keeps a product in \
+        Missing Metadata. Use it before propose_subscription, propose_in_app_purchase, propose_introductory_offer, \
+        propose_promotional_offer, propose_win_back_offer, propose_offer_code and \
+        propose_purchase_review_screenshot; reviewScreenshotUploadURL is where review screenshots go first, \
+        offerDurations lists the durations each offer mode takes and offerRules the offers' limits.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
@@ -62,6 +66,7 @@ struct GetSubscriptionsTool: MCPTool {
             "durations": .array(SubscriptionPeriod.allCases.map { .string($0.rawValue) }),
             "inAppPurchaseTypes": .array(NewInAppPurchaseKind.allCases.map { .string($0.rawValue) }),
             "offerDurations": Self.offerDurations,
+            "offerRules": Self.offerRules,
             "reviewScreenshotUploadURL": .string(MCPEndpoint.reviewScreenshotUploadURL(
                 port: context.port, token: PurchaseReviewScreenshotUploads.shared.token, appID: app.id
             )),
@@ -80,6 +85,29 @@ struct GetSubscriptionsTool: MCPTool {
         }))
     }
 
+    /// The limits the offer tools check, so a proposal fits the first time.
+    private static var offerRules: JSONValue {
+        [
+            "nameLength": .int(SubscriptionOfferRules.nameLength),
+            "identifierCharacters": "letters, digits, _ and ., up to 64",
+            "activePromotionalOffersPerSubscription": .int(SubscriptionOfferRules.activePerSubscription),
+            "activeOfferCodesPerSubscription": .int(SubscriptionOfferRules.activePerSubscription),
+            "eligibilityMonths": [
+                "minimum": .int(SubscriptionOfferRules.eligibilityMonths.lowerBound),
+                "maximum": .int(SubscriptionOfferRules.eligibilityMonths.upperBound),
+            ],
+            "numberOfCodes": [
+                "minimum": .int(SubscriptionOfferRules.numberOfCodes.lowerBound),
+                "maximum": .int(SubscriptionOfferRules.numberOfCodes.upperBound),
+            ],
+            "customCode": "letters and digits, up to 64, unique for the app; customers see it",
+            "textRules": .string("""
+            Reference names, identifiers and offer code names are only seen by the developer. A custom code is typed by \
+            customers: no other platforms, betas or placeholders.
+            """),
+        ]
+    }
+
     private static func product(_ product: PricingProduct, extras: PurchaseExtras?, setup: PurchaseSetupQueue) -> JSONValue {
         guard case var .object(json) = self.product(product) else { return .null }
         let target = PurchaseSetupTarget.existing(product)
@@ -88,6 +116,8 @@ struct GetSubscriptionsTool: MCPTool {
             if let offer = setup.queuedIntroductoryOffer(for: target) {
                 json["queuedIntroductoryOffer"] = .string("\(offer.summary) · \(offer.territories.title)")
             }
+            let queued = SubscriptionOfferChanges.queued(in: setup.queue, appID: setup.app.id, subscriptionID: product.id)
+            json.merge(MCPSubscriptionOffersJSON.fields(extras: extras, queued: queued)) { $1 }
         }
         var screenshot: [String: JSONValue] = ["state": .string(extras?.reviewScreenshot.code ?? "UNKNOWN")]
         if let name = extras?.reviewScreenshot.fileName { screenshot["fileName"] = .string(name) }
