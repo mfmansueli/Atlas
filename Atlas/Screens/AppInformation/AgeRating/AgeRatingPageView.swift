@@ -46,13 +46,13 @@ struct AgeRatingPageView: View {
                 AssistantAnswersBanner(client: banner.client, text: banner.text) {
                     if banner.unconfirmed > 0 {
                         Button(String(localized: "Confirm All")) { viewModel.confirmAllAnswers() }
-                            .help(String(localized: "Confirms every answer \(banner.client) proposed on this page."))
+                            .help(String(localized: "Confirms every answer \(banner.client) suggested on this page."))
                             .accessibilityIdentifier("appInformation.age.confirmAll")
                     }
                 }
             }
             if viewModel.content?.ids.ageRatingDeclarationID == nil {
-                InlineMessage.warning(String(localized: "App Store Connect didn’t return this app’s questionnaire, so it can’t be edited here."))
+                InlineMessage.warning(String(localized: "App Store Connect didn’t send this app’s questionnaire. Edit it there."))
             }
             ForEach(AgeRatingQuestionGroup.allCases) { group in
                 let questions = group.questions.filter { viewModel.showsField(.ageRating($0)) }

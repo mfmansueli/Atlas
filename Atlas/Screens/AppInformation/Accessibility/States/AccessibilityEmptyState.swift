@@ -25,9 +25,8 @@ struct AccessibilityEmptyState: View {
                         .font(.title3.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                     Text("""
-                    Accessibility Nutrition Labels tell people, before they download, which features work in \(appName): VoiceOver, Larger \
-                    Text, Reduced Motion and six others. You answer per device; Apple shows the answers on the product page. They’re voluntary \
-                    today, and Apple has said they’ll be required to submit new apps and updates.
+                    Accessibility Nutrition Labels show which features work in \(appName), per device: VoiceOver, Larger \
+                    Text and seven more. Voluntary now; required later for new apps and updates.
                     """)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)

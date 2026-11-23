@@ -65,7 +65,7 @@ extension AppInformationViewModel {
         guard let draft = editor, let answer = draft.answer else { return }
         queueDeclaration(answer, for: draft.family)
         editor = nil
-        toast = String(localized: "Saved. It’s waiting in Review & Push, where you choose whether to publish it.")
+        toast = String(localized: "Saved. Waiting in Review & Push; nothing is sent yet.")
     }
 
     func cancelEditor() {
@@ -89,7 +89,7 @@ extension AppInformationViewModel {
     func deleteDraft(_ family: DeviceFamily) {
         guard let card = card(for: family), card.canDeleteDraft else { return }
         apply(builder.deleteDraftChange(for: card), id: builder.accessibilityChangeID(family))
-        toast = String(localized: "The draft will be deleted when you push. Published declarations can’t be deleted, only replaced.")
+        toast = String(localized: "Push deletes the draft. Published declarations can only be replaced.")
     }
 
     /// Queues `answer` as the family's declaration, tagged with who
@@ -119,7 +119,7 @@ extension AppInformationViewModel {
                 ? String(localized: "\(names) isn’t available there, so it was left out.")
                 : String(localized: "\(names) aren’t available there, so they were left out."))
         }
-        return message + " " + String(localized: "Check that they hold on \(family.name) before you publish.")
+        return message + " " + String(localized: "Check they hold on \(family.name) before you push.")
     }
 
     // MARK: - URL

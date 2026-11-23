@@ -38,7 +38,7 @@ struct AccessibilityViewModelTests {
         vm.editor?.toggle(.reducedMotion)
         vm.saveEditor()
         #expect(vm.editor == nil)
-        #expect(vm.toast == "Saved. It’s waiting in Review & Push, where you choose whether to publish it.")
+        #expect(vm.toast == "Saved. Waiting in Review & Push; nothing is sent yet.")
         let change = try #require(queue.change(id: vm.builder.accessibilityChangeID(.iPhone)))
         #expect(change.option?.isOn == true)
         #expect(vm.card(for: .iPhone)?.state == .publishedChangesWaiting)
@@ -64,8 +64,7 @@ struct AccessibilityViewModelTests {
         let card = try #require(vm.card(for: .appleWatch))
         #expect(card.queued?.features == DebugAppInformationContent.iPhoneFeatures.subtracting([.voiceControl]))
         #expect(vm.toast == """
-        Copied iPhone’s answers to Apple Watch. Voice Control isn’t available there, so it was left out. Check that they hold on Apple Watch \
-        before you publish.
+        Copied iPhone’s answers to Apple Watch. Voice Control isn’t available there, so it was left out. Check they hold on Apple Watch before you push.
         """)
         #expect(!vm.canCopyFromIPhone(to: .iPhone))
     }

@@ -21,13 +21,13 @@ extension ProductPagesViewModel {
     func statusNote(of page: ProductPage) -> ProductPageStatusNote? {
         guard !page.isDraft, let editing = page.editing else { return nil }
         let visibleLater = makesVisibleWhenApproved(page)
-            ? " " + String(localized: "It becomes visible once it’s approved, as you chose.") : ""
+            ? " " + String(localized: "Visible once approved, as you chose.") : ""
         switch editing.state {
         case .waitingForReview:
             let canCancel = canCancelSubmission(of: page)
             let message = canCancel
-                ? String(localized: "App Review usually answers within a day. The page can’t be edited while it waits; cancel the submission to change it.")
-                : String(localized: "App Review usually answers within a day. The page can’t be edited while it waits.")
+                ? String(localized: "App Review usually answers in a day. To edit the page, cancel the submission.")
+                : String(localized: "App Review usually answers in a day. The page is locked until then.")
             return ProductPageStatusNote(
                 tone: .waiting, title: String(localized: "Waiting for Review."), message: message + visibleLater,
                 action: canCancel ? .cancelSubmission : nil
@@ -35,14 +35,13 @@ extension ProductPagesViewModel {
         case .inReview:
             return ProductPageStatusNote(
                 tone: .waiting, title: String(localized: "In Review."),
-                message: String(localized: "Nothing can be changed or cancelled until App Review answers.") + visibleLater
+                message: String(localized: "Locked until App Review answers. You can’t cancel.") + visibleLater
             )
         case .rejected:
             return ProductPageStatusNote(
                 tone: .problem, title: String(localized: "Rejected by App Review."),
                 message: String(localized: """
-                App Store Connect’s API doesn’t give Atlas the reviewer’s message, so it isn’t shown here. Read it in App Store \
-                Connect, under App Review, then fix the page and submit again.
+                Read the reviewer’s message in App Store Connect, under App Review. Then fix the page and submit again.
                 """),
                 action: .openAppStoreConnect
             )
@@ -64,14 +63,14 @@ extension ProductPagesViewModel {
         if isVisible(page) {
             return ProductPageStatusNote(
                 tone: .fine, title: String(localized: "On the App Store, and visible."),
-                message: String(localized: "Editing makes a new version. People keep seeing this one until the new one is approved."),
+                message: String(localized: "Editing makes a new version; this one shows until that’s approved."),
                 action: canChange ? .edit : nil
             )
         }
         return ProductPageStatusNote(
             tone: .fine, title: String(localized: "Approved, and hidden."),
             message: String(localized: """
-            Its link opens the default page while it is hidden. Turn Visible on to bring it back; that needs no review.
+            Hidden: its link opens the default page. Turn Visible on any time; no review.
             """),
             action: canChange ? .edit : nil
         )

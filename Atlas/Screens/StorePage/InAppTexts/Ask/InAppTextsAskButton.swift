@@ -15,11 +15,11 @@ struct InAppTextsAskButton: View {
             app: app,
             purpose: InAppTextsAskPrompt.purpose,
             prompt: InAppTextsAskPrompt.text(app: app.name),
-            help: { client in String(localized: "Ask \(client) to propose the missing group, subscription and in-app purchase texts") },
+            help: { client in String(localized: "Asks \(client) for missing group, subscription and in-app purchase texts") },
             explanation: { client in
                 String(localized: """
-                \(client) reads \(app.name)’s project and proposes the missing texts. They wait \
-                in Review & Push as its proposals; nothing reaches App Store Connect until you push.
+                \(client) reads \(app.name)’s project and suggests the missing texts. They wait in Review & Push until \
+                you push.
                 """)
             },
             identifier: "storePage.inAppTexts.ask"

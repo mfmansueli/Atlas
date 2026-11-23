@@ -9,7 +9,7 @@ import SwiftUI
 /// "Proposed by Claude Code".
 struct AssistantProposedTag: View {
     let client: String
-    var text = String(localized: "Proposed")
+    var text = String(localized: "Suggested")
 
     var body: some View {
         HStack(spacing: Spacing.xxSmall) {

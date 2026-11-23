@@ -56,6 +56,6 @@ extension [StoreTextGuidelineIssue] {
     /// What get_listing and get_store_page put in a field's state: "App
     /// Review would reject it: … Propose a version without it."
     nonisolated var assistantNote: String {
-        String(localized: "App Review would reject it: \(map(\.message).joined(separator: " ")) Propose a version without it.")
+        String(localized: "App Review would reject it: \(map(\.message).joined(separator: " ")) Suggest a version without it.")
     }
 }

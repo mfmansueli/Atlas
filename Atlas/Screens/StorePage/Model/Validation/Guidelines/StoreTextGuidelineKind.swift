@@ -74,11 +74,11 @@ nonisolated enum StoreTextGuidelineKind: String, CaseIterable, Hashable, Sendabl
         switch self {
         case .pricing:
             String(localized: """
-            The App Store shows the price, trials and offers itself: say what the app or its paid features do instead. \
-            Saying a feature needs Pro or an in-app purchase is fine; what it costs, “free”, discounts and trial lengths aren’t.
+            The App Store shows price, trials and offers itself. Say what the app or paid features do. Saying a feature \
+            needs Pro or an in-app purchase is fine; prices, “free”, discounts and trial lengths aren’t.
             """)
         case .otherPlatform:
-            String(localized: "Keep it about the app on Apple platforms, without other platforms, their stores or other app marketplaces.")
+            String(localized: "Mention only Apple platforms: no other platforms, their stores or app marketplaces.")
         case .unverifiableClaim:
             String(localized: "Say what the app does instead of ranking it.")
         case .otherApp:

@@ -108,8 +108,8 @@ struct PageShotsPlanStep: View {
                 HStack(spacing: Spacing.small) {
                     ProgressView().controlSize(.small)
                     Text(flow.copiedPrompt == nil
-                        ? String(localized: "\(assistant) is planning the set: the order and a caption for each screen in every language.")
-                        : String(localized: "Atlas couldn’t start \(assistant) here, so the prompt is copied. Paste it into your assistant."))
+                        ? String(localized: "\(assistant) is planning screen order and captions in every language.")
+                        : String(localized: "Couldn’t start \(assistant). Paste the copied prompt into your assistant."))
                         .font(.callout)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -179,9 +179,9 @@ struct PageShotsPlanStep: View {
         let total = source.slotCount
         let moved = plan.screens.enumerated().contains { $0.offset != $0.element.slot }
         let note = if count != total {
-            String(localized: "\(count) of the default page’s \(total) screens, in this page’s order and with other captions.")
+            String(localized: "\(count) of the default page’s \(total) screens, reordered, with new captions.")
         } else if moved {
-            String(localized: "The same \(count) screens as the default page, in another order and with other captions.")
+            String(localized: "The same \(count) screens as the default page, reordered, with new captions.")
         } else {
             String(localized: "The same \(count) screens as the default page, with other captions.")
         }
@@ -209,7 +209,7 @@ struct PageShotsPlanStep: View {
             if run?.look.isClaudeDesign == true {
                 planRow(
                     title: String(localized: "Draw three looks"),
-                    detail: String(localized: "\(run?.design?.candidates.count ?? 0) of \(PageShotsDesign.candidateCount) ready. You choose one."),
+                    detail: String(localized: "\(run?.design?.candidates.count ?? 0) of \(PageShotsDesign.candidateCount) ready. Choose one."),
                     who: assistant
                 )
             }
@@ -223,8 +223,8 @@ struct PageShotsPlanStep: View {
             planRow(
                 title: String(localized: "Lay out \(run?.expectedCount ?? 0) screenshots"),
                 detail: recapturedSlots.isEmpty
-                    ? String(localized: "From the default page’s captures. Nothing is captured again.")
-                    : String(localized: "From the default page’s captures, with \(recapturedSlots.count) captured again."),
+                    ? String(localized: "Uses the default page’s captures. No recapture.")
+                    : String(localized: "Uses the default page’s captures; \(recapturedSlots.count) recaptured."),
                 who: "Atlas"
             )
         }
@@ -270,9 +270,9 @@ struct PageShotsPlanStep: View {
 
     private var summary: String {
         let count = run?.expectedCount ?? 0
-        if run?.design?.isReady == false { return String(localized: "Choose one of the three looks to start.") }
+        if run?.design?.isReady == false { return String(localized: "Choose one of 3 looks.") }
         guard count > 0 else { return String(localized: "The default page’s screenshots don’t change.") }
         let minutes = max(1, Int((Double(count) * 1.5 / 60).rounded(.up)))
-        return String(localized: "\(count) screenshots for this page · about \(minutes) min · the default page’s screenshots don’t change")
+        return String(localized: "\(count) screenshots · about \(minutes) min · default page unchanged")
     }
 }

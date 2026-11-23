@@ -21,7 +21,7 @@ extension AppInformationViewModel {
     var exportNotice: String? {
         guard let content, content.export.buildID == nil else { return nil }
         let version = content.version?.versionString ?? String(localized: "this version")
-        return String(localized: "No build is attached to \(version) yet. The answers are kept here; attach a build in App Store Connect to send them.")
+        return String(localized: "\(version) has no build yet. Answers wait here until you attach one in App Store Connect.")
     }
 
     func setExportAnswer(_ answer: Bool, for question: ExportComplianceQuestion) {

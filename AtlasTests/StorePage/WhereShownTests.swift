@@ -12,8 +12,8 @@ import Testing
 @Suite("Where it shows")
 struct WhereShownTests {
     @Test func storePageFields() {
-        #expect(ListingField.subtitle.whereShown(version: "1.4") == "Under the name, on the page and in search results")
-        #expect(ListingField.keywords.whereShown(version: "1.4") == "Not shown on the page. Only App Store search reads them")
+        #expect(ListingField.subtitle.whereShown(version: "1.4") == "Under the name, also in search")
+        #expect(ListingField.keywords.whereShown(version: "1.4") == "Hidden. Only App Store search reads them")
         #expect(ListingField.whatsNew.whereShown(version: "1.4") == "Under “What’s New”, for version 1.4")
         #expect(ListingField.whatsNew.whereShown(version: nil) == "Under “What’s New”")
         #expect(ListingField.whatsNew.whereShown(version: "") == "Under “What’s New”")

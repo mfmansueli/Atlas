@@ -29,7 +29,7 @@ struct CoverageLegend: View {
             swatch(
                 HStack(spacing: Spacing.xxSmall) {
                     MonogramTag(client: Self.exampleClient)
-                    Text("Proposed by an assistant")
+                    Text("Suggested by an assistant")
                 },
                 foreground: Palette.label,
                 background: .clear,

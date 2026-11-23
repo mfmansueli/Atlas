@@ -60,7 +60,7 @@ struct AppPrivacyViewModelTests {
         #expect(count > 0)
         privacy.acceptAllHighConfidence()
         #expect(privacy.highConfidenceCount == 0)
-        #expect(section.toast?.hasPrefix("Accepted \(count) high-confidence suggestions") == true)
+        #expect(section.toast?.hasPrefix("Accepted \(count) suggestions marked Sure") == true)
     }
 
     @Test func theFiltersAndHiddenCounts() {

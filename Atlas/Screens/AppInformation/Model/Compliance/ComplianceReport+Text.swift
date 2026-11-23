@@ -119,9 +119,9 @@ extension ComplianceReport {
         case .noProblem:
             String(localized: "\(appName) is sold in China mainland and Apple shows nothing missing there.")
         case .missing:
-            String(localized: "\(appName) is available in China mainland and has no ICP Filing Number. Apple needs one for \(appName) to stay on the App Store there.")
+            String(localized: "\(appName) sells in China mainland without an ICP Filing Number. Apple needs one for \(appName) to stay.")
         case .invalid:
-            String(localized: "Apple says the ICP Filing Number it has for \(appName) isn’t valid. It needs a valid one for \(appName) to stay on the App Store in China mainland.")
+            String(localized: "Apple says \(appName)’s ICP Filing Number isn’t valid. \(appName) needs a valid one to stay in China mainland.")
         }
     }
 

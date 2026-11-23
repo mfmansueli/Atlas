@@ -46,7 +46,7 @@ struct PageShotsLookCandidates: View {
             InlineMessage.warning(problem)
                 .accessibilityIdentifier("pages.shots.looks.problem")
         } else if count > 0 {
-            Text(design?.chosen == nil ? "Choose one to start." : "The set is made with the one outlined.")
+            Text(design?.chosen == nil ? "Choose one to start." : "The set uses the outlined look.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }

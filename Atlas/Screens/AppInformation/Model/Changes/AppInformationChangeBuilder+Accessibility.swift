@@ -162,18 +162,18 @@ extension AppInformationChangeBuilder {
         return ChangeOption(
             title: String(localized: "Publish to the App Store"),
             isOn: card.isLive,
-            onNote: String(localized: "Goes on the product page as soon as it’s pushed. It can take up to 24 hours to show everywhere."),
-            offNote: String(localized: "Saved in App Store Connect as a draft; nothing changes on the product page."),
+            onNote: String(localized: "Live on the product page when pushed; up to 24 hours to show everywhere."),
+            offNote: String(localized: "Draft in App Store Connect; the product page doesn’t change."),
             disabledReason: card.isLive ? nil : String(localized: """
-            \(card.family.name) has no live version yet, so this is saved as a draft. Publish it after \(version) is released.
+            Saved as a draft: \(card.family.name) has no live version. Publish it after \(version) is released.
             """),
             requests: [PushRequest(method: .patch, path: "/v1/\(Self.declarationType)/\(declarationID)", body: document.encoded())],
             progressTitle: String(localized: "Publishing…"),
             doneTitle: String(localized: "Published"),
             offDoneTitle: String(localized: "Saved as a draft"),
             footnote: ChangeOptionFootnote(
-                one: String(localized: "1 declaration publishes immediately when pushed"),
-                other: String(localized: "{count} declarations publish immediately when pushed")
+                one: String(localized: "1 declaration goes live when pushed"),
+                other: String(localized: "{count} declarations go live when pushed")
             )
         )
     }

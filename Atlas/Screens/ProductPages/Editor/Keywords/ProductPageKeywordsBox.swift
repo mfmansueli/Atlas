@@ -30,7 +30,7 @@ struct ProductPageKeywordsBox: View {
                         .accessibilityIdentifier("pages.keywords.count")
                 }
             }
-            Text("People who search these words in \(languageName) see this page, once it’s approved and visible.")
+            Text("Searches for these words in \(languageName) show this page once it’s approved and visible.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -59,9 +59,8 @@ struct ProductPageKeywordsBox: View {
                 kind: .warning,
                 title: String(localized: "Keywords can’t be chosen yet."),
                 message: String(localized: """
-                A page’s keywords come from the keywords of a version Apple has approved, and \(viewModel.app.name) has no \
-                approved version. Everything else on the page can be prepared now; come back for keywords once a version is \
-                approved.
+                Keywords come from an approved version, and \(viewModel.app.name) has none yet. Prepare the rest now; \
+                add keywords after approval.
                 """),
                 isInline: true
             )
@@ -101,8 +100,7 @@ struct ProductPageKeywordsBox: View {
             }
             .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
             Text("""
-            Chosen from version \(versionString)’s \(languageName) keywords, the last version Apple approved. New words can’t be \
-            typed here.
+            From version \(versionString)’s \(languageName) keywords, the last approved. You can’t add new words here.
             """)
             .font(.subheadline)
             .foregroundStyle(Palette.label2)

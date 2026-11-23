@@ -43,11 +43,11 @@ struct PageShotsRunRow: View {
         let assistant = run.plan?.source ?? "Claude Code"
         switch run.stage {
         case .planning: return String(localized: "\(assistant) is planning this page’s screenshots.")
-        case .plan: return String(localized: "The plan for this page’s screenshots is ready. Look at it, then start Autopilot.")
+        case .plan: return String(localized: "Screenshot plan ready. Check it, then start Autopilot.")
         case .making:
-            return String(localized: "Autopilot is making this page’s screenshots · \(run.images.count) of \(run.expectedCount)")
+            return String(localized: "Making screenshots · \(run.images.count) of \(run.expectedCount)")
         case .revising: return String(localized: "\(assistant) is changing this page’s screenshots.")
-        case .result: return String(localized: "This page’s new screenshots are ready. Choose where they’re used.")
+        case .result: return String(localized: "New screenshots ready. Choose where they’re used.")
         case .used: return nil
         }
     }

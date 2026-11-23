@@ -197,7 +197,7 @@ extension AppInformationViewModel {
 
     func acceptSuggestion(_ suggestion: FieldSuggestion) {
         guard let slot = slot(of: suggestion) else { return }
-        accept([suggestion], toast: String(localized: "\(slot.title) accepted. It’s waiting in Review & Push, top right."))
+        accept([suggestion], toast: String(localized: "\(slot.title) accepted. In Review & Push."))
     }
 
     /// "Use and Edit": the value goes in and the field takes focus.
@@ -206,7 +206,7 @@ extension AppInformationViewModel {
         accept(
             [suggestion],
             isForEditing: true,
-            toast: String(localized: "Copied into the field. Edit it there; your version goes to Review & Push."),
+            toast: String(localized: "Copied into the field. Your edit goes to Review & Push."),
             offersReview: false
         )
         focusRequest = field
@@ -221,8 +221,8 @@ extension AppInformationViewModel {
     func acceptAllSuggestions(in scope: SuggestionScope) {
         let batch = visibleSuggestions(in: scope)
         let text = batch.count == 1
-            ? String(localized: "Accepted 1 on \(scope.title). It’s waiting in Review & Push, top right.")
-            : String(localized: "Accepted \(batch.count) on \(scope.title). They’re waiting in Review & Push, top right.")
+            ? String(localized: "Accepted 1 on \(scope.title). In Review & Push.")
+            : String(localized: "Accepted \(batch.count) on \(scope.title). In Review & Push.")
         accept(batch, toast: text)
     }
 

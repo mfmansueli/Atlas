@@ -59,9 +59,9 @@ struct ProductPageReviewWatchTests {
 
     @Test func whatsSaidNeverInventsTheReviewersMessage() {
         let rejected = ProductPageReviewMove(pageID: "p1", pageName: "Sleep", state: .rejected)
-        #expect(rejected.announcement(appName: "Lumen") == "App Review sent back “Sleep”, a custom product page of Lumen. Its message is in App Store Connect.")
+        #expect(rejected.announcement(appName: "Lumen") == "App Review sent back Lumen’s page “Sleep”. Reason in App Store Connect.")
         let approved = ProductPageReviewMove(pageID: "p1", pageName: "Sleep", state: .accepted)
-        #expect(approved.announcement(appName: "Lumen") == "Apple approved “Sleep”, a custom product page of Lumen.")
+        #expect(approved.announcement(appName: "Lumen") == "Apple approved Lumen’s page “Sleep”.")
         #expect(ProductPageReviewMove(pageID: "p1", pageName: "Sleep", state: .waitingForReview).announcement(appName: "Lumen") == nil)
     }
 
@@ -96,7 +96,7 @@ struct ProductPageReviewWatchTests {
         let index = try #require(services.snapshot.pages.firstIndex { $0.id == PageID.privateDiaryPushed })
         services.snapshot.pages[index].versions[0].state = .approved
         await model.load(force: true)
-        #expect(model.toast?.text == "Apple approved “Private diary”, a custom product page of \(model.app.name).")
+        #expect(model.toast?.text == "Apple approved \(model.app.name)’s page “Private diary”.")
         #expect(!(store.archive(for: model.app.id).reviewStates ?? [:]).keys.contains("private-v1"))
     }
 

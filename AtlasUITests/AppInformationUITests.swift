@@ -98,9 +98,9 @@ final class AppInformationUITests: XCTestCase {
         let vision = element("review.option.appInformation.\(lumen).accessibility.VISION")
         XCTAssertTrue(iPhone.exists)
         XCTAssertFalse(vision.isEnabled)
-        XCTAssertTrue(text(containing: "2 declarations publish immediately when pushed").exists)
+        XCTAssertTrue(text(containing: "2 declarations go live when pushed").exists)
         iPhone.click()
-        XCTAssertTrue(text(containing: "1 declaration publishes immediately when pushed").waitForExistence(timeout: 5))
+        XCTAssertTrue(text(containing: "1 declaration goes live when pushed").waitForExistence(timeout: 5))
     }
 
     func testAnAccessibilityErrorOffersTryAgain() {

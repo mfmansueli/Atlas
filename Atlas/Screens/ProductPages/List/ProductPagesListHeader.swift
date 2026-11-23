@@ -15,14 +15,13 @@ struct ProductPagesListHeader: View {
     var body: some View {
         SectionHeader(
             subtitle: String(localized: """
-            Other versions of \(viewModel.app.name)’s App Store page, each with its own link, for an audience, a campaign or a \
-            search.
+            Other App Store pages for \(viewModel.app.name), each for an audience, campaign or search.
             """)
         ) {
             if viewModel.state.value != nil {
                 Pill(text: viewModel.countText, style: viewModel.isAtLimit ? .warning : .neutral)
                     .help(Text("Apple allows 70 custom product pages for each app"))
-                    .accessibilityLabel(Text("\(viewModel.pageCount) of 70 pages. Apple allows 70 custom product pages for each app."))
+                    .accessibilityLabel(Text("\(viewModel.pageCount) of 70 custom product pages allowed"))
                     .accessibilityIdentifier("pages.count")
             }
             Button {

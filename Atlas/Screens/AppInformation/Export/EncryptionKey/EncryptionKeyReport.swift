@@ -69,11 +69,11 @@ struct EncryptionKeyReport: Hashable, Codable, Sendable {
         let place = places.first.map { String(localized: "\($0.fileName) (\($0.target))") }
         switch status {
         case .added:
-            guard let place else { return String(localized: "Added to the project — builds uploaded from now on answer it") }
-            return String(localized: "Added in \(place) — builds uploaded from now on answer it")
+            guard let place else { return String(localized: "Added to the project · future builds answer it") }
+            return String(localized: "Added in \(place) · future builds answer it")
         case .alreadyThere:
-            guard let place else { return String(localized: "Already in the project — builds uploaded from now on answer it") }
-            return String(localized: "Already in \(place) — builds uploaded from now on answer it")
+            guard let place else { return String(localized: "Already in the project · future builds answer it") }
+            return String(localized: "Already in \(place) · future builds answer it")
         case .couldNotAdd:
             return String(localized: "\(client) couldn’t add it")
         }

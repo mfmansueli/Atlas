@@ -30,7 +30,7 @@ struct ListingCoverageCell: Identifiable, Hashable, Sendable {
         case .edited:
             String(localized: "Edited")
         case .proposed:
-            String(localized: "Proposed")
+            String(localized: "Suggested")
         case .notApplicable:
             "—"
         }

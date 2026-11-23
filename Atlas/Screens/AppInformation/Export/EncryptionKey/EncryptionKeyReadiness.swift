@@ -43,8 +43,8 @@ enum EncryptionKeyReadiness: Hashable, Sendable {
                 String(localized: "The build’s answer and the app’s encryption declaration disagree. Answer the questions above first.")
             case .needsApprovedDeclaration:
                 String(localized: """
-                The encryption isn’t exempt, so the key must name an approved encryption declaration’s code, and none with \
-                these answers is approved yet.
+                Non-exempt encryption needs an approved declaration’s code in the key. None with these answers is \
+                approved yet.
                 """)
             }
         }

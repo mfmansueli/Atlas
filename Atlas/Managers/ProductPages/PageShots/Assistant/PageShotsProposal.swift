@@ -60,8 +60,8 @@ struct PageShotsProposal {
         if !missing.isEmpty {
             let places = missing.map(String.init).formatted(.list(type: .and))
             let message = String(localized: """
-            Every screenshot needs a caption in \(primary), the page’s primary language, that Atlas can keep: place \(places) \
-            hasn’t one. Nothing was kept.
+            Nothing was kept: place \(places) has no usable caption in \(primary), the primary language. Every \
+            screenshot needs one.
             """)
             return .refused(message, refused: refused)
         }

@@ -63,7 +63,7 @@ struct AppInformationPageBar: View {
                         .foregroundStyle(Palette.label2)
                     Button("Ask First") {
                         preferences.acceptsAllWithoutAsking = false
-                        viewModel.suggestionToast = ToastMessage(text: String(localized: "Accept All will show you the suggestions first again."))
+                        viewModel.suggestionToast = ToastMessage(text: String(localized: "Accept All shows the suggestions first again."))
                     }
                     .buttonStyle(.link)
                     .font(.subheadline)
@@ -141,7 +141,7 @@ struct AppInformationPageBar: View {
                 .imageScale(.small)
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
-            Text("For the User Privacy Choices URLs only. App Privacy’s answers are never accepted for you: you review each one in the worksheet.")
+            Text("Only for User Privacy Choices URLs. You review App Privacy answers one by one in the worksheet.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

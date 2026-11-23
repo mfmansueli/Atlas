@@ -34,7 +34,7 @@ struct AccessibilityURLCard: View {
                     .foregroundStyle(Palette.err)
                     .accessibilityIdentifier("appInformation.accessibility.urlProblem")
             }
-            Text("Shown on the product page on every device except Apple TV. Publishing it is immediate once a version is live.")
+            Text("Shows immediately on the product page, except on Apple TV, once a version is live.")
                 .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
