@@ -41,6 +41,11 @@ enum PrivacyConfidence: String, CaseIterable, Identifiable, Hashable, Codable, C
         }
     }
 
+    /// The rows' how-sure meter: low, medium and high are its three steps.
+    var howSure: HowSure {
+        HowSure(rawValue: bars) ?? .notVerySure
+    }
+
     static func < (lhs: PrivacyConfidence, rhs: PrivacyConfidence) -> Bool {
         lhs.bars < rhs.bars
     }

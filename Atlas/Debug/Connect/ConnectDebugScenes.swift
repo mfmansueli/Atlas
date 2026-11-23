@@ -25,18 +25,29 @@ import SwiftUI
 /// - `sync`: "Reading your apps…" halfway through; Cancel goes back to
 ///   Welcome.
 /// - `sync-still`: the same as Reduce Motion shows it.
+/// - `sync-done`: every app read, "Your 6 apps are ready" with Open Atlas.
+/// - `addkey`: "Add Another Key…" over the library while Northpier Studio
+///   is connected, the form filled in; Connect adds Fieldworks Studio.
+/// - `addkey-403`: the same with a key whose role is too low: the error
+///   sits under the fields and the key file is cleared.
+/// - `addkey-done`: Fieldworks Studio added, Keep Northpier Studio or
+///   Switch to Fieldworks Studio.
 enum ConnectDebugScenes {
     static let ids = [
         "welcome", "welcome-still",
         "connect", "connect-key", "connect-hover", "connect-hints", "connect-help", "connect-checking",
-        "connect-401", "connect-rejected", "connect-403", "connect-offline", "sync", "sync-still",
+        "connect-401", "connect-rejected", "connect-403", "connect-offline", "sync", "sync-still", "sync-done",
+        "addkey", "addkey-403", "addkey-done",
     ]
+
+    /// The team every added key in a DEBUG scene belongs to.
+    static let addedTeamName = "Fieldworks Studio"
 
     /// The key check every scene uses, in the main window and Settings.
     static func keyChecker(for id: String) -> any KeyChecker {
         switch id {
         case "connect-401", "connect-rejected": DebugKeyChecker(error: AppStoreConnectError.unauthorized)
-        case "connect-403": DebugKeyChecker(error: AppStoreConnectError.forbidden(detail: nil))
+        case "connect-403", "addkey-403": DebugKeyChecker(error: AppStoreConnectError.forbidden(detail: nil))
         case "connect-offline": DebugKeyChecker(error: URLError(.notConnectedToInternet))
         case "connect-checking": DebugKeyChecker(delay: .seconds(3600))
         default: DebugKeyChecker()
@@ -47,7 +58,10 @@ enum ConnectDebugScenes {
     static func view(for id: String) -> AnyView? {
         guard ids.contains(id) else { return nil }
         if id.hasPrefix("sync") {
-            return AnyView(SyncScene(isStill: id == "sync-still"))
+            return AnyView(SyncScene(isStill: id == "sync-still", isDone: id == "sync-done"))
+        }
+        if id.hasPrefix("addkey") {
+            return AnyView(AddKeyDebugScene(id: id))
         }
         return AnyView(Scene(id: id))
     }
@@ -101,21 +115,27 @@ enum ConnectDebugScenes {
     /// goes back to Welcome, as forgetting the only key does.
     private struct SyncScene: View {
         let isStill: Bool
+        var isDone = false
         @State private var isCancelled = false
+        @State private var isOpened = false
 
         var body: some View {
             if isCancelled {
                 WelcomeFlowView(checker: DebugKeyChecker(), forcesStill: isStill) { _, _ in }
+            } else if isOpened {
+                DebugMainScene()
             } else {
+                let read = isDone ? DebugFixtures.apps.count : 3
                 FirstSyncView(
                     progress: FirstSyncProgress(
                         appCount: DebugFixtures.apps.count,
-                        syncedCount: 3,
+                        syncedCount: read,
                         teamName: DebugFixtures.northpier.name,
-                        syncedNames: DebugFixtures.apps.prefix(3).map(\.name)
+                        syncedNames: DebugFixtures.apps.prefix(read).map(\.name)
                     ),
                     forcesStill: isStill,
-                    onCancel: { isCancelled = true }
+                    onCancel: { isCancelled = true },
+                    onOpen: isDone ? { isOpened = true } : nil
                 )
             }
         }

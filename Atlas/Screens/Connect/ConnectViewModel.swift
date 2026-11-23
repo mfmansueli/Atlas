@@ -79,6 +79,8 @@ final class ConnectViewModel {
     /// `AuthKey_<KEYID>.p8` name.
     func importKey(_ key: ImportedPrivateKey) {
         importErrorMessage = nil
+        // Another file: the last check's verdict was about the old one.
+        failure = nil
         guard CredentialsValidator.privateKeyIssue(key.pem) == nil else {
             privateKey = nil
             rejectedFileName = key.fileName
@@ -111,7 +113,10 @@ final class ConnectViewModel {
             let check = try await checker.check(credentials)
             try onConnect(credentials, check)
         } catch {
-            failure = KeyCheckFailure(error)
+            let failure = KeyCheckFailure(error)
+            self.failure = failure
+            // The file itself is the problem: Connect waits for another one.
+            if failure == .roleTooLow { privateKey = nil }
         }
     }
 }

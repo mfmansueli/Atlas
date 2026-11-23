@@ -14,6 +14,12 @@ struct KeyAccessCheck: Codable, Hashable, Sendable {
     var milliseconds: Int
     var salesAccess: SalesAccess
     var date: Date
+    /// The first apps' names, as the apps request returned them (nil in
+    /// checks saved before they were kept).
+    var appNames: [String]?
+    /// The team's name from its certificates, when the check looked it up
+    /// ("Add Another Key…" does, to name the team it adds).
+    var teamName: String?
 
     /// "Connected · 6 apps · 182 ms".
     var connectionSummary: String {

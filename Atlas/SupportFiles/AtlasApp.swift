@@ -118,6 +118,7 @@ struct AtlasApp: App {
                 .environment(background)
                 .environment(loginItem)
                 .environment(\.keyChecker, Self.keyChecker)
+                .environment(\.teamNameLookup, Self.teamNameLookup)
                 // What the person owns of Pro, and every change to it.
                 .task {
                     assistants.isPro = { [pro] in pro.entitlements.isPro }
@@ -166,6 +167,7 @@ struct AtlasApp: App {
             .environment(background)
             .environment(loginItem)
             .environment(\.keyChecker, Self.keyChecker)
+            .environment(\.teamNameLookup, Self.teamNameLookup)
             .environment(\.aiProviderKeyChecker, Self.aiProviderKeyChecker)
         }
 
@@ -317,6 +319,15 @@ struct AtlasApp: App {
         if let id = DebugScene.requestedID { return ConnectDebugScenes.keyChecker(for: id) }
         #endif
         return LiveKeyChecker()
+    }
+
+    /// DEBUG scenes name an added key's team from canned data, never
+    /// from Apple.
+    private static var teamNameLookup: any TeamNameLookup {
+        #if DEBUG
+        if DebugScene.requestedID != nil { return DebugTeamNameLookup() }
+        #endif
+        return LiveTeamNameLookup()
     }
 
     /// DEBUG scenes answer API key requests from canned data, never from

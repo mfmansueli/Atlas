@@ -18,6 +18,8 @@ import SwiftUI
 //   Sentry's manifest against a type marked not collected.
 // - `priv-done`, `priv-checklist`, `priv-published`: done; the checklist
 //   with three steps ticked; marked published.
+// - `priv-fill-blocked`: Fill In App Store Connect while suggestions and a
+//   question still wait: the amber line over the steps.
 // - `priv-rescan`: a later scan found Mixpanel; out of date.
 // - `priv-export`, `priv-import`: the export sheet over the done
 //   worksheet; a fastlane file to import.
@@ -29,7 +31,7 @@ import SwiftUI
 extension AppInformationDebugScenes {
     static let privacyIDs = [
         "priv-empty", "priv-noconn", "priv-scanning", "priv-review", "priv-evidence", "priv-questions", "priv-conflict",
-        "priv-mismatch", "priv-done", "priv-checklist", "priv-published", "priv-rescan", "priv-export", "priv-import",
+        "priv-mismatch", "priv-done", "priv-checklist", "priv-published", "priv-fill-blocked", "priv-rescan", "priv-export", "priv-import",
         "priv-urls", "priv-review-urls", "priv-overview", "info-privacy-draft",
     ]
 
@@ -54,6 +56,7 @@ extension AppInformationDebugScenes {
         "priv-done": { DebugPrivacyWorksheets.done },
         "priv-checklist": { DebugPrivacyWorksheets.checklist },
         "priv-published": { DebugPrivacyWorksheets.published },
+        "priv-fill-blocked": { DebugPrivacyWorksheets.review },
         "priv-rescan": { DebugPrivacyWorksheets.rescan },
         "priv-export": { DebugPrivacyWorksheets.done },
         "priv-import": { PrivacyWorksheet() },
@@ -66,6 +69,7 @@ extension AppInformationDebugScenes {
         "priv-questions": { $0.filter = .openQuestions },
         "priv-checklist": { $0.tab = .checklist },
         "priv-published": { $0.tab = .checklist },
+        "priv-fill-blocked": { $0.tab = .checklist },
         "priv-export": { $0.isExportSheetPresented = true },
         "priv-import": { model in
             model.showImport(

@@ -10,12 +10,15 @@ import SwiftUI
 /// is connected, until every app's summaries have loaded once. It counts
 /// the apps as they're read and says nothing is changed in App Store
 /// Connect. Cancel forgets the key just connected and goes back to
-/// Welcome.
+/// Welcome. Once every app is read, "Your 6 apps are ready" waits for
+/// Open Atlas.
 struct FirstSyncView: View {
     let progress: FirstSyncProgress
     /// DEBUG scenes show the Reduce Motion header without the setting.
     var forcesStill = false
     var onCancel: (() -> Void)?
+    /// Set once every app is read: the done step, with Open Atlas.
+    var onOpen: (() -> Void)?
 
     var body: some View {
         GeometryReader { geometry in
@@ -34,14 +37,22 @@ struct FirstSyncView: View {
         .accessibilityIdentifier("sync.view")
     }
 
+    private var isDone: Bool { onOpen != nil }
+
     private func body(layout: WelcomeLayout) -> some View {
         VStack(spacing: layout.isShort ? 10 : 14) {
-            Text("Reading your apps…")
-                .font(layout.isShort ? .largeTitle.bold() : .display)
-                .tracking(-0.4)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("sync.title")
-            Text(progress.summary)
+            Group {
+                if isDone {
+                    Text(progress.doneTitle)
+                } else {
+                    Text("Reading your apps…")
+                }
+            }
+            .font(layout.isShort ? .largeTitle.bold() : .display)
+            .tracking(-0.4)
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityIdentifier("sync.title")
+            Text(isDone ? progress.doneSummary : progress.summary)
                 .font(layout.isShort ? .body : .title3)
                 .lineSpacing(layout.isShort ? 2 : 4)
                 .foregroundStyle(Palette.label2)
@@ -50,12 +61,12 @@ struct FirstSyncView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("sync.summary")
             VStack(spacing: 6) {
-                ProgressView(value: progress.fraction)
+                ProgressView(value: isDone ? 1 : progress.fraction)
                     .progressViewStyle(.linear)
                     .accessibilityLabel(Text("Apps read"))
-                    .accessibilityValue(Text(progress.detail))
+                    .accessibilityValue(Text(detail))
                     .accessibilityIdentifier("sync.progress")
-                Text(progress.detail)
+                Text(detail)
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .monospacedDigit()
@@ -64,7 +75,13 @@ struct FirstSyncView: View {
                     .accessibilityHidden(true)
             }
             .frame(width: 360)
-            if let onCancel {
+            if let onOpen {
+                Button(String(localized: "Open Atlas", comment: "kind:button"), action: onOpen)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .keyboardShortcut(.defaultAction)
+                    .accessibilityIdentifier("sync.open")
+            } else if let onCancel {
                 Button("Cancel", action: onCancel)
                     .controlSize(.large)
                     .keyboardShortcut(.cancelAction)
@@ -75,6 +92,10 @@ struct FirstSyncView: View {
         .padding(.horizontal, 40)
         .padding(.bottom, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var detail: String {
+        isDone ? progress.doneDetail : progress.detail
     }
 }
 

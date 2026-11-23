@@ -26,11 +26,12 @@ final class AppPrivacyUITests: XCTestCase {
         launch(scene: "priv-review")
         XCTAssertTrue(element("appInformation.appPrivacy.worksheet").waitForExistence(timeout: 10))
         let tabs = element("appInformation.appPrivacy.tabs")
-        tabs.radioButtons["Fill in App Store Connect"].click()
+        // Badged segments: buttons, the worksheet's labelled with its count.
+        tabs.buttons["Fill in App Store Connect"].click()
         XCTAssertTrue(element("appInformation.appPrivacy.checklist").waitForExistence(timeout: 5))
-        tabs.radioButtons["Privacy URLs"].click()
+        tabs.buttons["Privacy URLs"].click()
         XCTAssertTrue(element("appInformation.appPrivacy.urls").waitForExistence(timeout: 5))
-        tabs.radioButtons["Worksheet"].click()
+        tabs.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Worksheet'")).firstMatch.click()
         XCTAssertTrue(element("appInformation.appPrivacy.worksheet").waitForExistence(timeout: 5))
     }
 

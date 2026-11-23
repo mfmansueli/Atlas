@@ -5,14 +5,15 @@
 
 import SwiftUI
 
-/// The Worksheet tab: the ways to start, or the worksheet itself (with the
-/// disclaimer under it), and the label preview in a column beside it.
+/// The Worksheet tab: the ways to start, or the worksheet itself, then the
+/// label people will see and the disclaimer, in one column.
 struct PrivacyWorksheetTab: View {
     let viewModel: AppPrivacyViewModel
 
     var body: some View {
         let worksheet = viewModel.worksheet
-        HStack(spacing: 0) {
+        // One column: the label sits under the worksheet, not beside it.
+        VStack(spacing: 0) {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.medium) {
@@ -34,9 +35,6 @@ struct PrivacyWorksheetTab: View {
                 .accessibilityIdentifier("appInformation.appPrivacy.worksheet")
                 .task { await revealEvidence(with: proxy) }
             }
-            Divider()
-            PrivacyLabelPreviewColumn(preview: worksheet.labelPreview)
-                .frame(width: 262)
         }
     }
 

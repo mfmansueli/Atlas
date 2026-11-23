@@ -68,6 +68,13 @@ struct PrivacyLabelPreview: Hashable, Sendable {
     /// "Data Not Collected": answered No, or nothing collected.
     var isDataNotCollected: Bool { isAnswered && groups.isEmpty }
 
+    /// The categories in one of the label's groups, as "The label people
+    /// will see" lists them: "Contact Info, User Content", or "None".
+    func categoryNames(in kind: Kind) -> String {
+        let names = groups.first { $0.kind == kind }?.lines.map(\.category.name) ?? []
+        return names.isEmpty ? String(localized: "None", comment: "kind:other") : names.formatted(.list(type: .and, width: .narrow))
+    }
+
     init(answers: PrivacyReviewedAnswers) {
         isAnswered = answers.collects != nil
         var byKind: [Kind: [PrivacyDataType]] = [:]

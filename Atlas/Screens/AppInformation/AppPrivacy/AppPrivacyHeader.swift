@@ -5,31 +5,26 @@
 
 import SwiftUI
 
-/// The page's title with its status, the three tabs, Export…, and the
-/// line that says this is a worksheet, not a sync.
+/// The top of App Privacy, as the canvas lays it out: the page's title,
+/// the line that says this is a worksheet Atlas can't push, then the
+/// three tabs (the worksheet's with what waits in it), the status and
+/// Export….
 struct AppPrivacyHeader: View {
     @Bindable var viewModel: AppPrivacyViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
+            AppInformationPageHeader(
+                title: AppInformationPage.appPrivacy.title,
+                subtitle: AppInformationPage.appPrivacy.summary(appName: viewModel.appShortName, version: nil)
+            )
+            notASync
             HStack(alignment: .center, spacing: Spacing.small) {
-                Text(AppInformationPage.appPrivacy.title)
-                    .font(.title2.weight(.semibold))
-                    .lineLimit(1)
-                    .accessibilityAddTraits(.isHeader)
-                AppPrivacyStatusPill(status: viewModel.status)
-                    .layoutPriority(-1)
+                BadgedSegments(label: String(localized: "App Privacy view"), options: tabs, selection: $viewModel.tab)
+                    .accessibilityIdentifier("appInformation.appPrivacy.tabs")
                 Spacer(minLength: Spacing.small)
-                Picker(String(localized: "App Privacy view"), selection: $viewModel.tab) {
-                    ForEach(AppPrivacyTab.allCases) { tab in
-                        Text(tab.title).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .controlSize(.regular)
-                .fixedSize()
-                .accessibilityIdentifier("appInformation.appPrivacy.tabs")
+                PrivacyPageStatusPill(status: PrivacyPageStatus(worksheet: viewModel.worksheet))
+                    .layoutPriority(-1)
                 Button(String(localized: "Export…")) {
                     viewModel.isExportSheetPresented = true
                 }
@@ -37,11 +32,17 @@ struct AppPrivacyHeader: View {
                 .disabled(viewModel.worksheet.reviewedAnswers.collects == nil)
                 .accessibilityIdentifier("appInformation.appPrivacy.export")
             }
-            notASync
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.top, Spacing.large)
         .padding(.bottom, Spacing.medium)
+    }
+
+    /// Worksheet carries the count of what waits in it.
+    private var tabs: [(value: AppPrivacyTab, title: String, count: Int)] {
+        AppPrivacyTab.allCases.map { tab in
+            (tab, tab.title, tab == .worksheet ? PrivacyPageStatus.worksheetCount(viewModel.worksheet) : 0)
+        }
     }
 
     private var notASync: some View {
