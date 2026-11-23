@@ -11,13 +11,13 @@ import Testing
 struct StabilityAlertTextTests {
     @Test func aRollingOutReleaseSaysWhoPausingProtects() {
         let text = StabilityAlertText.make(version: "1.4", previous: "1.3", times: 3.2, device: "iPhone 11", phase: .phased(day: 3, isPaused: false))
-        #expect(text.lead == "Version 1.4 crashes 3.2× as often as 1.3,")
+        #expect(text.lead == "Version 1.4 crashes \(AnalyticsText.times(3.2)) as often as 1.3,")
         #expect(text.detail == "mostly on iPhone 11. Pausing keeps it away from the other 95%.")
     }
 
     @Test func withoutADeviceTheLeadEndsTheSentence() {
         let text = StabilityAlertText.make(version: "1.4", previous: "1.3", times: 2, device: nil, phase: .phased(day: 1, isPaused: false))
-        #expect(text.lead == "Version 1.4 crashes 2.0× as often as 1.3.")
+        #expect(text.lead == "Version 1.4 crashes \(AnalyticsText.times(2)) as often as 1.3.")
         #expect(text.detail == "Pausing keeps it away from the other 99%.")
     }
 

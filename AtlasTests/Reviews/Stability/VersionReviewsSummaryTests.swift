@@ -13,6 +13,11 @@ struct VersionReviewsSummaryTests {
         AppReview(id: id, territory: "US", rating: rating, title: "", body: body, nickname: "x", date: Date(), version: version)
     }
 
+    /// "3.9" in this Mac's number format.
+    private func stars(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1)))
+    }
+
     @Test(arguments: [
         "It keeps crashing when I open it", "Trava toda hora", "Stürzt ab beim Start", "起動するとすぐ落ちる", "一打开就闪退", "se cierra sola al abrir",
     ])
@@ -51,15 +56,15 @@ struct VersionReviewsSummaryTests {
 
     @Test func theBannerLeadsWithBothAveragesThenTheCrashes() {
         let summary = VersionReviewsSummary(version: "1.4", count: 11, average: 3.9, crashMentions: 6, previousVersion: "1.3", previousAverage: 4.7)
-        #expect(summary.lead == "Version 1.4 averages 3.9 ★ from 11 reviews; 1.3 averaged 4.7 ★.")
-        #expect(summary.detail(crashTimes: 3.2) == "6 of the 11 mention a crash, and crashes are 3.2× higher on 1.4.")
+        #expect(summary.lead == "Version 1.4 averages \(stars(3.9)) ★ from 11 reviews; 1.3 averaged \(stars(4.7)) ★.")
+        #expect(summary.detail(crashTimes: 3.2) == "6 of the 11 mention a crash, and crashes are \(AnalyticsText.times(3.2)) higher on 1.4.")
         #expect(summary.detail(crashTimes: nil) == "6 of the 11 mention a crash.")
     }
 
     @Test func theBannerWithoutAnEarlierVersionOrCrashMentions() {
         let summary = VersionReviewsSummary(version: "2.0", count: 1, average: 2, crashMentions: 0)
-        #expect(summary.lead == "Version 2.0 averages 2.0 ★ from 1 review.")
-        #expect(summary.detail(crashTimes: 1.5) == "Crashes are 1.5× higher on 2.0.")
+        #expect(summary.lead == "Version 2.0 averages \(stars(2)) ★ from 1 review.")
+        #expect(summary.detail(crashTimes: 1.5) == "Crashes are \(AnalyticsText.times(1.5)) higher on 2.0.")
         #expect(summary.detail(crashTimes: nil) == nil)
     }
 
