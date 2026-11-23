@@ -16,6 +16,7 @@ extension FieldSuggestion {
             "reason": .string(reason),
             "source": .string(source.title),
         ]
+        layers?.add(to: &entry)
         switch target.scope {
         case let .storePage(locale): entry["locale"] = .string(locale)
         case let .appInformation(page): entry["page"] = .string(SuggestFieldsTool.mcpPageName(page))

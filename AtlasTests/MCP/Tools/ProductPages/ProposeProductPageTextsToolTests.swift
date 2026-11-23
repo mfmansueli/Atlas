@@ -153,7 +153,7 @@ struct ProposeProductPageTextsToolTests {
         var arguments = Fixtures.textsArguments(PageID.privateDiary, texts)
         arguments["reason"] = .string(String(repeating: "x", count: 301))
         let long = try await fixtures.call(fixtures.textsTool, arguments)
-        #expect(long.result["reason"]?.stringValue?.contains("reason has 301 characters") == true)
+        #expect(long.result["reason"]?.stringValue?.contains("reason is 301 characters; at most 110") == true)
         arguments.removeValue(forKey: "reason")
         await #expect(throws: MCPToolError.invalidArgument(name: "reason", expected: "a string")) {
             try await fixtures.call(fixtures.textsTool, arguments)

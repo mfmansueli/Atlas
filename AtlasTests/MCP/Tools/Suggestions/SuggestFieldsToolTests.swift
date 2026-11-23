@@ -68,6 +68,27 @@ struct SuggestFieldsToolTests {
         #expect(changes.changes.isEmpty)
     }
 
+    @Test func detailsConfidenceAndGlossAreKeptWithTheSuggestion() async throws {
+        var item = storeItem("subtitle", "Privates Tagebuch & Impulse", locale: "de-DE").objectValue ?? [:]
+        item["details"] = "41 of 220 reviews use “privat”."
+        item["confidence"] = 2
+        item["gloss"] = "Private diary & prompts"
+        let outcome = try await call(["appId": "app1", "items": [.object(item)]])
+        #expect(results(outcome).first?["status"] == "queued")
+        let suggestion = try #require(store.all(for: storeApp.id).first)
+        #expect(suggestion.layers == SuggestionLayers(
+            details: "41 of 220 reviews use “privat”.", confidence: .fairlySure, gloss: "Private diary & prompts"
+        ))
+        #expect(suggestion.mcpJSON["confidence"] == 2)
+
+        // The same value with other layers updates it in place.
+        item["confidence"] = 3
+        let again = try await call(["appId": "app1", "items": [.object(item)]])
+        #expect(results(again).first?["status"] == "updated")
+        #expect(store.all(for: storeApp.id).first?.layers?.confidence == .sure)
+        #expect(store.all(for: storeApp.id).first?.id == suggestion.id)
+    }
+
     @Test func theFieldsOwnValueIsUnchangedAndANewerOneReplaces() async throws {
         let same = try await call(["appId": "app1", "items": [storeItem("subtitle", "Private notes, gentle prompts")]])
         #expect(results(same).first?["status"] == "unchanged")

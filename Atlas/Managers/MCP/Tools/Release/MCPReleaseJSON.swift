@@ -143,6 +143,7 @@ enum MCPReleaseJSON {
             "receivedAt": .string(proposal.receivedAt.formatted(.iso8601)),
         ]
         if proposal.isPending, let problem { object["whyOutdated"] = .string(problem) }
+        proposal.evidence.layers?.add(to: &object)
         if let resolved = proposal.resolvedAt { object["resolvedAt"] = .string(resolved.formatted(.iso8601)) }
         if let submission = proposal.submission {
             var choices: [String: JSONValue] = [

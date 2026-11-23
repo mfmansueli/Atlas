@@ -134,8 +134,9 @@ final class FieldSuggestionStore {
 
     /// An assistant's or the AI provider's suggestion. Replaces the open one
     /// from the same source for the same field; the same value again
-    /// changes nothing, unless it comes with another reason or evidence,
-    /// which the open one takes (its id stays). `runID` is the Suggest
+    /// changes nothing, unless it comes with another reason, evidence or
+    /// layers (details, how sure, gloss), which the open one takes (its id
+    /// stays). `runID` is the Suggest
     /// Everything run it was sent with.
     @discardableResult
     func add(
@@ -145,6 +146,7 @@ final class FieldSuggestionStore {
         reason: String,
         source: SuggestionSource,
         evidence: [SuggestionEvidence] = [],
+        layers: SuggestionLayers? = nil,
         runID: SuggestionRun.ID? = nil
     ) -> (suggestion: FieldSuggestion, outcome: SuggestionAddOutcome) {
         let sameField = suggestions.filter { $0.appID == appID && $0.target == target && $0.source == source && isOpen($0) }
@@ -153,11 +155,15 @@ final class FieldSuggestionStore {
             let newReason = reason.trimmingCharacters(in: .whitespacesAndNewlines)
             let reasonChanged = !newReason.isEmpty && newReason != existing.reason
             let evidenceChanged = !evidence.isEmpty && evidence != existing.evidence
-            guard reasonChanged || evidenceChanged, let index = suggestions.firstIndex(where: { $0.id == existing.id }) else {
+            let layersChanged = layers != nil && layers != existing.layers
+            guard reasonChanged || evidenceChanged || layersChanged,
+                  let index = suggestions.firstIndex(where: { $0.id == existing.id })
+            else {
                 return (existing, .unchanged)
             }
             if reasonChanged { existing.reason = newReason }
             if evidenceChanged { existing.evidence = evidence }
+            if layersChanged { existing.layers = layers }
             suggestions[index] = existing
             save()
             return (existing, .updated)
@@ -170,6 +176,7 @@ final class FieldSuggestionStore {
             reason: reason,
             source: source,
             evidence: evidence,
+            layers: layers,
             createdAt: now()
         )
         nextNumber += 1

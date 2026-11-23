@@ -13,7 +13,7 @@ import Foundation
 struct ProposeEventTextsTool: MCPTool {
     var store = InAppEventsStore.shared
 
-    static let whyLimit = 240
+    static let whyLimit = AssistantTextLimits.why
 
     let definition = MCPToolDefinition(
         name: "propose_event_texts",
@@ -21,9 +21,12 @@ struct ProposeEventTextsTool: MCPTool {
         description: """
         Suggests an In-App Event's texts in more languages, shown in Atlas's In-App Events with Accept, Dismiss and \
         Accept All Languages. `texts` is a list of {locale, name (≤30 characters), shortDescription (≤50), longDescription \
-        (≤120), why}: all three written in that language, natural rather than literal (a winter event isn't one where \
-        December is summer), in the voice of that language's store page. `why` is one sentence for the person on why it \
-        reads this way (≤240). Over a limit, that language is refused with its count: shorten it and send it again. A \
+        (≤120), why, details, confidence, gloss}: all three written in that language, natural rather than literal (a \
+        winter event isn't one where December is summer), in the voice of that language's store page. `why` is one \
+        sentence for the person on why it reads this way (at most \(AssistantTextLimits.why) characters; the rest goes in \
+        `details`, at most \(AssistantTextLimits.details)), `confidence` how sure you are (1–3) and `gloss` what the name \
+        means in English (at most \(AssistantTextLimits.gloss)). Over a limit, that language is refused with its count: \
+        shorten it and send it again. A \
         language get_in_app_events lists in `queuedTexts` already has texts waiting in Review & Push and is refused: \
         leave it. Only \
         events that get_in_app_events marks editable take texts. Sending a language again replaces its waiting \
@@ -46,7 +49,17 @@ struct ProposeEventTextsTool: MCPTool {
                     {locale, name, shortDescription, longDescription, why} objects, one per language; with revise, only the \
                     texts to change, and why.
                     """,
-                    "items": ["type": "object"],
+                    "items": [
+                        "type": "object",
+                        "properties": .object(MCPToolDefinition.withLayers([
+                            "locale": MCPToolDefinition.string("An App Store locale code, e.g. pt-BR."),
+                            "name": MCPToolDefinition.string("At most 30 characters."),
+                            "shortDescription": MCPToolDefinition.string("At most 50 characters."),
+                            "longDescription": MCPToolDefinition.string("At most 120 characters."),
+                            "why": MCPToolDefinition.why("Why it reads this way."),
+                            "revise": ["type": "boolean", "description": "Revise this language's written texts."],
+                        ], gloss: true)),
+                    ],
                 ],
                 "revise": [
                     "type": "boolean",
@@ -82,7 +95,7 @@ struct ProposeEventTextsTool: MCPTool {
         for value in try arguments.array("texts") {
             let locale = value["locale"]?.stringValue ?? ""
             if revisesAll || value["revise"]?.boolValue == true {
-                let revision = Self.revision(value, locale: locale, of: event, queued: drafts[locale] ?? [:], source: context.clientName)
+                let revision = try Self.revision(value, locale: locale, of: event, queued: drafts[locale] ?? [:], source: context.clientName)
                 if let suggestion = revision.suggestion {
                     kept.append(suggestion)
                     revised.append(revision.json)
@@ -91,10 +104,10 @@ struct ProposeEventTextsTool: MCPTool {
                 }
                 continue
             }
-            let suggestion = InAppEventTextSuggestion(
+            let suggestion = try InAppEventTextSuggestion(
                 eventID: event.id, locale: locale, name: Self.trimmed(value["name"]), shortDescription: Self.trimmed(value["shortDescription"]),
                 longDescription: Self.trimmed(value["longDescription"]), why: String(Self.trimmed(value["why"]).prefix(Self.whyLimit)),
-                source: context.clientName, date: .now
+                source: context.clientName, date: .now, layers: MCPToolArguments(value.objectValue ?? [:]).layers()
             )
             let issues = Self.guidelineIssues(suggestion)
             if let reason = Self.refusal(suggestion, event: event, queuedLocales: queuedLocales) {

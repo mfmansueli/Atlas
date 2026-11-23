@@ -21,6 +21,9 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
     var reason: String
     var source: SuggestionSource
     var evidence: [SuggestionEvidence] = []
+    /// Details, how sure and a gloss, when the assistant sent them; nil in
+    /// data saved before they existed.
+    var layers: SuggestionLayers?
     var createdAt: Date
 
     init(
@@ -31,6 +34,7 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
         reason: String,
         source: SuggestionSource,
         evidence: [SuggestionEvidence] = [],
+        layers: SuggestionLayers? = nil,
         createdAt: Date = .now
     ) {
         self.id = id
@@ -40,6 +44,7 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
         self.reason = reason
         self.source = source
         self.evidence = evidence
+        self.layers = layers
         self.createdAt = createdAt
     }
 

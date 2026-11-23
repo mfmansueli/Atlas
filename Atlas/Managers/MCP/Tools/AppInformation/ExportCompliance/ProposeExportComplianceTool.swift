@@ -25,7 +25,9 @@ struct ProposeExportComplianceTool: MCPTool {
         "availableOnFrenchStore": ["type": "boolean", "description": "When not exempt: whether the app is on the App Store in France."],
         "appDescription": MCPToolDefinition.string("When not exempt: how the app uses encryption, for a new encryption declaration."),
         "declarationId": MCPToolDefinition.string("When not exempt: one of get_export_compliance's declarations to link the build to instead."),
-        "why": MCPToolDefinition.string("Why, in a sentence the person can check."),
+        "why": MCPToolDefinition.why("Why, for the person to check."),
+        "details": MCPToolDefinition.detailsProperty,
+        "confidence": MCPToolDefinition.confidenceProperty,
         "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. Lumen/Info.plist:42 — ITSAppUsesNonExemptEncryption NO"],
         "could_not_see": MCPToolDefinition.string("What the project can't show, e.g. a server's or an SDK's own encryption."),
         "run": MCPToolDefinition.string("The Suggest Everything run begin_suggestions returned, if this is part of one."),
@@ -96,7 +98,8 @@ struct ProposeExportComplianceTool: MCPTool {
             summary: MCPExportComplianceState.summary(of: answers),
             why: arguments.optionalString("why") ?? "",
             evidence: arguments.optionalStrings("evidence") ?? [],
-            couldNotSee: arguments.optionalString("could_not_see")
+            couldNotSee: arguments.optionalString("could_not_see"),
+            layers: arguments.layers()
         )
         context.workspace.services.appInformation.notes.setNotes(notes, for: app.id)
         let queue = context.workspace.changes

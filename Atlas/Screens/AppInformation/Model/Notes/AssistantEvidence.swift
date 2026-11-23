@@ -18,4 +18,6 @@ struct AssistantEvidence: Hashable, Codable, Sendable {
     var evidence: [String]
     /// What the assistant couldn't see from the code.
     var couldNotSee: String?
+    /// Details and how sure, beside the why; nil in answers saved before.
+    var layers: SuggestionLayers?
 }

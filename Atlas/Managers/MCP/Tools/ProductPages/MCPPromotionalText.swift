@@ -56,11 +56,12 @@ enum MCPPromotionalText {
     /// offered, with the phrases marked and why.
     static func refused(
         pageID: String, locale: String, text: String, issues: [StoreTextGuidelineIssue], reason: String, source: String,
-        evidence: [SuggestionEvidence]? = nil
+        evidence: [SuggestionEvidence]? = nil, layers: SuggestionLayers? = nil
     ) -> ProductPageTextSuggestion {
         ProductPageTextSuggestion(
             pageID: pageID, locale: locale, text: text, reason: reason, source: source,
-            refusal: ProductPageTextRefusal.reason(for: issues), refusedPhrases: issues.flatMap(\.phrases), evidence: evidence
+            refusal: ProductPageTextRefusal.reason(for: issues), refusedPhrases: issues.flatMap(\.phrases), evidence: evidence,
+            layers: layers
         )
     }
 

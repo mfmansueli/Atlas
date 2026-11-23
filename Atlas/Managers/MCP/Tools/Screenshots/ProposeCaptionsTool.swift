@@ -14,7 +14,9 @@ struct ProposeCaptionsTool: MCPTool {
         name: "propose_captions",
         title: "Propose captions",
         description: """
-        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?}. Each item is measured \
+        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?, gloss?}, with a reason (one \
+        sentence, at most \(AssistantTextLimits.why) characters), optional details and confidence 1–3; a gloss says \
+        what a caption not in English means. Each item is measured \
         against the current template on iPhone and iPad and refused when it doesn't fit (the reason says by how \
         much, e.g. "needs 3 lines at 72 u; the template allows 2"), when the font can't draw it, when the \
         locale is unknown, or when App Review would reject it: pricing such as “free”, prices, discounts or trials \
@@ -30,7 +32,7 @@ struct ProposeCaptionsTool: MCPTool {
         headline.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "items": [
                     "type": "array",
@@ -38,6 +40,7 @@ struct ProposeCaptionsTool: MCPTool {
                         "type": "object",
                         "properties": [
                             "locale": ["type": "string"], "slot": ["type": "integer"], "headline": ["type": "string"], "subhead": ["type": "string"],
+                            "gloss": MCPToolDefinition.glossProperty,
                             "placement": [
                                 "type": "string", "enum": ["search", "header", "text"],
                                 "description": """
@@ -53,10 +56,10 @@ struct ProposeCaptionsTool: MCPTool {
                         "required": ["locale", "headline"],
                     ],
                 ],
-                "reason": MCPToolDefinition.string("Why, in a sentence or two the person reads before accepting."),
+                "reason": MCPToolDefinition.why("Why, for the person before accepting."),
                 "title": MCPToolDefinition.string("A short title, e.g. Shorter German captions."),
                 "run": MCPToolDefinition.string("An Autopilot run's ID, when next_step asked for write_captions."),
-            ],
+            ]),
             required: ["appId", "items", "reason"]
         ),
         proposalKind: .screenshots
@@ -97,7 +100,7 @@ struct ProposeCaptionsTool: MCPTool {
             let proposal = try ScreenshotProposal.captions(
                 id: ProposeTemplateTool.newID(), client: context.clientName, receivedAt: .now,
                 title: arguments.optionalString("title") ?? String(localized: "Captions for \(names.formatted(.list(type: .and)))"),
-                reason: reason, items: queued
+                reason: reason, items: queued, layers: arguments.layers()
             )
             draft.document.proposals.append(proposal)
             try await draft.save()
@@ -140,6 +143,9 @@ struct ProposeCaptionsTool: MCPTool {
                 return .failure(Refusal(message: layout.headline.refusalText + suffix))
             }
         }
-        return .success(CaptionProposalItem(locale: locale.code, slot: slot, headline: headline, subhead: subhead))
+        let gloss = item["gloss"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return .success(CaptionProposalItem(
+            locale: locale.code, slot: slot, headline: headline, subhead: subhead, gloss: gloss?.isEmpty == false ? gloss : nil
+        ))
     }
 }

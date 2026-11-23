@@ -34,7 +34,7 @@ struct ProposeTemplateTool: MCPTool {
         app's real App Store rating, which Atlas checks before every push.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "basedOnVersion": ["type": "integer", "description": "The template version you read with get_template."],
                 "ops": [
@@ -46,9 +46,9 @@ struct ProposeTemplateTool: MCPTool {
                         "required": ["path", "value"],
                     ],
                 ],
-                "reason": MCPToolDefinition.string("Why, in a sentence or two the person reads before accepting."),
+                "reason": MCPToolDefinition.why("Why, for the person before accepting."),
                 "title": MCPToolDefinition.string("A short title, e.g. Smaller headline, hyphenation on."),
-            ],
+            ]),
             required: ["appId", "basedOnVersion", "ops", "reason"]
         ),
         proposalKind: .screenshots
@@ -78,7 +78,7 @@ struct ProposeTemplateTool: MCPTool {
         let proposal = try ScreenshotProposal.template(
             id: Self.newID(), client: context.clientName, receivedAt: .now,
             title: arguments.optionalString("title") ?? Self.title(for: operations), reason: reason,
-            proposal: TemplateProposal(basedOn: basedOn, operations: operations)
+            proposal: TemplateProposal(basedOn: basedOn, operations: operations), layers: arguments.layers()
         )
         draft.document.proposals.append(proposal)
         try await draft.save()
