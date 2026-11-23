@@ -5,10 +5,11 @@
 
 import SwiftUI
 
-/// One data type: collected or not, who answered and how sure, the
-/// evidence, Accept and Reject for a suggestion nobody reviewed (tinted
-/// purple), then for a collected type its purposes, whether it's linked
-/// and used for tracking, the assistant's reason, and a conflict to settle.
+/// One data type in its own box: collected or not, who answered, how sure
+/// and where it stands; for a collected type its purposes, whether it's
+/// linked and used for tracking; the assistant's reason, its evidence, and
+/// Reject and Accept for a suggestion nobody reviewed (the box tinted
+/// purple); then a conflict to settle.
 struct PrivacyDataTypeRow: View {
     @Bindable var viewModel: AppPrivacyViewModel
     let type: PrivacyDataType
@@ -21,14 +22,16 @@ struct PrivacyDataTypeRow: View {
             HStack(spacing: Spacing.small) {
                 Text(type.name)
                     .font(.callout.weight(.semibold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(1)
                 collectedPicker(answer)
+                Spacer(minLength: 0)
                 if let entry {
                     sourceTag(entry)
+                    if let suggestion = entry.suggestion, entry.status != .yours || entry.conflict == nil {
+                        PrivacyConfidenceBadge(confidence: suggestion.confidence)
+                    }
+                    PrivacyRowStatusPill(status: entry.status)
                 }
-            }
-            if let entry {
-                PrivacyDataTypeReviewLine(viewModel: viewModel, type: type, entry: entry)
             }
             if answer.collected {
                 PrivacyPurposeToggles(answer: answer) { viewModel.togglePurpose($0, for: type) }
@@ -45,6 +48,9 @@ struct PrivacyDataTypeRow: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            if let entry {
+                PrivacyDataTypeReviewLine(viewModel: viewModel, type: type, entry: entry)
+            }
             if let entry, let conflict = entry.conflict {
                 PrivacyConflictBox(yours: entry.answer, theirs: conflict) {
                     viewModel.keepYours(type)
@@ -56,11 +62,11 @@ struct PrivacyDataTypeRow: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small + 2)
-        .background(background(entry))
-        .overlay(alignment: .leading) {
-            if isMismatched {
-                Rectangle().fill(Palette.warnMark).frame(width: 3).accessibilityHidden(true)
-            }
+        .background(background(entry), in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
+                .strokeBorder(isMismatched ? Palette.warnMark : Palette.separator, lineWidth: isMismatched ? 1.5 : 1)
+                .accessibilityHidden(true)
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(accessibilityLabel(entry, answer: answer)))

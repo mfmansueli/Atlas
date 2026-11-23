@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// Mark as Published once every step is ticked, or when it was marked.
+/// Mark as Published once the worksheet is done (ticking the steps is the
+/// person's own help, not a gate), or when it was marked.
 struct PrivacyChecklistFooter: View {
     let viewModel: AppPrivacyViewModel
 
@@ -24,7 +25,7 @@ struct PrivacyChecklistFooter: View {
             .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("appInformation.appPrivacy.checklist.published")
-        } else if viewModel.canMarkPublished, viewModel.worksheet.allStepsChecked {
+        } else if viewModel.canMarkPublished {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Text("""
                 Done in App Store Connect and published there? Atlas saves today’s date and a copy of these answers, so it can tell \

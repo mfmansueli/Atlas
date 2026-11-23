@@ -20,6 +20,9 @@ struct MainView: View {
     /// What covers the whole window, e.g. an event's artwork full size.
     @State private var cover = WindowCover()
     @State private var isSyncing: Bool
+    /// The first sync read every app: "Your 6 apps are ready" waits for
+    /// Open Atlas.
+    @State private var isSyncRead = false
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     private let services: WorkspaceServices
     private let accounts: [TeamAccount]
@@ -234,7 +237,8 @@ struct MainView: View {
                     teamName: accounts.first { $0.id == currentAccountID && $0.isNamed }?.name,
                     syncedNames: viewModel.apps.filter { summaries.isSettled($0.id) }.map(\.name)
                 ),
-                onCancel: onCancelFirstSync
+                onCancel: onCancelFirstSync,
+                onOpen: openAction
             )
         } else {
             library
@@ -452,9 +456,21 @@ extension MainView {
         async let icons: Void = viewModel.loadIcons()
         await summaries.prefetch(viewModel.apps)
         if isSyncing, !Task.isCancelled {
-            isSyncing = false
-            onFirstSyncFinished()
+            isSyncRead = true
         }
         await icons
+    }
+
+    /// Open Atlas, once the first sync read every app.
+    private var openAction: (() -> Void)? {
+        guard isSyncRead else { return nil }
+        return { openAfterFirstSync() }
+    }
+
+    /// Open Atlas on "Your 6 apps are ready": the library, and the tour.
+    private func openAfterFirstSync() {
+        isSyncing = false
+        isSyncRead = false
+        onFirstSyncFinished()
     }
 }

@@ -5,14 +5,14 @@
 
 import SwiftUI
 
-/// The filters with their counts, Accept All High-Confidence (which
-/// skips conflicts and types with an open question; hidden when there's
-/// nothing to accept), and Show All 35 Data Types.
+/// Under "What … collects": the filters with their counts and Show All 35
+/// Data Types.
 struct PrivacyWorksheetFilterBar: View {
     @Bindable var viewModel: AppPrivacyViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
+        // Wraps under a narrow window instead of pushing the page wider.
+        FlowLayout(spacing: Spacing.small) {
             Picker(String(localized: "Show"), selection: $viewModel.filter) {
                 ForEach(PrivacyWorksheetFilter.allCases) { filter in
                     Text(viewModel.title(of: filter)).tag(filter)
@@ -23,30 +23,16 @@ struct PrivacyWorksheetFilterBar: View {
             .controlSize(.regular)
             .fixedSize()
             .accessibilityIdentifier("appInformation.appPrivacy.filter")
-            HStack(spacing: Spacing.small) {
-                let count = viewModel.highConfidenceCount
-                if count > 0 {
-                    Button {
-                        viewModel.acceptAllHighConfidence()
-                    } label: {
-                        HStack(spacing: Spacing.xSmall) {
-                            Text("Accept All High-Confidence")
-                            SuggestionBadge(count: count, isSmall: true)
-                        }
-                    }
-                    .accessibilityLabel(Text("Accept All High-Confidence, \(count) suggested"))
-                    .accessibilityIdentifier("appInformation.appPrivacy.acceptHighConfidence")
-                }
-                Button(viewModel.showsAllTypes
-                    ? String(localized: "Hide Untouched Types")
-                    : String(localized: "Show All \(PrivacyDataType.allCases.count) Data Types"))
-                {
-                    viewModel.showsAllTypes.toggle()
-                    viewModel.filter = .all
-                }
-                .accessibilityIdentifier("appInformation.appPrivacy.showAll")
+            Button(viewModel.showsAllTypes
+                ? String(localized: "Hide Untouched Types")
+                : String(localized: "Show All \(PrivacyDataType.allCases.count) Data Types"))
+            {
+                viewModel.showsAllTypes.toggle()
+                viewModel.filter = .all
             }
             .controlSize(.regular)
+            .accessibilityIdentifier("appInformation.appPrivacy.showAll")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

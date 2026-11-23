@@ -62,9 +62,12 @@ final class ConnectUITests: XCTestCase {
         XCTAssertTrue(connect.isEnabled)
         connect.click()
 
-        // The debug checker accepts the key, the first sync runs, then the
-        // library opens.
-        XCTAssertTrue(element("sidebar.section.overview").waitForExistence(timeout: 30))
+        // The debug checker accepts the key, the first sync runs, then
+        // Open Atlas opens the library.
+        let open = app.buttons["sync.open"]
+        XCTAssertTrue(open.waitForExistence(timeout: 30))
+        open.click()
+        XCTAssertTrue(element("sidebar.section.overview").waitForExistence(timeout: 10))
         XCTAssertTrue(element("sidebar.appSwitcher").exists)
     }
 

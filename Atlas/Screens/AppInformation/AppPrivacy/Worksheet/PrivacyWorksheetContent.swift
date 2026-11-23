@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// The worksheet once it has started: the scan, what changed and what
-/// disagrees, the first question, the open questions, then every data type
-/// by category.
+/// disagrees, the first question, the open questions, then what the app
+/// collects (Scan the Code Again…, Accept High-Confidence) by category, and
+/// the label people will see.
 struct PrivacyWorksheetContent: View {
     let viewModel: AppPrivacyViewModel
 
@@ -31,6 +32,7 @@ struct PrivacyWorksheetContent: View {
                 PrivacyOpenQuestionsBox(viewModel: viewModel)
             }
             if worksheet.collects?.value != false {
+                PrivacyCollectsHeading(viewModel: viewModel)
                 PrivacyWorksheetFilterBar(viewModel: viewModel)
                 ForEach(viewModel.visibleCategories, id: \.category) { item in
                     PrivacyCategoryBox(viewModel: viewModel, category: item.category, types: item.types)
@@ -42,6 +44,7 @@ struct PrivacyWorksheetContent: View {
                         .accessibilityIdentifier("appInformation.appPrivacy.emptyFilter")
                 }
             }
+            PrivacyLabelSummaryBox(preview: worksheet.labelPreview)
         }
     }
 }

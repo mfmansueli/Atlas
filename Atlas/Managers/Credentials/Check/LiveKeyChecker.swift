@@ -32,7 +32,8 @@ struct LiveKeyChecker: KeyChecker {
             appCount: page?.count ?? 0,
             milliseconds: Int((elapsed / .milliseconds(1)).rounded()),
             salesAccess: salesAccess(client),
-            date: now()
+            date: now(),
+            appNames: page?.data.compactMap(\.attributes?.name)
         )
     }
 
@@ -64,6 +65,11 @@ struct LiveKeyChecker: KeyChecker {
 
     private struct AppsPageResource: Decodable {
         var id: String
+        var attributes: AppsPageAttributes?
+    }
+
+    private struct AppsPageAttributes: Decodable {
+        var name: String?
     }
 
     private struct AppsPageMeta: Decodable {

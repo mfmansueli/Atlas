@@ -33,6 +33,15 @@ struct LiveKeyCheckerTests {
         #expect(transport.requests.allSatisfy { $0.value(forHTTPHeaderField: "Authorization")?.hasPrefix("Bearer ") == true })
     }
 
+    @Test func keepsTheAppsNamesFromTheSameRequest() async throws {
+        let named = #"{"data":[{"type":"apps","id":"1","attributes":{"name":"Trailhead"}},{"type":"apps","id":"2","attributes":{"name":"Kiln"}}]}"#
+        let (checker, transport) = checker([.init(body: named), .init(statusCode: 400, body: "{}")])
+        let check = try await checker.check(TestKeys.credentials())
+        #expect(check.appNames == ["Trailhead", "Kiln"])
+        #expect(check.teamName == nil)
+        #expect(transport.requests.count == 2, "No extra request for the names")
+    }
+
     @Test func pageLengthCountsWhenThereIsNoTotal() async throws {
         let (checker, _) = checker([.init(body: #"{"data":[{"type":"apps","id":"1"}]}"#), .init(statusCode: 400, body: "{}")])
         let check = try await checker.check(TestKeys.credentials())

@@ -7,7 +7,8 @@ import SwiftUI
 
 /// "Fill in App Store Connect": the steps to enter the reviewed answers in
 /// the order App Store Connect asks, each with Copy and a tick, then Mark
-/// as Published. Closed while the worksheet isn't done.
+/// as Published. While the worksheet isn't done, an amber line says what's
+/// left above the steps, and Mark as Published waits.
 struct PrivacyChecklistTab: View {
     let viewModel: AppPrivacyViewModel
 
@@ -16,9 +17,12 @@ struct PrivacyChecklistTab: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 PrivacyChecklistIntro(viewModel: viewModel)
+                // What's left in the worksheet doesn't close the steps: the
+                // person can start, and Mark as Published waits for it.
                 if let reason = worksheet.blockedReason, worksheet.publication == nil {
                     blocked(reason)
-                } else {
+                }
+                if viewModel.showsSteps {
                     PrivacyChecklistSteps(viewModel: viewModel)
                     PrivacyChecklistFooter(viewModel: viewModel)
                 }

@@ -23,15 +23,28 @@ struct ConnectView: View {
     /// and the header above already shows the icon.
     private let onBack: (() -> Void)?
     private let startsWithDropHover: Bool
+    /// "Add Another Key…" while a team is connected: the team that stays,
+    /// which the header names.
+    private let keptTeam: String?
 
     init(
         checker: any KeyChecker,
         notice: String? = nil,
         onCancel: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
+        keptTeam: String? = nil,
+        prefill: (@MainActor (ConnectViewModel) -> Void)? = nil,
         onConnect: @escaping (AppStoreConnectCredentials, KeyAccessCheck) throws -> Void
     ) {
-        self.init(viewModel: ConnectViewModel(checker: checker, onConnect: onConnect), notice: notice, onCancel: onCancel, onBack: onBack)
+        let viewModel = ConnectViewModel(checker: checker, onConnect: onConnect)
+        prefill?(viewModel)
+        self.init(
+            viewModel: viewModel,
+            notice: notice,
+            onCancel: onCancel,
+            onBack: onBack,
+            keptTeam: keptTeam
+        )
     }
 
     /// With an existing model, for DEBUG scenes and previews, optionally
@@ -41,6 +54,7 @@ struct ConnectView: View {
         notice: String? = nil,
         onCancel: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
+        keptTeam: String? = nil,
         showsHelp: Bool = false,
         showsDropHover: Bool = false
     ) {
@@ -49,6 +63,7 @@ struct ConnectView: View {
         self.notice = notice
         self.onCancel = onCancel
         self.onBack = onBack
+        self.keptTeam = keptTeam
         startsWithDropHover = showsDropHover
     }
 
@@ -58,18 +73,23 @@ struct ConnectView: View {
                 if onBack != nil {
                     welcomeTitle
                 } else {
-                    ConnectHeader(title: isSheet ? "Add Another Key" : "Connect to App Store Connect")
-                        .padding(.bottom, Spacing.tiny)
+                    ConnectHeader(
+                        title: isSheet ? "Add Another Key" : "Connect to App Store Connect",
+                        eyebrow: keptTeam.map { _ in AddKeyCopy.eyebrow },
+                        subtitle: keptTeam.map(AddKeyCopy.subtitle(keeping:))
+                    )
+                    .padding(.bottom, Spacing.tiny)
                 }
                 if let notice {
                     InlineMessage.warning(notice)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 form
-                help
+                // Under the fields, where the person fixes it (board 45).
                 if let failure = viewModel.failure {
                     ConnectFailureBanner(failure: failure) { Task { await viewModel.connect() } }
                 }
+                help
                 footer
             }
             .frame(maxWidth: 500)

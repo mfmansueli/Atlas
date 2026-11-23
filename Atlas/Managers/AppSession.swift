@@ -108,6 +108,26 @@ final class AppSession {
         setCurrentKeyID(credentials.keyID)
     }
 
+    /// "Add Another Key…" while a key is in use: saves an already-checked
+    /// key (replacing one with the same key ID) and its team's name, but
+    /// stays on the key in use until the person switches.
+    func add(_ credentials: AppStoreConnectCredentials, check: KeyAccessCheck) throws {
+        var credentials = credentials
+        if credentials.teamName == nil {
+            credentials.teamName = keys.first { $0.keyID == credentials.keyID }?.teamName
+        }
+        try store.save(credentials)
+        if let replaced = keys.firstIndex(where: { $0.keyID == credentials.keyID }) {
+            keys[replaced] = credentials
+        } else {
+            keys.append(credentials)
+        }
+        loadErrorMessage = nil
+        record(check, for: credentials.keyID)
+        if let teamName = check.teamName { recordTeamName(teamName, for: credentials.keyID) }
+        if currentKeyID == nil { setCurrentKeyID(credentials.keyID) }
+    }
+
     /// Switches the main window to another saved key.
     func select(keyID: String) {
         guard keyID != currentKeyID, keys.contains(where: { $0.keyID == keyID }) else { return }

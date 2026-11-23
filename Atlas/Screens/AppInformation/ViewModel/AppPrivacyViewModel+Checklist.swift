@@ -16,6 +16,14 @@ extension AppPrivacyViewModel {
 
     var steps: [PrivacyChecklistStep] { worksheet.checklistSteps }
 
+    /// The steps show once the first question has a reviewed answer (or
+    /// it was published), even while the rest of the worksheet waits:
+    /// before that, step 1 would have nothing true to say.
+    var showsSteps: Bool {
+        let worksheet = worksheet
+        return worksheet.reviewedAnswers.collects != nil || worksheet.publication != nil
+    }
+
     func isChecked(_ step: PrivacyChecklistStep) -> Bool {
         worksheet.isChecked(step)
     }
