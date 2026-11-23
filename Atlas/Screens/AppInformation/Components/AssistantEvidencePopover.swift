@@ -16,7 +16,10 @@ struct AssistantEvidencePopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small + 2) {
-            SourceTag(source: .assistant(client: evidence.client))
+            HStack(spacing: Spacing.xSmall) {
+                SourceTag(source: .assistant(client: evidence.client))
+                if let confidence = evidence.layers?.confidence { HowSureMeter(confidence: confidence) }
+            }
             Text(title)
                 .font(.body.weight(.semibold))
             Text(evidence.summary)
@@ -31,6 +34,7 @@ struct AssistantEvidencePopover: View {
             if let couldNotSee = evidence.couldNotSee {
                 couldNotSeeBox(couldNotSee)
             }
+            if let details = evidence.layers?.details { SuggestionDetailsDisclosure(details: details) }
             HStack {
                 Spacer()
                 Button("Reject", action: onReject)
