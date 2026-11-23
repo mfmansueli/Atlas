@@ -36,9 +36,12 @@ struct ProductPageTestProposal: Codable, Hashable, Sendable, Identifiable {
     /// What happened once the person made it: the outcome's line.
     var outcome: String?
     var decidedAt: Date?
+    /// Details and how sure, beside the reason; nil in proposals saved
+    /// before.
+    var layers: SuggestionLayers?
 
     static let maxName = 64
-    static let maxReason = 300
+    static let maxReason = AssistantTextLimits.why
     static let trafficRange = 1...100
 
     /// A new proposal's ID.

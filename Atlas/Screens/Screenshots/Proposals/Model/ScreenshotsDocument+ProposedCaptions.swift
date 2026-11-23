@@ -18,7 +18,10 @@ extension ScreenshotsDocument {
         for proposal in waitingProposals where proposal.kind == .captions {
             for item in proposal.captions where item.decision == nil {
                 let suggestion = ProposedCaption(
-                    proposalID: proposal.id, item: item, client: proposal.client, reason: proposal.reason, receivedAt: proposal.receivedAt
+                    proposalID: proposal.id, item: item, client: proposal.client, reason: proposal.reason, receivedAt: proposal.receivedAt,
+                    layers: SuggestionLayers(
+                        details: proposal.layers?.details, confidence: proposal.layers?.confidence, gloss: item.gloss
+                    ).nonEmpty
                 )
                 if let kept = newest[item.key], kept.receivedAt > proposal.receivedAt { continue }
                 newest[item.key] = suggestion

@@ -97,6 +97,14 @@ struct PageShotsPlanStep: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pages.shots.reason")
             }
+            if let confidence = plan?.layers?.confidence {
+                HStack(spacing: Spacing.xSmall) {
+                    HowSureMeter(confidence: confidence)
+                    Text(confidence.word).font(.subheadline).foregroundStyle(Palette.label2)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            if let details = plan?.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
     }
 

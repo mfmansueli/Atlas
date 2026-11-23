@@ -43,7 +43,7 @@ struct ProposeComplianceAnswersTool: MCPTool {
                 "answers": [
                     "type": "array",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withLayers([
                             "rule": MCPToolDefinition.string("traderStatus, icpFilingNumber, securityAssessment, aiGeneratedContent or medicalDevice."),
                             "answer": MCPToolDefinition.string(
                                 "trader, nonTrader, icpNumber, stopSelling, needsAssessment, noAssessment, offersAI, noAI, regulated or notRegulated."
@@ -61,9 +61,9 @@ struct ProposeComplianceAnswersTool: MCPTool {
                                 "name": MCPToolDefinition.string("The registered filing name, only if the project shows it."),
                                 "technologyOwner": MCPToolDefinition.string("The company whose model it is, when it isn't the person's own."),
                             ]),
-                            "why": MCPToolDefinition.string("Why, in a sentence the person can check."),
+                            "why": MCPToolDefinition.why("Why, for the person to check."),
                             "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. Lumen/Legal/Imprint.md:3 — company address"],
-                        ],
+                        ]),
                         required: ["rule", "answer"]
                     ),
                 ],
@@ -117,12 +117,13 @@ struct ProposeComplianceAnswersTool: MCPTool {
                 MCPComplianceRunTarget.noteArrival(of: MCPComplianceRunTarget.target(for: rule), appID: app.id, runID: runID, context: context)
                 continue
             }
-            let evidence = AssistantEvidence(
+            let evidence = try AssistantEvidence(
                 client: context.clientName,
                 summary: answer.title,
                 why: object["why"]?.stringValue ?? "",
                 evidence: (object["evidence"]?.arrayValue ?? []).compactMap(\.stringValue),
-                couldNotSee: couldNotSee
+                couldNotSee: couldNotSee,
+                layers: MCPToolArguments(object).layers()
             )
             notes.complianceSuggestions.removeAll { $0.rule == rule }
             notes.complianceSuggestions.append(ComplianceSuggestion(answer: answer, evidence: evidence))

@@ -133,6 +133,30 @@ struct AnalyticsToolsTests {
         #expect(store.findings(for: DebugFixtures.AppID.lumen).fromAssistants.count { $0.id == "cc.japan" } == 1)
     }
 
+    @Test func aFindingKeepsItsDetailsAndFollowsTheHouseLimits() async throws {
+        let base: [String: JSONValue] = [
+            "appId": "Lumen Journal", "title": "Japan opens the page less", "why": "4% of Japanese visitors open it; others 9%.",
+            "area": "storePage", "howSure": "120 of 3,000.", "details": "Japan: 120 of 3,000 views; Germany 270 of 3,000.", "id": "cc.details",
+        ]
+        let added = try await call(AddFindingTool(store: store), base)
+        #expect(added.result["status"] == "added")
+        let finding = try #require(store.findings(for: DebugFixtures.AppID.lumen).fromAssistants.first { $0.id == "cc.details" })
+        #expect(finding.details == "Japan: 120 of 3,000 views; Germany 270 of 3,000.")
+
+        var wordy = base
+        wordy["title"] = "Japan opens the store page far less often than the others"
+        #expect(try await call(AddFindingTool(store: store), wordy).result["reason"]
+            == "title has 11 words; at most 8. Move the rest to why or details.")
+        var longWhy = base
+        longWhy["why"] = .string(String(repeating: "w", count: 164))
+        #expect(try await call(AddFindingTool(store: store), longWhy).result["reason"]
+            == "why is 164 characters; at most 110. Move the rest to details.")
+        var longDetails = base
+        longDetails["details"] = .string(String(repeating: "d", count: 401))
+        #expect(try await call(AddFindingTool(store: store), longDetails).result["reason"]
+            == "details is 401 characters; at most 400. Keep the numbers that decide it.")
+    }
+
     @Test func aFindingThatCantStandIsRefusedWithTheReason() async throws {
         let base: [String: JSONValue] = ["appId": "Lumen Journal", "title": "T", "why": "W", "area": "pricing", "howSure": "H"]
         var long = base

@@ -49,7 +49,7 @@ enum MCPOfferTermsArguments {
     ]
 
     static let reasonProperties: [String: JSONValue] = [
-        "reason": MCPToolDefinition.string("Why, in a sentence the person reads in Review & Push."),
+        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person reads in Review & Push."),
         "evidence": [
             "type": "array",
             "items": ["type": "string"],

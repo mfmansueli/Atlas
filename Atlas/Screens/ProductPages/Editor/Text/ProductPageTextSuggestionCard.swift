@@ -32,6 +32,7 @@ struct ProductPageTextSuggestionCard: View {
                         .fixedSize()
                         .accessibilityIdentifier("pages.textSuggestion.evidence")
                 }
+                if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
@@ -61,6 +62,7 @@ struct ProductPageTextSuggestionCard: View {
                         .accessibilityIdentifier("pages.textSuggestion.value")
                 }
             }
+            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
             HStack(spacing: Spacing.xSmall) {
                 Text("\(suggestion.text.count) / \(ProductPageField.promotionalTextLimit)")
                     .font(.footnote.monospacedDigit())
@@ -75,6 +77,7 @@ struct ProductPageTextSuggestionCard: View {
                     .accessibilityIdentifier("pages.textSuggestion.accept")
             }
             .controlSize(.regular)
+            if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)

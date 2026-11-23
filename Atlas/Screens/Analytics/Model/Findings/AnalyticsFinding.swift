@@ -28,6 +28,9 @@ struct AnalyticsFinding: Hashable, Sendable, Identifiable, Codable {
     /// For an assistant's finding: what it read for it (tools, reports,
     /// files), shown under the finding.
     var read: [String]?
+    /// For an assistant's finding: the cause and the rest of the numbers,
+    /// shown on demand. nil in findings saved before it existed.
+    var details: String?
 
     var area: AnalyticsArea { action.area }
 }

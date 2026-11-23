@@ -60,7 +60,7 @@ struct ProposeEventDetailsTool: MCPTool {
                 ),
                 "eventStart": MCPToolDefinition.string("When the event starts, ISO 8601 with a time zone, e.g. 2026-11-23T00:00:00Z: in the future."),
                 "eventEnd": MCPToolDefinition.string("When it ends, ISO 8601 with a time zone: 15 minutes to 31 days after eventStart."),
-                "reason": MCPToolDefinition.string("Why, in one sentence, for the person."),
+                "reason": MCPToolDefinition.shortWhy("Why, in one sentence, for the person."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "Where it comes from: files and lines."],
             ],
             required: ["appId", "eventId", "reason"]

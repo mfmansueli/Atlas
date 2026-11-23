@@ -29,7 +29,7 @@ struct ProposeAppVersionTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "versionString": MCPToolDefinition.string("e.g. 1.5"),
                 "platform": MCPToolDefinition.string("IOS, MAC_OS, VISION_OS or TV_OS."),
-                "reason": MCPToolDefinition.string("Why this number, in a sentence the person can check."),
+                "reason": MCPToolDefinition.shortWhy("Why this number, in a sentence the person can check."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. Lumen.xcodeproj — MARKETING_VERSION = 1.5"],
             ],
             required: ["appId", "versionString"]

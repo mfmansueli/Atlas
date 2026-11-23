@@ -39,7 +39,7 @@ struct ProposePageTestTool: MCPTool {
         action: withdraw with proposalId takes back your own pending proposal.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "action": ["type": "string", "enum": ["create", "deleteDraft", "withdraw"], "description": "create (default), deleteDraft or withdraw."],
                 "name": MCPToolDefinition.string("The test's name in App Store Connect, up to 64 characters."),
@@ -56,11 +56,11 @@ struct ProposePageTestTool: MCPTool {
                 ],
                 "locales": ["type": "array", "items": ["type": "string"], "description": "The languages to test; default all."],
                 "startsTest": ["type": "boolean", "description": "Send it to App Review once made. Default false (a draft)."],
-                "reason": MCPToolDefinition.string("Why this test, in a sentence the person reads."),
+                "reason": MCPToolDefinition.why("Why this test, for the person."),
                 "evidence": ["type": "array", "items": evidenceSchema, "description": "What it's based on."],
                 "testId": MCPToolDefinition.string("deleteDraft: the draft's testId from get_page_tests."),
                 "proposalId": MCPToolDefinition.string("withdraw: your proposal's id."),
-            ],
+            ]),
             required: ["appId"]
         ),
         proposalKind: .artwork
@@ -156,7 +156,7 @@ struct ProposePageTestTool: MCPTool {
             name: arguments.optionalString("name"), placement: placement, trafficProportion: arguments.optionalInt("trafficProportion"),
             treatment: arguments.optionalString("treatment") ?? "variant", assets: assets, locales: locales,
             startsTest: arguments.optionalBool("startsTest") ?? false, reason: arguments.optionalString("reason") ?? "",
-            evidence: evidence(arguments)
+            evidence: evidence(arguments), layers: arguments.layers()
         )
     }
 

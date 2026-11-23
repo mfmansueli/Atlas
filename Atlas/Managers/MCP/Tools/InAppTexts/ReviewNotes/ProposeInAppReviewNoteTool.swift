@@ -28,7 +28,7 @@ struct ProposeInAppReviewNoteTool: MCPTool {
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "productId": MCPToolDefinition.string("The product ID, e.g. com.SimProps.complete (or its column, com.SimProps.complete.reviewNote)."),
                 "note": MCPToolDefinition.string("The whole Review Notes, within 4,000 characters."),
-                "reason": MCPToolDefinition.string("One sentence: why it changes."),
+                "reason": MCPToolDefinition.shortWhy("One sentence: why it changes."),
                 "evidence": ["type": "array", "items": evidenceSchema],
                 "notes": [
                     "type": "array",
@@ -37,7 +37,7 @@ struct ProposeInAppReviewNoteTool: MCPTool {
                         [
                             "productId": MCPToolDefinition.string("The product ID."),
                             "note": MCPToolDefinition.string("The whole Review Notes."),
-                            "reason": MCPToolDefinition.string("Why it changes."),
+                            "reason": MCPToolDefinition.shortWhy("Why it changes."),
                             "evidence": ["type": "array", "items": evidenceSchema],
                         ],
                         required: ["productId", "note"]

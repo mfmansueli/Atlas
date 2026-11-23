@@ -19,7 +19,8 @@ struct ProposePageScreenshotsTool: MCPTool {
         title: "Plan a product page's screenshots",
         description: """
         Sends the plan of a custom product page's own screenshots after get_page_screenshots: `angle` (the page's story \
-        in a sentence, ≤200 characters), `reason` (why this order and these words for this audience, ≤300), `screens` in \
+        in a sentence, ≤200 characters), `reason` (why this order and these words for this audience, one sentence, at most \
+        \(AssistantTextLimits.why) characters; the rest in `details`, with `confidence` 1–3), `screens` in \
         the page's order [{screen, captions: {locale: {headline, subhead}}}], each `screen` one of the default set's, \
         numbered from 1, at most 10, and `languages` (the ones you think need the page's own images; the primary is \
         always among them). Every screen needs a caption in the primary language. Atlas checks each caption against App \
@@ -30,14 +31,14 @@ struct ProposePageScreenshotsTool: MCPTool {
         goes with its captions. You can't push: the person makes the set, looks at it and puts it in Review & Push.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "page": MCPToolDefinition.string("The page's name or id, as get_page_screenshots has it."),
                 "angle": MCPToolDefinition.string("The page's story in a sentence, e.g. “Privacy first: the lock, then writing, then search.”"),
-                "reason": MCPToolDefinition.string("Why this order and these words, for this page's audience."),
+                "reason": MCPToolDefinition.why("Why this order and these words, for this page's audience."),
                 "screens": Self.screensSchema,
                 "languages": ["type": "array", "items": ["type": "string"], "description": "The languages that should get the page's own images."],
-            ],
+            ]),
             required: ["appId", "page", "screens"]
         ),
         proposalKind: .screenshots
@@ -73,7 +74,7 @@ struct ProposePageScreenshotsTool: MCPTool {
         let proposal = PageShotsProposal(run: found.run, source: found.source)
         let outcome = try proposal.check(
             angle: arguments.optionalString("angle"), reason: arguments.optionalString("reason"), screens: arguments.array("screens"),
-            locales: arguments.optionalStrings("languages"), client: context.clientName
+            locales: arguments.optionalStrings("languages"), client: context.clientName, layers: arguments.layers()
         )
         switch outcome {
         case let .refused(message, refused):

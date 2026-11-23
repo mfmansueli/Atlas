@@ -37,7 +37,7 @@ struct RequestPageRecaptureTool: MCPTool {
                 "screens": ["type": "array", "items": ["type": "integer"], "description": "The default set's screens, from 1; at most three."],
                 "locale": MCPToolDefinition.string("The locale the app runs in, e.g. de-DE."),
                 "displayType": MCPToolDefinition.string("iphone or ipad; iphone when left out."),
-                "reason": MCPToolDefinition.string("Why these screens should show something else for this page."),
+                "reason": MCPToolDefinition.shortWhy("Why these screens should show something else for this page."),
                 "evidence": MCPToolDefinition.string("What shows it: a file or commit."),
             ],
             required: ["appId", "page", "screens", "locale", "reason"]

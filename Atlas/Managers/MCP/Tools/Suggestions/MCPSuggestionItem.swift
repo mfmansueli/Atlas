@@ -23,6 +23,8 @@ struct MCPSuggestionItem: Hashable, Sendable {
     var value: String
     var reason: String
     var evidence: [SuggestionEvidence]
+    /// details, confidence and gloss.
+    var layers: SuggestionLayers?
 
     /// `isPlanned`: a plan's entry, which names a field without a value.
     init(_ object: [String: JSONValue], isPlanned: Bool = false) throws {
@@ -63,5 +65,6 @@ struct MCPSuggestionItem: Hashable, Sendable {
             }
             return SuggestionEvidence(kind: kind, ref: ref)
         }
+        layers = try arguments.layers()
     }
 }

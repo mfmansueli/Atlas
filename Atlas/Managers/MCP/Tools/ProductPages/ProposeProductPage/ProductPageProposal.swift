@@ -16,7 +16,7 @@ import Foundation
 @MainActor
 struct ProductPageProposal {
     static let audienceLimit = 200
-    static let reasonLimit = 300
+    static let reasonLimit = AssistantTextLimits.why
     static let screensLimit = 600
     static let idPrefix = "pp-"
 
@@ -41,6 +41,7 @@ struct ProductPageProposal {
         var proposal = ProductPageProposal(suggestion: ProductPageSuggestion(
             id: "", name: name, audience: audience, reason: reason, evidence: evidence, source: source
         ))
+        proposal.suggestion.layers = try arguments.layers()
         proposal.checkName(in: state)
         proposal.checkLengths()
         proposal.suggestion.start = try Self.start(arguments.optionalString("startFrom"), in: state)
@@ -91,8 +92,8 @@ struct ProductPageProposal {
         if suggestion.audience.count > Self.audienceLimit {
             problems.append(String(localized: "audience has \(suggestion.audience.count) characters; it holds \(Self.audienceLimit): say who it's for in a sentence."))
         }
-        if suggestion.reason.count > Self.reasonLimit {
-            problems.append(String(localized: "reason has \(suggestion.reason.count) characters; it holds \(Self.reasonLimit)."))
+        if let refusal = AssistantTextLimits.whyRefusal(suggestion.reason, field: "reason") {
+            problems.append(refusal)
         }
     }
 

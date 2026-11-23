@@ -48,19 +48,19 @@ enum MCPProposalKind: String, CaseIterable, Identifiable, Codable, Sendable {
     var refusal: String {
         switch self {
         case .storeText:
-            String(localized: "Proposing store text is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting store text is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .screenshots:
-            String(localized: "Proposing screenshots is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting screenshots is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .prices:
-            String(localized: "Proposing prices is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting prices is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .appInformation:
-            String(localized: "Proposing app information is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting app information is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .reviewReplies:
             String(localized: "Suggesting replies to reviews is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .artwork:
-            String(localized: "Proposing event and header artwork is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting event and header artwork is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .release:
-            String(localized: "Proposing release actions is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+            String(localized: "Suggesting release actions is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         }
     }
 

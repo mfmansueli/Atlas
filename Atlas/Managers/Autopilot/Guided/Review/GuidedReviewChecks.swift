@@ -58,7 +58,7 @@ enum GuidedReviewChecks {
             return "\(language) · \(screen): “\(item.headline)”"
         }
         return GuidedCheck(
-            id: "proposal-\(proposal.id)", text: String(localized: "\(proposal.client) proposes: \(proposal.title)"),
+            id: "proposal-\(proposal.id)", text: String(localized: "\(proposal.client) suggests: \(proposal.title)"),
             state: .attention, details: [proposal.reason] + limited(lines), proposalID: proposal.id
         )
     }
