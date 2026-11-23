@@ -53,7 +53,9 @@ struct AppInformationSuggestionsTests {
         #expect(vm.suggestionBar(for: .general, assistant: nil).countText == "1 suggestion")
         #expect(vm.showsSuggestions(on: .general))
         #expect(vm.showsSuggestions(on: .ageRating))
-        #expect(!vm.showsSuggestions(on: .appPrivacy))
+        // App Privacy's bar is for its User Privacy Choices URLs (never its answers).
+        #expect(vm.showsSuggestions(on: .appPrivacy))
+        #expect(!vm.showsSuggestions(on: .appCompliance))
     }
 
     @Test func acceptingQueuesTheValueTaggedWithItsSource() async throws {

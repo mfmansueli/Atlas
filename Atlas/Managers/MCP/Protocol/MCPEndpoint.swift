@@ -160,7 +160,7 @@ enum MCPEndpoint {
     possibleActions) and propose submit (build, release type, phased release, encryption, events), release, \
     pause, resume or complete the phased release, cancel the submission or resubmit with propose_release_action, \
     with a reason; it waits on the version card until the person confirms it: the tools only ever queue changes. App \
-    Review's rejection message isn't in the API: ask the person for it. Withdraw yours with \
-    withdraw_release_action. Always tell the person what you couldn't see.
+    Review's rejection message isn't in the API: ask the person for it. list_proposals lists yours too; withdraw them \
+    with withdraw_release_action or withdraw_suggestion and the rp- id. Always tell the person what you couldn't see.
     """
 }

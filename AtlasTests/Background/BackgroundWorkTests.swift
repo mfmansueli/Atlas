@@ -26,6 +26,7 @@ struct BackgroundWorkTests {
         preferences: AppPreferences = AppPreferences(defaults: nil),
         artwork: EventArtworkStudio = EventArtworkStudio(),
         pageShots: PageShotsStudio = PageShotsStudio(),
+        releaseProposals: ReleaseProposalStore = ReleaseProposalStore(),
         defaults: UserDefaults? = nil,
         clock: @escaping () -> Date
     ) -> BackgroundWork {
@@ -37,6 +38,7 @@ struct BackgroundWorkTests {
             autopilot: autopilot,
             reviews: ReviewsStore(),
             releases: ReleaseStore(),
+            releaseProposals: releaseProposals,
             analytics: AnalyticsStore(),
             artwork: artwork,
             pageShots: pageShots,

@@ -14,6 +14,9 @@ struct GeneralValues: Hashable, Sendable {
     var secondaryCategory: String?
     /// Up to two Games subcategory IDs, for a game.
     var gamesSubcategories: [String] = []
+    /// Up to two Games subcategory IDs for the secondary category, while
+    /// it's Games.
+    var secondaryGamesSubcategories: [String] = []
     var contentRights: ContentRights?
     /// "I have the rights to use it": asked when the app uses third-party
     /// content. App Store Connect only stores the answer above, so a
@@ -24,6 +27,8 @@ struct GeneralValues: Hashable, Sendable {
     var earliestReleaseDate: Date?
 
     var isGame: Bool { primaryCategory == AppCategory.gamesID }
+    /// Games is the secondary category: it takes subcategories of its own.
+    var isSecondaryGame: Bool { secondaryCategory == AppCategory.gamesID }
 
     /// The page column's line: "Lifestyle · Health & Fitness".
     var categorySummary: String {

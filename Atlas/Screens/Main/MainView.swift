@@ -287,6 +287,7 @@ struct MainView: View {
                     appID: app.id, model: sectionModels.models(for: app.id).appInformation, notes: services.appInformation.notes
                 ),
                 productPages: productPages.count(for: app.id),
+                releaseProposals: ReleaseProposalStore.shared.pending(for: app.id).count,
                 needsYou: SectionBadgeCounts.needsYou(appID: app.id, repliesArePro: !pro.isFree)
             )
         )

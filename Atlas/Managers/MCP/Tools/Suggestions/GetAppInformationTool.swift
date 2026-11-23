@@ -7,7 +7,8 @@ import Foundation
 
 /// `get_app_information`: what `suggest_fields` works on for App
 /// Information: General's copyright, categories (and Games
-/// subcategories), content rights and release, Age Rating's questions,
+/// subcategories, the primary and the secondary category's), content
+/// rights and release, Age Rating's questions,
 /// Accessibility's features per device and its URL, App Privacy's User
 /// Privacy Choices URL per language, and App Review's contact, sign-in
 /// (never the password) and notes, with App Store Connect's values where
@@ -19,16 +20,18 @@ struct GetAppInformationTool: MCPTool {
         title: "Get App Information for suggestions",
         description: """
         Reads an app's App Information in Atlas for suggestions, for the newest editable version (else \
-        the live one): page general (copyright, primaryCategory, secondaryCategory, gamesSubcategories, contentRights, \
-        release), page ageRating (one entry per question, with its answers), page accessibility (per device, one entry \
+        the live one): page general (copyright, primaryCategory, secondaryCategory, gamesSubcategories, \
+        secondaryGamesSubcategories, contentRights, release), page ageRating (one entry per question, with its answers), \
+        page accessibility (per device, one entry \
         per feature with Apple's meaning, answered Yes or No, and the app's accessibilityUrl in `url`), page appPrivacy \
         (the User Privacy Choices URL, privacyChoicesUrl, per language in `locales`) and page review (contactFirstName, \
         contactLastName, contactPhone, contactEmail, demoAccountRequired, demoAccountName, notes). Each field has its current \
         value, App Store Connect's (`live`) where it differs, \
         its limit, and whether it's locked (the version is in review or live); an unanswered question or \
-        feature has value null. Categories, gamesSubcategories, contentRights and release are picked from `choices`, by \
-        id. gamesSubcategories (up to two, comma-separated, e.g. "GAMES_PUZZLE,GAMES_WORD"; "" clears them) can be \
-        suggested only while the primary category is GAMES (`available`). demoAccountRequired is App Review's \
+        feature has value null. Categories, both Games subcategory fields, contentRights and release are picked from \
+        `choices`, by id. gamesSubcategories (up to two, comma-separated, e.g. "GAMES_PUZZLE,GAMES_WORD"; "" clears them) \
+        can be suggested only while the primary category is GAMES, and secondaryGamesSubcategories (the same, from \
+        choices.gamesSubcategories) only while the secondary category is GAMES (`available`). demoAccountRequired is App Review's \
         "Sign-in required", yes or no; demoAccountName is the demo account's user name. The demo account's \
         password is never read or suggested: the person types it in Atlas. accessibilityUrl is one for the whole \
         app (every device), and privacyChoicesUrl is set per language: suggest it with page appPrivacy and that \
@@ -46,7 +49,7 @@ struct GetAppInformationTool: MCPTool {
         number. Send suggestions with suggest_fields. Pass `version` with a new version queued with \
         propose_app_version to read it before it's in App Store Connect: its copyright, release and App Review \
         fields start from the version before it and aren't locked, and what suggest_fields sends for them with the \
-        same `version` waits with it in Review & Push, as do its categories, Games subcategories and User Privacy \
+        same `version` waits with it in Review & Push, as do its categories, both Games subcategories and User Privacy \
         Choices URLs (App Store Connect makes a new app info with the version). contentRights and accessibilityUrl \
         belong to the app, not to a version: they're never locked, and with `version` they're suggested for the app \
         as without, not queued with the new version.
@@ -98,7 +101,7 @@ struct GetAppInformationTool: MCPTool {
             "limit": field.limit.map { ["max": .int($0), "unit": "characters"] } ?? .null,
         ]
         if field.isPicked, !value.isEmpty { entry["name"] = .string(field.displayValue(value)) }
-        if field == .gamesSubcategories {
+        if field == .gamesSubcategories || field == .secondaryGamesSubcategories {
             entry["available"] = .bool(draft.slots.canSuggest(.field(field)))
             entry["max"] = 2
         }

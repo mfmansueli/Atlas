@@ -57,6 +57,7 @@ final class BackgroundWork {
     private let autopilot: AutopilotCenter
     private let reviews: ReviewsStore
     private let releases: ReleaseStore
+    private let releaseProposals: ReleaseProposalStore
     private let analytics: AnalyticsStore
     private let artwork: EventArtworkStudio
     private let pageShots: PageShotsStudio
@@ -78,6 +79,7 @@ final class BackgroundWork {
         autopilot: AutopilotCenter = .shared,
         reviews: ReviewsStore = .shared,
         releases: ReleaseStore = .shared,
+        releaseProposals: ReleaseProposalStore = .shared,
         analytics: AnalyticsStore = .shared,
         artwork: EventArtworkStudio = .shared,
         pageShots: PageShotsStudio = .shared,
@@ -91,6 +93,7 @@ final class BackgroundWork {
         self.autopilot = autopilot
         self.reviews = reviews
         self.releases = releases
+        self.releaseProposals = releaseProposals
         self.analytics = analytics
         self.artwork = artwork
         self.pageShots = pageShots
@@ -147,6 +150,9 @@ final class BackgroundWork {
                 crashHeadline: StabilityReport.make(analytics.reports(for: app.id), now: AnalyticsDay(analytics.now())).flatMap(\.headline),
                 readyArtwork: artwork.readyRuns.filter { $0.appID == app.id }.map { run in
                     BackgroundAppFacts.ReadyArtwork(eventID: run.eventID, eventName: run.eventName, count: run.concepts.count)
+                },
+                releaseProposals: releaseProposals.pending(for: app.id).map { proposal in
+                    BackgroundAppFacts.ReleaseProposalFact(client: proposal.client, title: proposal.title)
                 }
             )
         }

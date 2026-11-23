@@ -28,6 +28,9 @@ struct AppInformationPageBar: View {
                             .accessibilityIdentifier("appInformation.acceptHere")
                     }
                     acceptAll
+                    if page == .appPrivacy {
+                        PrivacyURLsSuggestionArrows(navigation: viewModel.privacySuggestionNavigation) { viewModel.showPrivacySuggestion($0) }
+                    }
                     Text(model.restText)
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
@@ -47,6 +50,9 @@ struct AppInformationPageBar: View {
                         showsButton: false
                     )
                 }
+            }
+            if takesSuggestions, page == .appPrivacy {
+                privacyNote
             }
             if takesSuggestions, model.acceptsRightAway, model.totalCount > 0 {
                 HStack(spacing: Spacing.small) {
@@ -127,22 +133,40 @@ struct AppInformationPageBar: View {
         .accessibilityIdentifier("appInformation.acceptAll")
     }
 
-    private var scope: SuggestionScope {
-        if page == .accessibility, let family = viewModel.shownAccessibilitySuggestionFamily {
-            return .accessibility(family)
+    /// Why App Privacy's bar holds only its URLs: the answers are the
+    /// person's to accept, each in the worksheet.
+    private var privacyNote: some View {
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
+            Image(systemName: "lock")
+                .imageScale(.small)
+                .foregroundStyle(Palette.label2)
+                .accessibilityHidden(true)
+            Text("For the User Privacy Choices URLs only. App Privacy’s answers are never accepted for you: you review each one in the worksheet.")
+                .font(.subheadline)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        return .appInformation(page)
+        .padding(.leading, Spacing.xxSmall)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("appInformation.appPrivacy.barNote")
+    }
+
+    /// What the More menu works on: the page, the device in view on
+    /// Accessibility, every language on App Privacy.
+    private var scopes: [SuggestionScope] {
+        viewModel.barScopes(on: page)
     }
 
     private var moreMenu: some View {
         Menu {
             SuggestionsMenuItems(
-                model: viewModel.suggestionBar(for: scope, assistant: assistants.assistantStatus.clientName),
+                model: viewModel.suggestionBar(for: scopes, assistant: assistants.assistantStatus.clientName),
                 filter: $viewModel.suggestionFilter,
                 showsOnlyFields: $viewModel.showsOnlySuggestedFields,
-                showsFieldsToggle: page != .accessibility,
-                onDismissAll: { viewModel.dismissAllSuggestions(in: scope) },
-                onRestore: { viewModel.restoreDismissedSuggestions(in: scope) }
+                // Accessibility and Privacy URLs always show every row.
+                showsFieldsToggle: page != .accessibility && page != .appPrivacy,
+                onDismissAll: { viewModel.dismissAllSuggestions(in: scopes) },
+                onRestore: { viewModel.restoreDismissedSuggestions(in: scopes) }
             )
         } label: {
             Label("More", systemImage: "ellipsis")

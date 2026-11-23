@@ -40,6 +40,13 @@ struct PrivacyURLsTab: View {
 
     private func content(_ table: PrivacyURLsTable) -> some View {
         VStack(spacing: 0) {
+            // The User Privacy Choices URLs' suggestions: Accept, Dismiss and
+            // the arrows; never the answers.
+            if let owner = viewModel.owner, owner.showsSuggestions(on: .appPrivacy) {
+                AppInformationPageBar(viewModel: owner, page: .appPrivacy)
+                    .padding(.horizontal, Spacing.large)
+                    .padding(.top, Spacing.small + 2)
+            }
             HStack(alignment: .center, spacing: Spacing.small) {
                 Text(String(localized: "\(viewModel.urlsCoverageText ?? "") · app-level fields, sent through Review & Push"))
                     .font(.subheadline)
@@ -58,15 +65,23 @@ struct PrivacyURLsTab: View {
             .padding(.vertical, Spacing.small + 2)
             PrivacyURLsHeaderRow()
             Divider()
-            ScrollView {
-                // Not lazy: a few dozen languages at most, and XCUITest's
-                // snapshot crashed SwiftUI's accessibility (label recursion)
-                // while lazy rows came and went under a suggestion card.
-                VStack(spacing: 0) {
-                    ForEach(table.locales) { locale in
-                        PrivacyURLsRow(table: table, locale: locale, viewModel: viewModel)
-                        Divider()
+            ScrollViewReader { proxy in
+                ScrollView {
+                    // Not lazy: a few dozen languages at most, and XCUITest's
+                    // snapshot crashed SwiftUI's accessibility (label recursion)
+                    // while lazy rows came and went under a suggestion card.
+                    VStack(spacing: 0) {
+                        ForEach(table.locales) { locale in
+                            PrivacyURLsRow(table: table, locale: locale, viewModel: viewModel, isFocused: viewModel.focusedChoicesLocale == locale)
+                                .id(locale.code)
+                            Divider()
+                        }
                     }
+                }
+                // The suggestion bar's arrows went to a language: its row.
+                .onChange(of: viewModel.focusedChoicesLocale, initial: true) { _, locale in
+                    guard let locale else { return }
+                    withAnimation(.easeInOut(duration: 0.2)) { proxy.scrollTo(locale.code, anchor: .center) }
                 }
             }
         }

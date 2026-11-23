@@ -23,30 +23,34 @@ extension AppInformationViewModel {
     }
 
     func setSecondaryCategory(_ id: String?) {
-        guard let content, general?.secondaryCategory != id else { return }
+        guard let content, let general, general.secondaryCategory != id else { return }
         apply(
             builder.categoryChange(Key.secondaryCategory, from: content.general.secondaryCategory, to: id),
             id: builder.changeID(.general, Key.secondaryCategory)
         )
+        // The secondary category's subcategories belong to Games too.
+        if id != AppCategory.gamesID, !general.secondaryGamesSubcategories.isEmpty { setGamesSubcategories([], secondary: true) }
     }
 
-    /// One of the two Games subcategory pickers; nil clears it.
-    func setGamesSubcategory(_ id: String?, at index: Int) {
+    /// One of the two Games subcategory pickers, the primary category's or
+    /// with `secondary` the secondary category's; nil clears it.
+    func setGamesSubcategory(_ id: String?, at index: Int, secondary: Bool = false) {
         guard let general else { return }
-        var subcategories = general.gamesSubcategories
+        var subcategories = secondary ? general.secondaryGamesSubcategories : general.gamesSubcategories
         if index < subcategories.count {
             if let id { subcategories[index] = id } else { subcategories.remove(at: index) }
         } else if let id {
             subcategories.append(id)
         }
-        setGamesSubcategories(Array(NSOrderedSet(array: subcategories).compactMap { $0 as? String }.prefix(2)))
+        setGamesSubcategories(Array(NSOrderedSet(array: subcategories).compactMap { $0 as? String }.prefix(2)), secondary: secondary)
     }
 
-    private func setGamesSubcategories(_ ids: [String]) {
+    private func setGamesSubcategories(_ ids: [String], secondary: Bool = false) {
         guard let content else { return }
+        let old = secondary ? content.general.secondaryGamesSubcategories : content.general.gamesSubcategories
         apply(
-            builder.gamesSubcategoriesChange(from: content.general.gamesSubcategories, to: ids),
-            id: builder.changeID(.general, Key.gamesSubcategories)
+            builder.gamesSubcategoriesChange(from: old, to: ids, secondary: secondary),
+            id: builder.changeID(.general, secondary ? Key.secondaryGamesSubcategories : Key.gamesSubcategories)
         )
     }
 

@@ -15,6 +15,8 @@ enum MCPProposalKind: String, CaseIterable, Identifiable, Codable, Sendable {
     case appInformation
     case reviewReplies
     case artwork
+    /// Submitting, releasing and the phased release (`propose_release_action`).
+    case release
 
     var id: Self { self }
 
@@ -26,6 +28,7 @@ enum MCPProposalKind: String, CaseIterable, Identifiable, Codable, Sendable {
         case .appInformation: String(localized: "App Information answers")
         case .reviewReplies: String(localized: "Replies to reviews")
         case .artwork: String(localized: "Event and header artwork")
+        case .release: String(localized: "Release actions")
         }
     }
 
@@ -37,6 +40,7 @@ enum MCPProposalKind: String, CaseIterable, Identifiable, Codable, Sendable {
         case .appInformation: String(localized: "Age rating, accessibility, App Privacy. You accept each one.")
         case .reviewReplies: nil
         case .artwork: String(localized: "Drawn by Claude from the app’s design project.")
+        case .release: String(localized: "Submit for review, release, the phased release. Waits on the version card for you.")
         }
     }
 
@@ -55,10 +59,19 @@ enum MCPProposalKind: String, CaseIterable, Identifiable, Codable, Sendable {
             String(localized: "Suggesting replies to reviews is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         case .artwork:
             String(localized: "Proposing event and header artwork is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
+        case .release:
+            String(localized: "Proposing release actions is turned off. The person can turn it on in Atlas → Settings → AI Assistants.")
         }
     }
 
     /// The kinds the switches had before board 48: a saved choice made
-    /// then leaves the newer ones on.
+    /// then leaves the newer ones on, unless they were under a switch of
+    /// their own before (`formerSwitch`).
     static let firstKinds: Set<Self> = [.storeText, .screenshots, .prices, .appInformation]
+
+    /// The switch a kind was under before it had its own: a choice saved
+    /// before then keeps what it allowed. Release actions were store text's.
+    var formerSwitch: Self? {
+        self == .release ? .storeText : nil
+    }
 }

@@ -253,15 +253,12 @@ struct MCPSuggestionSession {
     }
 
     /// Whether `slot` can take a value now: a version field while the
-    /// version is editable, Games subcategories for a game, and what's read
-    /// on its own once it's been read.
+    /// version is editable, Games subcategories while that category is
+    /// Games, and what's read on its own once it's been read.
     private func check(_ slot: AppInformationSuggestionSlot, in draft: MCPAppInformationDraft) throws(MCPSuggestionRefusal) {
         switch slot {
-        case .field(.gamesSubcategories):
-            guard draft.slots.canSuggest(slot) else {
-                let category = AppCategory.name(for: draft.general.primaryCategory)
-                throw .invalidValue(String(localized: "Games subcategories need Games as the primary category, and \(app.name)’s is \(category)."))
-            }
+        case .field(.gamesSubcategories), .field(.secondaryGamesSubcategories):
+            guard draft.slots.canSuggest(slot) else { throw .invalidValue(notAGame(secondary: slot == .field(.secondaryGamesSubcategories), in: draft)) }
         case .field(.accessibilityURL):
             guard draft.slots.canSuggest(slot) else { throw .invalidValue(String(localized: "\(app.name)’s accessibility couldn’t be read.")) }
         case let .field(field):
@@ -274,6 +271,17 @@ struct MCPSuggestionSession {
             // `slot(of:)` checked the language.
             break
         }
+    }
+
+    /// Why Games subcategories can't be suggested: the primary (or, for
+    /// the secondary pair, the secondary) category isn't Games.
+    private func notAGame(secondary: Bool, in draft: MCPAppInformationDraft) -> String {
+        guard secondary else {
+            let category = AppCategory.name(for: draft.general.primaryCategory)
+            return String(localized: "Games subcategories need Games as the primary category, and \(app.name)’s is \(category).")
+        }
+        let category = draft.general.secondaryCategory.map { AppCategory.name(for: $0) } ?? String(localized: "none")
+        return String(localized: "Secondary Games subcategories need Games as the secondary category, and \(app.name)’s is \(category).")
     }
 
     /// What an item names: a General or App Review field (on any page when

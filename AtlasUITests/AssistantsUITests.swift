@@ -101,6 +101,14 @@ final class AssistantsUITests: XCTestCase {
         // Board 48's two newer switches.
         XCTAssertEqual(app.switches["settings.ai.allow.reviewReplies"].value as? Int, 1)
         XCTAssertEqual(app.switches["settings.ai.allow.artwork"].value as? Int, 1)
+        // Release actions have their own switch, once under store text's.
+        let release = app.switches["settings.ai.allow.release"]
+        XCTAssertTrue(release.waitForExistence(timeout: 5))
+        XCTAssertEqual(release.value as? Int, 1)
+        if !release.isHittable { prices.scroll(byDeltaX: 0, deltaY: -120) }
+        release.click()
+        XCTAssertEqual(release.value as? Int, 0)
+        XCTAssertEqual(app.switches["settings.ai.allow.storeText"].value as? Int, 1)
     }
 
     /// Show Activity… opens the log; the row says how many were refused.

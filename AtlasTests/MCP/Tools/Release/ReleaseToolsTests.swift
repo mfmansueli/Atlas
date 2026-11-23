@@ -21,7 +21,7 @@ struct ReleaseToolsTests {
         #expect(MCPEndpoint.instructions.contains("propose_release_action"))
         #expect(MCPEndpoint.instructions.contains("withdraw_release_action"))
         #expect(GetReleaseTool().definition.isReadOnly)
-        #expect(ProposeReleaseActionTool().definition.proposalKind == .storeText)
+        #expect(ProposeReleaseActionTool().definition.proposalKind == .release)
         #expect(!WithdrawReleaseActionTool().definition.isReadOnly)
     }
 

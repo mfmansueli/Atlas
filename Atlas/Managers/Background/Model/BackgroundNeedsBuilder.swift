@@ -8,7 +8,8 @@ import Foundation
 /// Words the menu bar's "Needs you" lines from each app's facts, in the
 /// design's order: what Autopilot waits on, event artwork concepts to
 /// choose from, an approved version to release, reviews with suggested
-/// replies, new Analytics findings, then suggestions to accept. With more than one app in the library each
+/// replies, new Analytics findings, then release actions an assistant
+/// proposed and suggestions to accept. With more than one app in the library each
 /// detail starts with the app's name, so "6 reviews need a reply" says
 /// whose.
 enum BackgroundNeedsBuilder {
@@ -86,19 +87,36 @@ enum BackgroundNeedsBuilder {
                     isSuggestion: true
                 ))
             }
-            if facts.openSuggestions > 0 {
-                suggestions.append(BackgroundNeed(
-                    id: "suggestions-\(facts.appID)",
-                    title: facts.openSuggestions == 1
-                        ? String(localized: "1 suggestion to review")
-                        : String(localized: "\(facts.openSuggestions) suggestions to review"),
-                    detail: prefix + String(localized: "Nothing changes until you accept it"),
-                    destination: .section(.overview, appID: facts.appID),
-                    isSuggestion: true
-                ))
-            }
+            suggestions += suggestionNeeds(for: facts, prefix: prefix)
         }
         return autopilot + artwork + approved + reviews + findings + suggestions
+    }
+
+    /// Release actions an assistant proposed for the app, one line each,
+    /// then its open suggestions.
+    private static func suggestionNeeds(for facts: BackgroundAppFacts, prefix: String) -> [BackgroundNeed] {
+        var suggestions: [BackgroundNeed] = []
+        for (index, proposal) in facts.releaseProposals.enumerated() {
+            suggestions.append(BackgroundNeed(
+                id: "release-proposal-\(facts.appID)-\(index)",
+                title: String(localized: "\(proposal.client) proposes: \(proposal.title)"),
+                detail: prefix + String(localized: "Confirm or dismiss it on the version card"),
+                destination: .version(appID: facts.appID),
+                isSuggestion: true
+            ))
+        }
+        if facts.openSuggestions > 0 {
+            suggestions.append(BackgroundNeed(
+                id: "suggestions-\(facts.appID)",
+                title: facts.openSuggestions == 1
+                    ? String(localized: "1 suggestion to review")
+                    : String(localized: "\(facts.openSuggestions) suggestions to review"),
+                detail: prefix + String(localized: "Nothing changes until you accept it"),
+                destination: .section(.overview, appID: facts.appID),
+                isSuggestion: true
+            ))
+        }
+        return suggestions
     }
 
     /// "Choose the look for Lumen Journal’s screenshots".
