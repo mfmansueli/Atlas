@@ -68,7 +68,7 @@ final class PageShotsFlow {
             source = loaded
             problem = loaded.problem
         } catch {
-            problem = error.localizedDescription
+            problem = AppleErrorCopy(String(localized: "The default page’s screenshots didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -181,7 +181,7 @@ final class PageShotsFlow {
     func hide() {
         studio.update(key) { $0.isHidden = true }
         studio.presentedKey = nil
-        onToast(ToastMessage(text: String(localized: "Autopilot keeps going. The page shows the progress, and so does the menu bar icon.")))
+        onToast(ToastMessage(text: String(localized: "Autopilot keeps going. Watch the page or the menu bar.")))
     }
 
     var madeCount: Int { run?.images.count ?? 0 }
@@ -250,8 +250,8 @@ final class PageShotsFlow {
         studio.presentedKey = nil
         let count = run.usedImages.count
         let text = count == 1
-            ? String(localized: "1 screenshot added to “\(page.name)”. It’s waiting in Review & Push, top right.")
-            : String(localized: "\(count) screenshots added to “\(page.name)”. They’re waiting in Review & Push, top right.")
+            ? String(localized: "1 screenshot added to “\(page.name)”. In Review & Push.")
+            : String(localized: "\(count) screenshots added to “\(page.name)”. In Review & Push.")
         onToast(ToastMessage(text: text, actionTitle: String(localized: "Review & Push")))
     }
 

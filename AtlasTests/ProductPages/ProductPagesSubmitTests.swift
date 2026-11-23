@@ -80,7 +80,8 @@ struct ProductPagesSubmitTests {
         model.isSubmitPresented = true
         await model.submit(page, makeVisible: false)
         #expect(model.isSubmitPresented)
-        #expect(model.submitError != nil)
+        #expect(model.submitError?.summary == "The page wasn’t submitted. This key can’t do that. Use an Admin or App Manager key.")
+        #expect(model.submitError?.details == "FORBIDDEN_ERROR")
         #expect(model.keyCannotChange)
         #expect(services.submitted.isEmpty)
     }
@@ -98,6 +99,24 @@ struct ProductPagesSubmitTests {
         #expect(model.toast?.text == "Submission cancelled. The page is back to Prepare for Submission.")
     }
 
+    @Test func aCancelAtlasRefusesSaysWhyInItsOwnWords() async throws {
+        let services = FakeProductPagesServices()
+        services.cancelError = ProductPageSubmissionError.sharedSubmission
+        let model = await pushedModel(.waitingForReview, services: services)
+        let page = try ProductPagesTestModel.page(model, PageID.privateDiaryPushed)
+        await model.cancelSubmission(of: page)
+        #expect(model.toast?.text == "Not canceled: it went with other items. Cancel it in App Store Connect, under App Review.")
+    }
+
+    @Test func aCancelApplesRefusesKeepsApplesTextInDetails() async throws {
+        let services = FakeProductPagesServices()
+        services.cancelError = AppStoreConnectError.server(statusCode: 500, detail: nil)
+        let model = await pushedModel(.waitingForReview, services: services)
+        let page = try ProductPagesTestModel.page(model, PageID.privateDiaryPushed)
+        await model.cancelSubmission(of: page)
+        #expect(model.toast?.text == "The submission wasn’t canceled. Apple didn’t answer. Try again in a minute.\nDetails: HTTP 500")
+    }
+
     @Test func withoutCancelTheWaitingBannerOnlySaysSo() async throws {
         let services = FakeProductPagesServices()
         services.cancels = false
@@ -105,7 +124,7 @@ struct ProductPagesSubmitTests {
         let page = try ProductPagesTestModel.page(model, PageID.privateDiaryPushed)
         #expect(!model.canCancelSubmission(of: page))
         #expect(model.statusNote(of: page)?.action == nil)
-        #expect(model.statusNote(of: page)?.message == "App Review usually answers within a day. The page can’t be edited while it waits.")
+        #expect(model.statusNote(of: page)?.message == "App Review usually answers in a day. The page is locked until then.")
     }
 
     /// Once approved, turning Visible on waits in Review & Push, as asked.
@@ -156,7 +175,7 @@ struct ProductPagesSubmitTests {
         let diary = try ProductPagesTestModel.page(model, PageID.privateDiaryPushed)
         let check = try #require(model.submitChecks(of: diary).first { $0.id == "screenshots" })
         #expect(check.isFine == false)
-        #expect(check.detail.contains("Search results show a page’s first screenshots"))
+        #expect(check.detail.contains("Search shows screenshots first"))
         #expect(!check.detail.contains("The brief asks for"))
 
         let brief = ProductPageBrief(audience: "People who keep a diary", screens: "Lock first, then Write", source: "Claude Code")

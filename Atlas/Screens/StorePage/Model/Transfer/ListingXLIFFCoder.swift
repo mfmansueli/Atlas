@@ -45,7 +45,7 @@ enum ListingXLIFFCoder {
         parser.shouldProcessNamespaces = true
         parser.delegate = reader
         guard parser.parse() else {
-            throw ListingTransferError.unreadable(detail: parser.parserError?.localizedDescription)
+            throw ListingTransferError.unreadable(detail: parser.parserError.flatMap(AppleErrorCopy.details(for:)))
         }
         return ListingTransferDocument(
             format: .xliff,

@@ -81,7 +81,7 @@ struct ScreenshotsSectionModelTests {
         let section = ScreenshotsSectionModel(app: StorePageContentFixtures.app, services: services)
         await section.load()
         #expect(section.screenshots == nil)
-        #expect(section.errorMessage == URLError(.notConnectedToInternet).localizedDescription)
+        #expect(section.errorMessage?.hasPrefix("This section didn’t load. Atlas can’t reach Apple.") == true)
         services.error = nil
         await section.load()
         #expect(section.errorMessage == nil)

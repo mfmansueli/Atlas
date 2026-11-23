@@ -42,7 +42,7 @@ extension StorePageViewModel {
             showImport(data, fileName: url.lastPathComponent)
         } catch {
             importPreview = nil
-            importError = error.localizedDescription
+            importError = AppleErrorCopy(String(localized: "The file couldn’t be opened.", comment: "kind:error"), error: error).text
             sheet = .importPreview
         }
     }
@@ -56,7 +56,8 @@ extension StorePageViewModel {
             importError = nil
         } catch {
             importPreview = nil
-            importError = error.localizedDescription
+            importError = (error as? ListingTransferError)?.errorDescription
+                ?? AppleErrorCopy(String(localized: "The file couldn’t be read.", comment: "kind:error"), error: error).text
         }
         sheet = .importPreview
     }
@@ -103,7 +104,7 @@ extension StorePageViewModel {
             notice = String(localized: "Exported \(url.lastPathComponent).")
         case let .failure(error):
             if (error as? CocoaError)?.code == .userCancelled { return }
-            notice = error.localizedDescription
+            notice = AppleErrorCopy(String(localized: "The file wasn’t exported.", comment: "kind:error"), error: error).text
         }
     }
 }

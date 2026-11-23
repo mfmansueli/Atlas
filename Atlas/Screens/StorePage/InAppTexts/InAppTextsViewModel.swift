@@ -46,7 +46,7 @@ final class InAppTextsViewModel {
             // become what pushing them now takes.
             if let matrix { sync(matrix) }
         } catch {
-            state = .failed(error.localizedDescription)
+            state = .failed(AppleErrorCopy(String(localized: "In-app texts didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

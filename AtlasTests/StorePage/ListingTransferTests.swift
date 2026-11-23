@@ -118,6 +118,15 @@ struct ListingTransferTests {
         #expect(ListingTransfer.suggestedFileName(for: StorePageSampleData.listing, as: .xliff) == "Lumen-Journal-1.4.xliff")
     }
 
+    @Test func anUnreadableFileKeepsTheParsersWordsInDetails() {
+        let error = ListingTransferError.unreadable(detail: "Unexpected end of file (NSXMLParserErrorDomain 5)")
+        #expect(error.errorDescription == """
+        The file couldn’t be read. Check that it’s valid XLIFF or JSON.
+        Details: Unexpected end of file (NSXMLParserErrorDomain 5)
+        """)
+        #expect(ListingTransferError.unreadable(detail: nil).errorDescription == "The file couldn’t be read. Check that it’s valid XLIFF or JSON.")
+    }
+
     @Test func unreadableFilesThrow() {
         #expect(throws: ListingTransferError.unsupportedFileType("txt")) {
             try ListingTransfer.read(Data("x".utf8), fileName: "notes.txt")
