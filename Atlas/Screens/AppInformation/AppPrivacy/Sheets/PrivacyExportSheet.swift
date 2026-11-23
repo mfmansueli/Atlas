@@ -16,7 +16,7 @@ struct PrivacyExportSheet: View {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Text("Export answers")
                     .font(.title2.weight(.semibold))
-                Text("For fastlane, or for your team and legal. Exports describe the worksheet, not what’s in App Store Connect.")
+                Text("For fastlane, your team or legal. Describes the worksheet, not App Store Connect.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

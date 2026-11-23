@@ -65,7 +65,7 @@ struct PrivacyURLsSuggestionBarTests {
         #expect(queue.change(id: table.choicesBuilder.privacyChoicesChangeID(.german)) != nil)
         #expect(queue.change(id: table.choicesBuilder.privacyChoicesChangeID(.french)) != nil)
         #expect(viewModel.suggestionCount(on: .appPrivacy) == 0)
-        #expect(viewModel.suggestionToast?.text == "Accepted 2 on App Privacy. They’re waiting in Review & Push, top right.")
+        #expect(viewModel.suggestionToast?.text == "Accepted 2 on App Privacy. In Review & Push.")
     }
 
     @Test func dismissAllHereAndRestoreWorkOnEveryLanguage() async {

@@ -116,7 +116,7 @@ struct AccessibilityEditorSheet: View {
                 Button(String(localized: "Copy from iPhone")) { viewModel.copyIntoEditor() }
                     .accessibilityIdentifier("appInformation.accessibility.editor.copy")
             }
-            Text("Saved here as a pending change. Publishing happens from Review & Push.")
+            Text("In Review & Push. Nothing is sent yet.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

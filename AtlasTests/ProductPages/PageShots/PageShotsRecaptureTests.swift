@@ -27,7 +27,7 @@ struct PageShotsRecaptureTests {
     @Test func aScreenCapturedAgainStandsInForTheDefaultOne() async throws {
         let studio = PageShotsStudio()
         studio.begin(Test.run(plan: Test.plan()))
-        #expect(studio.receive(capture: capture(slot: 4), for: Test.key)?.contains("didn’t ask") == true)
+        #expect(studio.receive(capture: capture(slot: 4), for: Test.key)?.contains("No recapture was asked for") == true)
 
         studio.setRecapture(true, for: Test.key)
         let token = try #require(studio.run(Test.key)?.recapture?.uploadToken)
@@ -82,7 +82,7 @@ struct PageShotsRecaptureTests {
         studio.claudeRunEnded(Test.session(id))
         let recapture = studio.run(Test.key)?.recapture
         #expect(recapture?.claudeRunID == nil)
-        #expect(recapture?.problem?.contains("before it sent a capture") == true)
+        #expect(recapture?.problem?.contains("sent no capture") == true)
         #expect(studio.run(Test.key)?.stage == .plan)
     }
 

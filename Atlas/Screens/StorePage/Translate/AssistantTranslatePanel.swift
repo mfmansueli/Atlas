@@ -29,7 +29,7 @@ struct AssistantTranslatePanel: View {
             slashCommand: prompt.slashCommand,
             request: prompt.text,
             explanation: String(
-                localized: "Paste this into \(clientName). Its proposals appear in the coverage grid as they arrive, tagged with who proposed them, and wait for you in Review & Push."
+                localized: "Paste this into \(clientName). Its suggestions appear in the coverage grid, tagged with its name, and wait in Review & Push."
             ),
             clientName: clientName,
             isCopied: isCopied

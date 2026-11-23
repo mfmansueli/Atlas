@@ -24,8 +24,8 @@ struct InAppTextsView: View {
             content
             Divider()
             Text("""
-            Shown on the purchase sheet and in Settings → Subscriptions. Display name 30 characters; \
-            description 55 for a subscription, 45 for an in-app purchase. Click a cell to edit.
+            On the purchase sheet and in Settings → Subscriptions. Character limits: display name 30, description 55 (45 \
+            for an in-app purchase). Click a cell to edit.
             """)
             .font(.subheadline)
             .foregroundStyle(Palette.label2)

@@ -46,7 +46,7 @@ struct ListingImportPreviewTests {
                 == "“pt” isn’t an App Store locale. Did you mean Portuguese (Brazil) or Portuguese (Portugal)? 9 fields skipped."
         )
         #expect(problems.first?.isError == false)
-        #expect(problems.last?.message == "French subtitle is 33 characters; the limit is 30. Skipped.")
+        #expect(problems.last?.message == "French subtitle: 33 of 30 characters. Skipped.")
         #expect(problems.last?.isError == true)
     }
 
@@ -120,7 +120,7 @@ struct ListingImportPreviewTests {
         ))
         #expect(preview.changes.isEmpty)
         #expect(preview.problems.map(\.message) == [
-            "German keywords are 102 bytes; the limit is 100. Skipped.",
+            "German keywords: 102 of 100 bytes. Skipped.",
             "German privacy policy URL isn’t a full https:// address. Skipped.",
         ])
         let allErrors = preview.problems.allSatisfy(\.isError)

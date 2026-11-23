@@ -43,14 +43,14 @@ struct AccessibilityCardTests {
     }
 
     @Test func theNoteExplainsTheState() {
-        #expect(Support.card(draft: six).note == "Saved in App Store Connect as a draft. It isn’t on the product page.")
+        #expect(Support.card(draft: six).note == "Draft in App Store Connect, not on the product page.")
         let vision = Support.card(.vision, draft: six, isLive: false).note
         #expect(vision == """
-        No live version on Apple Vision Pro yet. Apple only publishes labels for live devices, so this stays a draft until 1.4 is released.
+        No live Apple Vision Pro version yet: stays a draft until 1.4 is released.
         """)
         var queued = Support.card(published: six)
         queued.queued = AccessibilityAnswer(features: [.voiceOver])
-        #expect(queued.note == "Live on the product page as shown; the changes publish when you push them.")
+        #expect(queued.note == "Live on the product page. Your changes go live when you push.")
         #expect(Support.card(published: six).note == nil)
     }
 

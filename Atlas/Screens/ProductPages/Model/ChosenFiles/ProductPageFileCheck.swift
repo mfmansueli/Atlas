@@ -14,7 +14,7 @@ enum ProductPageFileCheck {
     static func problems(_ files: [ProductPageChosenFile], device: ProductPageDevice) -> [String] {
         var problems: [String] = []
         if files.count > ProductPageScreenshotsPush.maxScreenshots {
-            problems.append(String(localized: "A set has up to 10 screenshots, and \(files.count) were chosen. Choose 10 or fewer."))
+            problems.append(String(localized: "\(files.count) screenshots chosen. A set takes up to 10."))
         }
         let sizes = sizesText(device)
         for file in files {

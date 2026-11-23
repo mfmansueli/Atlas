@@ -26,7 +26,7 @@ struct NewVersionSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("New Version")
                     .font(.title2.weight(.semibold))
-                Text("App Store Connect creates it when you push, in Prepare for Submission. Then you edit its What’s New and other texts here.")
+                Text("Created in Prepare for Submission when you push. Then edit its texts here.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)

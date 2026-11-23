@@ -17,7 +17,7 @@ struct StorePageHeader: View {
 
     var body: some View {
         SectionHeader(
-            subtitle: String(localized: "The words on \(viewModel.app.name)’s App Store page and in search, in every language.")
+            subtitle: String(localized: "\(viewModel.app.name)’s page and search texts, in every language.")
         ) {
             StorePageVersionMenu(viewModel: viewModel)
             if let version = viewModel.content?.version, !version.isEditable {

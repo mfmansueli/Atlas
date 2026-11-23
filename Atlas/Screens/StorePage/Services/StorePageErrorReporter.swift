@@ -17,12 +17,11 @@ enum StorePageErrorReporter {
             case .notFound: break
             default: push?.report(.apiError(error.pushFailureText))
             }
-            return error.errorDescription ?? error.localizedDescription
         }
         if let error = error as? URLError, offlineCodes.contains(error.code) {
             push?.report(.offline)
         }
-        return error.localizedDescription
+        return AppleErrorCopy(String(localized: "This section didn’t load.", comment: "kind:error"), error: error).text
     }
 
     static func nextHour(after date: Date) -> Date {

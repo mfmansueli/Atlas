@@ -13,7 +13,7 @@ struct PrivacyOutOfDateBanner: View {
 
     var body: some View {
         PrivacyNotice(isWarning: true) {
-            Text("**Out of date with App Store Connect.** You marked these answers as published on \(date.formatted(date: .abbreviated, time: .omitted)). A later scan or an edit changed them, so App Store Connect may no longer match. Review the changes, then update App Store Connect with the checklist.")
+            Text("**Out of date with App Store Connect.** Answers changed since you published them on \(date.formatted(date: .abbreviated, time: .omitted)). Review them, then update App Store Connect with the checklist.")
                 .fixedSize(horizontal: false, vertical: true)
         } actions: {
             Button(String(localized: "Open Checklist"), action: onOpenChecklist)

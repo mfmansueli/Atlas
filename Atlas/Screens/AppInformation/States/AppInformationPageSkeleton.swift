@@ -21,7 +21,7 @@ struct AppInformationPageSkeleton: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Loading"))
+        .accessibilityLabel(Text("Loading App Information"))
         .accessibilityIdentifier("appInformation.loading")
     }
 }

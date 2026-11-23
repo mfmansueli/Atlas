@@ -23,13 +23,13 @@ enum ListingTransferError: LocalizedError, Hashable, Sendable {
         case .notText:
             String(localized: "The file isn’t UTF-8 text.")
         case .missingFieldColumn:
-            String(localized: "The CSV needs a “field” column with field names like subtitle or whatsNew.")
+            String(localized: "Add a “field” column with names like subtitle or whatsNew.")
         case let .unreadable(detail):
-            if let detail {
-                String(localized: "The file couldn’t be read: \(detail)")
-            } else {
-                String(localized: "The file couldn’t be read.")
-            }
+            // The parser's own words go in Details, never in the message.
+            AppleErrorCopy(
+                summary: String(localized: "The file couldn’t be read. Check that it’s valid XLIFF or JSON.", comment: "kind:error"),
+                details: detail
+            ).text
         }
     }
 }

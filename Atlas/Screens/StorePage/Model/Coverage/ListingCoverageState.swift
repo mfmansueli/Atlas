@@ -83,7 +83,7 @@ enum ListingCoverageState: Hashable, Sendable {
         case .invalidURL: String(localized: "invalid URL")
         case .machineTranslated: String(localized: "machine-translated, not reviewed")
         case .edited: String(localized: "edited, not pushed")
-        case let .proposed(client): String(localized: "proposed by \(client)")
+        case let .proposed(client): String(localized: "suggested by \(client)")
         case .notApplicable: String(localized: "not used in a first version")
         }
     }

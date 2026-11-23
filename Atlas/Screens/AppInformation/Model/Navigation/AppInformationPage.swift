@@ -37,8 +37,8 @@ enum AppInformationPage: String, CaseIterable, Identifiable, Hashable, Sendable 
             return version.isEmpty
                 ? String(localized: "Copyright, categories and how the version is released.")
                 : String(localized: "Copyright, categories and how \(version) is released.")
-        case .appCompliance: return String(localized: "Rules and permits that apply in some countries or to some kinds of apps.")
-        case .ageRating: return String(localized: "Apple’s questionnaire. Apple works out \(appName)’s age rating from these answers.")
+        case .appCompliance: return String(localized: "Rules and permits for some countries or kinds of apps.")
+        case .ageRating: return String(localized: "Apple sets \(appName)’s age rating from these answers.")
         case .accessibility: return String(localized: "Accessibility Nutrition Labels: what people can do with each feature, per device.")
         case .appPrivacy: return String(localized: "What data \(appName) collects and why.")
         case .appReview:

@@ -51,7 +51,7 @@ struct AppCompliancePageView: View {
                 .accessibilityIdentifier("appInformation.compliance.suggestions")
         }
         if let line = viewModel.complianceErrorLine {
-            InlineMessage.warning(String(localized: "Couldn’t check again where \(viewModel.app.name) is sold. This is what was read before. \(line)"))
+            InlineMessage.warning(String(localized: "Couldn’t recheck where \(viewModel.app.name) is sold; showing the last result. \(line)"))
                 .accessibilityIdentifier("appInformation.compliance.stale")
         }
         ForEach(ComplianceRule.allCases) { rule in
@@ -81,7 +81,7 @@ struct AppCompliancePageView: View {
             Image(systemName: "checkmark.shield")
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
-            Text("\(report.headline). Compliance answers are yours: Atlas prepares them and checks them, and never accepts them for you, not even with Accept All.")
+            Text("\(report.headline). Accept All never accepts compliance answers: you accept each one.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

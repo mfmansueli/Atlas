@@ -71,8 +71,8 @@ struct InfoPlistKeyCard: View {
             }
         } else {
             Text("""
-            Add this key to the app’s Info.plist, or the build setting to a target that generates its Info.plist, and \
-            App Store Connect stops asking for every build you upload. It must say what the answers above say.
+            Add this key to Info.plist, or the build setting to a target that generates one, and App Store Connect stops \
+            asking per build. It must match the answers above.
             """)
             .font(.callout)
             .foregroundStyle(Palette.label2)

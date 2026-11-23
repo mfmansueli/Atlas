@@ -22,7 +22,7 @@ enum ProductPageTextRefusal {
             }
         }
         return String(localized: """
-        It \(what.formatted(.list(type: .and))). App Review rejects promotional text like this, so Atlas doesn’t offer it to accept.
+        It \(what.formatted(.list(type: .and))). App Review rejects this in promotional text, so it’s not offered.
         """)
     }
 

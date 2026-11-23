@@ -45,7 +45,7 @@ struct AgeRatingAccessibilitySuggestionsTests {
         #expect(vm.provenance(wellness) != nil)
         #expect(vm.assistantAnswers[.wellness] == nil)
         #expect(vm.shownSuggestion(wellness) == nil)
-        #expect(vm.suggestionToast?.text == "Health or wellness topics accepted. It’s waiting in Review & Push, top right.")
+        #expect(vm.suggestionToast?.text == "Health or wellness topics accepted. In Review & Push.")
     }
 
     @Test func undoTakesTheQuestionBackToUnanswered() async {
@@ -93,7 +93,7 @@ struct AgeRatingAccessibilitySuggestionsTests {
         #expect(vm.isPending(.accessibility(.appleWatch, .voiceOver)))
         #expect(vm.provenance(.accessibility(.appleWatch, .voiceOver)) != nil)
         #expect(vm.suggestionCount(in: .accessibility(.iPhone)) == 1)
-        #expect(vm.suggestionToast?.text == "Accepted 1 on Accessibility · Apple Watch. It’s waiting in Review & Push, top right.")
+        #expect(vm.suggestionToast?.text == "Accepted 1 on Accessibility · Apple Watch. In Review & Push.")
     }
 
     @Test func acceptingTwoFeaturesKeepsBoth() async {

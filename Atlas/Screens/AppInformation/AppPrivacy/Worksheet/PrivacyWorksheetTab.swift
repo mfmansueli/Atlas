@@ -18,7 +18,7 @@ struct PrivacyWorksheetTab: View {
                     VStack(alignment: .leading, spacing: Spacing.medium) {
                         if worksheet.hasContent {
                             PrivacyWorksheetContent(viewModel: viewModel)
-                            Text("Suggestions aren’t legal advice. You’re responsible for these answers, including what third-party SDKs in \(viewModel.appShortName) collect. “Collect” means data leaves the device and is kept longer than it takes to serve the request.")
+                            Text("Not legal advice. You’re responsible for these answers, including \(viewModel.appShortName)’s third-party SDKs. “Collect” means data leaves the device and is kept longer than the request needs.")
                                 .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                                 .fixedSize(horizontal: false, vertical: true)

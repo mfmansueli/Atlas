@@ -49,14 +49,14 @@ extension PageShotsStudio {
     /// person didn't ask or it'd be a fourth screen.
     func receive(capture: PageShotsNewCapture, for key: PageShotsRun.Key) -> String? {
         guard let recapture = runs[key]?.recapture else {
-            return String(localized: "The person didn’t ask for screens to be captured again. Use the default set’s captures.")
+            return String(localized: "No recapture was asked for. Use the default set’s captures.")
         }
         let slots = Set(recapture.slots)
         if !slots.contains(capture.slot), slots.count >= PageShotsRecapture.maxScreens {
             let numbers = recapture.slots.map { String($0 + 1) }.formatted(.list(type: .and))
             return String(localized: """
-            Screens \(numbers) are captured again already; a page captures at most \(PageShotsRecapture.maxScreens) again. \
-            Send one of those again instead.
+            Already recaptured: screens \(numbers). A page recaptures at most \(PageShotsRecapture.maxScreens). Resend \
+            one of those.
             """)
         }
         update(key) { run in
@@ -81,8 +81,9 @@ extension PageShotsStudio {
         update(run.key) { run in
             run.recapture?.claudeRunID = nil
             if run.recapture?.captures.isEmpty == true {
+                let assistant = run.plan?.source ?? MCPClientKind.claudeCode.title
                 run.recapture?.problem = String(localized: """
-                Claude Code stopped before it sent a capture, so the set uses the default page’s. Ask it again, or leave it.
+                \(assistant) sent no capture, so the set uses the default page’s. Ask again or leave it.
                 """)
             }
         }

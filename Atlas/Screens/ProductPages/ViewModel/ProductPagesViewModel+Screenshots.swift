@@ -64,7 +64,7 @@ extension ProductPagesViewModel {
         do {
             screenshotSets[key] = try await .loaded(read())
         } catch {
-            screenshotSets[key] = .failed(error.localizedDescription)
+            screenshotSets[key] = .failed(AppleErrorCopy(String(localized: "Screenshots didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

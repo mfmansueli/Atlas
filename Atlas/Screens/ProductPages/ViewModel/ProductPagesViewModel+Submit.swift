@@ -91,7 +91,7 @@ extension ProductPagesViewModel {
             show(String(localized: "“\(page.name)” was submitted to App Review."), undo: nil)
         } catch {
             if case AppStoreConnectError.forbidden = error { store.setKeyCannotChange(true, for: app.id) }
-            submitError = error.localizedDescription
+            submitError = AppleErrorCopy(String(localized: "The page wasn’t submitted.", comment: "kind:error"), error: error)
         }
     }
 
@@ -113,7 +113,9 @@ extension ProductPagesViewModel {
             setState(.prepareForSubmission, ofVersion: version.id, pageID: page.id)
             show(String(localized: "Submission cancelled. The page is back to Prepare for Submission."), undo: nil)
         } catch {
-            show(error.localizedDescription, undo: nil)
+            let text = (error as? ProductPageSubmissionError)?.errorDescription
+                ?? AppleErrorCopy(String(localized: "The submission wasn’t canceled.", comment: "kind:error"), error: error).text
+            show(text, undo: nil)
         }
     }
 

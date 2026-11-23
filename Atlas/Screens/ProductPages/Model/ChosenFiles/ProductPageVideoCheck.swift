@@ -17,7 +17,7 @@ enum ProductPageVideoCheck {
         var problems: [String] = []
         let limit = ProductPageMedia.appPreviews.limit
         if videos.count > limit {
-            problems.append(String(localized: "A set has up to 3 App Previews, and \(videos.count) were chosen. Choose 3 or fewer."))
+            problems.append(String(localized: "\(videos.count) App Previews chosen. A set takes up to 3."))
         }
         guard let spec = AppPreviewSpec.spec(for: device.displayType, landscape: false) else { return problems }
         let size = "\(spec.pixelSize.width) × \(spec.pixelSize.height)"

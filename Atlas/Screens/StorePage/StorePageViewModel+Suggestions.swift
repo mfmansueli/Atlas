@@ -148,7 +148,7 @@ extension StorePageViewModel {
 
     func acceptSuggestion(_ suggestion: FieldSuggestion) {
         guard let (field, _) = storeField(of: suggestion) else { return }
-        accept([suggestion], toast: String(localized: "\(field.title) accepted. It’s waiting in Review & Push, top right."))
+        accept([suggestion], toast: String(localized: "Accepted \(field.title), waiting in Review & Push."))
     }
 
     /// "Use and Edit": the value goes in and the field takes focus.
@@ -157,7 +157,7 @@ extension StorePageViewModel {
         accept(
             [suggestion],
             isForEditing: true,
-            toast: String(localized: "Copied into the field. Edit it there; your version goes to Review & Push."),
+            toast: String(localized: "Copied into the field. Your edit goes to Review & Push."),
             offersReview: false
         )
         focusRequest = ListingFieldKey(locale, field)
@@ -173,8 +173,8 @@ extension StorePageViewModel {
         let batch = visibleSuggestions(in: locale)
         let name = LanguageBarModel.shortName(locale)
         let text = batch.count == 1
-            ? String(localized: "Accepted 1 in \(name). It’s waiting in Review & Push, top right.")
-            : String(localized: "Accepted \(batch.count) in \(name). They’re waiting in Review & Push, top right.")
+            ? String(localized: "Accepted 1 in \(name), waiting in Review & Push.")
+            : String(localized: "Accepted \(batch.count) in \(name), waiting in Review & Push.")
         accept(batch, toast: text)
     }
 

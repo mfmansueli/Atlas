@@ -132,7 +132,7 @@ struct AppReviewPageView: View {
                 .accessibilityLabel(Text(AppReviewField.notes.title))
                 .accessibilityIdentifier("appInformation.review.notes")
             if isOver {
-                Text("App Store Connect takes up to \(AppReviewField.notesLimit.formatted()) characters. Shorten the notes to push them.")
+                Text("Shorten to \(AppReviewField.notesLimit.formatted()) characters to push.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.err)
             }

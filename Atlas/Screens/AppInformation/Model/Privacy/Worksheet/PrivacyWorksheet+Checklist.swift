@@ -47,7 +47,7 @@ extension PrivacyWorksheet {
             id: "s4",
             number: collectsData ? "4" : "2",
             title: String(localized: "Publish"),
-            body: String(localized: "Click Publish at the top of the App Privacy page."),
+            body: String(localized: "Click Publish on the App Privacy page."),
             canCopy: false
         ))
         return steps

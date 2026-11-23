@@ -32,7 +32,7 @@ struct AppInformationDebugScenesTests {
             #require(DebugAppInformationChanges.visionSwapsVoiceControl),
         ]
         #expect(changes.map { $0.option?.isEffective } == [true, true, false])
-        #expect(changes[2].option?.disabledReason?.contains("Apple Vision Pro has no live version yet") == true)
+        #expect(changes[2].option?.disabledReason?.contains("Apple Vision Pro has no live version") == true)
         #expect(changes[0].newValue.hasPrefix("7 features"))
     }
 

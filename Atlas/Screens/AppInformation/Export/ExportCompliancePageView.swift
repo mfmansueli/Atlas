@@ -68,8 +68,8 @@ struct ExportCompliancePageView: View {
     private func fromBuildNote(build: String) -> some View {
         Label {
             Text("""
-            From build \(build)’s answer. App Store Connect keeps only that the app uses no encryption that needs documents: \
-            exempt encryption, such as HTTPS, or none at all. Change the answers if they’re not right.
+            From build \(build)’s answer, which can’t tell exempt encryption (such as HTTPS) from none. Change the \
+            answers if they’re wrong.
             """)
         } icon: {
             Image(systemName: "info.circle")

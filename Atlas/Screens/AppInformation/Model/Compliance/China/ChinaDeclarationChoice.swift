@@ -52,8 +52,7 @@ enum ChinaDeclarationChoice: String, CaseIterable, Identifiable, Hashable, Senda
             String(localized: "Answered No in App Store Connect.")
         case (.stopSelling, _):
             String(localized: """
-            \(appName) stays everywhere else. It’s the one Apple’s API takes: the change waits in Review & Push. \
-            App Store Connect still asks, and the answer is No.
+            \(appName) stays everywhere else; the change waits in Review & Push. In App Store Connect, still answer No.
             """)
         }
     }

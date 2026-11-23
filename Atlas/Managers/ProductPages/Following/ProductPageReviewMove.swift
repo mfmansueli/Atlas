@@ -28,11 +28,11 @@ struct ProductPageReviewMove: Hashable, Sendable {
         guard isTold else { return nil }
         return switch state {
         case .inReview:
-            String(localized: "App Review is looking at “\(pageName)”, a custom product page of \(appName).")
+            String(localized: "App Review is looking at \(appName)’s page “\(pageName)”.")
         case .approved, .accepted:
-            String(localized: "Apple approved “\(pageName)”, a custom product page of \(appName).")
+            String(localized: "Apple approved \(appName)’s page “\(pageName)”.")
         case .rejected:
-            String(localized: "App Review sent back “\(pageName)”, a custom product page of \(appName). Its message is in App Store Connect.")
+            String(localized: "App Review sent back \(appName)’s page “\(pageName)”. Reason in App Store Connect.")
         case .prepareForSubmission, .readyForReview, .waitingForReview, .replacedWithNewVersion:
             nil
         }

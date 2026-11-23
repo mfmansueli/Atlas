@@ -43,7 +43,7 @@ struct PrivacyAssistantStatusLine: View {
             return String(localized: "\(session.displayName) connected\(folder) · via Atlas’s local MCP server")
         }
         guard isEnabled else {
-            return String(localized: "No assistant connected. The local server is off; turn it on in Settings, then connect Claude Code from \(appName)’s folder.")
+            return String(localized: "No assistant connected. Turn on the local server in Settings, then connect Claude Code from \(appName)’s folder.")
         }
         return String(localized: "No assistant connected. The local server is on; connect Claude Code from \(appName)’s folder.")
     }

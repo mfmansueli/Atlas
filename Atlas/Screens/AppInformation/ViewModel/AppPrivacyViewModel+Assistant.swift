@@ -49,9 +49,9 @@ extension AppPrivacyViewModel {
         let manifests = running.scan?.manifestsRead.count ?? 0
         let suggestions = running.answeredTypes.count
         if sdks == 0, manifests == 0 {
-            return String(localized: "Reading the project · \(suggestions) suggestions so far")
+            return String(localized: "Reading the project · \(suggestions) suggestions")
         }
-        return String(localized: "Reading \(sdks) SDKs · \(manifests) privacy manifests · \(suggestions) suggestions so far")
+        return String(localized: "Reading \(sdks) SDKs, \(manifests) manifests · \(suggestions) suggestions")
     }
 
     /// "Scan done · 12 answers suggested · 3 open questions".

@@ -59,7 +59,7 @@ struct ProductPageDefaultRow: View {
 
     private var subtitle: String {
         let languages = ReviewText.languages(max(viewModel.defaultPage.languages.count, 1))
-        return String(localized: "What everyone else sees · \(languages) · the reference for every page below")
+        return String(localized: "What everyone else sees · \(languages)")
     }
 
     private var status: some View {

@@ -89,7 +89,7 @@ struct PageShotsFlowTests {
         #expect(queued.allSatisfy { $0.blockedReason == nil && $0.oldValue == "The default page’s screenshots" })
         #expect(flow.run?.stage == .used)
         #expect(flow.studio.presentedKey == nil)
-        #expect(toasts.last?.text == "8 screenshots added to “Private diary”. They’re waiting in Review & Push, top right.")
+        #expect(toasts.last?.text == "8 screenshots added to “Private diary”. In Review & Push.")
         #expect(toasts.last?.actionTitle == "Review & Push")
 
         let files = try #require(model.queuedScreenshots(of: flow.page, locale: "de-DE", device: .iPad))

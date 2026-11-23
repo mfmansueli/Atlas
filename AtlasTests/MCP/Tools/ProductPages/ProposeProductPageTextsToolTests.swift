@@ -76,7 +76,7 @@ struct ProposeProductPageTextsToolTests {
 
         let kept = try #require(fixtures.store.textSuggestion(for: appID, pageID: PageID.privateDiary, locale: "en-US"))
         #expect(kept.isRefused)
-        #expect(kept.refusal.contains("App Review rejects promotional text like this"))
+        #expect(kept.refusal.contains("App Review rejects this in promotional text"))
         #expect(kept.refusedPhrases.contains("50% off"))
         // Not offered isn't counted: it can't be accepted.
         #expect(fixtures.store.count(for: appID) == before)

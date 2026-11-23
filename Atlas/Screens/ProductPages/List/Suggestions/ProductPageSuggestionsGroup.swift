@@ -52,7 +52,7 @@ struct ProductPageSuggestionsGroup: View {
                 ProductPageSuggestionRow(viewModel: viewModel, suggestion: suggestion, isCompact: isCompact)
             }
             Divider().overlay(Palette.aiMark.opacity(0.25))
-            Text("Accepting makes a draft page in Atlas. You still push it and submit it to App Review yourself.")
+            Text("Accepting makes a draft in Atlas. You push and submit it yourself.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
