@@ -45,6 +45,10 @@ extension PricingViewModel {
             await setup.load([product])
             open(sheet.route(for: product))
         }
+        if let sheet = launch.inAppPurchaseOfferSheet, let purchase = catalog?.product(id: DebugPricingCatalog.lumenLifetimeID) {
+            await setup.load([purchase])
+            openInAppPurchaseOffer(sheet.route(for: purchase))
+        }
         if let state = launch.reviewShots { await applyReviewShotsDebugLaunch(state) }
     }
 

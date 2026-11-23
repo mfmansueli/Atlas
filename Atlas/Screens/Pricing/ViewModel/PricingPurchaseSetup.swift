@@ -20,6 +20,8 @@ final class PricingPurchaseSetup {
     var reviewScreenshotTarget: PurchaseSetupTarget?
     /// The promotional offer, win-back offer or offer code sheet that's open.
     var offerRoute: SubscriptionOfferRoute?
+    /// The in-app purchase offer code sheet that's open.
+    var inAppPurchaseOfferRoute: InAppPurchaseOfferCodeRoute?
     /// The one-time codes Save Codes… read, while its save panel is open.
     var codesFile: OneTimeCodesFile?
     /// Why Save Codes… couldn't read a batch's one-time codes.

@@ -21,6 +21,8 @@ A subscription’s **Offers** tab lists its offers in App Store Connect and the 
 - **New Offer** > **Win-Back Offer…**: Apple shows it to people who used to subscribe, chosen by how long they paid and when they left. You can also let Apple promote it on the App Store. **Edit…** changes who gets it, its dates and its priority.
 - **New Offer** > **Offer Code…**: people redeem it with a code. A **custom code** is one word they type, such as PODCAST30. **One-time codes** are unique codes Apple makes. Once Apple has made them, **Save Codes…** saves them as a CSV file. **Deactivate…** turns off a code for good.
 
+An in-app purchase’s **Offers** tab lists its offer codes. **New Offer Code…** makes one: who can redeem it (people who never bought, buy now or stopped buying), a free or lower price, and where. It can come with a custom code and one-time codes. **Add Custom Code…**, **Add One-Time Codes…**, **Save Codes…** and **Deactivate…** work as they do for a subscription.
+
 Your assistant can propose all of these too, and you review them in Review & Push. Nothing reaches App Store Connect until you push.
 
 ## Review screenshots

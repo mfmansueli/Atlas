@@ -90,7 +90,7 @@ enum MCPSubscriptionOffersJSON {
         ]
     }
 
-    private static func queued(_ change: PendingChange) -> JSONValue {
+    static func queued(_ change: PendingChange) -> JSONValue {
         var json: [String: JSONValue] = [
             "changeId": .string(change.id),
             "kind": .string(SubscriptionOfferChanges.kind(of: change)?.rawValue ?? ""),

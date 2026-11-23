@@ -5,11 +5,19 @@
 
 import Foundation
 
-/// One-time offer codes' values, which App Store Connect sends as a CSV
-/// file rather than JSON.
+/// One-time offer codes' values, a subscription's or an in-app purchase's,
+/// which App Store Connect sends as a CSV file rather than JSON.
 extension AppStoreConnectClient: OneTimeCodeValuesReading {
     func oneTimeCodeValues(batchID: String) async throws -> Data {
-        var request = URLRequest(url: url(ExistingOneTimeCodes.valuesPath(batchID: batchID)))
+        try await csv(at: ExistingOneTimeCodes.valuesPath(batchID: batchID))
+    }
+
+    func inAppPurchaseOneTimeCodeValues(batchID: String) async throws -> Data {
+        try await csv(at: InAppPurchaseOfferCodeResource.valuesPath(batchID: batchID))
+    }
+
+    private func csv(at path: String) async throws -> Data {
+        var request = URLRequest(url: url(path))
         try request.setValue("Bearer \(AppStoreConnectJWT.token(for: credentials, issuedAt: now()))", forHTTPHeaderField: "Authorization")
         request.setValue("text/csv", forHTTPHeaderField: "Accept")
         let (data, response) = try await transport.send(request)

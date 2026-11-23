@@ -6,11 +6,12 @@
 import Foundation
 
 /// Reads, while pushing, each territory's price point for an offer: where
-/// the subscription is sold (its availability) unless territories were
-/// chosen, the US price point at the offer's price and the points Apple
-/// equalizes with it, and for a territory priced apart its own point at
-/// that price. A free offer has no points: each territory is listed alone.
-/// The same reads an introductory offer makes (`IntroductoryOfferEverywhere`).
+/// the subscription (or in-app purchase) is sold, its availability, unless
+/// territories were chosen, the US price point at the offer's price and the
+/// points Apple equalizes with it, and for a territory priced apart its own
+/// point at that price. A free subscription offer has no points: each
+/// territory is listed alone. The same reads an introductory offer makes
+/// (`IntroductoryOfferEverywhere`), from the plan's owner's points.
 struct OfferPriceReader: Hashable, Sendable {
     var plan: OfferPricesPlan
 
@@ -20,15 +21,14 @@ struct OfferPriceReader: Hashable, Sendable {
         var pricePointID: String?
     }
 
-    /// `GET` the subscription's availability.
+    /// `GET` the subscription's (or in-app purchase's) availability.
     var availabilityPath: String {
-        "/v1/subscriptions/\(plan.subscriptionID)/subscriptionAvailability?fields%5BsubscriptionAvailabilities%5D=availableInNewTerritories"
+        plan.owner.availabilityPath
     }
 
-    /// `GET` the subscription's price points in a territory.
+    /// `GET` the subscription's (or in-app purchase's) price points in a territory.
     func pricePointsPath(territoryID: String) -> String {
-        "/v1/subscriptions/\(plan.subscriptionID)/pricePoints?filter%5Bterritory%5D=\(territoryID)"
-            + "&fields%5BsubscriptionPricePoints%5D=customerPrice&limit=8000"
+        plan.owner.pricePointsPath(territoryID: territoryID)
     }
 
     /// Every territory's price, the United States first when it's one.
@@ -59,14 +59,14 @@ struct OfferPriceReader: Hashable, Sendable {
         do {
             availability = try await transport.fetch(availabilityPath)
         } catch AppStoreConnectError.notFound {
-            throw SubscriptionOfferPushError.notAvailable
+            throw plan.owner.notAvailable
         }
         note(availability.rateLimit)
         let object = try? JSONSerialization.jsonObject(with: availability.data) as? [String: Any]
-        guard let id = (object?["data"] as? [String: Any])?["id"] as? String else { throw SubscriptionOfferPushError.notAvailable }
-        let ids = try await PushPagedRead.resources(at: IntroductoryOfferEverywhere.availableTerritoriesPath(availabilityID: id), via: transport, note: note)
+        guard let id = (object?["data"] as? [String: Any])?["id"] as? String else { throw plan.owner.notAvailable }
+        let ids = try await PushPagedRead.resources(at: plan.owner.availableTerritoriesPath(availabilityID: id), via: transport, note: note)
             .data.compactMap { $0["id"] as? String }
-        guard !ids.isEmpty else { throw SubscriptionOfferPushError.notAvailable }
+        guard !ids.isEmpty else { throw plan.owner.notAvailable }
         return ids
     }
 
@@ -83,7 +83,7 @@ struct OfferPriceReader: Hashable, Sendable {
         var points = [base: baseID]
         guard territories.contains(where: { $0 != base && plan.territoryPrices[$0] == nil }) else { return points }
         let equalized = try await PushPagedRead.resources(
-            at: IntroductoryOfferEverywhere.equalizationsPath(pricePointID: baseID), via: transport, note: note
+            at: plan.owner.equalizationsPath(pricePointID: baseID), via: transport, note: note
         ).data
         for point in equalized {
             guard let territory = PushPagedRead.relationshipID("territory", of: point), let id = point["id"] as? String else { continue }
@@ -99,7 +99,7 @@ struct OfferPriceReader: Hashable, Sendable {
     ) async throws -> String {
         let points = try await PushPagedRead.resources(at: pricePointsPath(territoryID: territoryID), via: transport, note: note).data
         guard let id = points.first(where: { PushPagedRead.customerPrice(of: $0) == price })?["id"] as? String else {
-            throw SubscriptionOfferPushError.noPricePoint(territoryID: territoryID, price: price, nearest: PushPagedRead.nearest(price, in: points))
+            throw plan.owner.noPricePoint(territoryID: territoryID, price: price, nearest: PushPagedRead.nearest(price, in: points))
         }
         return id
     }

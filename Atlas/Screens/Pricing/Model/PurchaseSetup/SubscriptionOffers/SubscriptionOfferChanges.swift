@@ -64,9 +64,11 @@ enum SubscriptionOfferChanges {
         return fields
     }
 
-    /// Whether a change is a promotional offer's, win-back offer's or offer code's.
+    /// Whether a change is a promotional offer's, win-back offer's or offer
+    /// code's (a subscription's or an in-app purchase's).
     static func owns(_ change: PendingChange) -> Bool {
         PromotionalOfferChangeBuilder.owns(change) || WinBackOfferChangeBuilder.owns(change) || OfferCodeChangeBuilder.owns(change)
+            || InAppPurchaseOfferCodeChangeBuilder.owns(change)
     }
 
     /// The offer changes for a subscription waiting in Review & Push.
@@ -79,7 +81,7 @@ enum SubscriptionOfferChanges {
     static func kind(of change: PendingChange) -> OfferKind? {
         if PromotionalOfferChangeBuilder.owns(change) { return .promotional }
         if WinBackOfferChangeBuilder.owns(change) { return .winBack }
-        if OfferCodeChangeBuilder.owns(change) { return .offerCode }
+        if OfferCodeChangeBuilder.owns(change) || InAppPurchaseOfferCodeChangeBuilder.owns(change) { return .offerCode }
         return nil
     }
 }

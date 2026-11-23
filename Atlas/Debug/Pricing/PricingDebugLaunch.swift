@@ -52,5 +52,7 @@ struct PricingDebugLaunch {
     var hasSampleOffers = false
     /// Opens an offer sheet on Lumen Monthly.
     var offerSheet: SubscriptionOfferDebugSheet?
+    /// Opens an offer code sheet on Lumen Lifetime.
+    var inAppPurchaseOfferSheet: InAppPurchaseOfferCodeDebugSheet?
 }
 #endif
