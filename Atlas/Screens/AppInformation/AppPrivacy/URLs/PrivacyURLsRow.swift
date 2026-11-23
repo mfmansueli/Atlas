@@ -34,13 +34,21 @@ struct PrivacyURLsRow: View {
                 problem: table.policyProblem(locale),
                 id: "policy"
             ) { viewModel.setPolicyURL(locale, to: $0) }
-            field(
-                String(localized: "User Privacy Choices URL, \(locale.name)"),
-                value: table.choicesURL(locale),
-                prompt: String(localized: "Optional"),
-                problem: table.choicesProblem(locale),
-                id: "choices"
-            ) { viewModel.setChoicesURL(locale, to: $0) }
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                field(
+                    String(localized: "User Privacy Choices URL, \(locale.name)"),
+                    value: table.choicesURL(locale),
+                    prompt: String(localized: "Optional"),
+                    problem: table.choicesProblem(locale),
+                    id: "choices"
+                ) { viewModel.setChoicesURL(locale, to: $0) }
+                // An assistant's suggested URL, under the field.
+                if let owner = viewModel.owner {
+                    AppInformationFieldSuggestions(viewModel: owner, slot: .privacyChoicesURL(locale))
+                        .padding(.horizontal, -(Spacing.medium + 2))
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.xSmall)

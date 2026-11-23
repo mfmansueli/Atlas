@@ -231,7 +231,9 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         """
         Suggest everything for \(appPhrase) in Atlas: every Store Page field in every language, \
         including languages the app supports that aren’t on the App Store yet, and App Information's General, \
-        Age Rating, Accessibility for each device, and App Review. Call list_apps to get its appId. Read the \
+        Age Rating, Accessibility for each device and its URL, App Privacy's User Privacy Choices URL in each \
+        language, and App Review (contact, sign-in and the demo account's user name, notes; never its password). \
+        Call list_apps to get its appId. Read the \
         project's targets, devices and string catalogs and send them with report_app_support first, so \
         Atlas knows the languages the App Store page lacks. Then call get_store_page and \
         get_app_information: they say which fields are locked, which the person changed (a `live` value that \

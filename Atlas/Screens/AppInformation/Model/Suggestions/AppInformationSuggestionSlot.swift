@@ -5,19 +5,25 @@
 
 import Foundation
 
-/// What an App Information suggestion is for: a General or App Review
-/// field, an Age Rating question, or an Accessibility feature on one
-/// device. Questions and features take answers rather than text, so their
-/// cards show the answers and have no Use and Edit. Answers are stored as
-/// `AgeRatingAnswer` raw values, and as `yes` or `no` for a feature.
+/// What an App Information suggestion is for: a General, App Review or
+/// Accessibility field, an Age Rating question, an Accessibility feature
+/// on one device, or App Privacy's User Privacy Choices URL in one
+/// language. Questions and features take answers rather than text, so
+/// their cards show the answers and have no Use and Edit. Answers are
+/// stored as `AgeRatingAnswer` raw values, and as `yes` or `no` for a
+/// feature.
 enum AppInformationSuggestionSlot: Hashable, Sendable {
     case field(AppInformationSuggestionField)
     case ageRating(AgeRatingQuestion)
     case accessibility(DeviceFamily, AccessibilityFeature)
+    case privacyChoicesURL(StoreLocale)
 
     /// A feature's stored answers.
     static let supported = "yes"
     static let unsupported = "no"
+
+    /// The User Privacy Choices URL's key, App Store Connect's attribute.
+    static let privacyChoicesField = AppInformationChangeBuilder.choicesURLAttribute
 
     init?(target: SuggestionTarget) {
         switch target.scope {
@@ -36,6 +42,9 @@ enum AppInformationSuggestionSlot: Hashable, Sendable {
                   feature.isAvailable(on: family)
             else { return nil }
             self = .accessibility(family, feature)
+        case let .appPrivacy(code):
+            guard target.field == Self.privacyChoicesField, let locale = StoreLocaleCatalog.locale(code: code) else { return nil }
+            self = .privacyChoicesURL(locale)
         }
     }
 
@@ -44,6 +53,7 @@ enum AppInformationSuggestionSlot: Hashable, Sendable {
         case let .field(field): .appInformation(field)
         case let .ageRating(question): SuggestionTarget(.appInformation(.ageRating), field: question.rawValue)
         case let .accessibility(family, feature): SuggestionTarget(.accessibility(family), field: feature.rawValue)
+        case let .privacyChoicesURL(locale): SuggestionTarget(.appPrivacy(locale), field: Self.privacyChoicesField)
         }
     }
 
@@ -55,26 +65,30 @@ enum AppInformationSuggestionSlot: Hashable, Sendable {
         case let .field(field): field.title
         case let .ageRating(question): question.title
         case let .accessibility(_, feature): feature.name
+        case .privacyChoicesURL: String(localized: "User Privacy Choices URL")
         }
     }
 
     /// Answered from a list of choices rather than typed.
     var isChoice: Bool {
-        if case .field = self { return false }
-        return true
+        switch self {
+        case .field, .privacyChoicesURL: false
+        case .ageRating, .accessibility: true
+        }
     }
 
     /// What can't be edited after it goes in: choices and picked fields.
+    /// The URLs on Accessibility and App Privacy are edited where they are.
     var canUseAndEdit: Bool {
         guard case let .field(field) = self else { return false }
-        return !field.isPicked
+        return !field.isPicked && field.page != .accessibility
     }
 
     /// The stored answers a question or feature takes, in the picker's
     /// order; empty for a field.
     var choices: [String] {
         switch self {
-        case .field: []
+        case .field, .privacyChoicesURL: []
         case let .ageRating(question): question.answers.map(\.rawValue)
         case .accessibility: [Self.supported, Self.unsupported]
         }
@@ -87,6 +101,8 @@ enum AppInformationSuggestionSlot: Hashable, Sendable {
         switch self {
         case let .field(field):
             return field.displayValue(value)
+        case .privacyChoicesURL:
+            return value
         case .ageRating:
             guard !value.isEmpty else { return String(localized: "Not answered") }
             return AgeRatingAnswer(rawValue: value)?.title ?? value
@@ -107,6 +123,8 @@ enum AppInformationSuggestionSlot: Hashable, Sendable {
         switch self {
         case let .field(field):
             return field.normalized(value)
+        case .privacyChoicesURL:
+            return value.trimmingCharacters(in: .whitespacesAndNewlines)
         case let .ageRating(question):
             let booleans = question.hasLevels ? [:] : ["true": AgeRatingAnswer.affirmative, "false": .negative]
             let answer = question.answers.first { [$0.rawValue.lowercased(), $0.title.lowercased()].contains(trimmed) } ?? booleans[trimmed]

@@ -52,8 +52,8 @@ struct SuggestEverythingScopeTests {
         #expect(scope.rows[0].detail == "Every field in English (U.S.) and German")
         #expect(scope.rows[1].detail == "Copyright, categories, content rights, release")
         #expect(scope.rows[2].detail == "7 questions not answered, and a check of the rest")
-        #expect(scope.rows[3].detail.hasSuffix(", every feature"))
-        #expect(scope.rows[4].detail == "Contact and notes")
+        #expect(scope.rows[3].detail.hasSuffix(", every feature, and the accessibility URL"))
+        #expect(scope.rows[4].detail == "Contact, sign-in and notes")
         #expect(scope.prompt.hasPrefix("Suggest everything for Lumen Journal \(scope.versionString ?? "") in Atlas. Read the project first"))
         #expect(scope.prompt.contains("every Store Page field in every language"))
         #expect(scope.prompt.hasSuffix("Skip fields I’ve already changed."))
@@ -90,7 +90,8 @@ struct SuggestEverythingScopeTests {
         #expect(scope.prompt == """
         Suggest everything for Lumen Journal 1.4 in Atlas. Read the project first, then suggest every Store Page field in \
         every language, including languages the app supports that aren’t on the App Store yet, and App Information: General, Age \
-        Rating, Accessibility for each device, and App Review. Skip fields I’ve already changed.
+        Rating, Accessibility for each device and its URL, App Privacy’s User Privacy Choices URL in each language, and \
+        App Review’s contact, sign-in and notes. Skip fields I’ve already changed.
         """)
         #expect(SuggestEverythingScope(appName: "Lumen Journal", versionString: nil).prompt.hasPrefix("Suggest everything for Lumen Journal in"))
     }

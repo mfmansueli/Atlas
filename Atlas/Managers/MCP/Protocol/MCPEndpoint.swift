@@ -95,7 +95,10 @@ enum MCPEndpoint {
     to Autopilot: ask to redo just those with request_recapture (and a product page's with \
     request_page_recapture), even when no Autopilot run was saved (the run is then made from the captures the \
     set uses), or mark them out of date with mark_captures_stale; the person accepts, and \
-    get_capture_plan and next_step then ask only for those. To find what to improve, read \
+    get_capture_plan and next_step then ask only for those. To change one language's set by hand, read it with \
+    get_screenshot_context's locale and displayType, then propose a file with propose_screenshot_file, screenshots to \
+    delete with propose_screenshot_removal or a new order with propose_screenshot_order: each waits on its language \
+    page for the person. To find what to improve, read \
     the get_analytics_ tools (the funnel from impression to paid subscriber, where it's weak, subscriptions), \
     propose the fix, and say why with add_finding; never quote a rate marked tooFewToTell. After release, read \
     the reviews with get_reviews, suggest a reply to each in the reviewer's own language with \

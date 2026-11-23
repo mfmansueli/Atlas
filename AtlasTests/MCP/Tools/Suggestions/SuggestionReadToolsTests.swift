@@ -53,7 +53,7 @@ struct SuggestionReadToolsTests {
         let result = outcome.result
         #expect(result["version"]?["versionString"] == "1.4")
         let pages = try #require(result["pages"]?.arrayValue)
-        #expect(pages.map { $0["page"] } == ["general", "review", "ageRating", "accessibility"])
+        #expect(pages.map { $0["page"] } == ["general", "review", "ageRating", "accessibility", "appPrivacy"])
         #expect(pages[0]["fields"]?["copyright"]?["value"] == "© 2026 Northpier Studio")
         #expect(pages[0]["fields"]?["copyright"]?["locked"] == false)
         #expect(pages[1]["fields"]?["notes"]?["limit"] == ["max": 4000, "unit": "characters"])

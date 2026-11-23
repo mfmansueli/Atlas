@@ -11,10 +11,10 @@ import Foundation
 /// field, the limit and the permissions.
 struct MCPSuggestionItem: Hashable, Sendable {
     var area: SuggestionArea
-    /// A Store Page locale code, e.g. `de-DE`.
+    /// A Store Page or App Privacy locale code, e.g. `de-DE`.
     var locale: String?
-    /// An App Information page: `general`, `ageRating`, `accessibility`
-    /// or `review`.
+    /// An App Information page: `general`, `ageRating`, `accessibility`,
+    /// `appPrivacy` or `review`.
     var page: String?
     /// For Accessibility: `iphone`, `watch`, …
     var device: String?
@@ -41,6 +41,17 @@ struct MCPSuggestionItem: Hashable, Sendable {
         page = try arguments.optionalString("page")
         device = try arguments.optionalString("device")
         field = try arguments.string("field")
+        // The User Privacy Choices URL is App Privacy's, in one language;
+        // the accessibility URL is Accessibility's, for the whole app.
+        if page == nil {
+            if field.caseInsensitiveCompare(AppInformationSuggestionSlot.privacyChoicesField) == .orderedSame {
+                area = .appInformation
+                page = AppInformationPage.appPrivacy.rawValue
+            } else if AppInformationSuggestionField.accessibilityURL.isNamed(field) {
+                area = .appInformation
+                page = AppInformationPage.accessibility.rawValue
+            }
+        }
         guard let value = object["value"]?.stringValue ?? (isPlanned ? "" : nil) else {
             throw MCPToolError.invalidArgument(name: "value", expected: String(localized: "a string"))
         }

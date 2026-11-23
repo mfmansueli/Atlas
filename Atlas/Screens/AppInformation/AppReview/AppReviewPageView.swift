@@ -38,7 +38,7 @@ struct AppReviewPageView: View {
                     if !contactFields.isEmpty {
                         contactSection(review)
                     }
-                    if !viewModel.showsOnlySuggestedFields {
+                    if viewModel.showsField(.demoAccountRequired) || viewModel.showsField(.demoAccountName) {
                         signInSection(review)
                     }
                     if viewModel.showsField(.notes) {
@@ -84,9 +84,14 @@ struct AppReviewPageView: View {
                     .labelsHidden()
                     .accessibilityIdentifier("appInformation.review.signInRequired")
             }
-            if review.signInRequired {
+            AppInformationFieldSuggestions(viewModel: viewModel, field: .demoAccountRequired)
+            // A suggested user name shows even before sign-in is required.
+            if review.signInRequired || viewModel.shownSuggestion(.demoAccountName) != nil {
                 Divider()
                 textRow(.userName, review)
+                AppInformationFieldSuggestions(viewModel: viewModel, field: .demoAccountName)
+            }
+            if review.signInRequired {
                 Divider()
                 AppInformationFormRow(label: AppReviewField.password.title) {
                     PasswordField(title: AppReviewField.password.title, text: review.password, isVisible: $viewModel.isPasswordVisible) {

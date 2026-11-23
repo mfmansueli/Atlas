@@ -10,17 +10,23 @@ import Foundation
 // Review field through `AppInformationSuggestionWriter`, an Age Rating
 // answer, or an Accessibility feature in its device's declaration.
 extension AppInformationViewModel {
-    /// The scopes a page's suggestion bar works on: the page, or on
-    /// Accessibility one per device.
+    /// The scopes a page's suggestions are in: the page, on Accessibility
+    /// one per device and the page for its URL, and on App Privacy one per
+    /// language for its User Privacy Choices URL (once the URLs loaded).
     func suggestionScopes(on page: AppInformationPage) -> [SuggestionScope] {
         switch page {
         case .general, .ageRating, .appReview: [.appInformation(page)]
-        case .accessibility: accessibilitySuggestionFamilies.map(SuggestionScope.accessibility)
+        case .accessibility: accessibilitySuggestionFamilies.map(SuggestionScope.accessibility) + [.appInformation(.accessibility)]
+        case .appPrivacy: (slotValues?.privacyLocales ?? []).map(SuggestionScope.appPrivacy)
         // Compliance answers are the person's: never suggested, never in
         // Accept All.
-        case .appPrivacy, .exportCompliance, .appCompliance: []
+        case .exportCompliance, .appCompliance: []
         }
     }
+
+    /// The pages whose slots take suggestions: the ones with a suggestion
+    /// bar, and App Privacy, whose URLs show theirs in their rows.
+    static let slotPages: [AppInformationPage] = [.general, .ageRating, .accessibility, .appPrivacy, .appReview]
 
     /// What takes suggestions in `scope`, in the page's order.
     func suggestionSlots(in scope: SuggestionScope) -> [AppInformationSuggestionSlot] {
@@ -34,11 +40,14 @@ extension AppInformationViewModel {
         case let .accessibility(code):
             guard let family = DeviceFamily(rawValue: code) else { return [] }
             return family.features.map { .accessibility(family, $0) }
+        case let .appPrivacy(code):
+            guard let locale = StoreLocaleCatalog.locale(code: code) else { return [] }
+            return [.privacyChoicesURL(locale)]
         }
     }
 
     var allSuggestionSlots: [AppInformationSuggestionSlot] {
-        Self.suggestionPages.flatMap(suggestionScopes).flatMap(suggestionSlots)
+        Self.slotPages.flatMap(suggestionScopes).flatMap(suggestionSlots)
     }
 
     /// The devices Accessibility's suggestions can be for: every card's,
@@ -58,7 +67,9 @@ extension AppInformationViewModel {
     /// What every slot holds as shown, with what's queued on top; nil
     /// until App Information has loaded.
     var slotValues: AppInformationSlotValues? {
-        content.map { AppInformationSlotValues(content: $0, accessibility: accessibility.value, builder: builder, changes: changes) }
+        content.map {
+            AppInformationSlotValues(content: $0, accessibility: accessibility.value, builder: builder, changes: changes, privacyURLs: privacy.urls.value)
+        }
     }
 
     /// Its value as shown, as stored: a category by id, an answer by raw

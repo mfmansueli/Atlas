@@ -157,7 +157,7 @@ struct SuggestionRun: Identifiable, Hashable, Sendable {
     /// Per language or device ("German 0/1", or "German 1" once it's over),
     /// or the fields' names.
     private func detail(of targets: [SuggestionTarget], on page: SuggestionPage) -> String {
-        guard page == .storePage || page == .accessibility else {
+        guard [.storePage, .accessibility, .appPrivacy].contains(page) else {
             return targets.map(SuggestionPage.fieldTitle).joined(separator: ", ")
         }
         var scopes: [SuggestionScope] = []
@@ -173,12 +173,13 @@ struct SuggestionRun: Identifiable, Hashable, Sendable {
         .joined(separator: " · ")
     }
 
-    /// "German", "Apple Watch".
+    /// "German", "Apple Watch", or "URL" for Accessibility's.
     private static func name(of scope: SuggestionScope) -> String {
         switch scope {
         case let .storePage(code): StoreLocaleCatalog.locale(code: code)?.name ?? code
         case let .accessibility(family): DeviceFamily(rawValue: family)?.name ?? family
-        case .appInformation: scope.title
+        case let .appPrivacy(code): StoreLocaleCatalog.locale(code: code)?.name ?? code
+        case .appInformation: scope.page == .accessibility ? String(localized: "URL") : scope.title
         }
     }
 }

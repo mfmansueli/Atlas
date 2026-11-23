@@ -20,11 +20,15 @@ struct SuggestFieldsTool: MCPTool {
         Suggests values for an app's fields in Atlas; each one shows under its field until the person \
         accepts, edits or dismisses it. Items are {area, locale | page, device, field, value, reason, evidence}: \
         area store with a locale code and a Store Page field (\(ListingField.mcpNames.joined(separator: ", "))), \
-        or area info with page general (copyright, primaryCategory, secondaryCategory, contentRights, release; \
-        contentRights is USES_THIRD_PARTY_CONTENT or DOES_NOT_USE_THIRD_PARTY_CONTENT, or yes or no), page review \
-        (contactFirstName, contactLastName, contactPhone, contactEmail, notes), page ageRating (field is a \
-        question, value one of its answers) or page accessibility with a device (iphone, ipad, watch, vision, \
-        mac, tv; field is a feature, value yes or no). Give a one-sentence reason and \
+        or area info with page general (copyright, primaryCategory, secondaryCategory, gamesSubcategories, \
+        contentRights, release; contentRights is USES_THIRD_PARTY_CONTENT or DOES_NOT_USE_THIRD_PARTY_CONTENT, or yes \
+        or no; gamesSubcategories is up to two Games subcategory ids, comma-separated, only while the primary \
+        category is GAMES), page review (contactFirstName, contactLastName, contactPhone, contactEmail, \
+        demoAccountRequired yes or no, demoAccountName, notes; the demo account's password is never suggested), \
+        page ageRating (field is a question, value one of its answers), page accessibility with a device (iphone, \
+        ipad, watch, vision, mac, tv; field is a feature, value yes or no) or field accessibilityUrl (the app's, no \
+        device), or page appPrivacy with a locale and field privacyChoicesUrl (the User Privacy Choices URL in that \
+        language). Give a one-sentence reason and \
         evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. Per item, \
         status is queued, unchanged (the field already has that value or you suggested it already), updated (you \
         suggested that value already and it took your new reason or evidence, same id), replaced (your older open \
@@ -44,10 +48,11 @@ struct SuggestFieldsTool: MCPTool {
         suggestions that went stale (a reason that cites a date that moved, a value no longer right) with \
         withdraw_suggestion and their ids. version may also be a new version queued with propose_app_version: its \
         fields (whatsNew, description, keywords, promotionalText, URLs, copyright, release, page review, and \
-        name, subtitle, privacy URLs, categories and age rating, which go into the app info App Store Connect \
-        makes with it) are then queued with it in Review & Push (status applied, with a note) instead of shown as \
-        suggestions, since it has no page in Atlas yet; they go into it right after Atlas creates it, and are \
-        discarded with it. contentRights belongs to the app, so with version it's handled as without.
+        name, subtitle, privacy URLs (privacyChoicesUrl too), categories, Games subcategories and age rating, which \
+        go into the app info App Store Connect makes with it) are then queued with it in Review & Push (status \
+        applied, with a note) instead of shown as suggestions, since it has no page in Atlas yet; they go into it \
+        right after Atlas creates it, and are discarded with it. contentRights and accessibilityUrl belong to the \
+        app, so with version they're handled as without.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -67,12 +72,15 @@ struct SuggestFieldsTool: MCPTool {
     private static let itemSchema = MCPToolDefinition.schema(
         [
             "area": MCPToolDefinition.string("store or info."),
-            "locale": MCPToolDefinition.string("For store: an App Store Connect locale code, e.g. en-US."),
-            "page": MCPToolDefinition.string("For info: general, ageRating, accessibility or review."),
+            "locale": MCPToolDefinition.string("For store and for appPrivacy: an App Store Connect locale code, e.g. en-US."),
+            "page": MCPToolDefinition.string("For info: general, ageRating, accessibility, appPrivacy or review."),
             "device": MCPToolDefinition.string("For accessibility: iphone, ipad, watch, vision, mac or tv."),
             "field": MCPToolDefinition.string("The field, question or feature, e.g. whatsNew, notes, wellness or voiceOver."),
             "value": MCPToolDefinition.string(
-                "The suggested value, within the field's limit. Categories, contentRights and release by id; an answer by name, e.g. Yes or Infrequent."
+                """
+                The suggested value, within the field's limit. Categories, gamesSubcategories, contentRights and release by id; \
+                an answer by name, e.g. Yes or Infrequent.
+                """
             ),
             "reason": MCPToolDefinition.string("One sentence: why this value."),
             "evidence": ["type": "array", "items": evidenceSchema],
@@ -153,19 +161,20 @@ struct SuggestFieldsTool: MCPTool {
         throw MCPToolError.notFound(String(localized: "\(app)’s version being prepared is \(shown), not \(version). Suggestions are for \(shown)."))
     }
 
-    /// `general`, `ageRating`, `accessibility` or `review`, as MCP names
-    /// App Information's pages.
+    /// `general`, `ageRating`, `accessibility`, `appPrivacy` or `review`,
+    /// as MCP names App Information's pages.
     nonisolated static func mcpPageName(_ page: String) -> String {
         page == AppInformationPage.appReview.rawValue ? "review" : page
     }
 
     /// The page an assistant named: `general`, `ageRating` (or `age`),
-    /// `accessibility`, `review` or `appReview`.
+    /// `accessibility`, `appPrivacy` (or `privacy`), `review` or `appReview`.
     nonisolated static func page(named name: String) -> AppInformationPage? {
         switch name.replacingOccurrences(of: "_", with: "").lowercased() {
         case "general": .general
         case "agerating", "age": .ageRating
         case "accessibility": .accessibility
+        case "appprivacy", "privacy": .appPrivacy
         case "review", "appreview": .appReview
         default: nil
         }

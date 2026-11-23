@@ -8,7 +8,8 @@ import XCTest
 /// Screenshots by hand on the language page (`ScreenshotsHandDebugScenes`):
 /// select a screenshot and move it, replace and delete it through their
 /// sheets, the Add tile and Manage, a language that uses the primary
-/// one's, and an assistant's file to accept.
+/// one's, and an assistant's file, removal and new order to accept or
+/// dismiss.
 @MainActor
 final class ScreenshotsByHandUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -123,6 +124,42 @@ final class ScreenshotsByHandUITests: XCTestCase {
         XCTAssertTrue(waitUntil { !accept.exists })
         let shot = element("screenshots.page.shot.2")
         XCTAssertTrue(waitUntil { self.text(of: shot).contains("Replaced") }, text(of: shot))
+    }
+
+    func testAcceptingASuggestedRemoval() {
+        app.launch(debugScene: "hand-removal")
+        let title = element("screenshots.hand.arrangement.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 20))
+        XCTAssertTrue(text(of: title).contains("Delete screenshots 2 and 4"), text(of: title))
+        attachScreenshot("Claude Code suggests deleting 2 and 4")
+        let accept = element("screenshots.hand.arrangement.accept")
+        accept.click()
+        XCTAssertTrue(waitUntil { !accept.exists })
+        let shot = element("screenshots.page.shot.1")
+        XCTAssertTrue(waitUntil { self.text(of: shot).contains("Will be deleted") }, text(of: shot))
+    }
+
+    func testDismissingASuggestedOrderKeepsTheSet() {
+        app.launch(debugScene: "hand-order")
+        let title = element("screenshots.hand.arrangement.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 20))
+        XCTAssertTrue(text(of: title).contains("New order: 3, 1, 2, 4, 5"), text(of: title))
+        let first = text(of: element("screenshots.page.shot.0"))
+        let dismiss = element("screenshots.hand.arrangement.dismiss")
+        dismiss.click()
+        XCTAssertTrue(waitUntil { !dismiss.exists })
+        XCTAssertEqual(text(of: element("screenshots.page.shot.0")), first)
+    }
+
+    func testAcceptingASuggestedOrder() {
+        app.launch(debugScene: "hand-order")
+        let accept = element("screenshots.hand.arrangement.accept")
+        XCTAssertTrue(accept.waitForExistence(timeout: 20))
+        accept.click()
+        XCTAssertTrue(waitUntil { !accept.exists })
+        let toast = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "Claude Code’s order")).firstMatch
+        XCTAssertTrue(toast.waitForExistence(timeout: 5), "The toast says the set is in Claude Code's order")
+        attachScreenshot("Claude Code's order accepted")
     }
 
     // MARK: - Helpers

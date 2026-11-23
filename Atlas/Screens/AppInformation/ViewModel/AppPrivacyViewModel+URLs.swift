@@ -13,6 +13,8 @@ extension AppPrivacyViewModel {
         if urls.value == nil { urls = .loading }
         do {
             urls = try await .loaded(services.privacyURLs(for: app))
+            // The User Privacy Choices URLs' suggestions can show now.
+            owner?.refreshSuggestions()
         } catch {
             urls = .failed(String(localized: "Couldn’t load the privacy URLs."))
         }

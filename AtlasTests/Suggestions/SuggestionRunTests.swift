@@ -208,7 +208,8 @@ struct SuggestionRunTests {
         #expect(SuggestionPage(.appInformation(.ageRating)) == .ageRating)
         #expect(SuggestionPage(.appInformation(.appReview)) == .appReview)
         #expect(SuggestionPage(.accessibility(.appleWatch)) == .accessibility)
-        #expect(SuggestionPage(.appInformation(.appPrivacy)) == nil)
+        #expect(SuggestionPage(.appPrivacy(.german)) == .appPrivacy)
+        #expect(SuggestionPage(.appInformation(.accessibility)) == .accessibility)
         #expect(SuggestionPage.fieldTitle(of: AppInformationSuggestionSlot.ageRating(.wellness).target) == "Health or wellness topics")
     }
 }

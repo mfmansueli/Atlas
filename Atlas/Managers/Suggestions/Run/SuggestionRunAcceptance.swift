@@ -57,9 +57,12 @@ enum SuggestionRunAcceptance {
         }
 
         let information = batch.filter { $0.target.scope.area == .appInformation }
-        let readsAccessibility = information.contains { if case .accessibility = $0.target.scope { true } else { false } }
+        let readsAccessibility = information.contains { $0.target.scope.page == .accessibility }
+        let readsPrivacyURLs = information.contains { $0.target.scope.page == .appPrivacy }
         if !information.isEmpty,
-           var draft = try? await MCPAppInformationDraft.load(app: appID, in: workspace, includesAccessibility: readsAccessibility)
+           var draft = try? await MCPAppInformationDraft.load(
+               app: appID, in: workspace, includesAccessibility: readsAccessibility, includesPrivacyURLs: readsPrivacyURLs
+           )
         {
             for suggestion in information {
                 guard let slot = AppInformationSuggestionSlot(target: suggestion.target) else { continue }

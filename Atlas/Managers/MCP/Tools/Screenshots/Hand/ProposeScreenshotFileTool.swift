@@ -11,7 +11,8 @@ import Foundation
 /// `get_screenshot_context` and is checked like one the person adds: one of
 /// the device's sizes, upright or turned, PNG or JPEG without
 /// transparency, never scaled. It waits on the Screenshots language page
-/// to be accepted or dismissed. Assistants never delete a screenshot.
+/// to be accepted or dismissed. Deleting and moving screenshots are
+/// `propose_screenshot_removal`'s and `propose_screenshot_order`'s.
 struct ProposeScreenshotFileTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "propose_screenshot_file",
@@ -24,8 +25,9 @@ struct ProposeScreenshotFileTool: MCPTool {
         displayTypes list them), upright or turned, without transparency: Atlas never scales a screenshot, and a wrong \
         size is refused with the sizes to use. A file replacing a screenshot Atlas made from the template stops it \
         being redrawn when the template or caption changes. It waits on the Screenshots language page for the person \
-        to accept or dismiss, then in Review & Push. Proposing the same place again replaces the waiting one. You \
-        can't delete screenshots; say in reason which ones should go and the person deletes them.
+        to accept or dismiss, then in Review & Push. Proposing the same place again replaces the waiting one. Positions \
+        are as get_screenshot_context lists the set with the same locale and displayType. To delete screenshots use \
+        propose_screenshot_removal, and to change their order propose_screenshot_order.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -47,9 +49,7 @@ struct ProposeScreenshotFileTool: MCPTool {
         var draft = try await MCPScreenshotsDraft.load(app: arguments.string("appId"), in: context.workspace)
         let locale = try draft.locale(arguments.string("locale"))
         let displayValue = try arguments.string("displayType")
-        guard let display = ScreenshotDisplayType(mcpValue: displayValue), ScreenshotDisplayType.studio.contains(display) else {
-            throw MCPToolError.invalidArgument(name: "displayType", expected: "iphone, iphone_duo, ipad, mac, watch or vision_pro")
-        }
+        let display = try MCPScreenshotHandSet.displayType(displayValue)
         let position = try arguments.optionalInt("position")
         let target = "\(draft.app.name) · \(locale.code) · \(display.shortTitle)" + (position.map { " · \($0)" } ?? "")
         if let position, !(1...ScreenshotHandSet.capacity).contains(position) {

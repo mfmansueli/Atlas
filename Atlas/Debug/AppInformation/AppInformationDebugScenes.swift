@@ -27,6 +27,10 @@ import SwiftUI
 ///   mainland, no AI generation, no Security Assessment, not a medical
 ///   device) waiting on the cards. `info-comp-outside-china`: Lumen not
 ///   sold in China mainland, its two declarations still asked, with No.
+/// - `info-signin-suggested`: App Review with Claude Code's Sign-in
+///   required and demo user name waiting. `info-choices-suggested`: App
+///   Privacy's Privacy URLs with Claude Code's German User Privacy Choices
+///   URL waiting.
 /// - `info-age`: Claude Code's seven answers, two confirmed. `info-age-override`:
 ///   all confirmed, rated 13+ over the calculated rating, with a reason.
 /// - `a11y-empty`, `a11y-loading`, `a11y-error`: never declared; the
@@ -43,7 +47,7 @@ import SwiftUI
 ///   `AppInformationDebugScenes+Privacy.swift`.
 enum AppInformationDebugScenes {
     static let ids = [
-        "info-general", "info-age", "info-age-override", "info-review", "info-export",
+        "info-general", "info-age", "info-age-override", "info-review", "info-export", "info-signin-suggested", "info-choices-suggested",
         "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested",
         "info-comp-outside-china", "a11y-empty", "a11y-loading", "a11y-error", "a11y-editor", "a11y-editor-watch", "a11y-draft", "a11y-published",
         "a11y-pending", "a11y-nolive", "a11y-url", "a11y-review", "a11y-pushing",
@@ -96,6 +100,25 @@ enum AppInformationDebugScenes {
                 model.page = .exportCompliance
                 model.showsExportEvidence = true
             }
+        case "info-signin-suggested":
+            return scene { model in
+                model.page = .appReview
+                suggest("yes", for: AppInformationSuggestionSlot.field(.demoAccountRequired).target, on: model, reason: "Journals sync after you sign in.")
+                let userName = AppInformationSuggestionSlot.field(.demoAccountName).target
+                suggest("review@northpier.dev", for: userName, on: model, reason: "The sandbox account in the README.")
+            }
+        case "info-choices-suggested":
+            return scene { model in
+                model.page = .appPrivacy
+                model.privacy.tab = .urls
+                await model.privacy.loadURLs()
+                suggest(
+                    "https://lumen.example/de/privacy/choices",
+                    for: AppInformationSuggestionSlot.privacyChoicesURL(.german).target,
+                    on: model,
+                    reason: "The German site has its own choices page."
+                )
+            }
         case "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested":
             return scene { complianceOpening(id, on: $0) }
         case "info-comp-outside-china":
@@ -103,6 +126,16 @@ enum AppInformationDebugScenes {
         default:
             return privacyScene(id)
         }
+    }
+
+    /// Claude Code's suggestion for `target`, waiting under its field.
+    @MainActor
+    private static func suggest(_ value: String, for target: SuggestionTarget, on model: AppInformationViewModel, reason: String) {
+        _ = model.suggestions.add(
+            appID: model.app.id, target: target, value: value, reason: reason, source: .assistant(client: "Claude Code"),
+            evidence: [SuggestionEvidence(kind: "code", ref: "README.md:42")]
+        )
+        model.refreshSuggestions()
     }
 
     /// App Compliance with the trader details prepared: the question open,

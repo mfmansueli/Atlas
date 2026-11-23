@@ -34,7 +34,7 @@ enum AppInformationSuggestionWriter {
         source: ChangeSource
     ) -> (change: PendingChange?, id: String)? {
         typealias Key = AppInformationChangeBuilder.GeneralKey
-        let (content, general, review, builder) = (values.content, values.general, values.review, values.builder)
+        let (content, general, builder) = (values.content, values.general, values.builder)
         if field.isVersionLevel, !content.isVersionEditable { return nil }
         switch field {
         case .copyright:
@@ -43,6 +43,8 @@ enum AppInformationSuggestionWriter {
             let key = field == .primaryCategory ? Key.primaryCategory : Key.secondaryCategory
             let old = field == .primaryCategory ? content.general.primaryCategory : content.general.secondaryCategory
             return (builder.categoryChange(key, from: old, to: value.isEmpty ? nil : value, source: source), builder.changeID(.general, key))
+        case .gamesSubcategories:
+            return subcategoriesChange(to: value, in: values, source: source)
         case .contentRights:
             return contentRightsChange(to: value, in: values, source: source)
         case .release:
@@ -51,15 +53,45 @@ enum AppInformationSuggestionWriter {
             if option == .scheduled, date == nil { return nil }
             let old = (content.general.release, content.general.earliestReleaseDate)
             return (builder.releaseChange(from: old, to: (option, date), source: source), builder.versionChangeID(.general, Key.release))
-        case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .notes:
-            guard let reviewField = field.reviewField else { return nil }
-            var edited = review
-            edited.setText(value, for: reviewField)
-            if content.ids.reviewDetailID == nil {
-                return (builder.newReviewDetailChange(edited, source: source), builder.newReviewDetailChangeID)
-            }
-            return (builder.reviewFieldChange(reviewField, from: content.review, to: edited, source: source), builder.reviewChangeID(reviewField))
+        case .accessibilityURL:
+            // The app's, read with Accessibility: `AppInformationSlotValues` writes it.
+            return nil
+        case .contactFirstName, .contactLastName, .contactPhone, .contactEmail, .demoAccountRequired, .demoAccountName, .notes:
+            return reviewChange(field, to: value, in: values, source: source)
         }
+    }
+
+    /// Games subcategories: only for a game, as on the page.
+    private static func subcategoriesChange(to value: String, in values: Values, source: ChangeSource) -> (change: PendingChange?, id: String)? {
+        guard values.general.isGame else { return nil }
+        let ids = AppInformationSuggestionField.subcategoryIDs(value)
+        let builder = values.builder
+        return (
+            builder.gamesSubcategoriesChange(from: values.content.general.gamesSubcategories, to: ids, source: source),
+            builder.changeID(.general, AppInformationChangeBuilder.GeneralKey.gamesSubcategories)
+        )
+    }
+
+    /// An App Review field: its own change, or the new review details'
+    /// when the version has none yet. Sign-in required is a switch.
+    private static func reviewChange(
+        _ field: AppInformationSuggestionField,
+        to value: String,
+        in values: Values,
+        source: ChangeSource
+    ) -> (change: PendingChange?, id: String)? {
+        guard let reviewField = field.reviewField else { return nil }
+        let (content, builder) = (values.content, values.builder)
+        var edited = values.review
+        if reviewField == .signInRequired {
+            edited.signInRequired = value == AppInformationSuggestionField.yesAnswer
+        } else {
+            edited.setText(value, for: reviewField)
+        }
+        if content.ids.reviewDetailID == nil {
+            return (builder.newReviewDetailChange(edited, source: source), builder.newReviewDetailChangeID)
+        }
+        return (builder.reviewFieldChange(reviewField, from: content.review, to: edited, source: source), builder.reviewChangeID(reviewField))
     }
 
     /// Yes or No to third-party content, as the page's picker: a Yes is

@@ -38,6 +38,19 @@ extension QueuedAppVersion {
         return content
     }
 
+    /// App Privacy's URLs in the app info App Store Connect makes with the
+    /// new version: the current one's values, with its placeholder IDs.
+    func privacyURLsContent(from base: PrivacyURLsContent) -> PrivacyURLsContent {
+        var content = base
+        content.appInfoID = appInfoToken
+        content.locales = base.locales.map { remote in
+            var remote = remote
+            remote.localizationID = appInfoLocalizationToken(remote.locale)
+            return remote
+        }
+        return content
+    }
+
     /// The version a new one starts from: the newest on its platform, nil
     /// when it's the platform's first (then the one shown).
     func baseVersionID(among versions: [StorePageVersion]) -> StorePageVersion.ID? {

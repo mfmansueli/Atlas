@@ -61,6 +61,6 @@ struct AppInformationBuiltInSuggestionsTests {
         #expect(AppInformationSuggestionField.contactPhone.normalized("  +39 011 ") == "+39 011")
         #expect(AppInformationSuggestionField(reviewField: .notes) == .notes)
         #expect(AppInformationSuggestionField(reviewField: .password) == nil)
-        #expect(AppInformationSuggestionField.fields(on: .appReview).count == 5)
+        #expect(AppInformationSuggestionField.fields(on: .appReview).count == 7)
     }
 }

@@ -54,7 +54,10 @@ struct MCPSuggestionSession {
                 app: app.id,
                 version: version,
                 in: context.workspace,
-                includesAccessibility: items.contains { $0.page.flatMap(SuggestFieldsTool.page(named:)) == .accessibility }
+                includesAccessibility: items.contains {
+                    $0.page.flatMap(SuggestFieldsTool.page(named:)) == .accessibility || AppInformationSuggestionField.accessibilityURL.isNamed($0.field)
+                },
+                includesPrivacyURLs: items.contains { $0.page.flatMap(SuggestFieldsTool.page(named:)) == .appPrivacy }
             )
             : nil
     }
@@ -72,6 +75,7 @@ struct MCPSuggestionSession {
         case .appInformation:
             result["page"] = item.page.map(JSONValue.string) ?? .null
             if let device = item.device { result["device"] = .string(device) }
+            if let locale = item.locale { result["locale"] = .string(locale) }
         }
         let target = target(of: item)
         do {
@@ -114,6 +118,11 @@ struct MCPSuggestionSession {
     /// have the rights.
     static var rightsNote: String {
         String(localized: "It waits in Review & Push until the person confirms in Atlas that they have the rights to the third-party content.")
+    }
+
+    /// An applied Sign-in required: the password is the person's to type.
+    static var passwordNote: String {
+        String(localized: "The person types the demo account’s password in Atlas: it’s never read or sent over MCP.")
     }
 
     // MARK: - Store Page
@@ -192,6 +201,7 @@ struct MCPSuggestionSession {
             result["changeId"] = .string(written.id)
             if let queued = draft.queuedVersion, Self.waits(written.change, in: draft) { result["note"] = .string(Self.waitsNote(queued)) }
             if slot == .field(.contentRights), written.change?.blockedReason != nil { result["note"] = .string(Self.rightsNote) }
+            if slot == .field(.demoAccountRequired), value == AppInformationSuggestionField.yesAnswer { result["note"] = .string(Self.passwordNote) }
             noteSettled(slot.target)
         } else {
             result.merge(add(value, for: slot.target, item: item)) { _, new in new }
@@ -205,17 +215,26 @@ struct MCPSuggestionSession {
         of item: MCPSuggestionItem
     ) throws(MCPSuggestionRefusal) -> (AppInformationSuggestionSlot, String, MCPAppInformationDraft) {
         let (slot, draft) = try informationSlot(of: item)
+        if case .privacyChoicesURL = slot {
+            // Optional: "" clears it.
+            let value = slot.normalized(item.value) ?? ""
+            guard value.isEmpty || ListingFieldValidator.isValidURL(value) else {
+                throw .invalidValue(String(localized: "Not a full https:// URL."))
+            }
+            return (slot, value, draft)
+        }
         guard case let .field(field) = slot else {
             guard let value = slot.normalized(item.value) else {
                 throw .invalidAnswer(String(localized: "“\(item.value)” isn’t an answer to \(item.field). The answers are \(slot.choiceList)."))
             }
             return (slot, value, draft)
         }
-        guard let value = field.normalized(item.value), !value.isEmpty || field.isPicked else {
+        guard let value = field.normalized(item.value), !value.isEmpty || field.isPicked || field.isURL else {
             throw .invalidValue(field.isPicked
                 ? String(localized: "“\(item.value)” isn’t one of the choices get_app_information lists for \(field.rawValue).")
                 : String(localized: "The value is empty."))
         }
+        if field.isURL, let problem = AccessibilityURLValidator.problem(in: value) { throw .invalidValue(problem) }
         if let limit = field.limit, value.count > limit { throw .overLimit(count: value.count, limit: ListingTextLimit(limit)) }
         if field == .release, value == ReleaseOption.scheduled.rawValue, draft.general.earliestReleaseDate == nil {
             throw .invalidValue(String(localized: "“On a date” needs a date, which the person picks in Atlas."))
@@ -229,50 +248,101 @@ struct MCPSuggestionSession {
         guard let draft = information else { throw .invalidValue(String(localized: "App Information couldn’t be read.")) }
         let slot = try Self.slot(of: item, in: draft)
         guard context.allows(.appInformation) else { throw .notPermitted(.appInformation) }
+        try check(slot, in: draft)
+        return (slot, draft)
+    }
+
+    /// Whether `slot` can take a value now: a version field while the
+    /// version is editable, Games subcategories for a game, and what's read
+    /// on its own once it's been read.
+    private func check(_ slot: AppInformationSuggestionSlot, in draft: MCPAppInformationDraft) throws(MCPSuggestionRefusal) {
         switch slot {
+        case .field(.gamesSubcategories):
+            guard draft.slots.canSuggest(slot) else {
+                let category = AppCategory.name(for: draft.general.primaryCategory)
+                throw .invalidValue(String(localized: "Games subcategories need Games as the primary category, and \(app.name)’s is \(category)."))
+            }
+        case .field(.accessibilityURL):
+            guard draft.slots.canSuggest(slot) else { throw .invalidValue(String(localized: "\(app.name)’s accessibility couldn’t be read.")) }
         case let .field(field):
             guard !draft.isLocked(field) else { throw .locked(version: draft.content.version?.versionString ?? "") }
         case .ageRating, .accessibility:
             guard draft.slots.canSuggest(slot) else {
                 throw .invalidValue(String(localized: "App Store Connect has no age rating questionnaire for \(app.name) yet."))
             }
+        case .privacyChoicesURL:
+            // `slot(of:)` checked the language.
+            break
         }
-        return (slot, draft)
     }
 
     /// What an item names: a General or App Review field (on any page when
-    /// it names none), an Age Rating question, or a feature on the device
-    /// it names (the only one, when the app has one).
+    /// it names none), an Age Rating question, a feature on the device it
+    /// names (the only one, when the app has one) or the accessibility URL,
+    /// or a language's User Privacy Choices URL.
     private static func slot(of item: MCPSuggestionItem, in draft: MCPAppInformationDraft) throws(MCPSuggestionRefusal) -> AppInformationSuggestionSlot {
-        func named(_ name: String) -> Bool { name.caseInsensitiveCompare(item.field) == .orderedSame }
         let page = item.page.flatMap(SuggestFieldsTool.page(named:))
         switch page {
         case .ageRating:
-            guard let question = AgeRatingQuestion.allCases.first(where: { named($0.rawValue) }) else {
+            guard let question = AgeRatingQuestion.allCases.first(where: { $0.rawValue.caseInsensitiveCompare(item.field) == .orderedSame }) else {
                 throw .unknownField(item.field, known: AgeRatingQuestion.allCases.map(\.rawValue))
             }
             return .ageRating(question)
         case .accessibility:
-            let families = draft.slots.accessibilityFamilies
-            guard !families.isEmpty else { throw .invalidValue(String(localized: "\(draft.app.name)’s accessibility couldn’t be read.")) }
-            let devices = families.map(\.mcpName).joined(separator: ", ")
-            guard let family = item.device.flatMap(DeviceFamily.init(mcpName:)) ?? (families.count == 1 ? families.first : nil) else {
-                throw .invalidValue(String(localized: "Accessibility suggestions need a device: \(devices)."))
-            }
-            guard families.contains(family) else {
-                throw .invalidValue(String(localized: "\(draft.app.name) doesn’t run on \(family.name). Its devices are \(devices)."))
-            }
-            guard let feature = family.features.first(where: { named($0.rawValue) }) else {
-                throw .unknownField(item.field, known: family.features.map(\.rawValue))
-            }
-            return .accessibility(family, feature)
+            return try accessibilitySlot(of: item, in: draft)
+        case .appPrivacy:
+            return try privacySlot(of: item, in: draft)
         default:
-            let field = AppInformationSuggestionField.allCases.first { named($0.rawValue) }
+            let field = AppInformationSuggestionField.allCases.first { $0.isNamed(item.field) }
             guard let field, page == nil || page == field.page else {
                 throw .unknownField(item.field, known: AppInformationSuggestionField.allCases.filter { page == nil || $0.page == page }.map(\.rawValue))
             }
             return .field(field)
         }
+    }
+
+    /// The accessibility URL, the app's for every device, or a feature on
+    /// the device the item names.
+    private static func accessibilitySlot(
+        of item: MCPSuggestionItem,
+        in draft: MCPAppInformationDraft
+    ) throws(MCPSuggestionRefusal) -> AppInformationSuggestionSlot {
+        let unread = String(localized: "\(draft.app.name)’s accessibility couldn’t be read.")
+        if AppInformationSuggestionField.accessibilityURL.isNamed(item.field) {
+            guard draft.slots.accessibility != nil else { throw .invalidValue(unread) }
+            return .field(.accessibilityURL)
+        }
+        let families = draft.slots.accessibilityFamilies
+        guard !families.isEmpty else { throw .invalidValue(unread) }
+        let devices = families.map(\.mcpName).joined(separator: ", ")
+        guard let family = item.device.flatMap(DeviceFamily.init(mcpName:)) ?? (families.count == 1 ? families.first : nil) else {
+            throw .invalidValue(String(localized: "Accessibility suggestions need a device: \(devices)."))
+        }
+        guard families.contains(family) else {
+            throw .invalidValue(String(localized: "\(draft.app.name) doesn’t run on \(family.name). Its devices are \(devices)."))
+        }
+        guard let feature = family.features.first(where: { $0.rawValue.caseInsensitiveCompare(item.field) == .orderedSame }) else {
+            throw .unknownField(item.field, known: family.features.map(\.rawValue))
+        }
+        return .accessibility(family, feature)
+    }
+
+    /// The User Privacy Choices URL in the language the item names, one
+    /// App Privacy has.
+    private static func privacySlot(of item: MCPSuggestionItem, in draft: MCPAppInformationDraft) throws(MCPSuggestionRefusal) -> AppInformationSuggestionSlot {
+        let field = AppInformationSuggestionSlot.privacyChoicesField
+        guard field.caseInsensitiveCompare(item.field) == .orderedSame else { throw .unknownField(item.field, known: [field]) }
+        guard let urls = draft.slots.privacyURLs else {
+            throw .invalidValue(String(localized: "\(draft.app.name)’s privacy URLs couldn’t be read."))
+        }
+        let codes = urls.locales.map(\.locale.code).joined(separator: ", ")
+        guard let code = item.locale else {
+            throw .unknownLocale(String(localized: "The User Privacy Choices URL is set per language: pass a locale (\(codes))."))
+        }
+        guard let locale = StoreLocaleCatalog.locale(code: code), urls.remote(locale) != nil else {
+            throw .unknownLocale(String(localized: "\(draft.app.name)’s App Privacy has no \(code). Its languages are \(codes)."))
+        }
+        return .privacyChoicesURL(locale)
     }
 
     /// The result's field, page and device, as MCP names them.
@@ -282,6 +352,7 @@ struct MCPSuggestionSession {
             "page": .string(SuggestFieldsTool.mcpPageName(slot.scope.page?.rawValue ?? "")),
         ]
         if case let .accessibility(family, _) = slot { json["device"] = .string(family.mcpName) }
+        if case let .privacyChoicesURL(locale) = slot { json["locale"] = .string(locale.code) }
         return json
     }
 

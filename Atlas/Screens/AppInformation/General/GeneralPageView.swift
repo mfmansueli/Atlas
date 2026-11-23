@@ -43,7 +43,7 @@ struct GeneralPageView: View {
     /// With "Only fields with suggestions or changes" on, a section shows
     /// while one of its suggestion fields does.
     private var showsCategories: Bool {
-        viewModel.showsField(.primaryCategory) || viewModel.showsField(.secondaryCategory)
+        viewModel.showsField(.primaryCategory) || viewModel.showsField(.secondaryCategory) || viewModel.showsField(.gamesSubcategories)
     }
 
     private var showsVersion: Bool {
@@ -74,7 +74,7 @@ struct GeneralPageView: View {
                 }
                 AppInformationFieldSuggestions(viewModel: viewModel, field: .secondaryCategory)
             }
-            if general.isGame, !viewModel.showsOnlySuggestedFields {
+            if general.isGame, viewModel.showsField(.gamesSubcategories) {
                 Divider()
                 AppInformationFormRow(label: String(localized: "Games subcategories"), detail: String(localized: "· up to two")) {
                     HStack(spacing: Spacing.small) {
@@ -86,9 +86,11 @@ struct GeneralPageView: View {
                                 allowsNone: true
                             ) { viewModel.setGamesSubcategory($0, at: index) }
                                 .disabled(index > general.gamesSubcategories.count)
+                                .accessibilityIdentifier("appInformation.general.gamesSubcategory\(index + 1)")
                         }
                     }
                 }
+                AppInformationFieldSuggestions(viewModel: viewModel, field: .gamesSubcategories)
             }
         }
     }
