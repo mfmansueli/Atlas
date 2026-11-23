@@ -53,61 +53,61 @@ enum SubscriptionOfferProblem: Hashable, Sendable {
     var message: String {
         switch self {
         case let .terms(problem):
-            return problem.message
+            problem.message
         case .basePriceSetApart:
-            return String(localized: "The United States’ price is the offer’s price; set the other countries or regions apart.")
+            String(localized: "The United States’ price is the offer’s price; set the other countries or regions apart.")
         case let .pricedOutsideTerritories(ids):
-            return String(localized: "\(ids.formatted(.list(type: .and))) priced apart but not among the offer’s countries or regions.")
+            String(localized: "\(ids.formatted(.list(type: .and))) priced apart but not among the offer’s countries or regions.")
         case let .invalidTerritoryPrices(ids):
-            return String(localized: "Enter \(ids.formatted(.list(type: .and)))’s price above zero, with up to two decimals.")
+            String(localized: "Enter \(ids.formatted(.list(type: .and)))’s price above zero, with up to two decimals.")
         case let .missingName(label):
-            return String(localized: "Enter the \(label).")
+            String(localized: "Enter the \(label).")
         case let .nameTooLong(label, limit):
-            return String(localized: "The \(label) holds up to \(limit) characters.")
+            String(localized: "The \(label) holds up to \(limit) characters.")
         case let .invalidIdentifier(label):
-            return String(localized: "The \(label) takes letters, digits, “_” and “.”, up to 64 characters, and can’t be changed later.")
+            String(localized: "The \(label) takes letters, digits, “_” and “.”, up to 64 characters, and can’t be changed later.")
         case let .identifierTaken(label, value):
-            return String(localized: "The subscription has an offer with the \(label) “\(value)” already.")
+            String(localized: "The subscription has an offer with the \(label) “\(value)” already.")
         case let .tooMany(kind, limit):
-            return String(localized: "A subscription has up to \(limit) active \(kind.groupTitle.lowercased()).")
+            String(localized: "A subscription has up to \(limit) active \(kind.groupTitle.lowercased()).")
         case .subscriptionNotCreated:
-            return String(localized: "The subscription waits in Review & Push. Push it first, then add the offer.")
+            String(localized: "The subscription waits in Review & Push. Push it first, then add the offer.")
         case .noCustomerEligibility:
-            return String(localized: "Choose who can redeem it: new, active or expired subscribers.")
+            String(localized: "Choose who can redeem it: new, active or expired subscribers.")
         case let .invalidEligibilityMonths(label, range):
-            return String(localized: "\(label) is \(range.lowerBound) to \(range.upperBound) months.")
+            String(localized: "\(label) is \(range.lowerBound) to \(range.upperBound) months.")
         case .sinceLastSubscribedReversed:
-            return String(localized: "The shortest time since they last subscribed comes before the longest.")
+            String(localized: "The shortest time since they last subscribed comes before the longest.")
         case .startsInThePast:
-            return String(localized: "The offer can’t start before today.")
+            String(localized: "The offer can’t start before today.")
         case .endsBeforeStart:
-            return String(localized: "The offer ends after it starts.")
+            String(localized: "The offer ends after it starts.")
         case .invalidCustomCode:
-            return String(localized: "A custom code takes letters and digits only, up to 64 characters.")
+            String(localized: "A custom code takes letters and digits only, up to 64 characters.")
         case let .customCodeTaken(code):
-            return String(localized: "The app has the custom code “\(code)” already.")
+            String(localized: "The app has the custom code “\(code)” already.")
         case let .customCodeGuideline(reason):
-            return reason
+            reason
         case let .numberOfCodesOutOfRange(range):
-            return String(localized: "Enter \(range.lowerBound.formatted()) to \(range.upperBound.formatted()) codes.")
+            String(localized: "Enter \(range.lowerBound.formatted()) to \(range.upperBound.formatted()) codes.")
         case .expiresInThePast:
-            return String(localized: "The codes expire after today.")
+            String(localized: "The codes expire after today.")
         case .notActive:
-            return String(localized: "It isn’t active in App Store Connect any more.")
+            String(localized: "It isn’t active in App Store Connect any more.")
         case .nothingChanged:
-            return String(localized: "Nothing changed from what App Store Connect has.")
+            String(localized: "Nothing changed from what App Store Connect has.")
         case .inAppPurchaseNotCreated:
-            return String(localized: "The in-app purchase waits in Review & Push. Push it first, then add the offer code.")
+            String(localized: "The in-app purchase waits in Review & Push. Push it first, then add the offer code.")
         case let .inAppPurchaseOfferCodeNameTaken(name):
-            return String(localized: "The in-app purchase has an offer code named “\(name)” already.")
+            String(localized: "The in-app purchase has an offer code named “\(name)” already.")
         case let .tooManyInAppPurchaseOfferCodes(limit):
-            return String(localized: "An in-app purchase has up to \(limit) active offer codes.")
+            String(localized: "An in-app purchase has up to \(limit) active offer codes.")
         case .noSpenderEligibility:
-            return String(localized: "Choose who can redeem it: people who never bought, who buy now, or who stopped buying.")
+            String(localized: "Choose who can redeem it: people who never bought, who buy now, or who stopped buying.")
         case .invalidInAppPurchaseOfferPrice:
-            return String(localized: "Enter a price in US dollars: zero for free, or more with up to two decimals.")
+            String(localized: "Enter a price in US dollars: zero for free, or more with up to two decimals.")
         case let .notBelowPurchasePrice(price):
-            return String(localized: "An offer code’s price is below the in-app purchase’s own (\(price) in the United States).")
+            String(localized: "An offer code’s price is below the in-app purchase’s own (\(price) in the United States).")
         }
     }
 }
