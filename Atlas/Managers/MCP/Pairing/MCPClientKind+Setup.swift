@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// How "Set Up Your AI Assistant" presents each client: its name in the
+/// How "Set Up Your Assistant" presents each client: its name in the
 /// list, what it can see, and what to tell the person next to the snippet.
 extension MCPClientKind {
     /// "Codex CLI", "Other MCP client".

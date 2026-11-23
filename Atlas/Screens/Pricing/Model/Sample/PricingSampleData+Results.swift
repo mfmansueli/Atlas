@@ -21,7 +21,7 @@ extension PricingSampleData {
     }
 
     /// The same four weeks after pushing `prices` (by territory ID), e.g.
-    /// what Apply Recommended Prices… queued.
+    /// what Apply Suggested Prices… queued.
     func results(pushing prices: [String: Decimal], subscription: PricingSampleSubscription = .annual) -> [PriceChangeResult] {
         catalog.territories.compactMap { territory -> PriceChangeResult? in
             let old = currentPrice(for: territory, subscription: subscription)

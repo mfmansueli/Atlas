@@ -9,7 +9,7 @@ import Foundation
 // (Accept, Dismiss, Show Countries), Accept All above them, and "What
 // people pay" beside them. Every product's prices are read once the catalog
 // is here, one product at a time; accepting follows the strategy for that
-// product, as Apply Recommended Prices… does, and nothing is pushed.
+// product, as Apply Suggested Prices… does, and nothing is pushed.
 extension PricingViewModel {
     // MARK: - Loading
 

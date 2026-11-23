@@ -74,7 +74,7 @@ extension PrivacyWorksheet {
         checklistSteps.allSatisfy(isChecked)
     }
 
-    /// "Mark as Published in App Store Connect": keeps the date and a copy
+    /// "Mark as Published": keeps the date and a copy
     /// of the reviewed answers.
     mutating func markPublished(at date: Date) {
         publication = PrivacyPublication(date: date, snapshot: reviewedAnswers)

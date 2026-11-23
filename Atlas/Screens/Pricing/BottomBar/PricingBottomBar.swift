@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// The bar under the matrix: counts on the left; the selection's actions,
-/// the schedule and Apply Recommended Prices… on the right. Keep my prices
+/// the schedule and Apply Suggested Prices… on the right. Keep my prices
 /// shows a read-only summary and one quiet link instead.
 struct PricingBottomBar: View {
     let viewModel: PricingViewModel

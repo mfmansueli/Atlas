@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// "Set Up Your AI Assistant", from the Assistant button, the overview and
+/// "Set Up Your Assistant", from the Assistant button, the overview and
 /// the suggestion bars: how (an assistant over MCP, or an API key), then
 /// that method's steps, with the step bars on top and Cancel, a note, Back
 /// and Continue at the bottom. Opened from Suggest Everything…, it says

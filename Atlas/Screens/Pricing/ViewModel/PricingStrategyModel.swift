@@ -8,7 +8,7 @@ import Observation
 
 /// The app's pricing strategy and the index data it draws on, as the
 /// Customize… inspector edits them. Any edit to the recommended strategy
-/// turns it custom; `Back to Recommended` undoes all of them.
+/// turns it custom; `Back to Suggested` undoes all of them.
 @MainActor
 @Observable
 final class PricingStrategyModel {
