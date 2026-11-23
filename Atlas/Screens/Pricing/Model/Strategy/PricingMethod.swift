@@ -18,7 +18,7 @@ enum PricingMethod: String, CaseIterable, Codable, Hashable, Sendable {
 
     var title: String {
         switch self {
-        case .recommended: "Recommended"
+        case .recommended: "Suggested"
         case .equalized: "Apple equalization"
         case .priceIndex: "Price index"
         case .regionalTiers: "Custom regional tiers"

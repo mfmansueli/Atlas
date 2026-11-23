@@ -230,14 +230,14 @@ struct EventArtworkPanelState: Hashable {
             return String(localized: "Review & Push keeps the images you used until you use the changed ones.")
         }
         switch phase {
-        case .drawing: return String(localized: "Each concept shows up here as it’s done. You can open the ones that are ready.")
+        case .drawing: return String(localized: "Each concept appears here when done. Open any that’s ready.")
         case .animating:
-            return String(localized: "Each concept keeps its drawing and gets a \(AutopilotArtworkMotion.loopSeconds)-second loop. You can open the ones that are ready.")
+            return String(localized: "Each concept keeps its drawing and gets a \(AutopilotArtworkMotion.loopSeconds)-second loop. Open any that’s ready.")
         case .ready, .changing: return String(localized: "Click one to see it on the App Store card. Nothing is chosen until you use one.")
         case let .used(_, kinds, moves):
             if kinds < 2 { return String(localized: "Event details, for all \(languages) languages · in Review & Push") }
             return moves
-                ? String(localized: "Event card and event details, a matching pair for all \(languages) languages, each with a moving version · in Review & Push")
+                ? String(localized: "Event card and details, a matching pair with moving versions, for all \(languages) languages · in Review & Push")
                 : String(localized: "Event card and event details, a matching pair for all \(languages) languages · in Review & Push")
         case .missing: return String(localized: "Needed to submit. Claude can make a matching pair from the event’s text.")
         case .complete:

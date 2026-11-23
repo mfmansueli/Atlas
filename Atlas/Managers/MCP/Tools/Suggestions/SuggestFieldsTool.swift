@@ -18,7 +18,8 @@ struct SuggestFieldsTool: MCPTool {
         title: "Suggest field values",
         description: """
         Suggests values for an app's fields in Atlas; each one shows under its field until the person \
-        accepts, edits or dismisses it. Items are {area, locale | page, device, field, value, reason, evidence}: \
+        accepts, edits or dismisses it. Items are {area, locale | page, device, field, value, reason, details, confidence, \
+        gloss, evidence}: \
         area store with a locale code and a Store Page field (\(ListingField.mcpNames.joined(separator: ", "))), \
         or area info with page general (copyright, primaryCategory, secondaryCategory, gamesSubcategories, \
         secondaryGamesSubcategories, contentRights, release; contentRights is USES_THIRD_PARTY_CONTENT or \
@@ -29,10 +30,13 @@ struct SuggestFieldsTool: MCPTool {
         page ageRating (field is a question, value one of its answers), page accessibility with a device (iphone, \
         ipad, watch, vision, mac, tv; field is a feature, value yes or no) or field accessibilityUrl (the app's, no \
         device), or page appPrivacy with a locale and field privacyChoicesUrl (the User Privacy Choices URL in that \
-        language). Give a one-sentence reason and \
-        evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. Per item, \
+        language). Give a one-sentence reason (at most \(AssistantTextLimits.why) characters: the strongest evidence; the \
+        rest goes in details, at most \(AssistantTextLimits.details)), how sure you are as confidence 1–3, for a value not \
+        in English a gloss (what it means in English, at most \(AssistantTextLimits.gloss)), and \
+        evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. A reason, details \
+        or gloss over its limit refuses the call with the reason. Per item, \
         status is queued, unchanged (the field already has that value or you suggested it already), updated (you \
-        suggested that value already and it took your new reason or evidence, same id), replaced (your older open \
+        suggested that value already and it took your new reason, evidence, details, confidence or gloss, same id), replaced (your older open \
         suggestion for the field was replaced: send a field again to change your value or its reason) or refused \
         with a code: over_limit (with count), \
         unknown_field, unknown_locale, locked (the version is in review), not_permitted, invalid_value or \
@@ -71,7 +75,7 @@ struct SuggestFieldsTool: MCPTool {
     )
 
     private static let itemSchema = MCPToolDefinition.schema(
-        [
+        MCPToolDefinition.withLayers([
             "area": MCPToolDefinition.string("store or info."),
             "locale": MCPToolDefinition.string("For store and for appPrivacy: an App Store Connect locale code, e.g. en-US."),
             "page": MCPToolDefinition.string("For info: general, ageRating, accessibility, appPrivacy or review."),
@@ -83,9 +87,9 @@ struct SuggestFieldsTool: MCPTool {
                 an answer by name, e.g. Yes or Infrequent.
                 """
             ),
-            "reason": MCPToolDefinition.string("One sentence: why this value."),
+            "reason": MCPToolDefinition.why("Why this value."),
             "evidence": ["type": "array", "items": evidenceSchema],
-        ],
+        ], gloss: true),
         required: ["field", "value"]
     )
 

@@ -156,8 +156,8 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
         var uploaded: [String] = []
         for (index, item) in files.enumerated() {
             progress(media == .appPreviews
-                ? String(localized: "Uploading App Preview \(index + 1) of \(files.count)")
-                : String(localized: "Uploading screenshot \(index + 1) of \(files.count)"))
+                ? String(localized: "Pushing App Preview \(index + 1) of \(files.count)")
+                : String(localized: "Pushing screenshot \(index + 1) of \(files.count)"))
             let reserve = try await transport.send(media.reserve(item.file, fileSize: item.data.count, setID: setID))
             note(reserve.rateLimit)
             let reservation = try ScreenshotUploadRequests.reservation(in: reserve.data)

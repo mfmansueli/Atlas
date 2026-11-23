@@ -26,6 +26,9 @@ struct InAppEventTextSuggestion: Identifiable, Hashable, Codable, Sendable {
     /// they are (and are empty here). Nil for a new language's three
     /// texts, and for suggestions saved before there were revisions.
     var revisedFields: [InAppEventField]?
+    /// Details, how sure and a gloss, beside the why; nil in suggestions
+    /// saved before.
+    var layers: SuggestionLayers?
 
     var id: String { "\(eventID).\(locale)" }
 

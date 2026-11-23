@@ -52,8 +52,8 @@ struct PageShotsSheet: View {
 
     private var subtitle: String {
         switch stage.step {
-        case .plan: String(localized: "Autopilot makes a set for this page only. The default page’s screenshots don’t change.")
-        case .making: String(localized: "Autopilot is working. You don’t have to wait here.")
+        case .plan: String(localized: "Autopilot makes this page’s own set. The default page’s screenshots don’t change.")
+        case .making: String(localized: "Autopilot is working. You can leave.")
         case .result: String(localized: "The new set beside the default page’s. Choose where it’s used.")
         }
     }

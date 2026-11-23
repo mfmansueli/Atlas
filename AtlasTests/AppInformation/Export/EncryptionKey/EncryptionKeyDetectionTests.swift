@@ -39,9 +39,9 @@ struct EncryptionKeyDetectionTests {
         let detection = EncryptionKeyDetection.detect(report: Self.report(.added), project: .notFound(targets: ["Lumen"]), builds: [])
         #expect(detection.state == "reported")
         #expect(detection.present == true)
-        #expect(detection.headline == "Added in project.pbxproj (Lumen) — builds uploaded from now on answer it")
+        #expect(detection.headline == "Added in project.pbxproj (Lumen) · future builds answer it")
         #expect(detection.detail?.contains("INFOPLIST_KEY_ITSAppUsesNonExemptEncryption (Debug, Release) — Lumen") == true)
-        #expect(Self.report(.alreadyThere).headline == "Already in project.pbxproj (Lumen) — builds uploaded from now on answer it")
+        #expect(Self.report(.alreadyThere).headline == "Already in project.pbxproj (Lumen) · future builds answer it")
         #expect(Self.report(.added).byLine(.dateTime.year()).contains("By Claude Code"))
         #expect(Self.report(.added).byLine(.dateTime.year()).contains("commit 4f2a9c1e7b"))
     }
@@ -61,7 +61,7 @@ struct EncryptionKeyDetectionTests {
         )
         let detection = EncryptionKeyDetection.detect(report: nil, project: .found(key), builds: [Self.build("43", nil)])
         #expect(detection.state == "readInProject")
-        #expect(detection.headline == "In Lumen’s build settings — builds uploaded from now on answer it")
+        #expect(detection.headline == "In Lumen’s build settings · future builds answer it")
         let missing = EncryptionKeyDetection.detect(report: nil, project: .notFound(targets: ["Lumen"]), builds: [Self.build("43", false)])
         #expect(missing == .notInProject(targets: ["Lumen"]))
         #expect(missing.detail?.contains(".xcconfig files aren’t read") == true)
@@ -73,8 +73,8 @@ struct EncryptionKeyDetectionTests {
         #expect(detection == .inferred(value: .no, builds: ["44", "43"]))
         #expect(detection.state == "inferred")
         #expect(detection.headline == "Builds already answer it")
-        #expect(detection.detail?.contains("Builds 44 and 43 arrived with the encryption answer already set") == true)
-        #expect(detection.detail?.contains("this is inferred") == true)
+        #expect(detection.detail?.contains("Builds 44 and 43 arrived with the encryption answer set") == true)
+        #expect(detection.detail?.contains("Inferred only") == true)
     }
 
     @Test func buildsAtlasAnsweredItselfDontCount() {

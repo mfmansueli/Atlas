@@ -281,7 +281,7 @@ struct RetentionChangeBuilder {
             PendingChangePart(id: "shows", title: String(localized: "Shows"), oldValue: "", newValue: message.kind.summary, source: source),
         ]
         if message.kind == .image, let image = message.image {
-            let from = image.assetID == nil ? String(localized: "uploaded to the Asset Library when you push") : String(localized: "from the Asset Library")
+            let from = image.assetID == nil ? String(localized: "added to the Asset Library when you push") : String(localized: "from the Asset Library")
             fields.append(PendingChangePart(id: "image", title: String(localized: "Image"), oldValue: "",
                                             newValue: "\(image.name) · \(image.sizeText) · \(from)", source: source))
         }

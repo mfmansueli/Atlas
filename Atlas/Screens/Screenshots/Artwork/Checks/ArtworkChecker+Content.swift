@@ -25,7 +25,7 @@ extension ArtworkChecker {
                 if isInterface {
                     checks.append(ArtworkCheck(
                         kind: match.kind, severity: .warning,
-                        text: String(localized: "\(input.place), on the phone’s screen: ‘\(match.snippet)’ — \(match.kind.notAllowed). It’s the app’s own interface: check it’s right for this placement.")
+                        text: String(localized: "\(input.place), on the phone’s screen: ‘\(match.snippet)’ — \(match.kind.notAllowed). It’s the app’s interface; check it suits this placement.")
                     ))
                 } else {
                     checks.append(ArtworkCheck(kind: match.kind, text: String(localized: "\(input.place): ‘\(match.snippet)’ — \(match.kind.notAllowed).")))

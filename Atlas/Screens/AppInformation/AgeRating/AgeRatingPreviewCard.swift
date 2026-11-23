@@ -35,7 +35,7 @@ struct AgeRatingPreviewCard: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
             if changesWithPush {
-                Pill(text: String(localized: "Changes with your next push"), systemImage: "circle.fill", style: .accent)
+                Pill(text: String(localized: "Changes on push"), systemImage: "circle.fill", style: .accent)
             }
             Text("BY REGION")
                 .font(.footnote.weight(.semibold))

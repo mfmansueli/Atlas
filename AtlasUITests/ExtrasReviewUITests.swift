@@ -117,7 +117,7 @@ final class ExtrasReviewUITests: XCTestCase {
         app.launch(debugScene: "shots-ppo")
         XCTAssertTrue(element("ppo.sheet").waitForExistence(timeout: 30))
         XCTAssertTrue(text(of: element("ppo.explanation")).contains(
-            "Tests one idea at a time. Apple splits traffic between your current page and this treatment; results appear in App Store Connect."
+            "Tests one idea. Apple splits traffic between your page and this treatment; results show in App Store Connect."
         ))
         let create = app.buttons["ppo.create"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))

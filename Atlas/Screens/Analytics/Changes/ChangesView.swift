@@ -17,8 +17,7 @@ struct ChangesView: View {
                 Label("Nothing pushed yet", systemImage: "arrow.up.circle")
             } description: {
                 Text("""
-                When you push new screenshots, store page text, prices or paywall text from Atlas, its result shows \
-                here: 28 days before against 28 days after.
+                Push screenshots, texts, prices or paywall text to see each result here, 28 days before and after.
                 """)
             }
             .accessibilityIdentifier("analytics.changes.none")

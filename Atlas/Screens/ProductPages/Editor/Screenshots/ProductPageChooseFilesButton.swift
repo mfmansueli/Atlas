@@ -22,7 +22,7 @@ struct ProductPageChooseFilesButton: View {
         }
         .controlSize(.regular)
         .disabled(!viewModel.canChooseFiles(for: page))
-        .help(Text("Use screenshots you already have for this page only. The default page doesn’t change."))
+        .help(Text("Adds your own screenshots to this page only. The default page stays."))
         .accessibilityIdentifier("pages.screenshots.chooseFiles")
     }
 }

@@ -37,7 +37,7 @@ struct AssistantConnectFolderStep: View {
                     .accessibilityIdentifier("settings.connect.suggestion")
                 }
             }
-            Text("Your other apps can get their folders later, in Settings → AI Assistants.")
+            Text("Add folders for other apps later in Settings → AI Assistants.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
@@ -47,12 +47,10 @@ struct AssistantConnectFolderStep: View {
         let name = model.assistant.title
         return model.assistant == .claudeCode
             ? String(localized: """
-            The folder on this Mac with the app’s code, the one you open in Xcode. \(name) reads it so its suggestions match \
-            what the app really does. It never changes your files.
+            The app’s code folder, the one you open in Xcode. \(name) reads it for better suggestions and never changes files.
             """)
             : String(localized: """
-            The folder on this Mac with the app’s code, the one you open in Xcode. \(name) opens it so its suggestions match \
-            what the app really does.
+            The app’s code folder, the one you open in Xcode. \(name) opens it to match suggestions to the app.
             """)
     }
 

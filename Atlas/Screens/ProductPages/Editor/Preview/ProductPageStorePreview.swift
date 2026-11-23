@@ -47,7 +47,7 @@ struct ProductPageStorePreview: View {
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pages.preview.note")
-            Text("The name, subtitle, icon and description are the default page’s on every page.")
+            Text("Always the default page’s: name, subtitle, icon, description.")
                 .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -60,8 +60,8 @@ struct ProductPageStorePreview: View {
     }
 
     private func note(suggestion: ProductPageTextSuggestion?, ownText: String, isOwnShots: Bool) -> String {
-        if ownText.isEmpty, suggestion != nil { return String(localized: "Shown with the suggested text, which isn’t accepted yet.") }
+        if ownText.isEmpty, suggestion != nil { return String(localized: "Shown with suggested text, not yet accepted.") }
         if !ownText.isEmpty || isOwnShots { return String(localized: "What’s different from the default page is outlined.") }
-        return String(localized: "In \(ProductPageChangeBuilder.localeName(locale)) this page looks the same as the default page.")
+        return String(localized: "In \(ProductPageChangeBuilder.localeName(locale)), same as the default page.")
     }
 }

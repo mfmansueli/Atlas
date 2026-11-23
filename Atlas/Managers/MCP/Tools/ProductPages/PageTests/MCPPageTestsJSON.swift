@@ -159,6 +159,7 @@ enum MCPPageTestsJSON {
             "receivedAt": .string(proposal.receivedAt.formatted(.iso8601)),
         ]
         if !proposal.evidence.isEmpty { json["evidence"] = .array(proposal.evidence.map(JSONValue.string)) }
+        proposal.layers?.add(to: &json)
         let assets = proposal.treatment.libraryAssets
         if !assets.isEmpty {
             json["assets"] = .array(assets.map { ["locale": .string($0.locale), "assetId": .string($0.assetID), "name": .string($0.name)] })

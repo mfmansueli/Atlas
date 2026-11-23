@@ -156,8 +156,7 @@ struct GuidedTemplatePreviewBuilder {
         if items.contains(where: { $0.job.layout.reviews.map { $0.isChecked && $0.own + $0.borrowed == 0 } == true }) {
             let country = Locale.current.localizedString(forRegionCode: locale.regionCode) ?? locale.regionCode
             parts.append(String(localized: """
-            \(app) has no 5-star App Store reviews in \(country) yet, so the Reviews screen shows its capture instead, \
-            like the others, until it has some.
+            \(app) has no 5-star App Store reviews in \(country) yet, so the Reviews screen shows its capture.
             """))
         }
         if device == .iPhoneDuo, plan.duoScreens == .inner {
@@ -165,12 +164,12 @@ struct GuidedTemplatePreviewBuilder {
         }
         if device != .watch {
             if !items.isEmpty, !items.contains(where: \.hasCapture) {
-                parts.append(String(localized: "There are no captures yet, so the screens stay empty until Autopilot captures them."))
+                parts.append(String(localized: "Empty until Autopilot captures the screens."))
             } else if locale.code != primary.code, items.contains(where: \.showsPrimaryInterface) {
                 let interface = items.contains(where: \.borrowsIPad) ? ScreenshotDisplayType.iPad : device
                 parts.append(String(localized: """
-                \(app)’s \(interface.shortTitle) interface isn’t captured in \(locale.shortName) yet, so the \(primary.shortName) interface \
-                shows under the \(locale.shortName) captions (marked) until Autopilot captures it.
+                \(app)’s \(interface.shortTitle) interface isn’t in \(locale.shortName) yet. Marked screens show the \
+                \(primary.shortName) one under \(locale.shortName) captions.
                 """))
             }
         }
@@ -189,7 +188,7 @@ struct GuidedTemplatePreviewBuilder {
         let app = appName
         switch device {
         case .iPhone:
-            return String(localized: "The App Store scales this set down for smaller iPhones, so one size covers them all.")
+            return String(localized: "One size covers all iPhones; the App Store scales it down.")
         case .iPad:
             return String(localized: "The same template, laid out for iPad with \(app)’s iPad screens.")
         case .iPhoneDuo:
@@ -208,7 +207,7 @@ struct GuidedTemplatePreviewBuilder {
         let app = appName
         switch device {
         case .iPhoneDuo:
-            return String(localized: "The inner display runs \(app)’s iPad layout, so the preview uses its iPad screens until Autopilot captures iPhone Duo.")
+            return String(localized: "The inner display runs \(app)’s iPad layout; iPad screens stand in until Autopilot captures iPhone Duo.")
         case .mac:
             return ownLead(.mac) + " " + String(localized: "Its iPad screens stand in until Autopilot captures the Mac app.")
         case .visionPro:
@@ -224,13 +223,12 @@ struct GuidedTemplatePreviewBuilder {
     private func watchLead(isCaptured: Bool) -> String {
         if isCaptured {
             return String(localized: """
-            Apple shows watch screenshots as the bare screen inside its own frame, so no template is applied: this is what \
-            people will see, whichever template you pick.
+            Apple frames watch screenshots itself, so no template applies. People see this with any template.
             """)
         }
         return String(localized: """
-        Apple shows watch screenshots as the bare screen inside its own frame, so no template is applied. \(appName)’s watch \
-        screens show here once Autopilot captures them.
+        Apple frames watch screenshots itself, so no template applies. \(appName)’s watch screens show here once \
+        captured.
         """)
     }
 }

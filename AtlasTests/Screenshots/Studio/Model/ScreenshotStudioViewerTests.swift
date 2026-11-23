@@ -170,8 +170,8 @@ struct ScreenshotStudioViewerTests {
     @Test func aNoteSaysWhatItCanChange() async {
         let (motion, _) = await newSet(StudioDebugArtMotion.revising)
         let note = motion.studio.revisionScopeNote ?? ""
-        #expect(note.hasPrefix("A note changes the screenshots and the header and search images"))
-        #expect(note.contains("the motion itself can’t change yet"))
+        #expect(note.hasPrefix("Notes change screenshots, header and search images"))
+        #expect(note.contains("Loops use Atlas’s motion"))
 
         var still = StudioDebugExtras.run(.choose, languages: .primary)
         still.plan.alsoMakes.setMotion(.still)
@@ -184,8 +184,8 @@ struct ScreenshotStudioViewerTests {
         // Without screenshots, a note is only about the header and search.
         let (artworkOnly, _) = await newSet(StudioDebugWebArtwork.artworkOnly(.choose))
         let only = artworkOnly.studio.revisionScopeNote ?? ""
-        #expect(only.hasPrefix("A note changes the header and search images: colors, type, layout and what they show."))
-        #expect(only.contains("The live screenshots stay as they are."))
+        #expect(only.hasPrefix("Notes change header and search images: colors, type, layout, content."))
+        #expect(only.contains("Live screenshots stay."))
     }
 }
 #endif

@@ -76,7 +76,7 @@ struct PriceMatrixTable: View {
                 TableColumn("Source", value: \PricingRow.sourceSortKey) { row in sourceCell(row) }
                     .width(min: 90, ideal: 110)
                     .customizationID(PriceColumn.source.customizationID)
-                TableColumn("Proposed", value: \PricingRow.proposedSortKey) { row in
+                TableColumn("Suggested", value: \PricingRow.proposedSortKey) { row in
                     ProposedPriceCell(row: row, viewModel: viewModel, matrix: matrix)
                 }
                 .width(min: 120, ideal: 150)

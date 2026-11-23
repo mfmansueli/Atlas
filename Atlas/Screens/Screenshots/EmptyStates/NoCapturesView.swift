@@ -20,7 +20,7 @@ struct NoCapturesView: View {
                 .accessibilityHidden(true)
             Text("No captures yet")
                 .font(.title3.weight(.semibold))
-            Text("A capture is a real screenshot of \(appName), ideally taken in each language. Atlas puts it in a template with a caption; it never draws your interface.")
+            Text("Captures are real screenshots of \(appName), one per language. Atlas adds template and caption, never your interface.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)

@@ -52,8 +52,8 @@ struct OfferCodesFields: View {
             Text("Custom code")
         } footer: {
             note(String(localized: """
-            One word people type to redeem it, e.g. for a podcast. Letters and digits, unique for the app. Customers see it: \
-            no other platforms, betas or placeholders.
+            One word people type, e.g. from a podcast. Letters and digits, unique in the app. People see it: no other platforms, betas or \
+            placeholders.
             """))
         }
     }
@@ -83,7 +83,7 @@ struct OfferCodesFields: View {
         } header: {
             Text("One-time codes")
         } footer: {
-            note(String(localized: "Apple makes unique codes, each redeemed once. Once it has, Save Codes… in Pricing saves them as a CSV file."))
+            note(String(localized: "Apple makes single-use codes. Then Save Codes… in Pricing saves them as a CSV file."))
         }
     }
 

@@ -69,7 +69,7 @@ final class AccountSettingsViewModel {
             failures[keyID] = nil
             errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "The key wasn’t removed.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -78,7 +78,7 @@ final class AccountSettingsViewModel {
             try session.rename(keyID: keyID, to: name)
             errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "The key wasn’t renamed.", comment: "kind:error"), error: error).text
         }
     }
 }

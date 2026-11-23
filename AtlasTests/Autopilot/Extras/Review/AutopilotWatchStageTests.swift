@@ -19,7 +19,7 @@ struct AutopilotWatchStageTests {
     }
 
     @Test(arguments: [
-        (true, "Watch the App Preview, then approve it or ask Claude for changes."),
+        (true, "Watch the App Preview. Approve or ask Claude for changes."),
         (false, "Watch the App Preview, then approve it."),
     ])
     func theStripSaysItsThePersonsTurn(design: Bool, text: String) {

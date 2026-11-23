@@ -17,10 +17,10 @@ A suggested reply comes with its meaning in your language underneath, so you kno
 
 ## Reply automatically
 
-With Pro, **Reply Automatically…** in the Autopilot menu checks your reviews every hour while Atlas runs, in the menu bar too, and Claude Code writes a reply to each new one in its language. Without Claude Code, your API key in Settings → AI Assistants writes them, once you let it read reviews.
+With Pro, **Reply Automatically…** (Autopilot menu) checks reviews hourly while Atlas runs, even in the menu bar. Claude Code replies in each reviewer’s language; without it, your API key in Settings → AI Assistants does, once allowed to read reviews.
 
 - **Draft a reply and tell me**: nothing is sent until you press Send.
-- **Send the ones I allow by themselves**: choose the ratings and languages that may go out alone, how long to wait first and how many a day. Replies about a bug, billing, an account, a feature request or something personal wait for you, and so does any review Claude isn’t sure about.
+- **Send the ones I allow by themselves**: set the ratings, languages, delay and daily limit. Replies about bugs, billing, accounts, feature requests or personal matters wait for you, as does any review Claude isn’t sure about.
 - A reply that goes out by itself says when, with **Send Now**, **Edit…** and **Don’t Send**. One that waits says why, and Atlas tells you.
 - A drafted reply's notification shows the reply, with **Send Reply** and **Open Reviews**.
 - **Pause** stops sending until you resume, here, in the Autopilot menu or in the menu bar. **History** lists what went out; **Undo** takes a reply off the App Store and keeps its draft.

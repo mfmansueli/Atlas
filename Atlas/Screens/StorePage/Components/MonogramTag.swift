@@ -16,6 +16,6 @@ struct MonogramTag: View {
             .foregroundStyle(Color(nsColor: .windowBackgroundColor))
             .frame(width: 16, height: 16)
             .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
-            .accessibilityLabel(Text("Proposed by \(client)"))
+            .accessibilityLabel(Text("Suggested by \(client)"))
     }
 }

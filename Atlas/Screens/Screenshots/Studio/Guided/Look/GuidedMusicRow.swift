@@ -68,8 +68,8 @@ struct GuidedMusicRow: View {
         var required = AttributedString(localized: "Required")
         required.font = .caption.weight(.semibold)
         let rest = AttributedString(localized: """
-         for every App Preview. Tracks from Atlas’s library are licensed for the App Store; with your own file, \
-        you confirm you hold the rights. Mixed under the captions, faded out at the end.
+         for every App Preview. Atlas tracks are licensed for the App Store; for your \
+        own file, you confirm the rights. Plays under captions, fades out.
         """)
         return required + rest
     }

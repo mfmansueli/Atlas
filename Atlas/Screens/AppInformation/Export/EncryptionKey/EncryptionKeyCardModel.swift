@@ -56,11 +56,11 @@ struct EncryptionKeyCardModel: Hashable, Sendable {
     var conflictText: String? {
         guard conflict, let found = detection.value, let expected = expectedValue else { return nil }
         if found == expected {
-            return String(localized: "The key names another encryption declaration’s code than the approved one. Change it before the next upload.")
+            return String(localized: "The key’s declaration code isn’t the approved one. Fix it before the next upload.")
         }
         return String(localized: """
-        The key says \(found.rawValue), but the answers say \(expected.meaning) (\(expected.rawValue)). Change it before the next upload: \
-        every build answers with it.
+        The key says \(found.rawValue); the answers say \(expected.meaning) (\(expected.rawValue)). Fix it before the \
+        next upload: every build uses it.
         """)
     }
 

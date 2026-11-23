@@ -56,7 +56,7 @@ enum AutopilotContinuation {
         let time = resume.formatted(date: .omitted, time: .shortened)
         center.update(appID) { run in
             run.appendLog(
-                String(localized: "Claude Code reached its usage limit. Atlas continues the run by itself at \(time)."), kind: .event, at: center.now()
+                String(localized: "Claude Code hit its usage limit. Atlas resumes the run at \(time)."), kind: .event, at: center.now()
             )
         }
         limitWaits[appID]?.cancel()

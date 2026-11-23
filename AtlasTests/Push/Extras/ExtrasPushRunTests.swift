@@ -87,8 +87,7 @@ struct ExtrasPushRunTests {
         let run = await Fixtures.push([item], environment: Fixtures.environment(library))
 
         #expect(run.status(of: item) == .failed(
-            "App Store Connect doesn’t take a 3000 × 1286 image for the product page header; it takes 3840 × 1646 or 5244 × 2950. "
-                + "Nothing was uploaded."
+            "The product page header takes 3840 × 1646 or 5244 × 2950, not a 3000 × 1286 image. Nothing was pushed."
         ))
         #expect(library.log == ["ref-data"])
     }
@@ -98,8 +97,7 @@ struct ExtrasPushRunTests {
         let item = Fixtures.preview()
         let run = await Fixtures.push([item], environment: Fixtures.environment(library))
 
-        #expect(run.status(of: item).failureReason == "\(Fixtures.iPhoneGroup) already has 3 App Previews, the most it holds, and this one "
-            + "replaces none of them. Nothing was uploaded.")
+        #expect(run.status(of: item).failureReason == "\(Fixtures.iPhoneGroup) is full at 3 App Previews. Nothing was pushed.")
         #expect(library.log == ["ref-data", "list loc-de \(preview) \(Fixtures.iPhoneGroup)"])
         #expect(library.placements(on: Fixtures.localizationID).map(\.id) == ["p-a", "p-b", "p-c"])
     }
@@ -158,7 +156,9 @@ struct ExtrasPushRunTests {
         let preview = Fixtures.preview()
         let run = await Fixtures.push([header, preview], environment: Fixtures.environment(library))
 
-        #expect(run.status(of: header) == .failed("STATE_ERROR.INVALID_STATE — The version can’t be edited."))
+        #expect(run.status(of: header) == .failed(
+            "The file wasn’t pushed. Apple refused the change. See Details.\nDetails: STATE_ERROR.INVALID_STATE — The version can’t be edited"
+        ))
         #expect(run.status(of: preview).isDone)
         #expect(run.title == "1 of 2 extras pushed")
         let before = library.log.count
@@ -182,7 +182,7 @@ struct ExtrasPushRunTests {
         let run = await Fixtures.push([item], environment: Fixtures.environment(library))
 
         #expect(run.status(of: item) == .failed(
-            "Couldn’t place it (STATE_ERROR.INVALID_STATE — The version can’t be edited.). What was there before was put back."
+            "Couldn’t place it (STATE_ERROR.INVALID_STATE — The version can’t be edited.). The old one was restored."
         ))
         #expect(Array(library.log.suffix(3)) == [
             "delete p-old", "place image-1 \(header) \(Fixtures.headerGroup) loc-de", "place asset-p-old \(header) \(Fixtures.headerGroup) loc-de",
@@ -197,7 +197,7 @@ struct ExtrasPushRunTests {
         let item = Fixtures.header()
         let run = await Fixtures.push([item], environment: Fixtures.environment(library, processingTimeout: .seconds(2)))
 
-        #expect(run.status(of: item) == .failed("Apple was still processing the file. It’s uploaded; Retry Failed places it once it’s ready."))
+        #expect(run.status(of: item) == .failed("The file is with Apple but still processing. Retry Failed places it once ready."))
         #expect(library.log.count { $0 == "state image-1" } == 3)
         let before = library.log.count
 
@@ -315,7 +315,7 @@ struct ExtrasPushRunTests {
         #expect(ExtrasPushStatus.waiting.title == "Waiting")
         #expect(ExtrasPushStatus.preparing.title == "Getting ready")
         #expect(!ExtrasPushStatus.preparing.isFinished)
-        #expect(ExtrasPushStatus.uploading(0.426).title == "Uploading 42%")
+        #expect(ExtrasPushStatus.uploading(0.426).title == "Pushing 42%")
         #expect(ExtrasPushStatus.processing.title == "Processing")
         #expect(ExtrasPushStatus.placing.title == "Placing")
         #expect(ExtrasPushStatus.done(assetID: "a", placementIDs: []).title == "Done")

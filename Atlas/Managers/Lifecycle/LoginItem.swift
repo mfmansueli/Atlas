@@ -47,7 +47,7 @@ final class LoginItem {
         do {
             if enabled { try service.register() } else { try service.unregister() }
         } catch {
-            problem = error.localizedDescription
+            problem = AppleErrorCopy(String(localized: "Atlas couldn’t change its login item.", comment: "kind:error"), error: error).text
         }
         refresh()
         if enabled, service.status == .requiresApproval {

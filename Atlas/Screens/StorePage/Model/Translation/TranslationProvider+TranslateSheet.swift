@@ -17,7 +17,7 @@ extension TranslationProvider {
     var detail: String {
         switch self {
         case .appleTranslation:
-            String(localized: "Free and private. Translates the text as it is, with no keyword optimization.")
+            String(localized: "Free and private. Literal translation, no keyword optimization.")
         case .aiProvider:
             String(localized: "App Store-optimized keywords and natural What’s New. Uses the API key in Settings.")
         case .assistant:

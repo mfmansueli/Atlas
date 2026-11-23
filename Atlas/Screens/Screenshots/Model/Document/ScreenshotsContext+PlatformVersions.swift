@@ -28,10 +28,10 @@ extension ScreenshotsContext {
     func editBlock(for displayType: ScreenshotDisplayType) -> String? {
         if displayType == .mac, !isMacVersion {
             guard macVersionIsEditable == false else { return nil }
-            return String(localized: "The macOS version is live. Mac screenshots can only change with a version that’s being prepared.")
+            return String(localized: "The macOS version is live. To change Mac screenshots, prepare a new version.")
         }
         guard !version.isEditable else { return nil }
-        return String(localized: "Version \(version.versionString) is live. Screenshots can only change with a version that’s being prepared.")
+        return String(localized: "Version \(version.versionString) is live. To change screenshots, prepare a new version.")
     }
 
     /// The visionOS version that goes with `content`'s.

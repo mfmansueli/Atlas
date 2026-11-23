@@ -47,9 +47,9 @@ extension AutoReplyCenter {
     static func writeProblem(app: StoreApp, launcher: ClaudeCodeLauncher, keyAssistant: KeyAssistantController?) -> String {
         if let keyProblem = keyProblem(keyAssistant) { return String(localized: "Couldn’t write a reply. \(keyProblem)") }
         guard launcher.canStart else {
-            return String(localized: "Couldn’t write a reply: Claude Code isn’t connected, and no API key is set up in Settings → AI Assistants.")
+            return String(localized: "Couldn’t write a reply. Connect Claude Code, or add an API key in Settings → AI Assistants.")
         }
-        return String(localized: "Couldn’t write a reply: Claude Code doesn’t know \(app.name)’s project folder yet. Use Draft Replies… once to choose it.")
+        return String(localized: "Couldn’t write a reply: no project folder for \(app.name). Choose it once with Draft Replies…")
     }
 
     private func startClaudeCode(app: StoreApp, reviews toWrite: [AppReview], launcher: ClaudeCodeLauncher) async {

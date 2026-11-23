@@ -105,7 +105,7 @@ struct AutopilotPlanTable: View {
     private func sectionTitle(_ display: ScreenshotDisplayType) -> String {
         switch display {
         case .watch:
-            return String(localized: "Apple Watch · paired with the iPhone simulator; no captions on the watch")
+            return String(localized: "Apple Watch · paired with the iPhone simulator · no captions")
         case .visionPro:
             return ScreenshotDisplayType.visionPro.title
         default:
@@ -128,8 +128,8 @@ struct AutopilotPlanTable: View {
 
     private func emptyText(_ display: ScreenshotDisplayType) -> String {
         display == .watch
-            ? String(localized: "No watch screens yet. Add them here, or \(client) adds the ones it finds in your watch app’s UI tests.")
-            : String(localized: "No screens yet. Add them here, or \(client) adds the ones it finds in your UI tests.")
+            ? String(localized: "No watch screens yet. Add them, or \(client) adds those from your watch app’s UI tests.")
+            : String(localized: "No screens yet. Add them, or \(client) adds those from your UI tests.")
     }
 
     /// A screen id no device uses yet: `watch-screen-3`.
@@ -228,7 +228,7 @@ struct AutopilotPlanTable: View {
     private func stepsPlaceholder(_ screen: AutopilotScreen) -> String {
         screen.worksOutSteps == true
             ? String(localized: "\(client) works out the steps")
-            : String(localized: "Steps, e.g. tab “Week” → scroll to top")
+            : String(localized: "Tab “Week” → scroll to top")
     }
 
     private func binding(_ id: String, _ keyPath: WritableKeyPath<AutopilotScreen, String>) -> Binding<String> {

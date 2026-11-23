@@ -22,7 +22,8 @@ enum KeyCheckFailure: Equatable, Sendable {
         case AppStoreConnectError.unauthorized: self = .rejected
         case AppStoreConnectError.forbidden: self = .roleTooLow
         case let error as URLError where Self.offlineCodes.contains(error.code): self = .offline
-        default: self = .other(error.localizedDescription)
+        // What to do, then Apple's or the system's own words under Details.
+        default: self = .other(AppleErrorCopy(summary: AppleErrorCopy.nextStep(for: error) ?? "", details: AppleErrorCopy.details(for: error)).text)
         }
     }
 
@@ -37,7 +38,7 @@ enum KeyCheckFailure: Equatable, Sendable {
 
     var message: String {
         switch self {
-        case .rejected: String(localized: "Check that the Key ID matches the .p8 file and that the key hasn’t been revoked.")
+        case .rejected: String(localized: "Check the Key ID matches the .p8 file and the key isn’t revoked.")
         case .roleTooLow: String(localized: "Create a Team Key with the Admin or App Manager role, then connect again.")
         case .offline: String(localized: "Nothing was sent. Connect again when this Mac is back online.")
         case let .other(message): message

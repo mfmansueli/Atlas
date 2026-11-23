@@ -137,7 +137,7 @@ struct StudioArtworkDetails: Hashable {
         }
         if !file.errors.isEmpty { return (String(localized: "New · stays out of the push until it’s fixed"), .danger) }
         if !hasLocalization {
-            return (String(localized: "New · App Store Connect has no \(languageName) localization on this version yet"), .warning)
+            return (String(localized: "New · this version has no \(languageName) localization yet"), .warning)
         }
         if pushed != nil { return (String(localized: "New · replaces the one on App Store Connect"), .accent) }
         return (String(localized: "New · waits in Review & Push"), .accent)

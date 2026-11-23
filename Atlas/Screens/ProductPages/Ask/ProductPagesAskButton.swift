@@ -45,7 +45,7 @@ struct ProductPagesAskButton: View {
 
     private func help(_ client: String) -> String {
         switch kind {
-        case .ideas: String(localized: "Ask \(client) to suggest pages from your reviews, your numbers and your keywords")
+        case .ideas: String(localized: "Ask \(client) to suggest pages from reviews, numbers and keywords")
         case .another: String(localized: "Ask \(client) for a text that follows App Review’s rules")
         }
     }
@@ -54,9 +54,8 @@ struct ProductPagesAskButton: View {
         switch kind {
         case .ideas:
             String(localized: """
-            \(client) reads \(app.name)’s pages, reviews and numbers, and suggests pages: who each is for, why, its \
-            keywords and promotional text. They wait at the top of the list; accepted, each is a draft you push and submit \
-            yourself.
+            \(client) suggests pages from \(app.name)’s pages, reviews and numbers: who each is for, why, keywords and \
+            promotional text. Accepted ones become drafts you push and submit.
             """)
         case let .another(pageName):
             String(localized: """

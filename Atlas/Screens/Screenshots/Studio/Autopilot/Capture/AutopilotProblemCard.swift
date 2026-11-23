@@ -170,7 +170,7 @@ struct AutopilotProblemCard: View {
             .accessibilityIdentifier("autopilot.problem.retry")
             if otherLanguageCount > 0 {
                 Button("Retry in Every Language") { studio.retryInEveryLanguage(group) }
-                    .help(String(localized: "Also captures this screen again in the \(otherLanguageCount) other languages already captured: for a change that shows in all of them."))
+                    .help(String(localized: "Also recaptures the \(otherLanguageCount) other languages already captured."))
                     .accessibilityIdentifier("autopilot.problem.retryEveryLanguage")
             }
             if canKeepCapture {
@@ -226,8 +226,8 @@ struct AutopilotProblemCard: View {
     private func repairText(_ fault: SimulatorFault) -> String {
         let state = simulators?.repair.state ?? .idle
         let offer = fault == .audioService
-            ? String(localized: "Atlas can restart it for you: macOS asks for your password once.")
-            : String(localized: "Atlas can restart it for you.")
+            ? String(localized: "Atlas can restart it. macOS asks for your password once.")
+            : String(localized: "Atlas can restart it.")
         return fault.summary + " " + (state.message ?? offer)
     }
 
@@ -244,23 +244,21 @@ struct AutopilotProblemCard: View {
     private var note: String? {
         if group.wasRefused {
             return String(localized: """
-            Claude Code started by Atlas may only run commands that start with xcodebuild, xcrun simctl and the like. \
-            Change the project so it doesn’t need this command, then retry, or continue the run in Terminal, where you can allow it.
+            Only xcodebuild, xcrun simctl and similar may run here. Change the project and retry, or allow it by continuing in Terminal.
             """)
         }
         if duo == .needsAccessibility {
             return String(localized: """
-            Atlas uses it only to press Open in iPhone Duo’s window in Device Hub, and tries again every few seconds. \
-            Leaving iPhone Duo out finishes the run without it.
+            Atlas uses it only to press Open in Device Hub, retrying every few seconds. Or leave iPhone Duo out to finish without it.
             """)
         }
         if duo?.waitsForPerson == true {
-            let then = String(localized: "Once it’s open, the run captures it by itself; leaving it out finishes the run without it.")
+            let then = String(localized: "Once open, the run captures it. Or leave it out to finish without it.")
             return DeviceHub.openingSteps + " " + then
         }
         if watchesDuo {
             return String(localized: """
-            Atlas opens iPhone Duo in Device Hub itself and restarts it when it’s stuck; leaving it out finishes the run without it.
+            Atlas opens iPhone Duo in Device Hub and restarts it when stuck. Or leave it out to finish without it.
             """)
         }
         if opensInDeviceHub {
@@ -271,41 +269,34 @@ struct AutopilotProblemCard: View {
         // project isn't.
         if group.isDeviceWide, group.needsProjectChange {
             return String(localized: """
-            This is a change to the project, not a command: make it, then retry. Claude Code started by Atlas can’t \
-            change files; Claude Code in Terminal can. Leaving \(group.displayType.shortTitle) out finishes the run without it.
+            Change the project, then retry; only Claude Code in Terminal can edit files. \
+            Or leave \(group.displayType.shortTitle) out to finish without it.
             """)
         }
         if fault != nil, helperTitle == nil, simulators?.repair.state != .needsHelper {
             return String(localized: """
-            Fix It restarts what the simulators need and tries \(group.displayType.shortTitle) again by itself. \
-            Restarting the Mac fixes it too; then Retry.
+            Fix It restarts the simulator services and retries \(group.displayType.shortTitle). Or restart the Mac, then Retry.
             """)
         }
         if group.isDeviceWide, helperTitle != nil {
-            return String(localized: """
-            Atlas installs the simulator through its helper: save it, then Install appears here. Leaving the device \
-            out finishes the run without it.
-            """)
+            return String(localized: "Save the helper; then Install appears here. Or leave the device out to finish without it.")
         }
         if group.isDeviceWide {
             return simulatorStatus?.platformToInstall != nil
                 ? String(localized: """
-                Installing downloads the simulator with xcodebuild (several GB) and makes the \(group.displayType.deviceName) simulator; \
-                the run tries the device again when it’s done. Leaving it out finishes the run without it.
+                Install downloads it (several GB) with xcodebuild, makes \(group.displayType.deviceName), then retries. \
+                Or leave it out to finish without it.
                 """)
                 : group.displayType == .mac
-                ? String(localized: "Retry once the Mac app can be captured on this Mac, or leave it out to finish the run without it.")
-                : String(localized: "Retry once this Mac can run the \(group.displayType.deviceName) simulator, or leave it out to finish the run without it.")
+                ? String(localized: "Retry once the Mac app can be captured here, or leave it out to finish without it.")
+                : String(localized: "Retry once this Mac can run the \(group.displayType.deviceName) simulator, or leave it out to finish without it.")
         }
         if group.needsProjectChange {
-            return String(localized: """
-            This is a change to the project, not a command: make it, then retry. Claude Code started by Atlas can’t \
-            change files; Claude Code in Terminal can.
-            """)
+            return String(localized: "Change the project, then retry; only Claude Code in Terminal can edit files.")
         }
         guard group.proposedFix != nil else { return nil }
-        if !group.fixIsCommand { return String(localized: "This is a step for you, not a command to add to the plan: do it, then retry.") }
-        return String(localized: "\(run.client ?? String(localized: "The assistant")) proposed the fix; retrying adds it to the plan so later runs don’t stop here.")
+        if !group.fixIsCommand { return String(localized: "This step is yours, not a plan command. Do it, then retry.") }
+        return String(localized: "Fix from \(run.clientName(assistant: nil)). Retrying adds it to the plan, so later runs don’t stop here.")
     }
 
     private func code(_ text: String, identifier: String) -> some View {
@@ -410,13 +401,13 @@ struct AutopilotProblemCard: View {
 
     private var othersText: String {
         if group.isDeviceWide {
-            return String(localized: "Every screen on it waits, in every language; the other devices keep going.")
+            return String(localized: "All its screens wait, in every language. Other devices keep going.")
         }
         let others = run.plan.screens.count - 1
         if waiting > 0 {
             return waiting == 1
-                ? String(localized: "1 more capture of it waits for your answer; the other screens keep going.")
-                : String(localized: "\(waiting) more captures of it wait for your answer; the other screens keep going.")
+                ? String(localized: "1 more capture waits for you. Other screens keep going.")
+                : String(localized: "\(waiting) more captures wait for you. Other screens keep going.")
         }
         return others == 1 ? String(localized: "The other screen and languages keep going.") : String(localized: "The other \(others) screens and languages keep going.")
     }

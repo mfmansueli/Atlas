@@ -9,7 +9,7 @@ import Foundation
 // (Accept, Dismiss, Show Countries), Accept All above them, and "What
 // people pay" beside them. Every product's prices are read once the catalog
 // is here, one product at a time; accepting follows the strategy for that
-// product, as Apply Recommended Prices… does, and nothing is pushed.
+// product, as Apply Suggested Prices… does, and nothing is pushed.
 extension PricingViewModel {
     // MARK: - Loading
 
@@ -69,7 +69,9 @@ extension PricingViewModel {
                 productErrors[product.id] = PricingReadFailure.text(productName: product.name)
                 unreadProductIDs.insert(product.id)
             } else {
-                productErrors[product.id] = error.localizedDescription
+                productErrors[product.id] = AppleErrorCopy(
+                    String(localized: "\(product.name)’s prices didn’t load.", comment: "kind:error"), error: error
+                ).text
                 unreadProductIDs.remove(product.id)
             }
         }
@@ -125,8 +127,8 @@ extension PricingViewModel {
     var priceSuggestionsBannerText: String {
         let count = openPriceSuggestionCount
         return count == 1
-            ? String(localized: "Price suggestions for 1 product. See it below, or accept it here.")
-            : String(localized: "Price suggestions for \(count) products. See each one below, or accept them together.")
+            ? String(localized: "Price suggestions for 1 product. Review below or accept here.")
+            : String(localized: "Price suggestions for \(count) products. Review below or accept all here.")
     }
 
     /// The countries "What people pay" offers: the base territory, then
@@ -158,7 +160,7 @@ extension PricingViewModel {
         guard let product = catalog?.product(id: productID) else { return }
         let undo = await accept([product])
         guard let undo else { return }
-        show(String(localized: "Prices for \(product.name) accepted. They’re waiting in Review & Push, top right."), undo: undo)
+        show(String(localized: "Accepted prices for \(product.name). In Review & Push."), undo: undo)
     }
 
     /// Accept All n.
@@ -166,8 +168,8 @@ extension PricingViewModel {
         let products = productCards.filter { $0.suggestion != nil }.map(\.product)
         guard !products.isEmpty, let undo = await accept(products) else { return }
         let text = products.count == 1
-            ? String(localized: "Prices for \(products[0].name) accepted. They’re waiting in Review & Push, top right.")
-            : String(localized: "Accepted prices for \(products.count) products. They’re waiting in Review & Push, top right.")
+            ? String(localized: "Accepted prices for \(products[0].name). In Review & Push.")
+            : String(localized: "Accepted prices for \(products.count) products, now in Review & Push.")
         show(text, undo: undo)
     }
 

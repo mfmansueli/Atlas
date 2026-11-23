@@ -20,7 +20,7 @@ struct NewProductPageSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("New Product Page")
                     .font(.title3.weight(.semibold))
-                Text("A page of its own on the App Store, with its own link. It starts as a draft in Atlas.")
+                Text("Its own App Store page and link. Starts as a draft in Atlas.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }
@@ -54,7 +54,7 @@ struct NewProductPageSheet: View {
             TextField("Name", text: $page.name, prompt: Text("Private diary"))
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.new.name")
-            Text("Only you see this. It names the page in App Store Connect and in Analytics.")
+            Text("Only you see this name, in App Store Connect and Analytics.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
@@ -106,7 +106,7 @@ struct NewProductPageSheet: View {
                 .lineLimit(3...5)
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.new.note")
-            Text("A note for your assistant. It uses it to suggest keywords, text and screenshots. It isn’t sent to Apple.")
+            Text("For your assistant’s keyword, text and screenshot suggestions. Not sent to Apple.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -134,8 +134,7 @@ struct NewProductPageSheet: View {
                 }
             }
             Text("""
-            The page exists in all \(allLocales.count) languages. The ones you leave out show the default page’s content, and \
-            you can add them later.
+            All \(allLocales.count) languages get the page. Skipped ones show default content until you add them.
             """)
             .font(.subheadline)
             .foregroundStyle(Palette.label2)

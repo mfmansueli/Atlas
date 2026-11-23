@@ -69,7 +69,7 @@ extension AutopilotCenter {
             Task { await placeRecaptures(appID, context: context) }
         case .localize:
             update(appID) {
-                $0.appendLog(String(localized: "Atlas closed while it was making them; picking up where it stopped"), kind: .event, at: now())
+                $0.appendLog(String(localized: "Atlas closed while making them; resuming where it stopped"), kind: .event, at: now())
             }
             localizing[appID, default: 0] += 1
             Task {
@@ -85,14 +85,14 @@ extension AutopilotCenter {
             }
         case .remix:
             update(appID) {
-                $0.appendLog(String(localized: "Atlas closed while it was mixing the App Preview; mixing it again"), kind: .event, at: now())
+                $0.appendLog(String(localized: "Atlas closed while mixing the App Preview; mixing it again"), kind: .event, at: now())
             }
             Task { await remakePreviews(appID, context: context) }
         case .reviseAgain:
             update(appID) { run in
                 run.previewReview?.remake = nil
                 run.loopReview?.isRemaking = false
-                let line = String(localized: "Atlas closed while it was making the App Preview; your note goes to the design source again")
+                let line = String(localized: "Atlas closed during the App Preview; resending your note to the design source")
                 run.appendLog(line, kind: .event, at: now())
             }
         }

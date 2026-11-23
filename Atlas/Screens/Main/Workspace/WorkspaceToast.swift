@@ -36,8 +36,8 @@ struct WorkspaceToast: Identifiable, Hashable, Sendable {
     /// The card's Accept All (n).
     static func accepted(_ count: Int, undo: SuggestionRunAcceptance.Undo) -> WorkspaceToast {
         let text = count == 1
-            ? String(localized: "Accepted 1 suggestion. It’s waiting in Review & Push, top right.")
-            : String(localized: "Accepted \(count) suggestions. They’re waiting in Review & Push, top right.")
+            ? String(localized: "Accepted 1 suggestion. In Review & Push.")
+            : String(localized: "Accepted \(count) suggestions. In Review & Push.")
         return WorkspaceToast(message: ToastMessage(text: text, canUndo: true), undo: undo)
     }
 

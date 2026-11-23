@@ -12,7 +12,7 @@ struct FirstSyncProgressTests {
         let progress = FirstSyncProgress()
         #expect(progress.fraction == 0)
         #expect(progress.detail == "Reading your team and apps…")
-        #expect(progress.summary == "Atlas is reading your team and its apps. Nothing is changed in App Store Connect.")
+        #expect(progress.summary == "Reading your team and its apps. Nothing is changed in App Store Connect.")
     }
 
     @Test func countsAppsAsTheirSummariesLoad() {
@@ -22,7 +22,7 @@ struct FirstSyncProgressTests {
         #expect(progress.detail == "3 of 6 · Lumen Journal, Habitat, Tempo")
         #expect(progress.fraction == 4.0 / 7.0)
         #expect(progress.summary == """
-        Found 6 apps in Northpier Studio. Atlas is reading their store pages, screenshots and prices. \
+        Found 6 apps in Northpier Studio. Reading their store pages, screenshots and prices. \
         Nothing is changed in App Store Connect.
         """)
     }
@@ -37,8 +37,8 @@ struct FirstSyncProgressTests {
     }
 
     @Test func withoutTheTeamNameItSaysHowManyApps() {
-        #expect(FirstSyncProgress(appCount: 6).summary.hasPrefix("Found 6 apps. Atlas is reading their"))
-        #expect(FirstSyncProgress(appCount: 1, teamName: "Alba").summary.hasPrefix("Found 1 app in Alba. Atlas is reading its store page"))
+        #expect(FirstSyncProgress(appCount: 6).summary.hasPrefix("Found 6 apps. Reading their"))
+        #expect(FirstSyncProgress(appCount: 1, teamName: "Alba").summary.hasPrefix("Found 1 app in Alba. Reading its store page"))
     }
 
     @Test func finishedSyncIsFull() {

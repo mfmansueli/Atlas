@@ -19,22 +19,20 @@ enum AutopilotPreflight {
         """,
         "Sample data shown in the captures is in each language (names, entries, phrases), not only the primary one.",
         """
-        UI tests take the language from the locale's testArguments (-testLanguage, -testRegion) and don't force \
-        their own -AppleLanguages or -AppleLocale, which would override it.
+        UI tests take the language from the locale's testArguments (-testLanguage, -testRegion), never their own \
+        -AppleLanguages or -AppleLocale.
         """,
         """
-        Every command starts with xcodebuild or xcrun: switches go in a scheme or test plan, never as VAR=value in \
-        front of the command.
+        Every command starts with xcodebuild or xcrun; switches go in a scheme or test plan, not VAR=value before it.
         """,
         "Nothing waits on a permission alert, the keyboard or the network: grant permissions with simctl and use local sample data.",
         """
-        Keep what you read back (derived data, exported captures) in the project folder, e.g. build/, and find the built app \
-        with xcodebuild -showBuildSettings (BUILT_PRODUCTS_DIR): Atlas's own Claude Code reads and lists files only in \
-        the project folder, not in /tmp.
+        Keep what you read back (derived data, exported captures) in the project folder, e.g. build/, not /tmp: \
+        Atlas's assistant reads only there. Find the built app with xcodebuild -showBuildSettings (BUILT_PRODUCTS_DIR).
         """,
         """
-        Every planned device has a simulator this Mac runs (xcrun simctl list devicetypes runtimes): iPhone Duo needs an iOS 27.1 \
-        runtime or later. One that's missing is reported once with affectsDevice: true; don't download runtimes yourself.
+        Every planned device has a simulator on this Mac (xcrun simctl list devicetypes runtimes); iPhone Duo needs \
+        iOS 27.1 or later. Report a missing one once with affectsDevice: true; don't download runtimes.
         """,
     ]
 

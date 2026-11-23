@@ -25,8 +25,8 @@ struct ConsentWarningBox: View {
                     .foregroundStyle(Palette.warnMark)
             }
             Text("""
-            Apple tells existing subscribers before an increase. In some territories, and above Apple’s limits, they \
-            have to agree or the subscription ends at renewal. Keeping their price avoids that.
+            In some territories, or above Apple’s limits, subscribers must agree to an increase or their subscription ends at renewal. \
+            Keeping their price avoids this.
             """)
             .font(.callout)
             .foregroundStyle(Palette.label2)

@@ -24,8 +24,7 @@ struct AssistantsConnectSection: View {
             Text("Connect an assistant")
         } footer: {
             Text("""
-            Atlas adds itself to the assistant for you: nothing to copy or type. Assistants read and suggest. They never see your \
-            .p8 key and can’t push.
+            Atlas connects the assistant for you. Assistants read and suggest, never see your .p8 key, and can’t push.
             """)
             .font(.subheadline)
             .foregroundStyle(Palette.label2)

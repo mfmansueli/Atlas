@@ -235,7 +235,7 @@ struct GetPageScreenshotsTool: MCPTool {
     }
 
     static func planJSON(_ plan: PageShotsPlan) -> JSONValue {
-        [
+        var json: [String: JSONValue] = [
             "angle": .string(plan.angle),
             "reason": .string(plan.reason),
             "languages": .array(plan.locales.map(JSONValue.string)),
@@ -249,6 +249,8 @@ struct GetPageScreenshotsTool: MCPTool {
                 return ["screen": .int(screen.slot + 1), "captions": .object(captions)]
             }),
         ]
+        plan.layers?.add(to: &json)
+        return .object(json)
     }
 
     private func next(_ run: PageShotsRun) -> String {

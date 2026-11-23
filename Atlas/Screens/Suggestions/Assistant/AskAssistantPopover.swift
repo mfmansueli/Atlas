@@ -91,8 +91,8 @@ struct AskAssistantPopover: View {
 
     private func activeNote(_ run: ClaudeCodeRun) -> some View {
         Text("""
-        \(request.client) is reading \(run.appName) and suggesting \(request.area.title) fields. Suggestions show up here \
-        as they arrive; nothing changes until you accept them.
+        \(request.client) is suggesting \(request.area.title) fields for \(run.appName). They appear here; nothing changes \
+        until you accept.
         """)
         .font(.callout)
         .foregroundStyle(Palette.label2)
@@ -103,7 +103,7 @@ struct AskAssistantPopover: View {
 
     private var copied: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Atlas can’t start your assistant. Paste this into \(request.client); its suggestions show up here as it sends them.")
+            Text("Atlas can’t start your assistant. Paste this into \(request.client); its suggestions appear here.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -118,7 +118,7 @@ struct AskAssistantPopover: View {
                     .controlSize(.regular)
                     .accessibilityIdentifier("ask.copyAgain")
             }
-            Text("Shortcut in Claude Code: \(Text(MCPPrompt.suggest.slashCommand).font(.footnote.monospaced())) is the same prompt, offered by Atlas’s server.")
+            Text("In Claude Code, \(Text(MCPPrompt.suggest.slashCommand).font(.footnote.monospaced())) runs the same prompt.")
                 .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

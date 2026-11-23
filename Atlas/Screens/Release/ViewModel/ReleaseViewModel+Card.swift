@@ -36,29 +36,28 @@ extension ReleaseViewModel {
             // README — redesign, November 22: the card lists only what's missing.
             let left = checks.filter { !$0.isOK }.count
             switch left {
-            case 0: return String(localized: "Nothing left to do. Submit when you want.")
+            case 0: return String(localized: "Ready. Submit when you want.")
             case 1: return String(localized: "One thing left before you submit.")
             default: return String(localized: "\(left) things left before you submit.")
             }
         case .waitingForReview:
-            return String(localized: "Most apps are reviewed within a day. Atlas tells you when it changes.")
+            return String(localized: "Usually reviewed within a day. Atlas tells you when it changes.")
         case .inReview:
             return String(localized: "Nothing to do until it finishes.")
         case .rejected:
             return String(localized: """
-            Apple’s message is in App Store Connect; this key can’t read it. Fix what it asks for, then submit again. The rest of \
-            the submission stays as it is.
+            Read Apple’s message in App Store Connect. Fix what it asks, then submit again; the rest stays.
             """)
         case .pendingDeveloperRelease:
-            return String(localized: "You chose to release it yourself. It stays ready for up to 90 days.")
+            return String(localized: "You release it yourself. It stays ready up to 90 days.")
         case .pendingAppleRelease:
             guard let date = status?.version.timing.date, date > now() else { return String(localized: "Apple is releasing it.") }
             return String(localized: "Apple releases it on \(date.formatted(date: .abbreviated, time: .shortened)).")
         case let .phased(day, isPaused):
             let share = PhasedRelease.percentage(day: day)
             return isPaused
-                ? String(localized: "Paused on day \(day). Automatic updates stop until you resume; anyone can still download \(version) from the App Store. You can pause for up to 30 days in total.")
-                : String(localized: "\(share)% of people with automatic updates have \(version) so far. Anyone can download it from the App Store today.")
+                ? String(localized: "Paused on day \(day). Automatic updates wait; \(version) stays downloadable. Pauses can total 30 days.")
+                : String(localized: "\(share)% of people with automatic updates have \(version). Anyone can download it.")
         case .live:
             return String(localized: "Everyone gets it now.")
         }
@@ -222,7 +221,7 @@ extension ReleaseViewModel {
         case .waitingForReview: String(localized: "Waiting for Review")
         case .inReview: String(localized: "In Review")
         case .rejected: String(localized: "Rejected by App Review")
-        case .pendingDeveloperRelease: String(localized: "Approved, waiting for you to release it")
+        case .pendingDeveloperRelease: String(localized: "Approved. Release when you want.")
         case .pendingAppleRelease: String(localized: "Approved")
         case let .phased(day, isPaused): Self.phasedState(day: day, isPaused: isPaused)
         case .live: String(localized: "Ready for Distribution")

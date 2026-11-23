@@ -46,7 +46,7 @@ struct BackgroundInspectorSection: View {
                     .accessibilityIdentifier("screenshots.template.angle")
                 }
                 if background.kind == .panorama {
-                    Text("One background spans all \(model.slotCount) slots, so it continues when people swipe. Right-to-left locales get it reversed.")
+                    Text("One background spans all \(model.slotCount) slots and continues as people swipe. Reversed for right-to-left locales.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .layoutPriority(1)

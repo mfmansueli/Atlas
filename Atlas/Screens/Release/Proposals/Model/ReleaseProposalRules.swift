@@ -50,7 +50,7 @@ enum ReleaseProposalRules {
     private static func releaseReason(_ status: ReleaseStatus, state: String) -> String? {
         switch status.phase {
         case .pendingDeveloperRelease: nil
-        case .pendingAppleRelease: String(localized: "\(state): Apple releases it itself (it isn’t set to be released manually).")
+        case .pendingAppleRelease: String(localized: "\(state): Apple releases it automatically.")
         default: String(localized: "\(state). Only a version App Review approved and that waits for the person (Pending Developer Release) can be released.")
         }
     }
@@ -65,7 +65,7 @@ enum ReleaseProposalRules {
             return action == .pausePhasedRelease ? rollingOut : action == .resumePhasedRelease ? notPaused : notRolling
         }
         switch action {
-        case .pausePhasedRelease where isPaused: return String(localized: "The phased release of \(status.version.versionString) is paused already.")
+        case .pausePhasedRelease where isPaused: return String(localized: "\(status.version.versionString)’s phased release is already paused.")
         case .pausePhasedRelease: return isActive ? nil : rollingOut
         case .resumePhasedRelease: return isPaused ? nil : notPaused
         default: return isPaused || isActive ? nil : notRolling
@@ -76,7 +76,7 @@ enum ReleaseProposalRules {
         let phase = status.phase
         if action == .cancelSubmission {
             if phase == .waitingForReview, status.submission?.canCancel == true { return nil }
-            if phase == .inReview { return String(localized: "\(state): App Review has started, so the submission can’t be canceled now.") }
+            if phase == .inReview { return String(localized: "\(state): App Review has started; it can’t be canceled.") }
             return String(localized: "\(state): only a submission waiting for review can be canceled.")
         }
         if phase == .rejected, status.submission?.hasUnresolvedIssues == true { return nil }

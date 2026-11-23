@@ -79,15 +79,15 @@ struct ProductPageScreenshotsBox: View {
         guard let queued else { return viewModel.screenshotsNote(of: page, locale: locale, device: viewModel.device) }
         let name = ProductPageChangeBuilder.localeName(locale)
         return queued.count == 1
-            ? String(localized: "1 screenshot for this page, in \(name), waiting in Review & Push.")
-            : String(localized: "\(queued.count) screenshots for this page, in \(name), waiting in Review & Push.")
+            ? String(localized: "In Review & Push: 1 screenshot in \(name).")
+            : String(localized: "In Review & Push: \(queued.count) screenshots in \(name).")
     }
 
     private func previewsNote(_ queued: [ProductPageScreenshotsPush.File]) -> String {
         let name = ProductPageChangeBuilder.localeName(locale)
         return queued.count == 1
-            ? String(localized: "1 App Preview for this page, in \(name), waiting in Review & Push.")
-            : String(localized: "\(queued.count) App Previews for this page, in \(name), waiting in Review & Push.")
+            ? String(localized: "In Review & Push: 1 App Preview in \(name).")
+            : String(localized: "In Review & Push: \(queued.count) App Previews in \(name).")
     }
 
     /// Same as Default · Own: which the language shows, not a control.

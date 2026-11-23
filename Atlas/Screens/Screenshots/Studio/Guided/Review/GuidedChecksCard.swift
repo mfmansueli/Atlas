@@ -32,7 +32,7 @@ struct GuidedChecksCard: View {
                         Label("Approved", systemImage: "checkmark").frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
-                    .help(Text("Click to take the approval back"))
+                    .help(Text("Takes the approval back"))
                 } else {
                     Button {
                         studio.toggleApproval(part)
@@ -51,7 +51,7 @@ struct GuidedChecksCard: View {
                 Button("Edit Captions…") { studio.editGuidedCaptions() }
                     .buttonStyle(.link)
                     .frame(maxWidth: .infinity)
-                    .help(Text("Opens the Captions tab, with every language’s captions"))
+                    .help(Text("Opens every language’s captions"))
                     .accessibilityIdentifier("autopilot.guided.review.editCaptions")
             }
         }
@@ -67,7 +67,7 @@ struct GuidedChecksCard: View {
     @ViewBuilder
     private var approveNote: some View {
         if part == .screenshots, !studio.guidedCaptionProposals.isEmpty {
-            Text("Accept or reject the proposal above first: it changes these screenshots.")
+            Text("Decide on the suggestion above first: it changes these screenshots.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

@@ -69,9 +69,6 @@ struct CaptureImportSession: Hashable, Sendable {
     /// App Store Connect's screenshots are finished marketing images.
     var warning: String? {
         guard source == .appStoreConnect else { return nil }
-        return String(localized: """
-        These are the screenshots live in App Store Connect. They may already have captions, which the template \
-        would then draw a second time.
-        """)
+        return String(localized: "Live screenshots from App Store Connect. Captions already on them would show twice.")
     }
 }

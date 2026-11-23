@@ -40,12 +40,9 @@ struct ReviewsSidebar: View {
         let summaries = viewModel.themeSummaries
         if !viewModel.isPro {
             Card(padding: Spacing.medium) {
-                Text("""
-                Pro reads every review in every language and groups them: what’s broken, what people ask for, what they love. Each \
-                group ends in something to do.
-                """)
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Text("Pro groups every review, in every language: what’s broken, wanted or loved. Each group ends with a next step.")
+                    .font(.callout)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Upgrade to Pro…", action: onUpgrade)
                     .buttonStyle(.borderedProminent)
                     .controlSize(.regular)
@@ -56,7 +53,7 @@ struct ReviewsSidebar: View {
             .accessibilityIdentifier("reviews.themes.locked")
         } else if summaries.isEmpty {
             Card(padding: Spacing.medium) {
-                Text("No groups yet. Your assistant reads the reviews in every language and groups them by subject, each with something to do.")
+                Text("No groups yet. Your assistant groups reviews by subject, each with a next step.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .frame(maxWidth: .infinity, alignment: .leading)

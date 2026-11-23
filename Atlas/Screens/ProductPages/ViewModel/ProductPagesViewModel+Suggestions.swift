@@ -27,7 +27,7 @@ extension ProductPagesViewModel {
         let left = makeDraft(from: suggestion)
         store.removeSuggestions([suggestion.id], for: app.id)
         if expandedSuggestionID == suggestion.id { expandedSuggestionID = nil }
-        var text = String(localized: "“\(suggestion.name)” is now a draft page. Nothing is on the App Store until you push and submit it.")
+        var text = String(localized: "“\(suggestion.name)” is a draft. Nothing is public until you push and submit it.")
         if !left.isEmpty { text += " " + Self.leftOutText(left) }
         show(text, undo: undo)
     }
@@ -43,8 +43,8 @@ extension ProductPagesViewModel {
         store.removeSuggestions(Set(suggestions.map(\.id)), for: app.id)
         expandedSuggestionID = nil
         var text = suggestions.count == 1
-            ? String(localized: "1 page added as a draft. Nothing is on the App Store until you push and submit it.")
-            : String(localized: "\(suggestions.count) pages added as drafts. Nothing is on the App Store until you push and submit them.")
+            ? String(localized: "1 draft page added. Nothing is public until you push and submit it.")
+            : String(localized: "\(suggestions.count) draft pages added. Nothing is public until you push and submit them.")
         if !left.isEmpty { text += " " + Self.leftOutText(left) }
         show(text, undo: undo)
     }
@@ -138,7 +138,7 @@ extension ProductPagesViewModel {
         guard !suggestion.isRefused, let page = page(suggestion.pageID), canEdit(page) else { return }
         write(text: suggestion.text, locale: suggestion.locale, of: page, source: .assistant(client: suggestion.source))
         store.removeSuggestions([suggestion.id], for: app.id)
-        show(String(localized: "Accepted. It’s waiting in Review & Push, top right."), undo: nil)
+        show(String(localized: "Accepted. In Review & Push."), undo: nil)
     }
 
     /// Use and Edit: the text goes into the field, as the person's.
@@ -162,8 +162,8 @@ extension ProductPagesViewModel {
         }
         store.removeSuggestions(Set(suggestions.map(\.id)), for: app.id)
         let text = suggestions.count == 1
-            ? String(localized: "1 suggestion accepted. It’s waiting in Review & Push, top right.")
-            : String(localized: "\(suggestions.count) suggestions accepted. They’re waiting in Review & Push, top right.")
+            ? String(localized: "1 suggestion accepted. In Review & Push.")
+            : String(localized: "\(suggestions.count) suggestions accepted. In Review & Push.")
         show(text, undo: undo)
     }
 

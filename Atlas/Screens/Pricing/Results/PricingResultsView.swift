@@ -35,10 +35,7 @@ struct PricingResultsView: View {
             ContentUnavailableView {
                 Label("No price changes to compare yet", systemImage: "chart.bar.xaxis")
             } description: {
-                Text("""
-                After you push new prices, Atlas compares 28 days before and after each change: subscription \
-                starts, conversion from product page views, and proceeds.
-                """)
+                Text("Push new prices to compare 28 days before and after: starts, conversion and proceeds.")
             }
             .accessibilityIdentifier("pricing.results.none")
         case let .tooEarly(changedOn, day, arrivesOn):
@@ -47,10 +44,7 @@ struct PricingResultsView: View {
             ContentUnavailableView {
                 Label("Results need sales data", systemImage: "chart.line.uptrend.xyaxis")
             } description: {
-                Text("""
-                Prices changed on \(PricingText.date(changedOn)). Atlas doesn’t read Sales and Trends or App \
-                Analytics yet, so it can’t compare subscription starts and proceeds before and after.
-                """)
+                Text("Prices changed on \(PricingText.date(changedOn)). Atlas can’t read Sales and Trends or App Analytics yet to compare.")
             }
             .accessibilityIdentifier("pricing.results.noSales")
         case let .ready(changedOn):

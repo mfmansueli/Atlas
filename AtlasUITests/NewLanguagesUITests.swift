@@ -36,7 +36,7 @@ final class NewLanguagesUITests: XCTestCase {
         app.buttons["storePage.newLanguages.addAll"].click()
         XCTAssertTrue(banner.waitForNonExistence(timeout: 5))
         XCTAssertEqual(text(of: element("toast.text")), """
-        Added Polish, Turkish, Hebrew. The pages are created in App Store Connect when you push; their drafted text is in each tab.
+        Added Polish, Turkish, Hebrew. Drafted text is in each tab; the pages are created when you push.
         """)
 
         app.buttons["toast.undo"].click()

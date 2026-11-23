@@ -216,7 +216,9 @@ final class TranslateMissingViewModel {
             guard !Task.isCancelled else { return }
             job?.complete(item.id, with: protected.restore(translated))
         } catch {
-            job?.fail(item.id, message: error.localizedDescription)
+            let message = (error as? AIProviderError)?.errorDescription
+                ?? AppleErrorCopy(String(localized: "This field wasn’t translated.", comment: "kind:error"), error: error).text
+            job?.fail(item.id, message: message)
         }
     }
 

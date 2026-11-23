@@ -40,7 +40,7 @@ struct PaywallModelTests {
 
     @Test func theCardSaysWhatWasBlockedInThePersonsNumbers() {
         #expect(Self.acceptAll.title == "Accept All Languages is part of Pro")
-        #expect(Self.acceptAll.detail?.hasPrefix("Accept 32 suggestions in 6 languages in one step.") == true)
+        #expect(Self.acceptAll.detail?.hasPrefix("Accept 32 suggestions in 6 languages at once.") == true)
         #expect(Self.acceptAll.detail?.contains("at a time stays free") == true)
         #expect(Self.acceptAll.feature == .acceptAll)
         #expect(Self.acceptAll.continueTitle == "Accept 32 Suggestions…")
@@ -49,8 +49,8 @@ struct PaywallModelTests {
         #expect(PaywallContext.retention.continueTitle == "Open Retention")
         // Make the Artwork… on an event is Autopilot's; choosing files stays free.
         #expect(PaywallContext.eventArtwork.feature == .autopilot)
-        #expect(PaywallContext.eventArtwork.title == "Event artwork from Claude is part of Pro")
-        #expect(PaywallContext.eventArtwork.detail?.hasSuffix("Choosing your own files stays free.") == true)
+        #expect(PaywallContext.eventArtwork.title == "Event artwork is part of Pro")
+        #expect(PaywallContext.eventArtwork.detail?.hasSuffix("Using your own files stays free.") == true)
         #expect(PaywallContext.eventArtwork.continueTitle == "Make the Artwork…")
     }
 
@@ -143,7 +143,7 @@ struct PaywallModelTests {
         let store = FakeProStore()
         store.offersOnSale = []
         let model = await make(store: store)
-        #expect(model.offersProblem?.hasPrefix("The App Store answered without Atlas Pro’s plans") == true)
+        #expect(model.offersProblem?.hasPrefix("Atlas Pro’s plans aren’t on sale yet") == true)
         #expect(!model.canBuy)
     }
 
@@ -152,7 +152,7 @@ struct PaywallModelTests {
         #expect(rows.count == 10)
         #expect(rows.first?.free == "1 app, 1 account")
         #expect(rows.filter(\.isMissingInFree).map(\.feature) == [
-            "Accept All Languages, Translate All", "Autopilot", "Recommended prices for 175 countries", "Retention messages and offers",
+            "Accept All Languages, Translate All", "Autopilot", "Suggested prices for 175 countries", "Retention messages and offers",
         ])
     }
 }

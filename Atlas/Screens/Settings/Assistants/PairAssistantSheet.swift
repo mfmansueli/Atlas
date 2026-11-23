@@ -87,7 +87,7 @@ struct PairAssistantSheet: View {
                 .tracking(1.5)
                 .textSelection(.enabled)
                 .accessibilityLabel(Text("Pairing code \(pairing.code.digits.map(String.init).joined(separator: " "))"))
-            Text("Pairing code, if the assistant asks for one instead. It expires in 10 minutes if no one uses it.")
+            Text("Pairing code, if the assistant asks for one. Expires in 10 minutes if unused.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -144,9 +144,9 @@ struct PairAssistantSheet: View {
 
     private func connectedText(_ client: MCPPairedClient) -> String {
         if let directory = client.workingDirectory {
-            return String(localized: "Connected from \(directory). It can read and propose now.")
+            return String(localized: "Connected from \(directory). It can read and suggest now.")
         }
-        return String(localized: "Connected. It can read and propose now.")
+        return String(localized: "Connected. It can read and suggest now.")
     }
 
     private func copy(_: MCPPendingPairing) {

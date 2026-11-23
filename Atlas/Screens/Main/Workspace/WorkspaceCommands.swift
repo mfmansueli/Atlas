@@ -36,7 +36,7 @@ struct WorkspaceCommands: Commands {
         CommandMenu("Pricing") {
             Group {
                 Button("Review Suggestions") { navigator?.open(.subscriptionPricing, intent: .reviewSuggestions) }
-                Button("Apply Recommended Prices…") { navigator?.open(.subscriptionPricing, intent: .applyRecommendedPrices) }
+                Button("Apply Suggested Prices…") { navigator?.open(.subscriptionPricing, intent: .applyRecommendedPrices) }
                 Button("Schedule Pending Prices…") { navigator?.open(.subscriptionPricing, intent: .editPriceSchedule(productID: nil)) }
                 Divider()
                 Menu("Show Prices As") {

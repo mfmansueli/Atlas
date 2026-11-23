@@ -66,7 +66,7 @@ struct AppPriceCard: View {
         } else if let current = state.current {
             details(current)
         } else {
-            Text("Set up a starting price for \(model.app.name). Every other country or region gets Apple’s equalized price.")
+            Text("Set a starting price for \(model.app.name). Apple prices every other country automatically.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             Button("Add Pricing…") { model.isPriceSheetPresented = true }

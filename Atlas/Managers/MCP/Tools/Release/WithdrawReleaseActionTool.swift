@@ -49,7 +49,7 @@ struct WithdrawReleaseActionTool: MCPTool {
         for proposal in withdrawn {
             proposals.resolve(proposal.id, as: .withdrawn)
         }
-        let target = String(localized: "\(app.name) · Release proposals")
+        let target = String(localized: "\(app.name) · Release suggestions")
         return MCPToolOutcome(
             result: [
                 "status": withdrawn.isEmpty ? "unchanged" : "withdrawn",

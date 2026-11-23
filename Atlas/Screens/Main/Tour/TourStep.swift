@@ -30,15 +30,15 @@ enum TourStep: Int, CaseIterable, Identifiable, Hashable, Sendable {
     var text: String {
         switch self {
         case .apps:
-            String(localized: "Click to switch to another app. The last line tells you when another app has suggestions for you.")
+            String(localized: "Click to switch apps. The last line shows when another app has suggestions.")
         case .sections:
-            String(localized: "A purple number is how many suggestions are waiting there. Overview shows them all in one place.")
+            String(localized: "A purple number counts the suggestions waiting there. Overview shows them all.")
         case .autopilot:
             String(
-                localized: "This button asks Claude Code for what the section needs: texts, screenshots, prices or replies. You can always do the same by hand."
+                localized: "Asks your assistant for this section’s texts, screenshots, prices or replies. Or do it by hand."
             )
         case .reviewPush:
-            String(localized: "What you accept or edit waits here. Review & Push shows every change before it goes to the App Store.")
+            String(localized: "Everything you accept or edit waits here until you push it.")
         case .settings:
             String(localized: "Connect your assistant, add accounts and choose notifications. ⌘, opens it too.")
         }

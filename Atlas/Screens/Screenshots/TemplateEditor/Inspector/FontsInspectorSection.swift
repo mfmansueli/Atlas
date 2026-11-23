@@ -25,7 +25,7 @@ struct FontsInspectorSection: View {
                                 .foregroundStyle(Palette.label2)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         } else {
-                            Picker("Fallback font for \(row.script.title)", selection: Binding { row.fallback } set: { model.setFallback($0, for: row.script) }) {
+                            Picker("\(row.script.title) fallback font", selection: Binding { row.fallback } set: { model.setFallback($0, for: row.script) }) {
                                 Text("None").tag(String?.none)
                                 ForEach(row.options, id: \.self) { font in
                                     Text(model.fontTitle(font)).tag(Optional(font))

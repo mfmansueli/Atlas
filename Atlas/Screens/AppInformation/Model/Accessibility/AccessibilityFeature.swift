@@ -106,7 +106,7 @@ enum AccessibilityFeature: String, CaseIterable, Identifiable, Hashable, Codable
         case .largerText:
             String(localized: "Larger Text isn’t asked on \(family.name), where text follows the window and the system’s text size.")
         default:
-            String(localized: "\(name) isn’t available on \(family.name), so Apple doesn’t ask about it here.")
+            String(localized: "Apple doesn’t ask about \(name) on \(family.name).")
         }
     }
 

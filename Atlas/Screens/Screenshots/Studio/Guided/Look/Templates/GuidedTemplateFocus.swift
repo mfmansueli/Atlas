@@ -39,7 +39,7 @@ struct GuidedTemplateFocus: View {
                             .accessibilityIdentifier("autopilot.guided.look.template.focusName")
                         Pill(text: starter.style.title, style: .neutral)
                         ForEach(starter.tags, id: \.self) { tag in Pill(text: tag, style: .outline) }
-                        if isInUse { Pill(text: String(localized: "In use now"), style: .accent) }
+                        if isInUse { Pill(text: String(localized: "In use"), style: .accent) }
                     }
                     Text(starter.summary)
                         .font(.callout)

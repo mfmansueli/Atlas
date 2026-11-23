@@ -39,7 +39,7 @@ struct StartingPriceSheet: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(spacing: Spacing.small) {
-                    Text("Price in the United States")
+                    Text("Price (United States)")
                     Spacer()
                     TextField("Price", text: $text, prompt: Text(verbatim: "9.99"))
                         .labelsHidden()

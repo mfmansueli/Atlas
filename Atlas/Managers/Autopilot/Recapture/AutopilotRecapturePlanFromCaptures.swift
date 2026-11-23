@@ -88,7 +88,7 @@ struct AutopilotRecapturePlanFromCaptures: Codable, Hashable, Sendable {
         run.startedAt = dates.min() ?? now
         run.finishedAt = dates.max() ?? now
         let count = captures.count
-        run.appendLog(String(localized: "No Autopilot run was saved: the plan comes from the set’s \(count) captures"), kind: .event, at: now)
+        run.appendLog(String(localized: "No saved run: planned from the set’s \(count) captures"), kind: .event, at: now)
         return run
     }
 

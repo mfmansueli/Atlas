@@ -38,7 +38,8 @@ extension ProductPagesViewModel {
         do {
             saved = try folder.save(files, appID: app.id)
         } catch {
-            filesProblem = ProductPageFilesProblem(pageName: page.name, problems: [error.localizedDescription])
+            let copy = AppleErrorCopy(String(localized: "The screenshots couldn’t be copied.", comment: "kind:error"), error: error)
+            filesProblem = ProductPageFilesProblem(pageName: page.name, problems: [copy.text])
             return
         }
         let displayType = device.displayType
@@ -48,8 +49,8 @@ extension ProductPagesViewModel {
         queue.upsert(change)
         let name = ProductPageChangeBuilder.localeName(locale)
         let text = saved.count == 1
-            ? String(localized: "1 screenshot added to “\(page.name)” in \(name). It’s waiting in Review & Push, top right.")
-            : String(localized: "\(saved.count) screenshots added to “\(page.name)” in \(name). They’re waiting in Review & Push, top right.")
+            ? String(localized: "1 screenshot added to “\(page.name)” in \(name). In Review & Push.")
+            : String(localized: "\(saved.count) screenshots added to “\(page.name)” in \(name). In Review & Push.")
         toast = ToastMessage(text: text, actionTitle: String(localized: "Review & Push"))
     }
 

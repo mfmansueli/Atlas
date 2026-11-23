@@ -119,7 +119,7 @@ struct PricingScreen: View {
                 viewModel.confirmKeepPrices()
             }
         } message: {
-            Text("Keep my prices never proposes a change, so the price changes waiting in Review & Push for \(viewModel.app.name) are discarded.")
+            Text("“Keep my prices” discards the price changes for \(viewModel.app.name) waiting in Review & Push.")
         }
         .confirmationDialog(
             String(localized: "Apply the strategy to the whole group?"),
@@ -129,10 +129,7 @@ struct PricingScreen: View {
                 Task { await viewModel.applyStrategyToGroup() }
             }
         } message: {
-            Text("""
-            Every subscription in the group gets the strategy’s prices as pending changes, keeping each one’s \
-            price ratio. Hand edits stay, and nothing is pushed until you review it.
-            """)
+            Text("Each subscription in the group gets the strategy’s prices, keeping their ratios. Hand edits stay; nothing is pushed yet.")
         }
     }
 
@@ -194,7 +191,7 @@ struct PricingScreen: View {
                 Banner(
                     kind: .info,
                     title: String(localized: "Suggestions use purchasing power alone."),
-                    message: String(localized: "This key’s role can’t read Sales and Trends or App Analytics, so every suggestion has low confidence.")
+                    message: String(localized: "This key can’t read Sales and Trends or App Analytics, so suggestions are Not very sure.")
                 ) {
                     Button("Use Another Key…") { openSettings() }
                         .accessibilityIdentifier("pricing.useAnotherKey")
@@ -204,7 +201,7 @@ struct PricingScreen: View {
                 Banner(
                     kind: .info,
                     title: String(localized: "Suggestions use purchasing power alone."),
-                    message: String(localized: "Atlas doesn’t read Sales and Trends yet, so every suggestion has low confidence.")
+                    message: String(localized: "Atlas doesn’t read Sales and Trends yet, so suggestions are Not very sure.")
                 )
                 .accessibilityIdentifier("pricing.noSalesBanner")
             }

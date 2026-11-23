@@ -55,7 +55,7 @@ final class ArtworkLoopWriter {
         do {
             try writer.start()
         } catch {
-            throw ArtworkLoopError.writerFailed(error.localizedDescription)
+            throw ArtworkLoopError.writerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
         writer.startSession(atSourceTime: .zero)
     }
@@ -103,7 +103,7 @@ final class ArtworkLoopWriter {
         pixels.finish()
         writer.endSession(atSourceTime: CMTime(value: CMTimeValue(frameCount), timescale: CMTimeScale(framesPerSecond)))
         await writer.finishWriting()
-        guard writer.status == .completed else { throw ArtworkLoopError.writerFailed(writer.error?.localizedDescription ?? "") }
+        guard writer.status == .completed else { throw ArtworkLoopError.writerFailed(writer.error.flatMap(AppleErrorCopy.details) ?? "") }
     }
 
     func cancel() {
@@ -112,7 +112,7 @@ final class ArtworkLoopWriter {
 
     private func checkWriter() throws {
         if writer.status == .failed || writer.status == .cancelled {
-            throw ArtworkLoopError.writerFailed(writer.error?.localizedDescription ?? "")
+            throw ArtworkLoopError.writerFailed(writer.error.flatMap(AppleErrorCopy.details) ?? "")
         }
     }
 

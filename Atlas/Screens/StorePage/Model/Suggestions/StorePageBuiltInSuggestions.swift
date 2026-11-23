@@ -44,10 +44,10 @@ enum StorePageBuiltInSuggestions {
         let repeated = analysis.tokens.filter { $0.state == .duplicate }.map { "“\($0.text)”" }
         var sentences: [String] = []
         if covered.count == 1, let word = covered.first {
-            sentences.append(String(localized: "Removes \(word). It’s already in the name or subtitle, which App Store search uses too."))
+            sentences.append(String(localized: "Removes \(word), already in the name or subtitle. Search reads those too."))
         } else if !covered.isEmpty {
             let words = covered.formatted(.list(type: .and))
-            sentences.append(String(localized: "Removes \(words). They’re already in the name and subtitle, which App Store search uses too."))
+            sentences.append(String(localized: "Removes \(words), already in the name and subtitle. Search reads those too."))
         }
         if !repeated.isEmpty {
             let words = repeated.formatted(.list(type: .and))

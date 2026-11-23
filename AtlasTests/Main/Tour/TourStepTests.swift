@@ -34,7 +34,7 @@ struct TourStepTests {
         #expect(TourStep.reviewPush.title == "Nothing changes until you push")
         #expect(TourStep.settings.title == "Settings are always here")
         #expect(TourStep.settings.text.contains("⌘,"))
-        #expect(TourStep.autopilot.text.hasSuffix("You can always do the same by hand."))
+        #expect(TourStep.autopilot.text.hasSuffix("Or do it by hand."))
     }
 
     @Test func eachTipHasItsOwnGlyph() {

@@ -29,6 +29,6 @@ struct CaptionProposalRow: Hashable, Sendable, Identifiable {
 
     /// "Proposed · Fits at 112 u".
     var proposedFitText: String {
-        String(localized: "Proposed · \(proposedFit.label)")
+        String(localized: "Suggested · \(proposedFit.label)")
     }
 }

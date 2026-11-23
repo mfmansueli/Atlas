@@ -27,12 +27,12 @@ struct ProposeAgeRatingTool: MCPTool {
                 "answers": [
                     "type": "array",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withLayers([
                             "question": MCPToolDefinition.string("A question id from get_age_rating, e.g. userGeneratedContent."),
                             "answer": MCPToolDefinition.string("none, infrequent, frequent, no or yes."),
-                            "why": MCPToolDefinition.string("Why, in a sentence the person can check."),
+                            "why": MCPToolDefinition.why("Why, for the person to check."),
                             "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. Lumen/Share/ShareSheet.swift:12 — posts entries"],
-                        ],
+                        ]),
                         required: ["question", "answer"]
                     ),
                 ],
@@ -80,12 +80,13 @@ struct ProposeAgeRatingTool: MCPTool {
                 continue
             }
             context.workspace.changes.upsert(change)
-            notes.ageEvidence[question.rawValue] = AssistantEvidence(
+            notes.ageEvidence[question.rawValue] = try AssistantEvidence(
                 client: context.clientName,
                 summary: answer.title,
                 why: object["why"]?.stringValue ?? "",
                 evidence: (object["evidence"]?.arrayValue ?? []).compactMap(\.stringValue),
-                couldNotSee: couldNotSee
+                couldNotSee: couldNotSee,
+                layers: MCPToolArguments(object).layers()
             )
             results.append(["question": .string(question.rawValue), "status": "queued", "changeId": .string(change.id)])
             logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .proposed))

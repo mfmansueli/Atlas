@@ -54,7 +54,7 @@ struct RetentionKindSection: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                Text("No image yet. It has to be a PNG 3840 wide and 160 to 2160 tall, with no transparency.")
+                Text("No image yet. Use a PNG, 3840 wide, 160 to 2160 tall, no transparency.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -70,7 +70,7 @@ struct RetentionKindSection: View {
     /// "Still Lake · from the Asset Library · 3840 × 1000 · from the
     /// header scenes · PNG, no transparency, reads in light and dark".
     private func imageDetail(_ image: RetentionImage) -> String {
-        let from = image.assetID == nil ? String(localized: "made on this Mac, uploaded when you push") : String(localized: "from the Asset Library")
+        let from = image.assetID == nil ? String(localized: "made on this Mac, sent when you push") : String(localized: "from the Asset Library")
         var parts = [image.name, from, image.sizeText]
         if let note = image.note { parts.append(note) }
         if let problem = image.problems.first {

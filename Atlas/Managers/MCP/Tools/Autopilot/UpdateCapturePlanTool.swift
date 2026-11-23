@@ -77,7 +77,7 @@ struct UpdateCapturePlanTool: MCPTool {
                     "items": ["type": "string"],
                     "description": "Every note fixes left, in place of the plan's (simulatorSetup.notes); [] removes them all.",
                 ],
-                "reason": MCPToolDefinition.string("For a proposal: why, in a sentence or two the person reads before accepting."),
+                "reason": MCPToolDefinition.shortWhy("For a proposal: why, for the person to read before accepting."),
                 "evidence": MCPToolDefinition.string("For a proposal: the files, targets or commits that show it."),
             ],
             required: ["appId"]

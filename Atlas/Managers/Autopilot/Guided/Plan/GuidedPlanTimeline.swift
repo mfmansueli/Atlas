@@ -42,8 +42,7 @@ enum GuidedPlanTimeline {
         rows.append(GuidedTimelineRow(
             kind: .review, who: .you, title: String(localized: "Review and approve everything"),
             detail: String(localized: """
-            Approve each part or ask for changes. Approve All puts it in Review & Push; nothing reaches the App Store \
-            before you push from there.
+            Approve each part or ask for changes. Approve All puts it in Review & Push; nothing is sent until you push.
             """),
             time: ""
         ))
@@ -95,13 +94,13 @@ enum GuidedPlanTimeline {
         let devices = plan.runDisplays.map(\.title).formatted(.list(type: .and))
         var detail = if reusesSome {
             String(localized: """
-            The captures and picks of the last run, and new ones on \(devices). Problems like a keyboard in the way are fixed and \
-            captured again; you’ll see what was fixed.
+            Last run’s captures and picks, plus new ones on \(devices). Problems like a keyboard in the way are fixed \
+            and listed.
             """)
         } else if toCapture > 0 || records {
-            String(localized: "On \(devices). Problems like a keyboard in the way are fixed and captured again; you’ll see what was fixed.")
+            String(localized: "On \(devices). Problems like a keyboard in the way are fixed and listed.")
         } else {
-            String(localized: "The captures and picks of the last run; nothing new to capture.")
+            String(localized: "Last run’s captures and picks; nothing new to capture.")
         }
         if toCapture > 0, let gap = gapSentence(gaps.filter { plan.displayTypes.contains($0.displayType) }, plan: plan, app: app) {
             detail += " " + gap
@@ -203,8 +202,8 @@ enum GuidedPlanTimeline {
             ? String(localized: "Checks everything in \(GuidedMakeSummary.primaryName(plan))")
             : String(localized: "Localizes and checks everything in \(count) languages")
         let detail = plan.makesScreenshots
-            ? String(localized: "Captions that don’t fit are shortened by \(client); each change is listed for you.")
-            : String(localized: "Names and phrases that don’t fit are shortened by \(client); each change is listed for you.")
+            ? String(localized: "\(client) shortens captions that don’t fit and lists each change.")
+            : String(localized: "\(client) shortens names and phrases that don’t fit and lists each change.")
         return GuidedTimelineRow(
             kind: .localize, who: .atlas, title: title, detail: detail,
             time: String(localized: "about \(GuidedMakeSummary.localizeMinutes(plan)) min")

@@ -21,8 +21,8 @@ struct WelcomeIntro: View {
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("welcome.title")
             Text("""
-            Atlas keeps your App Store page right in every country: the words, the screenshots and the prices. \
-            It suggests what to change, you review it, and one push sends it to App Store Connect.
+            Your App Store words, screenshots and prices, right in every country. Atlas suggests, you review, and one push \
+            sends it to App Store Connect.
             """)
             .font(layout.isShort ? .body : .title3)
             .lineSpacing(layout.isShort ? 2 : 4)
@@ -64,7 +64,7 @@ struct WelcomeIntro: View {
             WelcomePoint(
                 systemImage: "sparkle",
                 title: "Suggestions, never surprises",
-                detail: "Your AI assistant and Atlas’s own checks suggest changes. Nothing is accepted without you.",
+                detail: "Your assistant and Atlas’s checks suggest changes. Nothing is accepted without you.",
                 showsDetail: layout.showsPointDetails
             )
             WelcomePoint(

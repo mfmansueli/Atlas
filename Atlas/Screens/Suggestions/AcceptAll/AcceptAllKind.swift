@@ -47,8 +47,8 @@ enum AcceptAllKind: Hashable, Sendable {
     /// The footer's checkbox.
     var dontAskTitle: String {
         self == .appInformation
-            ? String(localized: "Don’t ask again: Accept All accepts every page right away")
-            : String(localized: "Don’t ask again: Accept All Languages accepts every language right away")
+            ? String(localized: "Don’t ask before Accept All")
+            : String(localized: "Don’t ask before Accept All Languages")
     }
 
     /// Added to the toast after turning that on.
@@ -65,8 +65,8 @@ enum AcceptAllKind: Hashable, Sendable {
             ? String(localized: "Accepted 1 suggestion in \(groups) \(unit)")
             : String(localized: "Accepted \(count) suggestions in \(groups) \(unit)")
         let text = withoutAsking
-            ? String(localized: "\(what), without asking. They’re waiting in Review & Push, top right.")
-            : String(localized: "\(what). They’re waiting in Review & Push, top right.")
+            ? String(localized: "\(what), without asking. In Review & Push.")
+            : String(localized: "\(what). In Review & Push.")
         return turnedOffAsking ? "\(text) \(nextTimeText)" : text
     }
 }

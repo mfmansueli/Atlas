@@ -43,7 +43,9 @@ struct ProposeReleaseActionTool: MCPTool {
             "type": "array", "items": ["type": "string"],
             "description": "submit: the In-App Events that go to App Review with it (get_release's offeredEvents).",
         ],
-        "reason": MCPToolDefinition.string("Why, in a sentence the person can check, e.g. what changed since the last release."),
+        "reason": MCPToolDefinition.why("Why, for the person to check, e.g. what changed since the last release."),
+        "details": MCPToolDefinition.detailsProperty,
+        "confidence": MCPToolDefinition.confidenceProperty,
         "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. CHANGELOG.md — 1.4: Mood Calendar; Crashes: 0.1% on day 3"],
     ]
 
@@ -109,7 +111,7 @@ struct ProposeReleaseActionTool: MCPTool {
             action: action, submission: submission,
             evidence: AssistantEvidence(
                 client: context.clientName, summary: action.title(version: version.versionString), why: reason,
-                evidence: arguments.optionalStrings("evidence") ?? []
+                evidence: arguments.optionalStrings("evidence") ?? [], layers: arguments.layers()
             ),
             receivedAt: now()
         )

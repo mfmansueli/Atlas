@@ -28,7 +28,7 @@ struct PricingModeSheet: View {
                     Text("How should Atlas handle prices for \(appName)?")
                         .font(.title3.weight(.semibold))
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("You can switch at any time from the Pricing toolbar. The default for new apps is in Settings → Pricing.")
+                    Text("Switch anytime in the Pricing toolbar. Set the default for new apps in Settings → Pricing.")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)

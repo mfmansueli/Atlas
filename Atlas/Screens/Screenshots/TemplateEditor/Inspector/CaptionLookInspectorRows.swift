@@ -43,7 +43,7 @@ struct CaptionLookInspectorRows: View {
         }
         TemplateInspectorRow(label: String(localized: "Highlight")) {
             HStack(spacing: Spacing.small) {
-                Toggle("Highlight bar behind each line", isOn: Binding { model.highlight != nil } set: { model.setHighlighted($0) })
+                Toggle("Line highlight bar", isOn: Binding { model.highlight != nil } set: { model.setHighlighted($0) })
                     .toggleStyle(.switch)
                     .labelsHidden()
                     .controlSize(.mini)

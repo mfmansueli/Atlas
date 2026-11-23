@@ -151,8 +151,7 @@ struct InAppEventDatesChangeTests {
         // Read without its territories: changing the dates would change those too.
         let unknown = Data.winter
         #expect(InAppEventChangeBuilder.datesEditProblem(of: unknown) == """
-        Atlas doesn’t know which countries or regions “Winter Reflection 2026” shows in, so it can’t send new dates without changing those \
-        too. Change its dates in App Store Connect.
+        Atlas doesn’t know where “Winter Reflection 2026” shows, so it can’t change its dates. Change them in App Store Connect.
         """)
         #expect(builder.datesChange(to: Self.moved, of: unknown, now: Data.now, source: .you) == nil)
 
@@ -160,7 +159,7 @@ struct InAppEventDatesChangeTests {
         split.schedules.append(InAppEventSchedule(
             territories: ["JPN"], publishStart: Data.day(9), eventStart: Data.day(15), eventEnd: Data.day(45)
         ))
-        #expect(InAppEventChangeBuilder.datesEditProblem(of: split)?.hasSuffix("change these in App Store Connect.") == true)
+        #expect(InAppEventChangeBuilder.datesEditProblem(of: split)?.hasSuffix("Change them in App Store Connect.") == true)
 
         var undated = Self.winter
         undated.schedules[0].publishStart = nil

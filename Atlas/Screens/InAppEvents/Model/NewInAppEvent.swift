@@ -72,9 +72,9 @@ struct NewInAppEvent: Hashable, Sendable {
         var problems: [String] = []
         let name = trimmedReferenceName
         if name.isEmpty { problems.append(String(localized: "Give the event a reference name. People never see it.")) }
-        if name.count > Self.referenceNameLimit { problems.append(String(localized: "The reference name is over \(Self.referenceNameLimit) characters.")) }
+        if name.count > Self.referenceNameLimit { problems.append(String(localized: "Shorten the reference name to \(Self.referenceNameLimit) characters.")) }
         if !name.isEmpty, Set(takenReferenceNames.map(Self.nameKey)).contains(Self.nameKey(name)) {
-            problems.append(String(localized: "Another event already has the reference name “\(name)”. Choose another one."))
+            problems.append(String(localized: "“\(name)” is taken by another event. Choose another name."))
         }
         problems += dateProblems(now: now)
         if let problem = InAppEventDeepLink.problem(trimmedDeepLink) { problems.append(problem) }

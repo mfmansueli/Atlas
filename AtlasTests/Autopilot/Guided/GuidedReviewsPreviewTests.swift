@@ -38,7 +38,7 @@ struct GuidedReviewsPreviewTests {
         await model.reviewsTask?.value
         let after = try #require(model.studio.templatePreview(.socialProof, plan: run.plan))
         #expect(after.note.contains("has no 5-star App Store reviews in"), "\(after.note)")
-        #expect(after.note.contains("the Reviews screen shows its capture instead"))
+        #expect(after.note.contains("the Reviews screen shows its capture."))
     }
 
     @Test func aTemplateWithoutAReviewsScreenSaysNothingOfReviews() async throws {

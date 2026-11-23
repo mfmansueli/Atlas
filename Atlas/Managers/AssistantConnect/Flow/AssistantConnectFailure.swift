@@ -29,11 +29,11 @@ enum AssistantConnectFailure: Hashable, Sendable {
         switch self {
         case .noAnswer:
             return String(localized: """
-            Atlas added itself to \(assistant.title), and then waited \(seconds) seconds without hearing back. Nothing is broken; \
-            it’s usually one of these.
+            Atlas added itself to \(assistant.title) but heard nothing for \(seconds) seconds. Nothing is broken; it’s usually \
+            one of these.
             """)
         case .couldNotRestart:
-            return String(localized: "Atlas added itself to \(assistant.title), but \(assistant.title) didn’t quit to start again. It’s usually one of these.")
+            return String(localized: "Atlas added itself to \(assistant.title), but \(assistant.title) didn’t restart. It’s usually one of these.")
         case let .couldNotAdd(message):
             return message
         case let .run(failure):

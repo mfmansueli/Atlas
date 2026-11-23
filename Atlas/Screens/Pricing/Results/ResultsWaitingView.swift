@@ -17,8 +17,8 @@ struct ResultsWaitingView: View {
             Text("Too early to tell")
                 .font(.title3.weight(.semibold))
             Text("""
-            Prices changed on \(PricingText.date(changedOn)). Results arrive on \(PricingText.date(arrivesOn)), after \
-            28 days: long enough for a full monthly billing cycle, and Apple’s reports land a day or more late.
+            Prices changed on \(PricingText.date(changedOn)). Results arrive \(PricingText.date(arrivesOn)): 28 days covers a monthly \
+            billing cycle and Apple’s report delay.
             """)
             .font(.callout)
             .foregroundStyle(Palette.label2)

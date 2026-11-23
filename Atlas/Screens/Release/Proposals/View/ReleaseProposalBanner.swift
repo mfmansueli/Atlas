@@ -30,6 +30,7 @@ struct ReleaseProposalBanner: View {
                     .font(.callout.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("\(identifier).title")
+                if let confidence = proposal.evidence.layers?.confidence { HowSureMeter(confidence: confidence) }
             }
             let lines = viewModel.proposalLines(proposal)
             if !lines.isEmpty {
@@ -72,13 +73,14 @@ struct ReleaseProposalBanner: View {
             }
             .controlSize(.regular)
             .disabled(viewModel.busyAction != nil)
+            if let details = proposal.evidence.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
         .suggestionSurface(isSettling: false, arrivalKey: proposal.id, arrivedAt: proposal.receivedAt)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text("Proposed by \(proposal.client): \(proposal.title)"))
+        .accessibilityLabel(Text("Suggested by \(proposal.client): \(proposal.title)"))
         .accessibilityIdentifier(identifier)
     }
 

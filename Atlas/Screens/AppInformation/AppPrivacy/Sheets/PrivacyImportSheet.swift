@@ -29,7 +29,7 @@ struct PrivacyImportSheet: View {
                         .accessibilityIdentifier("appInformation.appPrivacy.importSheet.error")
                 } else if let preview = viewModel.importPreview {
                     rows(preview)
-                    Text("Imported answers are tagged as yours. Run a scan afterwards to check them against the code.")
+                    Text("Imported answers are marked as yours. Scan to check them against the code.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)

@@ -44,8 +44,8 @@ extension ScreenshotStudioModel {
             let followers = run.plan.displayTypes.filter { $0 == .iPad || $0 == .mac || $0 == .visionPro }.map(\.shortTitle)
             let most = run.plan.screens.map { run.candidates(for: $0.id).count }.max() ?? 1
             var text = most > 1
-                ? String(localized: "Best of \(most) per screen, ranked by \(client). Click any capture to see it full size and use another.")
-                : String(localized: "Ranked by \(client). Click any capture to see it full size.")
+                ? String(localized: "Best of \(most) per screen, ranked by \(client). Click one to view or swap it.")
+                : String(localized: "Ranked by \(client). Click one for full size.")
             text += " " + (followers.isEmpty
                 ? String(localized: "Picks apply to every language.")
                 : String(localized: "Picks apply to every language; \(followers.formatted(.list(type: .and))) use the same moments."))
@@ -56,9 +56,9 @@ extension ScreenshotStudioModel {
             case .cover: String(localized: "on the cover display")
             case .both: String(localized: "on the inner and cover displays")
             }
-            return String(localized: "Same moments as iPhone, \(displays). Click to see them full size.")
+            return String(localized: "Same moments as iPhone, \(displays). Click for full size.")
         case .watch:
-            return String(localized: "Best of 3 each, ranked the same way. No captions on the watch.")
+            return String(localized: "Best of 3, ranked the same way. No watch captions.")
         }
     }
 
@@ -194,8 +194,8 @@ extension ScreenshotStudioModel {
         let perLanguage = Set(run.pickRecordingTargets.map(\.locale)).count > 1
         let designer = run.designKind == .claudeDesign ? DesignProjectKind.claude : String(localized: "Atlas")
         return perLanguage
-            ? String(localized: "\(client) recorded the plan’s screens in one take per device and language, then marked the moments that work in an App Preview. Choose which go in; \(designer) adds captions, music and the end card next.")
-            : String(localized: "\(client) recorded the plan’s screens in one take per device, then marked the moments that work in an App Preview. Choose which go in; \(designer) adds captions, music and the end card next.")
+            ? String(localized: "\(client) recorded one take per device and language and marked the best moments. Pick which go in; \(designer) adds captions, music and the end card.")
+            : String(localized: "\(client) recorded one take per device and marked the best moments. Pick which go in; \(designer) adds captions, music and the end card.")
     }
 
     /// "App Preview: Today, Week, Search and the end card · 0:24 · within
@@ -226,7 +226,7 @@ extension ScreenshotStudioModel {
     func recordAgainNote(_ run: AutopilotRun, moment: AutopilotRecordingMoment) -> String? {
         guard run.momentRetakes?.contains(moment.screenID) == true else { return nil }
         let name = run.plan.screen(id: moment.screenID)?.name ?? moment.screenID
-        return String(localized: "\(run.clientName(assistant: nil, startsSentence: true)) will record “\(name)” again before the design step. The rest of the recording stays.")
+        return String(localized: "\(run.clientName(assistant: nil, startsSentence: true)) re-records “\(name)” before design. The rest stays.")
     }
 
     /// The current recording's moments.

@@ -34,7 +34,7 @@ struct AnalyticsScreen: View {
         ) {
             if viewModel.setup == .ready, viewModel.funnel != nil {
                 if viewModel.funnel?.isNew == true {
-                    Pill(text: String(localized: "\(viewModel.dataset.dayCount) days of data"), isProminent: true)
+                    Pill(text: String(localized: "\(viewModel.dataset.dayCount) days"), isProminent: true)
                 } else {
                     AnalyticsSegments(
                         label: String(localized: "Period"),

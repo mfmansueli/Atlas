@@ -74,8 +74,8 @@ struct GuidedMakingStepView: View {
                 if fixedCount > 0 {
                     Label {
                         Text(fixedCount == 1
-                            ? String(localized: "Autopilot fixed 1 problem on its own. You’ll see it in the review.")
-                            : String(localized: "Autopilot fixed \(fixedCount) problems on its own. You’ll see them in the review."))
+                            ? String(localized: "Autopilot fixed 1 problem. It’s in the review.")
+                            : String(localized: "Autopilot fixed \(fixedCount) problems. They’re in the review."))
                     } icon: {
                         Image(systemName: "checkmark")
                     }

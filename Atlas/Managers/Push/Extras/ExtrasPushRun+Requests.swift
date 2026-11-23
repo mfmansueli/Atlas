@@ -52,18 +52,25 @@ extension ExtrasPushRun {
             return .cancelled
         case let error as AppStoreConnectError:
             if error == .unauthorized || error == .invalidPrivateKey { stopReason = String(localized: "Not sent · the API key was refused") }
-            return .failed(Self.describe(error))
+            return .failed(Self.notPushed(error))
         case let error as URLError where Self.offlineCodes.contains(error.code):
             let reason = String(localized: "Not sent · offline")
             stopReason = reason
             return .failed(reason)
         default:
-            return .failed(Self.describe(error))
+            return .failed(Self.notPushed(error))
         }
     }
 
+    /// A row's whole message for an error that isn't Atlas's own: what
+    /// happened and what to do, Apple's text after "Details:".
+    static func notPushed(_ error: any Error) -> String {
+        AppleErrorCopy(String(localized: "The file wasn’t pushed.", comment: "kind:error"), error: error).text
+    }
+
     /// An error as one short sentence ending in a period, with Apple's
-    /// code and detail when it sent them.
+    /// code and detail when it sent them: the detail inside an Atlas
+    /// sentence ("Couldn’t place it (…)").
     static func describe(_ error: any Error) -> String {
         let text = (error as? AppStoreConnectError)?.pushFailureText ?? error.localizedDescription
         return text.hasSuffix(".") ? text : text + "."

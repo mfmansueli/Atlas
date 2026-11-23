@@ -17,14 +17,13 @@ enum DeviceHub {
 
     /// What the person does, for the sheet: open it.
     static let openingSteps = String(localized: """
-    In iPhone Duo’s window in Device Hub, choose Open in the poses at the bottom, or drag its hinge all the way open. Keep it \
-    running: starting it again closes it.
+    In Device Hub, pick the Open pose or drag iPhone Duo’s hinge fully open. Keep it running: a restart closes it.
     """)
 
     /// What the person does when its SpringBoard is stuck (a spinner on the
     /// inner display) and Atlas can't restart it (`DuoWatcher`).
     static let restartSteps = String(localized: """
-    If its inner display shows only a spinner, shut it down there, start it, wait for the Home Screen and open it.
+    Only a spinner? In Device Hub: shut it down, start it, wait for the Home Screen, open it.
     """)
 
     /// Where it is, or nil when this Mac's Xcode has none.

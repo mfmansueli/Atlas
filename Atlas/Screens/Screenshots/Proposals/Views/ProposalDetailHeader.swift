@@ -23,10 +23,13 @@ struct ProposalDetailHeader: View {
                     .foregroundStyle(Palette.label2)
             }
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Why · from \(proposal.client)")
-                    .font(.footnote.weight(.semibold))
-                    .textCase(.uppercase)
-                    .foregroundStyle(Palette.label2)
+                HStack(spacing: Spacing.xSmall) {
+                    Text("Why · from \(proposal.client)")
+                        .font(.footnote.weight(.semibold))
+                        .textCase(.uppercase)
+                        .foregroundStyle(Palette.label2)
+                    if let confidence = proposal.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 Text(proposal.reason)
                     .font(.callout)
                     .fixedSize(horizontal: false, vertical: true)
@@ -40,6 +43,7 @@ struct ProposalDetailHeader: View {
                     .strokeBorder(Palette.separator, lineWidth: 0.5)
             }
             .accessibilityElement(children: .combine)
+            if let details = proposal.layers?.details { SuggestionDetailsDisclosure(details: details) }
             if let outcome {
                 Label(outcome, systemImage: proposal.status == .rejected ? "xmark.circle" : "checkmark.circle")
                     .font(.callout)

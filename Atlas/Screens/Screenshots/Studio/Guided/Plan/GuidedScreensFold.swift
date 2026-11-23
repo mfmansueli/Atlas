@@ -27,7 +27,7 @@ struct GuidedScreensFold: View {
                 VStack(alignment: .leading, spacing: Spacing.small) {
                     AutopilotOptionRow(
                         title: String(localized: "\(client) picks the screens"),
-                        detail: String(localized: "It reads the project and replaces these with the screens that show \(studio.app.name) best, before capturing. Off, it keeps yours and writes their steps."),
+                        detail: String(localized: "On: swaps these for the screens that show \(studio.app.name) best. Off: keeps yours and writes their steps."),
                         isOn: Binding { run.plan.choosesScreens } set: { value in studio.updatePlan { $0.choosesScreens = value } }
                     )
                     .accessibilityIdentifier("autopilot.guided.plan.choosesScreens")

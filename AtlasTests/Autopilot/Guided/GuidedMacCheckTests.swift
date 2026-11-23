@@ -31,7 +31,7 @@ struct GuidedMacCheckTests {
         #expect(check.missing == [.iPhoneDuo])
         #expect(check.blocksStart)
         #expect(check.summary == "1 simulator to make before Start")
-        #expect(check.detail(for: .iPhoneDuo, appName: "Lumen") == "No iPhone Duo simulator yet. It can be made on iOS 27.2 in a few seconds.")
+        #expect(check.detail(for: .iPhoneDuo, appName: "Lumen") == "No iPhone Duo simulator yet. Atlas can make it on iOS 27.2 in seconds.")
     }
 
     @Test func aPlatformToInstallHoldsStartToo() throws {

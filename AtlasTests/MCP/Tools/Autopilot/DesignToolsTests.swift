@@ -59,7 +59,7 @@ struct DesignToolsTests {
         let fixtures = MCPAutopilotFixtures(StudioDebugRuns.run(.design), project: StudioDebugRuns.northpier)
         _ = try await fixtures.call(GetDesignBriefTool(), ["run": "run-debug"])
         #expect(fixtures.run?.briefReadAt == AutopilotTestFixtures.now)
-        #expect(fixtures.run?.log.last?.text == "\(AutopilotTestFixtures.client) read the brief and is designing 2 directions")
+        #expect(fixtures.run?.log.last?.text == "\(AutopilotTestFixtures.client) is designing 2 directions")
     }
 
     @Test func eachSlotsCaptionsComeWithTheLongest() async throws {

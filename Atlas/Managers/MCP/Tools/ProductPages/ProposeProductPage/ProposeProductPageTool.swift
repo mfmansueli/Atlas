@@ -22,7 +22,9 @@ struct ProposeProductPageTool: MCPTool {
         Suggests a custom product page for an app, shown in Atlas's Product Pages (⌘4) with Dismiss and Accept; \
         accepting makes a draft page in Atlas. Read get_product_pages first. Send `name` (the page's reference name, \
         one no page has), `audience` (who it's for and what it should do, ≤200 characters), `reason` (why, from the \
-        evidence, ≤300) and `evidence` [{source, detail}], each with the number that points to this page: analytics \
+        evidence, one sentence, at most \(AssistantTextLimits.why) characters), optional `details` (the rest, at most \
+        \(AssistantTextLimits.details)) and `confidence` (1–3), and `evidence` [{source, detail}], each with the number \
+        that points to this page: analytics \
         (get_analytics_funnel, or get_analytics_breakdown by source, language, territory or productPage), reviews (read \
         with get_reviews) or keywords (the approved version's ones it chooses); a page without evidence Atlas can show \
         isn't listed, so it's refused. `keywords` {locale: [keyword]} only from get_product_pages' \
@@ -40,11 +42,11 @@ struct ProposeProductPageTool: MCPTool {
         You can't push, submit or make a page visible: the person does.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "name": MCPToolDefinition.string("The page's reference name, e.g. “Weekly reflections”: shown in Atlas and App Store Connect."),
                 "audience": MCPToolDefinition.string("Who it's for and what it should do, e.g. “People who want a look back at their week”."),
-                "reason": MCPToolDefinition.string("Why, from the evidence, in a sentence or two."),
+                "reason": MCPToolDefinition.why("Why, from the evidence."),
                 "evidence": ["type": "array", "items": MCPProductPageEvidence.itemSchema, "description": "What it's based on, one or more."],
                 "keywords": [
                     "type": "object", "additionalProperties": ["type": "array", "items": ["type": "string"]],
@@ -63,7 +65,7 @@ struct ProposeProductPageTool: MCPTool {
                     "description": "The screenshots in the order the page should show them, for Autopilot.",
                 ],
                 "deepLink": MCPToolDefinition.string("Where the app opens from this page, e.g. https://example.app/reflections. Optional."),
-            ],
+            ]),
             required: ["appId", "name", "audience", "reason", "evidence"]
         ),
         proposalKind: .storeText

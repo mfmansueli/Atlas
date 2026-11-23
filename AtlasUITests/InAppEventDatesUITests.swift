@@ -39,8 +39,8 @@ final class InAppEventDatesUITests: XCTestCase {
 
         let row = element("events.settings.publish.problem")
         XCTAssertTrue(row.exists)
-        XCTAssertTrue(text(of: row).hasPrefix("Was set to show from today at"), text(of: row))
-        XCTAssertTrue(text(of: row).hasSuffix("(your time), which has passed"), text(of: row))
+        XCTAssertTrue(text(of: row).hasPrefix("Show time today at"), text(of: row))
+        XCTAssertTrue(text(of: row).hasSuffix("(your time) has passed"), text(of: row))
         XCTAssertTrue(element("events.settings.publish.fix").exists)
 
         let footer = element("events.footer.text")

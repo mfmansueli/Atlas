@@ -26,7 +26,7 @@ struct RetentionOffersBox: View {
                 row(offer)
                 Divider()
             }
-            Text("A new offer type for people about to cancel. Up to \(RetentionLimits.offersPerSubscription) per subscription; Apple decides who’s eligible and shows the best one.")
+            Text("For people about to cancel. Up to \(RetentionLimits.offersPerSubscription) per subscription; Apple picks who’s eligible and shows the best.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

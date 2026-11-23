@@ -48,7 +48,7 @@ final class AppPreviewWriter {
         do {
             writer = try AVAssetWriter(outputURL: output, fileType: .mov)
         } catch {
-            throw AppPreviewError.writerFailed(error.localizedDescription)
+            throw AppPreviewError.writerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
         let video = AVAssetWriterInput(mediaType: .video, outputSettings: Self.videoSettings(spec: spec, bitRate: bitRate))
         let audio = AVAssetWriterInput(mediaType: .audio, outputSettings: [
@@ -66,7 +66,7 @@ final class AppPreviewWriter {
         do {
             try writer.start()
         } catch {
-            throw AppPreviewError.writerFailed(error.localizedDescription)
+            throw AppPreviewError.writerFailed(AppleErrorCopy.details(for: error) ?? "")
         }
         writer.startSession(atSourceTime: .zero)
     }
@@ -233,6 +233,6 @@ final class AppPreviewWriter {
     }
 
     private static func reason(_ error: (any Error)?) -> String {
-        error?.localizedDescription ?? String(localized: "The movie writer gave no reason.")
+        error.flatMap { AppleErrorCopy.details(for: $0) } ?? String(localized: "The movie writer gave no reason.")
     }
 }

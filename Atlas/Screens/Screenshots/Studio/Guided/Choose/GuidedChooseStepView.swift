@@ -63,12 +63,11 @@ struct GuidedChooseStepView: View {
         .accessibilityIdentifier("autopilot.guided.choose")
     }
 
-    /// "Claude’s pick is marked. Not quite right? Ask for changes on any
-    /// of them."
+    /// "Claude’s pick is marked. Ask for changes on any of them."
     private var subtitle: String {
         let marked = String(localized: "\(GuidedPick.label(design: run.designKind)) is marked.")
         guard run.designKind.usesDesignAI else { return marked }
-        return marked + " " + String(localized: "Not quite right? Ask for changes on any of them.")
+        return marked + " " + String(localized: "Ask for changes on any of them.")
     }
 
     static let conceptSpacing: CGFloat = 10

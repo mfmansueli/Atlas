@@ -59,7 +59,7 @@ struct AppPriceChangeBuilder {
             newValue: AppPriceText.newPrice(point.customerPrice, in: territory),
             source: source,
             blockedReason: point.appStoreConnectID == nil
-                ? String(localized: "Atlas has no App Store Connect price point for this price. Choose it again in Pricing.")
+                ? String(localized: "No Apple price point for this price. Choose it again in Pricing.")
                 : nil,
             requests: requests,
             restoreRequests: restoreRequests(for: current),
@@ -84,22 +84,22 @@ struct AppPriceChangeBuilder {
     private func detail(point: PricePoint, current: AppPriceState) -> String {
         var parts: [String] = []
         if let existing = current.current {
-            parts.append(String(localized: "A new price schedule for \(app.name), from as soon as Apple processes it."))
+            parts.append(String(localized: "A new price schedule for \(app.name), starting once Apple processes it."))
             if !existing.otherManualTerritoryIDs.isEmpty || existing.laterChangeCount > 0 {
                 parts.append(String(localized: """
-                It replaces the prices set by hand in \(existing.otherManualTerritoryIDs.count) other countries or regions and \
+                Replaces hand-set prices in \(existing.otherManualTerritoryIDs.count) other countries or regions and \
                 \(existing.laterChangeCount) scheduled changes.
                 """))
             }
         } else {
-            parts.append(String(localized: "\(app.name)’s first price, from as soon as Apple processes it."))
+            parts.append(String(localized: "\(app.name)’s first price, starting once Apple processes it."))
         }
         if point.customerPrice == 0 {
             parts.append(String(localized: "Free in every country or region."))
         } else {
             parts.append(String(localized: """
-            Every other country or region gets Apple’s equalized price. A paid price needs the Paid Applications \
-            agreement to be active in App Store Connect → Business.
+            Elsewhere, Apple’s automatic prices apply. A paid price needs an active Paid Applications agreement (App Store Connect → \
+            Business).
             """))
         }
         return parts.joined(separator: " ")

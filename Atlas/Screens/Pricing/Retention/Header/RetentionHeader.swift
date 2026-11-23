@@ -39,7 +39,7 @@ struct RetentionHeader: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(!model.canAddMessage || model.subscriptions.isEmpty)
                 .help(model.canAddMessage
-                    ? String(localized: "A new message, empty: write \(model.sourceLocale.name) first, then Translate All")
+                    ? String(localized: "Adds an empty message. Write \(model.sourceLocale.name), then Translate All.")
                     : String(localized: "An app can have \(RetentionLimits.messagesPerApp) retention messages"))
                 .accessibilityIdentifier("retention.newMessage")
             }

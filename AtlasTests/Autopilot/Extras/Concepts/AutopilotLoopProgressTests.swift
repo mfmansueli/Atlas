@@ -64,7 +64,7 @@ struct AutopilotLoopProgressTests {
         #expect(progress.line == "7 of 12 languages · about 30 min left")
         #expect(progress.fraction == 7.0 / 12)
         #expect(progress.minutesLeft == 30)
-        #expect(progress.approveNote == "You can approve once the new loop is made · about 30 min left")
+        #expect(progress.approveNote == "Approve once the new loop is made · about 30 min left")
     }
 
     /// A language takes minutes: the figure goes down between them rather

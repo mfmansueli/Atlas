@@ -70,7 +70,7 @@ extension CaptureCoverage {
         return switch cell.label {
         case .localized: String(localized: "Localized · the interface is \(row.locale.name)")
         case .primaryInterface: legend
-        case .wrongSize: String(localized: "Wrong size · \(capture.pixelSize.title) doesn’t fit \(display.title) screenshots, so it isn’t used")
+        case .wrongSize: String(localized: "Wrong size, not used · \(capture.pixelSize.title) doesn’t fit \(display.title)")
         case .missing: nil
         }
     }

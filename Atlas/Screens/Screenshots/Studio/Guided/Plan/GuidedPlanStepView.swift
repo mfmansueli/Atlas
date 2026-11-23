@@ -31,7 +31,7 @@ struct GuidedPlanStepView: View {
                         .font(.title2.weight(.semibold))
                         .accessibilityAddTraits(.isHeader)
                         .accessibilityIdentifier("autopilot.guided.title")
-                    Text("Autopilot runs on its own and stops only where it says \(Text("You").fontWeight(.semibold)).")
+                    Text("Autopilot stops only where it says \(Text("You").fontWeight(.semibold)).")
                         .font(.callout)
                         .foregroundStyle(Palette.label2)
                 }

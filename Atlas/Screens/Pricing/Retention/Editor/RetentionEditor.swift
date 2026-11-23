@@ -50,7 +50,7 @@ struct RetentionEditor: View {
             .font(.title3.weight(.semibold))
             .disabled(!model.canRename)
             .help(model.canRename
-                ? String(localized: "Only you see it, in App Store Connect. It can’t change once the message is pushed.")
+                ? String(localized: "Only you see it. It can’t change after the push.")
                 : String(localized: "App Store Connect keeps a message’s name; only you see it."))
             .accessibilityLabel("Message name")
             .accessibilityIdentifier("retention.name")

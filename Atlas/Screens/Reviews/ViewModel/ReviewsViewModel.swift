@@ -185,7 +185,7 @@ final class ReviewsViewModel {
                 store.setFirstPage(page, currentVersion: version ?? nil, for: app.id)
                 errorMessage = nil
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = AppleErrorCopy(String(localized: "Reviews didn’t load.", comment: "kind:error"), error: error).text
             }
             isLoading = false
         }
@@ -202,7 +202,7 @@ final class ReviewsViewModel {
             try await store.append(services.reviews(for: app, after: next), for: app.id)
             errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "Older reviews didn’t load.", comment: "kind:error"), error: error).text
         }
         await translate()
     }

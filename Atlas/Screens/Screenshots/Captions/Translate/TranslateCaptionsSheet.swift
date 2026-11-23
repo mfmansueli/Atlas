@@ -26,7 +26,7 @@ struct TranslateCaptionsSheet: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("Translate missing captions")
                     .font(.title2.weight(.semibold))
-                Text("\(translation.selectedPlan.summary) Uses the source from Settings → AI Assistants, and the glossary and tone from Settings → Suggestions.")
+                Text("\(translation.selectedPlan.summary) Source: Settings → AI Assistants. Glossary and tone: Settings → Suggestions.")
                     .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(Palette.label2)
@@ -62,8 +62,7 @@ struct TranslateCaptionsSheet: View {
 
     private var footnote: String {
         String(localized: """
-        Each caption is measured as it arrives. Ones that don’t fit are flagged, never cut. \
-        Accepted text stays tagged “machine-translated” until someone reviews it.
+        Captions that don’t fit are flagged, never cut. Accepted ones stay tagged “machine-translated” until someone reviews them.
         """)
     }
 
@@ -98,10 +97,7 @@ struct TranslateCaptionsSheet: View {
                 run: launched,
                 appID: viewModel.app.id,
                 appName: viewModel.app.name,
-                explanation: String(localized: """
-                Claude Code translates the empty captions. They appear in the table as proposals, tagged with who proposed \
-                them, and wait for you in Review & Push.
-                """),
+                explanation: String(localized: "Claude Code translates the empty captions into tagged suggestions. They wait in Review & Push."),
                 onRetried: { launchedRunID = $0 },
                 identifierPrefix: "screenshots.captions.translate"
             )
@@ -110,7 +106,7 @@ struct TranslateCaptionsSheet: View {
                 slashCommand: assistantPrompt.slashCommand,
                 request: assistantPrompt.text,
                 explanation: String(
-                    localized: "Paste this into \(assistantName). Its captions appear in the table as proposals, tagged with who proposed them, and wait for you in Review & Push."
+                    localized: "Paste this into \(assistantName). Its captions arrive as tagged suggestions and wait in Review & Push."
                 ),
                 clientName: assistantName,
                 isCopied: translation.isAssistantPromptCopied,

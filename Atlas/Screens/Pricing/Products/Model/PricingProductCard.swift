@@ -60,7 +60,7 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
     /// What the card says instead of a suggestion while its starting
     /// prices are being set.
     static let settingStartingPricesText = String(localized: """
-    Its starting prices aren’t all in App Store Connect yet. Suggestions show once Review & Push has set them in every country and region.
+    Push its starting prices in every country and region first. Suggestions show after that.
     """)
 
     var id: String { product.id }
@@ -157,8 +157,8 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
             ?? String(localized: "the United States")
         if heldBack > 0 {
             return heldBack == 1
-                ? String(localized: "In 1 of them the price feels at least 25% higher than in \(baseName), which likely holds people back.")
-                : String(localized: "In \(heldBack) of them the price feels at least 25% higher than in \(baseName), which likely holds people back.")
+                ? String(localized: "In 1 of them it feels 25%+ above \(baseName), likely holding people back.")
+                : String(localized: "In \(heldBack) of them it feels 25%+ above \(baseName), likely holding people back.")
         }
         if let first = rows.first(where: { $0.recommendation?.reason.isEmpty == false }), let reason = first.recommendation?.reason {
             return "\(first.territory.name): \(reason)"

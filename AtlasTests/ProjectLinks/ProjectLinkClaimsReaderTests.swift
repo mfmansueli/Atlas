@@ -223,7 +223,7 @@ struct ProjectLinkClaimsReaderTests {
         let noFolder = InAppEventLinkClaim.of("alba://events", in: .noFolder)
         #expect(noFolder == .noFolder)
         #expect(noFolder.needsFolder)
-        #expect(noFolder.message(appName: "Alba")?.contains("choose Alba’s project folder") == true)
+        #expect(noFolder.message(appName: "Alba")?.contains("Choose Alba’s project folder") == true)
         #expect(InAppEventLinkClaim.of(nil, in: .noFolder) == .noDeepLink)
         #expect(InAppEventLinkClaim.of("not a link", in: .noFolder) == .noDeepLink)
         #expect(InAppEventLinkClaim.of("alba://events", in: .unknown) == .reading)

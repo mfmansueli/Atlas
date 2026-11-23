@@ -146,7 +146,7 @@ struct AutopilotCenterRunChoiceTests {
             #expect(run.artworkTextNeeds?.isEmpty == false)
         } else {
             #expect(run.stage == .ready)
-            #expect(run.log.last?.text == "Ready in Review & Push: header and search artwork; the live screenshots stay as they are")
+            #expect(run.log.last?.text == "Ready in Review & Push: header and search artwork. Live screenshots unchanged")
             #expect(after.extras?.artwork.isEmpty == false)
         }
     }

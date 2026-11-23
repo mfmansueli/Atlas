@@ -75,6 +75,6 @@ struct BreakdownPopover: View {
     private var provenance: String {
         if row.origin == .manual { return String(localized: "Edited manually") }
         if row.usesCustomStrategy { return String(localized: "Custom strategy · \(row.calculation.provenance.label)") }
-        return String(localized: "Recommended")
+        return String(localized: "Suggested")
     }
 }

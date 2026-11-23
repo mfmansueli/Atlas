@@ -152,7 +152,21 @@ struct CaptionTranslationTests {
         #expect(screen.services.storedDocument?.captions.caption(locale: "pl", slot: 0) == nil)
         #expect(screen.services.storedDocument?.captions.caption(locale: "sv", slot: 0) != nil)
         let notice = try #require(screen.model.notice)
-        #expect(notice.hasPrefix("Translated 15 captions with Apple Translation. 5 couldn’t be translated:"))
+        #expect(notice.hasPrefix("Translated 15 captions with Apple Translation. 5 couldn’t be translated. Try again, or write them by hand."))
+    }
+
+    @Test func aTranslatorErrorKeepsItsTextForDetails() async throws {
+        let screen = await makeScreen(CannedCaptionTranslator(failing: ["pl"]))
+        await screen.translation.checkAvailability()
+        screen.translation.start()
+        await screen.translation.waitUntilFinished()
+        #expect(screen.services.storedDocument?.captions.caption(locale: "pl", slot: 0) == nil)
+        let notice = try #require(screen.model.notice)
+        #expect(notice.hasPrefix(
+            "Translated 15 captions with Apple Translation. 5 couldn’t be translated. Try again, or write them by hand. "
+                + "The translator returned an error.\nDetails: "
+        ))
+        #expect(notice.hasSuffix("(URLError -1001)"))
     }
 
     @Test func cancelKeepsWhatArrived() async throws {

@@ -248,7 +248,7 @@ struct ArtworkExtrasToolsTests {
         let read = try #require(fixtures.run?.variantRequest?.readAt)
         _ = try await fixtures.call(NextStepTool(), ["run": "run-debug"])
         #expect(fixtures.run?.variantRequest?.readAt == read)
-        #expect(fixtures.run?.log.filter { $0.text.contains("read what to change") }.count == 1)
+        #expect(fixtures.run?.log.filter { $0.text.contains("is designing the test variant") }.count == 1)
     }
 
     @Test func aVariantNobodyAskedForIsTurnedAway() async throws {

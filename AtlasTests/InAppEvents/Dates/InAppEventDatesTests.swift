@@ -111,8 +111,7 @@ struct InAppEventDatesTests {
         let warnings = InAppEventReviewWarning.warnings(for: dates, now: Self.now, format: Self.gmt)
         #expect(warnings.map(\.id) == ["cardShowsSoon"])
         #expect(warnings[0].text == """
-        The card is set to show in 20 hours. App Review usually takes up to 2 days, and the card only shows once it’s approved, so it may \
-        show later than planned.
+        The card is set to show in 20 hours. App Review usually takes up to 2 days, so the card may show later than planned.
         """)
         // 2 days from now, on the hour.
         let suggested = Self.date("2026-11-21T15:00:00Z")
@@ -126,8 +125,7 @@ struct InAppEventDatesTests {
         #expect(dates.warnings(now: Self.now) == [.eventStartsSoon])
         let warning = try #require(InAppEventReviewWarning.warnings(for: dates, now: Self.now, format: Self.gmt).first)
         #expect(warning.text == """
-        The event starts in 20 hours. App Review usually takes up to 2 days, so it may start before it’s approved, and its card would \
-        miss some of the event.
+        The event starts in 20 hours. App Review usually takes up to 2 days, so the card may miss part of the event.
         """)
         #expect(warning.detail == "To give App Review 2 days, move “Starts” and “Ends” later, or submit it now and expect it to show late.")
         #expect(warning.suggestedDates.isEmpty)

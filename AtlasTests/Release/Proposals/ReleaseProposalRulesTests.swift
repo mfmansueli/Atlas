@@ -39,7 +39,7 @@ struct ReleaseProposalRulesTests {
         #expect(cancel.hasSuffix("Nothing can be done until App Review finishes."))
 
         let paused = DebugReleaseData.status(.paused)
-        #expect(ReleaseProposalRules.problem(.pausePhasedRelease, in: paused)?.contains("paused already") == true)
+        #expect(ReleaseProposalRules.problem(.pausePhasedRelease, in: paused)?.contains("already paused") == true)
         #expect(ReleaseProposalRules.problem(.resumePhasedRelease, in: paused) == nil)
     }
 

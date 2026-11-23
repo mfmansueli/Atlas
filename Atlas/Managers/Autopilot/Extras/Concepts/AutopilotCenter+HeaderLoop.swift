@@ -40,13 +40,13 @@ extension AutopilotCenter {
         let failed = run.extrasProgress?.artworkProblem == nil ? nil : run.plan.alsoMakes.artworkSize.artworkTitle
         guard run.plan.makesScreenshots else {
             if let failed {
-                return String(localized: "\(failed) couldn’t be made, so it isn’t in Review & Push; Make Again tries again with what you chose")
+                return String(localized: "\(failed) couldn’t be made and isn’t in Review & Push. Make Again retries.")
             }
             let made = run.plan.extrasTitle ?? String(localized: "the extras")
-            return String(localized: "Ready in Review & Push: \(made); the live screenshots stay as they are")
+            return String(localized: "Ready in Review & Push: \(made). Live screenshots unchanged")
         }
         guard let failed else { return String(localized: "\(run.totalScreenshots) screenshots ready in Review & Push") }
-        return String(localized: "\(run.totalScreenshots) screenshots ready in Review & Push; \(failed.lowercased()) couldn’t be made, Make Again tries again")
+        return String(localized: "\(run.totalScreenshots) screenshots ready in Review & Push. \(failed) couldn’t be made; Make Again retries.")
     }
 
     /// The chosen header's animated pages, from `revise_artwork_concept`:

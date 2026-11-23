@@ -126,7 +126,7 @@ enum ConnectableAssistant: String, CaseIterable, Identifiable, Codable, Sendable
         switch self {
         case .claudeCode: String(localized: "Claude Code may read this folder. It can’t write to it.")
         case .claudeForMac: String(localized: "Claude for Mac doesn’t read folders on this Mac.")
-        case .cursor: String(localized: "Cursor opens this folder. Atlas only asks it to read; Cursor’s own settings say what else it may do.")
+        case .cursor: String(localized: "Cursor opens this folder. Atlas asks it only to read; Cursor’s settings decide the rest.")
         }
     }
 }

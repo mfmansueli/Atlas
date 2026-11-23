@@ -39,7 +39,7 @@ struct ScreenshotsViewModelTests {
         }
         #expect(title == "No version to push to.")
         #expect(message.hasPrefix("Version 1.3 is live."))
-        #expect(message.contains("create 1.4 in App Store Connect"))
+        #expect(message.contains("Create 1.4 in App Store Connect"))
     }
 
     @Test func theFailedDocumentCountsFourteenLocales() async {

@@ -126,8 +126,13 @@ extension AutopilotCenter {
             update(appID) { run in
                 let total = run.extrasProgress?.artworkTotal ?? 0
                 run.extrasProgress?.artworkDone = total
-                run.extrasProgress?.artworkProblem = error.localizedDescription
-                run.appendLog(String(localized: "Couldn’t make the header and search artwork: \(error.localizedDescription)"), kind: .problem, at: now())
+                // The renderer's or the system's own words: shown as Details.
+                let details = AppleErrorCopy.details(for: error) ?? error.localizedDescription
+                run.extrasProgress?.artworkProblem = details
+                let copy = AppleErrorCopy(
+                    summary: String(localized: "Couldn’t make the header and search artwork.", comment: "kind:history-entry"), details: details
+                )
+                run.appendLog(copy.text, kind: .problem, at: now())
             }
             return []
         }

@@ -42,9 +42,9 @@ struct PricingHeader: View {
     /// regions."
     private var subtitle: String {
         guard let count = viewModel.territoryCount else {
-            return String(localized: "What \(viewModel.app.name)’s subscriptions and purchases cost in each country and region.")
+            return String(localized: "What \(viewModel.app.name) costs, in each country and region.")
         }
-        return String(localized: "What \(viewModel.app.name)’s subscriptions and purchases cost in \(count) countries and regions.")
+        return String(localized: "What \(viewModel.app.name) costs, in \(count) countries and regions.")
     }
 
     private var moreMenu: some View {

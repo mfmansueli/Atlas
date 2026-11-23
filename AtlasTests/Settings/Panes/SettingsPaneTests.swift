@@ -35,7 +35,7 @@ struct SettingsPaneTests {
     }
 
     @Test func theSourcesUseTheDesignsWords() {
-        #expect(TranslationProvider.assistant.sourceTitle == "Your AI assistant")
+        #expect(TranslationProvider.assistant.sourceTitle == "Your assistant")
         #expect(TranslationProvider.aiProvider.sourceTitle == "An API key")
         #expect(TranslationProvider.appleTranslation.sourceTitle == "Built-in only")
         #expect(TranslationProvider.aiProvider.sourceDetail.hasPrefix("Atlas asks the provider directly"))

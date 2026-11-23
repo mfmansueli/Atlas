@@ -86,8 +86,11 @@ extension CapturesViewModel {
             try center.openRecapture(
                 appID: screenshots.app.id, targets: selectedTargets(fromCaptures: fromCaptures), client: nil, fromCaptures: fromCaptures
             )
-        } catch {
+        } catch let error as AutopilotError {
             errorMessage = error.localizedDescription
+            return
+        } catch {
+            errorMessage = AppleErrorCopy(String(localized: "The run for these captures didn’t open.", comment: "kind:error"), error: error).text
             return
         }
         selection = []

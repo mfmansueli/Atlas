@@ -67,7 +67,7 @@ struct PushProgressSheet: View {
 
     private var cancelHelp: String? {
         guard screenshots.run?.isRunning == true else { return nil }
-        return String(localized: "New images are committed before the old ones are deleted, so a set is never left with a gap.")
+        return String(localized: "Old images are deleted only after new ones are in.")
     }
 
     /// Stops all three: what's on its way finishes, the rest isn't sent.

@@ -76,7 +76,7 @@ struct ProposeProductPageTextsToolTests {
 
         let kept = try #require(fixtures.store.textSuggestion(for: appID, pageID: PageID.privateDiary, locale: "en-US"))
         #expect(kept.isRefused)
-        #expect(kept.refusal.contains("App Review rejects promotional text like this"))
+        #expect(kept.refusal.contains("App Review rejects this in promotional text"))
         #expect(kept.refusedPhrases.contains("50% off"))
         // Not offered isn't counted: it can't be accepted.
         #expect(fixtures.store.count(for: appID) == before)
@@ -153,7 +153,7 @@ struct ProposeProductPageTextsToolTests {
         var arguments = Fixtures.textsArguments(PageID.privateDiary, texts)
         arguments["reason"] = .string(String(repeating: "x", count: 301))
         let long = try await fixtures.call(fixtures.textsTool, arguments)
-        #expect(long.result["reason"]?.stringValue?.contains("reason has 301 characters") == true)
+        #expect(long.result["reason"]?.stringValue?.contains("reason is 301 characters; at most 110") == true)
         arguments.removeValue(forKey: "reason")
         await #expect(throws: MCPToolError.invalidArgument(name: "reason", expected: "a string")) {
             try await fixtures.call(fixtures.textsTool, arguments)

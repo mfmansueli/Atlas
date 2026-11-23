@@ -13,12 +13,12 @@ import Foundation
 nonisolated enum StoreTextRules {
     /// One sentence for prompts and instructions.
     static let summary = """
-    Follow App Review's metadata rules in every store text and caption: no prices, “free” (in any language), discounts \
-    or trial lengths (Guideline 2.3.7: the App Store shows the price and offers itself), no other platforms or app \
-    stores such as Android or Google Play (2.3.10), no other apps' names in the name, subtitle or keywords and no \
-    unverifiable claims such as “#1” or “best” in the name or subtitle (2.3.7), no beta, demo or “coming soon” \
-    (2.2, 2.3), no placeholder text (2.1), and “For Kids” only in the Kids Category (2.3.8); describe only what this \
-    version really does (2.3.1). A text that breaks one is refused with the reason.
+    Store texts and captions follow App Review’s metadata rules. No prices, “free” (in any language), discounts or trial \
+    lengths: the App Store shows price and offers itself (Guideline 2.3.7). No other platforms or app stores, like \
+    Android or Google Play (2.3.10). No other apps’ names in the name, subtitle or keywords, and no unverifiable claims \
+    like “#1” or “best” in the name or subtitle (2.3.7). No beta, demo or “coming soon” (2.2, 2.3). No placeholder text \
+    (2.1). “For Kids” only in the Kids Category (2.3.8). Describe only what this version does (2.3.1). Texts that break \
+    a rule are refused with the reason.
     """
 
     /// `storeTextRules`: each rule with its guideline.
@@ -61,14 +61,13 @@ nonisolated enum StoreTextRules {
     /// get_in_app_texts, propose_subscription and the prompts that write
     /// them.
     static let inAppSummary = """
-    In-app purchase, subscription and subscription group names and descriptions follow the same metadata rules: \
-    no prices, “free” (in any language) or discounts, since the App Store shows each product's price and offers \
-    itself (Guidelines 2.3.7 and 2.3.1), and no trial lengths in a subscription's texts (its free trial is an \
-    introductory offer, 3.1.2(a)); no other platforms or app stores (2.3.10), no placeholder text (2.1), nothing \
-    “coming soon” (2.3), “For Kids” only in the Kids Category (2.3.8), and texts that suit everyone (2.3.2). A \
-    non-subscription app's free trial is the exception: 3.1.1 asks for a non-consumable at Price Tier 0 named \
-    “XX-day Trial”, such as “7-day Trial”, so an in-app purchase's texts may say how long it lasts. A text that \
-    breaks one is refused with the reason.
+    In-app purchase, subscription and subscription group names and descriptions follow the same metadata rules: no \
+    prices, “free” (in any language) or discounts, since the App Store shows each product’s price and offers (Guidelines \
+    2.3.7, 2.3.1); no trial lengths in a subscription’s texts (its free trial is an introductory offer, 3.1.2(a)); no \
+    other platforms or app stores (2.3.10); no placeholder text (2.1); nothing “coming soon” (2.3); “For Kids” only in \
+    the Kids Category (2.3.8); texts that suit everyone (2.3.2). Exception: a non-subscription app’s free trial is a \
+    non-consumable at Price Tier 0 named “XX-day Trial”, like “7-day Trial” (3.1.1), so its texts may say how long it \
+    lasts. Texts that break a rule are refused with the reason.
     """
 
     /// get_in_app_texts' `textRules`: each rule with its guideline.

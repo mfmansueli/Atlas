@@ -51,7 +51,7 @@ struct InAppEventsGalleryTests {
         let model = await makeModel()
         #expect(model.tileNote(of: Data.winter) == InAppEventTileNote(text: "2 languages suggested", tone: .suggestion))
         try studio.begin(Test.run(step: .making, concepts: [Test.concept("a", in: directory)]))
-        #expect(model.tileNote(of: Data.winter).text == "Claude is drawing · 1 of 3 ready · 2 languages suggested")
+        #expect(model.tileNote(of: Data.winter).text == "Drawing · 1 of 3 ready · 2 languages suggested")
         studio.update(Test.key) { $0.step = .choose }
         #expect(model.readyConcepts(of: Data.winter) == 1)
         #expect(model.tileNote(of: Data.winter).text == "1 concept to choose from · 2 languages suggested")

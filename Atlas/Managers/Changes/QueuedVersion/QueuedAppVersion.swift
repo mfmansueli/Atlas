@@ -100,7 +100,7 @@ struct QueuedAppVersion: Hashable, Sendable {
         tied.creation = PendingCreation(
             id: changeID,
             title: creationTitle,
-            detail: String(localized: "A new \(version.platformTitle) version in Prepare for Submission. It’s created first, then the texts below go into it."),
+            detail: String(localized: "New \(version.platformTitle) version in Prepare for Submission. The texts below go in once it’s created."),
             source: change.source,
             fields: [PendingChangePart(id: change.id, title: change.title, oldValue: change.oldValue, newValue: change.newValue, source: change.source)]
         )

@@ -16,13 +16,10 @@ struct ResultsReportView: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text("Before and after \(PricingText.date(changedOn))")
                     .font(.title3.weight(.semibold))
-                Text("""
-                28 days before each change compared with the 28 days after. App Store Connect can’t run price tests, \
-                so this shows what changed, not why.
-                """)
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .lineLimit(2)
+                Text("28 days before each change vs 28 days after. This shows what changed, not why.")
+                    .font(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .lineLimit(2)
             }
             if let summary = model.summary {
                 cards(summary)
@@ -167,7 +164,7 @@ struct ResultsReportView: View {
             }
             .controlSize(.regular)
             .buttonBorderShape(.capsule)
-            .help(String(localized: "Queue the old price for review in Review & Push"))
+            .help(String(localized: "Adds the old price to Review & Push."))
             .accessibilityLabel(String(localized: "Restore the old price in \(result.territory.name)"))
             .accessibilityIdentifier("pricing.results.restore.\(result.id)")
         }
@@ -175,8 +172,8 @@ struct ResultsReportView: View {
 
     private var footnote: String {
         let caveat = String(localized: """
-        Seasonality, featuring and your own marketing also move these numbers. “Better” means more starts and at least \
-        the same proceeds; “Worse” offers to restore the old price, which goes through Review & Push like any other change.
+        Seasons, featuring and marketing also move these numbers. “Better”: more starts, same or higher proceeds. “Worse” offers to \
+        restore the old price through Review & Push.
         """)
         guard let count = model.summary?.tooLittleDataCount, count > 0 else { return caveat }
         let hidden = count == 1

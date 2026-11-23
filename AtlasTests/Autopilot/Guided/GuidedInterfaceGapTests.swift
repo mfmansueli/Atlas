@@ -113,7 +113,7 @@ struct GuidedInterfaceGapTests {
         let checks = GuidedReviewChecks.checks(for: .screenshots, run: run, app: "Lumen")
         #expect(checks.prefix(2).map(\.id) == ["devices", "interface"], "First, as on the board")
         let devices = try #require(Self.check("devices", in: checks))
-        #expect(devices.text == "Every device in the run: iPhone and iPad, each checked in every language")
+        #expect(devices.text == "Every device, checked in every language: iPhone and iPad")
         #expect(devices.state == .passed)
         let interface = try #require(Self.check("interface", in: checks))
         let total = run.plan.localeCodes.count
@@ -126,7 +126,7 @@ struct GuidedInterfaceGapTests {
         let run = try #require(StudioDebugGuided.scene(for: "ap-review-devices")?.run)
         let checks = GuidedReviewChecks.checks(for: .screenshots, run: run, app: "Lumen")
         #expect(Self.check("devices", in: checks)?.text
-            == "Every device in the run: iPhone, iPad, iPhone Duo, Mac, Vision Pro, and Apple Watch, each checked in every language")
+            == "Every device, checked in every language: iPhone, iPad, iPhone Duo, Mac, Vision Pro, and Apple Watch")
         let total = run.plan.localeCodes.count
         #expect(Self.check("interface", in: checks)?.text
             == "Every screenshot shows Lumen in its own language: iPad and Mac captured in all \(total) (before, iPad and Mac screens existed in 4)")

@@ -44,7 +44,7 @@ struct GuidedMakeStepView: View {
     private func screenshotsCard(_ shots: [StudioShot]) -> some View {
         GuidedMakeCard(
             title: String(localized: "Screenshots"),
-            text: String(localized: "The images on your App Store page, captured from the real app."),
+            text: String(localized: "Your store page images, captured from the real app."),
             isOn: binding(.screenshots), identifier: "autopilot.guided.make.screenshots"
         ) {
             HStack(spacing: Spacing.xSmall) {
@@ -65,7 +65,7 @@ struct GuidedMakeStepView: View {
     private func appPreviewCard(_ shots: [StudioShot]) -> some View {
         GuidedMakeCard(
             title: String(localized: "App Preview video"),
-            text: String(localized: "A short video of the app in use, recorded in Simulator, with captions and music."),
+            text: String(localized: "A short Simulator video of the app, with captions and music."),
             isOn: binding(.appPreview), identifier: "autopilot.guided.make.appPreview"
         ) {
             ZStack {
@@ -107,7 +107,7 @@ struct GuidedMakeStepView: View {
         let template = studio.headerTemplatePicks.first ?? studio.headerRecommendation.template
         return GuidedMakeCard(
             title: String(localized: "Header and search artwork"),
-            text: String(localized: "The wide image at the top of your page, and the one shown in search results."),
+            text: String(localized: "Your page’s top image and its search result image."),
             isOn: binding(.artwork), identifier: "autopilot.guided.make.artwork"
         ) {
             HeaderTemplateSketch(template: template, light: colors.light, dark: colors.dark, isMoving: plan.alsoMakes.makesMotion, width: 250)

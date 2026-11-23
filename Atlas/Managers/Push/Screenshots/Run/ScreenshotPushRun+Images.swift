@@ -78,8 +78,7 @@ extension ScreenshotPushRun {
         } catch LiveScreenshotImageError.noImage {
             items[index].note = String(
                 localized: """
-                The live screenshot had no image in App Store Connect (its upload never finished or Apple couldn’t \
-                process it), so there was nothing to keep.
+                Nothing to keep: the live screenshot had no image in App Store Connect.
                 """
             )
             return

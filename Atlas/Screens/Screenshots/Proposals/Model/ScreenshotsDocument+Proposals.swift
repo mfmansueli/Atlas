@@ -31,7 +31,7 @@ extension ScreenshotsDocument {
               let template = proposals[index].template, var history
         else {
             return .failure(TemplateRefusals(items: [
-                TemplateRefusal(path: "", kind: .stale, reason: String(localized: "This proposal was already decided.")),
+                TemplateRefusal(path: "", kind: .stale, reason: String(localized: "This suggestion was already decided.")),
             ]))
         }
         let proposal = proposals[index]

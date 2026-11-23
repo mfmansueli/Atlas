@@ -26,8 +26,8 @@ struct ExcludedSection: View {
                         }
                     }
                     Text("""
-                    Excluded territories stay at Apple’s equalized price. Useful for Japan, where a weak yen makes the \
-                    Big Mac Index suggest a deep cut in a market that already pays well for apps.
+                    Excluded territories keep Apple’s automatic price. Useful for Japan: the weak yen skews the Big Mac Index, but Japan \
+                    pays well for apps.
                     """)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)

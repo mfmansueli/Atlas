@@ -31,7 +31,7 @@ enum PricingSheetError: LocalizedError, Hashable, Sendable {
     /// What the product's card says instead of its prices.
     var cardText: String {
         switch self {
-        case .noStartingPrice: String(localized: "No price yet. Set its starting price in its prices.")
+        case .noStartingPrice: String(localized: "No price yet. Set its starting price first.")
         case .noInAppPurchasePrice: String(localized: "No price yet. Set it in App Store Connect.")
         }
     }

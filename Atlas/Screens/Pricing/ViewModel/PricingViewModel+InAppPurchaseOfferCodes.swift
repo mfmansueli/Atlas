@@ -97,7 +97,10 @@ extension PricingViewModel {
             let data = try await reader.inAppPurchaseOneTimeCodeValues(batchID: batch.id)
             setup.codesFile = OneTimeCodesFile(data: data, fileName: batch.fileName(offerName: code.name))
         } catch {
-            setup.codesSaveError = String(localized: "App Store Connect didn’t send the codes: \(error.localizedDescription) Apple can take a while to make them; try again later.")
+            setup.codesSaveError = AppleErrorCopy(
+                summary: String(localized: "Apple hasn’t sent the codes yet. Try again later.", comment: "kind:error"),
+                details: AppleErrorCopy.details(for: error)
+            ).text
         }
     }
 }

@@ -60,16 +60,15 @@ struct AccessibilityCard: Identifiable, Hashable, Sendable {
         if !isLive {
             let version = upcomingVersion ?? String(localized: "the next version")
             return String(localized: """
-            No live version on \(family.name) yet. Apple only publishes labels for live devices, so this stays a draft until \
-            \(version) is released.
+            No live \(family.name) version yet: stays a draft until \(version) is released.
             """)
         }
         switch state {
-        case .draft: return String(localized: "Saved in App Store Connect as a draft. It isn’t on the product page.")
+        case .draft: return String(localized: "Draft in App Store Connect, not on the product page.")
         case .publishedChangesWaiting where hasPendingChange:
-            return String(localized: "Live on the product page as shown; the changes publish when you push them.")
+            return String(localized: "Live on the product page. Your changes go live when you push.")
         case .publishedChangesWaiting:
-            return String(localized: "A newer draft is saved in App Store Connect. It isn’t on the product page yet.")
+            return String(localized: "A newer draft is in App Store Connect, not yet on the product page.")
         case .notDeclared, .draftCantPublish, .published: return nil
         }
     }

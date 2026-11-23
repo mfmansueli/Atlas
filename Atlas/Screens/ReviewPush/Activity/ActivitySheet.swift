@@ -90,7 +90,7 @@ struct ActivitySheet: View {
 
     private var subtitle: String {
         guard history.records.contains(where: { $0.screenshots != nil }) else { return String(localized: "Every push from this Mac, newest first.") }
-        return String(localized: "Every push from this Mac, newest first. Replaced screenshots are kept on this Mac so you can put them back.")
+        return String(localized: "Every push from this Mac, newest first. Replaced screenshots are kept to restore.")
     }
 
     private func showResults() {

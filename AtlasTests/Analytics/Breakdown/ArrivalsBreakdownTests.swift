@@ -110,6 +110,6 @@ struct ArrivalsBreakdownTests {
         for dimension in BreakdownDimension.allCases {
             #expect(dimension.emptyText.contains("five"), "\(dimension)")
         }
-        #expect(BreakdownDimension.campaign.emptyText.contains("ct token"))
+        #expect(BreakdownDimension.campaign.emptyText.contains("App Analytics → Campaigns"))
     }
 }

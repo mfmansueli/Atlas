@@ -109,7 +109,7 @@ final class ScreenshotPushRun {
                 let time = pausedUntil.formatted(date: .omitted, time: .shortened)
                 return String(localized: "Paused: this hour’s requests are used up. Resumes at \(time).")
             }
-            return String(localized: "\(doneCount) of \(totalCount) done · reserve, upload and commit for each image")
+            return String(localized: "\(doneCount) of \(totalCount) done")
         case .finished:
             if removedForFailedCount > 0 {
                 return String(localized: "\(failedCount) failed, and \(removedForFailedCount) live removed to make room. Restore them from Activity.")

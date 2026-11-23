@@ -11,7 +11,7 @@ import Foundation
 enum WorkspaceIntent: Hashable, Sendable {
     /// Pricing: show suggestions (switching out of Keep my prices if needed).
     case reviewSuggestions
-    /// Pricing: "Apply Recommended Prices…".
+    /// Pricing: "Apply Suggested Prices…".
     case applyRecommendedPrices
     /// Pricing: the Results tab.
     case showResults

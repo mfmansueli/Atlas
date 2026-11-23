@@ -15,7 +15,7 @@ enum AtlasNotifications {
             let total = landed + failed
             notifier.post(
                 .pushFailed, title: String(localized: "Push stopped"),
-                body: String(localized: "\(failed) of \(total) changes weren’t pushed. They’re still in Review & Push, each with Apple’s reason."),
+                body: String(localized: "\(failed) of \(total) changes weren’t pushed. See Apple’s reasons in Review & Push."),
                 identifier: "push.finished"
             )
         } else if landed > 0 {

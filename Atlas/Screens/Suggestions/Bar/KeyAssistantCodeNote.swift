@@ -37,8 +37,8 @@ struct KeyAssistantCodeNote: View {
     /// read code, so these need an assistant that does, like Claude Code."
     var text: String {
         count == 1
-            ? String(localized: "1 answer here comes from \(appName)’s code. An API key doesn’t read code, so it needs an assistant that does, like Claude Code.")
-            : String(localized: "\(count) answers here come from \(appName)’s code. An API key doesn’t read code, so these need an assistant that does, like Claude Code.")
+            ? String(localized: "1 answer here comes from \(appName)’s code. It needs an assistant that reads code, like Claude Code.")
+            : String(localized: "\(count) answers here come from \(appName)’s code. They need an assistant that reads code, like Claude Code.")
     }
 }
 

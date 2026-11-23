@@ -77,7 +77,7 @@ final class PricingViewModelReviewShotsTests {
         let missing = model.productsMissingReviewShot
         let ids = try model.useCapture(for: missing)
         #expect(ids.count == 3)
-        #expect(model.useCaptureToast(for: missing) == "Capture 14 is now the review screenshot for 3 products. They’re in Review & Push.")
+        #expect(model.useCaptureToast(for: missing) == "Capture 14 is the review screenshot for 3 products. In Review & Push.")
         for product in missing {
             guard case let .accepted(item) = model.reviewShotState(for: product) else {
                 Issue.record("\(product.name) isn't waiting in Review & Push")
@@ -97,7 +97,7 @@ final class PricingViewModelReviewShotsTests {
     @Test func oneProductsToastNamesIt() async throws {
         let model = try await model()
         let monthly = try #require(model.reviewShotProducts.first)
-        #expect(model.useCaptureToast(for: [monthly]) == "Capture 14 is now \(monthly.name)’s review screenshot. It’s in Review & Push.")
+        #expect(model.useCaptureToast(for: [monthly]) == "Capture 14 is now \(monthly.name)’s review screenshot. In Review & Push.")
     }
 
     @Test func anAssistantsImageIsSuggestedUntilAccepted() async throws {

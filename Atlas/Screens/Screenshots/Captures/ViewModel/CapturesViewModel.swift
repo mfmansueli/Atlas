@@ -67,9 +67,12 @@ final class CapturesViewModel {
         do {
             let scan = try await Task.detached { try await scanner.scan(urls) }.value
             present(scan)
-        } catch {
+        } catch let error as CaptureImportError {
             stopAccessing()
             errorMessage = error.localizedDescription
+        } catch {
+            stopAccessing()
+            errorMessage = AppleErrorCopy(String(localized: "The files couldn’t be read.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -77,7 +80,7 @@ final class CapturesViewModel {
     func useLiveScreenshots() {
         let scan = CaptureLiveCandidates.scan(screenshots.live)
         guard !scan.candidates.isEmpty else {
-            errorMessage = String(localized: "There are no iPhone 6.9″ or iPad 13″ screenshots live in App Store Connect for this version.")
+            errorMessage = String(localized: "This version has no live iPhone 6.9″ or iPad 13″ screenshots.")
             return
         }
         present(scan)
@@ -132,8 +135,11 @@ final class CapturesViewModel {
         let captures: [ScreenshotCapture]
         do {
             captures = try await screenshots.services.importCaptures(session.items, for: screenshots.app)
-        } catch {
+        } catch let error as CaptureImportError {
             errorMessage = error.localizedDescription
+            return
+        } catch {
+            errorMessage = AppleErrorCopy(String(localized: "The captures weren’t imported.", comment: "kind:error"), error: error).text
             return
         }
         captures.forEach { document.captures.add($0) }

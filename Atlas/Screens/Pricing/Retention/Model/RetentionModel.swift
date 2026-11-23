@@ -72,7 +72,7 @@ final class RetentionModel {
             if !loaded.languages.contains(where: { $0.code == selectedLocale }) { selectedLocale = loaded.sourceLocale.code }
             refresh()
         } catch {
-            loadState = .failed(error.localizedDescription)
+            loadState = .failed(AppleErrorCopy(String(localized: "Messages and offers didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

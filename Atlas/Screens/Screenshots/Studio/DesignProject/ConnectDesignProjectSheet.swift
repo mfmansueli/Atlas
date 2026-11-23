@@ -24,7 +24,7 @@ struct ConnectDesignProjectSheet: View {
                 VStack(alignment: .leading, spacing: Spacing.medium) {
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                         Text("Connect a Design Project").font(.title2.weight(.semibold)).accessibilityAddTraits(.isHeader)
-                        Text("The design AI makes \(studio.app.name)’s screenshot template in your brand. The result is an Atlas template, so you can still edit it here.")
+                        Text("Makes \(studio.app.name)’s screenshot template in your brand, as an Atlas template you can edit here.")
                             .font(.callout)
                             .foregroundStyle(Palette.label2)
                     }
@@ -37,7 +37,7 @@ struct ConnectDesignProjectSheet: View {
                     }
                     if kind != .none { source }
                     if kind == .claudeDesign {
-                        Toggle("Also create the directions in Claude Design, so I can refine them there", isOn: $createsInClaudeDesign)
+                        Toggle("Also add the directions to Claude Design", isOn: $createsInClaudeDesign)
                             .toggleStyle(.checkbox)
                             .accessibilityIdentifier("designProject.createInClaudeDesign")
                     }
@@ -123,14 +123,11 @@ struct ConnectDesignProjectSheet: View {
     private var howItConnects: String {
         switch kind {
         case .claudeDesign, .figma:
-            String(localized: "How it connects: Atlas gives Claude the brief over MCP (captures, captions, canvas sizes, safe areas, the longest caption in each language). Claude designs with your \(kind == .figma ? String(localized: "Figma file") : String(localized: "design system")) and sends back templates in Atlas’s format. Nothing is uploaded to App Store Connect from here.")
+            String(localized: "Claude gets the brief over MCP (captures, captions, sizes, safe areas) and returns templates designed with your \(kind == .figma ? String(localized: "Figma file") : String(localized: "design system")). Nothing is pushed to App Store Connect.")
         case .folder:
-            String(localized: """
-            How it connects: Atlas reads the folder and hands its colors, fonts and logo to the assistant with \
-            the brief. The directions come back as Atlas templates.
-            """)
+            String(localized: "Atlas sends the folder’s colors, fonts and logo to the assistant. Directions come back as Atlas templates.")
         case .none:
-            String(localized: "Atlas makes three directions from its starters, colored from the app icon. You can connect a design project any time.")
+            String(localized: "Three directions from Atlas’s starters, in the icon’s colors. Connect a design project any time.")
         }
     }
 
@@ -161,7 +158,7 @@ struct ConnectDesignProjectSheet: View {
         }
         summary = studio.designProject?.link == link ? studio.designProject?.summary : nil
         if summary == nil {
-            findMessage = String(localized: "Atlas can’t open \(kind.title) itself: Claude reads “\(link)” when Autopilot designs, and what it finds shows here.")
+            findMessage = String(localized: "Atlas can’t open \(kind.title). Claude reads “\(link)” during design; what it finds shows here.")
         }
     }
 
@@ -172,9 +169,12 @@ struct ConnectDesignProjectSheet: View {
         do {
             summary = try BrandFolderReader.summary(of: folder)
             findMessage = nil
-        } catch {
+        } catch let error as AutopilotError {
             summary = nil
             findMessage = error.localizedDescription
+        } catch {
+            summary = nil
+            findMessage = AppleErrorCopy(String(localized: "The folder couldn’t be read.", comment: "kind:error"), error: error).text
         }
     }
 

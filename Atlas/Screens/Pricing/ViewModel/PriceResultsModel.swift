@@ -107,7 +107,7 @@ final class PriceResultsModel {
             results = all.filter(\.verdict.hasEnoughData).sorted { $0.before.pageViews > $1.before.pageViews }
             state = .ready(changedOn: date)
         } catch {
-            state = .failed(error.localizedDescription)
+            state = .failed(AppleErrorCopy(String(localized: "Results didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

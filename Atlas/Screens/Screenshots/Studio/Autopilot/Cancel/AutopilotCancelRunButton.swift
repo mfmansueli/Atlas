@@ -37,14 +37,11 @@ struct AutopilotCancelRunButton: View {
     /// What stays and what stops.
     static func message(for run: AutopilotRun) -> String {
         if run.stage == .capture {
-            return String(localized: """
-            Claude Code stops capturing and the run goes back to the plan. The captures so far stay for the next \
-            start. Nothing was sent to App Store Connect.
-            """)
+            return String(localized: "Capturing stops and the run returns to the plan, keeping its captures. Nothing was sent to App Store Connect.")
         }
-        var parts = [String(localized: "Atlas stops what it’s making and Claude Code stops. The captures and picks stay for the next start.")]
+        var parts = [String(localized: "Atlas and Claude Code stop. Captures and picks are kept.")]
         if let version = run.templateVersion {
-            parts.append(String(localized: "Template v\(version) is already saved and stays in the set’s history."))
+            parts.append(String(localized: "Template v\(version) stays saved in the set’s history."))
         }
         parts.append(String(localized: "Nothing was sent to App Store Connect."))
         return parts.joined(separator: " ")

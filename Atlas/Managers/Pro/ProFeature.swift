@@ -41,7 +41,7 @@ enum ProFeature: String, CaseIterable, Hashable, Sendable, Identifiable {
         switch self {
         case .acceptAll: String(localized: "Accept All Languages, Translate All and every App Information page in one step.")
         case .autopilot: String(localized: "Screenshots, App Preview and header artwork in every language, made for you.")
-        case .recommendedPrices: String(localized: "Recommended prices for local purchasing power, checked country by country.")
+        case .recommendedPrices: String(localized: "Suggested prices for local purchasing power, checked per country.")
         case .retention: String(localized: "Messages and offers when someone taps Cancel Subscription.")
         case .multipleApps: String(localized: "All your apps and App Store Connect accounts in one window.")
         case .allTemplates: String(localized: "Mac, iPad, iPhone Duo, Vision Pro and Apple Watch.")

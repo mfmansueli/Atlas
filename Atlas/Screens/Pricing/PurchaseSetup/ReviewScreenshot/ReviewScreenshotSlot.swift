@@ -89,8 +89,10 @@ struct ReviewScreenshotSlot: View {
             let data = try Data(contentsOf: url)
             file = try folder.save(data, fileName: url.lastPathComponent, appID: appID)
             problem = nil
-        } catch {
+        } catch let error as PurchaseReviewScreenshotProblem {
             problem = error.localizedDescription
+        } catch {
+            problem = AppleErrorCopy(String(localized: "The screenshot couldn’t be added.", comment: "kind:error"), error: error).text
         }
     }
 }

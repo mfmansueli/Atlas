@@ -71,13 +71,10 @@ struct AppPriceSheet: View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             Text(model.price.value?.current == nil ? String(localized: "Add Pricing") : String(localized: "Change Price"))
                 .font(.title2.weight(.semibold))
-            Text("""
-            \(model.app.name)’s price in the base country or region. Apple sets the equalized price everywhere else \
-            and keeps it in line with taxes and exchange rates.
-            """)
-            .font(.callout)
-            .foregroundStyle(Palette.label2)
-            .fixedSize(horizontal: false, vertical: true)
+            Text("\(model.app.name)’s price in the base country or region. Apple prices the rest, following taxes and exchange rates.")
+                .font(.callout)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -145,12 +142,12 @@ struct AppPriceSheet: View {
     private var notes: some View {
         if let current = model.price.value?.current, current.replacesMoreThanThePrice {
             InlineMessage.warning(String(localized: """
-            The new schedule replaces the prices set by hand in \(current.otherManualTerritoryIDs.count) other countries or regions \
-            and \(current.laterChangeCount) scheduled changes.
+            Replaces hand-set prices in \(current.otherManualTerritoryIDs.count) other countries or regions and \
+            \(current.laterChangeCount) scheduled changes.
             """))
         }
         if let point = selectedPoint, point.customerPrice > 0 {
-            Text("A paid price needs the Paid Applications agreement to be active in App Store Connect → Business.")
+            Text("A paid price needs an active Paid Applications agreement (App Store Connect → Business).")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)

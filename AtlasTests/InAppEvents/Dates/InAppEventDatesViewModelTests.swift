@@ -69,7 +69,7 @@ struct InAppEventDatesViewModelTests {
         #expect(model.dateProblems(of: event, format: Self.gmt) == ["\(items[0].text) \(items[0].detail ?? "")"])
 
         // Never "Ready" while it's open.
-        #expect(model.footerText == "To submit: show its card from a time still ahead. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: show its card from a time still ahead. No new version needed.")
         #expect(model.footerButton?.isEnabled == false)
         #expect(!model.canSubmitOnItsOwn(event))
         #expect(model.tileNote(of: event).text.contains("Its dates need a fix"))
@@ -79,13 +79,13 @@ struct InAppEventDatesViewModelTests {
         let event = Self.passed
         let model = await makeModel(event)
         let publish = try row("publish", in: model, of: event)
-        #expect(publish.value == "Was set to show from today at 00:00 (your time), which has passed")
+        #expect(publish.value == "Show time today at 00:00 (your time) has passed")
         #expect(publish.isProblem)
         #expect(publish.fixField == .publishStart)
         #expect(try !row("dates", in: model, of: event).isProblem)
         // The next morning it names the day.
         model.now = { Data.day(0.9) }
-        #expect(try row("publish", in: model, of: event).value == "Was set to show from 16 Nov at 00:00 (your time), which has passed")
+        #expect(try row("publish", in: model, of: event).value == "Show time 16 Nov at 00:00 (your time) has passed")
 
         // On its own day, before it shows: the time, not just the day.
         let later = Self.event(publish: 0.25, start: 3.5, end: 10)
@@ -102,7 +102,7 @@ struct InAppEventDatesViewModelTests {
         let event = Self.event(publish: -1, start: -0.25, end: 5)
         let model = await makeModel(event)
         let dates = try row("dates", in: model, of: event)
-        #expect(dates.value == "Was set to start today at 06:00 (your time), which has passed")
+        #expect(dates.value == "Start time today at 06:00 (your time) has passed")
         #expect(dates.isProblem)
         #expect(dates.fixField == .eventStart)
         #expect(model.reviewItems(of: event).map(\.id) == ["eventStartPassed"])
@@ -130,7 +130,7 @@ struct InAppEventDatesViewModelTests {
         let publish = try row("publish", in: model, of: event)
         #expect(!publish.isProblem)
         #expect(publish.value.hasSuffix(". New dates wait in Review & Push."))
-        #expect(model.footerText == "To submit: push its changes. Events can go to App Review on their own.")
+        #expect(model.footerText == "To submit: push its changes. No new version needed.")
         #expect(!model.tileNote(of: event).text.contains("Its dates need a fix"))
 
         // Undo on "Shows from": App Store Connect's dates again.
@@ -186,7 +186,7 @@ struct InAppEventDatesViewModelTests {
     @Test func datesAtlasCantSendStayAsTheyAre() async throws {
         let event = Self.event(publish: -0.5, start: 3.5, end: 10, territories: [])
         let model = await makeModel(event)
-        #expect(model.datesEditProblem(of: event)?.hasPrefix("Atlas doesn’t know which countries or regions") == true)
+        #expect(model.datesEditProblem(of: event)?.hasPrefix("Atlas doesn’t know where") == true)
         model.setDate(.publishStart, to: Data.day(2), of: event)
         #expect(queue.changes.isEmpty)
         // Still a problem, without Fix…: it's changed in App Store Connect.
@@ -205,7 +205,7 @@ struct InAppEventDatesViewModelTests {
         #expect(warnings[0].suggestedDates == [.publishStart: Data.day(2)])
         #expect(model.reviewItems(of: event).isEmpty)
         #expect(model.canSubmitOnItsOwn(event))
-        #expect(model.footerText == "Ready. Events can go to App Review on their own, without a new version.")
+        #expect(model.footerText == "Ready. Submit it without a new version.")
         // Moving it as the warning says clears it.
         model.applySuggestedDates(warnings[0].suggestedDates, of: event)
         #expect(model.reviewWarnings(of: event).isEmpty)

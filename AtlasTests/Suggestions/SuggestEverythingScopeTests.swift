@@ -120,10 +120,10 @@ struct SuggestEverythingScopeTests {
     @Test func theBusyLineSaysWhatTheAskStillSends() {
         var request = AssistantSuggestionRequest(appID: "1", area: .storePage, client: "Claude Code", prompt: "", startedAt: .now, received: 2)
         #expect(SuggestEverythingPopover.busyText(request)
-            == "Claude Code is still sending Store Page suggestions. Those keep coming; this run skips the fields they cover.")
+            == "Claude Code is still sending Store Page suggestions. This run skips those fields.")
         request.total = 4
         #expect(SuggestEverythingPopover.busyText(request)
-            == "Claude Code is still sending Store Page suggestions (2 of 4). Those keep coming; this run skips the fields they cover.")
+            == "Claude Code is still sending Store Page suggestions (2 of 4). This run skips those fields.")
     }
 }
 #endif

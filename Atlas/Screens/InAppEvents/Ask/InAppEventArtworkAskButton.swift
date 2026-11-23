@@ -20,10 +20,8 @@ struct InAppEventArtworkAskButton: View {
             help: { client in String(localized: "Ask \(client) to make this event’s card and details page") },
             explanation: { client in
                 String(localized: """
-                \(client) designs “\(event.referenceName)”’s card and details page with Claude, from the \
-                app’s look, its design project and its own visuals, as stills or seamless loops. It checks them against \
-                Apple’s rules under the event’s text and sends them here. Each waits for you to accept it; accepted, it \
-                waits in Review & Push.
+                \(client) designs “\(event.referenceName)”’s card and details page with Claude, as stills or loops, and checks \
+                them against Apple’s rules. Accept each here; accepted ones wait in Review & Push.
                 """)
             },
             identifier: "events.media.ask"

@@ -19,8 +19,10 @@ struct GuidedArtworkMissingTests {
         let run = StudioDebugHeaderStyle.headerNotMade
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
         #expect(missing.title == "Header artwork couldn’t be made")
-        #expect(missing.detail.hasPrefix("Couldn’t render the header page in English (U.S.): The page didn’t load. Make Again"), "\(missing.detail)")
-        #expect(missing.detail.hasSuffix("Approving puts the rest in Review & Push without it."))
+        #expect(missing.detail == """
+        Make Again rebuilds it from your choices, no new design. Or approve the rest without it.
+        Details: Couldn’t render the header page in English (U.S.): The page didn’t load
+        """)
     }
 
     /// A run from before `artworkProblem`: the set just has none of it.
@@ -28,14 +30,17 @@ struct GuidedArtworkMissingTests {
         var run = StudioDebugHeaderStyle.headerNotMade
         run.extrasProgress?.artworkProblem = nil
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
-        #expect(missing.detail.hasPrefix("Nothing of it was saved with the set. Make Again"), "\(missing.detail)")
+        #expect(missing.detail.hasPrefix("None of it was saved with the set. Make Again"), "\(missing.detail)")
+        #expect(!missing.detail.contains("Details:"))
     }
 
-    @Test func aReasonEndingInAFullStopKeepsOne() throws {
+    /// The renderer's reason is never the message: it goes after Details.
+    @Test func theReasonGoesInDetails() throws {
         var run = StudioDebugHeaderStyle.headerNotMade
         run.extrasProgress?.artworkProblem = "The page was too heavy."
         let missing = try #require(GuidedArtworkMissing(run: run, extras: Self.none))
-        #expect(missing.detail.hasPrefix("The page was too heavy. Make Again"), "\(missing.detail)")
+        #expect(missing.detail.hasPrefix("Make Again"), "\(missing.detail)")
+        #expect(missing.detail.hasSuffix("\nDetails: The page was too heavy."), "\(missing.detail)")
     }
 
     @Test func madeArtworkOrARunNotReadyIsntMissing() {

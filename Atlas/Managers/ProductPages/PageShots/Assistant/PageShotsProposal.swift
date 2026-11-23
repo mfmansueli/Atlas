@@ -34,12 +34,15 @@ struct PageShotsProposal {
 
     static let maxScreens = 10
     static let maxAngle = 200
-    static let maxReason = 300
+    static let maxReason = AssistantTextLimits.why
 
     let run: PageShotsRun
     let source: PageShotsSource
 
-    func check(angle rawAngle: String?, reason rawReason: String?, screens items: [JSONValue], locales: [String]?, client: String) -> Outcome {
+    func check(
+        angle rawAngle: String?, reason rawReason: String?, screens items: [JSONValue], locales: [String]?, client: String,
+        layers: SuggestionLayers? = nil
+    ) -> Outcome {
         let angle = rawAngle?.trimmingCharacters(in: .whitespacesAndNewlines) ?? run.plan?.angle ?? ""
         let reason = rawReason?.trimmingCharacters(in: .whitespacesAndNewlines) ?? run.plan?.reason ?? ""
         if let problem = textProblem(angle: angle, reason: reason) { return .refused(problem, refused: []) }
@@ -60,8 +63,8 @@ struct PageShotsProposal {
         if !missing.isEmpty {
             let places = missing.map(String.init).formatted(.list(type: .and))
             let message = String(localized: """
-            Every screenshot needs a caption in \(primary), the page’s primary language, that Atlas can keep: place \(places) \
-            hasn’t one. Nothing was kept.
+            Nothing was kept: place \(places) has no usable caption in \(primary), the primary language. Every \
+            screenshot needs one.
             """)
             return .refused(message, refused: refused)
         }
@@ -69,7 +72,7 @@ struct PageShotsProposal {
         let suggested = asked.compactMap { StoreLocaleCatalog.resolve($0).locale?.code }
         let plan = PageShotsPlan(
             angle: angle, screens: screens, locales: PageShotsRun.ordered(suggested + [primary], by: run.languages),
-            reason: reason, source: client, madeAt: .now
+            reason: reason, source: client, madeAt: .now, layers: layers ?? (rawReason == nil ? run.plan?.layers : nil)
         )
         return .planned(plan, refused: refused)
     }
@@ -125,7 +128,7 @@ struct PageShotsProposal {
             return String(localized: "Send `angle`: the page’s story in a sentence, e.g. “Privacy first: the lock, then writing, then search.”")
         }
         if angle.count > Self.maxAngle { return String(localized: "`angle` is \(angle.count) characters; keep it to \(Self.maxAngle).") }
-        if reason.count > Self.maxReason { return String(localized: "`reason` is \(reason.count) characters; keep it to \(Self.maxReason).") }
+        if let refusal = AssistantTextLimits.whyRefusal(reason, field: "reason") { return refusal }
         return nil
     }
 

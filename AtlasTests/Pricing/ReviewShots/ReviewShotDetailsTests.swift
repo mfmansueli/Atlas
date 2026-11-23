@@ -26,7 +26,7 @@ struct ReviewShotDetailsTests {
         let details = fromClaude
         #expect(details.heading == "Review screenshot · Monthly selected")
         #expect(details.capturedLine(now: now.addingTimeInterval(5))
-            == "Captured in Simulator on iPhone 17 Pro, English (U.S.), just now. Monthly is selected and shows $4.99.")
+            == "Captured in Simulator on iPhone 17 Pro, English (U.S.), a moment ago. Monthly is selected and shows $4.99.")
         #expect(details.acceptedLine == "From Claude Code · Monthly selected · uploads when you push")
         #expect(details.reviewLine == "Review screenshot · Monthly selected · from Claude Code")
         #expect(details.isFromAssistant)

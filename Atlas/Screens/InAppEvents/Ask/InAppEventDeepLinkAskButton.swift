@@ -30,12 +30,12 @@ struct InAppEventDeepLinkAskButton: View {
             explanation: { client in
                 kind == .check
                     ? String(localized: """
-                    \(client) reads \(app.name)’s project, builds it and tries the link in Simulator when it can, then says \
-                    here whether it opens the event: before it starts, after onboarding, without a paywall. It changes nothing.
+                    \(client) builds \(app.name) and tries the link in Simulator. It reports whether the event opens before \
+                    its start, after onboarding, without a paywall. Changes nothing.
                     """)
                     : String(localized: """
-                    \(client) changes \(app.name)’s project so the link opens the event, tries it in Simulator and bumps the \
-                    build number, then says here what it found. It never uploads the build: you do, from Xcode.
+                    \(client) makes \(app.name) open the event from the link, tests it in Simulator and bumps the build \
+                    number. You upload the build from Xcode.
                     """)
             },
             identifier: identifier,

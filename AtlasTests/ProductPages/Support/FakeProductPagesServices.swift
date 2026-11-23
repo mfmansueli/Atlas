@@ -15,6 +15,7 @@ final class FakeProductPagesServices: ProductPagesServices {
     var readError: AppStoreConnectError?
     var submitError: AppStoreConnectError?
     var cancels = true
+    var cancelError: (any Error)?
     private(set) var reads = 0
     private(set) var submitted: [String] = []
     private(set) var cancelled: [String] = []
@@ -33,6 +34,7 @@ final class FakeProductPagesServices: ProductPagesServices {
     var canCancelSubmission: Bool { cancels }
 
     func cancelSubmission(versionID: String, of _: StoreApp) async throws {
+        if let cancelError { throw cancelError }
         cancelled.append(versionID)
     }
 

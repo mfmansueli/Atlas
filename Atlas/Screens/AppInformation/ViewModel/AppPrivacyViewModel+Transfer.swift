@@ -49,7 +49,7 @@ extension AppPrivacyViewModel {
         isExporterPresented = false
         switch result {
         case let .success(url): say(String(localized: "Saved \(url.lastPathComponent)."))
-        case let .failure(error): say(error.localizedDescription)
+        case let .failure(error): say(AppleErrorCopy(String(localized: "The export wasn’t saved.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -104,7 +104,8 @@ extension AppPrivacyViewModel {
 
     private func showImportError(_ error: any Error) {
         importPreview = nil
-        importError = error.localizedDescription
+        importError = (error as? PrivacyFastlaneCoder.Failure)?.errorDescription
+            ?? AppleErrorCopy(String(localized: "The file couldn’t be read.", comment: "kind:error"), error: error).text
         isImportSheetPresented = true
     }
 

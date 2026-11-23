@@ -137,7 +137,7 @@ struct PageShotsResultStep: View {
                     ) { flow.toggleUse(display: display) }
                 }
             }
-            Text("Untick a language or a device to keep the default page’s screenshots there.")
+            Text("Untick a language or device to keep its default screenshots.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -167,16 +167,16 @@ struct PageShotsResultStep: View {
     private var summary: String {
         let count = flow.usedCount
         let shots = count == 1 ? String(localized: "1 screenshot goes") : String(localized: "\(count) screenshots go")
-        return String(localized: "\(shots) to Review & Push. Nothing reaches the App Store until you push and submit the page.")
+        return String(localized: "\(shots) to Review & Push. Nothing is public until you push and submit.")
     }
 
     private var askPopover: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             Text("What should change?").font(.body.weight(.semibold))
-            Text("Say it in a sentence. Only this page’s set is redone.")
+            Text("One sentence. Only this page’s set is redone.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
-            TextField("Open with search, and make the second caption shorter", text: $request, axis: .vertical)
+            TextField("Open with search, shorter second caption", text: $request, axis: .vertical)
                 .lineLimit(3...5)
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("pages.shots.ask.text")

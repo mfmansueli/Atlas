@@ -130,7 +130,7 @@ struct EventDetailsToolsTests {
 
     @Test(arguments: [
         (["deepLink": "lumen challenge"], "deepLink: The deep link isn’t a valid URL."),
-        (["deepLink": "http://lumen.app/winter"], "deepLink: Links that start with http:// open in Safari"),
+        (["deepLink": "http://lumen.app/winter"], "deepLink: http:// links open in Safari"),
         (["purpose": "EVERYONE"], "purpose: “EVERYONE” isn’t a purpose."),
         (["priority": "LOW"], "priority: “LOW” isn’t a priority. Use HIGH or NORMAL."),
         (["primaryLocale": "fr-FR"], "primaryLocale: “Winter Reflection 2026” isn’t written in fr-FR"),

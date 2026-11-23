@@ -46,7 +46,7 @@ struct ReviewBulkSheet: View {
                 .font(.title3.weight(.semibold))
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("reviews.bulk.title")
-            Text("One message, written for each language. Each reply goes under its own review; nobody sees the others.")
+            Text("One message, in each language. Each reply goes under its own review only.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .lineLimit(3)

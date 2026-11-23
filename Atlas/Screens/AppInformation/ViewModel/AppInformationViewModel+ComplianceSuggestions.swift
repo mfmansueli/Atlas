@@ -31,7 +31,7 @@ extension AppInformationViewModel {
         let clients = Set(open.map(\.client))
         let client = clients.count == 1 ? first.client : String(localized: "Assistants")
         let count = open.count == 1 ? String(localized: "suggested 1 answer") : String(localized: "suggested \(open.count) answers")
-        return (client, String(localized: "\(count) from the project. Accept each one yourself: Accept All doesn’t take them."))
+        return (client, String(localized: "\(count) from the project. Accept All skips them; accept each yourself."))
     }
 
     func acceptComplianceSuggestion(for rule: ComplianceRule) {
@@ -58,7 +58,7 @@ extension AppInformationViewModel {
         removeComplianceSuggestion(for: rule)
         toast = suggestion.answer == .stopSellingInChina
             ? String(localized: "Accepted \(suggestion.client)’s answer. China mainland comes off sale when you push.")
-            : String(localized: "Accepted \(suggestion.client)’s answer. Enter it in App Store Connect: Apple’s API doesn’t take it.")
+            : String(localized: "Accepted \(suggestion.client)’s answer. Enter it in App Store Connect; the API can’t.")
     }
 
     func dismissComplianceSuggestion(for rule: ComplianceRule) {

@@ -99,8 +99,7 @@ extension ScreenshotStudioModel {
         panel.canChooseDirectories = false
         panel.title = String(localized: "Music for the App Preview")
         panel.message = String(localized: """
-        Choose music you hold the rights to: it plays under your App Preview on the App Store, in every language. \
-        By choosing it, you confirm you may use it there.
+        Choose music you hold the rights to. Choosing it confirms you may use it under your App Preview, in every language.
         """)
         panel.prompt = String(localized: "Use This Music")
         guard panel.runModal() == .OK, let url = panel.url else { return }
@@ -121,8 +120,10 @@ extension ScreenshotStudioModel {
             try FileManager.default.createDirectory(at: copy.deletingLastPathComponent(), withIntermediateDirectories: true)
             if !FileManager.default.fileExists(atPath: copy.path) { try data.write(to: copy, options: .atomic) }
             setPreviewMusic(AutopilotPreviewMusic(fileID: id, fileExtension: pathExtension, fileName: url.lastPathComponent))
-        } catch {
+        } catch let error as AppPreviewError {
             musicError = error.localizedDescription
+        } catch {
+            musicError = AppleErrorCopy(String(localized: "The music wasn’t added.", comment: "kind:error"), error: error).text
         }
     }
 

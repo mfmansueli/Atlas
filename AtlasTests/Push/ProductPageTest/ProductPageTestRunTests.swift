@@ -161,8 +161,8 @@ struct ProductPageTestRunTests {
             Issue.record("Expected an export")
             return
         }
-        #expect(reason.contains("The unfinished draft “Header: Interface vs Outcome” couldn’t be deleted"))
-        #expect(reason.contains("delete it in App Store Connect before making another test"))
+        #expect(reason.contains("Couldn’t delete draft “Header: Interface vs Outcome”"))
+        #expect(reason.contains("Delete it in App Store Connect before a new test."))
     }
 
     @Test func aRefusalAfterALanguageWasPlacedFailsOnlyThatLanguage() async throws {
@@ -188,7 +188,7 @@ struct ProductPageTestRunTests {
             Issue.record("Expected an export")
             return
         }
-        #expect(reason == "App Store Connect’s API can’t put the product page header on a test’s treatment.")
+        #expect(reason == "Apple’s API can’t add the product page header to a treatment.")
         #expect(tester.log.isEmpty)
         #expect(library.log.isEmpty)
         #expect(exportedFiles(in: folder).count == 4)
@@ -219,8 +219,8 @@ struct ProductPageTestRunTests {
             Issue.record("Expected a failure")
             return
         }
-        #expect(reason.hasPrefix("No language’s variant went on the treatment."))
-        #expect(run.status(of: "en-US").failureReason?.contains("doesn’t take a 3000 × 1000 image") == true)
+        #expect(reason.hasPrefix("No variant went on the treatment."))
+        #expect(run.status(of: "en-US").failureReason?.contains("not a 3000 × 1000 image") == true)
         #expect(!library.log.contains { $0.hasPrefix("reserve") })
         #expect(tester.log.last == "delete exp-1")
     }

@@ -64,7 +64,7 @@ struct ScreenshotsHandArrangementViewModelTests {
         await model.acceptHandArrangement(order)
         let saved = try #require(services.storedDocument?.handSet(locale: "ja", displayType: .iPhone))
         #expect(saved.kept.map { $0.base?.templateSlot } == [2, 0, 1, 3, 4])
-        #expect(model.captionToast?.text == "Japanese’s screenshots are in Claude Code’s order. It’s waiting in Review & Push.")
+        #expect(model.captionToast?.text == "Japanese’s screenshots are in Claude Code’s order. In Review & Push.")
     }
 
     @Test func undoPutsTheSetAndTheSuggestionBack() async throws {

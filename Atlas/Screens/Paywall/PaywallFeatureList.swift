@@ -35,7 +35,7 @@ struct PaywallFeatureList: View {
                 row(feature)
             }
             Spacer(minLength: Spacing.small)
-            Text("AI runs on your own assistant or API key, so Pro’s price never includes AI usage.")
+            Text("Suggestions run on your own assistant or API key. Pro never charges for usage.")
                 .font(.callout)
                 .opacity(0.78)
                 .fixedSize(horizontal: false, vertical: true)

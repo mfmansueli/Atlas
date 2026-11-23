@@ -20,7 +20,7 @@ enum TranslationProvider: String, CaseIterable, Identifiable, Codable, Sendable 
         switch self {
         case .appleTranslation: String(localized: "Apple Translation · on this Mac")
         case .aiProvider: String(localized: "AI provider")
-        case .assistant: String(localized: "Your AI assistant · MCP")
+        case .assistant: String(localized: "Your assistant · MCP")
         }
     }
 
@@ -35,7 +35,7 @@ enum TranslationProvider: String, CaseIterable, Identifiable, Codable, Sendable 
     /// Settings → AI Assistants → "Where suggestions come from" (board 48).
     var sourceTitle: String {
         switch self {
-        case .assistant: String(localized: "Your AI assistant")
+        case .assistant: String(localized: "Your assistant")
         case .aiProvider: String(localized: "An API key")
         case .appleTranslation: String(localized: "Built-in only")
         }

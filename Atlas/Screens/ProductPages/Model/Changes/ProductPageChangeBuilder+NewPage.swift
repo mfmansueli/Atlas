@@ -53,8 +53,7 @@ extension ProductPageChangeBuilder {
         change.creation = PendingCreation(
             id: id, title: title,
             detail: String(localized: """
-            A new custom product page with a link of its own. It goes to App Review by itself, and it can be made visible \
-            once Apple approves it.
+            A new custom product page with its own link. It goes to App Review alone and can go visible once approved.
             """),
             source: draft.source,
             fields: Self.fields(of: draft, versionString: defaultPage.versionString)

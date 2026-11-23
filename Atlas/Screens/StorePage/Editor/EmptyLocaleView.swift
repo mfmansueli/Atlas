@@ -20,7 +20,7 @@ struct EmptyLocaleView: View {
                 .accessibilityHidden(true)
             Text("\(locale.name) has no text yet")
                 .font(.title3.weight(.semibold))
-            Text("Translate it from \(primary.name), or copy from a sibling locale with Fill. URLs can be copied as they are.")
+            Text("Translate from \(primary.name), or copy another locale with Fill. URLs copy as they are.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)

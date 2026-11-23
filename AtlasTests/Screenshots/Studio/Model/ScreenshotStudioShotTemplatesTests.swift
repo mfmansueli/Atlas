@@ -63,8 +63,8 @@ struct ScreenshotStudioShotTemplatesTests {
     @Test func thePickerSaysWhoMakesTheDirections() async {
         let (model, _) = await screenshots()
         let note = model.studio.shotTemplatePickerNote
-        #expect(note.hasPrefix("From each template you pick, \(model.studio.shotStyleDesigner) makes one screenshot direction"))
-        #expect(note.hasSuffix("Each template is previewed with Lumen Journal’s captions and captures."))
+        #expect(note.hasPrefix("\(model.studio.shotStyleDesigner) makes one direction"))
+        #expect(note.hasSuffix("per template you pick, with Lumen Journal’s captions and captures. You choose one."))
     }
 
     @Test func eachTemplateIsPreviewedOnceLaidOut() async {

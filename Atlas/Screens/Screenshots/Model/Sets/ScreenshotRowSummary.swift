@@ -25,7 +25,7 @@ struct ScreenshotRowSummary: Hashable, Sendable {
         if cells.contains(where: { $0.state == .noCaption }) { parts.append(String(localized: "No captions yet")) }
         if cells.contains(where: { $0.state == .noCapture }) { parts.append(String(localized: "No captures yet")) }
         if !cells.isEmpty, cells.allSatisfy({ $0.state == .live }) { parts.append(String(localized: "Live")) }
-        if cells.contains(where: { $0.state == .uploadedByHand }) { parts.append(String(localized: "Uploaded by hand · not managed")) }
+        if cells.contains(where: { $0.state == .uploadedByHand }) { parts.append(String(localized: "Added by hand · not managed")) }
         let isFallback = cells.contains { $0.state == .fallback }
         if isFallback { parts.append(String(localized: "Uses English (U.S.)")) }
         if !isFallback, cells.contains(where: \.showsPrimaryInterface) { parts.append(String(localized: "UI not localized")) }

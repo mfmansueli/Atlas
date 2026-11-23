@@ -24,9 +24,9 @@ enum ProductPageStart: Codable, Hashable, Sendable {
             let version = versionString.map { String(localized: "version \($0)’s") } ?? String(localized: "the default page’s")
             return String(localized: "Starts with \(version) screenshots, App Previews and promotional text in \(ReviewText.languages(languageCount)).")
         case let .copy(_, name):
-            return String(localized: "Starts as a copy of “\(name)”: its screenshots, text and deep link. Keywords are not copied.")
+            return String(localized: "Starts as a copy of “\(name)”: screenshots, text and deep link, no keywords.")
         case .empty:
-            return String(localized: "Starts empty. Every language shows the default page’s content until you add your own.")
+            return String(localized: "Starts empty, showing the default page’s content until you add your own.")
         }
     }
 }

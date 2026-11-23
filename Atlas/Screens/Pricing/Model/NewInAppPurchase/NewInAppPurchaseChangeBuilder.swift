@@ -75,8 +75,7 @@ struct NewInAppPurchaseChangeBuilder {
             id: id,
             title: String(localized: "Create \(change.title)"),
             detail: String(localized: """
-            A \(purchase.kind.title.lowercased()) in-app purchase for \(app.name), available in every country or region. \
-            Submit it for App Review with the app’s next version.
+            A \(purchase.kind.title.lowercased()) in-app purchase for \(app.name), sold everywhere. Submit it with the app’s next version.
             """),
             source: source,
             fields: fields(of: purchase, source: source, evidence: evidence)

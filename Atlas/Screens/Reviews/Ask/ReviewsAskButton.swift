@@ -15,12 +15,9 @@ struct ReviewsAskButton: View {
             app: app,
             purpose: ReviewsAskPrompt.purpose,
             prompt: ReviewsAskPrompt.text(app: app.name),
-            help: { client in String(localized: "Ask \(client) to suggest replies, each in the reviewer’s language, and to group the reviews") },
+            help: { client in String(localized: "Asks \(client) for replies in each reviewer’s language, grouped by subject") },
             explanation: { client in
-                String(localized: """
-                \(client) reads \(app.name)’s reviews and its project, suggests a reply under each review that needs one \
-                and groups them by subject. Nothing is sent until you press Send Reply.
-                """)
+                String(localized: "\(client) suggests replies to \(app.name)’s reviews and groups them by subject. Nothing is sent until you press Send Reply.")
             },
             identifier: "reviews.ask"
         )

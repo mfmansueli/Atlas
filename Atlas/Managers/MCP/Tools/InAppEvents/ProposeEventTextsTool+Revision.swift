@@ -17,7 +17,7 @@ extension ProposeEventTextsTool {
     /// texts waiting in Review & Push.
     static func revision(
         _ value: JSONValue, locale: String, of event: InAppEvent, queued: [InAppEventField: String], source: String, date: Date = .now
-    ) -> (suggestion: InAppEventTextSuggestion?, json: JSONValue) {
+    ) throws -> (suggestion: InAppEventTextSuggestion?, json: JSONValue) {
         func skip(_ reason: String, issues: [StoreTextGuidelineIssue] = []) -> (suggestion: InAppEventTextSuggestion?, json: JSONValue) {
             var json: [String: JSONValue] = ["locale": .string(locale), "reason": .string(reason), "revise": true]
             if !issues.isEmpty { json["issues"] = .array(issues.map(\.json)) }
@@ -32,10 +32,11 @@ extension ProposeEventTextsTool {
         let current = { (field: InAppEventField) in queued[field] ?? localization.text(field) }
         let changed = changedTexts(in: value, current: current)
         guard let texts = changed.texts else { return skip(changed.problem ?? "") }
-        let suggestion = InAppEventTextSuggestion(
+        let suggestion = try InAppEventTextSuggestion(
             eventID: event.id, locale: locale, name: texts[.name] ?? "", shortDescription: texts[.shortDescription] ?? "",
             longDescription: texts[.longDescription] ?? "", why: String(why.prefix(whyLimit)), source: source, date: date,
-            revisedFields: InAppEventField.allCases.filter { texts[$0] != nil }
+            revisedFields: InAppEventField.allCases.filter { texts[$0] != nil },
+            layers: MCPToolArguments(value.objectValue ?? [:]).layers()
         )
         if let over = suggestion.overLimit {
             return skip("\(over.field.rawValue) has \(over.count) characters; it holds \(over.field.limit).")
