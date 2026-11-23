@@ -66,18 +66,20 @@ struct AppInformationFieldSuggestions: View {
 
     private var placeholderKind: SuggestionComingPlaceholder.Kind {
         switch slot {
-        case .field: .field
+        case .field, .privacyChoicesURL: .field
         case .ageRating: .question
         case .accessibility: .feature
         }
     }
 
-    /// `copyright`, `age.wellness`, `accessibility.voiceOver`.
+    /// `copyright`, `age.wellness`, `accessibility.voiceOver`,
+    /// `appPrivacy.de-DE.privacyChoicesUrl`.
     private var identifier: String {
         switch slot {
         case let .field(field): field.rawValue
         case let .ageRating(question): "age.\(question.rawValue)"
         case let .accessibility(_, feature): "accessibility.\(feature.rawValue)"
+        case let .privacyChoicesURL(locale): "appPrivacy.\(locale.code).\(AppInformationSuggestionSlot.privacyChoicesField)"
         }
     }
 }

@@ -77,7 +77,7 @@ struct SuggestEverythingScope: Hashable, Sendable {
     @MainActor
     static func load(app: StoreApp, in workspace: MCPWorkspace) async -> SuggestEverythingScope {
         let listing = try? await MCPListingDraft.load(app: app.id, in: workspace)
-        let information = try? await MCPAppInformationDraft.load(app: app.id, in: workspace)
+        let information = try? await MCPAppInformationDraft.load(app: app.id, in: workspace, includesPrivacyURLs: true)
         let inAppTexts = try? await MCPInAppTextsDraft.load(app: app.id, in: workspace)
         let compliance = try? await MCPComplianceState.load(app, workspace: workspace)
         return SuggestEverythingScope(
@@ -97,7 +97,8 @@ struct SuggestEverythingScope: Hashable, Sendable {
             let everything = String(localized: """
             Suggest everything for \(app) in Atlas. Read the project first, then suggest every Store Page field in every \
             language, including languages the app supports that aren’t on the App Store yet, and App Information: General, Age \
-            Rating, Accessibility for each device, and App Review. Skip fields I’ve already changed.
+            Rating, Accessibility for each device and its URL, App Privacy’s User Privacy Choices URL in each language, and \
+            App Review’s contact, sign-in and notes. Skip fields I’ve already changed.
             """)
             let withInAppTexts = inAppTextsDetail == nil ? everything : everything + " " + Self.inAppTextsRequest
             return complianceDetail == nil && !coversExportCompliance ? withInAppTexts : withInAppTexts + " " + Self.complianceRequest
@@ -201,12 +202,13 @@ struct SuggestEverythingScope: Hashable, Sendable {
         let families = slots.accessibilityFamilies
         if !families.isEmpty {
             let devices = families.map(\.name).formatted(.list(type: .and))
-            rows.append(Row(page: .accessibility, detail: String(localized: "\(devices), every feature")))
+            rows.append(Row(page: .accessibility, detail: String(localized: "\(devices), every feature, and the accessibility URL")))
             openParts.append(String(localized: "Accessibility for each device"))
         }
-        let review: [AppInformationSuggestionField] = [.contactFirstName, .contactLastName, .contactPhone, .contactEmail, .notes]
+        addAppPrivacy(slots)
+        let review = AppInformationSuggestionField.fields(on: .appReview)
         if review.contains(where: { slots.canSuggest(.field($0)) }) {
-            rows.append(Row(page: .appReview, detail: String(localized: "Contact and notes")))
+            rows.append(Row(page: .appReview, detail: String(localized: "Contact, sign-in and notes")))
             openParts.append(String(localized: "App Review"))
         } else {
             rows.append(Row(page: .appReview, detail: locked, isLocked: true))
@@ -214,14 +216,29 @@ struct SuggestEverythingScope: Hashable, Sendable {
         }
     }
 
-    /// Copyright, the categories, content rights and the release; the
-    /// categories and content rights, the app's, stay open while the
-    /// version is in review.
+    /// The User Privacy Choices URL in each language, the app info's: open
+    /// while the version is in review, as the categories are.
+    private mutating func addAppPrivacy(_ slots: AppInformationSlotValues) {
+        let locales = slots.privacyLocales
+        guard !locales.isEmpty else { return }
+        let languages = locales.count <= 3
+            ? locales.map(\.name).formatted(.list(type: .and))
+            : String(localized: "\(locales.count) languages")
+        rows.append(Row(page: .appPrivacy, detail: String(localized: "User Privacy Choices URL in \(languages)")))
+        openParts.append(String(localized: "the User Privacy Choices URLs"))
+    }
+
+    /// Copyright, the categories (and Games subcategories for a game),
+    /// content rights and the release; the categories and content rights,
+    /// the app's, stay open while the version is in review.
     private mutating func addGeneral(_ slots: AppInformationSlotValues, locked: String) {
         let fields: [AppInformationSuggestionField] = [.copyright, .primaryCategory, .secondaryCategory, .contentRights, .release]
         let open = fields.filter { slots.canSuggest(.field($0)) }
         if open.count == fields.count {
-            rows.append(Row(page: .general, detail: String(localized: "Copyright, categories, content rights, release")))
+            let detail = slots.canSuggest(.field(.gamesSubcategories))
+                ? String(localized: "Copyright, categories, Games subcategories, content rights, release")
+                : String(localized: "Copyright, categories, content rights, release")
+            rows.append(Row(page: .general, detail: detail))
             openParts.append(String(localized: "General"))
             return
         }

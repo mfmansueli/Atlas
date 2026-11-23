@@ -11,11 +11,11 @@ import Foundation
 extension AppInformationViewModel {
     /// Every page's suggestions, in the page column's order.
     private var allPageSuggestions: [FieldSuggestion] {
-        Self.suggestionPages.flatMap { visibleSuggestions(on: $0) }
+        Self.slotPages.flatMap { visibleSuggestions(on: $0) }
     }
 
     func pageBarModel(on page: AppInformationPage, acceptsRightAway: Bool) -> AppInformationPageBarModel {
-        let others = Self.suggestionPages.filter { $0 != page && !visibleSuggestions(on: $0).isEmpty }
+        let others = Self.slotPages.filter { $0 != page && !visibleSuggestions(on: $0).isEmpty }
         return AppInformationPageBarModel(
             hereCount: visibleSuggestions(on: page).count,
             totalCount: allPageSuggestions.count,
@@ -69,7 +69,7 @@ extension AppInformationViewModel {
 
     /// What Accept All Pages offers, the open page first in focus.
     func acceptAllSelection() -> AcceptAllSelection {
-        let groups = Self.suggestionPages.compactMap { page -> AcceptAllGroup? in
+        let groups = Self.slotPages.compactMap { page -> AcceptAllGroup? in
             let items = visibleSuggestions(on: page).compactMap { suggestion -> AcceptAllItem? in
                 guard let slot = slot(of: suggestion) else { return nil }
                 var title = slot.title

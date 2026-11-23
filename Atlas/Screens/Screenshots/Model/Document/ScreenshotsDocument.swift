@@ -38,6 +38,9 @@ struct ScreenshotsDocument: Codable, Hashable, Sendable {
     /// Files assistants suggested for a screenshot, decided or not; nil
     /// when none was.
     var handProposals: [ScreenshotHandProposal]?
+    /// Screenshots assistants suggested deleting from a set, or a set's
+    /// new order, decided or not; nil when none was.
+    var handArrangements: [ScreenshotHandArrangement]?
 
     init(
         history: TemplateHistory? = nil,

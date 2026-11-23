@@ -49,5 +49,6 @@ You don’t need Autopilot or an assistant to change a set. Open a language in S
 - A language without screenshots of its own shows the primary language’s. Start from English (U.S.) copies them in, ready to replace one by one, or Add Its Own… starts fresh.
 - Import a Folder reads folders named by language, as fastlane makes them (de-DE/iphone-6.9/01.png). The device comes from the folder or file name, or from the image’s size, and the order from the leading number. A table shows what happens to each language before anything changes.
 - The primary language must keep at least one screenshot on each device: Apple needs it.
+- Claude Code can suggest a file for a screenshot, screenshots to delete, or a new order. Each shows on the language page with its reason, and Accept does what you would do by hand: it waits in Review & Push. Deleting or moving one Atlas made from the template changes only that language's set; the template, and every other language, keep it.
 
 > Atlas never scales a screenshot: the file must be one of the device’s sizes (iPhone 6.9″ 1320 × 2868 or 1290 × 2796, iPad 13″ 2064 × 2752 or 2048 × 2732, Mac 2880 × 1800, 2560 × 1600, 1440 × 900 or 1280 × 800), upright or turned, without transparency. Pushing uploads first and deletes after, so a failed upload never leaves a language with fewer screenshots.

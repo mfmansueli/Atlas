@@ -18,6 +18,7 @@ extension AppInformationViewModel {
             return switch slot {
             case let .field(field): [.primaryCategory, .secondaryCategory, .contentRights, .notes].contains(field)
             case .ageRating, .accessibility: suggestionValue(slot).isEmpty
+            case .privacyChoicesURL: false
             }
         }
     }

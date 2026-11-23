@@ -32,25 +32,47 @@ extension AppInformationViewModel {
         let scopes = AppInformationSuggestionField.pages.map { SuggestionScope.appInformation($0) } + [.appInformation(.ageRating)]
         suggestions.setBuiltIn(found, appID: app.id, scopes: Set(scopes))
         var pending = Set(allSuggestionSlots.filter(isPending).map(\.target))
-        if accessibility.value == nil {
-            // Accessibility loads on its own: keep its lines until it has.
+        // Accessibility and App Privacy's URLs load on their own: keep their
+        // lines until they have.
+        let waiting = Set(unloadedSuggestionPages)
+        if !waiting.isEmpty {
             let kept = suggestions.review.provenance.keys.filter { key in
-                guard key.appID == app.id, case .accessibility = key.target.scope else { return false }
-                return true
+                key.appID == app.id && key.target.scope.page.map(waiting.contains) == true
             }
             pending.formUnion(kept.map(\.target))
         }
         suggestions.pruneProvenance(appID: app.id, area: .appInformation, keeping: pending)
         noteShownSuggestions()
+        loadPrivacyURLsForSuggestions()
+    }
+
+    /// The pages whose values load on their own and haven't yet.
+    private var unloadedSuggestionPages: [AppInformationPage] {
+        var pages: [AppInformationPage] = []
+        if accessibility.value == nil { pages.append(.accessibility) }
+        if privacy.urls.value == nil { pages.append(.appPrivacy) }
+        return pages
+    }
+
+    /// A User Privacy Choices URL suggestion shows once the URLs are read:
+    /// reads them when one is open and they haven't been.
+    private func loadPrivacyURLsForSuggestions() {
+        guard case .idle = privacy.urls,
+              suggestions.open(for: app.id, area: .appInformation).contains(where: { $0.target.scope.page == .appPrivacy })
+        else { return }
+        privacy.urls = .loading
+        Task { await privacy.loadURLs() }
     }
 
     /// Tells the store what this section shows, for its badge. Accessibility
-    /// loads on its own: until it has, its suggestions stay counted.
+    /// and App Privacy's URLs load on their own: until they have, their
+    /// suggestions stay counted.
     private func noteShownSuggestions() {
-        let shown = Self.suggestionPages.flatMap { visibleSuggestions(on: $0, filter: .all) }
-        let undecided = accessibility.value == nil
-            ? suggestions.open(for: app.id, area: .appInformation).filter { $0.target.scope.page == .accessibility }
-            : []
+        let shown = Self.slotPages.flatMap { visibleSuggestions(on: $0, filter: .all) }
+        let waiting = unloadedSuggestionPages
+        let undecided = waiting.isEmpty
+            ? []
+            : suggestions.open(for: app.id, area: .appInformation).filter { $0.target.scope.page.map(waiting.contains) == true }
         suggestions.noteShown(shown + undecided, appID: app.id, area: .appInformation)
     }
 
@@ -127,7 +149,7 @@ extension AppInformationViewModel {
 
     /// "· 4 coming" under a page in the page column.
     func comingCount(on page: AppInformationPage) -> Int {
-        guard Self.suggestionPages.contains(page) else { return 0 }
+        guard Self.slotPages.contains(page) else { return 0 }
         return suggestionRun?.comingCount(in: suggestionScopes(on: page)) ?? 0
     }
 
@@ -274,13 +296,15 @@ extension AppInformationViewModel {
     /// Opens the first page with suggestions (General when none has any),
     /// and on Accessibility the first device with some.
     func openSuggestions() {
-        openSuggestions(on: Self.suggestionPages.first { suggestionCount(on: $0) > 0 } ?? .general)
+        openSuggestions(on: Self.slotPages.first { suggestionCount(on: $0) > 0 } ?? .general)
     }
 
     /// Opens `page`, and on Accessibility the first device with
     /// suggestions.
     func openSuggestions(on page: AppInformationPage) {
         self.page = page
+        // App Privacy's suggestions are its User Privacy Choices URLs.
+        if page == .appPrivacy { privacy.tab = .urls }
         if page == .accessibility, let family = accessibilitySuggestionFamilies.first(where: { suggestionCount(in: .accessibility($0)) > 0 }) {
             accessibilitySuggestionFamily = family
         }

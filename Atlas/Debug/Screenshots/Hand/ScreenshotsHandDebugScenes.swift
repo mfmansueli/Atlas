@@ -24,10 +24,12 @@ import SwiftUI
 ///   doesn't.
 /// - `hand-import`: Import a Folder before a folder is chosen.
 /// - `hand-proposal`: Claude Code's file for screenshot 3, to accept.
+/// - `hand-removal`, `hand-order`: Claude Code suggests deleting
+///   screenshots 2 and 4, or the order 3, 1, 2, 4, 5, to accept.
 enum ScreenshotsHandDebugScenes {
     static let ids = [
         "hand-page", "hand-select", "hand-changed", "hand-fallback", "hand-replace", "hand-replace-wrong", "hand-delete",
-        "hand-delete-all", "hand-add", "hand-import", "hand-proposal",
+        "hand-delete-all", "hand-add", "hand-import", "hand-proposal", "hand-removal", "hand-order",
     ]
 
     @MainActor
@@ -52,6 +54,10 @@ enum ScreenshotsHandDebugScenes {
             model.pageLocale = fallback
         case "hand-proposal":
             await propose(model)
+        case "hand-removal":
+            await arrange(model, .removal, positions: [1, 3])
+        case "hand-order":
+            await arrange(model, .order, positions: [2, 0, 1, 3, 4])
         default:
             guard let (position, sheet) = sheet(for: id) else { return }
             if let position { select(model, position: position) }
@@ -114,6 +120,24 @@ enum ScreenshotsHandDebugScenes {
             reason: "The darker Week screen reads better behind the German caption, which is longer than the English one."
         )
         document.handProposals = [proposal]
+        await model.commit(document)
+    }
+
+    /// Claude Code's removal or order of German's template-made set, by
+    /// 0-based position.
+    @MainActor
+    private static func arrange(_ model: ScreenshotsViewModel, _ action: ScreenshotHandArrangement.Action, positions: [Int]) async {
+        guard var document = model.document else { return }
+        let set = document.handSetOrStart(locale: "de-DE", displayType: .iPhone, live: model.live)
+        let places = ScreenshotHandPlace.kept(in: set)
+        let reason = action == .removal
+            ? "Screens 2 and 4 show the same week view; German reviewers mention neither."
+            : "German reviews talk about search first, so the Search screen should lead."
+        document.handArrangements = [ScreenshotHandArrangement(
+            id: "ha1", client: "Claude Code", receivedAt: .now, locale: "de-DE", displayType: .iPhone, action: action,
+            places: positions.filter(places.indices.contains).map { places[$0] }, reason: reason,
+            evidence: [SuggestionEvidence(kind: "review", ref: "App Store reviews, de-DE, last 90 days")]
+        )]
         await model.commit(document)
     }
 

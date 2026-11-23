@@ -14,4 +14,4 @@ Each suggestion says who made it and why, under the field it belongs to.
 - **Accept** keeps it, **Edit** lets you change it first, **Dismiss** removes it.
 - **Accept All Languages** takes every language at once and shows the list first, so you can untick any.
 
-> Prices, App Privacy answers, the age rating and App Compliance are never accepted for you. You accept each one.
+> Prices, App Privacy answers (not its URLs), the age rating and App Compliance are never accepted for you. You accept each one.

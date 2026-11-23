@@ -127,6 +127,21 @@ struct ScreenshotHandSet: Codable, Hashable, Sendable, Identifiable {
         return true
     }
 
+    /// Puts the kept places in `order` (every kept slot's ID, once each);
+    /// deleted places stay where they are until they're gone. Returns false
+    /// when `order` doesn't name exactly the kept places.
+    @discardableResult
+    mutating func arrange(_ order: [String]) -> Bool {
+        let keptIDs = kept.map(\.id)
+        guard order.count == keptIDs.count, Set(order) == Set(keptIDs) else { return false }
+        var next = order.compactMap { id in slots.first { $0.id == id } }.makeIterator()
+        for index in slots.indices where !slots[index].isDeleted {
+            guard let slot = next.next() else { return false }
+            slots[index] = slot
+        }
+        return true
+    }
+
     /// Undo Change: a replaced slot gets its own image back, a deleted one
     /// stays, one added by hand goes.
     @discardableResult

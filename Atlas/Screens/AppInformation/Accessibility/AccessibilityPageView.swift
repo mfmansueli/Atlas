@@ -58,6 +58,8 @@ struct AccessibilityPageView: View {
         AccessibilityURLCard(url: viewModel.accessibilityURL, problem: viewModel.accessibilityURLProblem) {
             viewModel.setAccessibilityURL($0)
         }
+        AppInformationFieldSuggestions(viewModel: viewModel, field: .accessibilityURL)
+            .padding(.horizontal, -(Spacing.medium + 2))
     }
 
     /// Two cards per row; cards in a row share its height.

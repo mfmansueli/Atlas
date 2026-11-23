@@ -111,6 +111,43 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertEqual(wellness.value as? Int, 1)
     }
 
+    /// Claude Code's Sign-in required shows under its switch, and the
+    /// suggested demo user name shows its row even before sign-in is on.
+    func testSuggestedSignInAndUserNameShowUnderTheirFields() {
+        launch(scene: "info-signin-suggested")
+        let signIn = element("appInformation.suggestions.demoAccountRequired")
+        XCTAssertTrue(signIn.waitForExistence(timeout: 10))
+        let userName = element("appInformation.suggestions.demoAccountName")
+        XCTAssertTrue(userName.exists)
+        XCTAssertFalse(text(containing: "lumen-sandbox").exists, "No password is suggested.")
+        reveal(signIn)
+        signIn.descendants(matching: .any)["suggestion.accept"].firstMatch.click()
+        XCTAssertTrue(waitUntil { !signIn.exists })
+        let toggle = element("appInformation.review.signInRequired")
+        XCTAssertEqual(toggle.value as? Int, 1)
+    }
+
+    /// The German User Privacy Choices URL Claude Code suggests shows
+    /// under that language's field on App Privacy's Privacy URLs.
+    func testSuggestedPrivacyChoicesURLShowsUnderItsLanguage() {
+        launch(scene: "info-choices-suggested")
+        let card = element("appInformation.suggestions.appPrivacy.de-DE.privacyChoicesUrl")
+        XCTAssertTrue(card.waitForExistence(timeout: 15))
+        XCTAssertTrue(text(containing: "https://lumen.example/de/privacy/choices").exists)
+        reveal(card)
+        card.descendants(matching: .any)["suggestion.accept"].firstMatch.click()
+        XCTAssertTrue(waitUntil { !card.exists })
+    }
+
+    private func waitUntil(timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if condition() { return true }
+            RunLoop.current.run(until: .now.addingTimeInterval(0.2))
+        }
+        return condition()
+    }
+
     /// Ignores saved window state, which can leave the app without a
     /// window under XCUITest.
     private func launch(scene: String) {

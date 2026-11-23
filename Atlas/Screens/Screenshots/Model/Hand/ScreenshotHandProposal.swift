@@ -7,8 +7,8 @@ import Foundation
 
 /// An assistant's suggestion to put a file in place of one screenshot
 /// (`propose_screenshot_file`): shown on the language page beside the
-/// suggested captions, to accept or dismiss. Assistants never delete a
-/// screenshot.
+/// suggested captions, to accept or dismiss. Deleting or moving
+/// screenshots is a `ScreenshotHandArrangement`.
 struct ScreenshotHandProposal: Codable, Hashable, Sendable, Identifiable {
     var id: String
     /// "Claude Code".

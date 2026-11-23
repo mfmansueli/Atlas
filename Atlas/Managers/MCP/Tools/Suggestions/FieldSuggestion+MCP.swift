@@ -22,6 +22,9 @@ extension FieldSuggestion {
         case let .accessibility(family):
             entry["page"] = .string(AppInformationPage.accessibility.rawValue)
             entry["device"] = .string(DeviceFamily(rawValue: family)?.mcpName ?? family)
+        case let .appPrivacy(locale):
+            entry["page"] = .string(AppInformationPage.appPrivacy.rawValue)
+            entry["locale"] = .string(locale)
         }
         return .object(entry)
     }

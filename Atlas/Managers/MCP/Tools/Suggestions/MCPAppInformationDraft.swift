@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// One app's General, Age Rating, Accessibility and App Review values as
-/// an assistant sees them: App Store Connect's for the newest editable
+/// One app's General, Age Rating, Accessibility, App Privacy URLs and App
+/// Review values as an assistant sees them: App Store Connect's for the newest editable
 /// version (else the live one), with everything already queued laid on
 /// top, as App Information shows them. The demo password is never read.
 @MainActor
@@ -21,15 +21,17 @@ struct MCPAppInformationDraft {
     /// version fields these are: what's written is queued tied to it.
     var queuedVersion: QueuedAppVersion?
 
-    /// Accessibility is read only when `includesAccessibility`; when it
-    /// can't be read, its features can't take suggestions.
+    /// Accessibility is read only when `includesAccessibility`, and App
+    /// Privacy's URLs only when `includesPrivacyURLs`; what can't be read
+    /// can't take suggestions.
     /// The version being prepared, or with `version` a new one waiting in
     /// Review & Push (`MCPVersionTarget`).
     static func load(
         app identifier: String,
         version: String? = nil,
         in workspace: MCPWorkspace,
-        includesAccessibility: Bool = true
+        includesAccessibility: Bool = true,
+        includesPrivacyURLs: Bool = false
     ) async throws -> MCPAppInformationDraft {
         let app = try await workspace.app(matching: identifier)
         let services = workspace.services.appInformation
@@ -52,10 +54,12 @@ struct MCPAppInformationDraft {
             throw MCPToolError.unavailable(String(localized: "Couldn’t read \(app.name)’s app information: \(error.localizedDescription)"))
         }
         let accessibility = includesAccessibility ? try? await services.accessibility(for: app) : nil
+        var privacyURLs = includesPrivacyURLs ? try? await services.privacyURLs(for: app) : nil
+        if let queued, let base = privacyURLs { privacyURLs = queued.privacyURLsContent(from: base) }
         let builder = AppInformationChangeBuilder(appID: app.id, ids: content.ids, versionString: content.version?.versionString)
         var draft = MCPAppInformationDraft(
             app: app,
-            slots: AppInformationSlotValues(content: content, accessibility: accessibility, builder: builder, changes: [])
+            slots: AppInformationSlotValues(content: content, accessibility: accessibility, builder: builder, changes: [], privacyURLs: privacyURLs)
         )
         draft.queuedVersion = queued
         return draft.with(changes: draft.queuedChanges(in: workspace.changes))
@@ -65,7 +69,9 @@ struct MCPAppInformationDraft {
     func with(changes: [PendingChange]) -> MCPAppInformationDraft {
         var draft = MCPAppInformationDraft(
             app: app,
-            slots: AppInformationSlotValues(content: content, accessibility: slots.accessibility, builder: builder, changes: changes)
+            slots: AppInformationSlotValues(
+                content: content, accessibility: slots.accessibility, builder: builder, changes: changes, privacyURLs: slots.privacyURLs
+            )
         )
         draft.queuedVersion = queuedVersion
         return draft

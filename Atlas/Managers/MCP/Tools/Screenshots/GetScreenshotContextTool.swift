@@ -7,7 +7,8 @@ import Foundation
 
 /// `get_screenshot_context`: what an assistant needs before captioning:
 /// display types and sizes, slot names, the locales in scope, the primary
-/// captions, the listing's name and subtitle, and the template version.
+/// captions, the listing's name and subtitle, and the template version;
+/// with a locale and device, that set's screenshots in order.
 struct GetScreenshotContextTool: MCPTool {
     let definition = MCPToolDefinition(
         name: "get_screenshot_context",
@@ -19,12 +20,17 @@ struct GetScreenshotContextTool: MCPTool {
         listing's name and subtitle, and the template version. Captions are short marketing headlines drawn \
         above or below a real screenshot of the app; they must fit the template, so check them with \
         measure_caption before proposing. fileUploadURL and fileSizes are for propose_screenshot_file (a file for \
-        one screenshot, never scaled); setsChangedByHand lists the sets the person changed by hand.
+        one screenshot, never scaled); setsChangedByHand lists the sets the person changed by hand. Pass locale and \
+        displayType to read that set as the language page shows it (`set`): each screenshot's position (from 1), id and \
+        what made it (template, a file, or live on the App Store), for propose_screenshot_file, \
+        propose_screenshot_removal and propose_screenshot_order.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "version": MCPToolDefinition.string("The version string, e.g. 1.4. Leave it out for the version being prepared."),
+                "locale": MCPToolDefinition.string("With displayType: the language whose set to list, e.g. de-DE."),
+                "displayType": MCPToolDefinition.string("With locale: iphone, iphone_duo, ipad, mac, watch or vision_pro."),
             ],
             required: ["appId"]
         )
@@ -71,6 +77,11 @@ struct GetScreenshotContextTool: MCPTool {
                     }),
                 ]
             })
+        }
+        if let code = try arguments.optionalString("locale") {
+            let display = try MCPScreenshotHandSet.displayType(arguments.optionalString("displayType") ?? ScreenshotDisplayType.iPhone.mcpValue)
+            let set = try await MCPScreenshotHandSet.load(draft, locale: draft.locale(code), displayType: display, in: context.workspace)
+            result["set"] = set.json
         }
         if let listing {
             result["version"] = listing.versionJSON

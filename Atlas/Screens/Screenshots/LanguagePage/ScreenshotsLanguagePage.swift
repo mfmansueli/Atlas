@@ -118,10 +118,14 @@ struct ScreenshotsLanguagePage: View {
     private var suggestions: some View {
         let captions = viewModel.proposedCaptions(in: locale)
         let files = viewModel.handProposals(locale: locale.code, displayType: viewModel.displayType)
+        let arrangements = viewModel.handArrangements(locale: locale.code, displayType: viewModel.displayType)
+        ForEach(arrangements) { arrangement in
+            ScreenshotHandArrangementCard(viewModel: viewModel, arrangement: arrangement)
+        }
         ForEach(files) { proposal in
             ScreenshotHandProposalCard(viewModel: viewModel, proposal: proposal)
         }
-        if captions.isEmpty, !files.isEmpty {
+        if captions.isEmpty, !files.isEmpty || !arrangements.isEmpty {
             EmptyView()
         } else if captions.isEmpty {
             Text("Nothing to review in \(locale.name).")
