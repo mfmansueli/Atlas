@@ -23,7 +23,9 @@ enum AIProviderKeyStatus: Equatable, Sendable {
         case AIProviderError.unauthorized: self = .rejected(vendor)
         case let error as URLError where Self.offlineCodes.contains(error.code):
             self = .unchecked(vendor, reason: String(localized: "You’re offline. Check again when this Mac is back online."))
-        default: self = .unchecked(vendor, reason: error.localizedDescription)
+        default:
+            let what = String(localized: "The key couldn’t be checked.", comment: "kind:error")
+            self = .unchecked(vendor, reason: AIProviderError.message(for: error, what: what))
         }
     }
 

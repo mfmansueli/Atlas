@@ -278,7 +278,7 @@ struct ReleaseViewModelTests {
     @Test func aPhasedReleasePausesResumesAndEndsEarly() async {
         let (model, _) = await makeModel(.phased)
         #expect(model.cardTitle == "1.4 is rolling out")
-        #expect(model.cardSubtitle.hasPrefix("5% of people with automatic updates have 1.4 so far."))
+        #expect(model.cardSubtitle.hasPrefix("5% of people with automatic updates have 1.4."))
         #expect(model.pauseAction == .pause)
         #expect(model.pauseTitle == "Pause Phased Release")
         await model.perform(.pause)

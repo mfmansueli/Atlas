@@ -22,7 +22,7 @@ struct AssistantActivityScreenshotTests {
         )
         #expect(activity.isVisible)
         #expect(activity.proposalCount == 3)
-        #expect(activity.title == "3 proposals")
+        #expect(activity.title == "3 suggestions")
         #expect(activity.apps.map(\.appID) == ["1", "2"])
         #expect(activity.rows.map(\.appID) == ["1", "2", "3"])
         #expect(activity.reviewCount == 1)

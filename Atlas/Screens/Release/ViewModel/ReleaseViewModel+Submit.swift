@@ -151,7 +151,7 @@ extension ReleaseViewModel {
             if error is SubmissionFailure { await readEvents() }
             let failure = error as? SubmissionFailure
             let text = failure.map { Self.failureText($0, events: events, plan: plan, versionString: versionString, now: now()) }
-                ?? error.localizedDescription
+                ?? AppleErrorCopy(String(localized: "The version wasn’t submitted.", comment: "kind:error"), error: error).text
             submitError = text
             submitFailure = SubmitFailureNote(
                 text: text, date: now(), pastDateEventIDs: failure.flatMap { Self.onlyPastDateEventIDs($0, plan: plan) }, events: events

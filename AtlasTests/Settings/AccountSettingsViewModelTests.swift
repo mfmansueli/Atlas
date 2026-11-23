@@ -92,7 +92,7 @@ struct AccountSettingsViewModelTests {
         store.deleteError = KeychainError(status: errSecAuthFailed)
         let vm = model(store)
         vm.remove(keyID: northpier.keyID)
-        #expect(vm.errorMessage == KeychainError(status: errSecAuthFailed).errorDescription)
+        #expect(vm.errorMessage == AppleErrorCopy("The key wasn’t removed.", error: KeychainError(status: errSecAuthFailed)).text)
         #expect(vm.keys == [northpier])
     }
 }

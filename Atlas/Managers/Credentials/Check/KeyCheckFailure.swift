@@ -22,7 +22,8 @@ enum KeyCheckFailure: Equatable, Sendable {
         case AppStoreConnectError.unauthorized: self = .rejected
         case AppStoreConnectError.forbidden: self = .roleTooLow
         case let error as URLError where Self.offlineCodes.contains(error.code): self = .offline
-        default: self = .other(error.localizedDescription)
+        // What to do, then Apple's or the system's own words under Details.
+        default: self = .other(AppleErrorCopy(summary: AppleErrorCopy.nextStep(for: error) ?? "", details: AppleErrorCopy.details(for: error)).text)
         }
     }
 

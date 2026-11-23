@@ -186,7 +186,7 @@ struct InAppEventDatesViewModelTests {
     @Test func datesAtlasCantSendStayAsTheyAre() async throws {
         let event = Self.event(publish: -0.5, start: 3.5, end: 10, territories: [])
         let model = await makeModel(event)
-        #expect(model.datesEditProblem(of: event)?.hasPrefix("Atlas doesn’t know which countries or regions") == true)
+        #expect(model.datesEditProblem(of: event)?.hasPrefix("Atlas doesn’t know where") == true)
         model.setDate(.publishStart, to: Data.day(2), of: event)
         #expect(queue.changes.isEmpty)
         // Still a problem, without Fix…: it's changed in App Store Connect.

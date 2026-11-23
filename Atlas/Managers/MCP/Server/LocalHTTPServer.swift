@@ -77,6 +77,6 @@ final class LocalHTTPServer: LocalHTTPServing, @unchecked Sendable {
         if case let NWError.posix(code) = error, code == .EADDRINUSE {
             return String(localized: "Port \(String(port)) is in use by another app.")
         }
-        return error.localizedDescription
+        return AppleErrorCopy(String(localized: "The local server didn’t start.", comment: "kind:error"), error: error).text
     }
 }

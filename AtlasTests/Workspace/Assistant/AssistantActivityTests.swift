@@ -36,7 +36,7 @@ struct AssistantActivityTests {
         #expect(activity.client == "Cursor")
         #expect(activity.isVisible)
         #expect(!activity.isWorking)
-        #expect(activity.title == "3 proposals")
+        #expect(activity.title == "3 suggestions")
         #expect(activity.accessibilityLabel == "3 suggestions to review")
     }
 

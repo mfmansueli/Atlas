@@ -249,7 +249,7 @@ struct ProposeInAppEventToolTests {
 
     @Test func aReferenceNameAnEventHasIsRefused() async throws {
         let outcome = try await propose(newYear(["appId": "Lumen Journal", "referenceName": "winter reflection 2026"]))
-        #expect(Self.reasons(outcome).first?.hasPrefix("Another event already has the reference name") == true)
+        #expect(Self.reasons(outcome).first?.hasSuffix("is taken by another event. Choose another name.") == true)
         #expect(changes.changes.isEmpty)
     }
 

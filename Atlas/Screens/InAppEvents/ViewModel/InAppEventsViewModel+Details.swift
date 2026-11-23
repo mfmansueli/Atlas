@@ -160,7 +160,7 @@ extension InAppEventsViewModel {
             undo = nil
             await load(force: true)
         } catch {
-            actionError = error.localizedDescription
+            actionError = AppleErrorCopy(String(localized: "The event wasn’t submitted.", comment: "kind:error"), error: error).text
         }
     }
 

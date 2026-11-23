@@ -89,7 +89,7 @@ struct EventSubmitPreflightTests {
         // No project folder: still not a block.
         let noFolder = preflight(state: .noFolder)
         #expect(!noFolder.blocks)
-        #expect(noFolder.note?.contains("choose Lumen Journal’s project folder") == true)
+        #expect(noFolder.note?.contains("Choose Lumen Journal’s project folder") == true)
     }
 
     @Test func aCheckThatFailedWarnsButDoesntBlock() {
@@ -133,8 +133,8 @@ struct EventSubmitPreflightTests {
         let text = ReleaseViewModel.failureText(failure, events: Events.events, plan: Self.plan, versionString: "1.4")
         #expect(text == """
         App Store Connect didn’t add the In-App Event “Mood Calendar” to the submission. You must provide a value for the attribute 'deepLink' with this request
-        Nothing went to App Review. App Store Connect keeps the review submission as a draft with 1.4 and “Gratitude Week”. Fix what it names, \
-        or untick the event, and Submit again: Atlas sends that same draft, without the events you untick.
+        Nothing went to App Review. The submission stays a draft with 1.4 and “Gratitude Week”. Fix what it names or untick the event, then \
+        Submit again.
         """)
     }
 
@@ -161,7 +161,7 @@ struct EventSubmitPreflightTests {
         #expect(text.hasPrefix("App Store Connect didn’t send the submission to App Review."))
         #expect(text.contains("'deepLink' with this request (“Mood Calendar”)"))
         #expect(text.contains("'deepLink' with this request (“Gratitude Week”)"))
-        #expect(text.contains("as a draft with 1.4, “Gratitude Week”"))
+        #expect(text.contains("stays a draft with 1.4, “Gratitude Week”"))
         #expect(text.contains("“Mood Calendar”. Fix what it names"))
     }
 

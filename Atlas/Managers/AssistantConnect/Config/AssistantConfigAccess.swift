@@ -44,7 +44,9 @@ final class AssistantConfigAccess: AssistantConfigWriting {
         do {
             try data.write(to: file, options: .atomic)
         } catch {
-            throw AssistantConfigProblem.writeFailed(error.localizedDescription)
+            throw AssistantConfigProblem.writeFailed(
+                AppleErrorCopy(String(localized: "Atlas couldn’t write \(assistant.title)’s settings.", comment: "kind:error"), error: error).text
+            )
         }
     }
 

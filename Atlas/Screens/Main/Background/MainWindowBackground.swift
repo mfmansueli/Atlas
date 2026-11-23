@@ -105,9 +105,13 @@ struct MainWindowBackground {
             reviews.markReplySentByHand()
             autoReply.personReplied(to: reviewID, appID: appID)
         } catch {
+            let copy = AppleErrorCopy(String(localized: "Your reply wasn’t sent.", comment: "kind:error"), error: error)
+            let body = AppleErrorCopy(
+                summary: String(localized: "\(copy.summary) It waits under the review.", comment: "kind:notification"), details: copy.details
+            )
             AtlasNotifier.shared.post(
                 .pushFailed, title: String(localized: "The reply wasn’t sent"),
-                body: String(localized: "\(error.localizedDescription) It waits under the review."),
+                body: body.text,
                 identifier: "autoreply.\(appID).\(reviewID)"
             )
         }

@@ -133,7 +133,7 @@ struct InAppEventsViewModelTests {
         #expect(store.open(for: Data.app.id).map(\.eventID) == ["winter", "winter", "winter"])
         #expect(model.suggestedCount == 3)
         model.acceptAllLanguages()
-        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. They’re waiting in Review & Push, top right.")
+        #expect(model.toast?.text == "Accepted 3 languages for Winter Reflection Challenge. In Review & Push.")
         let prefix = "inAppEvents.\(Data.app.id).winter."
         #expect(queue.changes(for: Data.app.id).map { String($0.id.dropFirst(prefix.count)) }.sorted() == [
             "de-DE.longDescription", "de-DE.name", "de-DE.shortDescription", "ja.new", "ko.new",
@@ -205,7 +205,7 @@ struct InAppEventsViewModelTests {
         event.deepLink = "lumen://spring"
         #expect(model.add(event))
         // Queued, the name is taken too.
-        #expect(model.problem(for: event)?.hasPrefix("Another event already has the reference name") == true)
+        #expect(model.problem(for: event)?.hasSuffix("is taken by another event. Choose another name.") == true)
         event.referenceName = "Summer 2027"
         event.eventStart = Data.day(-1)
         event.eventEnd = Data.day(3)

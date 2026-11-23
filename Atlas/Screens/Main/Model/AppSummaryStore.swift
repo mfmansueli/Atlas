@@ -81,7 +81,7 @@ final class AppSummaryStore {
         do {
             pricing[app.id] = try await .loaded(services.pricing.summary(for: app))
         } catch {
-            pricing[app.id] = .failed(error.localizedDescription)
+            pricing[app.id] = .failed(AppleErrorCopy(String(localized: "Prices didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -91,7 +91,7 @@ final class AppSummaryStore {
         do {
             storePage[app.id] = try await .loaded(services.storePage.summary(for: app))
         } catch {
-            storePage[app.id] = .failed(error.localizedDescription)
+            storePage[app.id] = .failed(AppleErrorCopy(String(localized: "The Store Page didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 
@@ -101,7 +101,7 @@ final class AppSummaryStore {
         do {
             appInformation[app.id] = try await .loaded(services.appInformation.summary(for: app))
         } catch {
-            appInformation[app.id] = .failed(error.localizedDescription)
+            appInformation[app.id] = .failed(AppleErrorCopy(String(localized: "App Information didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

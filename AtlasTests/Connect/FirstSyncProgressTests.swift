@@ -37,8 +37,8 @@ struct FirstSyncProgressTests {
     }
 
     @Test func withoutTheTeamNameItSaysHowManyApps() {
-        #expect(FirstSyncProgress(appCount: 6).summary.hasPrefix("Found 6 apps. Atlas is reading their"))
-        #expect(FirstSyncProgress(appCount: 1, teamName: "Alba").summary.hasPrefix("Found 1 app in Alba. Atlas is reading its store page"))
+        #expect(FirstSyncProgress(appCount: 6).summary.hasPrefix("Found 6 apps. Reading their"))
+        #expect(FirstSyncProgress(appCount: 1, teamName: "Alba").summary.hasPrefix("Found 1 app in Alba. Reading its store page"))
     }
 
     @Test func finishedSyncIsFull() {

@@ -41,7 +41,7 @@ extension ReleaseViewModel {
             await load()
             onChanged()
         } catch {
-            actionError = error.localizedDescription
+            actionError = AppleErrorCopy(String(localized: "App Store Connect didn’t make the change.", comment: "kind:error"), error: error).text
         }
     }
 

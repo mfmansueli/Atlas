@@ -7,7 +7,8 @@ import Foundation
 
 /// What can go wrong talking to App Store Connect, with the message the UI
 /// shows. HTTP failures carry the first `detail` Apple sent back, if any,
-/// followed by the reasons in its associated errors.
+/// followed by the reasons in its associated errors, on a "Details:" line
+/// after Atlas's sentence.
 enum AppStoreConnectError: LocalizedError, Equatable {
     /// The `.p8` contents aren't a P-256 private key.
     case invalidPrivateKey
@@ -50,13 +51,15 @@ enum AppStoreConnectError: LocalizedError, Equatable {
         case let .forbidden(detail):
             Self.message(String(localized: "This API key isn't allowed to do that. Team keys need the Admin or App Manager role."), detail: detail)
         case let .notFound(detail):
-            Self.message(String(localized: "App Store Connect couldn't find that resource."), detail: detail)
+            Self.message(String(localized: "App Store Connect couldn't find that resource. Refresh and try again."), detail: detail)
         case .rateLimited:
             String(localized: "App Store Connect's hourly request limit was reached. Try again in a few minutes.")
         case let .rejected(statusCode, code, detail):
             Self.message(String(localized: "App Store Connect refused the change (\(code ?? String(statusCode)))."), detail: detail)
-        case let .server(statusCode, _, detail):
+        case let .server(statusCode, _, detail) where statusCode >= 500:
             Self.message(String(localized: "App Store Connect had a problem (\(statusCode)). Try again in a minute."), detail: detail)
+        case let .server(statusCode, _, detail):
+            Self.message(String(localized: "App Store Connect refused the request (\(statusCode))."), detail: detail)
         case .invalidResponse:
             String(localized: "App Store Connect sent an answer Atlas can’t read. Try again.")
         case .unexpectedPayload:
@@ -139,8 +142,9 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     /// What precedes an event's id in a reason: "In-App Event ".
     static let eventMarker = "In-App Event "
 
+    /// The error template: Atlas's sentence, then Apple's own words on a
+    /// "Details:" line, never run into the sentence.
     private static func message(_ summary: String, detail: String?) -> String {
-        guard let detail, !detail.isEmpty else { return summary }
-        return "\(summary) \(detail)"
+        AppleErrorCopy(summary: summary, details: detail).text
     }
 }

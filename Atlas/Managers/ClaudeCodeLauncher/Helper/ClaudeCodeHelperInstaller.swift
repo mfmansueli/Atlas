@@ -21,8 +21,9 @@ enum ClaudeCodeHelperInstaller {
             switch self {
             case let .wrongFolder(folder):
                 String(localized: "The helper only works in \(folder). Save it there, without changing the folder.")
+            // Already a whole sentence: Atlas's, or the error template's.
             case let .couldNotWrite(message):
-                String(localized: "Couldn’t save the helper: \(message)")
+                message
             }
         }
     }
@@ -42,7 +43,9 @@ enum ClaudeCodeHelperInstaller {
     /// person cancelled.
     @discardableResult
     static func install() throws(Problem) -> Bool {
-        guard let directory = scriptsDirectory else { throw .couldNotWrite(String(localized: "There’s no scripts folder for Atlas.")) }
+        guard let directory = scriptsDirectory else {
+            throw .couldNotWrite(String(localized: "Couldn’t save the helper: there’s no scripts folder for Atlas.", comment: "kind:error"))
+        }
         let panel = NSSavePanel()
         panel.directoryURL = directory
         panel.nameFieldStringValue = ClaudeCodeHelperScript.fileName
@@ -68,7 +71,7 @@ enum ClaudeCodeHelperInstaller {
             try Data(ClaudeCodeHelperScript.contents.utf8).write(to: url, options: .atomic)
             try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: url.path)
         } catch {
-            throw .couldNotWrite(error.localizedDescription)
+            throw .couldNotWrite(AppleErrorCopy(String(localized: "The helper wasn’t saved.", comment: "kind:error"), error: error).text)
         }
     }
 
