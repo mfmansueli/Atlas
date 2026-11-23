@@ -27,8 +27,7 @@ enum QuitChoice: Hashable, Sendable {
         let alert = NSAlert()
         alert.messageText = String(localized: "A push is running")
         alert.informativeText = String(localized: """
-        Atlas can quit once the push is done. If it quits now, what didn’t reach App Store Connect stays in Review & Push \
-        for next time.
+        Atlas can quit after the push. Quit now, and unsent changes stay in Review & Push.
         """)
         alert.addButton(withTitle: String(localized: "Quit After the Push"))
         alert.addButton(withTitle: String(localized: "Quit Now"))

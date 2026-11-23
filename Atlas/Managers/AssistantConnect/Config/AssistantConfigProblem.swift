@@ -20,7 +20,7 @@ enum AssistantConfigProblem: LocalizedError, Equatable {
         case let .folderMissing(assistant):
             String(localized: "\(assistant.title) hasn’t made its settings folder yet. Open it once, then try again.")
         case let .notAllowed(assistant):
-            String(localized: "Atlas needs to be allowed into \(assistant.title)’s settings folder once, to add itself there.")
+            String(localized: "Allow Atlas into \(assistant.title)’s settings folder once, so it can add itself.")
         case let .wrongFolder(assistant, chosen):
             String(localized: "“\(chosen)” isn’t \(assistant.title)’s settings folder. Choose the folder Atlas opens the panel in.")
         case let .writeFailed(message):

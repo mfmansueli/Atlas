@@ -38,11 +38,11 @@ struct AtlasCodeIdentityTests {
     @Test func theFailureSaysWhatToDo() {
         let failure = ClaudeCodeRunFailure.atlasReplaced(onDisk: "Atlas")
         #expect(failure.title == "Open Atlas again to start Claude Code")
-        #expect(failure.detail.contains("a build signed as “Atlas”"))
-        #expect(failure.detail.contains("quit Atlas"))
+        #expect(failure.detail.hasPrefix("A build signed as “Atlas” replaced Atlas"))
+        #expect(failure.detail.contains("quit and open a signed build"))
         #expect(!failure.canRetry)
         #expect(!failure.needsFolder)
-        #expect(ClaudeCodeRunFailure.atlasReplaced(onDisk: nil).detail.contains("another build"))
+        #expect(ClaudeCodeRunFailure.atlasReplaced(onDisk: nil).detail.hasPrefix("Another build replaced Atlas"))
         #expect(ClaudeCodeRunFailure.couldNotStart("x").canRetry)
     }
 }

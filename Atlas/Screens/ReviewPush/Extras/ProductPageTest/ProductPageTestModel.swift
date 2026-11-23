@@ -77,7 +77,7 @@ final class ProductPageTestModel: Identifiable {
 
     /// The sheet's first line.
     static let explanation = String(localized: """
-    Tests one idea at a time. Apple splits traffic between your current page and this treatment; results appear in App Store Connect.
+    Tests one idea. Apple splits traffic between your page and this treatment; results show in App Store Connect.
     """)
 
     init(
@@ -153,7 +153,7 @@ final class ProductPageTestModel: Identifiable {
     /// Why Create Test is off, or nil.
     var createBlockReason: String? {
         if usesLibrary {
-            guard !rows.isEmpty else { return String(localized: "The proposal has no language to test.") }
+            guard !rows.isEmpty else { return String(localized: "The suggestion has no language to test.") }
         } else if variant == nil {
             return String(localized: "The variant isn’t in yet.")
         }

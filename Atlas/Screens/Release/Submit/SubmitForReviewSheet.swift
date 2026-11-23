@@ -94,7 +94,7 @@ struct SubmitForReviewSheet: View {
                 }
                 .buttonStyle(.borderless)
                 .controlSize(.regular)
-                .help("Look for builds uploaded since this opened")
+                .help("Checks for newly uploaded builds")
                 .accessibilityIdentifier("submit.checkBuilds")
             }
         } content: {
@@ -116,7 +116,7 @@ struct SubmitForReviewSheet: View {
                 )
                 .accessibilityIdentifier("submit.build.\(build.number)")
             }
-            Text("Atlas checks every minute while this is open. A new upload shows a few minutes after Xcode finishes it.")
+            Text("Checks every minute while open. New builds show minutes after Xcode uploads them.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -242,7 +242,7 @@ struct SubmitForReviewSheet: View {
                 }
                 .accessibilityIdentifier("submit.encryption.\(answer.rawValue)")
             }
-            Text("Saved to App Information → Export Compliance, so the next version asks only if something changed.")
+            Text("Saved to App Information → Export Compliance. Next version asks only if it changes.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
@@ -273,7 +273,7 @@ struct SubmitForReviewSheet: View {
             HStack(alignment: .top, spacing: Spacing.small) {
                 caption(
                     String(localized: "Reset the rating summary"),
-                    String(localized: "Apple’s API can’t turn it on. To start \(viewModel.versionString) with a fresh rating, set it in App Store Connect before you submit.")
+                    String(localized: "Set this in App Store Connect before you submit to start \(viewModel.versionString) with a fresh rating.")
                 )
                 ExternalLinkButton(title: String(localized: "Open"), url: viewModel.appStoreConnectURL, isLink: true)
             }
@@ -284,7 +284,7 @@ struct SubmitForReviewSheet: View {
         switch kind {
         case .afterApproval: nil
         case .manual: String(localized: "Atlas tells you when it’s approved.")
-        case .scheduled: String(localized: "Apple releases it at the time you pick, or once it’s approved if that’s later.")
+        case .scheduled: String(localized: "Released at your chosen time, or on approval if later.")
         }
     }
 

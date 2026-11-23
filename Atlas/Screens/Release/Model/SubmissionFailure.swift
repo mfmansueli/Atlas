@@ -45,8 +45,14 @@ struct SubmissionFailure: LocalizedError, Sendable {
         do {
             return try await work()
         } catch {
+            // App Store Connect's refusals already read as the error template
+            // (Atlas's sentence, then Apple's words under Details); anything
+            // else (the network, the system) goes through it here.
+            let message = error is AppStoreConnectError
+                ? error.localizedDescription
+                : AppleErrorCopy(String(localized: "This step didn’t go through.", comment: "kind:error"), error: error).text
             throw SubmissionFailure(
-                step: step, message: error.localizedDescription, submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs,
+                step: step, message: message, submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs,
                 underlying: error as? AppStoreConnectError
             )
         }

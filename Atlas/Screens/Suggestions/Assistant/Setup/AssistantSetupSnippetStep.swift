@@ -33,8 +33,8 @@ struct AssistantSetupSnippetStep: View {
             AssistantSetupOptionRow(
                 title: String(localized: "Atlas starts Claude Code"),
                 detail: String(localized: """
-                No Terminal and nothing to paste. Save a small helper once; when you ask, Atlas runs your Claude Code \
-                in the app’s project folder, with its own token for that run, and shows what it does.
+                No Terminal, nothing to paste. Save a small helper once. Atlas then runs Claude Code in the project folder, \
+                with a token per run, and shows what it does.
                 """),
                 badge: String(localized: "Recommended"),
                 isSelected: viewModel.launches
@@ -76,7 +76,7 @@ struct AssistantSetupSnippetStep: View {
                     Label(viewModel.hasCopiedSnippet ? String(localized: "Copied") : viewModel.kind.copyTitle, systemImage: "doc.on.doc")
                 }
                 .accessibilityIdentifier("assistantSetup.copy")
-                Text("Includes a new token just for \(viewModel.kind.title).")
+                Text("Includes a new token for \(viewModel.kind.title) only.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }

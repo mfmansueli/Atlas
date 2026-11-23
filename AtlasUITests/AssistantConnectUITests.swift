@@ -42,7 +42,7 @@ final class AssistantConnectUITests: XCTestCase {
         let test = app.buttons["settings.ai.test.claudeCode"]
         XCTAssertTrue(test.waitForExistence(timeout: 15))
         XCTAssertTrue(element("settings.ai.try.claudeCode").exists)
-        XCTAssertTrue(text(of: element("settings.ai.assistant.claudeCode.status")).hasPrefix("Connected just now"))
+        XCTAssertTrue(text(of: element("settings.ai.assistant.claudeCode.status")).hasPrefix("Connected a moment ago"))
         attach("set-assistants-done")
         test.click()
         // The pretend Claude Code makes its suggestion and the button says so.

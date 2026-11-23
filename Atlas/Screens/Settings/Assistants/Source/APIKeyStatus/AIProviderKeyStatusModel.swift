@@ -29,7 +29,8 @@ final class AIProviderKeyStatusModel {
         do {
             key = preferences.hasAPIKey ? try preferences.apiKey() : nil
         } catch {
-            status = .unchecked(vendor, reason: error.localizedDescription)
+            let what = String(localized: "The key couldn’t be read from the Keychain.", comment: "kind:error")
+            status = .unchecked(vendor, reason: AppleErrorCopy(what, error: error).text)
             return
         }
         guard let key else {

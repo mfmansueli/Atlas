@@ -28,7 +28,7 @@ struct AssistantIntroCard: View {
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                     HStack(spacing: Spacing.small) {
-                        Text("Use your own AI assistant or API key with Atlas")
+                        Text("Use your own assistant or API key")
                             .font(.headline)
                             .accessibilityAddTraits(.isHeader)
                         Pill(text: statusText, style: status.isWaiting ? .warning : .outline)
@@ -36,8 +36,8 @@ struct AssistantIntroCard: View {
                             .accessibilityIdentifier("overview.assistantIntro.status")
                     }
                     Text("""
-                    Your assistant reads \(appName)’s code and suggests store text, answers and captions. Every suggestion \
-                    waits here for you; nothing goes to App Store Connect until you push.
+                    Your assistant reads \(appName)’s code and suggests store text, answers and captions. Nothing is sent \
+                    until you push.
                     """)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)

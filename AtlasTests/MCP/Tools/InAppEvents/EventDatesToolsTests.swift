@@ -93,7 +93,7 @@ struct EventDatesToolsTests {
     @Test func datesAtlasCantSendSayWhy() async throws {
         let (_, event) = try await read([Self.event(publish: -0.5, start: 3.5, end: 10, territories: [])])
         #expect(event["datesEditable"] == false)
-        #expect(event["datesNotEditable"]?.stringValue?.hasPrefix("Atlas doesn’t know which countries or regions") == true)
+        #expect(event["datesNotEditable"]?.stringValue?.hasPrefix("Atlas doesn’t know where") == true)
         #expect(event["missingForReview"]?.arrayValue?.first?["item"] == "publishStartPassed")
     }
 
@@ -178,7 +178,7 @@ struct EventDatesToolsTests {
             ["publishStart": "2026-11-18T12:00:00Z"], events: [Self.event(publish: -0.5, start: 3.5, end: 10, territories: [])]
         )
         #expect(outcome.result["status"] == "refused")
-        #expect(Self.reasons(outcome).first?.hasPrefix("dates: Atlas doesn’t know which countries or regions") == true)
+        #expect(Self.reasons(outcome).first?.hasPrefix("dates: Atlas doesn’t know where") == true)
         #expect(changes.changes.isEmpty)
     }
 

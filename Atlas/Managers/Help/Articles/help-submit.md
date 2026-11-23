@@ -11,11 +11,11 @@ related: push, events, assistant
 2. Click **Submit for Review…** Choose the build, check What’s New in every language, and answer the encryption question.
 3. Choose what happens after approval: release right away, by you, or on a date.
 
-> The bottom of the sidebar shows the version’s status from every section. If Apple rejects it, the card says so and links to Apple’s message in App Store Connect, where you read it and reply.
+> The sidebar’s bottom shows the version’s status. If Apple rejects it, the card links to Apple’s message in App Store Connect, where you reply.
 
-## When an assistant proposes it
+## When an assistant suggests it
 
-A connected assistant can propose what to do next: submit with a build and release choices, release an approved version, pause, resume or finish a phased release, cancel a submission, or send a rejected one back. The proposal waits on the version card with who sent it and why.
+A connected assistant can suggest the next step: submit (with build and release choices), release, pause, resume or finish a phased release, cancel a submission, or resend a rejected one. It waits on the version card with its source and reason.
 
-- **Confirm** does what the card’s own button does, and asks first where the card asks. A proposed submission opens **Submit for Review…** with its choices, and nothing goes to Apple until you click Submit.
-- **Dismiss** removes it. A proposal the version no longer allows says why, and can only be dismissed.
+- **Confirm** acts like the card’s own button, including its questions. A suggested submission opens **Submit for Review…** filled in; nothing goes to Apple until you click Submit.
+- **Dismiss** removes it. A suggestion the version no longer allows says why and can only be dismissed.

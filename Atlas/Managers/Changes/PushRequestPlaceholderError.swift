@@ -18,9 +18,9 @@ enum PushRequestPlaceholderError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .missingCreatedID:
-            String(localized: "App Store Connect didn't return the new resource's ID, so the next step couldn't be sent.")
+            String(localized: "App Store Connect sent no ID, so the next step wasn’t sent. Refresh, then retry.")
         case .missingSecret:
-            String(localized: "A password this change needs isn't in this Mac's Keychain any more. Enter it again.")
+            String(localized: "Keychain no longer has this change’s password. Enter it again.")
         }
     }
 }

@@ -65,8 +65,8 @@ struct ConnectableAssistantRow: View {
         }
         guard server.isEnabled else { return String(localized: "Can’t connect while connections are off") }
         if let fresh {
-            guard let folder = fresh.folder else { return String(localized: "Connected just now") }
-            return String(localized: "Connected just now · reads \(ProjectFolderPath.abbreviated(folder))")
+            guard let folder = fresh.folder else { return String(localized: "Connected a moment ago") }
+            return String(localized: "Connected a moment ago · reads \(ProjectFolderPath.abbreviated(folder))")
         }
         return String(localized: "Connected · \(Self.lastUsed(client.lastSeenAt))")
     }
@@ -137,9 +137,9 @@ struct ConnectableAssistantRow: View {
         case .sending:
             return String(localized: "\(assistant.title) is writing a subtitle for \(fresh.appName)…")
         case .arrived:
-            return String(localized: "A test suggestion arrived in Store Page, marked as a test. It works.")
+            return String(localized: "A test suggestion arrived in Store Page. It works.")
         case .copied:
-            return String(localized: "The test is on the clipboard. Paste it into \(assistant.title): its suggestion arrives in Store Page, marked as a test.")
+            return String(localized: "Test copied. Paste it into \(assistant.title); the suggestion arrives in Store Page, marked as a test.")
         case let .failed(reason):
             return String(localized: "The test didn’t arrive: \(reason)")
         }

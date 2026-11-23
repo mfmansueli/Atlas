@@ -64,7 +64,7 @@ struct ExtrasReviewSection: View {
             if viewModel.screenshots.canPushExtras {
                 Button("Asset Library…") { viewModel.openAssetLibrary(plan) }
                     .controlSize(.regular)
-                    .help(String(localized: "The files uploaded for \(plan.appName) on App Store Connect: see which are on a page and delete leftovers."))
+                    .help(String(localized: "Lists \(plan.appName)’s files in App Store Connect so you can delete unused ones."))
                     .accessibilityIdentifier("review.extras.library.\(plan.appID)")
             }
             if !plan.items.isEmpty {
@@ -75,7 +75,7 @@ struct ExtrasReviewSection: View {
                 }
                 .controlSize(.regular)
                 .disabled(count == 0 || extras.isPushing || !viewModel.screenshots.canPushExtras)
-                .help(String(localized: "Uploads them to the app’s asset library and places each on its language’s page. Images with errors stay here."))
+                .help(String(localized: "Pushes each to its language’s page. Images with errors stay here."))
                 .accessibilityIdentifier("review.extras.push.\(plan.appID)")
             }
         }

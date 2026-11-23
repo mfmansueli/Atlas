@@ -38,12 +38,12 @@ struct StillRunningNote: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            Text("It keeps pushes and Autopilot going, and checks for new reviews and Apple’s answers. Find it here, in the menu bar.")
+            Text("It finishes pushes and Autopilot, and checks for reviews and Apple’s answers. Find it in the menu bar.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.xSmall) {
                 Spacer(minLength: 0)
-                Button("Quit When I Close the Window", action: onQuitWhenClosed)
+                Button("Quit When Window Closes", action: onQuitWhenClosed)
                     .controlSize(.regular)
                     .accessibilityIdentifier("stillRunning.quitWhenClosed")
                 Button("Got It", action: onDismiss)

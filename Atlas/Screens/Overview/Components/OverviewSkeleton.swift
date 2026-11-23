@@ -17,7 +17,7 @@ struct OverviewSkeleton: View {
             }
         }
         .accessibilityElement()
-        .accessibilityLabel(Text("Loading"))
+        .accessibilityLabel(Text("Loading App Information"))
         .accessibilityIdentifier("overview.skeleton")
     }
 }

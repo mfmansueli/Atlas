@@ -102,15 +102,15 @@ struct AssistantActivity: Hashable {
     var accessibilityLabel: String {
         if let workingClient { return String(localized: "\(workingClient) is suggesting changes") }
         return proposalCount == 1
-            ? String(localized: "1 proposal waiting for review")
-            : String(localized: "\(proposalCount) proposals waiting for review")
+            ? String(localized: "1 suggestion to review")
+            : String(localized: "\(proposalCount) suggestions to review")
     }
 
     static func proposalsText(_ count: Int) -> String {
         switch count {
         case 0: String(localized: "None")
-        case 1: String(localized: "1 proposal")
-        default: String(localized: "\(count) proposals")
+        case 1: String(localized: "1 suggestion")
+        default: String(localized: "\(count) suggestions")
         }
     }
 }

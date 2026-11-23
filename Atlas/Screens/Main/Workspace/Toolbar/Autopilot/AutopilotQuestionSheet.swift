@@ -20,11 +20,11 @@ struct AutopilotQuestionSheet: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Text("Ask \(client)")
                 .font(.body.weight(.semibold))
-            Text("What should \(client) do for \(appName)? It reads the app and its project, and what it changes waits for you, marked in purple.")
+            Text("What should \(client) do for \(appName)? Its changes wait for you, marked in purple.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
-            TextField("Make the subtitle about journaling at night", text: $question, axis: .vertical)
+            TextField("Subtitle about journaling at night", text: $question, axis: .vertical)
                 .lineLimit(3...6)
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("autopilot.question.field")

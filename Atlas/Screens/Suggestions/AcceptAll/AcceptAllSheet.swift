@@ -169,7 +169,7 @@ struct AcceptAllSheet: View {
                 VStack(alignment: .leading, spacing: Spacing.tiny) {
                     Text(selection.kind.dontAskTitle)
                         .font(.subheadline)
-                    Text("You can still undo right after, and turn this back on next to the button or in Settings → Suggestions.")
+                    Text("You can undo right after. Turn this back on next to the button or in Settings → Suggestions.")
                         .font(.footnote)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)

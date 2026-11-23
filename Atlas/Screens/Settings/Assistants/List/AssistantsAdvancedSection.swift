@@ -46,7 +46,7 @@ struct AssistantsAdvancedSection: View {
 
     private var serverText: String {
         server.isEnabled
-            ? String(localized: "On · only on this Mac, at \(server.address), and only while Atlas is open")
+            ? String(localized: "On · this Mac only, at \(server.address), while Atlas is open")
             : String(localized: "Off. Paired assistants stay paired, and can’t connect.")
     }
 

@@ -24,7 +24,7 @@ struct PrivacySettingsPane: View {
             SettingsPaneHeader(pane: .privacy)
             Section("What leaves this Mac") {
                 destination("To Apple", "What you push, signed on this Mac with your key and sent straight to App Store Connect.")
-                destination("To your AI assistant", "Only what it asks for through the local server: text, captures, prices. Never a key.")
+                destination("To your assistant", "Only what it asks for through the local server: text, captures, prices. Never a key.")
                 destination(
                     "To an AI provider, with an API key",
                     "The text a suggestion is being written for, from this Mac to the provider you chose."
@@ -83,8 +83,8 @@ struct PrivacySettingsPane: View {
                 .accessibilityIdentifier("settings.privacy.removeAll.confirm")
         } message: {
             Text("""
-            Every App Store Connect key, API key and paired assistant is deleted from the Keychain, and every draft, \
-            suggestion and change that wasn’t pushed is deleted. Atlas quits. Nothing changes in App Store Connect.
+            Deletes every App Store Connect key, API key and paired assistant, and every unpushed draft, suggestion and \
+            change. Atlas quits. Nothing changes in App Store Connect.
             """)
         }
     }

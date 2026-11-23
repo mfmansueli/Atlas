@@ -20,4 +20,4 @@ related: privacy, fix
 2. In Atlas, paste both and drop the .p8 file on the window.
 3. Click **Connect**. Atlas reads your apps and changes nothing.
 
-> The key is stored in this Mac’s Keychain. Every request is signed on this Mac and sent straight to Apple.
+> The key stays in Keychain. Requests are signed here and go straight to Apple.

@@ -166,7 +166,7 @@ struct EventArtworkToolsTests {
         // length is outside Apple's rules.
         let refusals = outcome.result["refusals"]?.arrayValue?.compactMap(\.stringValue) ?? []
         #expect(refusals.count == 1)
-        #expect(refusals.first?.hasPrefix("The video is 0.1 seconds") == true)
+        #expect(refusals.first?.hasPrefix("Event videos must be 5 to 30 seconds and loop; this one is 0.1 seconds") == true)
         #expect(!outcome.images.isEmpty)
         let fileID = try #require(outcome.result["fileId"]?.stringValue)
         #expect(InAppEventArtworkFiles.url(id: fileID, appID: Data.app.id, in: directory)?.pathExtension == "mov")

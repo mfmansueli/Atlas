@@ -121,7 +121,7 @@ struct AccountsSettingsPane: View {
 
     private func renameMessage(for keyID: String) -> String {
         guard let name = viewModel?.teamNameFromAppStoreConnect(for: keyID) else {
-            return String(localized: "App Store Connect didn’t give this team’s name, so give this key the name you know it by.")
+            return String(localized: "App Store Connect didn’t share this team’s name. Name the key yourself.")
         }
         return String(localized: "Leave it empty to use “\(name)”, the team’s name in App Store Connect.")
     }

@@ -211,7 +211,7 @@ struct ProductPageTestSheet: View {
                 Button("Create Test") { model.createTest() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!model.canCreateTest)
-                    .help(model.createBlockReason ?? String(localized: "Makes the test as a draft; you start it in App Store Connect."))
+                    .help(model.createBlockReason ?? String(localized: "Makes a draft test to start in App Store Connect."))
                     .accessibilityIdentifier("ppo.create")
             case .testing, .finished:
                 EmptyView()

@@ -56,7 +56,7 @@ struct QueuedSubscriptionPlaceholder: Hashable, Sendable {
         var productID: String
 
         var errorDescription: String? {
-            String(localized: "The new subscription \(productID) isn’t in App Store Connect yet, so its offers wait. Push the subscription first.")
+            String(localized: "\(productID) isn’t in App Store Connect yet. Push the subscription first, then its offers.")
         }
     }
 }

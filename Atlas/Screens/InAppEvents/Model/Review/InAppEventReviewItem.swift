@@ -166,7 +166,7 @@ struct InAppEventReviewItem: Identifiable, Hashable, Sendable {
             let canEdit = InAppEventChangeBuilder.datesEditProblem(of: event) == nil
             let detail = canEdit
                 ? String(localized: "Set them under Details.")
-                : String(localized: "Set them in App Store Connect: Atlas can’t change this event’s dates.")
+                : String(localized: "Atlas can’t change these dates. Set them in App Store Connect.")
             return Self(kind: .need(need), state: state, text: need.title, detail: detail)
         }
         let suggestion = rule.field == .publishStart ? dates.suggestedPublishStart(now: now, calendar: format.calendar) : nil

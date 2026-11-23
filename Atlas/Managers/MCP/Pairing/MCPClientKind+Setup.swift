@@ -20,9 +20,9 @@ extension MCPClientKind {
     var setupDescription: String {
         switch self {
         case .claudeCode:
-            String(localized: "Works in your project folder, so it can read the code and git history. Best for What’s New, review notes and privacy answers.")
+            String(localized: "Reads your project’s code and git history. Best for What’s New, review notes and privacy.")
         case .claudeDesktop:
-            String(localized: "Uses Atlas’s data plus whatever you attach or paste. It doesn’t see your code unless you give it access.")
+            String(localized: "Uses Atlas’s data and what you attach or paste. Sees your code only if you give access.")
         case .cursor: String(localized: "Works with the project you have open in Cursor.")
         case .codex: String(localized: "Reads the project you start it in.")
         case .other: String(localized: "Any client that can connect to a local MCP server.")
@@ -49,17 +49,16 @@ extension MCPClientKind {
         switch self {
         case .claudeCode:
             String(localized: """
-            It replaces Atlas’s older entry and works in every project, and opens Atlas when it’s closed. Start \
-            Claude Code in each app’s folder: Atlas sees which folder it works in and matches it to the app.
+            Replaces Atlas’s older entry, works in every project and opens Atlas if it’s closed. Start Claude Code in each \
+            app’s folder to match it to the app.
             """)
         case .claudeDesktop:
             String(localized: """
-            Claude Desktop doesn’t see your code unless you give it access, so suggestions written from code \
-            (What’s New, privacy) work best from Claude Code.
+            For What’s New and privacy, use Claude Code. Claude Desktop sees code only with access.
             """)
-        case .cursor: String(localized: "Open your app’s folder in Cursor so its agent can read the code.")
-        case .codex: String(localized: "Start Codex in your app’s project folder so it can read the code.")
-        case .other: String(localized: "Your client needs MCP tools. Atlas also offers MCP prompts, if your client shows them.")
+        case .cursor: String(localized: "Open your app’s folder in Cursor.")
+        case .codex: String(localized: "Start Codex in your app’s project folder.")
+        case .other: String(localized: "Needs MCP tools. MCP prompts work too, if your client shows them.")
         }
     }
 
