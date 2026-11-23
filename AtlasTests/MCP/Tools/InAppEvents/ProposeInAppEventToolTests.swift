@@ -261,7 +261,7 @@ struct ProposeInAppEventToolTests {
 
         let outcome = try await propose(newYear())
         #expect(outcome.result["status"] == "refused")
-        #expect(Self.reasons(outcome).first?.hasPrefix("Another event already has the reference name “New Year Challenge 2027”") == true)
+        #expect(Self.reasons(outcome).first?.hasPrefix("“New Year Challenge 2027” is taken by another event") == true)
         #expect(changes.changes.count == 1)
         #expect(changes.changes.first?.source == .you)
         // Another assistant's is left to it too.

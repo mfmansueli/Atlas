@@ -46,7 +46,7 @@ enum AIProviderKeyStatus: Equatable, Sendable {
         case let .connected(check):
             String(localized: "Kept in this Mac’s Keychain. \(check.vendor.title) accepted it, so translations can use it.")
         case let .rejected(vendor):
-            String(localized: "\(vendor.title) answered that the key is wrong, revoked or has no access. Paste a working key to replace it.")
+            String(localized: "\(vendor.title) rejected the key: wrong, revoked or no access. Paste a working key.")
         case let .unchecked(_, reason): reason
         }
     }

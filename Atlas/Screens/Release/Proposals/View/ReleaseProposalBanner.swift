@@ -78,7 +78,7 @@ struct ReleaseProposalBanner: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .suggestionSurface(isSettling: false, arrivalKey: proposal.id, arrivedAt: proposal.receivedAt)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text("Proposed by \(proposal.client): \(proposal.title)"))
+        .accessibilityLabel(Text("Suggested by \(proposal.client): \(proposal.title)"))
         .accessibilityIdentifier(identifier)
     }
 

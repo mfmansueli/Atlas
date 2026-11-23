@@ -51,9 +51,9 @@ enum AIProviderError: LocalizedError, Equatable {
         case let .cutOff(vendor):
             String(localized: "\(vendor.title)’s answer was cut off.")
         case let .rejected(vendor, statusCode, message):
-            [String(localized: "\(vendor.title) returned an error (\(statusCode))."), message].compactMap(\.self).joined(separator: " ")
+            [String(localized: "\(vendor.title) failed with error \(statusCode). Try again in a minute."), message].compactMap(\.self).joined(separator: " ")
         case let .unreadableResponse(vendor):
-            String(localized: "\(vendor.title) sent an answer this app can’t read.")
+            String(localized: "\(vendor.title)’s answer couldn’t be read. Try again.")
         }
     }
 

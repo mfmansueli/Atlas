@@ -37,7 +37,7 @@ struct ProductPageTestModelTests {
 
     @Test func itSaysWhatATestIs() {
         #expect(ProductPageTestModel.explanation
-            == "Tests one idea at a time. Apple splits traffic between your current page and this treatment; results appear in App Store Connect.")
+            == "Tests one idea. Apple splits traffic between your page and this treatment; results show in App Store Connect.")
     }
 
     @Test func itStartsOnTheVariantWhenThereIsOne() throws {
@@ -169,7 +169,7 @@ struct ProductPageTestModelTests {
 
         await model.ask(center: center, launcher: nil)
         #expect(model.steps(of: center.run(for: appID)).map(\.state) == [.done, .current, .upcoming, .upcoming])
-        #expect(model.steps(of: center.run(for: appID)).last?.title == "Atlas renders it in 3 languages and checks it")
+        #expect(model.steps(of: center.run(for: appID)).last?.title == "Renders and checks it in 3 languages")
 
         center.markVariantRead(appID: appID, client: "Claude Code")
         #expect(model.steps(of: center.run(for: appID)).map(\.state) == [.done, .done, .current, .upcoming])

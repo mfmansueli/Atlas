@@ -37,7 +37,7 @@ enum KeyCheckFailure: Equatable, Sendable {
 
     var message: String {
         switch self {
-        case .rejected: String(localized: "Check that the Key ID matches the .p8 file and that the key hasn’t been revoked.")
+        case .rejected: String(localized: "Check the Key ID matches the .p8 file and the key isn’t revoked.")
         case .roleTooLow: String(localized: "Create a Team Key with the Admin or App Manager role, then connect again.")
         case .offline: String(localized: "Nothing was sent. Connect again when this Mac is back online.")
         case let .other(message): message

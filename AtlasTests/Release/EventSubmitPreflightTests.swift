@@ -115,7 +115,7 @@ struct EventSubmitPreflightTests {
 
     @Test func aFreeEventLandingOnPremiumIsWarned() {
         let result = preflight(report: Self.report(needsPremium: true))
-        #expect(result.warnings == ["Its deep link lands on Premium, but the event costs nothing: App Review sends that back."])
+        #expect(result.warnings == ["Its deep link lands on Premium, but the event is free. App Review rejects that."])
     }
 
     // MARK: - When App Store Connect refuses

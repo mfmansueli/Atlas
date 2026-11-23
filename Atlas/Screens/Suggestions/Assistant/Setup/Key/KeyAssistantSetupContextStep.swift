@@ -14,7 +14,7 @@ struct KeyAssistantSetupContextStep: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("\(viewModel.vendor.title) only sees what Atlas sends with each request. Before each one, you see the list.")
+            Text("\(viewModel.vendor.title) sees only what Atlas sends, and you see the list first.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             VStack(spacing: 0) {
@@ -38,7 +38,7 @@ struct KeyAssistantSetupContextStep: View {
                         .accessibilityIdentifier("keySetup.folder")
                 }
                 Divider()
-                row(String(localized: "Customer reviews"), String(localized: "The latest App Store reviews, to learn what people praise.")) {
+                row(String(localized: "Customer reviews"), String(localized: "Latest App Store reviews, for what people praise.")) {
                     Toggle("Customer reviews", isOn: $viewModel.readsReviews)
                         .toggleStyle(.switch)
                         .labelsHidden()
@@ -49,8 +49,8 @@ struct KeyAssistantSetupContextStep: View {
             .overlay(RoundedRectangle(cornerRadius: Radius.banner, style: .continuous).strokeBorder(Palette.separator2, lineWidth: 0.5))
             InlineMessage(
                 text: String(localized: """
-                Source code is never sent. Without it, App Review notes and category checks need an assistant that reads \
-                the project itself, like Claude Code.
+                Source code is never sent. App Review notes and category checks need an assistant that reads it, like Claude \
+                Code.
                 """),
                 systemImage: "info.circle",
                 tint: Palette.label2

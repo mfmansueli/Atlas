@@ -26,7 +26,7 @@ struct ProductPageTestAskingStepTests {
         #expect(list[0].detail?.hasPrefix("One idea changed: Interface → Outcome; the rest stays") == true)
         #expect(list[1].title == "Waiting for Claude Code to read what to change")
         #expect(list[2].title == "Claude Code designs it")
-        #expect(list[3].title == "Atlas renders it in 14 languages and checks it")
+        #expect(list[3].title == "Renders and checks it in 14 languages")
     }
 
     @Test func onceReadItsDesigningWithTheDirection() {

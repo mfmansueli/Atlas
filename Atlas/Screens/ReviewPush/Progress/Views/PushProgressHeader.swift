@@ -40,7 +40,7 @@ struct PushProgressHeader: View {
                             .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .monospacedDigit()
-                            .help(Text("From how fast they’ve gone so far: several go at once, and uploads overlap Apple’s processing."))
+                            .help(Text("Based on the speed so far."))
                             .accessibilityIdentifier("push.time")
                     }
                 }

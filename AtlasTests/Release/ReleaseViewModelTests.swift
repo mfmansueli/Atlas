@@ -73,7 +73,7 @@ struct ReleaseViewModelTests {
         let (model, _) = await makeModel(isWhatsNewComplete: true, encryption: .exempt)
         let missing = model.checks.filter { !$0.isOK }
         #expect(missing.isEmpty)
-        #expect(model.cardSubtitle == "Nothing left to do. Submit when you want.")
+        #expect(model.cardSubtitle == "Ready. Submit when you want.")
     }
 
     @Test func theSheetSaysExactlyWhatToDoBeforeSubmitting() async {
@@ -143,7 +143,7 @@ struct ReleaseViewModelTests {
         #expect(plan.timing == .manual)
         #expect(plan.isPhased)
         #expect(plan.eventIDs == [DebugInAppEventsData.moodID])
-        #expect(messages == ["Lumen Journal 1.4 is submitted. App Review usually takes about a day."])
+        #expect(messages == ["Lumen Journal 1.4 submitted. App Review usually takes a day."])
         #expect(services.appInformation.notes.notes(for: app.id).exportAnswers == EncryptionAnswer.exempt.answers)
         #expect(store.eventIDs(for: app.id) == [DebugInAppEventsData.moodID])
         #expect(model.submitError == nil)
@@ -261,7 +261,7 @@ struct ReleaseViewModelTests {
         await model.perform(.cancelSubmission)
         #expect(release.actions == ["cancel \(Data.submissionID)"])
         #expect(model.confirming == nil)
-        #expect(messages == ["Submission canceled. 1.4 is back to Prepare for Submission; nothing you edited is lost."])
+        #expect(messages == ["Submission canceled. 1.4 is back to Prepare for Submission, edits kept."])
     }
 
     @Test func anApprovedVersionIsReleasedIntoItsPhasedRelease() async {
@@ -272,7 +272,7 @@ struct ReleaseViewModelTests {
         #expect(model.summary?.actionTitle == "Release…")
         await model.perform(.releaseNow)
         #expect(release.actions == ["release \(Data.versionID)"])
-        #expect(messages == ["Releasing 1.4. Phased release starts today: 1% of automatic updates on day 1."])
+        #expect(messages == ["Releasing 1.4. Phased release: 1% of automatic updates today."])
     }
 
     @Test func aPhasedReleasePausesResumesAndEndsEarly() async {
@@ -363,7 +363,7 @@ struct ReleaseViewModelTests {
         #expect(said(.phased(day: 1, isPaused: false)) == "Lumen 1.4 is on the App Store, rolling out over 7 days.")
         #expect(said(.live) == "Lumen 1.4 is on the App Store for everyone.")
         let submitted = ReleaseViewModel.submittedText("Lumen 1.4", pushed: 4)
-        #expect(submitted == "Lumen 1.4 is submitted, with 4 pushed changes. App Review usually takes about a day.")
+        #expect(submitted == "Lumen 1.4 submitted with 4 pushed changes. App Review usually takes a day.")
     }
 
     @Test func beforeReadingTheSidebarSaysWhatWasSeenLast() async {

@@ -111,7 +111,7 @@ final class AssistantConfigAccess: AssistantConfigWriting {
         panel.directoryURL = folder
         panel.prompt = String(localized: "Allow")
         panel.message = String(localized: """
-        Atlas adds itself to \(assistant.title) in this folder, its settings folder. Click Allow; Atlas changes only its own entry.
+        This is \(assistant.title)’s settings folder. Click Allow; Atlas adds only its own entry.
         """)
         guard panel.runModal() == .OK else { return nil }
         return panel.url

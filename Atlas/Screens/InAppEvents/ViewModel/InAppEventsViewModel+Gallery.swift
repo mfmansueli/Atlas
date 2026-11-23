@@ -74,7 +74,7 @@ extension InAppEventsViewModel {
         var parts: [InAppEventTileNote.Part] = []
         let run = artworkRun(of: event)
         if let run, run.isDrawing {
-            parts.append(.init(text: String(localized: "Claude is drawing · \(run.designedCount) of \(run.expectedCount) ready")))
+            parts.append(.init(text: String(localized: "Drawing · \(run.designedCount) of \(run.expectedCount) ready")))
         } else if let count = readyConcepts(of: event) {
             parts.append(.init(text: count == 1 ? String(localized: "1 concept to choose from") : String(localized: "\(count) concepts to choose from")))
         } else {

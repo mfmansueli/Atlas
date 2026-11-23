@@ -29,9 +29,9 @@ enum ReleaseAction: Hashable, Sendable {
     func consequence(version: String) -> String {
         switch self {
         case .cancelSubmission:
-            String(localized: "\(version) goes back to Prepare for Submission. Nothing you edited is lost, and you can submit it again.")
+            String(localized: "\(version) returns to Prepare for Submission. Edits stay; submit again any time.")
         case .releaseNow:
-            String(localized: "People can download \(version) as soon as Apple has processed it. This can’t be undone.")
+            String(localized: "\(version) is live once Apple processes it. This can’t be undone.")
         case .releaseToEveryone:
             String(localized: "The phased release ends: everyone with automatic updates gets \(version). This can’t be undone.")
         case .pause, .resume, .submitAgain:

@@ -41,7 +41,7 @@ extension ReleaseViewModel {
     func accept(_ suggestion: FieldSuggestion) async {
         guard let model = await storePageModel?() else {
             submitFailure = nil
-            submitError = String(localized: "The Store Page couldn’t be read, so the suggestion wasn’t accepted. Accept it in Store Page.")
+            submitError = String(localized: "Couldn’t read the Store Page. Accept the suggestion there.")
             return
         }
         model.acceptSuggestion(suggestion)
@@ -104,8 +104,7 @@ extension ReleaseViewModel {
     var phasedDetail: String {
         guard options.isPhased else { return String(localized: "Everyone with automatic updates gets \(versionString) on the first day.") }
         return String(localized: """
-        Over 7 days, to people with automatic updates: 1%, 2%, 5%, 10%, 20%, 50%, then everyone. Anyone can still download it \
-        from the App Store. You can pause it.
+        Automatic updates over 7 days: 1%, 2%, 5%, 10%, 20%, 50%, then everyone. Anyone can download it. You can pause.
         """)
     }
 
@@ -176,9 +175,9 @@ extension ReleaseViewModel {
     /// usually takes about a day."
     static func submittedText(_ versionName: String, pushed: Int) -> String {
         switch pushed {
-        case 0: String(localized: "\(versionName) is submitted. App Review usually takes about a day.")
-        case 1: String(localized: "\(versionName) is submitted, with 1 pushed change. App Review usually takes about a day.")
-        default: String(localized: "\(versionName) is submitted, with \(pushed) pushed changes. App Review usually takes about a day.")
+        case 0: String(localized: "\(versionName) submitted. App Review usually takes a day.")
+        case 1: String(localized: "\(versionName) submitted with 1 pushed change. App Review usually takes a day.")
+        default: String(localized: "\(versionName) submitted with \(pushed) pushed changes. App Review usually takes a day.")
         }
     }
 

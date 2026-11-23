@@ -87,7 +87,7 @@ struct ScreenshotsLanguagePageTests {
         #expect(selection.groups.first?.items.first?.suggested == "Deine Woche auf einen Blick")
 
         await model.acceptAllCaptions(withoutAsking: true)
-        #expect(model.captionToast?.text == "Accepted 3 suggestions in 1 language, without asking. They’re waiting in Review & Push, top right.")
+        #expect(model.captionToast?.text == "Accepted 3 suggestions in 1 language, without asking. In Review & Push.")
         #expect(model.proposedCaptions.isEmpty)
     }
 
@@ -98,7 +98,7 @@ struct ScreenshotsLanguagePageTests {
         await model.acceptCaptions(ids: [first.id], turnedOffAsking: true)
         #expect(!model.isAcceptAllCaptionsPresented)
         #expect(model.captionToast?.text
-            == "Accepted 1 suggestion in 1 language. They’re waiting in Review & Push, top right. Next time, Accept All Languages won’t ask first.")
+            == "Accepted 1 suggestion in 1 language. In Review & Push. Next time, Accept All Languages won’t ask first.")
         #expect(model.proposedCaptions.count == 2)
     }
 

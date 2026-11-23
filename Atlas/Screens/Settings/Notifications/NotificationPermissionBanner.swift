@@ -42,8 +42,7 @@ struct NotificationPermissionBanner: View {
             String(localized: "macOS asks the first time Atlas has something to tell you.")
         case .blocked:
             String(localized: """
-            Notifications are turned off for Atlas in System Settings. Nothing below reaches you until they’re allowed. \
-            The menu bar icon still shows a dot.
+            Notifications are off for Atlas in System Settings. Until you allow them, only the menu bar dot shows.
             """)
         }
     }

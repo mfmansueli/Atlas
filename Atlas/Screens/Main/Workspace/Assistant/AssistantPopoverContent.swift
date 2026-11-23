@@ -71,7 +71,7 @@ struct AssistantPopoverContent: View {
                 proposals
             }
             capabilities
-            Text("Runs only on this Mac (127.0.0.1). Your App Store Connect key stays in the Keychain; assistants never see it, and they can’t push.")
+            Text("Runs only on this Mac (127.0.0.1). Assistants can’t see your Keychain key or push.")
                 .font(.footnote)
                 .foregroundStyle(Palette.label2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -86,7 +86,7 @@ struct AssistantPopoverContent: View {
 
     private var header: some View {
         HStack(spacing: Spacing.small) {
-            Text("AI Assistant")
+            Text("Assistant")
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: Spacing.xxSmall) {
@@ -102,11 +102,10 @@ struct AssistantPopoverContent: View {
 
     private var introText: String {
         status.isWaiting
-            ? String(localized: "The local server is on, but no assistant has called it yet. Finish setup to see the command again and test it.")
+            ? String(localized: "Server on, no assistant connected yet. Finish setup to see the command and test it.")
             : String(localized: """
-            Connect your own assistant (Claude Code, Claude Desktop, Cursor, Codex or any MCP client), or add an API key \
-            from Anthropic, OpenAI or Google Gemini. Atlas then suggests what to put in its fields, and you accept \
-            or dismiss every suggestion.
+            Connect your assistant (Claude Code, Claude Desktop, Cursor, Codex or any MCP client), or add an Anthropic, OpenAI \
+            or Google Gemini API key. You accept or dismiss every suggestion.
             """)
     }
 
@@ -212,7 +211,7 @@ struct AssistantPopoverContent: View {
     static func requestDetail(_ request: KeyAssistantRequestLog, now: Date = .now) -> String {
         let ago = request.date.formatted(.relative(presentation: .named, unitsStyle: .abbreviated))
         let tokens = KeyAssistantTokens.formatted(request.tokens)
-        return String(localized: "\(tokens) tokens · \(now.timeIntervalSince(request.date) < 60 ? String(localized: "just now") : ago)")
+        return String(localized: "\(tokens) tokens · \(now.timeIntervalSince(request.date) < 60 ? String(localized: "a moment ago") : ago)")
     }
 
     private var proposals: some View {
@@ -222,7 +221,7 @@ struct AssistantPopoverContent: View {
                 .textCase(.uppercase)
                 .foregroundStyle(Palette.label2)
             if activity.rows.isEmpty {
-                Text("Nothing yet. Proposals show here as \(activity.client ?? String(localized: "the assistant")) sends them.")
+                Text("Nothing yet. Suggestions show here as \(activity.client ?? String(localized: "the assistant")) sends them.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -240,11 +239,11 @@ struct AssistantPopoverContent: View {
                 .accessibilityElement(children: .combine)
             }
             HStack(spacing: Spacing.xSmall) {
-                Button("Review Proposals…", action: onReviewProposals)
+                Button("Review Suggestions…", action: onReviewProposals)
                     .disabled(activity.apps.isEmpty || (activity.reviewCount == 0 && !canOpenScreenshotProposals))
                     .accessibilityIdentifier("workspace.reviewProposals")
                 if activity.reviewCount > 0, canOpenScreenshotProposals {
-                    Button("Screenshot Proposals…", action: onScreenshotProposals)
+                    Button("Screenshot Suggestions…", action: onScreenshotProposals)
                         .accessibilityIdentifier("workspace.screenshotProposals")
                 }
             }

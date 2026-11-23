@@ -52,7 +52,7 @@ enum AssistantAskStarter {
 
     /// The toast after `.copied`.
     static func copiedText(client: String) -> String {
-        String(localized: "Copied the request. Paste it into \(client) in the app’s folder; what it suggests shows up here.")
+        String(localized: "Copied. Paste it into \(client) in the app’s folder. Suggestions show here.")
     }
 
     static func copyToPasteboard(_ text: String) {

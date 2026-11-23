@@ -79,7 +79,7 @@ struct EventSubmitPreflight: Hashable, Sendable {
         let isFree = (event.purchaseRequirement ?? .noCostAssociated) == .noCostAssociated
         if isFree, report.needsPremium {
             preflight.offersFix = true
-            preflight.warnings.append(String(localized: "Its deep link lands on Premium, but the event costs nothing: App Review sends that back."))
+            preflight.warnings.append(String(localized: "Its deep link lands on Premium, but the event is free. App Review rejects that."))
         }
         if let selected = builds.selected, report.isNewer(than: selected.number) == true, let checked = report.buildNumber {
             preflight.warnings.append(String(localized: "Build \(selected.number) is older than the build where \(appName) opens these links (\(checked))."))

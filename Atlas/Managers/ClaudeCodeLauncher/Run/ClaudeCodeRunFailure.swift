@@ -102,9 +102,8 @@ enum ClaudeCodeRunFailure: Hashable, Sendable {
     static func replacedDetail(onDisk: String?) -> String {
         let build = onDisk.map { String(localized: "a build signed as “\($0)”") } ?? String(localized: "another build")
         return String(localized: """
-        Atlas was replaced on disk by \(build) while it was open, and macOS only runs the helper for the Atlas on \
-        disk. Saving the helper again won’t help: quit Atlas and open a signed build again (Run in Xcode). Until \
-        then, copy the prompt.
+        \(build) replaced Atlas while it was open, so the helper won’t run. Saving it again won’t help: quit and open a signed \
+        build (Run in Xcode). Until then, copy the prompt.
         """)
     }
 

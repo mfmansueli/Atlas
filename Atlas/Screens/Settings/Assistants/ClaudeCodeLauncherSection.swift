@@ -40,8 +40,8 @@ struct ClaudeCodeLauncherSection: View {
             Text("Start Claude Code from Atlas")
         } footer: {
             Text("""
-            Anything else is refused and shown in the run’s output. Each run gets its own token, which stops working when it \
-            ends. Claude Code uses your own login and plan.
+            Anything else is refused and shown in the run’s output. Each run’s token expires when it ends. Claude Code uses \
+            your login and plan.
             """)
             .font(.callout)
             .foregroundStyle(Palette.label2)

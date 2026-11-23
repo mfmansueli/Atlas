@@ -49,7 +49,7 @@ struct AssistantAskCenterTests {
         let (center, box) = center(flies: false)
         center.send(ask(subject: "In-App Events · Winter Reflection 2026"), from: nil, reduceMotion: false)
         #expect(center.ask(for: "1")?.phase == .working)
-        #expect(box.said == ["Sent to Claude Code: In-App Events, Winter Reflection 2026. The Autopilot button in the toolbar shows it’s working."])
+        #expect(box.said == ["Sent to Claude Code: In-App Events, Winter Reflection 2026. The Autopilot button shows progress."])
         #expect(center.ask(for: "1")?.toolbarLabel == "Autopilot, Claude Code is working on In-App Events, Winter Reflection 2026")
         #expect(center.ask(for: "1")?.busyTitle == "Claude Code Is Working…")
     }
@@ -118,7 +118,7 @@ struct AssistantAskCenterTests {
         store.add(appID: "1", target: .storePage(.englishUS, .whatsNew), value: "One", reason: "", source: claude)
         store.add(appID: "1", target: .storePage(.german, .whatsNew), value: "Zwei", reason: "", source: claude)
         let text = SuggestionAskButton.ended(run(UUID(), phase: .finished), appID: "1", area: .storePage, suggestions: store)
-        #expect(text == "Claude Code finished Store Page: 2 suggestions, marked in purple on the fields. Nothing changes until you accept them.")
+        #expect(text == "Claude Code finished Store Page: 2 suggestions, in purple. Nothing changes until you accept them.")
         #expect(store.request == nil)
 
         store.beginRequest(appID: "1", area: .storePage, client: "Claude Code", prompt: "Suggest…")

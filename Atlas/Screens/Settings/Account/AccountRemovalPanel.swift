@@ -49,8 +49,7 @@ struct AccountRemovalPanel: View {
         case let count?: String(localized: "Its \(count) apps leave Atlas.")
         }
         return apps + " " + String(localized: """
-        Changes that weren’t pushed stay until you push or discard them. The key is deleted from this Mac’s Keychain. \
-        Nothing changes in App Store Connect.
+        Deletes the key from this Mac’s Keychain. Unpushed changes stay. Nothing changes in App Store Connect.
         """)
     }
 }

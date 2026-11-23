@@ -64,7 +64,7 @@ struct ScreenshotReviewGroupView: View {
                 Label(previewsTitle(previews), systemImage: "lock")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
-                    .help(String(localized: "App Previews stay as they are; pushing screenshots never uploads or deletes them."))
+                    .help(String(localized: "Pushing screenshots never changes App Previews."))
             }
             Text(group.countTitle)
                 .font(.subheadline)
@@ -88,7 +88,7 @@ struct ScreenshotReviewGroupView: View {
     private func assistantTag(_ client: String) -> some View {
         HStack(spacing: Spacing.xxSmall) {
             AssistantMonogram(letters: ChangeSource.assistant(client: client).monogram ?? "AI")
-            Text("Includes \(client)’s proposals")
+            Text("Includes \(client)’s suggestions")
                 .font(.subheadline)
                 .lineLimit(1)
         }

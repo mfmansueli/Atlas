@@ -51,8 +51,7 @@ enum ClaudeCodeHelperInstaller {
         panel.allowedContentTypes = [UTType(filenameExtension: "zsh") ?? .shellScript]
         panel.prompt = String(localized: "Save Helper")
         panel.message = String(localized: """
-        Save the helper here, without changing the folder. macOS runs it for Atlas, outside its sandbox, \
-        and only when you ask Atlas to start Claude Code.
+        Save the helper in this folder. macOS runs it outside Atlas’s sandbox, only when you start Claude Code from Atlas.
         """)
         guard panel.runModal() == .OK, let url = panel.url else { return false }
         try write(to: url, scriptsDirectory: directory)

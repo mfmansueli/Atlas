@@ -20,8 +20,8 @@ struct ScreenshotsSettingsPane: View {
                     SettingsRowLabel(
                         title: "Let Claude Code open capture-only runs",
                         caption: String(localized: """
-                        When Claude Code asks to redo some captures, the run opens at once. Off: each request waits in \
-                        Screenshots for Accept. Nothing is pushed either way.
+                        On: Claude Code’s capture reruns open at once. Off: each waits in Screenshots for Accept. Nothing is \
+                        pushed either way.
                         """)
                     )
                 }
@@ -40,7 +40,7 @@ struct ScreenshotsSettingsPane: View {
                 .toggleStyle(.switch)
                 .accessibilityIdentifier("settings.artworkWords")
                 Toggle(isOn: $preferences.eventArtworkMakesMotion) {
-                    SettingsRowLabel(title: "Also make moving versions", caption: String(localized: "A seamless 20-second loop of each image. Takes longer."))
+                    SettingsRowLabel(title: "Also make moving versions", caption: String(localized: "A 20-second loop of each image. Takes longer."))
                 }
                 .toggleStyle(.switch)
                 .accessibilityIdentifier("settings.artworkMotion")

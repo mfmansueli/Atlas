@@ -36,11 +36,10 @@ struct AssistantConnectHelloStep: View {
     private var detail: String {
         model.assistant.answersAtlas
             ? String(localized: """
-            This message was written by \(name) on your Mac and came to Atlas through the new connection. If you can read it, \
-            everything works.
+            \(name) wrote this message on your Mac and sent it to Atlas. The connection works.
             """)
             : String(localized: """
-            Atlas can’t ask \(name) a question itself, so this is what Atlas saw of it. Ask it below to say hello in its own words.
+            This is what Atlas saw of \(name). Ask it below to say hello in its own words.
             """)
     }
 
@@ -86,8 +85,8 @@ struct AssistantConnectHelloStep: View {
     /// "Claude Code · just now", or "Atlas · just now" for what Atlas saw.
     private var sender: String {
         model.hello?.isFromAssistant == false
-            ? String(localized: "Atlas · just now")
-            : String(localized: "\(name) · just now")
+            ? String(localized: "Atlas · now")
+            : String(localized: "\(name) · now")
     }
 
     private var pastePrompt: some View {
@@ -111,7 +110,7 @@ struct AssistantConnectHelloStep: View {
 
     private var thingsToAsk: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text("Things you can ask \(name), in your own words")
+            Text("Things to ask \(name)")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             FlowLayout(spacing: Spacing.xSmall) {
@@ -124,7 +123,7 @@ struct AssistantConnectHelloStep: View {
                         .overlay(Capsule().strokeBorder(Palette.separator2, lineWidth: 0.5))
                 }
             }
-            Text("Or use the purple Autopilot button at the top of any section: it asks for you.")
+            Text("Or use Autopilot at the top of any section: it asks for you.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }

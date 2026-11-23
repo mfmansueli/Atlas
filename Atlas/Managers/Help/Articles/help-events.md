@@ -20,6 +20,6 @@ An event needs a name, two descriptions, dates, and two images: the event card (
 
 ## Dates
 
-A draft’s dates are under **Details**: **Shows from** (when the card appears on the App Store), **Starts** and **Ends**, in your time zone. Each change waits in Review & Push.
+Set **Shows from** (when the card appears), **Starts** and **Ends** under **Details**, in your time zone. Changes wait in Review & Push.
 
-App Store Connect only takes dates in the future. When a date has passed, **Before App Review** says so with a time that works: click it, then push. App Review usually takes up to 2 days, and the event shows only once it’s approved, so leave it that long before the card shows.
+Dates must be in the future. If one has passed, **Before App Review** offers one that works: click it, then push. App Review takes up to 2 days; the card shows after approval.

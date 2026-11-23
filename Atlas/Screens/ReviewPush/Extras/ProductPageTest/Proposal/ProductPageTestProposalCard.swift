@@ -20,7 +20,7 @@ struct ProductPageTestProposalCard: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: Spacing.small) {
                 Image(systemName: "testtube.2").foregroundStyle(Palette.label2).accessibilityHidden(true)
-                Text("Proposed test · \(proposal.placement.title)").font(.callout.weight(.semibold))
+                Text("Suggested test · \(proposal.placement.title)").font(.callout.weight(.semibold))
                 Spacer(minLength: Spacing.small)
                 Button("Dismiss", action: onDismiss)
                     .controlSize(.regular)

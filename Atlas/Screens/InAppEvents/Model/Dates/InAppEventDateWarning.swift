@@ -40,13 +40,13 @@ enum InAppEventDateWarning: String, CaseIterable, Hashable, Sendable {
         switch self {
         case .cardShowsSoon:
             String(localized: """
-            The card is set to show \(format.timeUntil(dates.publishStart, from: now)). App Review usually takes up to 2 days, and the \
-            card only shows once it’s approved, so it may show later than planned.
+            The card is set to show \(format.timeUntil(dates.publishStart, from: now)). App Review usually takes up to 2 days, \
+            so the card may show later than planned.
             """)
         case .eventStartsSoon:
             String(localized: """
-            The event starts \(format.timeUntil(dates.eventStart, from: now)). App Review usually takes up to 2 days, so it may start \
-            before it’s approved, and its card would miss some of the event.
+            The event starts \(format.timeUntil(dates.eventStart, from: now)). App Review usually takes up to 2 days, so the \
+            card may miss part of the event.
             """)
         }
     }

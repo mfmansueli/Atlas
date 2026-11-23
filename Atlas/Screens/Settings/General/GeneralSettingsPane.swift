@@ -39,7 +39,7 @@ struct GeneralSettingsPane: View {
             } header: {
                 Text("Checking App Store Connect")
             } footer: {
-                Text("Apple publishes analytics once a day, so reports are read each morning whatever you choose here.")
+                Text("Reports are read each morning either way: Apple publishes analytics daily.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }

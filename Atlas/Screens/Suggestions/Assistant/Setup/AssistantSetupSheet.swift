@@ -17,7 +17,7 @@ struct AssistantSetupSheet: View {
 
     /// Setup opened from Suggest Everything….
     static let suggestEverythingReason = String(
-        localized: "Suggest Everything needs an assistant. Connect one here; when you’re done, it starts from Overview."
+        localized: "Suggest Everything needs an assistant. Connect one here, then it starts from Overview."
     )
 
     /// The selected app, which arrives after the sheet when it opened
@@ -97,7 +97,7 @@ struct AssistantSetupSheet: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack {
-                Text("Set Up Your AI Assistant")
+                Text("Set Up Your Assistant")
                     .font(.title2.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("Step \(viewModel.step.rawValue) of \(AssistantSetupStep.allCases.count)")
@@ -202,7 +202,7 @@ struct AssistantSetupSheet: View {
                 VStack(alignment: .leading, spacing: Spacing.xSmall) {
                     fact("network", String(localized: "Listens only on this Mac (\(viewModel.assistants.address)), and only while Atlas is open."))
                     fact("lock", String(localized: "Your App Store Connect key stays in the Keychain. Assistants get results, never the key."))
-                    fact("key", String(localized: "Each assistant gets its own token, which you can revoke in Settings → AI Assistants."))
+                    fact("key", String(localized: "Each assistant gets its own token. Revoke it in Settings → AI Assistants."))
                 }
                 .padding(Spacing.medium)
             }
@@ -223,8 +223,7 @@ struct AssistantSetupSheet: View {
                 AssistantSetupOptionRow(
                     title: String(localized: "Suggest and edit drafts"),
                     detail: String(localized: """
-                    The assistant can also change fields directly. Changes are marked with its name and stay unpushed \
-                    until you review them.
+                    It can also edit fields directly, marked with its name and unpushed until you review.
                     """),
                     isSelected: viewModel.editsDrafts
                 ) {
@@ -232,7 +231,7 @@ struct AssistantSetupSheet: View {
                 }
                 .accessibilityIdentifier("assistantSetup.editDrafts")
             }
-            Text("Either way, nothing reaches App Store Connect until you push it in Review & Push.")
+            Text("Either way, nothing is sent until you push in Review & Push.")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }

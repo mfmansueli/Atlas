@@ -44,9 +44,9 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .invalidPrivateKey:
-            String(localized: "The private key couldn't be read. Choose the AuthKey .p8 file you downloaded from App Store Connect.")
+            String(localized: "Can't read this private key. Choose the AuthKey .p8 file from App Store Connect.")
         case .unauthorized:
-            String(localized: "App Store Connect rejected this API key. Check the Issuer ID and Key ID, and that the key hasn't been revoked.")
+            String(localized: "App Store Connect rejected this key. Check the Issuer ID, Key ID, and that it isn't revoked.")
         case let .forbidden(detail):
             Self.message(String(localized: "This API key isn't allowed to do that. Team keys need the Admin or App Manager role."), detail: detail)
         case let .notFound(detail):
@@ -56,11 +56,11 @@ enum AppStoreConnectError: LocalizedError, Equatable {
         case let .rejected(statusCode, code, detail):
             Self.message(String(localized: "App Store Connect refused the change (\(code ?? String(statusCode)))."), detail: detail)
         case let .server(statusCode, _, detail):
-            Self.message(String(localized: "App Store Connect returned an error (\(statusCode))."), detail: detail)
+            Self.message(String(localized: "App Store Connect had a problem (\(statusCode)). Try again in a minute."), detail: detail)
         case .invalidResponse:
-            String(localized: "App Store Connect sent a response that isn't HTTP.")
+            String(localized: "App Store Connect sent an answer Atlas can’t read. Try again.")
         case .unexpectedPayload:
-            String(localized: "App Store Connect sent data in an unexpected format.")
+            String(localized: "App Store Connect sent an unexpected answer. Try again later.")
         }
     }
 

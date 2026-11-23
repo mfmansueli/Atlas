@@ -12,7 +12,7 @@ struct AssistantSetupMethodStep: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("How should Atlas get AI suggestions?")
+            Text("How should Atlas get suggestions?")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
             HStack(alignment: .top, spacing: Spacing.small) {
@@ -31,8 +31,8 @@ struct AssistantSetupMethodStep: View {
             if viewModel.usesKey {
                 InlineMessage(
                     text: String(localized: """
-                    An API key works without any other app. It doesn’t read your code, so App Review notes and category \
-                    checks still need an assistant like Claude Code.
+                    No other app needed. It can’t read code, so App Review notes and category checks need an assistant like \
+                    Claude Code.
                     """),
                     systemImage: "info.circle",
                     tint: Palette.label2

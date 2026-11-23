@@ -55,7 +55,7 @@ struct ActivityRow: View {
                         Label("Restore Previous Screenshots…", systemImage: "arrow.uturn.backward")
                     }
                     .disabled(onRestoreScreenshots == nil || screenshots.locales.isEmpty)
-                    .help(String(localized: "Puts a locale’s screenshots from before this push back through Review & Push."))
+                    .help(String(localized: "Queues this locale’s earlier screenshots in Review & Push."))
                     .accessibilityIdentifier("activity.restoreScreenshots")
                 }
                 if record.screenshots == nil || !record.pushed.isEmpty {

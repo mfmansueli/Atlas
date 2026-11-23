@@ -26,7 +26,7 @@ extension InAppEventsViewModel {
             key: "dates"
         )
         if event.state.isBeforeApproval, let start = Self.passed(.eventStart, of: event, now: now) {
-            dates.value = String(localized: "Was set to start \(format.dayAndTime(start, now: now)) (your time), which has passed")
+            dates.value = String(localized: "Start time \(format.dayAndTime(start, now: now)) (your time) has passed")
             Self.markPassed(&dates, field: .eventStart, canFix: canFix, fixedByQueued: fixedByQueued)
         }
         rows.append(dates)
@@ -73,7 +73,7 @@ extension InAppEventsViewModel {
         if event.state.isOver, let end = event.schedule?.eventEnd { return String(localized: "Ended \(format.day(end))") }
         guard let start = event.schedule?.publishStart else { return String(localized: "Not scheduled yet") }
         if event.state.isBeforeApproval, let passed = passed(.publishStart, of: event, now: now) {
-            return String(localized: "Was set to show from \(format.dayAndTime(passed, now: now)) (your time), which has passed")
+            return String(localized: "Show time \(format.dayAndTime(passed, now: now)) (your time) has passed")
         }
         if format.calendar.isDate(start, inSameDayAs: now) {
             return String(localized: "Shows on the App Store from today at \(format.time(start))")
@@ -108,10 +108,10 @@ extension InAppEventsViewModel {
         switch status(of: event) {
         case let .goesWithVersion(version):
             return event.state.isSubmitted
-                ? String(localized: "Submitted with \(version). Changes now wait for the next review.")
+                ? String(localized: "Submitted with \(version). Changes wait for next review.")
                 : String(localized: "Goes to App Review with \(version).")
         case .waitingForReview, .inReview, .approved, .live:
-            return String(localized: "With App Review or on the App Store. Changes now wait for the next review.")
+            return String(localized: "In review or live. Changes wait for the next review.")
         case .ended, .archived:
             return String(localized: "Duplicate it to run it again next year.")
         case .draft, .rejected:
@@ -126,8 +126,8 @@ extension InAppEventsViewModel {
                 }
             }
             if pendingCount > 0 { missing.append(String(localized: "push its changes")) }
-            guard !missing.isEmpty else { return String(localized: "Ready. Events can go to App Review on their own, without a new version.") }
-            return String(localized: "To submit: \(missing.formatted(.list(type: .and))). Events can go to App Review on their own.")
+            guard !missing.isEmpty else { return String(localized: "Ready. Submit it without a new version.") }
+            return String(localized: "To submit: \(missing.formatted(.list(type: .and))). No new version needed.")
         }
     }
 
@@ -156,7 +156,7 @@ extension InAppEventsViewModel {
         defer { isSubmitting = false }
         do {
             try await release.submitEvents([event.id], for: app, platform: platform)
-            toast = ToastMessage(text: String(localized: "“\(ReleaseViewModel.displayName(of: event))” is submitted. App Review usually takes about a day."))
+            toast = ToastMessage(text: String(localized: "“\(ReleaseViewModel.displayName(of: event))” submitted. App Review usually takes a day."))
             undo = nil
             await load(force: true)
         } catch {
@@ -230,7 +230,7 @@ extension InAppEventsViewModel {
         queue.upsert(change)
         undo = nil
         toast = ToastMessage(
-            text: String(localized: "“\(event.trimmedReferenceName)” waits in Review & Push. It’s created as a draft when you push."),
+            text: String(localized: "Pushing creates “\(event.trimmedReferenceName)” as a draft."),
             actionTitle: String(localized: "Review & Push")
         )
         return true

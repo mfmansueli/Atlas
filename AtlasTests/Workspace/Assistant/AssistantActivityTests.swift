@@ -37,7 +37,7 @@ struct AssistantActivityTests {
         #expect(activity.isVisible)
         #expect(!activity.isWorking)
         #expect(activity.title == "3 proposals")
-        #expect(activity.accessibilityLabel == "3 proposals waiting for review")
+        #expect(activity.accessibilityLabel == "3 suggestions to review")
     }
 
     @Test func aWorkingAssistantIsNamedEvenWithoutProposals() {
@@ -52,8 +52,8 @@ struct AssistantActivityTests {
 
     @Test func oneProposalIsSingular() {
         let activity = AssistantActivity(workingClient: nil, changes: [change("a", source: .assistant(client: "Codex"))])
-        #expect(activity.title == "1 proposal")
-        #expect(activity.accessibilityLabel == "1 proposal waiting for review")
+        #expect(activity.title == "1 suggestion")
+        #expect(activity.accessibilityLabel == "1 suggestion to review")
         #expect(AssistantActivity.proposalsText(0) == "None")
     }
 

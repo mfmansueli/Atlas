@@ -47,7 +47,7 @@ struct NewInAppEventSheet: View {
                 Text("New In-App Event")
                     .font(.title2.weight(.semibold))
                     .accessibilityAddTraits(.isHeader)
-                Text("For \(appName). It waits in Review & Push; nothing is created in App Store Connect until you push.")
+                Text("For \(appName). Nothing is created in App Store Connect until you push.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
@@ -75,9 +75,8 @@ struct NewInAppEventSheet: View {
                         .accessibilityIdentifier("events.new.deepLink")
                 } footer: {
                     Text("""
-                    People never see the reference name. The badge shows on the event’s card, and the deep link opens the event \
-                    in the app: it’s needed before you submit the event, and can be added later on the event’s page. Say it \
-                    needs a purchase only when the event costs extra.
+                    People never see the reference name. The badge shows on the card. The deep link opens the event in the \
+                    app; add it before you submit. Say it needs a purchase only if it costs extra.
                     """)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -85,12 +84,11 @@ struct NewInAppEventSheet: View {
                 Section {
                     DatePicker("Starts", selection: $event.eventStart)
                     DatePicker("Ends", selection: $event.eventEnd)
-                    DatePicker("Shows on the App Store from", selection: $event.publishStart)
+                    DatePicker("Card shows from", selection: $event.publishStart)
                 } footer: {
                     VStack(alignment: .leading, spacing: Spacing.xSmall) {
                         Text("""
-                        In every country and region, each in its own time zone. An event lasts up to 31 days, and its card can show \
-                        up to 14 days before it starts.
+                        Local time in every country or region. Events last up to 31 days; the card can show 14 days before.
                         """)
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
@@ -144,7 +142,7 @@ struct NewInAppEventSheet: View {
     /// link when there's none (a draft goes without one), and the art.
     private var footerNote: String {
         event.trimmedDeepLink.isEmpty
-            ? String(localized: "It’s created without a deep link. Add one, and its card and details images, before you submit it.")
+            ? String(localized: "No deep link yet. Add it and both images before you submit.")
             : String(localized: "Add its card and details images before you submit it.")
     }
 }

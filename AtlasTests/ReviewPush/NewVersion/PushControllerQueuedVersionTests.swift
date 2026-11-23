@@ -86,7 +86,7 @@ struct PushControllerQueuedVersionTests {
         let controller = await push([version, whatsNew], via: transport)
         #expect(controller.doneCount == 0)
         let text = try #require(controller.items.first { $0.id == whatsNew.id })
-        #expect(text.status == .notSent("Version 2.0 isn’t in App Store Connect yet, so its texts wait. Push the version first."))
+        #expect(text.status == .notSent("Version 2.0 isn’t in App Store Connect yet. Push it first, then its texts."))
         #expect(queue.changes.map(\.id) == [version.id, whatsNew.id])
         #expect(transport.sent.map(\.path) == ["/v1/appStoreVersions"])
     }

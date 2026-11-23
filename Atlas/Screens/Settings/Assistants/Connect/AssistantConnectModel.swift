@@ -367,7 +367,7 @@ final class AssistantConnectModel: Identifiable {
         step = .hello
         let time = now().formatted(date: .omitted, time: .shortened)
         hello = Hello(
-            text: String(localized: "\(assistant.title) connected to Atlas at \(time) and asked for its tools. It can read \(appName) now."),
+            text: String(localized: "\(assistant.title) connected at \(time). It can read \(appName) now."),
             date: now(),
             isFromAssistant: false
         )
