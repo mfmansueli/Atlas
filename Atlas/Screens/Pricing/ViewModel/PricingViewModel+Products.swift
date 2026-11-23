@@ -69,7 +69,9 @@ extension PricingViewModel {
                 productErrors[product.id] = PricingReadFailure.text(productName: product.name)
                 unreadProductIDs.insert(product.id)
             } else {
-                productErrors[product.id] = error.localizedDescription
+                productErrors[product.id] = AppleErrorCopy(
+                    String(localized: "\(product.name)’s prices didn’t load.", comment: "kind:error"), error: error
+                ).text
                 unreadProductIDs.remove(product.id)
             }
         }

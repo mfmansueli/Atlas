@@ -163,7 +163,7 @@ extension RetentionModel {
         do {
             libraryState = try await .loaded(services.libraryImages(for: app))
         } catch {
-            libraryState = .failed(error.localizedDescription)
+            libraryState = .failed(AppleErrorCopy(String(localized: "The Asset Library didn’t load.", comment: "kind:error"), error: error).text)
         }
     }
 

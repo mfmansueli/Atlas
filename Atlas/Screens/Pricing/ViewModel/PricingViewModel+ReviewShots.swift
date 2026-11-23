@@ -71,8 +71,8 @@ extension PricingViewModel {
         return ids
     }
 
-    /// “Capture 14 is now Lumen Plus Monthly’s review screenshot. It’s in
-    /// Review & Push.”
+    /// “Capture 14 is now Lumen Plus Monthly’s review screenshot. In Review
+    /// & Push.”
     func useCaptureToast(for products: [PricingProduct]) -> String {
         let capture = setup.paywallCapture.map { String(localized: "Capture \($0.number)") } ?? String(localized: "The capture")
         if products.count == 1, let product = products.first {

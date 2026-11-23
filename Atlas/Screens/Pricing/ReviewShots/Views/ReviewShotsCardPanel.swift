@@ -278,8 +278,11 @@ struct ReviewShotsCardPanel: View {
             viewModel.sayReviewShots(viewModel.useCaptureToast(for: products)) { [viewModel] in
                 viewModel.undoReviewShots(products)
             }
-        } catch {
+        } catch let error as PurchaseReviewScreenshotProblem {
             viewModel.sayReviewShots(error.localizedDescription, offersReview: false)
+        } catch {
+            let copy = AppleErrorCopy(String(localized: "The capture couldn’t be used.", comment: "kind:error"), error: error)
+            viewModel.sayReviewShots(copy.text, offersReview: false)
         }
     }
 

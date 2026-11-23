@@ -49,7 +49,7 @@ extension ReviewsViewModel {
         bulkProgress = ReviewBulkProgress(sent: 0, total: total)
         var sent = 0
         var languages: Set<String> = []
-        var failure: String?
+        var failure: (any Error)?
         var pending = rows.flatMap { row in
             row.reviewIDs.filter { archive.review(id: $0)?.hasReply == false }.map { (text: row.text, reviewID: $0, language: row.languageCode) }
         }[...]
@@ -67,7 +67,7 @@ extension ReviewsViewModel {
                     sent += 1
                     languages.insert(done.language)
                 case let .failure(error):
-                    failure = error.localizedDescription
+                    failure = error
                 }
                 bulkProgress = ReviewBulkProgress(sent: sent, total: total)
                 if let reply = pending.popFirst() {
@@ -90,15 +90,16 @@ extension ReviewsViewModel {
         }
     }
 
-    private func finishBulk(_ plan: ReviewBulkPlan, sent: Int, languageCount: Int, failure: String?) {
+    private func finishBulk(_ plan: ReviewBulkPlan, sent: Int, languageCount: Int, failure: (any Error)?) {
         if let failure {
             // What didn't go stays in the sheet.
             let remaining = ReviewBulkPlan.make(plan.theme, reviews: reviews)
             bulkPlan = remaining.rows.isEmpty ? nil : remaining
             bulkSelection.formIntersection(Set(remaining.rows.map(\.languageCode)))
-            errorMessage = sent == 0
-                ? String(localized: "The replies couldn’t be sent: \(failure) Try again.")
-                : String(localized: "\(ReviewText.replies(sent)) sent; the rest couldn’t be: \(failure) Send the rest again.")
+            let what = sent == 0
+                ? String(localized: "The replies couldn’t be sent.", comment: "kind:error")
+                : String(localized: "\(ReviewText.replies(sent)) sent; the rest couldn’t be.", comment: "kind:error")
+            errorMessage = AppleErrorCopy(what, error: failure).text
         } else {
             bulkPlan = nil
         }

@@ -86,7 +86,9 @@ struct ReviewBulkTests {
         await model.sendBulk()
         #expect(Set(services.sent.map(\.reviewID)) == ["de1", "us1"])
         #expect(model.bulkPlan?.rows.map(\.reviewIDs) == [["de2"]])
-        #expect(model.errorMessage?.hasPrefix("2 replies sent; the rest couldn’t be:") == true)
+        #expect(model.errorMessage?.hasPrefix(
+            "2 replies sent; the rest couldn’t be. This key can’t do that. Use an Admin or App Manager key."
+        ) == true)
     }
 
     @Test func aGroupSaysWhereItsReviewsComeFrom() {

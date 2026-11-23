@@ -104,8 +104,9 @@ struct AppPriceAvailabilityModelTests {
 
     @Test func aFailedReadSaysWhy() async {
         let model = await model(Self.tempo, services: DebugAppPriceAvailabilityServices(error: .server(statusCode: 500, detail: nil)))
-        #expect(model.price.errorMessage != nil)
-        #expect(model.availability.errorMessage != nil)
+        #expect(model.price.errorMessage?.hasPrefix("The price didn’t load. Apple didn’t answer. Try again in a minute.") == true)
+        #expect(model.availability.errorMessage?.hasPrefix("Availability didn’t load. Apple didn’t answer.") == true)
+        #expect(model.price.errorMessage?.contains("Details: HTTP 500") == true)
     }
 
     @Test func keepMyPricesLeavesTheAppsPriceQueued() async {

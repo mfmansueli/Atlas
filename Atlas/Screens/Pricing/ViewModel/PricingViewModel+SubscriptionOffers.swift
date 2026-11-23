@@ -182,7 +182,10 @@ extension PricingViewModel {
             let data = try await reader.oneTimeCodeValues(batchID: batch.id)
             setup.codesFile = OneTimeCodesFile(data: data, fileName: batch.fileName(offerName: code.name))
         } catch {
-            setup.codesSaveError = String(localized: "Apple hasn’t sent the codes yet. Try again later. \(error.localizedDescription)")
+            setup.codesSaveError = AppleErrorCopy(
+                summary: String(localized: "Apple hasn’t sent the codes yet. Try again later.", comment: "kind:error"),
+                details: AppleErrorCopy.details(for: error)
+            ).text
         }
     }
 }

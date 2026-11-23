@@ -66,7 +66,8 @@ struct ReviewsViewModelTests {
         services.readError = .server(statusCode: 500, detail: "Try later.")
         let model = makeModel(services: services)
         await model.load(force: true)
-        #expect(model.errorMessage != nil)
+        #expect(model.errorMessage?.hasPrefix("Reviews didn’t load. Apple didn’t answer. Try again in a minute.") == true)
+        #expect(model.errorMessage?.contains("Details: ") == true)
         #expect(model.reviews.count == 6)
     }
 
@@ -134,7 +135,7 @@ struct ReviewsViewModelTests {
         let model = makeModel(store: store, services: services)
         let review = model.shownReviews[0]
         await model.sendSuggestion(for: review)
-        #expect(model.replyErrors["de1"] != nil)
+        #expect(model.replyErrors["de1"]?.hasPrefix("The reply wasn’t sent. This key can’t do that.") == true)
         #expect(model.suggestion(for: review) != nil)
         #expect(model.toast == nil)
     }
