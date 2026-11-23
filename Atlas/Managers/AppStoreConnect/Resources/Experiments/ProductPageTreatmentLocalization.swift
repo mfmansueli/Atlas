@@ -11,10 +11,13 @@ import Foundation
 struct ProductPageTreatmentLocalization: Hashable, Sendable, Identifiable {
     var id: String
     var locale: String?
+    /// The artwork on its page, when the response included it.
+    var placements: [AssetLibraryPlacement] = []
 
-    init(id: String, locale: String? = nil) {
+    init(id: String, locale: String? = nil, placements: [AssetLibraryPlacement] = []) {
         self.id = id
         self.locale = locale
+        self.placements = placements
     }
 
     init(_ resource: ScreenshotAPIResource<ProductPageTreatmentLocaleAttributes>) {

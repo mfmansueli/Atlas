@@ -27,6 +27,18 @@ extension AppStoreConnectClient {
         return experiments
     }
 
+    /// A test's treatments, with when one was applied to the page.
+    func productPageTreatments(experimentID: String) async throws -> [ProductPageTreatment] {
+        let path = ProductPageExperimentRequests.treatmentsPath(experimentID: experimentID)
+        return try await ProductPageExperimentRequests.treatments(in: fetch(path).data)
+    }
+
+    /// A treatment's languages, each with the artwork placed on its page.
+    func productPageTreatmentLocalizations(treatmentID: String) async throws -> [ProductPageTreatmentLocalization] {
+        let path = ProductPageExperimentRequests.treatmentLocalizationsPath(treatmentID: treatmentID)
+        return try await ProductPageExperimentRequests.treatmentLocalizations(in: fetch(path).data)
+    }
+
     /// A draft test on the app's iOS page.
     func createProductPageExperiment(appID: StoreApp.ID, name: String, trafficProportion: Int) async throws -> ProductPageExperiment {
         let request = ProductPageExperimentRequests.createExperiment(appID: appID, name: name, trafficProportion: trafficProportion)

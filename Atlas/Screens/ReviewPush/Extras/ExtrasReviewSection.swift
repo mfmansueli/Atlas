@@ -24,6 +24,13 @@ struct ExtrasReviewSection: View {
                     .padding(.horizontal, -Spacing.large)
                     .accessibilityIdentifier("review.extras.blocked")
             }
+            ForEach(plan.testProposals) { proposal in
+                ProductPageTestProposalCard(proposal: proposal, plan: plan) {
+                    viewModel.openProposedTest(plan, proposal: proposal)
+                } onDismiss: {
+                    Task { await viewModel.dismissTestProposal(plan, proposal: proposal) }
+                }
+            }
             ForEach(plan.artworkKinds, id: \.self) { kind in
                 card(
                     title: "\(kind.title) · \(kind.ratioTitle)",

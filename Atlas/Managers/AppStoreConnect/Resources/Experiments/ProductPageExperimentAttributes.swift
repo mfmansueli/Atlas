@@ -17,9 +17,14 @@ struct ProductPageExperimentAttributes: Decodable, Sendable {
     /// `IN_REVIEW`, `ACCEPTED`, `APPROVED`, `REJECTED`, `COMPLETED`,
     /// `STOPPED`.
     var state: String?
+    /// Whether App Review must approve it before it runs.
+    var reviewRequired: Bool?
+    /// When it started and ended (ISO 8601); nil before.
+    var startDate: String?
+    var endDate: String?
 
     private enum CodingKeys: String, CodingKey {
-        case name, platform, trafficProportion, state
+        case name, platform, trafficProportion, state, reviewRequired, startDate, endDate
     }
 
     init(from decoder: any Decoder) throws {
@@ -28,5 +33,8 @@ struct ProductPageExperimentAttributes: Decodable, Sendable {
         platform = try? container.decodeIfPresent(String.self, forKey: .platform)
         trafficProportion = try? container.decodeIfPresent(Int.self, forKey: .trafficProportion)
         state = try? container.decodeIfPresent(String.self, forKey: .state)
+        reviewRequired = try? container.decodeIfPresent(Bool.self, forKey: .reviewRequired)
+        startDate = try? container.decodeIfPresent(String.self, forKey: .startDate)
+        endDate = try? container.decodeIfPresent(String.self, forKey: .endDate)
     }
 }

@@ -27,5 +27,8 @@ struct DebugExtrasScript: Sendable {
     /// And asks for the variant, which the pretend Claude Code reads and
     /// works on (`shots-ppo-asking`).
     var asksVariant = false
+    /// Opens it on the assistant's proposed test instead
+    /// (`shots-ppo-proposed-sheet`).
+    var opensProposal = false
 }
 #endif

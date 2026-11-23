@@ -44,6 +44,9 @@ struct ScreenshotExtras: Codable, Hashable, Sendable {
     /// The place a run that made only the header or only search results
     /// left as it was, drawn as before; its files are in `artwork`.
     var keptPlace: ExtrasArtworkPlace?
+    /// Product Page Optimization tests assistants proposed, decided or
+    /// not, oldest first; nil when none was.
+    var testProposals: [ProductPageTestProposal]?
 
     var hasArtwork: Bool { artworkSize != nil && !artwork.isEmpty }
     var hasPreviews: Bool { !previews.isEmpty }

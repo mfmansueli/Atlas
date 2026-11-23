@@ -14,19 +14,31 @@ struct ProductPageExperiment: Hashable, Sendable, Identifiable {
     var platform: String?
     var state: String?
     var trafficProportion: Int?
+    /// Whether App Review must approve it before it runs.
+    var reviewRequired: Bool?
+    var startDate: Date?
+    var endDate: Date?
 
-    init(id: String, name: String? = nil, platform: String? = nil, state: String? = nil, trafficProportion: Int? = nil) {
+    init(
+        id: String, name: String? = nil, platform: String? = nil, state: String? = nil, trafficProportion: Int? = nil,
+        reviewRequired: Bool? = nil, startDate: Date? = nil, endDate: Date? = nil
+    ) {
         self.id = id
         self.name = name
         self.platform = platform
         self.state = state
         self.trafficProportion = trafficProportion
+        self.reviewRequired = reviewRequired
+        self.startDate = startDate
+        self.endDate = endDate
     }
 
     init(_ resource: ScreenshotAPIResource<ProductPageExperimentAttributes>) {
+        let attributes = resource.attributes
         self.init(
-            id: resource.id, name: resource.attributes?.name, platform: resource.attributes?.platform,
-            state: resource.attributes?.state, trafficProportion: resource.attributes?.trafficProportion
+            id: resource.id, name: attributes?.name, platform: attributes?.platform, state: attributes?.state,
+            trafficProportion: attributes?.trafficProportion, reviewRequired: attributes?.reviewRequired,
+            startDate: AppStoreConnectDate.date(attributes?.startDate), endDate: AppStoreConnectDate.date(attributes?.endDate)
         )
     }
 
@@ -36,6 +48,9 @@ struct ProductPageExperiment: Hashable, Sendable, Identifiable {
     static let finishedStates: Set<String> = ["COMPLETED", "STOPPED"]
 
     var isFinished: Bool { state.map(Self.finishedStates.contains) ?? false }
+
+    /// A draft: the only state Atlas proposes deleting a test in.
+    var isDraft: Bool { state == "PREPARE_FOR_SUBMISSION" }
 
     /// "a draft", "in review", "running"…, for "already has a test, …".
     var stateTitle: String {

@@ -130,7 +130,12 @@ enum MCPEndpoint {
     get_page_screenshots and send the plan with propose_page_screenshots: the default set's screens in the page's \
     order and a caption for each in every language; Atlas lays them out. When its look is claudeDesign, send three \
     looks with propose_page_look; when it has recapture, capture the screens that should show something else in the \
-    Simulator and name each with report_page_capture. When a release needs a new App Store version, read \
+    Simulator and name each with report_page_capture. To A/B test the header or search results image (Product \
+    Page Optimization), read get_page_tests (the app's tests, what each placement can be tested with, results aren't \
+    in the API) and propose one with propose_page_test, its reason and evidence: one placement, one treatment (the \
+    Autopilot run's variant, asked for when there's none, or an image in the app's library); App Store Connect runs \
+    one test at a time, so a test that isn't over refuses it. The person creates it from Review & Push; a draft in \
+    the way can be proposed for deletion (action: deleteDraft). When a release needs a new App Store version, read \
     get_app_versions and propose it with propose_app_version (the project's MARKETING_VERSION is a good number); \
     App Store Connect creates it when the person pushes. When a release changes what a subscription or in-app \
     purchase unlocks, update its Review Notes for App Review in the same task: get_in_app_review_notes, then \

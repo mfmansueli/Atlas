@@ -224,4 +224,23 @@ struct ProductPageTestRunTests {
         #expect(!library.log.contains { $0.hasPrefix("reserve") })
         #expect(tester.log.last == "delete exp-1")
     }
+
+    // MARK: - From the library
+
+    /// A proposed test of images already in the app's library places them
+    /// on the treatment without uploading anything.
+    @Test func aLibraryImageIsPlacedWithoutUploading() async throws {
+        let folder = try Fixtures.folder()
+        let tester = FakeProductPageTesting()
+        let library = FakeAssetLibrary()
+        var request = Fixtures.request(in: folder, locales: ["en-US"])
+        request.locales[0].treatmentFile = nil
+        request.locales[0].libraryAsset = AssetLibraryAsset(id: "lib-en", media: .image)
+        let run = await Fixtures.run(request, environment: Fixtures.environment(tester, library: library))
+
+        #expect(run.outcome?.isCreated == true)
+        let group = AssetLibraryRefDataSample.headerGroup
+        #expect(tester.log.contains("place lib-en \(ExtrasPushKind.productPageHeader) \(group) trl-en-US"))
+        #expect(!library.log.contains { $0.hasPrefix("reserve") || $0.hasPrefix("upload") })
+    }
 }

@@ -13,7 +13,8 @@ struct ListProposalsTool: MCPTool {
         description: """
         Lists the screenshot proposals sent for an app, oldest first: proposalId, kind (template or captions), \
         the template version a template proposal is based on, and status: pending, stale (based on an older \
-        template version; the person rebases or discards it), accepted, partial or rejected.
+        template version; the person rebases or discards it), accepted, partial or rejected. pageTests lists the \
+        Product Page Optimization tests proposed with propose_page_test, when there are any.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
@@ -38,6 +39,10 @@ struct ListProposalsTool: MCPTool {
             if proposal.kind == .captions { entry["captions"] = .int(proposal.captions.count) }
             return .object(entry)
         }
-        return .read(["appId": .string(draft.app.id), "proposals": .array(proposals)], target: draft.target)
+        var result: [String: JSONValue] = ["appId": .string(draft.app.id), "proposals": .array(proposals)]
+        if let tests = draft.document.extras?.testProposals, !tests.isEmpty {
+            result["pageTests"] = .array(tests.map(MCPPageTestsJSON.proposal))
+        }
+        return .read(.object(result), target: draft.target)
     }
 }

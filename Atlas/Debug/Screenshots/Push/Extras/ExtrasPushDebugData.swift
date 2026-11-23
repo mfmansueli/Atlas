@@ -20,7 +20,7 @@ enum ExtrasPushDebugData {
         kind: .edgeContrast, text: String(localized: "Japanese header: its edges melt into the page in Dark Mode.")
     )
 
-    static func extras(for run: AutopilotRun, variant: Bool) -> ScreenshotExtras? {
+    static func extras(for run: AutopilotRun, variant: Bool, proposesTest: Bool = false) -> ScreenshotExtras? {
         guard var extras = StudioDebugExtras.extras(for: run) else { return nil }
         for index in extras.artwork.indices {
             let file = extras.artwork[index]
@@ -46,7 +46,24 @@ enum ExtrasPushDebugData {
                 client: "Claude Code", madeAt: StudioDebugRuns.date(day: 31, month: 10, hour: 15, minute: 2)
             )
         }
+        if variant, proposesTest {
+            extras.testProposals = [testProposal(locales: run.plan.localeCodes)]
+        }
         return extras
+    }
+
+    /// The header test Claude Code proposed over MCP (`propose_page_test`):
+    /// the variant against the current header, 30% of visitors, every
+    /// language, from what Analytics shows.
+    static func testProposal(locales: [String]) -> ProductPageTestProposal {
+        ProductPageTestProposal(
+            id: "pt-debug01", name: "Header: Editor vs Calm morning", placement: .header, trafficProportion: 30,
+            treatment: .variant(change: String(localized: "A calm morning page instead of the editor, warm light, no text")),
+            locales: locales,
+            reason: String(localized: "Search visitors open the page but few download: a calmer header may say what the journal feels like faster."),
+            evidence: [String(localized: "analytics: page views to downloads 2.1% (app average 3.4%) over 28 days")],
+            client: "Claude Code", receivedAt: StudioDebugRuns.date(day: 31, month: 10, hour: 15, minute: 6)
+        )
     }
 
     /// German's header breaks a rule; English's search image and Japanese

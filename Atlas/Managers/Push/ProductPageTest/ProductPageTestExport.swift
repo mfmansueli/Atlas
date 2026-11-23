@@ -21,11 +21,17 @@ struct ProductPageTestExport {
     /// What to do in App Store Connect with the exported files.
     static func steps(for request: ProductPageTestRequest) -> String {
         let placement = request.placement.title
-        return String(localized: """
+        var steps = String(localized: """
         In App Store Connect, open \(request.appName)’s Product Page Optimization and create a test with one treatment named \
         “\(request.treatmentName)”. On the treatment’s \(request.placement.tabTitle) tab, add “\(placement) – \(request.treatmentName) – …” \
         in each language. The “\(request.controlName)” images are what the page shows now, the control: leave them on the page.
         """)
+        let fromLibrary = request.locales.filter { $0.treatmentFile == nil }.map(\.locale)
+        if !fromLibrary.isEmpty {
+            let languages = fromLibrary.formatted(.list(type: .and))
+            steps += " " + String(localized: "For \(languages), choose the treatment’s image from the app’s library there.")
+        }
+        return steps
     }
 
     /// Copies each language's control and treatment into the request's
@@ -41,7 +47,10 @@ struct ProductPageTestExport {
             } else {
                 withoutControl.append(locale.locale)
             }
-            try files.append(copy(locale.treatmentFile, variant: request.treatmentName, locale: locale.locale, into: folder, fileManager: fileManager))
+            // A library asset has no file here: the steps say to pick it there.
+            if let treatment = locale.treatmentFile {
+                try files.append(copy(treatment, variant: request.treatmentName, locale: locale.locale, into: folder, fileManager: fileManager))
+            }
         }
         return ProductPageTestExportResult(folder: folder, files: files, languagesWithoutControl: withoutControl, steps: Self.steps(for: request))
     }

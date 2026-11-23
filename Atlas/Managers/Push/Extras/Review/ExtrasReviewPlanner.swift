@@ -13,7 +13,7 @@ struct ExtrasReviewPlanner {
     var fileURL: (_ fileID: String, _ pathExtension: String) -> URL
 
     func plan(appID: StoreApp.ID, appName: String, extras: ScreenshotExtras?, context: ScreenshotsContext) -> ExtrasReviewPlan? {
-        guard let extras, extras.hasArtwork || extras.hasPreviews else { return nil }
+        guard let extras, extras.hasArtwork || extras.hasPreviews || !extras.openTestProposals.isEmpty else { return nil }
         let pushed = extras.pushedChecksums ?? [:]
         let discarded = extras.discardedChecksums ?? [:]
         let localizations = Dictionary(context.localizations.map { ($0.key.code, $0.value) }, uniquingKeysWith: { first, _ in first })
@@ -56,7 +56,7 @@ struct ExtrasReviewPlanner {
             appID: appID, appName: appName, directionName: extras.directionName, items: items, pushedCount: pushedCount,
             artwork: extras.artwork, primaryLocale: context.primaryLocale.code, variant: extras.variant, discardedCount: discardedCount,
             musicTitle: extras.hasPreviews ? extras.previewMusic?.title : nil,
-            blockedReason: Self.blockedReason(context)
+            blockedReason: Self.blockedReason(context), testProposals: extras.openTestProposals
         )
     }
 

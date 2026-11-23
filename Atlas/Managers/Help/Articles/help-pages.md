@@ -3,7 +3,7 @@ id: pages
 group: listing
 title: Product pages for an audience
 summary: Other versions of your App Store page, each with its own link, for an audience, a campaign or a search.
-keywords: custom product pages, product page, product pages, page, pages, link, campaign, audience, deep link, visible, hidden, 70, promotional text, keywords, not offered, rules, screenshots, make screenshots for this page, autopilot, look, template, claude design, capture again, simulator, choose files, sizes, app review, approved, rejected, notification, app previews, video, choose app previews, campaign, referrer
+keywords: product page optimization, a/b test, ab test, treatment, experiment, custom product pages, product page, product pages, page, pages, link, campaign, audience, deep link, visible, hidden, 70, promotional text, keywords, not offered, rules, screenshots, make screenshots for this page, autopilot, look, template, claude design, capture again, simulator, choose files, sizes, app review, approved, rejected, notification, app previews, video, choose app previews, campaign, referrer
 showMe: section:productPages
 related: store, submit, analytics
 ---
@@ -35,6 +35,18 @@ Have App Preview videos for the page? Click **Choose App Previews…** and pick 
 Already have the screenshots? Click **Choose Files…** under the page’s screenshots and pick up to 10 PNG or JPEG images for the language and device shown. Atlas checks each one’s size first: iPhone takes 1320 × 2868, 1290 × 2796 or 1260 × 2736, and iPad 2064 × 2752 or 2048 × 2732, upright or turned. A file that doesn’t fit is named with the sizes that work, and nothing is added. The ones that fit wait in Review & Push, in place of any set chosen before for that language and device.
 
 The default page’s screenshots, captions and template don’t change.
+
+## Test the header or search image
+
+Product Page Optimization shows part of your visitors another header or search results image (the treatment) and the rest your page as it is, so you can see which brings more downloads. App Store Connect runs one test at a time.
+
+1. In Review & Push, click **Test with Product Page Optimization…** beside the header or the search results artwork Autopilot made.
+2. Click **Ask for the Outcome Variant**. Your assistant designs a second image with one idea changed, and Atlas checks it in every language.
+3. Click **Create Test**. The test is made as a draft in App Store Connect. Start it there, or tick **Send it to App Review once it’s made** first. When the API can’t put the image on the test, Atlas saves both images to a folder and says what to do in App Store Connect.
+
+Your assistant can propose a test too: its name, how many visitors see the treatment, the languages, and why. It waits on a card in Review & Push. **Review Test…** opens it filled in, and nothing is made until you click **Create Test**. **Dismiss** leaves it out. The treatment is the run’s variant or an image already in the app’s library. An assistant can also propose deleting a draft test that’s in the way: it waits in Review & Push like any other change.
+
+> A running test can only be stopped in App Store Connect, and the results (conversion and improvement) are there too. Atlas doesn’t show them.
 
 ## Where a page’s link is used
 

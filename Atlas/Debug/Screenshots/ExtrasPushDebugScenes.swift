@@ -26,9 +26,15 @@ import SwiftUI
 ///   while the ones before it process.
 /// - `asset-library`: the App Asset Library sheet on its own, with files on
 ///   a page, leftovers from earlier pushes, a failed and an unfinished one.
+/// - `shots-ppo-proposed`: Review & Push with the header test Claude Code
+///   proposed over MCP (`propose_page_test`) waiting on its card, the
+///   variant rendered.
+/// - `shots-ppo-proposed-sheet`: the same proposal opened in “Test with
+///   Product Page Optimization…”, prefilled with its name, traffic and why.
 enum ExtrasPushDebugScenes {
     static let ids = [
         "shots-review-extras", "shots-review-extras-only", "shots-ppo", "shots-ppo-export", "shots-ppo-asking", "shots-extras-pushing", "asset-library",
+        "shots-ppo-proposed", "shots-ppo-proposed-sheet",
     ]
 
     @MainActor
@@ -49,13 +55,17 @@ enum ExtrasPushDebugScenes {
             scene(script: DebugExtrasScript(delay: .milliseconds(700), processingChecks: 2, pushesExtras: true), variant: false)
         case "shots-ppo-export":
             scene(script: DebugExtrasScript(delay: .milliseconds(20), refusesTreatmentArtwork: true, opensTest: .header, createsTest: true), variant: true)
+        case "shots-ppo-proposed":
+            scene(script: DebugExtrasScript(), variant: true, proposesTest: true)
+        case "shots-ppo-proposed-sheet":
+            scene(script: DebugExtrasScript(opensTest: .header, opensProposal: true), variant: true, proposesTest: true)
         default:
             nil
         }
     }
 
     @MainActor
-    private static func scene(script: DebugExtrasScript, variant: Bool, onlyExtras: Bool = false) -> AnyView {
+    private static func scene(script: DebugExtrasScript, variant: Bool, onlyExtras: Bool = false, proposesTest: Bool = false) -> AnyView {
         let run = StudioDebugExtras.run(.ready)
         let center = AutopilotCenter()
         center.holdsStages = true
@@ -63,7 +73,7 @@ enum ExtrasPushDebugScenes {
         center.install(run)
         let base = DebugScreenshotsServices()
         base.autopilot = center
-        let extras = ExtrasPushDebugData.extras(for: run, variant: variant)
+        let extras = ExtrasPushDebugData.extras(for: run, variant: variant, proposesTest: proposesTest)
         if let extras { ExtrasPushDebugData.writeFiles(for: run, extras: extras, fonts: base.fonts) }
         base.documentChange = { document in
             document.extras = extras

@@ -118,6 +118,8 @@ struct MCPToolbox {
             ProposePageLookTool(),
             ReportPageCaptureTool(),
             RequestPageRecaptureTool(),
+            GetPageTestsTool(),
+            ProposePageTestTool(),
         ])
     }
 
