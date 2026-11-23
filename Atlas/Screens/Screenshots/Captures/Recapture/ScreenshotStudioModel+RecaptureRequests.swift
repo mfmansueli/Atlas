@@ -23,8 +23,11 @@ extension ScreenshotStudioModel {
         }
         do {
             try autopilot.acceptRecapture(request.id, appID: app.id, fromCaptures: recapturePlanFromCaptures)
-        } catch {
+        } catch let error as AutopilotError {
             screenshots.notice = error.localizedDescription
+            return
+        } catch {
+            screenshots.notice = AppleErrorCopy(String(localized: "The request wasn’t accepted.", comment: "kind:error"), error: error).text
             return
         }
         openAutopilot()
@@ -52,7 +55,7 @@ extension ScreenshotStudioModel {
         do {
             source = try await PageShotsSource.load(app: app, services: screenshots.services)
         } catch {
-            screenshots.notice = error.localizedDescription
+            screenshots.notice = AppleErrorCopy(String(localized: "The page’s screenshots didn’t load.", comment: "kind:error"), error: error).text
             return
         }
         if let problem = source.problem {

@@ -110,7 +110,7 @@ extension ScreenshotStudioModel {
                     plan.alsoMakes.artworkDirection.references.append(reference)
                 }
             } catch {
-                referenceError = error.localizedDescription
+                referenceError = AppleErrorCopy(String(localized: "The reference wasn’t added.", comment: "kind:error"), error: error).text
             }
         }
     }

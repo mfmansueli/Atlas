@@ -35,11 +35,8 @@ struct AssetLibraryFileRow: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                 if let error = model.deleteErrors[file.id] {
-                    Text(error)
-                        .font(.subheadline)
-                        .foregroundStyle(Palette.err)
+                    ErrorCopyMessage(copy: error)
                         .fixedSize(horizontal: false, vertical: true)
-                        .textSelection(.enabled)
                         .accessibilityIdentifier("assetLibrary.error.\(file.id)")
                 }
             }

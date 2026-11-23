@@ -54,7 +54,7 @@ final class ScreenshotProposalsViewModel: Identifiable {
         do {
             try await adopt(services.loadDocument(for: app, primaryLocale: primaryLocale))
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "The suggestions didn’t load.", comment: "kind:error"), error: error).text
         }
     }
 

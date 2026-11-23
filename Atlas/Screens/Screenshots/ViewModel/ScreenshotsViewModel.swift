@@ -142,7 +142,7 @@ final class ScreenshotsViewModel {
             errorMessage = nil
             live = try await services.liveScreenshots(for: app, context: context)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppleErrorCopy(String(localized: "Screenshots didn’t load.", comment: "kind:error"), error: error).text
         }
         await rebuild()
     }

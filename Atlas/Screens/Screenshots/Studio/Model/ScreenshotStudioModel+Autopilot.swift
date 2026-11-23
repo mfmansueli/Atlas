@@ -246,8 +246,10 @@ extension ScreenshotStudioModel {
             _ = try await autopilot.receiveCapture(appID: app.id, file: file, report: report, context: context)
             await autopilot.resolveProblem(appID: app.id, problemID: problem.id, with: .uploadedByHand, context: context)
             await keepGoing()
-        } catch {
+        } catch let error as AutopilotError {
             screenshots.notice = error.localizedDescription
+        } catch {
+            screenshots.notice = AppleErrorCopy(String(localized: "The screenshot wasn’t added.", comment: "kind:error"), error: error).text
         }
     }
 

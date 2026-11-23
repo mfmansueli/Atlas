@@ -120,8 +120,10 @@ extension ScreenshotStudioModel {
             try FileManager.default.createDirectory(at: copy.deletingLastPathComponent(), withIntermediateDirectories: true)
             if !FileManager.default.fileExists(atPath: copy.path) { try data.write(to: copy, options: .atomic) }
             setPreviewMusic(AutopilotPreviewMusic(fileID: id, fileExtension: pathExtension, fileName: url.lastPathComponent))
-        } catch {
+        } catch let error as AppPreviewError {
             musicError = error.localizedDescription
+        } catch {
+            musicError = AppleErrorCopy(String(localized: "The music wasn’t added.", comment: "kind:error"), error: error).text
         }
     }
 

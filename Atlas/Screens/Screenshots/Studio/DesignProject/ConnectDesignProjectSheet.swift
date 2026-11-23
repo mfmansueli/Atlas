@@ -169,9 +169,12 @@ struct ConnectDesignProjectSheet: View {
         do {
             summary = try BrandFolderReader.summary(of: folder)
             findMessage = nil
-        } catch {
+        } catch let error as AutopilotError {
             summary = nil
             findMessage = error.localizedDescription
+        } catch {
+            summary = nil
+            findMessage = AppleErrorCopy(String(localized: "The folder couldn’t be read.", comment: "kind:error"), error: error).text
         }
     }
 

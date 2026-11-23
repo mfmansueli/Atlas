@@ -67,9 +67,12 @@ final class CapturesViewModel {
         do {
             let scan = try await Task.detached { try await scanner.scan(urls) }.value
             present(scan)
-        } catch {
+        } catch let error as CaptureImportError {
             stopAccessing()
             errorMessage = error.localizedDescription
+        } catch {
+            stopAccessing()
+            errorMessage = AppleErrorCopy(String(localized: "The files couldn’t be read.", comment: "kind:error"), error: error).text
         }
     }
 
@@ -132,8 +135,11 @@ final class CapturesViewModel {
         let captures: [ScreenshotCapture]
         do {
             captures = try await screenshots.services.importCaptures(session.items, for: screenshots.app)
-        } catch {
+        } catch let error as CaptureImportError {
             errorMessage = error.localizedDescription
+            return
+        } catch {
+            errorMessage = AppleErrorCopy(String(localized: "The captures weren’t imported.", comment: "kind:error"), error: error).text
             return
         }
         captures.forEach { document.captures.add($0) }

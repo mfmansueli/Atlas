@@ -32,6 +32,9 @@ final class CaptionTranslationViewModel {
     private(set) var availability: [StoreLocale: TranslationAvailability] = [:]
     /// Captions written by the last batch that don't fit.
     private(set) var flagged: [LocaleSlot] = []
+    /// The translator's own words for the batch's first failure that
+    /// wasn't Atlas's, shown after "Details:" in the summary.
+    @ObservationIgnored private var failureDetails: String?
     @ObservationIgnored private var task: Task<Void, Never>?
 
     init(screenshots: ScreenshotsViewModel) {
@@ -115,6 +118,7 @@ final class CaptionTranslationViewModel {
         runProvider = provider
         aiTranslator = provider == .aiProvider ? aiProvider.makeTranslator(glossary.tone) : nil
         flagged = []
+        failureDetails = nil
         isRunning = true
         task = Task { [weak self] in await self?.run() }
     }
@@ -140,8 +144,11 @@ final class CaptionTranslationViewModel {
                 guard !Task.isCancelled else { break }
                 job?.complete(item.key, with: caption)
                 await write(caption, for: item.key)
-            } catch {
+            } catch let error as CaptionTranslationError {
                 job?.fail(item.key, message: error.localizedDescription)
+            } catch {
+                failureDetails = failureDetails ?? AppleErrorCopy.details(for: error)
+                job?.fail(item.key, message: String(localized: "The translator returned an error.", comment: "kind:error"))
             }
         }
         if !Task.isCancelled { finish() }
@@ -216,6 +223,6 @@ final class CaptionTranslationViewModel {
             }.first ?? ""
             parts.append(failed == 1 ? String(localized: "1 couldn’t be translated: \(reason)") : String(localized: "\(failed) couldn’t be translated. Try again, or write them by hand. \(reason)"))
         }
-        return parts.joined(separator: " ")
+        return AppleErrorCopy(summary: parts.joined(separator: " "), details: failureDetails).text
     }
 }

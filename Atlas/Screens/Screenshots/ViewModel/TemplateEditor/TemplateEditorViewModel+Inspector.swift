@@ -193,8 +193,10 @@ extension TemplateEditorViewModel {
             let family = try await screenshots.uploadFont(from: url)
             uploadError = nil
             setDisplayFont(family)
-        } catch {
+        } catch let error as ScreenshotFontLibrary.UploadError {
             uploadError = error.localizedDescription
+        } catch {
+            uploadError = AppleErrorCopy(String(localized: "The font wasn’t added.", comment: "kind:error"), error: error).text
         }
     }
 }

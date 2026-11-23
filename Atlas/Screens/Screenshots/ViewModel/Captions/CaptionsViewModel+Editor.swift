@@ -128,7 +128,7 @@ extension CaptionsViewModel {
             }
             suggestion = CaptionSuggestion(key: selection, headline: text, providerTitle: TranslationProvider.appleTranslation.shortTitle, fit: fit)
         } catch {
-            suggestionMessage = error.localizedDescription
+            suggestionMessage = AppleErrorCopy(String(localized: "The caption wasn’t translated.", comment: "kind:error"), error: error).text
         }
     }
 

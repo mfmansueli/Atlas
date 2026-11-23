@@ -43,7 +43,7 @@ final class AssetLibraryModel: Identifiable {
     private(set) var deletedCount = 0
     private(set) var deleteTotal = 0
     /// Why a file couldn't be deleted, in Apple's words.
-    private(set) var deleteErrors: [AssetLibraryFile.ID: String] = [:]
+    private(set) var deleteErrors: [AssetLibraryFile.ID: AppleErrorCopy] = [:]
     private(set) var notice: String?
 
     init(appID: StoreApp.ID, appName: String, manager: any AssetLibraryManaging) {
@@ -207,8 +207,9 @@ final class AssetLibraryModel: Identifiable {
         return String(localized: "Deleting \(min(deletedCount + deleteErrors.count + 1, deleteTotal)) of \(deleteTotal)…")
     }
 
-    private static func describe(_ error: any Error) -> String {
-        let text = (error as? AppStoreConnectError)?.pushFailureText ?? error.localizedDescription
-        return text.hasSuffix(".") ? text : text + "."
+    /// "The file wasn’t deleted. Apple refused the change. See Details.",
+    /// with Apple's code and words in Details.
+    private static func describe(_ error: any Error) -> AppleErrorCopy {
+        AppleErrorCopy(String(localized: "The file wasn’t deleted.", comment: "kind:error"), error: error)
     }
 }
