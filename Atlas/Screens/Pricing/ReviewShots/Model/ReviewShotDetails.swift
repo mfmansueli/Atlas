@@ -19,6 +19,10 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
     var origin: Origin
     /// “Monthly”: the plan selected in it.
     var plan: String?
+    /// The product's own plan, when it isn't `plan`: Bruma's paywall
+    /// selects Annual and nothing selects Monthly without a tap, so
+    /// Monthly's image shows Monthly and its price with Annual selected.
+    var expectedPlan: String?
     /// “$4.99”: the price it shows for that plan.
     var price: String?
     /// “iPhone 17 Pro”.
@@ -41,9 +45,22 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
         return nil
     }
 
+    /// Another plan than the product's is selected in it.
+    var showsOtherPlan: Bool {
+        guard let plan, let expectedPlan else { return false }
+        return plan.localizedCaseInsensitiveCompare(expectedPlan) != .orderedSame
+    }
+
+    /// “Monthly selected”, or “Monthly shows, Annual selected”.
+    var planText: String? {
+        guard let plan else { return nil }
+        if showsOtherPlan, let expectedPlan { return String(localized: "\(expectedPlan) shows, \(plan) selected") }
+        return String(localized: "\(plan) selected")
+    }
+
     /// “Review screenshot · Monthly selected”.
     var heading: String {
-        plan.map { String(localized: "Review screenshot · \($0) selected") } ?? String(localized: "Review screenshot")
+        planText.map { String(localized: "Review screenshot · \($0)") } ?? String(localized: "Review screenshot")
     }
 
     /// “Captured in Simulator on iPhone 17 Pro, English (U.S.), just now.
@@ -54,7 +71,10 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
             : madeAt.formatted(.relative(presentation: .named, unitsStyle: .wide))
         let place = [device, language].compactMap(\.self).joined(separator: ", ")
         var line = place.isEmpty ? String(localized: "Captured in Simulator \(when).") : String(localized: "Captured in Simulator on \(place), \(when).")
-        if let plan, let price {
+        if showsOtherPlan, let plan, let expectedPlan {
+            let shows = price.map { String(localized: "\(expectedPlan) shows \($0)") } ?? String(localized: "\(expectedPlan) shows")
+            line += " " + String(localized: "\(shows), with \(plan) selected.")
+        } else if let plan, let price {
             line += " " + String(localized: "\(plan) is selected and shows \(price).")
         } else if let plan {
             line += " " + String(localized: "\(plan) is selected.")
@@ -67,7 +87,7 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
     var acceptedLine: String {
         switch origin {
         case let .assistant(client):
-            let plan = plan.map { " · " + String(localized: "\($0) selected") } ?? ""
+            let plan = planText.map { " · " + $0 } ?? ""
             return String(localized: "From \(client)\(plan) · uploads when you push")
         case let .capture(title):
             return String(localized: "\(title) from Screenshots · uploads when you push")
@@ -79,7 +99,7 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
     var reviewLine: String {
         switch origin {
         case let .assistant(client):
-            let plan = plan.map { " · " + String(localized: "\($0) selected") } ?? ""
+            let plan = planText.map { " · " + $0 } ?? ""
             return String(localized: "Review screenshot\(plan) · from \(client)")
         case let .capture(title):
             return String(localized: "Review screenshot · \(title) from Screenshots")

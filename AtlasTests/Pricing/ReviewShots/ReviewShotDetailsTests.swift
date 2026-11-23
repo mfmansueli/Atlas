@@ -55,5 +55,19 @@ struct ReviewShotDetailsTests {
         #expect(reread.details(for: "b") != nil)
         defaults.removePersistentDomain(forName: "ReviewShotDetailsTests")
     }
+
+    /// Bruma's Monthly (2026-11-23): nothing selects it without a tap, so
+    /// its image shows Monthly and its price with Annual selected.
+    @Test func anotherPlanSelectedIsSaidPlainly() {
+        var details = ReviewShotDetails(origin: .assistant(client: "Claude Code"), plan: "Annual", price: "$6.99", device: "iPhone 17 Pro")
+        details.expectedPlan = "Monthly"
+        #expect(details.showsOtherPlan)
+        #expect(details.heading == "Review screenshot · Monthly shows, Annual selected")
+        #expect(details.capturedLine(now: details.madeAt).hasSuffix("Monthly shows $6.99, with Annual selected."))
+        #expect(details.reviewLine == "Review screenshot · Monthly shows, Annual selected · from Claude Code")
+        details.expectedPlan = "annual"
+        #expect(!details.showsOtherPlan)
+        #expect(details.heading == "Review screenshot · Annual selected")
+    }
 }
 #endif

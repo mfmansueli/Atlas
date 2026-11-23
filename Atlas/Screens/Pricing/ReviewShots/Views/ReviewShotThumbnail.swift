@@ -18,6 +18,15 @@ struct ReviewShotThumbnail: View {
     @State private var image: CGImage?
     @State private var isLoading = true
 
+    /// The image's own proportions, phone-shaped until it's read.
+    var height: CGFloat {
+        guard let image, image.width > 0 else { return width * Self.phoneRatio }
+        return (width * CGFloat(image.height) / CGFloat(image.width)).rounded()
+    }
+
+    /// An iPhone 17 Pro screen's height over its width.
+    static let phoneRatio: CGFloat = 2.165
+
     var body: some View {
         Group {
             if let image {
@@ -26,10 +35,12 @@ struct ReviewShotThumbnail: View {
                     .scaledToFit()
             } else {
                 ImageLoadingTile(isLoading: isLoading)
-                    .frame(width: width, height: width * 2.165)
             }
         }
-        .frame(width: width)
+        // Its height too: with only a width, a row that offers less height
+        // squeezed it (Bruma's Yearly card drew a 64 × 50 pt box with a
+        // tiny image in it).
+        .frame(width: width, height: height)
         .clipShape(RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
         .accessibilityElement(children: .ignore)

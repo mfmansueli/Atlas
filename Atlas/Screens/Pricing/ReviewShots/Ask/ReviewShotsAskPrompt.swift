@@ -76,7 +76,8 @@ enum ReviewShotsAskPrompt {
         TestFlight banner. One more try if a check fails. Send the PNG to reviewScreenshotUploadURL with exactly \
         curl -s --data-binary @<file> -H 'Content-Type: image/png' '<url>?name=<productId>.png' (single quotes) and call \
         propose_purchase_review_screenshot with appId, \
-        productId, the fileId, planShown, price, device "iPhone 17 Pro", language and the checks it passed. It arrives \
+        productId, the fileId, planShown (only the selected plan's name, such as Annual, even when it's another \
+        product's), price, device "iPhone 17 Pro", language and the checks it passed. It arrives \
         as a suggestion; the person accepts it.
         6. Never tap the purchase button and never buy anything: stop before the purchase sheet. Never accept, push or \
         change the products. When every product is done, call report_review_screenshot_run with status "done".

@@ -19,7 +19,9 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         "productId": MCPToolDefinition.string("The subscription's or in-app purchase's product ID (or App Store Connect id); a queued one's too."),
         "file": MCPToolDefinition.string(MCPReviewScreenshotArgument.description),
         "reason": MCPToolDefinition.string("Optional: what it shows, e.g. the paywall with the yearly plan selected."),
-        "planShown": MCPToolDefinition.string("Optional: the plan selected in it, e.g. Monthly."),
+        "planShown": MCPToolDefinition.string(
+            "Optional: only the name of the plan selected in it, e.g. Monthly, even when it's another product's plan: Atlas says so."
+        ),
         "price": MCPToolDefinition.string("Optional: the price it shows for that plan, e.g. $4.99."),
         "device": MCPToolDefinition.string("Optional: where it was captured, e.g. iPhone 17 Pro."),
         "language": MCPToolDefinition.string("Optional: the app's language in it, e.g. English (U.S.)."),
@@ -78,7 +80,8 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         }
         let isSuggestion = !target.isQueued
         if isSuggestion, var change = queue.change(id: changeID) {
-            let shot = try Self.details(arguments, client: context.clientName)
+            var shot = try Self.details(arguments, client: context.clientName)
+            if case let .existing(product) = target.place { shot.expectedPlan = PricingViewModel.plan(of: product) }
             change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
             change.title = shot.reviewLine
             queue.upsert(change)
@@ -98,9 +101,14 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
     /// What the card says of it: the plan, price, device, language and
     /// checks the assistant named.
     static func details(_ arguments: MCPToolArguments, client: String) throws -> ReviewShotDetails {
-        try ReviewShotDetails(
+        let plan = try arguments.optionalString("planShown")?.trimmingCharacters(in: .whitespaces)
+        // A name, not a sentence: the card says “Monthly selected”.
+        if let plan, plan.count > 30 || plan.contains(where: { ";,().".contains($0) }) {
+            throw MCPToolError.invalidArgument(name: "planShown", expected: String(localized: "only the selected plan's name, e.g. Annual"))
+        }
+        return try ReviewShotDetails(
             origin: .assistant(client: client),
-            plan: arguments.optionalString("planShown"),
+            plan: plan.flatMap { $0.isEmpty ? nil : $0 },
             price: arguments.optionalString("price"),
             device: arguments.optionalString("device"),
             language: arguments.optionalString("language"),

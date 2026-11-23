@@ -111,6 +111,20 @@ struct ProposePurchaseReviewScreenshotToolTests {
         #expect(changes.change(id: id)?.title == "Review screenshot · Lifetime selected · from Claude Code")
         #expect(runs.run(for: DebugFixtures.AppID.lumen)?.arrived == ["lumen.lifetime"])
         #expect(runs.run(for: DebugFixtures.AppID.lumen)?.current == nil)
+        #expect(saved.expectedPlan == "Lifetime")
+        #expect(!saved.showsOtherPlan)
+    }
+
+    /// Bruma's live run sent a sentence as planShown, and the card's title
+    /// read “Review screenshot · Annual selected (Monthly not selected); …”.
+    @Test func planShownIsAName() throws {
+        #expect(throws: MCPToolError.self) {
+            try ProposePurchaseReviewScreenshotTool.details(
+                MCPToolArguments(["planShown": "Annual selected (Monthly not selected); the Monthly plan shows"]), client: "Claude Code"
+            )
+        }
+        let details = try ProposePurchaseReviewScreenshotTool.details(MCPToolArguments(["planShown": " Annual "]), client: "Claude Code")
+        #expect(details.plan == "Annual")
     }
 
     @Test func anotherAppsFileIsntFound() async throws {

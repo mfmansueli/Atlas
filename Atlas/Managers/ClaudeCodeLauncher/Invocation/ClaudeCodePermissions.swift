@@ -267,7 +267,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     a plan with the app's own deep links (xcrun simctl openurl booted '<link>'), launch arguments or debug scenes \
     (they go after the bundle ID in xcrun simctl launch), or its UI tests (xcodebuild test -only-testing:… \
     -resultBundlePath <path>, then xcrun xcresulttool export attachments). When no way selects a plan, a capture where \
-    the product's plan and price show on the paywall is fine: say in planShown which plan is selected. Save each \
+    the product's plan and price show on the paywall is fine: planShown is then the selected plan's name. Save each \
     screen with xcrun simctl io booted screenshot <file>. Upload each with exactly: curl -s --data-binary @<file> \
     -H 'Content-Type: image/png' '<reviewScreenshotUploadURL from get_subscriptions>?name=<file name>'. \
     Run xcodebuild in the foreground and wait for it. Never buy anything, and never archive, export or upload a build.
