@@ -211,9 +211,14 @@ final class PricingViewModel {
             // Apple's server failing on this product is said on it, not in
             // a banner: the other products' prices are fine.
             let isProductFailure = PricingReadFailure.isProductFailure(error)
-            sheetError = isProductFailure
-                ? PricingReadFailure.text(productName: product.name)
-                : AppleErrorCopy(String(localized: "Prices didn’t load.", comment: "kind:error"), error: error).text
+            // Atlas's own reasons (no price yet) keep their sentence.
+            sheetError = if isProductFailure {
+                PricingReadFailure.text(productName: product.name)
+            } else if error is PricingSheetError {
+                error.localizedDescription
+            } else {
+                AppleErrorCopy(String(localized: "Prices didn’t load.", comment: "kind:error"), error: error).text
+            }
             needsStartingPrice = (error as? PricingSheetError)?.offersStartingPrice == true
             hasNoPrice = error is PricingSheetError && !needsStartingPrice
             if !(error is PricingSheetError), !isProductFailure { reportLoadError(error) }

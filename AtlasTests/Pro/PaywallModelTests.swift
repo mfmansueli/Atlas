@@ -50,7 +50,7 @@ struct PaywallModelTests {
         // Make the Artwork… on an event is Autopilot's; choosing files stays free.
         #expect(PaywallContext.eventArtwork.feature == .autopilot)
         #expect(PaywallContext.eventArtwork.title == "Event artwork is part of Pro")
-        #expect(PaywallContext.eventArtwork.detail?.hasSuffix("Choosing your own files stays free.") == true)
+        #expect(PaywallContext.eventArtwork.detail?.hasSuffix("Using your own files stays free.") == true)
         #expect(PaywallContext.eventArtwork.continueTitle == "Make the Artwork…")
     }
 
@@ -143,7 +143,7 @@ struct PaywallModelTests {
         let store = FakeProStore()
         store.offersOnSale = []
         let model = await make(store: store)
-        #expect(model.offersProblem?.hasPrefix("The App Store answered without Atlas Pro’s plans") == true)
+        #expect(model.offersProblem?.hasPrefix("Atlas Pro’s plans aren’t on sale yet") == true)
         #expect(!model.canBuy)
     }
 
