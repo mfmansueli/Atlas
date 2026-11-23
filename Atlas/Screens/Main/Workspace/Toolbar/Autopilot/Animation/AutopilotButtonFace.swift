@@ -6,8 +6,8 @@
 import SwiftUI
 
 /// How the Autopilot split button looks: the main half with the animated
-/// label, a hairline, and the arrow's menu, on a glass capsule (solid
-/// purple while the run needs the person). While it works a light runs
+/// label, a hairline, and the arrow's menu, on a Liquid Glass capsule
+/// (tinted purple while the run needs the person). While it works a light runs
 /// along the capsule's edge and a 2 pt bar shows counted progress; when a
 /// run is done the button bounces once. The toolbar button adds what it
 /// does; DEBUG scenes show every look.
@@ -59,7 +59,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             .accessibilityLabel(Text(accessibilityLabel))
             .accessibilityIdentifier("workspace.autopilot.main")
             Rectangle()
-                .fill(isNeedingYou ? Palette.aiFillLabel.opacity(0.35) : Palette.separator)
+                .fill(isNeedingYou ? Color.white.opacity(0.35) : Palette.separator)
                 .frame(width: 0.5, height: 18)
                 .accessibilityHidden(true)
             Menu {
@@ -67,7 +67,7 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(isNeedingYou ? Palette.aiFillLabel : Palette.label2)
+                    .foregroundStyle(isNeedingYou ? Color.white : Palette.label2)
                     .frame(width: 30, height: Self.height)
                     .contentShape(Rectangle())
             }
@@ -80,14 +80,15 @@ struct AutopilotButtonFace<MenuContent: View>: View {
         }
     }
 
-    /// Glass, or solid purple while the run needs the person.
-    @ViewBuilder
+    /// Liquid Glass, tinted purple while the run needs the person.
     private var glass: some View {
-        if isNeedingYou {
-            Capsule().fill(Palette.aiFill)
-        } else {
-            Capsule().fill(.clear).glassEffect(.regular, in: Capsule())
-        }
+        Capsule()
+            .fill(.clear)
+            .glassEffect(glassStyle, in: Capsule())
+    }
+
+    private var glassStyle: Glass {
+        isNeedingYou ? .clear.tint(Palette.aiFill.opacity(0.6)).interactive() : .regular.interactive()
     }
 
     /// Inside the bottom of the main half, while a run counts its steps.

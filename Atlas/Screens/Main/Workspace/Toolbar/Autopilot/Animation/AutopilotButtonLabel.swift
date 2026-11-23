@@ -33,11 +33,11 @@ struct AutopilotButtonLabel: View {
                 AutopilotDoneMark()
                 if !isCompact { Text(text).foregroundStyle(Palette.ok) }
             case let .needsYou(text):
-                AutopilotSparkle(color: Palette.aiFillLabel)
+                AutopilotSparkle(color: .white)
                 if !isCompact {
                     Text(text)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Palette.aiFillLabel)
+                        .foregroundStyle(.white)
                 }
             case let .failed(text):
                 AutopilotSparkle(color: Palette.label2)

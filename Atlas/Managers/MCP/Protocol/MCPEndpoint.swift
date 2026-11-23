@@ -159,7 +159,7 @@ enum MCPEndpoint {
     person's: read where it stands with get_release (phase, builds, What's New, phased release, submission, \
     possibleActions) and propose submit (build, release type, phased release, encryption, events), release, \
     pause, resume or complete the phased release, cancel the submission or resubmit with propose_release_action, \
-    with a reason; it waits on the version card until the person confirms it, and nothing is sent before. App \
+    with a reason; it waits on the version card until the person confirms it: the tools only ever queue changes. App \
     Review's rejection message isn't in the API: ask the person for it. Withdraw yours with \
     withdraw_release_action. Always tell the person what you couldn't see.
     """
