@@ -53,6 +53,12 @@ struct PrivacyPageStatusTests {
         #expect(PrivacyPageStatus(worksheet: worksheet).tone == .waiting)
     }
 
+    @Test func rowsMeterHowSureEachSuggestionIs() {
+        #expect(PrivacyConfidence.low.howSure == .notVerySure)
+        #expect(PrivacyConfidence.medium.howSure == .fairlySure)
+        #expect(PrivacyConfidence.high.howSure == .sure)
+    }
+
     @Test func labelListsCategoriesPerGroup() {
         let worksheet = Support.answered([
             .userId: Support.collected(linked: true),

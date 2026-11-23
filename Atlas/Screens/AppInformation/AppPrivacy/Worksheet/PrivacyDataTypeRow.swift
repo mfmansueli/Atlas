@@ -28,7 +28,7 @@ struct PrivacyDataTypeRow: View {
                 if let entry {
                     sourceTag(entry)
                     if let suggestion = entry.suggestion, entry.status != .yours || entry.conflict == nil {
-                        PrivacyConfidenceBadge(confidence: suggestion.confidence)
+                        HowSureMeter(confidence: suggestion.confidence.howSure)
                     }
                     PrivacyRowStatusPill(status: entry.status)
                 }
