@@ -10,8 +10,8 @@ import Foundation
 /// lower price Apple shows people who used to subscribe (in the app, in
 /// Settings and, when promoted, on the App Store), from a start date. Its
 /// reference name and offer ID are only seen by the developer and can't
-/// change; its eligibility, dates, priority and promotion can
-/// (`WinBackOfferSettings`).
+/// change, nor can the payment plan it's for; its eligibility, dates,
+/// priority and promotion can (`WinBackOfferSettings`).
 struct NewWinBackOffer: Hashable, Sendable {
     /// `referenceName`.
     var referenceName: String
@@ -19,6 +19,9 @@ struct NewWinBackOffer: Hashable, Sendable {
     var offerID: String
     var terms: OfferTerms
     var settings: WinBackOfferSettings
+    /// `targetSubscriptionPlanType`: the payment plan it's for; nil for
+    /// every plan (not sent).
+    var targetPlanType: SubscriptionPlanType?
 
     var trimmedName: String {
         referenceName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -38,14 +41,19 @@ struct NewWinBackOffer: Hashable, Sendable {
             "periodCount": terms.sentPeriods,
         ]
         attributes.merge(settings.attributes) { $1 }
+        if let targetPlanType { attributes[SubscriptionPlanType.attribute] = targetPlanType.rawValue }
         return attributes
     }
 
-    init(referenceName: String, offerID: String, terms: OfferTerms, settings: WinBackOfferSettings) {
+    init(
+        referenceName: String, offerID: String, terms: OfferTerms, settings: WinBackOfferSettings,
+        targetPlanType: SubscriptionPlanType? = nil
+    ) {
         self.referenceName = referenceName
         self.offerID = offerID
         self.terms = terms
         self.settings = settings
+        self.targetPlanType = targetPlanType
     }
 
     /// The offer a queued create carries back; nil for another request.
@@ -58,6 +66,9 @@ struct NewWinBackOffer: Hashable, Sendable {
               let settings = WinBackOfferSettings(attributes: attributes)
         else { return nil }
         let terms = OfferTerms(mode: mode, duration: duration, numberOfPeriods: attributes["periodCount"] as? Int ?? 1)
-        self.init(referenceName: name, offerID: offerID, terms: write.plan.applied(to: terms), settings: settings)
+        self.init(
+            referenceName: name, offerID: offerID, terms: write.plan.applied(to: terms), settings: settings,
+            targetPlanType: SubscriptionPlanType(attributes: attributes)
+        )
     }
 }

@@ -6,8 +6,8 @@
 import Foundation
 
 /// A promotional offer a subscription has in App Store Connect
-/// (`GET /v1/subscriptions/{id}/promotionalOffers`), with where it runs
-/// and its US price.
+/// (`GET /v1/subscriptions/{id}/promotionalOffers`), with where it runs,
+/// its US price and the territories priced apart from it.
 struct ExistingPromotionalOffer: Identifiable, Hashable, Sendable {
     var id: String
     var name: String
@@ -52,11 +52,12 @@ struct ExistingPromotionalOffer: Identifiable, Hashable, Sendable {
         self.prices = prices
     }
 
-    /// Its terms, as the sheet edits them: the US price, everywhere it runs.
+    /// Its terms, as the sheet edits them: the US price, everywhere it
+    /// runs, and the territories whose price isn't the equalized one.
     var terms: OfferTerms {
         OfferTerms(
             mode: mode, duration: duration, numberOfPeriods: numberOfPeriods, price: prices.usPrice,
-            territories: .chosen(prices.territoryIDs)
+            territories: .chosen(prices.territoryIDs), territoryPrices: mode == .freeTrial ? [:] : prices.pricedApart
         )
     }
 

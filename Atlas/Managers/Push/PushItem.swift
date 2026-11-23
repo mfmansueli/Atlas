@@ -26,6 +26,12 @@ struct PushItem: Identifiable, Hashable, Sendable {
     /// this name goes on with it instead of refusing it as made by another
     /// push (`ProductPageCreate`). Kept across a retry, even after an edit.
     var mayHaveMadePage: String?
+    /// The one-time code batches each offer code had (by its ID) before
+    /// this change first posted one: a retry takes a batch like its own
+    /// that wasn't there then for the one Apple made, instead of making
+    /// another (`OfferCodeCodesCreate`). Kept across a retry, even after
+    /// an edit.
+    var oneTimeBatchesBefore: [String: Set<String>] = [:]
     /// How far a long step of a sending change got, e.g. "Prices · 40 of
     /// 175"; nil otherwise.
     var progressNote: String?

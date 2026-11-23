@@ -53,7 +53,7 @@ struct ProposeOfferCodeTool: MCPTool {
         .merging(codeProperties) { $1 }
         .merging([
             "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions."),
+            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions; a queued one's too."),
             "action": [
                 "type": "string",
                 "enum": ["create", "add_custom_code", "add_one_time_codes", "deactivate"],
@@ -73,8 +73,9 @@ struct ProposeOfferCodeTool: MCPTool {
         name: "propose_offer_code",
         title: "Propose Offer Code",
         description: """
-        Proposes an offer code for a subscription App Store Connect has: free time or a lower price people redeem with \
-        a code (in the App Store, in the app or by link). mode, duration, numberOfPeriods and price (US dollars, \
+        Proposes an offer code for a subscription App Store Connect has, or a new one still queued by \
+        propose_subscription (the push creates the subscription first; discarding it discards the code): free time \
+        or a lower price people redeem with a code (in the App Store, in the app or by link). mode, duration, numberOfPeriods and price (US dollars, \
         equalized everywhere else; territoryPrices sets some apart) work as in propose_introductory_offer; \
         customerEligibilities says who can redeem it. It can come with a customCode and a batch of oneTimeCodes, made \
         after it when the person pushes. A subscription has up to 10 active offer codes. action add_custom_code and \

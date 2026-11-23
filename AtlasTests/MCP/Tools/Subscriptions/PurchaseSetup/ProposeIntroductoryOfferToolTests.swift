@@ -17,8 +17,10 @@ struct ProposeIntroductoryOfferToolTests {
     private let changes = ChangeQueue()
     private static let quiet = StoreApp(id: DebugFixtures.AppID.quiet, name: "Quiet Timer", bundleID: "dev.northpier.quiet", primaryLocale: "en-US")
 
-    private func call(_ tool: some MCPTool, _ arguments: [String: JSONValue], client: String = "Claude Code") async throws -> MCPToolOutcome {
-        let workspace = MCPTestFixtures.workspace(apps: MCPTestFixtures.apps + [Self.quiet], changes: changes)
+    private func call(
+        _ tool: some MCPTool, _ arguments: [String: JSONValue], client: String = "Claude Code", modes: PricingModeStore? = nil
+    ) async throws -> MCPToolOutcome {
+        let workspace = MCPTestFixtures.workspace(apps: MCPTestFixtures.apps + [Self.quiet], changes: changes, pricingModes: modes)
         return try await tool.call(MCPToolArguments(arguments), in: MCPToolContext(workspace: workspace, clientName: client))
     }
 
@@ -69,6 +71,26 @@ struct ProposeIntroductoryOfferToolTests {
         // get_subscriptions shows it on the queued subscription.
         let read = try await call(GetSubscriptionsTool(), ["appId": "Quiet Timer"])
         #expect(read.result["queued"]?.arrayValue?.first?["introductoryOffer"] != nil)
+    }
+
+    @Test func paidOffersAreRefusedForAppsThatKeepTheirPrices() async throws {
+        let modes = PricingModeStore(defaults: nil)
+        modes.setMode(.keepPrices, for: "6450000003")
+        let paid = try await call(ProposeIntroductoryOfferTool(), [
+            "appId": "Tempo Metronome", "productId": "tempo.pro.monthly", "mode": "PAY_AS_YOU_GO", "duration": "ONE_MONTH",
+            "numberOfPeriods": 2, "price": .double(0.99),
+        ], modes: modes)
+        #expect(paid.result["status"] == "refused")
+        let reasons = paid.result["reasons"]?.arrayValue?.compactMap(\.stringValue) ?? []
+        #expect(reasons.count == 1)
+        #expect(reasons.first?.contains(PricingMode.keepPrices.title) == true)
+        #expect(changes.changes.isEmpty)
+        // A free trial sets no price, so it's queued as for any app.
+        let free = try await call(ProposeIntroductoryOfferTool(), [
+            "appId": "Tempo Metronome", "productId": "tempo.pro.monthly", "mode": "FREE_TRIAL", "duration": "ONE_WEEK",
+        ], modes: modes)
+        #expect(free.result["status"] == "queued")
+        #expect(changes.changes.count == 1)
     }
 
     @Test func termsAppStoreConnectRefusesAreListed() async throws {

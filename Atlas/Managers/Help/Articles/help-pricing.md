@@ -17,9 +17,11 @@ Raising a price that people already pay asks them to agree. Atlas says how many 
 A subscription’s **Offers** tab lists its offers in App Store Connect and the ones waiting in Review & Push. Each offer is a free period, pay as you go (a lower price each period) or pay up front (one lower price). You set the price in the United States, and every other country or region gets the equalized price unless you give it its own.
 
 - **Add Introductory Offer…**: a free trial or a lower price for new subscribers.
-- **New Offer** > **Promotional Offer…**: for people who subscribe now or did before. Your app offers it with StoreKit, by the identifier its code uses. **Change Prices…** gives it new prices; **Delete…** removes it.
-- **New Offer** > **Win-Back Offer…**: Apple shows it to people who used to subscribe, chosen by how long they paid and when they left. You can also let Apple promote it on the App Store. **Edit…** changes who gets it, its dates and its priority.
+- **New Offer** > **Promotional Offer…**: for people who subscribe now or did before. Your app offers it with StoreKit, by the identifier its code uses. **Change Prices…** gives it new prices, and countries or regions priced apart keep theirs until you change them; **Delete…** removes it.
+- **New Offer** > **Win-Back Offer…**: Apple shows it to people who used to subscribe, chosen by how long they paid and when they left. You can also let Apple promote it on the App Store, and give it to one payment plan only. **Edit…** changes who gets it, its dates and its priority.
 - **New Offer** > **Offer Code…**: people redeem it with a code. A **custom code** is one word they type, such as PODCAST30. **One-time codes** are unique codes Apple makes. Once Apple has made them, **Save Codes…** saves them as a CSV file. **Deactivate…** turns off a code for good.
+
+A new subscription waiting in Review & Push takes offers too, from its **…** menu: each waits for the subscription, goes out after it when you push, and is discarded with it.
 
 Your assistant can propose all of these too, and you review them in Review & Push. Nothing reaches App Store Connect until you push.
 

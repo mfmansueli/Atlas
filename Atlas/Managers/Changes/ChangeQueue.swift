@@ -70,8 +70,11 @@ final class ChangeQueue {
         for change in newChanges {
             if let index = changes.firstIndex(where: { $0.id == change.id }) {
                 // Another version for the same platform: what was written
-                // for the old number goes with it.
-                if changes[index].requests != change.requests { orphaned.formUnion(dependents(of: [change.id])) }
+                // for the old number goes with it. A new subscription's
+                // offers stay with it (`keepsDependentsWhenEdited`).
+                if changes[index].requests != change.requests, !change.keepsDependentsWhenEdited {
+                    orphaned.formUnion(dependents(of: [change.id]))
+                }
                 changes[index] = Self.merge(changes[index], with: change)
             } else {
                 changes.append(change)

@@ -14,7 +14,7 @@ struct ProposePromotionalOfferTool: MCPTool {
         .merging(MCPOfferTermsArguments.reasonProperties) { $1 }
         .merging([
             "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
-            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions."),
+            "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions; a queued one's too."),
             "action": [
                 "type": "string",
                 "enum": ["create", "update_prices", "delete"],
@@ -33,15 +33,18 @@ struct ProposePromotionalOfferTool: MCPTool {
         name: "propose_promotional_offer",
         title: "Propose Promotional Offer",
         description: """
-        Proposes a promotional offer for a subscription App Store Connect has: a discount or free time the app offers \
-        its current or lapsed subscribers with a signed StoreKit offer, under offerIdentifier. mode, duration, \
-        numberOfPeriods and price (US dollars, equalized everywhere else; territoryPrices sets some apart) work as in \
-        propose_introductory_offer; a paid price is below the subscription's. A subscription takes up to 10. \
-        action update_prices gives one it has a new price or territories (mode and duration can't change: delete it \
-        and create another); action delete removes one. Anything App Store Connect would refuse is refused with the \
-        reasons (status "refused"); an accepted proposal is queued for the person (status "queued"), and proposing \
-        again for the same offer replaces it. Paid offers are refused for apps set to Keep my prices. Nothing reaches \
-        App Store Connect until they push.
+        Proposes a promotional offer for a subscription App Store Connect has, or a new one still queued by \
+        propose_subscription (the push creates the subscription first; discarding it discards the offer): a \
+        discount or free time the app offers its current or lapsed subscribers with a signed StoreKit offer, under \
+        offerIdentifier. mode, duration, numberOfPeriods and price (US dollars, equalized everywhere else; \
+        territoryPrices sets some apart) work as in propose_introductory_offer; a paid price is below the \
+        subscription's. A subscription takes up to 10. action update_prices gives one it has a new price or \
+        territories (mode and duration can't change: delete it and create another); the territories it prices \
+        apart (get_subscriptions' territoryPrices) keep their prices unless territoryPrices is given ({} prices none \
+        apart). action delete removes one. Anything App Store Connect would refuse is refused with the reasons \
+        (status "refused"); an accepted proposal is queued for the person (status "queued"), and proposing again for \
+        the same offer replaces it. Paid offers are refused for apps set to Keep my prices. Nothing reaches App Store \
+        Connect until they push.
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId", "productId"]),
         proposalKind: .prices
@@ -87,6 +90,10 @@ struct ProposePromotionalOfferTool: MCPTool {
             terms.price = price
         }
         try MCPOfferTermsArguments.applyTerritories(from: arguments, to: &terms)
+        // The territories it prices apart now keep their prices, where it still runs.
+        if arguments.values["territoryPrices"] == nil, let chosen = terms.territories.chosenIDs {
+            terms.territoryPrices = terms.territoryPrices.filter { chosen.contains($0.key) }
+        }
         if let refusal = context.priceRefusal(for: terms) { return context.refused([refusal]) }
         var reasons = context.offers.problems(forPrices: terms, of: existing, subscription: context.subscription).map(\.message)
         let id = PromotionalOfferChangeBuilder.changeID(appID: context.app.id, productID: context.subscription.productID, identifier: existing.identifier)

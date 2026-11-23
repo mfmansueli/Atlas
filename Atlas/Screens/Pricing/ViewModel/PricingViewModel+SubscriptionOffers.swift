@@ -22,9 +22,23 @@ extension PricingViewModel {
 
     /// Whether the new offer menu works for `product`: a subscription App
     /// Store Connect has, whose offers Atlas could read (so it knows the
-    /// identifiers already taken).
+    /// identifiers already taken), or a new one waiting in Review & Push,
+    /// which has none yet.
     func canAddOffers(to product: PricingProduct) -> Bool {
-        !product.isInAppPurchase && setup.extras[product.id]?.offersRead == true
+        !product.isInAppPurchase && (product.isQueuedSubscription || setup.extras[product.id]?.offersRead == true)
+    }
+
+    /// The subscription a new one waiting in Review & Push takes offers
+    /// through (`PurchaseSetupTarget.offerSubscription`); nil for another change.
+    func offerSubscription(forQueued change: PendingChange) -> PricingProduct? {
+        guard NewSubscriptionChangeBuilder.owns(change) else { return nil }
+        return PurchaseSetupTarget.queued(change)?.offerSubscription
+    }
+
+    /// The offers waiting with a new subscription, pushed after it and
+    /// discarded with it.
+    func waitingOffers(forQueued change: PendingChange) -> [PendingChange] {
+        SubscriptionOfferChanges.waiting(for: change, in: queue)
     }
 
     // MARK: - Listing

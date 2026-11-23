@@ -174,6 +174,39 @@ struct SubscriptionOfferPushTests {
         #expect(included(transport.sent[0]).compactMap { PushPagedRead.relationshipID("subscriptionPricePoint", of: $0) } == ["pU1"])
     }
 
+    @Test func newPromotionalPricesKeepTheTerritoriesPricedApartAndRestoreEveryOldPrice() async throws {
+        let existing = ExistingPromotionalOffer(
+            id: "po1", name: "Come back", identifier: "come_back", mode: .payAsYouGo, duration: .oneMonth, numberOfPeriods: 3,
+            prices: ExistingOfferPrices(
+                territoryIDs: ["BRA", "GBR", "USA"], usPrice: Decimal(string: "2.99"), pricedApart: ["BRA": Decimal(string: "9.90") ?? 0]
+            )
+        )
+        var terms = existing.terms
+        terms.price = Decimal(string: "1.99")
+        let change = PromotionalOfferChangeBuilder(app: Self.app).pricesChange(for: existing, terms: terms, subscription: Self.monthly)
+        let transport = FakePushTransport(remote: [
+            change.conflictCheck?.path ?? "": Data(#"{"data":[],"included":[{"attributes":{"customerPrice":"2.99"}}]}"#.utf8),
+            Self.reader.pricePointsPath(territoryID: "USA"): Self.points([("pU1", "1.99")]),
+            IntroductoryOfferEverywhere.equalizationsPath(pricePointID: "pU1"): Data("""
+            {"data":[{"id":"pG","relationships":{"territory":{"data":{"type":"territories","id":"GBR"}}}},
+            {"id":"pB","relationships":{"territory":{"data":{"type":"territories","id":"BRA"}}}}]}
+            """.utf8),
+            Self.reader.pricePointsPath(territoryID: "BRA"): Self.points([("pB9", "9.90")]),
+        ])
+        let controller = await push([change], via: transport)
+        #expect(controller.doneCount == 1)
+        let prices = try included(#require(transport.sent.first))
+        // Brazil keeps its own price; Great Britain gets the equalized one.
+        #expect(prices.compactMap { PushPagedRead.relationshipID("territory", of: $0) } == ["USA", "BRA", "GBR"])
+        #expect(prices.compactMap { PushPagedRead.relationshipID("subscriptionPricePoint", of: $0) } == ["pU1", "pB9", "pG"])
+
+        // Restore puts back the old US price and Brazil's own.
+        let restore = try #require(change.restoreRequests.first.flatMap(SubscriptionOfferWrite.init))
+        #expect(restore.plan.usPrice == Decimal(string: "2.99"))
+        #expect(restore.plan.territoryPrices == ["BRA": Decimal(string: "9.90") ?? 0])
+        #expect(restore.plan.territoryIDs == ["BRA", "GBR", "USA"])
+    }
+
     // MARK: - Reading
 
     @Test func theOffersAreReadBackWithTheirPricesAndCodes() async throws {
@@ -187,6 +220,9 @@ struct SubscriptionOfferPushTests {
         #expect(promotional.prices.territoryIDs == ["BRA", "USA"])
         #expect(promotional.prices.usPrice == Decimal(string: "2.99"))
         #expect(promotional.prices.customerPrices["BRA"] == Decimal(string: "9.90"))
+        // Brazil's price isn't the one the US price equalizes to.
+        #expect(promotional.prices.pricedApart == ["BRA": Decimal(string: "9.90") ?? 0])
+        #expect(promotional.terms.territoryPrices == ["BRA": Decimal(string: "9.90") ?? 0])
         #expect(promotional.subscriptionOffer(subscriptionPrice: Decimal(string: "4.99")).kind == .promotional)
 
         let winBack = try #require(offers.winBack.first)
@@ -195,6 +231,7 @@ struct SubscriptionOfferPushTests {
         #expect(winBack.settings.priority == .high)
         #expect(winBack.settings.endDate == nil)
         #expect(winBack.prices.usPrice == nil)
+        #expect(winBack.targetPlanType == .monthly)
 
         let code = try #require(offers.codes.first)
         #expect(code.eligibilities == [.new, .expired])

@@ -47,10 +47,12 @@ struct WinBackOfferChangeBuilder {
             requests: [SubscriptionOfferWrite.create(.winBack, attributes: offer.attributes, plan: plan)], date: date
         ))
         let settings = offer.settings
-        let fields = [
+        var fields = [
             (id: "name", title: String(localized: "Reference name"), value: offer.trimmedName),
             (id: "offerId", title: String(localized: "Offer ID"), value: offer.trimmedOfferID),
-        ] + SubscriptionOfferChanges.termFields(offer.terms) + [
+        ]
+        if let plan = offer.targetPlanType { fields.append((id: "plan", title: String(localized: "Payment plan"), value: plan.title)) }
+        fields += SubscriptionOfferChanges.termFields(offer.terms) + [
             (id: "eligibility", title: String(localized: "Who can get it"), value: settings.eligibility.summary),
             (id: "dates", title: String(localized: "When"), value: settings.datesTitle),
             (id: "priority", title: String(localized: "Priority"), value: settings.priority.title),

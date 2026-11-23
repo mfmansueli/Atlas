@@ -6,8 +6,8 @@
 import SwiftUI
 
 /// New Win-Back Offer… for a subscription App Store Connect has: its
-/// reference name and offer ID, the terms, who's eligible, when it runs,
-/// its priority and whether Apple promotes it. Add to Review & Push queues
+/// reference name and offer ID, the payment plan it's for, the terms,
+/// who's eligible, when it runs, its priority and whether Apple promotes it. Add to Review & Push queues
 /// it; the push creates it with every price.
 struct WinBackOfferSheet: View {
     let subscription: PricingProduct
@@ -19,13 +19,14 @@ struct WinBackOfferSheet: View {
     @State private var offerID = ""
     @State private var typedOfferID = false
     @State private var draft = OfferTermsDraft()
+    @State private var planType: SubscriptionPlanType?
     @State private var settings = WinBackOfferSettings(startDate: Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now)
     @State private var showsProblems = false
 
     private static let id = "pricing.winBackOffer"
 
     private var current: NewWinBackOffer {
-        NewWinBackOffer(referenceName: name, offerID: offerID, terms: draft.terms, settings: settings)
+        NewWinBackOffer(referenceName: name, offerID: offerID, terms: draft.terms, settings: settings, targetPlanType: planType)
     }
 
     var body: some View {
@@ -59,6 +60,19 @@ struct WinBackOfferSheet: View {
                     Text("Name")
                 } footer: {
                     Text("Only you see the name and the offer ID; your app can ask StoreKit for the offer by its ID.")
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                }
+                Section {
+                    Picker("Payment plan", selection: $planType) {
+                        Text(SubscriptionPlanType.title(of: nil)).tag(SubscriptionPlanType?.none)
+                        ForEach(SubscriptionPlanType.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
+                    }
+                    .accessibilityIdentifier("\(Self.id).planType")
+                } header: {
+                    Text("Plan")
+                } footer: {
+                    Text("For a subscription sold with a plan paid monthly, it can go to one plan only. It can’t change later.")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }

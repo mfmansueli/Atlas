@@ -26,9 +26,11 @@ enum SubscriptionOfferChanges {
         var date: Date
     }
 
-    /// One change for `subscription`.
+    /// One change for `subscription`. For a new subscription waiting in
+    /// Review & Push (its id a `QueuedSubscriptionPlaceholder`), the change
+    /// depends on the subscription's: pushed after it, discarded with it.
     static func change(_ spec: Spec) -> PendingChange {
-        PendingChange(
+        var change = PendingChange(
             id: spec.id,
             appID: spec.app.id,
             section: .subscriptionPricing,
@@ -44,6 +46,8 @@ enum SubscriptionOfferChanges {
             conflictCheck: spec.conflictCheck,
             createdAt: spec.date
         )
+        change.dependsOn = QueuedSubscriptionPlaceholder(token: spec.subscription.id)?.changeID(appID: spec.app.id)
+        return change
     }
 
     /// A creation's fields, then what the assistant based it on.
@@ -73,6 +77,13 @@ enum SubscriptionOfferChanges {
     @MainActor
     static func queued(in queue: ChangeQueue, appID: StoreApp.ID, subscriptionID: String) -> [PendingChange] {
         queue.changes(for: appID, section: .subscriptionPricing).filter { owns($0) && $0.groupID == subscriptionID }
+    }
+
+    /// The offer changes waiting for a new subscription's change, pushed
+    /// after it (`QueuedSubscriptionPlaceholder`).
+    @MainActor
+    static func waiting(for subscriptionChange: PendingChange, in queue: ChangeQueue) -> [PendingChange] {
+        queue.changes(for: subscriptionChange.appID).filter { owns($0) && $0.dependsOn == subscriptionChange.id }
     }
 
     /// Its kind, for get_subscriptions and the Offers tab.

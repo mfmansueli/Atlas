@@ -7,8 +7,9 @@ import Foundation
 
 /// Reads a subscription's promotional offers, win-back offers and offer
 /// codes from App Store Connect, each with its prices (one read per offer:
-/// where it runs and its US price), and an offer code's custom codes and
-/// one-time code batches.
+/// where it runs and its US price), a paid promotional offer's territories
+/// priced apart (one more read: the US point's equalizations), and an
+/// offer code's custom codes and one-time code batches.
 struct SubscriptionOffersReader {
     let transport: any PushTransport
 
@@ -24,6 +25,9 @@ struct SubscriptionOffersReader {
         for resource in try await read(ExistingPromotionalOffer.listPath(subscriptionID: subscriptionID)).data {
             guard var offer = ExistingPromotionalOffer(resource: resource) else { continue }
             offer.prices = try await prices(.promotional, offerID: offer.id)
+            if let point = offer.prices.usPricePointID {
+                try await offer.prices.comparePrices(withEqualized: read(IntroductoryOfferEverywhere.equalizationsPath(pricePointID: point)).data)
+            }
             offers.promotional.append(offer)
         }
         for resource in try await read(ExistingWinBackOffer.listPath(subscriptionID: subscriptionID)).data {
