@@ -35,6 +35,9 @@ struct AutopilotDirection: Codable, Hashable, Sendable, Identifiable {
     /// Language checks with the captions: too long, mirrors, fits.
     var checks: [AutopilotDirectionCheck] = []
     var receivedAt: Date
+    /// The design AI's details and how sure, beside the rationale; nil for
+    /// a starter, when none came and in runs saved before.
+    var layers: SuggestionLayers?
 
     /// The artwork's look: its own, else the screenshots'.
     var artworkLook: ScreenshotTemplate { artworkTemplate ?? template }

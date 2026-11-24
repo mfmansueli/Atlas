@@ -67,6 +67,17 @@ struct ArtworkConceptToolsTests {
         #expect(fixtures.run?.concept("A")?.metaphor == "The crescent from Lumen’s icon rises in a clear evening sky.")
     }
 
+    @Test func aConceptKeepsItsHowSureWhenItsPagesComeLater() async throws {
+        let fixtures = MCPAutopilotFixtures(Self.designing)
+        _ = try await fixtures.call(ProposeArtworkConceptTool(), [
+            "run": "run-debug", "concept": Self.moonrise, "confidence": 2, "details": "Your icon is a crescent.",
+        ])
+        let sent = SuggestionLayers(details: "Your icon is a crescent.", confidence: .fairlySure)
+        #expect(fixtures.run?.concept("A")?.layers == sent)
+        _ = try await fixtures.call(ProposeArtworkConceptTool(), ["run": "run-debug", "concept": ["id": "A"], "artworkDesign": Self.pages])
+        #expect(fixtures.run?.concept("A")?.layers == sent, "Pages sent alone keep what came with the idea")
+    }
+
     @Test func aConceptMustAdaptAPickedTemplate() async throws {
         let fixtures = MCPAutopilotFixtures(Self.designing)
         var concept = Self.moonrise.objectValue ?? [:]

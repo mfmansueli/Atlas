@@ -113,10 +113,41 @@ struct ProposeListingTextToolTests {
         #expect(changes.changes.count == 1)
     }
 
+    @Test func howSureAndTheGlossGoOnTheQueuedChange() async throws {
+        _ = try await call(["locale": "de-DE", "field": "subtitle", "text": "Deine privaten Notizen", "confidence": 2, "gloss": "Your private notes"])
+        let change = try #require(changes.change(id: StorePageContentFixtures.changeID(.german, .subtitle)))
+        #expect(change.layers == SuggestionLayers(confidence: .fairlySure, gloss: "Your private notes"))
+    }
+
+    @Test func aBatchItemKeepsItsOwnGlossAndTakesTheCallsHowSure() async throws {
+        let proposals: JSONValue = [
+            ["locale": "de-DE", "field": "keywords", "text": "tagebuch,stimmung", "gloss": "diary, mood"],
+            ["locale": "de-DE", "field": "subtitle", "text": "Deine privaten Notizen", "confidence": 1],
+        ]
+        _ = try await call(["proposals": proposals, "confidence": 3, "gloss": "Not for any one text"])
+        let keywords = try #require(changes.change(id: StorePageContentFixtures.changeID(.german, .keywords)))
+        #expect(keywords.layers == SuggestionLayers(confidence: .sure, gloss: "diary, mood"))
+        let subtitle = try #require(changes.change(id: StorePageContentFixtures.changeID(.german, .subtitle)))
+        #expect(subtitle.layers == SuggestionLayers(confidence: .notVerySure))
+    }
+
+    @Test func onThePersonsOwnChangeTheyGoOnTheAssistantsVersion() async throws {
+        var listing = StorePageContentFixtures.editable.listing()
+        listing.edit(.subtitle, in: .german, to: "Notizen, nur für dich")
+        changes.upsert(contentsOf: builder.changes(for: listing))
+
+        _ = try await call(["locale": "de-DE", "field": "subtitle", "text": "Deine privaten Notizen", "confidence": 3])
+
+        let change = try #require(changes.change(id: StorePageContentFixtures.changeID(.german, .subtitle)))
+        #expect(change.layers == nil)
+        #expect(change.alternative?.layers?.confidence == .sure)
+    }
+
     @Test func badArgumentsAreErrors() async {
         await #expect(throws: MCPToolError.self) { try await call(["locale": "de-DE", "field": "tagline", "text": "x"]) }
         await #expect(throws: MCPToolError.self) { try await call(["locale": "de-DE", "field": "subtitle"]) }
         await #expect(throws: MCPToolError.self) { try await call(["proposals": ["de-DE"]]) }
+        await #expect(throws: MCPToolError.self) { try await call(["locale": "de-DE", "field": "subtitle", "text": "x", "confidence": 4]) }
     }
 
     @Test func fieldsAreMatchedByTheirAPIName() {

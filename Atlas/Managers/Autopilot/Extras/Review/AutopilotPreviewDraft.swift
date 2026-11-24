@@ -15,4 +15,6 @@ struct AutopilotPreviewDraft: Hashable, Sendable {
     var track: AppPreviewTrack?
     /// "Claude Code".
     var client: String
+    /// Details and how sure, beside `changes`; nil when none came.
+    var layers: SuggestionLayers?
 }

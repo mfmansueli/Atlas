@@ -12,7 +12,7 @@ import Foundation
 /// price (equalized everywhere) and, when it has one, its review screenshot.
 struct ProposeInAppPurchaseTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "type": [
             "type": "string",
@@ -36,7 +36,7 @@ struct ProposeInAppPurchaseTool: MCPTool {
             "items": ["type": "string"],
             "description": "Where the code sells it, e.g. Bruma/Store/Products.swift:14 — buys com.example.app.lifetime",
         ],
-    ]
+    ], gloss: true)
 
     let definition = MCPToolDefinition(
         name: "propose_in_app_purchase",
@@ -82,8 +82,10 @@ struct ProposeInAppPurchaseTool: MCPTool {
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         let change = NewInAppPurchaseChangeBuilder(app: app).change(for: purchase, source: context.source, evidence: evidence)
         queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: id), into: change))
+        queue.attach(layers, to: id)
         var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(id),

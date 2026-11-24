@@ -9,7 +9,8 @@ import SwiftUI
 /// change, who made it and a discard button. Conflicts and blocks show
 /// underneath; blocked changes can't be checked. A change with an option
 /// (e.g. "Publish to the App Store") shows its switch underneath, and its
-/// old and new values on two lines.
+/// old and new values on two lines. An assistant's change shows how sure
+/// it is beside its tag, and its gloss and details underneath.
 struct ReviewChangeRow: View {
     let change: PendingChange
     let isSelected: Bool
@@ -41,6 +42,7 @@ struct ReviewChangeRow: View {
                     .frame(width: 170, alignment: .leading)
                 values
                 Spacer(minLength: Spacing.small)
+                if let confidence = change.layers?.confidence { HowSureMeter(confidence: confidence) }
                 SourceTag(source: change.source)
                 Button(action: onDiscard) {
                     Image(systemName: "xmark")
@@ -72,6 +74,9 @@ struct ReviewChangeRow: View {
                         .accessibilityIdentifier("review.accept.\(change.id)")
                 }
                 .padding(.leading, 26)
+            }
+            if let layers = change.layers ?? change.alternative?.layers {
+                ReviewChangeLayers(layers: layers)
             }
             let issues = change.guidelineIssues
             if !issues.isEmpty {

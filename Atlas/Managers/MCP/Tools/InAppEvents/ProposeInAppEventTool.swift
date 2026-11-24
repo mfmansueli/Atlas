@@ -16,7 +16,7 @@ struct ProposeInAppEventTool: MCPTool {
     var now: () -> Date = { .now }
 
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withLayers([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "referenceName": MCPToolDefinition.string("The event's name in App Store Connect, unique among the app's events; people never see it (≤64)."),
         "badge": enumeration(InAppEventBadge.allCases.map(\.rawValue), "What kind of event it is; the card shows it above the name."),
@@ -47,12 +47,12 @@ struct ProposeInAppEventTool: MCPTool {
                 "properties": ["name": ["type": "string"], "shortDescription": ["type": "string"], "longDescription": ["type": "string"]],
             ],
         ],
-        "reason": MCPToolDefinition.shortWhy("Why this event, for the person to read before pushing."),
+        "reason": MCPToolDefinition.why("Why this event, for the person to read before pushing."),
         "evidence": [
             "type": "array", "items": ["type": "string"],
             "description": "Where it comes from, e.g. Alba/Streaks/StreakChallenge.swift:14 — the January streak challenge.",
         ],
-    ]
+    ])
 
     private static func enumeration(_ values: [String], _ description: String) -> JSONValue {
         ["type": "string", "enum": .array(values.map(JSONValue.string)), "description": .string(description)]
@@ -95,6 +95,7 @@ struct ProposeInAppEventTool: MCPTool {
         guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: target) }
         let reason = try arguments.string("reason")
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
 
         let events = try await context.workspace.services.inAppEvents.events(for: app)
         let builder = InAppEventChangeBuilder(appID: app.id)
@@ -115,6 +116,7 @@ struct ProposeInAppEventTool: MCPTool {
             return .failed(String(localized: "Atlas couldn’t write this event’s request. Check its texts and send it again."), target: target)
         }
         queue.upsert(change)
+        queue.attach(layers, to: change.id)
         let result = Self.queuedResult(change, event: event, replaced: replaced != nil, warnings: event.warnings(now: now()))
         return MCPToolOutcome(result: result, isError: false, logLines: [
             .init(target: target, outcome: .proposed),

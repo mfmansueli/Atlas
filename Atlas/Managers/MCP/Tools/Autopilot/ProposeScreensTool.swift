@@ -15,7 +15,8 @@ struct ProposeScreensTool: MCPTool {
         title: "Suggest screens for the plan",
         description: """
         Suggests screens for the app's screenshot plan, each with its name, why (reason), what shows it (evidence: \
-        a file, target or commit), how to reach it from launch (steps, like the plan's) and a caption in the primary \
+        a file, target or commit), optional details and confidence 1–3, gloss when the caption isn't in English, \
+        how to reach it from launch (steps, like the plan's) and a caption in the primary \
         language (none on Apple Watch). As the answer to next_step's suggest_screens (pass its run), they show under \
         that device's screens in the open plan (status shown). At any other time, with or without a run (at Review & \
         Push, say, when the app gained a screen), they're queued for the app's next plan (status queued, with a \
@@ -35,13 +36,13 @@ struct ProposeScreensTool: MCPTool {
                     "type": "array",
                     "description": "Best first, at most next_step's room (10 outside suggest_screens).",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withLayers([
                             "name": MCPToolDefinition.string("The screen's name, e.g. Insights."),
-                            "reason": MCPToolDefinition.shortWhy("Why it shows the app well, in a sentence."),
+                            "reason": MCPToolDefinition.why("Why it shows the app well."),
                             "evidence": MCPToolDefinition.string("The file, target or commit that shows it."),
                             "steps": MCPToolDefinition.string("How to reach it from launch, e.g. tab “Insights” → wait for the mood chart."),
                             "caption": MCPToolDefinition.string("The primary language's headline, 3–6 words. Left out on Apple Watch."),
-                        ],
+                        ], gloss: true),
                         required: ["name", "reason", "steps"]
                     ),
                 ],
@@ -128,7 +129,8 @@ struct ProposeScreensTool: MCPTool {
         let item = MCPToolArguments(value.objectValue ?? [:])
         return try AutopilotScreenSuggestion(
             id: id, name: item.string("name"), reason: item.string("reason"),
-            evidence: item.optionalString("evidence"), steps: item.string("steps"), caption: item.optionalString("caption") ?? ""
+            evidence: item.optionalString("evidence"), steps: item.string("steps"), caption: item.optionalString("caption") ?? "",
+            layers: item.layers()
         )
     }
 

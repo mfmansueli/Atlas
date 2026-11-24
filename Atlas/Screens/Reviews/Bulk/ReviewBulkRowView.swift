@@ -39,6 +39,7 @@ struct ReviewBulkRowView: View {
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .environment(\.layoutDirection, ReviewLanguage.isRightToLeft(row.languageCode) ? .rightToLeft : .leftToRight)
+                if let gloss = row.gloss { GlossLine(gloss: gloss) }
             }
         }
         .padding(.horizontal, Spacing.medium)

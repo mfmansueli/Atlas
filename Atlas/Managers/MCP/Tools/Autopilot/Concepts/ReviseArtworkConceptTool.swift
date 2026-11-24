@@ -22,10 +22,10 @@ struct ReviseArtworkConceptTool: MCPTool {
         animated pages (every canvas) the same way: Atlas checks that every animation repeats evenly in the \
         loop, frame 0 is the still, the last frame leads back to it, the data-al elements never move and no frame \
         jumps; at Design the person then chooses among the loops, later Atlas makes them in every language. \
-        Rendered and checked like propose_artwork_concept.
+        Rendered and checked like propose_artwork_concept. details and confidence 1–3 are optional, beside change_notes.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
                 "concept_id": MCPToolDefinition.string("The concept's id (\"A\") or name."),
@@ -35,7 +35,7 @@ struct ReviseArtworkConceptTool: MCPTool {
                     "type": "boolean",
                     "description": "False when another concept for the same note follows; true (the default) for the final one.",
                 ],
-            ],
+            ]),
             required: ["appId", "run", "concept_id"]
         ),
         proposalKind: .artwork
@@ -80,7 +80,8 @@ struct ReviseArtworkConceptTool: MCPTool {
         }
         do {
             try session.center.reviseConcept(
-                concept.id, design: checkedDesign, changeNotes: notes, isLast: arguments.values["last"]?.boolValue ?? true, appID: session.app.id
+                concept.id, design: checkedDesign, changeNotes: notes, layers: arguments.layers(),
+                isLast: arguments.values["last"]?.boolValue ?? true, appID: session.app.id
             )
         } catch {
             return .refused(error.localizedDescription, target: session.target)

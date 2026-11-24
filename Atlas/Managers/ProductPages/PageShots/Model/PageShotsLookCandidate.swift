@@ -19,4 +19,7 @@ struct PageShotsLookCandidate: Codable, Hashable, Sendable, Identifiable {
     /// Who drew it: "Claude Code".
     var source: String
     var receivedAt: Date
+    /// Details and how sure, beside the rationale; nil when none came and
+    /// in looks saved before.
+    var layers: SuggestionLayers?
 }

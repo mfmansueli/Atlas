@@ -29,7 +29,7 @@ enum ReviewsMCPJSON {
     }
 
     static func theme(_ theme: ReviewTheme) -> JSONValue {
-        [
+        var entry: [String: JSONValue] = [
             "id": .string(theme.id),
             "title": .string(theme.title),
             "note": .string(theme.note),
@@ -37,5 +37,7 @@ enum ReviewsMCPJSON {
             "action": .string(theme.action.code),
             "languages": .array(theme.replies.map { .string($0.languageCode) }),
         ]
+        theme.layers?.add(to: &entry)
+        return .object(entry)
     }
 }

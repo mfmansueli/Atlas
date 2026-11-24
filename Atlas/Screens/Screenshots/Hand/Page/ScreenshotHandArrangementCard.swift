@@ -17,9 +17,12 @@ struct ScreenshotHandArrangementCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text(viewModel.handArrangementTitle(arrangement))
-                .font(.body.weight(.semibold))
-                .accessibilityIdentifier("screenshots.hand.arrangement.title")
+            HStack(spacing: Spacing.xSmall) {
+                Text(viewModel.handArrangementTitle(arrangement))
+                    .font(.body.weight(.semibold))
+                    .accessibilityIdentifier("screenshots.hand.arrangement.title")
+                if let confidence = arrangement.layers?.confidence { HowSureMeter(confidence: confidence) }
+            }
             HStack(spacing: Spacing.xSmall) {
                 Pill(text: String(localized: "Suggested"), style: .machineTranslated)
                     .fixedSize()
@@ -46,6 +49,7 @@ struct ScreenshotHandArrangementCard: View {
                     .accessibilityIdentifier("screenshots.hand.arrangement.accept")
             }
             .controlSize(.regular)
+            if let details = arrangement.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)

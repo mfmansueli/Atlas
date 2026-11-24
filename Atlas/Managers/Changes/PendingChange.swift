@@ -63,6 +63,10 @@ struct PendingChange: Identifiable, Hashable, Codable, Sendable {
     /// waits in Review & Push goes into it once it's created. Discarding
     /// that change discards this one too (`ChangeQueue.discard`).
     var dependsOn: PendingChange.ID?
+    /// An assistant's details, how sure it is and the gloss of a text in
+    /// another language (README-DS §9), shown on its Review & Push row;
+    /// nil for the person's changes and for changes saved before.
+    var layers: SuggestionLayers?
     var createdAt: Date
 
     init(

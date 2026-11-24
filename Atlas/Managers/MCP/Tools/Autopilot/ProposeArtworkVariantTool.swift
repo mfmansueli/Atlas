@@ -18,20 +18,23 @@ struct ProposeArtworkVariantTool: MCPTool {
         gives the currentPage) or else as template fields and/or ops laid on the current artwork's look \
         (get_design_brief's extras describe the canvases), changing ONE idea only, the one \
         next_step names (by default the current image shows the interface doing the task, the variant the outcome or \
-        feeling). Say the change in a sentence. When the idea is the words, pass texts [{locale, headline}] for every \
+        feeling). Say the change in a sentence; details and confidence 1–3 are optional. When the idea is the words, \
+        pass texts [{locale, headline}] for every \
         language too, and for a page phrase (data-al="text") that isn't one of next_step's translatedPhrases, \
         phrases [{phrase, locale, text}] for every language but the primary one. The phones still show the real \
         picked captures. Atlas renders and checks it in every \
         language; the person creates the test from Review & Push.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
                 "html": MCPToolDefinition.string("The variant's whole page, when the current image is a page (next_step's currentPage)."),
                 "template": ["type": "object", "description": "Template fields for the variant's look, as get_template returns them."],
                 "ops": ["type": "array", "items": ["type": "object"], "description": "{op: \"replace\", path, value} changes."],
-                "change": MCPToolDefinition.string("The one idea changed, in a sentence."),
+                "change": MCPToolDefinition.string(
+                    "The one idea changed, in a sentence of at most \(AssistantTextLimits.why) characters; the rest goes in details."
+                ),
                 "texts": [
                     "type": "array",
                     "items": ["type": "object", "properties": ["locale": ["type": "string"], "headline": ["type": "string"]]],
@@ -45,7 +48,7 @@ struct ProposeArtworkVariantTool: MCPTool {
                     ],
                     "description": "A new page phrase's words in each other language: phrase as the page writes it in the primary language.",
                 ],
-            ],
+            ]),
             required: ["appId", "run", "change"]
         ),
         proposalKind: .artwork
@@ -65,6 +68,9 @@ struct ProposeArtworkVariantTool: MCPTool {
             : session.run.chosenDirection?.artworkLook
         guard let base = look else {
             return .refused(String(localized: "The run has no chosen direction to vary."), target: session.target)
+        }
+        if let refusal = try AssistantTextLimits.whyRefusal(arguments.string("change"), field: "change") {
+            return .refused(refusal, target: session.target)
         }
         var texts: [String: String] = [:]
         for item in try arguments.optionalArray("texts") ?? [] {
@@ -99,7 +105,7 @@ struct ProposeArtworkVariantTool: MCPTool {
             let look = try MCPDirectionTemplate.template(arguments, base: base, fonts: session.context.services.fonts, allowsNothing: design != nil)
             let variant = try await session.center.receiveVariant(
                 appID: session.app.id, look: look, design: design, change: arguments.string("change"), texts: texts, phrases: phrases,
-                client: context.clientName, context: session.context
+                layers: arguments.layers(), client: context.clientName, context: session.context
             )
             let result: JSONValue = [
                 "status": "rendered", "placement": .string(variant.role.rawValue), "languages": .int(variant.files.count),

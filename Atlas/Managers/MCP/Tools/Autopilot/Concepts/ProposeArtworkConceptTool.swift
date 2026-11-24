@@ -21,10 +21,11 @@ struct ProposeArtworkConceptTool: MCPTool {
         concept id. Atlas renders each in the primary language and checks it like propose_direction, and returns \
         the images. Refused, with what to fix, for a template the person didn't pick or another concept took, a kind \
         another concept has (going freely), a missing follows_the_request when the person asked for something, text \
-        besides the name and phrases, or a page that doesn't render or breaks Apple's rules.
+        besides the name and phrases, or a page that doesn't render or breaks Apple's rules. details and confidence 1–3 \
+        are optional, beside the concept's fits_because.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
                 "concept": AutopilotArtworkConcept.mcpSchema,
@@ -34,7 +35,7 @@ struct ProposeArtworkConceptTool: MCPTool {
                 concept's follows_the_request works too.
                 """),
                 "recommended": ["type": "boolean", "description": "True on the concept your answer recommends."],
-            ],
+            ]),
             required: ["appId", "run", "concept"]
         ),
         proposalKind: .artwork
@@ -62,6 +63,7 @@ struct ProposeArtworkConceptTool: MCPTool {
         }
         var previews: [MCPArtworkPreview.Page] = []
         var sent = concept
+        sent.layers = try arguments.layers() ?? concept.layers
         if let design {
             let checked = await MCPArtworkPreview(session: session, workspace: context.workspace).check(design, requiresHeadline: false)
             if let refusal = checked.refusal {

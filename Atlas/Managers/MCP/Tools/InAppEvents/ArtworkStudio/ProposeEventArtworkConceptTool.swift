@@ -32,23 +32,23 @@ struct ProposeEventArtworkConceptTool: MCPTool {
         `detailsFileId`): a render's file keeps its page. Atlas renders the pages at 3840 × 2160 and 2160 × 3840 (with \
         {{eventName}} drawn in each language when the brief has wordsInArt, and as a 20-second loop when it has motion), \
         checks them under the event's text and shows them to the person. `name` is two or three words, `why` one \
-        sentence on the idea for the person, `pick` true on the one you'd choose. When the brief has a revision, send \
+        sentence on the idea for the person (details and confidence 1–3 optional), `pick` true on the one you'd choose. When the brief has a revision, send \
         only that concept again with `replaces`. Refused when a render breaks Apple's rules: fix it and send it again. \
         Nothing is queued or pushed: the person chooses and uses one in Atlas.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "eventId": MCPToolDefinition.string("The event's id."),
                 "name": MCPToolDefinition.string("The concept's name, two or three words, e.g. Snowfall Path."),
-                "why": MCPToolDefinition.shortWhy("One sentence for the person: the idea, and why it reads at card size."),
+                "why": MCPToolDefinition.why("For the person: the idea, and why it reads at card size."),
                 "pick": ["type": "boolean", "description": "True on the concept you'd choose. Default false."],
                 "cardHtml": MCPToolDefinition.string("The card as a full HTML page, 16:9."),
                 "detailsHtml": MCPToolDefinition.string("The details image as a full HTML page, 9:16."),
                 "cardFileId": MCPToolDefinition.string("The card as a file from render_event_artwork or the upload link, instead of cardHtml."),
                 "detailsFileId": MCPToolDefinition.string("The details image as a file from render_event_artwork or the upload link, instead of detailsHtml."),
                 "replaces": MCPToolDefinition.string("The conceptId being redrawn or given motion, from the brief's revision or addMotion."),
-            ],
+            ]),
             required: ["appId", "eventId", "name", "why"]
         ),
         proposalKind: .artwork
@@ -71,10 +71,10 @@ struct ProposeEventArtworkConceptTool: MCPTool {
         }
         let why = try arguments.string("why").trimmingCharacters(in: .whitespacesAndNewlines)
         let isPick = try arguments.optionalBool("pick") ?? false
-        let concept = EventArtworkConcept(
+        let concept = try EventArtworkConcept(
             id: replaces ?? run.nextConceptID, name: name, why: why, isPick: isPick, client: context.clientName, pages: made.pages,
             stills: made.stills, videos: made.videos, checks: EventArtworkConceptChecks.make(made.reports, wordsInArt: run.wordsInArt),
-            arrivedAt: .now
+            arrivedAt: .now, layers: arguments.layers()
         )
         guard let updated = studio.add(concept, to: run.key, replacing: replaces) else { return .refused(GetEventArtworkBriefTool.noRun, target: target) }
         // Its files say which concept they are, for get_in_app_events.

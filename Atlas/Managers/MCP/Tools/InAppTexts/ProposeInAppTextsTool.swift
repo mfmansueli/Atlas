@@ -27,7 +27,7 @@ struct ProposeInAppTextsTool: MCPTool {
         a release changes what it unlocks), use propose_in_app_review_note.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withConfidence([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "locale": MCPToolDefinition.string("An App Store Connect locale code, e.g. de-DE."),
                 "column": MCPToolDefinition.string("The column id, e.g. group.name or lumen.monthly.description."),
@@ -36,15 +36,15 @@ struct ProposeInAppTextsTool: MCPTool {
                     "type": "array",
                     "description": "Several proposals at once, instead of locale, column and text.",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withConfidence([
                             "locale": MCPToolDefinition.string("An App Store Connect locale code."),
                             "column": MCPToolDefinition.string("The column id."),
                             "text": MCPToolDefinition.string("The proposed text."),
-                        ],
+                        ], gloss: true),
                         required: ["locale", "column", "text"]
                     ),
                 ],
-            ],
+            ], gloss: true),
             required: ["appId"]
         ),
         proposalKind: .storeText
@@ -55,11 +55,14 @@ struct ProposeInAppTextsTool: MCPTool {
         var locale: String
         var column: String
         var text: String
+        var layers: SuggestionLayers?
 
-        init(_ arguments: MCPToolArguments) throws {
+        /// `call`: the call's layers, for a batch item without its own.
+        init(_ arguments: MCPToolArguments, call: SuggestionLayers? = nil) throws {
             locale = try arguments.string("locale")
             column = try arguments.string("column")
             text = try arguments.string("text")
+            layers = try arguments.layers(over: call)
         }
 
         var key: String { "\(locale).\(column)" }
@@ -67,12 +70,13 @@ struct ProposeInAppTextsTool: MCPTool {
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let batch = try arguments.optionalArray("proposals")
+        let callLayers = try arguments.layers()
         let proposals = try batch.map { items in
             try items.map { item in
                 guard let object = item.objectValue else {
                     throw MCPToolError.invalidArgument(name: "proposals", expected: String(localized: "a list of {locale, column, text} objects"))
                 }
-                return try Proposal(MCPToolArguments(object))
+                return try Proposal(MCPToolArguments(object), call: callLayers)
             }
         } ?? [Proposal(arguments)]
 
@@ -96,6 +100,7 @@ struct ProposeInAppTextsTool: MCPTool {
                 logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .read))
             case .queued:
                 let change = committed["\(code).\(proposal.column)"]
+                if let change { context.workspace.changes.attach(proposal.layers, to: change.id) }
                 result["status"] = "queued"
                 result["changeId"] = change.map { .string($0.id) } ?? .null
                 if let blocked = change?.blockedReason { result["blockedReason"] = .string(blocked) }

@@ -20,4 +20,7 @@ struct ExtrasArtworkVariant: Codable, Hashable, Sendable {
     var files: [ExtrasArtworkFile]
     var client: String
     var madeAt: Date
+    /// The design source's details and how sure, beside `change`; nil when
+    /// none came and in variants saved before.
+    var layers: SuggestionLayers?
 }

@@ -17,8 +17,9 @@ struct ProposePrivacyAnswersTool: MCPTool {
         title: "Propose App Privacy answers",
         description: """
         Proposes App Privacy answers for an app into Atlas's worksheet, where the person reviews each one. \
-        Send collects (the first question), answers: [{type, collected, purposes, linked, tracking, confidence, \
-        rationale, evidence: [{kind, sdk, version, entry, path, line, excerpt}]}] with ids from \
+        Send collects (the first question), answers: [{type, collected, purposes, linked, tracking, confidence (1–3; \
+        high, medium and low still work), rationale (one sentence, at most \(AssistantTextLimits.why) characters), details \
+        (the rest, at most \(AssistantTextLimits.details)), evidence: [{kind, sdk, version, entry, path, line, excerpt}]}] with ids from \
         get_privacy_questionnaire, open_questions: [{id, question, affects, if_yes: {summary, collected, purposes, \
         linked, tracking}, if_no: {...}}] for what the code can't show (such as what a server keeps), and scan: \
         {repository, commit, sdks, manifests_read, tracking_signals, could_not_see}. When the person answers a \
@@ -181,8 +182,15 @@ struct ProposePrivacyAnswersTool: MCPTool {
                             "purposes": ["type": "array", "items": ["type": "string"], "description": "Purpose ids, e.g. APP_FUNCTIONALITY."],
                             "linked": ["type": "boolean"],
                             "tracking": ["type": "boolean"],
-                            "confidence": ["type": "string", "enum": ["high", "medium", "low"]],
-                            "rationale": MCPToolDefinition.string("Why, in a sentence the person can check."),
+                            "confidence": [
+                                "type": ["integer", "string"],
+                                "description": """
+                                How sure you are: 1 (not very sure), 2 (fairly sure) or 3 (sure). The words low, medium and \
+                                high still work. Medium when left out.
+                                """,
+                            ],
+                            "rationale": MCPToolDefinition.why("Why, in a sentence the person can check."),
+                            "details": MCPToolDefinition.detailsProperty,
                             "evidence": ["type": "array", "items": evidence],
                         ],
                         required: ["type", "collected"]

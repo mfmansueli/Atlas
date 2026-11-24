@@ -127,6 +127,13 @@ extension AutopilotCenter {
         }
     }
 
+    /// What a revision sent beside its template; what it left out stays.
+    private static func take(rationale: String?, link: String?, layers: SuggestionLayers?, into direction: inout AutopilotDirection) {
+        if let rationale, !rationale.isEmpty { direction.rationale = rationale }
+        if let link, !link.isEmpty { direction.link = link }
+        if let layers { direction.layers = layers }
+    }
+
     /// A revised direction from the design AI: back to Choose after the
     /// last one (`isLast`), so a note about every direction gets all of
     /// them.
@@ -137,6 +144,7 @@ extension AutopilotCenter {
         artworkDesign: AutopilotArtworkDesign? = nil,
         rationale: String?,
         link: String?,
+        layers: SuggestionLayers? = nil,
         isLast: Bool = true,
         appID: StoreApp.ID,
         context: AutopilotContext
@@ -158,8 +166,7 @@ extension AutopilotCenter {
             run.directions[index].isRevised = true
             run.directions[index].checks = checks
             run.directions[index].receivedAt = now()
-            if let rationale, !rationale.isEmpty { run.directions[index].rationale = rationale }
-            if let link, !link.isEmpty { run.directions[index].link = link }
+            Self.take(rationale: rationale, link: link, layers: layers, into: &run.directions[index])
             let name = run.directions[index].name
             let sent = run.directionTitle
             var revised = run.revision?.revisedIDs ?? []

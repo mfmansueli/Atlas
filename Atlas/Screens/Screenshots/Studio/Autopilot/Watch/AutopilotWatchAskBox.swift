@@ -64,9 +64,11 @@ struct AutopilotWatchAskBox: View {
                                 .font(.callout)
                                 .foregroundStyle(Palette.label2)
                                 .fixedSize(horizontal: false, vertical: true)
+                            if let confidence = revision.layers?.confidence { HowSureMeter(confidence: confidence) }
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("autopilot.watch.revision.\(revision.version)")
+                        if let details = revision.layers?.details { SuggestionDetailsDisclosure(details: details) }
                     }
                 }
             }

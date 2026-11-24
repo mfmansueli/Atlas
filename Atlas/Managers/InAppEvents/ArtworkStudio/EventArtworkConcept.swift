@@ -33,6 +33,9 @@ struct EventArtworkConcept: Codable, Hashable, Sendable, Identifiable {
     var arrivedAt: Date
     /// Claude redrew it the way the person asked: "Updated".
     var revisedAt: Date?
+    /// Details and how sure, beside `why`; nil for files, when none came
+    /// and in runs saved before.
+    var layers: SuggestionLayers?
 
     var kinds: [InAppEventMedia.Kind] {
         InAppEventMedia.Kind.allCases.filter { kind in stills.contains { $0.kind == kind } }

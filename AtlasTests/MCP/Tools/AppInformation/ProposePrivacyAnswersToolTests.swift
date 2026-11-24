@@ -168,6 +168,70 @@ struct ProposePrivacyAnswersToolTests {
         #expect(worksheet.questionnaireJSON["answeredQuestions"]?.arrayValue?.first?["changed"] == ["purchases"])
     }
 
+    /// `purchases` with another confidence, or none.
+    private func purchases(confidence: JSONValue?) throws -> JSONValue {
+        var object = try #require(purchases.objectValue)
+        object["confidence"] = confidence
+        return .object(object)
+    }
+
+    @Test(arguments: [
+        ("high" as JSONValue, PrivacyConfidence.high),
+        ("Medium" as JSONValue, .medium),
+        ("low" as JSONValue, .low),
+        (1 as JSONValue, .low),
+        (2 as JSONValue, .medium),
+        (3 as JSONValue, .high),
+    ])
+    func confidenceTakesOneToThreeAndTheOldWords(confidence: JSONValue, expected: PrivacyConfidence) async throws {
+        let outcome = try await call(["answers": [purchases(confidence: confidence)]])
+        #expect(outcome.result["queued"] == 1)
+        #expect(worksheet[.purchases]?.suggestion?.confidence == expected)
+    }
+
+    @Test func confidenceLeftOutIsMedium() async throws {
+        _ = try await call(["answers": [purchases(confidence: nil)]])
+        #expect(worksheet[.purchases]?.suggestion?.confidence == .medium)
+    }
+
+    @Test(arguments: [4 as JSONValue, "maybe" as JSONValue])
+    func anyOtherConfidenceIsRefusedWithWhatToSend(confidence: JSONValue) async throws {
+        let outcome = try await call(["answers": [purchases(confidence: confidence)]])
+        let result = try #require(outcome.result["results"]?.arrayValue?.first)
+        #expect(result["status"] == "refused")
+        let sent = confidence.intValue.map(String.init) ?? confidence.stringValue ?? ""
+        #expect(result["reason"] == .string("confidence is \(sent); send 1 (not very sure), 2 (fairly sure) or 3 (sure). high, medium and low still work."))
+        #expect(worksheet[.purchases] == nil)
+    }
+
+    @Test func detailsWaitBesideTheRationale() async throws {
+        var object = try #require(purchases.objectValue)
+        object["details"] = "RevenueCat 5.14.2 declares NSPrivacyCollectedDataTypePurchaseHistory; PaywallModel.swift:88 buys through it."
+        _ = try await call(["answers": [.object(object)]])
+        #expect(worksheet[.purchases]?.suggestion?.details?.hasPrefix("RevenueCat 5.14.2") == true)
+    }
+
+    @Test func aRationaleOverItsLimitIsRefusedBeforeTheCall() throws {
+        var object = try #require(purchases.objectValue)
+        object["rationale"] = .string(String(repeating: "r", count: 130))
+        let refusal = AssistantTextCheck.refusal(
+            ["appId": "Lumen Journal", "answers": [.object(object)]], schema: ProposePrivacyAnswersTool().definition.inputSchema
+        )
+        #expect(refusal == "answers[0].rationale is 130 characters; at most 110. Move the rest to details.")
+    }
+
+    @Test func aSuggestionSavedBeforeDetailsStillDecodes() throws {
+        let suggestion = PrivacySuggestion(
+            answer: .notCollected, confidence: .low, rationale: "No SDK collects it.", evidence: [], client: "Claude Code", details: "Gone."
+        )
+        var object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(suggestion)) as? [String: Any])
+        object["details"] = nil
+        let old = try JSONSerialization.data(withJSONObject: object)
+        let decoded = try JSONDecoder().decode(PrivacySuggestion.self, from: old)
+        #expect(decoded.details == nil)
+        #expect(decoded.rationale == "No SDK collects it.")
+    }
+
     @Test func itIsGatedByTheAppInformationSwitch() {
         #expect(ProposePrivacyAnswersTool().definition.proposalKind == .appInformation)
     }

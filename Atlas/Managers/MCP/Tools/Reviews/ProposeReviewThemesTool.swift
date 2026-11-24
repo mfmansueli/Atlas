@@ -18,9 +18,10 @@ struct ProposeReviewThemesTool: MCPTool {
         description: """
         Sets "What people write about" in Atlas's Reviews: up to 8 groups of reviews on one subject, most mentioned \
         first. `themes` is a list of {title (≤60 characters, e.g. "iCloud sync since 1.3"), note (≤240: what's going on and \
-        what to do about it), reviewIds (from get_reviews), action, territory?, replies?}. `action` is one of reply_to_all \
-        (it's fixed or answered: give `replies`, one {language, text} per language of the group's reviews, each a message \
-        that fits every review of the group in that language), open_pricing (a price or plan complaint; `territory` \
+        what to do about it), details? (the rest, ≤400, shown on demand), confidence? (how sure you are of the group, 1–3), \
+        reviewIds (from get_reviews), action, territory?, replies?}. `action` is one of reply_to_all (it's fixed or \
+        answered: give `replies`, one {language, text, gloss?} per language of the group's reviews, each a message that \
+        fits every review of the group in that language, with gloss what it means in English, ≤110), open_pricing (a price or plan complaint; `territory` \
         alpha-2 opens that country), suggest_store_page (the store page should say it) or show_reviews (just list them). \
         Send every group in one call: it replaces the groups sent before. Nothing is sent to the App Store; with Reply to \
         All the person reviews each language's message and sends it.
@@ -29,8 +30,31 @@ struct ProposeReviewThemesTool: MCPTool {
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "themes": [
-                    "type": "array", "description": "{title, note, reviewIds, action, territory, replies} objects.",
-                    "items": ["type": "object"],
+                    "type": "array", "description": "{title, note, details, confidence, reviewIds, action, territory, replies} objects.",
+                    // Open, as before: a client may send more than these.
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "title": MCPToolDefinition.string("What the reviews are about, ≤60 characters."),
+                            "note": MCPToolDefinition.string("What's going on and what to do about it, ≤240 characters."),
+                            "details": MCPToolDefinition.detailsProperty,
+                            "confidence": MCPToolDefinition.confidenceProperty,
+                            "reviewIds": ["type": "array", "items": ["type": "string"]],
+                            "action": MCPToolDefinition.string("reply_to_all, open_pricing, suggest_store_page or show_reviews."),
+                            "territory": MCPToolDefinition.string("With open_pricing: an alpha-2 code."),
+                            "replies": [
+                                "type": "array",
+                                "items": [
+                                    "type": "object",
+                                    "properties": [
+                                        "language": MCPToolDefinition.string("e.g. de."),
+                                        "text": MCPToolDefinition.string("The message, in that language."),
+                                        "gloss": MCPToolDefinition.glossProperty,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
             ],
             required: ["appId", "themes"]
@@ -97,13 +121,22 @@ struct ProposeReviewThemesTool: MCPTool {
             guard text.count <= ReviewText.replyLimit else {
                 return .failure(Refusal(reason: "the \(language) reply has \(text.count) characters; a reply holds \(ReviewText.replyLimit)."))
             }
-            replies.append(ReviewThemeReply(languageCode: language, text: text))
+            let gloss = reply["gloss"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)
+            replies.append(ReviewThemeReply(languageCode: language, text: text, gloss: gloss?.isEmpty == false ? gloss : nil))
         }
         if action == .replyToAll, replies.isEmpty {
             return .failure(Refusal(reason: "reply_to_all needs replies: one {language, text} per language of its reviews."))
         }
+        let layers: SuggestionLayers?
+        do {
+            layers = try MCPToolArguments(value.objectValue ?? [:]).layers()
+        } catch {
+            return .failure(Refusal(reason: error.localizedDescription))
+        }
         let id = value["id"]?.stringValue ?? slug(title, fallback: index)
-        return .success(ReviewTheme(id: id, title: title, note: note, reviewIDs: reviewIDs, action: action, replies: replies, source: source))
+        return .success(ReviewTheme(
+            id: id, title: title, note: note, reviewIDs: reviewIDs, action: action, replies: replies, source: source, layers: layers
+        ))
     }
 
     /// "icloud-sync-since-1-3".

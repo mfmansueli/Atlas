@@ -17,6 +17,7 @@ struct ReviewThemeCard: View {
                 Text(summary.theme.title)
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                if let confidence = summary.theme.layers?.confidence { HowSureMeter(confidence: confidence) }
                 Text(summary.countText)
                     .font(.footnote.monospacedDigit())
                     .foregroundStyle(Palette.label2)
@@ -38,6 +39,7 @@ struct ReviewThemeCard: View {
                 .buttonBorderShape(.capsule)
                 .disabled(!summary.isButtonEnabled)
                 .accessibilityIdentifier("reviews.theme.action.\(summary.id)")
+            if let details = summary.theme.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.theme.\(summary.id)")

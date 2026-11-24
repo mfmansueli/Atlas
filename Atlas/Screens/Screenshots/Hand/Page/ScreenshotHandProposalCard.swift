@@ -30,8 +30,11 @@ struct ScreenshotHandProposalCard: View {
             .frame(width: 54, height: 110)
             .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text(viewModel.handProposalTitle(proposal))
-                    .font(.body.weight(.semibold))
+                HStack(spacing: Spacing.xSmall) {
+                    Text(viewModel.handProposalTitle(proposal))
+                        .font(.body.weight(.semibold))
+                    if let confidence = proposal.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 HStack(spacing: Spacing.xSmall) {
                     Pill(text: String(localized: "Suggested"), style: .machineTranslated)
                         .fixedSize()
@@ -55,6 +58,7 @@ struct ScreenshotHandProposalCard: View {
                         .accessibilityIdentifier("screenshots.hand.proposal.accept")
                 }
                 .controlSize(.regular)
+                if let details = proposal.layers?.details { SuggestionDetailsDisclosure(details: details) }
             }
         }
         .padding(Spacing.medium)

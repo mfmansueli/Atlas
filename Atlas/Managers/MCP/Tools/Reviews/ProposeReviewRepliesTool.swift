@@ -14,8 +14,9 @@ struct ProposeReviewRepliesTool: MCPTool {
         title: "Suggest replies to reviews",
         description: """
         Suggests a reply for each review, shown under it in Atlas's Reviews with Send Reply, Edit and Dismiss. \
-        `replies` is a list of {reviewId, text, meaning, waitTopics?, unsure?}: `text` in the reviewer's own language \
-        (≤5,970 characters; a few sentences is right), `meaning` what it says in English, for the person. When the \
+        `replies` is a list of {reviewId, text, meaning, waitTopics?, unsure?, confidence?}: `text` in the reviewer's own \
+        language (≤5,970 characters; a few sentences is right), `meaning` (or `gloss`, at most 110 characters) what it says \
+        in English, for the person, and `confidence` how sure you are of the reply, 1–3. When the \
         person has Reply Automatically on, also send `waitTopics`, what the review is about from bug, billing, account, \
         featureRequest and personal (empty when none), and `unsure: true` when you aren't sure what it means: Atlas's rule \
         decides from them which replies go out by themselves and which wait. You can't turn it on, change it or send. \
@@ -29,8 +30,21 @@ struct ProposeReviewRepliesTool: MCPTool {
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "replies": [
-                    "type": "array", "description": "{reviewId, text, meaning, waitTopics?, unsure?} objects, one per review.",
-                    "items": ["type": "object"],
+                    "type": "array", "description": "{reviewId, text, meaning, waitTopics?, unsure?, confidence?} objects, one per review.",
+                    // Open, as before: a client may send more than these.
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "reviewId": MCPToolDefinition.string("The review's id from get_reviews."),
+                            "text": MCPToolDefinition.string("The reply, in the reviewer's own language."),
+                            "meaning": MCPToolDefinition.string("What it says in English, for the person; empty when it's in English."),
+                            "gloss": MCPToolDefinition.glossProperty,
+                            "waitTopics": ["type": "array", "items": ["type": "string"], "description": "bug, billing, account, featureRequest, personal."],
+                            "unsure": ["type": "boolean", "description": "true when you aren't sure what the review means."],
+                            "confidence": MCPToolDefinition.confidenceProperty,
+                        ],
+                        "required": ["reviewId", "text"],
+                    ],
                 ],
             ],
             required: ["appId", "replies"]
@@ -64,8 +78,13 @@ struct ProposeReviewRepliesTool: MCPTool {
                 ])
                 continue
             }
-            let meaning = (value["meaning"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            kept.append(ReviewReplySuggestion(reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now()))
+            let item = MCPToolArguments(value.objectValue ?? [:])
+            let meaning = (value["meaning"]?.stringValue ?? value["gloss"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            // The gloss is `meaning`; only how sure is kept beside it.
+            let layers = try SuggestionLayers(confidence: item.layers()?.confidence).nonEmpty
+            kept.append(ReviewReplySuggestion(
+                reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now(), layers: layers
+            ))
             flags[reviewID] = Self.flags(value)
         }
         guard !kept.isEmpty else {

@@ -17,4 +17,7 @@ struct PrivacySuggestion: Hashable, Codable, Sendable {
     var evidence: [PrivacyEvidence]
     /// e.g. "Claude Code".
     var client: String
+    /// The rest behind the rationale, shown on demand under Details; nil
+    /// when the assistant sent none and in worksheets saved before.
+    var details: String?
 }

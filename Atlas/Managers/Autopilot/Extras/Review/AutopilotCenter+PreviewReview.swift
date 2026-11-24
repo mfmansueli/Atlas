@@ -130,7 +130,7 @@ extension AutopilotCenter {
             guard made else { return }
             run.previewReview?.version = version
             run.previewReview?.revisions.append(
-                AutopilotPreviewRevision(version: version, changes: changes, note: note, client: client, madeAt: now())
+                AutopilotPreviewRevision(version: version, changes: changes, note: note, client: client, madeAt: now(), layers: draft.layers)
             )
         }
     }

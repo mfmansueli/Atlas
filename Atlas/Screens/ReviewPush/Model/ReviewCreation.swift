@@ -42,6 +42,10 @@ struct ReviewCreation: Identifiable, Hashable, Sendable {
 
     var blockingMessage: String? { changes.lazy.compactMap(\.blockingMessage).first }
 
+    /// The assistant's details, how sure and gloss, from the first of its
+    /// changes that has them.
+    var layers: SuggestionLayers? { changes.lazy.compactMap(\.layers).first }
+
     /// The changes that create something, one per thing, in the order the
     /// first of each was made.
     static func group(_ changes: [PendingChange]) -> [ReviewCreation] {

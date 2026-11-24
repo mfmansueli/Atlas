@@ -33,6 +33,7 @@ struct PrivacyEvidencePopover: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            if let details = suggestion?.details { SuggestionDetailsDisclosure(details: details) }
             Text("Evidence")
                 .font(.subheadline.weight(.semibold))
                 .textCase(.uppercase)

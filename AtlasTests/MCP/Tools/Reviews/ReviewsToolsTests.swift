@@ -196,6 +196,46 @@ struct ReviewsToolsTests {
         #expect(store.archive(for: Data.app.id).themes.isEmpty)
     }
 
+    @Test func aReplyKeepsHowSureAndTakesGlossForMeaning() async throws {
+        _ = try await call(ProposeReviewRepliesTool(store: store), [
+            "appId": "Lumen Journal",
+            "replies": [["reviewId": "de1", "text": "Danke, 1.4 repariert das.", "gloss": "Thanks, 1.4 fixes it.", "confidence": 2]],
+        ])
+        let suggestion = try #require(store.archive(for: Data.app.id).suggestions["de1"])
+        #expect(suggestion.meaning == "Thanks, 1.4 fixes it.")
+        #expect(suggestion.layers == SuggestionLayers(confidence: .fairlySure))
+    }
+
+    @Test func aReplysConfidenceOutOfRangeIsRefusedBeforeTheCall() {
+        let refusal = AssistantTextCheck.refusal(
+            ["appId": "Lumen Journal", "replies": [["reviewId": "de1", "text": "Danke.", "confidence": 4]]],
+            schema: ProposeReviewRepliesTool().definition.inputSchema
+        )
+        #expect(refusal == "replies[0].confidence is 4; send 1 (not very sure), 2 (fairly sure) or 3 (sure).")
+    }
+
+    @Test func aGroupKeepsItsDetailsHowSureAndEachMessagesGloss() async throws {
+        _ = try await call(ProposeReviewThemesTool(store: store), [
+            "appId": "Lumen Journal",
+            "themes": [[
+                "title": "iCloud sync since 1.3", "note": "Fixed in 1.4.", "details": "3 reviews since 1.3 shipped, all about sync.",
+                "confidence": 3, "reviewIds": ["de1"], "action": "reply_to_all",
+                "replies": [["language": "de", "text": "Danke. 1.4 repariert das.", "gloss": "Thanks. 1.4 fixes it."]],
+            ]],
+        ])
+        let theme = try #require(store.archive(for: Data.app.id).themes.first)
+        #expect(theme.layers == SuggestionLayers(details: "3 reviews since 1.3 shipped, all about sync.", confidence: .sure))
+        #expect(theme.replies.first?.gloss == "Thanks. 1.4 fixes it.")
+        #expect(ReviewBulkPlan.make(theme, reviews: store.archive(for: Data.app.id).reviews).rows.first?.gloss == "Thanks. 1.4 fixes it.")
+    }
+
+    @Test func aReplySavedBeforeLayersStillDecodes() throws {
+        let json = #"{"reviewID":"de1","text":"Danke.","meaning":"Thanks.","source":"Claude Code","date":0}"#
+        let suggestion = try JSONDecoder().decode(ReviewReplySuggestion.self, from: Foundation.Data(json.utf8))
+        #expect(suggestion.layers == nil)
+        #expect(suggestion.meaning == "Thanks.")
+    }
+
     @Test func aTitleBecomesAStableID() {
         #expect(ProposeReviewThemesTool.slug("iCloud sync since 1.3", fallback: 0) == "icloud-sync-since-1-3")
         #expect(ProposeReviewThemesTool.slug("Preço — é caro?", fallback: 0) == "preco-e-caro")

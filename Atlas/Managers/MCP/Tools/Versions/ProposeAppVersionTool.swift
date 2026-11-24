@@ -25,13 +25,13 @@ struct ProposeAppVersionTool: MCPTool {
         queued; "refused" says why, e.g. a version still in progress on that platform.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "versionString": MCPToolDefinition.string("e.g. 1.5"),
                 "platform": MCPToolDefinition.string("IOS, MAC_OS, VISION_OS or TV_OS."),
-                "reason": MCPToolDefinition.shortWhy("Why this number, in a sentence the person can check."),
+                "reason": MCPToolDefinition.why("Why this number, in a sentence the person can check."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. Lumen.xcodeproj — MARKETING_VERSION = 1.5"],
-            ],
+            ]),
             required: ["appId", "versionString"]
         ),
         proposalKind: .storeText
@@ -68,6 +68,7 @@ struct ProposeAppVersionTool: MCPTool {
             return refuse(problem.message)
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         let reason = try [arguments.optionalString("reason"), evidence.isEmpty ? nil : evidence.joined(separator: "; ")]
             .compactMap(\.self)
             .joined(separator: " ")
@@ -78,6 +79,7 @@ struct ProposeAppVersionTool: MCPTool {
             reason: reason
         )
         context.workspace.changes.upsert(change)
+        context.workspace.changes.attach(layers, to: change.id)
         let result: JSONValue = [
             "status": "queued",
             "changeId": .string(change.id),
