@@ -124,7 +124,7 @@ struct AtlasApp: App {
                     assistants.isPro = { [pro] in pro.entitlements.isPro }
                     pro.entitlements.start()
                 }
-                .frame(minWidth: Metrics.minimumWindowWidth, minHeight: Metrics.minimumWindowHeight)
+                .frame(minWidth: Metrics.minimumWindowWidth, minHeight: Metrics.minimumWindowHeight - Metrics.windowToolbarHeight)
                 // The local MCP server runs while Atlas is open, if
                 // the person turned it on.
                 .task { assistants.startIfEnabled() }

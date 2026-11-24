@@ -21,6 +21,7 @@ struct FirstRunTourStarter: ViewModifier {
     func body(content: Content) -> some View {
         content
             .task(id: isReady) { await startIfDue() }
+            .task(id: navigator.requestsTour) { await startRequested() }
             .onChange(of: tour.step) {
                 if tour.isShowing, columnVisibility == .detailOnly { columnVisibility = .all }
             }
@@ -42,6 +43,19 @@ struct FirstRunTourStarter: ViewModifier {
         #else
         startsOnFirstRun
         #endif
+    }
+
+    /// Show the Tour: the tips start again from the first, on Overview,
+    /// once an app shows. After the click that asked, so the first tip
+    /// isn't closed as if by a click elsewhere.
+    private func startRequested() async {
+        guard navigator.requestsTour else { return }
+        navigator.requestsTour = false
+        guard isReady else { return }
+        navigator.section = .overview
+        if columnVisibility == .detailOnly { columnVisibility = .all }
+        try? await Task.sleep(for: .milliseconds(150))
+        tour.start()
     }
 
     private func startIfDue() async {

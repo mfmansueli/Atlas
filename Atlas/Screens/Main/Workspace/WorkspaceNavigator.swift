@@ -31,6 +31,9 @@ final class WorkspaceNavigator {
     /// ⌥⌘A: asks the toolbar's Autopilot button to run its action; the
     /// button clears it.
     var requestsAutopilot = false
+    /// Show the Tour, from the sidebar's Help ▾ or macOS's Help menu: the
+    /// main window starts the tips again on Overview.
+    var requestsTour = false
     /// The detail page open in the section (an event, a product page),
     /// whose action the Autopilot button leads with; the section sets and
     /// clears it.

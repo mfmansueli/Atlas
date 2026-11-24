@@ -41,6 +41,16 @@ struct PurchaseReviewScreenshotChangeBuilder {
         )
     }
 
+    /// Review & Push's heading for review screenshots.
+    static var group: String {
+        String(localized: "Pricing · Review screenshots", comment: "kind:section-title")
+    }
+
+    /// Under the heading: who sees them and what the push does.
+    static var groupNote: String {
+        String(localized: "Only App Review sees them. The push puts each one beside its product in App Store Connect.", comment: "kind:description")
+    }
+
     /// A screenshot for `product`, which App Store Connect has.
     func change(
         for file: PurchaseReviewScreenshotFile,
@@ -54,8 +64,11 @@ struct PurchaseReviewScreenshotChangeBuilder {
             id: Self.changeID(appID: app.id, productID: product.productID),
             appID: app.id,
             section: .subscriptionPricing,
-            group: String(localized: "Subscription Pricing · \(product.name)"),
-            title: String(localized: "Review screenshot"),
+            // One heading for every review screenshot, a row per product
+            // (board 66): "Pricing · Review screenshots".
+            group: Self.group,
+            groupNote: Self.groupNote,
+            title: product.name,
             oldValue: current.flatMap(\.fileName) ?? String(localized: "None"),
             newValue: file.summary,
             source: source,

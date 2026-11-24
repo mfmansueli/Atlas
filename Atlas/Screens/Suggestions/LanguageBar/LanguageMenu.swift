@@ -5,19 +5,34 @@
 
 import SwiftUI
 
-/// The language bar's menu: languages with suggestions first, each with its
-/// count, then the ones up to date; a language the App Store doesn't have
-/// yet says New page. A popover, because a menu can't show badges.
+/// The language bar's menu: Find a language over the list, then languages
+/// with suggestions first, each with its count, then the ones up to date;
+/// a language the App Store doesn't have yet says New page. A popover,
+/// because a menu can't show badges.
 struct LanguageMenu: View {
     let model: LanguageBarModel
     let onSelect: (StoreLocale) -> Void
     let onAcceptAll: () -> Void
 
+    /// What Find a language has; it starts empty each time the menu opens.
+    @State private var query = ""
+    @FocusState private var findsLanguage: Bool
+
     var body: some View {
+        let shown = model.matchingEntries(query)
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                group(String(localized: "Suggestions to review"), model.withSuggestions)
-                group(String(localized: "Up to date"), model.upToDate)
+                find
+                if shown.isEmpty {
+                    Text("No language matches “\(query.trimmingCharacters(in: .whitespaces))”.", comment: "kind:empty-state")
+                        .atlasTextStyle(.callout)
+                        .foregroundStyle(Palette.label2)
+                        .padding(.horizontal, Spacing.small)
+                        .padding(.vertical, Spacing.small)
+                        .accessibilityIdentifier("languageBar.menu.none")
+                }
+                group(String(localized: "Suggestions to review"), shown.filter { $0.count > 0 })
+                group(String(localized: "Up to date"), shown.filter { $0.count == 0 })
                 Divider()
                     .padding(.vertical, 5)
                     .padding(.horizontal, Spacing.xxSmall)
@@ -39,6 +54,33 @@ struct LanguageMenu: View {
         .frame(maxHeight: 460)
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityIdentifier("languageBar.menu")
+        .onAppear { findsLanguage = true }
+    }
+
+    /// Find a language, with how many there are (board “sp-menu-find”).
+    private var find: some View {
+        let shape = RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
+        return HStack(spacing: Spacing.xSmall) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(Palette.label2)
+                .accessibilityHidden(true)
+            TextField(String(localized: "Find a language", comment: "kind:placeholder"), text: $query)
+                .textFieldStyle(.plain)
+                .focused($findsLanguage)
+                .accessibilityIdentifier("languageBar.menu.find")
+            Text(model.countText)
+                .atlasTextStyle(.subheadline)
+                .foregroundStyle(Palette.label3)
+                .fixedSize()
+        }
+        .atlasTextStyle(.body)
+        .padding(.horizontal, Spacing.small)
+        .frame(height: Metrics.menuFieldHeight)
+        .background(Palette.fill1, in: shape)
+        .overlay(shape.strokeBorder(Palette.separator, lineWidth: 0.5))
+        .padding(.horizontal, Spacing.tiny)
+        .padding(.top, Spacing.tiny)
+        .padding(.bottom, Spacing.xSmall)
     }
 
     @ViewBuilder

@@ -81,9 +81,13 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
         let isSuggestion = !target.isQueued
         if isSuggestion, var change = queue.change(id: changeID) {
             var shot = try Self.details(arguments, client: context.clientName)
-            if case let .existing(product) = target.place { shot.expectedPlan = PricingViewModel.plan(of: product) }
+            var productName = change.title
+            if case let .existing(product) = target.place {
+                shot.expectedPlan = PricingViewModel.plan(of: product)
+                productName = product.name
+            }
             change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
-            change.title = shot.reviewLine
+            change.title = shot.reviewLine(product: productName)
             change.layers = try arguments.layers()
             queue.upsert(change)
             details.set(shot, for: changeID)

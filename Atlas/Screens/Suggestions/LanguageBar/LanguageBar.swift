@@ -195,7 +195,8 @@ struct LanguageBar<Trailing: View>: View {
                 Image(systemName: "chevron.left")
             }
             .disabled(model.previous == nil || model.previous == model.current)
-            .help(arrowHelp(model.previous, String(localized: "Previous language with suggestions")))
+            .keyboardShortcut("[", modifiers: .command)
+            .help(arrowHelp(model.previous, String(localized: "Previous language with suggestions"), shortcut: "⌘["))
             .accessibilityLabel(Text(arrowHelp(model.previous, String(localized: "Previous language with suggestions"))))
             .accessibilityIdentifier("languageBar.previous")
             Button {
@@ -204,15 +205,19 @@ struct LanguageBar<Trailing: View>: View {
                 Image(systemName: "chevron.right")
             }
             .disabled(model.next == nil || model.next == model.current)
-            .help(arrowHelp(model.next, String(localized: "Next language with suggestions")))
+            .keyboardShortcut("]", modifiers: .command)
+            .help(arrowHelp(model.next, String(localized: "Next language with suggestions"), shortcut: "⌘]"))
             .accessibilityLabel(Text(arrowHelp(model.next, String(localized: "Next language with suggestions"))))
             .accessibilityIdentifier("languageBar.next")
         }
         .fixedSize()
     }
 
-    private func arrowHelp(_ locale: StoreLocale?, _ title: String) -> String {
-        locale.map { "\(title): \($0.name)" } ?? title
+    /// "Next language with suggestions: German  ⌘]"; VoiceOver reads it
+    /// without the shortcut.
+    private func arrowHelp(_ locale: StoreLocale?, _ title: String, shortcut: String? = nil) -> String {
+        let help = locale.map { "\(title): \($0.name)" } ?? title
+        return shortcut.map { "\(help)  \($0)" } ?? help
     }
 
     private var acceptsRightAwayLine: some View {

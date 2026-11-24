@@ -9,12 +9,16 @@ import SwiftUI
 /// App Review and what's missing, with Submit for Review…; after, it
 /// follows the version (Submitted → Waiting for Review → In Review →
 /// Approved → On the App Store) and offers what can be done in that state.
-struct VersionCard: View {
+/// While it follows the version, a notice about it (the crash banner) sits
+/// under the steps.
+struct VersionCard<Notice: View>: View {
     @Bindable var viewModel: ReleaseViewModel
     let onSubmit: () -> Void
     let onOpenEvent: (InAppEvent.ID) -> Void
     let onOpenReviewInformation: () -> Void
     let onSeeReviews: () -> Void
+    /// Under the steps once submitted: Overview's crash banner.
+    @ViewBuilder var notice: () -> Notice
 
     @Environment(\.openURL) private var openURL
 
@@ -142,6 +146,7 @@ struct VersionCard: View {
             if case let .phased(day, isPaused) = viewModel.phase {
                 PhasedReleaseBar(day: day, isPaused: isPaused)
             }
+            notice()
             if viewModel.phase == .rejected {
                 rejection
             }

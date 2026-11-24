@@ -1927,6 +1927,9 @@
     "%@ · %@ for %@, set by country" : {
       "comment" : "kind:description"
     },
+    "%@ · %@ from Screenshots" : {
+      "comment" : "kind:description"
+    },
     "%@ · %@ is empty: send all three texts." : {
       "comment" : "kind:other"
     },
@@ -2346,6 +2349,9 @@
     },
     "%@%@ pt" : {
       "comment" : "kind:other"
+    },
+    "%@%@ · from %@" : {
+      "comment" : "kind:description"
     },
     "%@'s reports can't be asked for: the API key isn't an Admin key. The person adds one in Settings → Accounts." : {
       "comment" : "kind:other"
@@ -7606,6 +7612,9 @@
     "Atlas Help" : {
       "comment" : "kind:button"
     },
+    "Atlas Help and the tour" : {
+      "comment" : "kind:tooltip"
+    },
     "Atlas Help › %@ › %@" : {
       "comment" : "kind:description"
     },
@@ -12259,6 +12268,9 @@
     "Find a country or region" : {
       "comment" : "kind:section-title"
     },
+    "Find a language" : {
+      "comment" : "kind:placeholder"
+    },
     "Find a price" : {
       "comment" : "kind:placeholder"
     },
@@ -13017,6 +13029,9 @@
     },
     "Hebrew" : {
       "comment" : "kind:section-title"
+    },
+    "Help" : {
+      "comment" : "kind:button"
     },
     "Help lists the steps to check." : {
       "comment" : "kind:progress-step"
@@ -16006,6 +16021,9 @@
     "No language could be kept." : {
       "comment" : "kind:error"
     },
+    "No language matches “%@”." : {
+      "comment" : "kind:empty-state"
+    },
     "No line" : {
       "comment" : "kind:empty-state"
     },
@@ -17302,6 +17320,9 @@
     "Only Admin keys can ask for reports; Admin, Finance and Sales keys can read them." : {
       "comment" : "kind:description"
     },
+    "Only App Review sees them. The push puts each one beside its product in App Store Connect." : {
+      "comment" : "kind:description"
+    },
     "Only App Review sees these, next to each product. Nothing uploads until you push." : {
       "comment" : "kind:sheet-body"
     },
@@ -18596,6 +18617,9 @@
       "comment" : "kind:section-title"
     },
     "Pricing · Availability" : {
+      "comment" : "kind:section-title"
+    },
+    "Pricing · Review screenshots" : {
       "comment" : "kind:section-title"
     },
     "Pricing · prices" : {
@@ -20203,12 +20227,6 @@
     "Review screenshot · %@" : {
       "comment" : "kind:section-title"
     },
-    "Review screenshot · %@ from Screenshots" : {
-      "comment" : "kind:description"
-    },
-    "Review screenshot%@ · from %@" : {
-      "comment" : "kind:section-title"
-    },
     "Review screenshots" : {
       "comment" : "kind:section-title"
     },
@@ -21333,6 +21351,12 @@
     },
     "Settings" : {
       "comment" : "kind:section-title"
+    },
+    "Settings  ⌘," : {
+      "comment" : "kind:tooltip"
+    },
+    "Settings and Help" : {
+      "comment" : "kind:accessibility-label"
     },
     "Settings are always here" : {
       "comment" : "kind:tour-tip"

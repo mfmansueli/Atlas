@@ -94,15 +94,15 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
         }
     }
 
-    /// “Review screenshot · Monthly selected · from Claude Code”, for
-    /// Review & Push.
-    var reviewLine: String {
+    /// “Annual · Monthly selected · from Claude Code”: its row in Review
+    /// & Push, under “Pricing · Review screenshots” (board 66).
+    func reviewLine(product: String) -> String {
         switch origin {
         case let .assistant(client):
             let plan = planText.map { " · " + $0 } ?? ""
-            return String(localized: "Review screenshot\(plan) · from \(client)")
+            return String(localized: "\(product)\(plan) · from \(client)", comment: "kind:description")
         case let .capture(title):
-            return String(localized: "Review screenshot · \(title) from Screenshots")
+            return String(localized: "\(product) · \(title) from Screenshots", comment: "kind:description")
         }
     }
 }
