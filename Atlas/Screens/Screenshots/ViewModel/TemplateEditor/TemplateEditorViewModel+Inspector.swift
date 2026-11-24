@@ -26,7 +26,7 @@ extension TemplateEditorViewModel {
     /// "1320 × 2868 px · PNG · APP_IPHONE_67".
     var outputText: String {
         let size = ScreenshotCanvas(display: displayType, orientation: orientation).pixelSize
-        return "\(size.title) px · PNG · \(displayType.apiValue)"
+        return String(localized: "\(size.title) px · PNG · \(displayType.apiValue)", comment: "kind:description")
     }
 
     // MARK: - Background

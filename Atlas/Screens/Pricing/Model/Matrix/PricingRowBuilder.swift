@@ -74,7 +74,7 @@ struct PricingRowBuilder {
         guard availability == .notRead else { return recommendation }
         var copy = recommendation
         copy.basis = recommendation.basis.map { line in
-            line.hasPrefix("Sales:") ? String(localized: "Sales: not read, so purchasing power alone") : line
+            line == PriceRecommender.cantReadSalesLine ? String(localized: "Sales: not read, so purchasing power alone") : line
         }
         return copy
     }

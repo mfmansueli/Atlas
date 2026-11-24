@@ -15,7 +15,11 @@ struct AccessibilityFeaturePills: View {
         FlowLayout(spacing: Spacing.xxSmall, lineSpacing: Spacing.xxSmall) {
             ForEach(features) { feature in
                 Pill(text: feature.name, style: unpublished.contains(feature) ? .accent : .neutral)
-                    .accessibilityLabel(Text(unpublished.contains(feature) ? "\(feature.name), not published yet" : feature.name))
+                    .accessibilityLabel(
+                        unpublished.contains(feature)
+                            ? Text("\(feature.name), not published yet", comment: "kind:accessibility-label")
+                            : Text(feature.name)
+                    )
             }
         }
         .accessibilityElement(children: .contain)

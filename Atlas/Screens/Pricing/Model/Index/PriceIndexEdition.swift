@@ -27,6 +27,6 @@ struct PriceIndexEdition: Hashable, Sendable {
 
     /// "July 2026 available", or nil.
     var newerEditionLabel: String? {
-        newerEdition.map { "\($0) available" }
+        newerEdition.map { String(localized: "\($0) available", comment: "kind:hint") }
     }
 }

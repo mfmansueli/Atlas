@@ -92,7 +92,7 @@ extension StorePageViewModel {
     }
 
     func exportFileName(as format: ListingTransferFormat) -> String {
-        guard let listing else { return "Store Page.\(format.fileExtension)" }
+        guard let listing else { return String(localized: "Store Page", comment: "kind:section-title") + ".\(format.fileExtension)" }
         return ListingTransfer.suggestedFileName(for: listing, as: format)
     }
 

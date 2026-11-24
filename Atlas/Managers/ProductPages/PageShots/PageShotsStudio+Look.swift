@@ -47,7 +47,7 @@ extension PageShotsStudio {
         let candidates = run.design?.candidates ?? []
         let replaced = candidates.firstIndex { $0.name.caseInsensitiveCompare(candidate.name) == .orderedSame }
         if replaced == nil, candidates.count >= PageShotsDesign.candidateCount {
-            let names = candidates.map { "“\($0.name)”" }.formatted(.list(type: .and))
+            let names = candidates.map { String(localized: "“\($0.name)”", comment: "kind:other") }.formatted(.list(type: .and))
             return String(localized: """
             \(PageShotsDesign.candidateCount) looks exist: \(names). To change one, resend it with the same name.
             """)

@@ -33,7 +33,9 @@ final class ArtworkLoopWriter {
         self.size = size
         self.framesPerSecond = framesPerSecond
         try? FileManager.default.removeItem(at: output)
-        guard let space = CGColorSpace(name: CGColorSpace.sRGB) else { throw ArtworkLoopError.writerFailed("No sRGB color space.") }
+        guard let space = CGColorSpace(name: CGColorSpace.sRGB) else {
+            throw ArtworkLoopError.writerFailed(String(localized: "No sRGB color space.", comment: "kind:description"))
+        }
         colorSpace = space
         var made: (AVAssetWriter, AVAssetWriterInput, String)?
         for codec in [AVVideoCodecType.h264, .hevc] {

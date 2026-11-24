@@ -10,7 +10,7 @@ struct KeychainSecretStore: SecretStore {
     private let items: KeychainItems
 
     init(service: String = "Atlas.Secrets") {
-        items = KeychainItems(service: service, label: "Atlas — API key")
+        items = KeychainItems(service: service, label: String(localized: "Atlas — API key", comment: "kind:section-title"))
     }
 
     func secret(named name: String) throws -> String? {

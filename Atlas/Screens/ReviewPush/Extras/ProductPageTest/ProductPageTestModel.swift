@@ -106,7 +106,9 @@ final class ProductPageTestModel: Identifiable {
     var usesLibrary: Bool { !(proposal?.treatment.libraryAssets.isEmpty ?? true) }
 
     /// "Header: Interface vs Outcome", or the proposal's name.
-    var testName: String { proposal?.name ?? "\(placement.title): \(controlName) vs \(treatmentName)" }
+    var testName: String {
+        proposal?.name ?? String(localized: "\(placement.title): \(controlName) vs \(treatmentName)", comment: "kind:other")
+    }
 
     /// The share of the page's visitors who see the treatment, in percent.
     var trafficProportion: Int { proposal?.trafficProportion ?? 50 }

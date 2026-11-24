@@ -60,6 +60,7 @@ struct InAppEventDateText: Hashable, Sendable {
         let hours = abs(seconds) / 3600
         let minutes = abs(seconds) % 3600 / 60
         let offset = minutes == 0 ? "\(hours)" : String(format: "%d:%02d", hours, minutes)
-        return "\(name) (GMT\(seconds < 0 ? "-" : "+")\(offset))"
+        let sign = seconds < 0 ? "-" : "+"
+        return String(localized: "\(name) (GMT\(sign)\(offset))", comment: "kind:other")
     }
 }

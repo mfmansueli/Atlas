@@ -31,7 +31,7 @@ struct SavedKeyRow: View {
                     }
                 }
                 Group {
-                    Text(verbatim: "Issuer \(credentials.issuerID)")
+                    Text("Issuer \(credentials.issuerID)", comment: "kind:section-title")
                     Text("Key \(credentials.keyID) · \(account.role)")
                 }
                 .font(.subheadline.monospaced())

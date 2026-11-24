@@ -21,7 +21,7 @@ enum Commission: String, CaseIterable, Codable, Hashable, Sendable {
 
     var title: String {
         switch self {
-        case .smallBusiness: "15% (Small Business Program)"
+        case .smallBusiness: String(localized: "15% (Small Business Program)", comment: "kind:section-title")
         case .standard: "30%"
         }
     }

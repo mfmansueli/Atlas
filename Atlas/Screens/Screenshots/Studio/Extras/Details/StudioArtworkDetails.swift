@@ -106,7 +106,7 @@ struct StudioArtworkDetails: Hashable {
         let line = switch (headline.isEmpty, file.kind) {
         case (true, .header): String(localized: "No line: the app name only")
         case (true, _): String(localized: "No headline yet")
-        case (false, _): "“\(headline)”"
+        case (false, _): String(localized: "“\(headline)”", comment: "kind:other")
         }
         return file.fits ? line : line + " · " + String(localized: "too long even at its smallest size")
     }

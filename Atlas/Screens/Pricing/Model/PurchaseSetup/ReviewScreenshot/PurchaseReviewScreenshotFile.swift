@@ -26,7 +26,8 @@ struct PurchaseReviewScreenshotFile: Codable, Hashable, Sendable, Identifiable {
 
     /// "paywall.png · 1290 × 2796".
     var summary: String {
-        "\(fileName) · \(pixelSize.width) × \(pixelSize.height)"
+        // Pixel counts as plain digits, never grouped ("1290 × 2796").
+        String(localized: "\(fileName) · \(String(pixelSize.width)) × \(String(pixelSize.height))", comment: "kind:description")
     }
 
     /// The smallest side App Review reads comfortably. Apple's help asks

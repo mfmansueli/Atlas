@@ -116,7 +116,7 @@ struct SimulatorInventory: Decodable, Hashable, Sendable {
     /// "macOS 27.2", this Mac's.
     static var macOSName: String {
         let version = ProcessInfo.processInfo.operatingSystemVersion
-        return "macOS \(version.majorVersion).\(version.minorVersion)"
+        return String(localized: "macOS \(version.majorVersion).\(version.minorVersion)", comment: "kind:other")
     }
 
     /// "27.1.0" → "27.1"; "27.0.0" → "27.0".

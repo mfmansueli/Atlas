@@ -48,7 +48,7 @@ enum ClaudeCodeHelperScript {
     static let minimumRunVersion = 2
 
     /// The name the Save panel suggests.
-    static let fileName = "Start Claude Code.zsh"
+    static let fileName = String(localized: "Start Claude Code", comment: "kind:section-title") + ".zsh"
 
     /// The line `run` prints when Claude Code ends: `atlas-helper-exit 0`.
     static let exitMarker = "atlas-helper-exit"

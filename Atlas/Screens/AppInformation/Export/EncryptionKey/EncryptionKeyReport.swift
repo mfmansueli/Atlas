@@ -31,7 +31,7 @@ struct EncryptionKeyReport: Hashable, Codable, Sendable {
         /// "Lumen/Info.plist:42", "project.pbxproj · INFOPLIST_KEY_… (Debug, Release)".
         var text: String {
             var text = line.map { "\(file):\($0)" } ?? file
-            if let buildSetting { text += " · \(buildSetting)" }
+            if let buildSetting { text = String(localized: "\(text) · \(buildSetting)", comment: "kind:other") }
             if !configurations.isEmpty { text += " (\(configurations.joined(separator: ", ")))" }
             return "\(text) — \(target)"
         }

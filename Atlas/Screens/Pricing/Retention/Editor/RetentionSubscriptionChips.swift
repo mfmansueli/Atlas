@@ -34,7 +34,7 @@ struct RetentionSubscriptionChips: View {
         return Button {
             model.toggleSubscription(subscription.id)
         } label: {
-            Text(isOn ? "✓ \(subscription.name)" : subscription.name)
+            Text(isOn ? String(localized: "✓ \(subscription.name)", comment: "kind:button") : subscription.name)
                 .font(.callout.weight(isOn ? .medium : .regular))
                 .foregroundStyle(isOn ? Palette.accentText : Palette.label2)
                 .padding(.horizontal, Spacing.small)

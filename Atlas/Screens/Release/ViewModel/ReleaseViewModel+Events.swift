@@ -88,7 +88,7 @@ extension ReleaseViewModel {
     ) -> String {
         let named = Self.namingEvents(in: failure.message, events: events)
         func name(_ id: String) -> String {
-            events.first { $0.id == id }.map { "“\(displayName(of: $0))”" } ?? String(localized: "an In-App Event")
+            events.first { $0.id == id }.map { String(localized: "“\(displayName(of: $0))”", comment: "kind:error") } ?? String(localized: "an In-App Event")
         }
         var lines: [String] = []
         switch failure.step {
@@ -105,7 +105,7 @@ extension ReleaseViewModel {
             let withoutLink = plan.eventIDs.compactMap { id in events.first { $0.id == id } }
                 .filter { InAppEventDetail.deepLink.value(in: $0) == nil }
             if failure.message.contains("'deepLink'"), !failure.message.contains(AppStoreConnectError.eventMarker), !withoutLink.isEmpty {
-                let names = withoutLink.map { "“\(displayName(of: $0))”" }.formatted(.list(type: .and))
+                let names = withoutLink.map { String(localized: "“\(displayName(of: $0))”", comment: "kind:error") }.formatted(.list(type: .and))
                 lines.append(String(localized: "Without a deep link: \(names)."))
             }
         }

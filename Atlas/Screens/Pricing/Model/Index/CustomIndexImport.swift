@@ -58,9 +58,9 @@ struct CustomIndexImport: Hashable, Sendable {
     /// Oct 20, 2026" from `Regional reference prices.csv`.
     func index(fileName: String, importedOn date: Date) -> PriceIndex {
         let edition = PriceIndexEdition(
-            label: "Imported " + PricingText.date(date),
-            badge: "Custom",
-            provenanceLabel: "custom index",
+            label: String(localized: "Imported \(PricingText.date(date))", comment: "kind:section-title"),
+            badge: String(localized: "Custom", comment: "kind:pill"),
+            provenanceLabel: String(localized: "custom index", comment: "kind:other"),
             date: date,
             newerEdition: nil
         )

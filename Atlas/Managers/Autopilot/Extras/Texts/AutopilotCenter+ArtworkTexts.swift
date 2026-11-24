@@ -68,7 +68,7 @@ extension AutopilotCenter {
         update(appID) { run in
             let phrases = updates.filter { $0.phrase != nil }
             for item in updates where item.phrase == nil {
-                let text = item.headline.isEmpty ? String(localized: "none") : "“\(item.headline)”"
+                let text = item.headline.isEmpty ? String(localized: "none") : String(localized: "“\(item.headline)”", comment: "kind:other")
                 run.appendLog(String(localized: "\(client) wrote \(item.locale) \(item.role.title.lowercased()): \(text)"), kind: .event, at: now())
             }
             // Phrases come by the dozen: one line for them all.

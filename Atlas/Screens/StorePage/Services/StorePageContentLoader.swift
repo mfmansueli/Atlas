@@ -69,7 +69,9 @@ struct StorePageContentLoader: Sendable {
     /// (REPLACED_WITH_NEW_VERSION)") instead of "no version yet".
     static func noVersionDetail(_ resources: [AppStoreConnectResource<AppStoreVersionAttributes>]) -> String {
         guard !resources.isEmpty else { return String(localized: "This app has no App Store version yet.") }
-        let listed = resources.map { "\($0.attributes.versionString) (\($0.attributes.state ?? "no state"))" }.joined(separator: ", ")
+        let listed = resources.map {
+            "\($0.attributes.versionString) (\($0.attributes.state ?? String(localized: "no state", comment: "kind:other")))"
+        }.joined(separator: ", ")
         return String(localized: "None of its App Store versions is in a state Atlas reads: \(listed).")
     }
 

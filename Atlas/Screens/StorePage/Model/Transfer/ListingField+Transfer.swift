@@ -31,8 +31,9 @@ extension ListingField {
     /// "Keywords · 100 bytes, comma-separated, no spaces".
     var translatorNote: String {
         switch self {
-        case .keywords: "\(englishTitle) · \(limitDescription), comma-separated, no spaces"
-        case .privacyPolicyURL, .supportURL, .marketingURL: "\(englishTitle) · a full https:// address, copied as is"
+        case .keywords: String(localized: "\(englishTitle) · \(limitDescription), comma-separated, no spaces", comment: "kind:hint")
+        case .privacyPolicyURL, .supportURL, .marketingURL:
+            String(localized: "\(englishTitle) · a full https:// address, copied as is", comment: "kind:hint")
         default: "\(englishTitle) · \(limitDescription)"
         }
     }

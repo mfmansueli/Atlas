@@ -31,7 +31,8 @@ struct StabilityView: View {
                         identifier: "analytics.stability.rate"
                     )
                     AnalyticsStat(
-                        label: String(localized: "Against \(report.previous?.version ?? "the version before")"),
+                        label: report.previous.map { String(localized: "Against \($0.version)") }
+                            ?? String(localized: "Against the version before", comment: "kind:other"),
                         value: report.times.map(AnalyticsText.times) ?? "—",
                         note: report.comparison.verdict
                     )

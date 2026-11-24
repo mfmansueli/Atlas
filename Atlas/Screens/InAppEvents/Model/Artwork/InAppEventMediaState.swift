@@ -22,8 +22,10 @@ struct InAppEventMediaState: Hashable, Sendable {
         /// "none".
         func text(_ kind: InAppEventMedia.Kind) -> String {
             if let media = own[kind] { return Self.describe(media) }
-            if let media = fallback[kind], let primaryLocale { return "none · shows \(primaryLocale)'s \(Self.describe(media))" }
-            return "none"
+            if let media = fallback[kind], let primaryLocale {
+                return String(localized: "none · shows \(primaryLocale)'s \(Self.describe(media))", comment: "kind:other")
+            }
+            return String(localized: "none", comment: "kind:other")
         }
 
         private static func describe(_ media: InAppEventMedia) -> String {

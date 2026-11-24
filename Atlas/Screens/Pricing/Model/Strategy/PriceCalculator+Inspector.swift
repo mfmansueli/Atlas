@@ -13,8 +13,8 @@ extension PriceCalculator {
     func compareSources(_ input: PriceCalculationInput, strategy: PricingStrategy) -> [SourceComparison] {
         let current = input.currentPrice ?? input.equalizedPrice
         var bars = [
-            SourceComparison(kind: .current, title: "Current", price: current),
-            SourceComparison(kind: .equalized, title: "Equalized", price: input.equalizedPrice),
+            SourceComparison(kind: .current, title: String(localized: "Current", comment: "kind:section-title"), price: current),
+            SourceComparison(kind: .equalized, title: String(localized: "Equalized", comment: "kind:section-title"), price: input.equalizedPrice),
         ]
         let template = strategy.isRecommended ? PricingStrategy.recommended(baseTerritoryID: strategy.baseTerritoryID) : strategy
         for source in [PriceIndexSource.bigMac, .worldBank, .imf, .custom] {

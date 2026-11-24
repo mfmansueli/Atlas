@@ -16,10 +16,10 @@ enum PriceRounding: String, CaseIterable, Codable, Hashable, Sendable {
     /// The segmented control's label: Auto, .99, .90, Round.
     var title: String {
         switch self {
-        case .auto: "Auto"
+        case .auto: String(localized: "Auto", comment: "kind:section-title")
         case .ninetyNine: ".99"
         case .ninety: ".90"
-        case .round: "Round"
+        case .round: String(localized: "Round", comment: "kind:section-title")
         }
     }
 

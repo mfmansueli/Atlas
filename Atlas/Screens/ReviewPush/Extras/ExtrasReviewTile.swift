@@ -82,7 +82,7 @@ struct ExtrasReviewTile: View {
     private var thumbnailHelp: String {
         let action = isMovie ? String(localized: "Click to play it larger") : String(localized: "Click to see it larger")
         guard let headline = item.headline, !headline.isEmpty else { return action }
-        return "“\(headline)”\n\(action)"
+        return String(localized: "“\(headline)”\n\(action)", comment: "kind:other")
     }
 
     /// While it's pushed: its place in line, its upload's bar, how long

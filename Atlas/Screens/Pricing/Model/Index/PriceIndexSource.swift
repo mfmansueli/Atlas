@@ -17,29 +17,29 @@ enum PriceIndexSource: String, CaseIterable, Codable, Hashable, Sendable, Identi
 
     var name: String {
         switch self {
-        case .bigMac: "Big Mac Index"
-        case .worldBank: "World Bank PPP price level"
-        case .imf: "IMF implied PPP rate"
-        case .custom: "Custom index"
+        case .bigMac: String(localized: "Big Mac Index", comment: "kind:section-title")
+        case .worldBank: String(localized: "World Bank PPP price level", comment: "kind:section-title")
+        case .imf: String(localized: "IMF implied PPP rate", comment: "kind:section-title")
+        case .custom: String(localized: "Custom index", comment: "kind:section-title")
         }
     }
 
     /// For "Region median of World Bank" in the fallback chain.
     var shortName: String {
         switch self {
-        case .bigMac: "Big Mac"
-        case .worldBank: "World Bank"
-        case .imf: "IMF"
-        case .custom: "custom index"
+        case .bigMac: String(localized: "Big Mac", comment: "kind:section-title")
+        case .worldBank: String(localized: "World Bank", comment: "kind:section-title")
+        case .imf: String(localized: "IMF", comment: "kind:section-title")
+        case .custom: String(localized: "custom index", comment: "kind:other")
         }
     }
 
     var publisher: String {
         switch self {
         case .bigMac: "The Economist"
-        case .worldBank: "World Bank"
-        case .imf: "International Monetary Fund"
-        case .custom: "Imported CSV"
+        case .worldBank: String(localized: "World Bank", comment: "kind:section-title")
+        case .imf: String(localized: "International Monetary Fund", comment: "kind:section-title")
+        case .custom: String(localized: "Imported CSV", comment: "kind:section-title")
         }
     }
 
@@ -47,15 +47,25 @@ enum PriceIndexSource: String, CaseIterable, Codable, Hashable, Sendable, Identi
     var summary: String {
         switch self {
         case .bigMac:
-            "Raw index, not GDP-adjusted. Easy to explain; fewer countries, milder discounts. "
-                + "The euro area is one entry shared by 21 territories."
+            String(localized: """
+            Raw index, not GDP-adjusted. Easy to explain; fewer countries, milder discounts. \
+            The euro area is one entry shared by 21 territories.
+            """, comment: "kind:description")
         case .worldBank:
-            "Price level ratio of PPP conversion factor to market exchange rate. Broadest coverage and deeper discounts "
-                + "in emerging markets; runs a year or two behind."
+            String(localized: """
+            Price level ratio of PPP conversion factor to market exchange rate. Broadest coverage and deeper discounts \
+            in emerging markets; runs a year or two behind.
+            """, comment: "kind:description")
         case .imf:
-            "Implied PPP conversion rate divided by the market rate. Broad coverage, updated every April and October."
+            String(
+                localized: "Implied PPP conversion rate divided by the market rate. Broad coverage, updated every April and October.",
+                comment: "kind:description"
+            )
         case .custom:
-            "A CSV of territory code → factor, or a local reference price. Unmatched codes are listed when you import."
+            String(
+                localized: "A CSV of territory code → factor, or a local reference price. Unmatched codes are listed when you import.",
+                comment: "kind:description"
+            )
         }
     }
 

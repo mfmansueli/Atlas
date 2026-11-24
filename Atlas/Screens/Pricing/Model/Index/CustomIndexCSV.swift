@@ -33,7 +33,8 @@ enum CustomIndexCSV {
         let lines = text.components(separatedBy: .newlines).enumerated().map { (number: $0.offset + 1, text: $0.element) }
         let content = lines.filter { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty && !$0.text.hasPrefix("#") }
         guard let first = content.first else {
-            return CustomIndexImport(kind: .factor, rows: [], unmatched: [], errors: [.init(line: 0, message: "The file is empty.")])
+            let empty = String(localized: "The file is empty.", comment: "kind:error")
+            return CustomIndexImport(kind: .factor, rows: [], unmatched: [], errors: [.init(line: 0, message: empty)])
         }
         let separator = separator(for: first.text)
         let header = fields(first.text, separator: separator)
@@ -60,7 +61,7 @@ enum CustomIndexCSV {
         mutating func read(_ text: String, number line: Int, separator: Character) {
             let values = CustomIndexCSV.fields(text, separator: separator)
             guard values.count >= 2, !values[0].isEmpty else {
-                errors.append(.init(line: line, message: "Line \(line) needs a territory code and a value."))
+                errors.append(.init(line: line, message: String(localized: "Line \(line) needs a territory code and a value.", comment: "kind:error")))
                 return
             }
             let code = values[0]
@@ -70,11 +71,12 @@ enum CustomIndexCSV {
                 return
             }
             guard let value = CustomIndexCSV.number(values[1]), value > 0 else {
-                errors.append(.init(line: line, message: "Line \(line): “\(values[1])” isn’t a positive number."))
+                errors.append(.init(line: line, message: String(localized: "Line \(line): “\(values[1])” isn’t a positive number.", comment: "kind:error")))
                 return
             }
             guard !rows.contains(where: { $0.territory.id == territory.id }) else {
-                errors.append(.init(line: line, message: "Line \(line): \(territory.name) appears twice; the first value is kept."))
+                let message = String(localized: "Line \(line): \(territory.name) appears twice; the first value is kept.", comment: "kind:error")
+                errors.append(.init(line: line, message: message))
                 return
             }
             rows.append(.init(line: line, code: code, territory: territory, value: value, factor: value))
@@ -92,13 +94,17 @@ enum CustomIndexCSV {
         guard let base = parsed.rows.first(where: { $0.territory.id == baseTerritoryID }) else {
             let name = catalog.territory(alpha3: baseTerritoryID)?.name ?? baseTerritoryID
             result.rows = []
-            result.errors.insert(.init(line: 0, message: "Reference prices need a row for \(name), the base territory."), at: 0)
+            let message = String(localized: "Reference prices need a row for \(name), the base territory.", comment: "kind:description")
+            result.errors.insert(.init(line: 0, message: message), at: 0)
             return result
         }
         result.rows = parsed.rows.compactMap { row in
             if row.territory.id == baseTerritoryID { return withFactor(row, 1) }
             guard let multiplier = equalizationMultiplier(row.territory), multiplier > 0 else {
-                result.errors.append(.init(line: row.line, message: "Line \(row.line): no equalized price to compare \(row.territory.name) with."))
+                let message = String(
+                    localized: "Line \(row.line): no equalized price to compare \(row.territory.name) with.", comment: "kind:description"
+                )
+                result.errors.append(.init(line: row.line, message: message))
                 return nil
             }
             return withFactor(row, (row.value / (base.value * multiplier)).rounded(scale: 2))

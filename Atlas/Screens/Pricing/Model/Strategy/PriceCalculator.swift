@@ -33,19 +33,25 @@ struct PriceCalculator: Sendable {
     func calculate(_ input: PriceCalculationInput, strategy: PricingStrategy) -> PriceCalculation {
         let money = CurrencyFormat.forCurrency(input.territory.currencyCode)
         let equalized = input.equalizedPrice
-        let header = money.format(equalized) + " — Apple’s equalized price for " + baseFormat(strategy).format(input.basePrice)
+        let basePrice = baseFormat(strategy).format(input.basePrice)
+        let header = String(localized: "\(money.format(equalized)) — Apple’s equalized price for \(basePrice)", comment: "kind:description")
         if strategy.method == .equalized {
-            return unchanged(input, header: header, step: "Apple equalization: no index applied", kind: .equalized, adjustment: .kept)
+            let step = String(localized: "Apple equalization: no index applied", comment: "kind:section-title")
+            return unchanged(input, header: header, step: step, kind: .equalized, adjustment: .kept)
         }
         if strategy.isExcluded(input.territory.id) {
-            return unchanged(input, header: header, step: "Excluded from the index, so it stays equalized", kind: .excluded, adjustment: .excluded)
+            let step = String(localized: "Excluded from the index, so it stays equalized", comment: "kind:description")
+            return unchanged(input, header: header, step: step, kind: .excluded, adjustment: .excluded)
         }
         let index = indexTarget(input, strategy: strategy)
         let limited = applyLimits(to: index.target, input: input, strategy: strategy)
         let snapped = snap(limited, input: input, strategy: strategy)
         let price = snapped.point.customerPrice
-        let summary = money.format(equalized) + " equalized × " + index.multiplier.trimmed(maxPlaces: 3) + " = "
-            + money.format(index.target) + " → " + limited.adjustment.text + " → " + money.format(price)
+        let multiplier = index.multiplier.trimmed(maxPlaces: 3)
+        let summary = String(
+            localized: "\(money.format(equalized)) equalized × \(multiplier) = \(money.format(index.target)) → \(limited.adjustment.text) → \(money.format(price))",
+            comment: "kind:description"
+        )
         return PriceCalculation(
             price: snapped.point,
             equalizedPrice: equalized,
@@ -56,7 +62,8 @@ struct PriceCalculator: Sendable {
             provenance: index.provenance,
             adjustment: limited.adjustment,
             summary: summary,
-            steps: [header, index.step] + limited.steps + [snapped.step]
+            steps: [header, index.step] + limited.steps + [snapped.step],
+            raisedToFloor: limited.raisedToFloor
         )
     }
 
@@ -104,7 +111,7 @@ struct PriceCalculator: Sendable {
             let region = input.territory.region
             let multiplier = strategy.regionMultiplier(for: region)
             let target = equalized * multiplier
-            let step = "× " + multiplier.fixed(2) + " (" + region.title + " tier) = " + money.format(target)
+            let step = String(localized: "× \(multiplier.fixed(2)) (\(region.title) tier) = \(money.format(target))", comment: "kind:description")
             let provenance = PriceProvenance(kind: .regionalTier(region), isFallback: false)
             return IndexTarget(target: target, multiplier: multiplier, factor: multiplier, tier: nil, provenance: provenance, step: step)
         }
@@ -119,7 +126,7 @@ struct PriceCalculator: Sendable {
         let intensity = min(max(strategy.intensity, 0), 1)
         let multiplier = 1 - intensity + intensity * factor
         let target = equalized * multiplier
-        let label = resolved.provenance.label + (tier.map { ", tier \($0)" } ?? "")
+        let label = tier.map { String(localized: "\(resolved.provenance.label), tier \($0)", comment: "kind:other") } ?? resolved.provenance.label
         let step = intensity == 1
             ? "× " + factor.fixed(2) + " (" + label + ") = " + money.format(target)
             : "× (1 − " + intensity.fixed(2) + " + " + intensity.fixed(2) + " × " + factor.fixed(2) + ") = × "
@@ -137,9 +144,10 @@ struct PriceCalculator: Sendable {
         let money = CurrencyFormat.forCurrency(input.territory.currencyCode)
         let equalized = input.equalizedPrice
         let point = input.ladder.point(at: equalized) ?? offLadderPoint(equalized, territory: input.territory)
+        let price = money.format(equalized)
         let summary = adjustment == .kept
-            ? money.format(equalized) + " equalized → kept"
-            : money.format(equalized) + " equalized → excluded → " + money.format(equalized)
+            ? String(localized: "\(price) equalized → kept", comment: "kind:description")
+            : String(localized: "\(price) equalized → excluded → \(price)", comment: "kind:description")
         return PriceCalculation(
             price: point,
             equalizedPrice: equalized,
