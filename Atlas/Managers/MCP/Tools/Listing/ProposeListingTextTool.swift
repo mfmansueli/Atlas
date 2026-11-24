@@ -29,7 +29,7 @@ struct ProposeListingTextTool: MCPTool {
         Review & Push, go into it right after Atlas creates it, and are discarded with it.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withConfidence([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "version": MCPToolDefinition.string(
                     "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
@@ -41,15 +41,15 @@ struct ProposeListingTextTool: MCPTool {
                     "type": "array",
                     "description": "Several proposals at once, instead of locale, field and text.",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withConfidence([
                             "locale": MCPToolDefinition.string("An App Store Connect locale code."),
                             "field": MCPToolDefinition.string("The field."),
                             "text": MCPToolDefinition.string("The proposed text."),
-                        ],
+                        ], gloss: true),
                         required: ["locale", "field", "text"]
                     ),
                 ],
-            ],
+            ], gloss: true),
             required: ["appId"]
         ),
         proposalKind: .storeText
@@ -60,9 +60,12 @@ struct ProposeListingTextTool: MCPTool {
         var locale: String
         var field: ListingField
         var text: String
+        var layers: SuggestionLayers?
 
-        init(_ arguments: MCPToolArguments) throws {
+        /// `call`: the call's layers, for a batch item without its own.
+        init(_ arguments: MCPToolArguments, call: SuggestionLayers? = nil) throws {
             locale = try arguments.string("locale")
+            layers = try arguments.layers(over: call)
             let name = try arguments.string("field")
             guard let field = ListingField.matching(name) else {
                 throw MCPToolError.invalidArgument(name: "field", expected: String(localized: "one of \(ListingField.mcpNames.joined(separator: ", "))"))
@@ -74,12 +77,13 @@ struct ProposeListingTextTool: MCPTool {
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let batch = try arguments.optionalArray("proposals")
+        let callLayers = try arguments.layers()
         let proposals = try batch.map { items in
             try items.map { item in
                 guard let object = item.objectValue else {
                     throw MCPToolError.invalidArgument(name: "proposals", expected: String(localized: "a list of {locale, field, text} objects"))
                 }
-                return try Proposal(MCPToolArguments(object))
+                return try Proposal(MCPToolArguments(object), call: callLayers)
             }
         } ?? [Proposal(arguments)]
 
@@ -96,6 +100,7 @@ struct ProposeListingTextTool: MCPTool {
             let changeID = StoreLocaleCatalog.locale(code: proposal.locale).flatMap { changeIDs[ListingFieldKey($0, proposal.field)] }
             // Proposed back to App Store Connect's text: nothing stays queued.
             let outcome = proposed.isQueued && changeID == nil ? .unchanged : proposed
+            if let changeID, outcome.isQueued { context.workspace.changes.attach(proposal.layers, to: changeID) }
             settled.append(outcome)
             results.append(Self.result(proposal, outcome: outcome, changeID: changeID))
             logLines.append(Self.logLine(proposal, outcome: outcome, target: draft.target(locale: proposal.locale, field: proposal.field)))

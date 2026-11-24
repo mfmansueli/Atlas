@@ -48,7 +48,10 @@ struct GuidedDesignCards: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             switch card {
             case let .arrived(direction):
-                Text(direction.name).font(.callout.weight(.semibold)).lineLimit(1)
+                HStack(spacing: Spacing.xSmall) {
+                    Text(direction.name).font(.callout.weight(.semibold)).lineLimit(1)
+                    if let confidence = direction.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 if run.plan.makesScreenshots {
                     let fit = Self.thumbnails(
                         in: width, count: count, screens: studio.layouts(for: direction).count,

@@ -60,6 +60,9 @@ struct AutopilotArtworkConcept: Codable, Hashable, Sendable, Identifiable {
     /// What the last change did, in the designer's words.
     var changeNotes: String?
     var receivedAt: Date
+    /// The designer's details and how sure, beside why it fits; nil when
+    /// none came and in runs saved before.
+    var layers: SuggestionLayers?
 
     /// "From the Day to Night template", "Claude’s own concept".
     var sourceTitle: String {

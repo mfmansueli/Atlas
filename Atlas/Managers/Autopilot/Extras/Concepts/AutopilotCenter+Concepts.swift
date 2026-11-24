@@ -86,15 +86,21 @@ extension AutopilotCenter {
         if let design = concept.design { merged.design = design.laid(over: existing.design) } else { merged.design = existing.design }
         merged.drafts = existing.drafts
         merged.motion = existing.motion
-        if concept.beats.isEmpty { merged.beats = existing.beats }
-        if concept.followsTheRequest == nil { merged.followsTheRequest = existing.followsTheRequest }
-        if concept.metaphor.isEmpty { merged.metaphor = existing.metaphor }
-        if concept.fitsBecause.isEmpty { merged.fitsBecause = existing.fitsBecause }
+        keepWords(of: existing, into: &merged)
         if concept.template == nil { merged.template = existing.template }
         if concept.kind == nil { merged.kind = existing.kind }
         if !concept.isRecommended { merged.isRecommended = existing.isRecommended }
         if concept.recommendedBecause == nil { merged.recommendedBecause = existing.recommendedBecause }
+        if concept.layers == nil { merged.layers = existing.layers }
         return merged
+    }
+
+    /// The words the new concept left out, from the one sent before.
+    private static func keepWords(of existing: AutopilotArtworkConcept, into merged: inout AutopilotArtworkConcept) {
+        if merged.beats.isEmpty { merged.beats = existing.beats }
+        if merged.followsTheRequest == nil { merged.followsTheRequest = existing.followsTheRequest }
+        if merged.metaphor.isEmpty { merged.metaphor = existing.metaphor }
+        if merged.fitsBecause.isEmpty { merged.fitsBecause = existing.fitsBecause }
     }
 
     /// A page render_artwork passed for a concept still without its own:
@@ -211,7 +217,8 @@ extension AutopilotCenter {
     /// A concept changed for the person's note at Choose: back to Choose
     /// once every concept (and direction) the note is for has come.
     func reviseConcept(
-        _ conceptID: String, design: AutopilotArtworkDesign?, changeNotes: String?, isLast: Bool, appID: StoreApp.ID
+        _ conceptID: String, design: AutopilotArtworkDesign?, changeNotes: String?, layers: SuggestionLayers? = nil, isLast: Bool,
+        appID: StoreApp.ID
     ) throws {
         guard let run = runs[appID], run.stage == .design, let revision = run.revision else {
             throw AutopilotError(String(localized: "No change was asked for. Call next_step to see what Atlas wants."))
@@ -232,6 +239,7 @@ extension AutopilotCenter {
             if run.animatesEachConcept { Self.clearMotion(of: index, in: &run) }
             run.concepts?[index].isRevised = true
             run.concepts?[index].changeNotes = changeNotes
+            if let layers { run.concepts?[index].layers = layers }
             run.concepts?[index].receivedAt = now()
             let name = run.conceptList[index].name
             var revised = run.revision?.revisedIDs ?? []

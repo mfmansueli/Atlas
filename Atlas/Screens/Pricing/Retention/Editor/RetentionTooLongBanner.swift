@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// The selected language runs over 66 or 144: how far, and the assistant's
-/// shorter version to take, or a button to ask for one.
+/// shorter version to take (with how sure it is and what it means), or a
+/// button to ask for one.
 struct RetentionTooLongBanner: View {
     let model: RetentionModel
     let message: RetentionMessage
@@ -15,11 +16,15 @@ struct RetentionTooLongBanner: View {
         let text = model.selectedText
         if text.isTooLong, let locale = model.languages.first(where: { $0.code == model.selectedLocale }) {
             HStack(alignment: .center, spacing: Spacing.small) {
-                Text(description(text, language: RetentionLanguages.shortName(of: locale, among: model.languages)))
-                    .font(.callout)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityIdentifier("retention.tooLong.text")
+                VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                    Text(description(text, language: RetentionLanguages.shortName(of: locale, among: model.languages)))
+                        .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("retention.tooLong.text")
+                    if let gloss = model.suggestion?.layers?.gloss { GlossLine(gloss: gloss) }
+                }
+                if let confidence = model.suggestion?.layers?.confidence { HowSureMeter(confidence: confidence) }
                 if model.suggestion != nil {
                     Button("Use Shorter Version", action: model.useSuggestion)
                         .controlSize(.regular)

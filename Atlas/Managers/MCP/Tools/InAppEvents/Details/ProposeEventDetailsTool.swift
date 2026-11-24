@@ -48,7 +48,7 @@ struct ProposeEventDetailsTool: MCPTool {
         report_deep_link_check. Nothing reaches App Store Connect until the person pushes.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "eventId": MCPToolDefinition.string("The event's id, from get_in_app_events."),
                 "deepLink": MCPToolDefinition.string("Where Open goes: https://alba.app/events/new-year or alba://events/new-year."),
@@ -60,9 +60,9 @@ struct ProposeEventDetailsTool: MCPTool {
                 ),
                 "eventStart": MCPToolDefinition.string("When the event starts, ISO 8601 with a time zone, e.g. 2026-11-23T00:00:00Z: in the future."),
                 "eventEnd": MCPToolDefinition.string("When it ends, ISO 8601 with a time zone: 15 minutes to 31 days after eventStart."),
-                "reason": MCPToolDefinition.shortWhy("Why, in one sentence, for the person."),
+                "reason": MCPToolDefinition.why("Why, in one sentence, for the person."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "Where it comes from: files and lines."],
-            ],
+            ]),
             required: ["appId", "eventId", "reason"]
         ),
         proposalKind: .storeText
@@ -75,6 +75,7 @@ struct ProposeEventDetailsTool: MCPTool {
         let target = "\(app.name) · \(event.referenceName) · details"
         guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: target) }
         let reason = try arguments.string("reason")
+        let layers = try arguments.layers()
         var values: [InAppEventDetail: String] = [:]
         for detail in InAppEventDetail.allCases {
             if let value = try arguments.optionalString(detail.rawValue) { values[detail] = value }
@@ -93,6 +94,10 @@ struct ProposeEventDetailsTool: MCPTool {
         guard reasons.isEmpty else { return Self.refused(reasons, target: target) }
 
         let written = queue(values, dates: sentDates.isEmpty ? nil : dates, of: event, app: app, reason: reason, in: context)
+        // On the person's own dates, they go on the dates waiting beside them.
+        var writtenIDs = written.queued.compactMap { $0["changeId"]?.stringValue }
+        if written.suggested != nil, let persons = written.personsDates { writtenIDs.append(persons.id) }
+        context.workspace.changes.attach(layers, to: writtenIDs)
         // A check of another deep link says nothing about this one.
         if let deepLink = values[.deepLink], !written.queued.isEmpty {
             store.dropDeepLinkReport(for: app.id, eventID: event.id, unlessFor: deepLink)

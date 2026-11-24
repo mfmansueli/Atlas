@@ -16,21 +16,24 @@ struct ReviseAppPreviewTool: MCPTool {
         Sends the App Preview's new version after the person asked for changes (next_step's \
         revise_app_preview gives the note and the current cut): which plan screens play and in what order, \
         its length, the captions' size, the end card, optionally its look and a library track. Say what \
-        changed in changes. Atlas makes every App Preview again with it and shows the person the new \
+        changed in changes (details and confidence 1–3 optional). Atlas makes every App Preview again with it and shows the person the new \
         version. The recordings stay as they are.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
-                "changes": MCPToolDefinition.string("What changed, in a short sentence the person reads: “Slower pace, starts with Search”."),
+                "changes": MCPToolDefinition.string("""
+                What changed, in a short sentence the person reads, at most \(AssistantTextLimits.why) characters: “Slower pace, \
+                starts with Search”. The rest goes in details.
+                """),
                 "screens": Self.screensSchema,
                 "seconds": Self.secondsSchema,
                 "captionScale": Self.captionScaleSchema,
                 "endCard": Self.endCardSchema,
                 "appPreviewTemplate": Self.lookSchema,
                 "music": MCPToolDefinition.string("Optional: a library track (warm_acoustic, calm_piano, bright_pop) for other music."),
-            ],
+            ]),
             required: ["appId", "run", "changes"]
         ),
         proposalKind: .screenshots
@@ -63,6 +66,9 @@ struct ReviseAppPreviewTool: MCPTool {
         guard !changes.isEmpty else {
             throw MCPToolError.invalidArgument(name: "changes", expected: String(localized: "what changed, in a sentence"))
         }
+        if let refusal = AssistantTextLimits.whyRefusal(changes, field: "changes") {
+            return .refused(refusal, target: session.target)
+        }
         let review = session.run.previewReview ?? AutopilotPreviewReview()
         do {
             let cut = try Self.cut(arguments, over: review.cut, session: session)
@@ -75,7 +81,7 @@ struct ReviseAppPreviewTool: MCPTool {
             }
             let look = try Self.look(arguments, run: session.run, fonts: session.context.services.fonts)
             try await session.center.revisePreview(
-                AutopilotPreviewDraft(cut: cut, changes: changes, look: look, track: track, client: context.clientName),
+                AutopilotPreviewDraft(cut: cut, changes: changes, look: look, track: track, client: context.clientName, layers: arguments.layers()),
                 appID: session.app.id, context: session.context
             )
         } catch let error as MCPToolError {

@@ -17,6 +17,8 @@ struct MCPInAppPurchaseOfferContext {
     let extras: PurchaseExtras
     let offers: InAppPurchaseOfferCodeQueue
     let source: ChangeSource
+    /// The call's details, how sure and gloss, put on the change it queues.
+    var layers: SuggestionLayers?
 
     var app: StoreApp { catalog.app }
     var logTarget: String { "\(app.name) · \(purchase.name)" }
@@ -44,9 +46,10 @@ struct MCPInAppPurchaseOfferContext {
         }
         let reader = PurchaseExtrasReader(transport: context.workspace.services.push)
         let extras = await (try? reader.extras(for: purchase)) ?? PurchaseExtras()
-        return .ready(MCPInAppPurchaseOfferContext(
+        return try .ready(MCPInAppPurchaseOfferContext(
             catalog: catalog, purchase: purchase, extras: extras,
-            offers: InAppPurchaseOfferCodeQueue(app: app, queue: queue), source: context.source
+            offers: InAppPurchaseOfferCodeQueue(app: app, queue: queue), source: context.source,
+            layers: arguments.layers()
         ))
     }
 
@@ -75,6 +78,7 @@ struct MCPInAppPurchaseOfferContext {
 
     /// The change queued for the person.
     func queued(_ change: PendingChange, note: String) -> MCPToolOutcome {
+        offers.queue.attach(layers, to: change.id)
         let result: JSONValue = [
             "status": "queued",
             "changeId": .string(change.id),

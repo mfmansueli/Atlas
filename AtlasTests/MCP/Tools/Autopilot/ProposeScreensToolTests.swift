@@ -71,6 +71,32 @@ struct ProposeScreensToolTests {
         #expect(done["say"]?.stringValue?.contains("the person adds the ones they want") == true)
     }
 
+    @Test func aScreensDetailsHowSureAndGlossAreKept() async throws {
+        let fixtures = MCPAutopilotFixtures(Self.asked)
+        let screens: JSONValue = [[
+            "name": "Insights", "reason": "New in 1.4.", "steps": "tab “Insights”", "caption": "Was dich aufhellt",
+            "details": "23 commits since 1.3; no screenshot shows it yet.", "confidence": 3, "gloss": "What lifts you up",
+        ]]
+        _ = try await fixtures.call(ProposeScreensTool(), ["run": "run-debug", "screens": screens])
+        let item = try #require(fixtures.run?.screenSuggestions?.items.first)
+        #expect(item.layers == SuggestionLayers(details: "23 commits since 1.3; no screenshot shows it yet.", confidence: .sure, gloss: "What lifts you up"))
+        let schema = ProposeScreensTool().definition.inputSchema
+        #expect(AssistantTextCheck.refusal(["screens": [["reason": .string(String(repeating: "x", count: 111))]]], schema: schema)
+            == "screens[0].reason is 111 characters; at most 110. Move the rest to details.")
+        await #expect(throws: MCPToolError.self) {
+            try await fixtures.call(ProposeScreensTool(), [
+                "run": "run-debug", "screens": [["name": "Search", "reason": "Fast.", "steps": "tab “Search”", "confidence": 5]],
+            ])
+        }
+    }
+
+    @Test func aSuggestionSavedWithoutLayersStillDecodes() throws {
+        let saved = #"{"id":"s-1","name":"Insights","reason":"New in 1.4.","steps":"tab Insights","caption":"","status":"open"}"#
+        let item = try JSONDecoder().decode(AutopilotScreenSuggestion.self, from: Data(saved.utf8))
+        #expect(item.name == "Insights")
+        #expect(item.layers == nil)
+    }
+
     @Test func nextStepAsksForTheWatchsOwnScreens() async throws {
         let fixtures = MCPAutopilotFixtures(Self.askedForTheWatch)
         let result = try await fixtures.call(NextStepTool(), ["run": "run-debug"]).result

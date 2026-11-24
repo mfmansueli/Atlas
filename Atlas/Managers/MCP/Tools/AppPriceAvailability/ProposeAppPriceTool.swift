@@ -25,13 +25,13 @@ struct ProposeAppPriceTool: MCPTool {
         a reason and evidence (e.g. the project's paywall or a README).
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "price": ["type": ["number", "string"], "description": "e.g. 2.99, or 0 / \"free\"."],
                 "territory": MCPToolDefinition.string("The base territory, e.g. USA or US."),
-                "reason": MCPToolDefinition.shortWhy("Why this price, in a sentence the person can check."),
+                "reason": MCPToolDefinition.why("Why this price, in a sentence the person can check."),
                 "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. README.md:12 — “Free with Pro upgrade”"],
-            ],
+            ]),
             required: ["appId", "price"]
         ),
         proposalKind: .prices
@@ -65,10 +65,12 @@ struct ProposeAppPriceTool: MCPTool {
         }
         let reason = try MCPAppPriceAvailability.reason(arguments)
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         let change = AppPriceChangeBuilder(app: sale.app).change(
             point: point, in: territory, replacing: state, source: context.source, reason: reason, evidence: evidence
         )
         sale.queue.upsert(change)
+        sale.queue.attach(layers, to: change.id)
         let result: JSONValue = [
             "status": "queued",
             "changeId": .string(id),

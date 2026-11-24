@@ -52,4 +52,13 @@ extension MCPToolDefinition {
         if gloss { properties["gloss"] = glossProperty }
         return properties
     }
+
+    /// `properties` with `confidence`, for a tool that sends no why line
+    /// (so no details either), and `gloss` for a text in another language.
+    static func withConfidence(_ properties: [String: JSONValue], gloss: Bool = false) -> [String: JSONValue] {
+        var properties = properties
+        properties["confidence"] = confidenceProperty
+        if gloss { properties["gloss"] = glossProperty }
+        return properties
+    }
 }

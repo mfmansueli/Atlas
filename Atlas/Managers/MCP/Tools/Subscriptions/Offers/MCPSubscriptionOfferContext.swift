@@ -18,6 +18,8 @@ struct MCPSubscriptionOfferContext {
     let extras: PurchaseExtras
     let offers: SubscriptionOfferQueue
     let source: ChangeSource
+    /// The call's details, how sure and gloss, put on the change it queues.
+    var layers: SuggestionLayers?
 
     var app: StoreApp { catalog.app }
     var logTarget: String { "\(app.name) · \(subscription.name)" }
@@ -50,9 +52,10 @@ struct MCPSubscriptionOfferContext {
             // Not in App Store Connect yet: it has no offers to read.
             extras.offersRead = true
         }
-        return .ready(MCPSubscriptionOfferContext(
+        return try .ready(MCPSubscriptionOfferContext(
             catalog: catalog, subscription: subscription, extras: extras,
-            offers: SubscriptionOfferQueue(app: app, queue: queue), source: context.source
+            offers: SubscriptionOfferQueue(app: app, queue: queue), source: context.source,
+            layers: arguments.layers()
         ))
     }
 
@@ -94,6 +97,7 @@ struct MCPSubscriptionOfferContext {
     /// The change queued for the person; for a new subscription, the
     /// change it waits for.
     func queued(_ change: PendingChange, note: String) -> MCPToolOutcome {
+        offers.queue.attach(layers, to: change.id)
         var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(change.id),

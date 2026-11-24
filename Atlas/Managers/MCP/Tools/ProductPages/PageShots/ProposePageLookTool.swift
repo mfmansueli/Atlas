@@ -14,7 +14,6 @@ struct ProposePageLookTool: MCPTool {
     var studio = PageShotsStudio.shared
 
     static let maxName = 40
-    static let maxRationale = 300
     static let previewWidth = 400
 
     let definition = MCPToolDefinition(
@@ -23,7 +22,8 @@ struct ProposePageLookTool: MCPTool {
         description: """
         Sends one of three looks for a custom product page's own screenshots, when the person chose A new look from \
         Claude Design in Make Screenshots for This Page (get_page_screenshots' look.choice is claudeDesign): a name \
-        ("Quiet Indigo"), a one-sentence rationale, and the template — the JSON get_template returns (any subset of its \
+        ("Quiet Indigo"), a one-sentence rationale (details and confidence 1–3 optional), and the template — the JSON \
+        get_template returns (any subset of its \
         fields) and/or ops on dotted paths — laid on base: default (the default page's template) or a starter. Atlas \
         checks it like an edit in the template editor (unknown fields, values out of range and fonts that can't draw a \
         language are refused), draws the page's first screenshot with it and attaches the image: look at it. A look \
@@ -31,16 +31,16 @@ struct ProposePageLookTool: MCPTool {
         default page's screenshots never change.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "page": MCPToolDefinition.string("The page's name or id, as get_page_screenshots has it."),
                 "name": MCPToolDefinition.string("The look's name, e.g. Quiet Indigo."),
-                "rationale": MCPToolDefinition.string("Why it suits this page's audience, in a sentence the person reads."),
+                "rationale": MCPToolDefinition.why("Why it suits this page's audience, for the person."),
                 "base": MCPToolDefinition.string("default (the default page's template), or a starter from get_page_screenshots' look.starters."),
                 "template": ["type": "object", "description": "Template fields, as get_template returns them."],
                 "ops": ["type": "array", "items": ["type": "object"], "description": "{op: \"replace\", path, value} changes."],
                 "sourceLink": MCPToolDefinition.string("Where to refine it, e.g. the Claude Design project's link."),
-            ],
+            ]),
             required: ["appId", "page", "name", "rationale"]
         ),
         proposalKind: .screenshots
@@ -65,7 +65,7 @@ struct ProposePageLookTool: MCPTool {
         }
         let candidate = try PageShotsLookCandidate(
             id: "look-" + UUID().uuidString.lowercased().prefix(8), name: name, rationale: rationale, template: template,
-            link: arguments.optionalString("sourceLink"), source: context.clientName, receivedAt: .now
+            link: arguments.optionalString("sourceLink"), source: context.clientName, receivedAt: .now, layers: arguments.layers()
         )
         if let why = studio.receive(look: candidate, for: found.run.key) { return .refused(why, target: found.target) }
         let run = studio.run(found.run.key) ?? found.run
@@ -120,10 +120,7 @@ struct ProposePageLookTool: MCPTool {
         if name.isEmpty { return String(localized: "Send `name`: what the person calls the look, e.g. Quiet Indigo.") }
         if name.count > Self.maxName { return String(localized: "`name` is \(name.count) characters; keep it to \(Self.maxName).") }
         if rationale.isEmpty { return String(localized: "Send `rationale`: why the look suits this page’s audience, in a sentence.") }
-        if rationale.count > Self.maxRationale {
-            return String(localized: "`rationale` is \(rationale.count) characters; keep it to \(Self.maxRationale).")
-        }
-        return nil
+        return AssistantTextLimits.whyRefusal(rationale, field: "rationale")
     }
 
     /// `base`: the default page's template, or a starter sized for the set.

@@ -75,11 +75,50 @@ struct AssistantTextCheckTests {
         }
     }
 
+    @Test func everyProposeToolOffersHowSure() {
+        let tools = MCPToolbox.standard.tools.filter { $0.definition.name.hasPrefix("propose_") || $0.definition.name.hasPrefix("revise_") }
+        #expect(tools.count > 40)
+        for tool in tools {
+            #expect(tool.definition.inputSchema.jsonString().contains("\"confidence\""), "\(tool.definition.name)")
+        }
+    }
+
+    @Test func aTooLongReasonOnAQueuedChangeIsRefusedWithWhereTheRestGoes() {
+        for tool: any MCPTool in [ProposeAppPriceTool(), ProposeAppVersionTool(), ProposeInAppEventTool(), ProposeIntroductoryOfferTool()] {
+            let refusal = AssistantTextCheck.refusal(["reason": .string(long)], schema: tool.definition.inputSchema)
+            #expect(refusal == "reason is 164 characters; at most 110. Move the rest to details.", "\(tool.definition.name)")
+        }
+        let offer = AssistantTextCheck.refusal(["reason": .string(long)], schema: ProposeWinBackOfferTool().definition.inputSchema)
+        #expect(offer == "reason is 164 characters; at most 110. Move the rest to details.")
+    }
+
+    @Test func aRationaleIsAWhyLine() {
+        let schema = MCPToolDefinition.schema(MCPToolDefinition.withLayers(["rationale": MCPToolDefinition.why("Why.")]))
+        #expect(AssistantTextCheck.refusal(["rationale": "Short."], schema: schema) == nil)
+        #expect(
+            AssistantTextCheck.refusal(["rationale": .string(long)], schema: schema)
+                == "rationale is 164 characters; at most 110. Move the rest to details."
+        )
+    }
+
+    @Test func howSureOutOfRangeIsRefusedOnABatchItem() {
+        let schema = ProposeListingTextTool().definition.inputSchema
+        let arguments: [String: JSONValue] = ["proposals": [["locale": "de-DE", "field": "subtitle", "text": "A", "confidence": 0]]]
+        #expect(AssistantTextCheck.refusal(arguments, schema: schema) == "proposals[0].confidence is 0; send 1 (not very sure), 2 (fairly sure) or 3 (sure).")
+        #expect(AssistantTextCheck.refusal(["confidence": 5], schema: ProposePricesTool().definition.inputSchema)
+            == "confidence is 5; send 1 (not very sure), 2 (fairly sure) or 3 (sure).")
+        #expect(AssistantTextCheck.refusal(["gloss": .string(String(repeating: "g", count: 111))], schema: ProposeInAppTextsTool().definition.inputSchema)
+            == "gloss is 111 characters; at most 110. Say what it means, not word for word.")
+    }
+
     @Test func toolsThatKeepDetailsOfferThem() {
         let keepers: [any MCPTool] = [
             SuggestFieldsTool(), AddFindingTool(), ProposeCaptionsTool(), ProposeTemplateTool(), ProposeEventTextsTool(),
             ProposeProductPageTextsTool(), ProposeProductPageTool(), ProposePageTestTool(), ProposePageScreenshotsTool(),
-            ProposeReleaseActionTool(), ProposeExportComplianceTool(),
+            ProposeReleaseActionTool(), ProposeExportComplianceTool(), ProposeAppPriceTool(), ProposeAvailabilityTool(),
+            ProposeAppVersionTool(), ProposeIntroductoryOfferTool(), ProposePromotionalOfferTool(), ProposeWinBackOfferTool(),
+            ProposeOfferCodeTool(), ProposeInAppPurchaseOfferCodeTool(), ProposeInAppEventTool(), ProposeEventDetailsTool(),
+            ProposeInAppReviewNoteTool(),
         ]
         for tool in keepers {
             #expect(tool.definition.inputSchema.jsonString().contains("\"details\""), "\(tool.definition.name)")

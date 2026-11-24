@@ -16,7 +16,7 @@ struct ProposeRetentionMessageTool: MCPTool {
     var imageDirectory = RetentionImageFiles.directory
 
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "messageId": MCPToolDefinition.string("An existing message's id or reference name, from get_retention. Leave it out to make a new message."),
         "referenceName": MCPToolDefinition.string("A new message's internal name in App Store Connect (≤64). It can't change once pushed."),
@@ -54,7 +54,7 @@ struct ProposeRetentionMessageTool: MCPTool {
             "items": ["type": "string"],
             "description": "Where the wording comes from, e.g. Lumen/Paywall/PaywallView.swift:40 — lists photos, prompts and search",
         ],
-    ]
+    ], gloss: true)
 
     let definition = MCPToolDefinition(
         name: "propose_retention_message",
@@ -81,7 +81,7 @@ struct ProposeRetentionMessageTool: MCPTool {
         let proposal = try RetentionMessageProposal.make(from: arguments, in: retention, client: context.clientName, imageDirectory: imageDirectory)
         let target = "\(retention.target) · \(RetentionText.trimmed(proposal.message.referenceName))"
         if try arguments.optionalBool("suggestion") == true {
-            return try suggest(proposal, in: retention, client: context.clientName, target: target)
+            return try suggest(proposal, arguments: arguments, in: retention, client: context.clientName, target: target)
         }
         let messageCount = retention.messages.count + (retention.messages.contains { $0.id == proposal.message.id } ? 0 : 1)
         let builder = retention.builder(with: proposal.message)
@@ -95,7 +95,9 @@ struct ProposeRetentionMessageTool: MCPTool {
         let changeID = RetentionChangeBuilder.messageChangeID(appID: retention.app.id, messageID: proposal.message.id)
         let source = retention.queue.change(id: changeID)?.source ?? context.source
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         retention.queue.upsert(builder.change(for: proposal.message, source: source, messageCount: messageCount, evidence: evidence))
+        retention.queue.attach(layers, to: changeID)
         retention.store.keep(proposal.message, appID: retention.app.id, queued: true)
         return MCPToolOutcome(
             result: Self.queuedResult(proposal, changeID: changeID, builder: builder),
@@ -105,7 +107,9 @@ struct ProposeRetentionMessageTool: MCPTool {
     }
 
     /// One language's shorter wording, kept for Use Shorter Version.
-    private func suggest(_ proposal: RetentionMessageProposal, in retention: RetentionMCPContext, client: String, target: String) throws -> MCPToolOutcome {
+    private func suggest(
+        _ proposal: RetentionMessageProposal, arguments: MCPToolArguments, in retention: RetentionMCPContext, client: String, target: String
+    ) throws -> MCPToolOutcome {
         // A draft that hasn't been pushed counts: that's where long words are found.
         let isKnown = retention.messages.contains { $0.id == proposal.message.id }
         guard isKnown, proposal.locales.count == 1, let locale = proposal.locales.first else {
@@ -115,12 +119,13 @@ struct ProposeRetentionMessageTool: MCPTool {
         guard refusals.isEmpty else { return Self.refused(refusals, messageID: proposal.message.id, target: target) }
         let text = proposal.message.text(for: locale)
         let current = retention.messages.first { $0.id == proposal.message.id }?.text(for: locale)
-        let suggestion = RetentionSuggestion(
+        let suggestion = try RetentionSuggestion(
             messageID: proposal.message.id,
             locale: locale,
             header: text.header == current?.header ? nil : text.header,
             body: text.body,
-            client: client
+            client: client,
+            layers: arguments.layers()
         )
         retention.store.suggest(suggestion, appID: retention.app.id)
         let result: JSONValue = [

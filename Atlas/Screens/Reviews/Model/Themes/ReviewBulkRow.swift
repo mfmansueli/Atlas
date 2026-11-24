@@ -15,6 +15,8 @@ struct ReviewBulkRow: Identifiable, Hashable, Sendable {
     var territory: String
     var text: String
     var reviewIDs: [AppReview.ID]
+    /// What the message means in English, "Means: …" under it.
+    var gloss: String?
 
     var id: String { languageCode }
 }

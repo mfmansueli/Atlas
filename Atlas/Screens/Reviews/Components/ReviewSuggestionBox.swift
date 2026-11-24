@@ -35,6 +35,7 @@ struct ReviewSuggestionBox: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Palette.ai)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
                 SuggestionSourceTag(source: .assistant(client: suggestion.source))
             }
             SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.date)

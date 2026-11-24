@@ -38,7 +38,7 @@ struct ProposeEventArtworkTool: MCPTool {
         submitted for review here.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withConfidence([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "eventId": MCPToolDefinition.string("The event's id, from get_in_app_events."),
                 "artwork": [
@@ -49,7 +49,7 @@ struct ProposeEventArtworkTool: MCPTool {
                     """,
                     "items": ["type": "object"],
                 ],
-            ],
+            ]),
             required: ["appId", "eventId", "artwork"]
         ),
         proposalKind: .artwork
@@ -113,6 +113,7 @@ struct ProposeEventArtworkTool: MCPTool {
             return MCPToolOutcome(result: .object(result), isError: false, logLines: [MCPToolOutcome.LogLine(target: target, outcome: .read)])
         }
         queue.upsert(contentsOf: changes)
+        try queue.attach(arguments.layers(), to: changes.map(\.id))
         var result: [String: JSONValue] = [
             "status": "queued",
             "changes": .array(changes.map { ["changeId": .string($0.id), "title": .string($0.title)] }),

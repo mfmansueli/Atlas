@@ -179,6 +179,37 @@ struct DesignToolsTests {
         #expect(run.directions[0].rationale == "Bigger, as asked.")
     }
 
+    @Test func aDirectionKeepsItsDetailsAndHowSureAndARevisionReplacesThem() async throws {
+        let fixtures = MCPAutopilotFixtures(StudioDebugRuns.run(.design))
+        let outcome = try await fixtures.call(ProposeDirectionTool(), [
+            "run": "run-debug", "name": "Night Band", "rationale": "Dusk band under the capture.", "base": "band",
+            "details": "Your icon is indigo; 3 of 5 captures are dark.", "confidence": 2,
+        ])
+        let id = try #require(outcome.result["direction"]?.stringValue)
+        #expect(fixtures.run?.directions.first { $0.id == id }?.layers == SuggestionLayers(
+            details: "Your icon is indigo; 3 of 5 captures are dark.", confidence: .fairlySure
+        ))
+        let schema = ProposeDirectionTool().definition.inputSchema
+        #expect(AssistantTextCheck.refusal(["rationale": .string(String(repeating: "x", count: 120))], schema: schema)
+            == "rationale is 120 characters; at most 110. Move the rest to details.")
+
+        let revising = MCPAutopilotFixtures(StudioDebugRuns.run(.choose))
+        revising.center.requestRevision("Bigger headline", appID: MCPAutopilotFixtures.appID)
+        _ = try await revising.call(ReviseDirectionTool(), [
+            "run": "run-debug", "direction": "d-1", "ops": Self.biggerHeadline, "rationale": "Bigger, as asked.", "confidence": 3,
+        ])
+        #expect(revising.run?.directions[0].layers == SuggestionLayers(confidence: .sure))
+    }
+
+    @Test func aDirectionSavedWithoutLayersStillDecodes() throws {
+        let direction = try #require(StudioDebugRuns.run(.choose).directions.first)
+        var saved = try #require(JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(direction)).objectValue)
+        saved["layers"] = nil
+        let decoded = try JSONDecoder().decode(AutopilotDirection.self, from: JSONEncoder().encode(JSONValue.object(saved)))
+        #expect(decoded.name == direction.name)
+        #expect(decoded.layers == nil)
+    }
+
     @Test func aRevisionNobodyAskedForOrOfAnUnknownDirectionIsRefused() async throws {
         let fixtures = MCPAutopilotFixtures(StudioDebugRuns.run(.choose))
         let unasked = try await fixtures.call(ReviseDirectionTool(), ["run": "run-debug", "direction": "d-1", "ops": Self.biggerHeadline])

@@ -17,17 +17,17 @@ struct ReviseDirectionTool: MCPTool {
         fields and/or ops laid on the direction as it is, and artworkDesign with the header and search pages that \
         change (whole pages; the others stay), rendered and checked like propose_direction's. extrasTemplates.appPreview \
         for the App Preview. A run without screenshots takes no template unless it styles the App Preview. \
-        Optionally a new rationale (what changed) and sourceLink. Pass last: false on every \
+        Optionally a new rationale (what changed), with details and confidence 1–3, and sourceLink. Pass last: false on every \
         direction but the final one; the run goes back to the person to choose after the last.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
                 "direction": MCPToolDefinition.string("The direction's id or name."),
                 "template": ["type": "object", "description": "Template fields, as get_template returns them."],
                 "ops": ["type": "array", "items": ["type": "object"], "description": "{op: \"replace\", path, value} changes."],
-                "rationale": MCPToolDefinition.string("What changed, in a sentence."),
+                "rationale": MCPToolDefinition.why("What changed."),
                 "sourceLink": MCPToolDefinition.string("Where to refine it."),
                 "artworkDesign": AutopilotArtworkDesign.mcpSchema,
                 "extrasTemplates": MCPDirectionTemplate.extrasSchema,
@@ -35,7 +35,7 @@ struct ReviseDirectionTool: MCPTool {
                     "type": "boolean",
                     "description": "False when another direction for the same note follows; true (the default) for the final one.",
                 ],
-            ],
+            ]),
             required: ["appId", "run", "direction"]
         ),
         proposalKind: .screenshots
@@ -65,7 +65,7 @@ struct ReviseDirectionTool: MCPTool {
             }
             try await session.center.reviseDirection(
                 direction.id, template: template, extras: extras, artworkDesign: design, rationale: arguments.optionalString("rationale"),
-                link: arguments.optionalString("sourceLink"), isLast: arguments.values["last"]?.boolValue ?? true,
+                link: arguments.optionalString("sourceLink"), layers: arguments.layers(), isLast: arguments.values["last"]?.boolValue ?? true,
                 appID: session.app.id, context: session.context
             )
         } catch {

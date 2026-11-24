@@ -48,14 +48,15 @@ enum MCPOfferTermsArguments {
         ],
     ]
 
-    static let reasonProperties: [String: JSONValue] = [
-        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person reads in Review & Push."),
+    /// Why, with the details and how sure beside it.
+    static let reasonProperties: [String: JSONValue] = MCPToolDefinition.withLayers([
+        "reason": MCPToolDefinition.why("Why, in a sentence the person reads in Review & Push."),
         "evidence": [
             "type": "array",
             "items": ["type": "string"],
             "description": "What it's based on, e.g. Bruma/Paywall/WinBackView.swift:40 — offers “3 months at half price”.",
         ],
-    ]
+    ])
 
     /// The terms; throws for arguments that aren't usable at all.
     static func terms(from arguments: MCPToolArguments) throws -> OfferTerms {

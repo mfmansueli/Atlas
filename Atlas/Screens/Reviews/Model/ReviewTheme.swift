@@ -21,6 +21,9 @@ struct ReviewTheme: Identifiable, Hashable, Codable, Sendable {
     var replies: [ReviewThemeReply] = []
     /// Who grouped them, e.g. "Claude Code".
     var source: String
+    /// The rest of the note behind Details, and how sure the assistant is
+    /// of the group; nil when it sent neither and in groups saved before.
+    var layers: SuggestionLayers?
 
     /// The message for a review's language: "de" finds "de" or "de-DE".
     func reply(forLanguage code: String) -> ReviewThemeReply? {

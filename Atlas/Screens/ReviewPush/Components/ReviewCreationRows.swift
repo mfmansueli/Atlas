@@ -47,6 +47,7 @@ struct ReviewCreationRows: View {
                         .accessibilityIdentifier("review.creation.\(creation.id).detail")
                 }
                 Spacer(minLength: Spacing.small)
+                if let confidence = creation.layers?.confidence { HowSureMeter(confidence: confidence) }
                 SourceTag(source: creation.source)
                 Button(action: onDiscard) {
                     Image(systemName: "xmark")
@@ -63,6 +64,7 @@ struct ReviewCreationRows: View {
                     .foregroundStyle(Palette.err)
                     .padding(.leading, 26)
             }
+            if let layers = creation.layers { ReviewChangeLayers(layers: layers) }
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)

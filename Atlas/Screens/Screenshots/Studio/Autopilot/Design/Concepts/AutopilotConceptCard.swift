@@ -37,6 +37,7 @@ struct AutopilotConceptCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: Spacing.xSmall) {
                     Text(concept.name).font(.callout.weight(.semibold))
+                    if let confidence = concept.layers?.confidence { HowSureMeter(confidence: confidence) }
                     if let pickLabel {
                         Pill(text: pickLabel, style: .accent)
                             .accessibilityIdentifier("autopilot.choose.concept.pick")
@@ -54,6 +55,7 @@ struct AutopilotConceptCard: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            if let details = concept.layers?.details { SuggestionDetailsDisclosure(details: details) }
             if run.plan.alsoMakes.makesMotion, let loop = concept.loopLine {
                 Text(loop)
                     .font(.subheadline)

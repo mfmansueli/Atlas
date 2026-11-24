@@ -22,7 +22,7 @@ struct ProposePricesTool: MCPTool {
         purchases and every price for an app set to Keep my prices are refused (status "refused") with the reason.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withConfidence([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "productId": MCPToolDefinition.string("The subscription's Apple ID, product ID or name, from get_prices."),
                 "territory": MCPToolDefinition.string("A territory code such as BRA or BR."),
@@ -38,7 +38,7 @@ struct ProposePricesTool: MCPTool {
                         required: ["territory", "price"]
                     ),
                 ],
-            ],
+            ]),
             required: ["appId", "productId"]
         ),
         proposalKind: .prices
@@ -48,6 +48,7 @@ struct ProposePricesTool: MCPTool {
         let appID = try arguments.string("appId")
         let productID = try arguments.string("productId")
         let (proposals, isBatch) = try MCPPriceProposal.list(from: arguments)
+        let layers = try arguments.layers()
         let catalog = try await MCPPriceCatalog.load(app: appID, in: context.workspace)
 
         var results: [JSONValue] = []
@@ -71,6 +72,7 @@ struct ProposePricesTool: MCPTool {
                     results.append(Self.result(proposal, territoryID: territoryID, outcome: outcome))
                     logLines.append(Self.logLine(outcome, target: starting.target))
                 }
+                context.workspace.changes.attach(layers, to: Self.queuedIDs(outcomes))
                 return Self.outcome(results: results, outcomes: outcomes, logLines: logLines, isBatch: isBatch)
             }
             let territories = proposals.map { sheet.territory(matching: $0.territory) }
@@ -83,8 +85,14 @@ struct ProposePricesTool: MCPTool {
                 results.append(Self.result(proposal, territoryID: territory?.id, outcome: outcome))
                 logLines.append(Self.logLine(outcome, target: sheet.target(territory?.name ?? proposal.territory)))
             }
+            context.workspace.changes.attach(layers, to: Self.queuedIDs(outcomes))
         }
         return Self.outcome(results: results, outcomes: outcomes, logLines: logLines, isBatch: isBatch)
+    }
+
+    /// The changes the call queued, for its how sure.
+    private static func queuedIDs(_ outcomes: [MCPPriceProposer.Outcome]) -> [PendingChange.ID] {
+        outcomes.compactMap { if case let .queued(changeID, _) = $0 { changeID } else { nil } }
     }
 
     /// One proposal's result, or a batch's results with counts.

@@ -78,6 +78,19 @@ struct PageShotsLookToolsTests {
         let checked = try await fixtures.call(lookTool, badField)
         #expect(checked.result["status"]?.stringValue == "refused")
         #expect(studio.run(Test.key)?.design?.candidates.count == 1)
+
+        // Sent again with how sure and details: they replace the look's.
+        var sure = Self.look
+        sure["confidence"] = 3
+        sure["details"] = "Reviews call the app private 14 times."
+        _ = try await fixtures.call(lookTool, sure)
+        #expect(studio.run(Test.key)?.design?.candidates.first?.layers == SuggestionLayers(
+            details: "Reviews call the app private 14 times.", confidence: .sure
+        ))
+        var long = Self.look
+        long["rationale"] = .string(String(repeating: "x", count: 111))
+        let tooLong = try await fixtures.call(lookTool, long)
+        #expect(tooLong.result["reason"]?.stringValue == "rationale is 111 characters; at most 110. Move the rest to details.")
     }
 
     @Test func aCaptureIsRefusedUnlessThePersonTurnedItOn() async throws {

@@ -76,17 +76,22 @@ struct ProductPageTestSheet: View {
             )
             variantColumn(
                 name: model.treatmentName, role: String(localized: "Treatment"),
-                meaning: model.variant?.change ?? ArtworkVariantRequest.meaning(of: model.treatmentName), url: primary?.treatment
+                meaning: model.variant?.change ?? ArtworkVariantRequest.meaning(of: model.treatmentName), url: primary?.treatment,
+                layers: model.variant?.layers
             )
         }
     }
 
-    private func variantColumn(name: String, role: String, meaning: String, url: URL?) -> some View {
+    private func variantColumn(name: String, role: String, meaning: String, url: URL?, layers: SuggestionLayers? = nil) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             ExtrasFileThumbnail(url: url, pixelSize: model.kind.pixelSize, width: 300)
-            Text("\(name) · \(role)").font(.callout.weight(.semibold))
+            HStack(spacing: Spacing.xSmall) {
+                Text("\(name) · \(role)").font(.callout.weight(.semibold))
+                if let confidence = layers?.confidence { HowSureMeter(confidence: confidence) }
+            }
             Text(meaning.prefix(1).uppercased() + meaning.dropFirst())
                 .font(.subheadline).foregroundStyle(Palette.label2).fixedSize(horizontal: false, vertical: true)
+            if let details = layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

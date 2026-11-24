@@ -19,4 +19,7 @@ struct ChangeAlternative: Hashable, Codable, Sendable {
     var note: String?
     /// Why this version can't be pushed; nil when it can.
     var blockedReason: String?
+    /// The assistant's details, how sure and gloss, which go with it when
+    /// it's picked; nil when it sent none and in versions saved before.
+    var layers: SuggestionLayers?
 }

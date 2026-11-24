@@ -12,7 +12,7 @@ import Foundation
 /// it gets a change per territory turned on or off.
 struct ProposeAvailabilityTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withLayers([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "territories": [
             "type": ["array", "string"],
@@ -23,9 +23,9 @@ struct ProposeAvailabilityTool: MCPTool {
         "preOrderReleaseDate": MCPToolDefinition.string("First availability only: offer a pre-order until this release date, YYYY-MM-DD."),
         "makeAvailable": ["type": "array", "items": ["type": "string"], "description": "Territories to start selling in, e.g. [\"CHN\"]."],
         "makeUnavailable": ["type": "array", "items": ["type": "string"], "description": "Territories to stop selling in."],
-        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person can check."),
+        "reason": MCPToolDefinition.why("Why, in a sentence the person can check."),
         "evidence": ["type": "array", "items": ["type": "string"], "description": "e.g. README.md:30 — “Available in the US and Canada”"],
-    ]
+    ])
 
     let definition = MCPToolDefinition(
         name: "propose_availability",
@@ -97,8 +97,10 @@ struct ProposeAvailabilityTool: MCPTool {
             return .refused(String(localized: "\(queued.source.title) already queued an availability for \(sale.app.name) in Review & Push."), target: target)
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         let change = AppAvailabilityChangeBuilder(app: sale.app).setupChange(setup, source: context.source, reason: reason, evidence: evidence)
         sale.queue.upsert(change)
+        sale.queue.attach(layers, to: change.id)
         let result: JSONValue = [
             "status": "queued",
             "changeId": .string(id),
@@ -163,7 +165,9 @@ struct ProposeAvailabilityTool: MCPTool {
         guard !changes.isEmpty else {
             return MCPToolOutcome(result: ["status": "unchanged"], isError: false, logLines: [.init(target: target, outcome: .read)])
         }
+        let layers = try arguments.layers()
         sale.queue.upsert(contentsOf: changes)
+        sale.queue.attach(layers, to: changes.map(\.id))
         let result: JSONValue = [
             "status": "queued",
             "changeIds": .array(changes.map { .string($0.id) }),

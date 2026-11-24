@@ -16,4 +16,7 @@ struct ReviewReplySuggestion: Hashable, Codable, Sendable {
     /// Who suggested it, e.g. "Claude Code".
     var source: String
     var date: Date
+    /// How sure the assistant is of it; nil when it didn't say and in
+    /// replies saved before. Its gloss is `meaning`.
+    var layers: SuggestionLayers?
 }

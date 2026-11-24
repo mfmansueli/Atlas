@@ -60,8 +60,11 @@ struct AutopilotConceptsBox: View {
             .accessibilityLabel(Text(concept.map { "View \($0.name) larger" } ?? ""))
             VStack(alignment: .leading, spacing: 2) {
                 if let concept {
-                    Text("\(Text(concept.name).fontWeight(.semibold)) \(Text(concept.sourceTitle).font(.subheadline).foregroundStyle(Palette.label2))")
-                        .font(.callout)
+                    HStack(spacing: Spacing.xSmall) {
+                        Text("\(Text(concept.name).fontWeight(.semibold)) \(Text(concept.sourceTitle).font(.subheadline).foregroundStyle(Palette.label2))")
+                            .font(.callout)
+                        if let confidence = concept.layers?.confidence { HowSureMeter(confidence: confidence) }
+                    }
                     Text([concept.metaphor, concept.fitsBecause].filter { !$0.isEmpty }.joined(separator: " "))
                         .font(.callout)
                         .foregroundStyle(Palette.label2)

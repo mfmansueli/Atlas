@@ -6,7 +6,9 @@
 import SwiftUI
 
 /// One suggested screen: its name, why, how to reach it and its caption,
-/// with Dismiss and Add to Plan, or "Added" once it's in the plan.
+/// with Dismiss and Add to Plan, or "Added" once it's in the plan. How
+/// sure the assistant is shows beside the name; its details fold under
+/// Details.
 struct AutopilotScreenSuggestionRow: View {
     @Bindable var studio: ScreenshotStudioModel
     let suggestion: AutopilotScreenSuggestion
@@ -17,7 +19,10 @@ struct AutopilotScreenSuggestionRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(suggestion.name).fontWeight(.semibold)
+                HStack(spacing: Spacing.xSmall) {
+                    Text(suggestion.name).fontWeight(.semibold)
+                    if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 Text(suggestion.reason)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -33,7 +38,9 @@ struct AutopilotScreenSuggestionRow: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if !suggestion.caption.isEmpty {
                     Text("Caption: “\(suggestion.caption)”").font(.subheadline)
+                    if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
                 }
+                if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
             }
             .font(.callout)
             .frame(maxWidth: .infinity, alignment: .leading)

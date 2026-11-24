@@ -20,6 +20,29 @@ struct EventArtworkConceptRow: View {
     @Environment(\.colorSchemeContrast) private var contrast
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            content
+            // Outside the row's button: Details opens in place.
+            if row.state == .ready, let details = row.concept?.layers?.details {
+                SuggestionDetailsDisclosure(details: details)
+                    .padding(.horizontal, Spacing.xSmall)
+                    .padding(.bottom, Spacing.xSmall)
+            }
+        }
+        .opacity(row.isDisabled ? 0.75 : 1)
+        .background(background, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
+                .strokeBorder(ring, lineWidth: row.isPreviewed ? (contrast == .increased ? 2.5 : 2) : contrast == .increased ? 1 : 0.5)
+        )
+        .onHover { isHovered = $0 }
+    }
+
+    private var confidence: HowSure? {
+        row.state == .ready ? row.concept?.layers?.confidence : nil
+    }
+
+    private var content: some View {
         ZStack(alignment: .trailing) {
             Button(action: onSelect) {
                 HStack(alignment: .top, spacing: 9) {
@@ -32,6 +55,7 @@ struct EventArtworkConceptRow: View {
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: Spacing.xxSmall) {
                                 name.fixedSize(horizontal: true, vertical: false)
+                                if let confidence { HowSureMeter(confidence: confidence) }
                                 tag
                             }
                             VStack(alignment: .leading, spacing: 3) {
@@ -56,7 +80,7 @@ struct EventArtworkConceptRow: View {
             .disabled(row.isDisabled)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(row.isPreviewed ? Text("\(row.name), shown in the preview", comment: "kind:accessibility-label") : Text(row.name))
-            .accessibilityValue(Text([row.tagTitle, row.why].compactMap(\.self).joined(separator: ", ")))
+            .accessibilityValue(Text([row.tagTitle, row.why, confidence?.word].compactMap(\.self).joined(separator: ", ")))
             .accessibilityAddTraits(row.isPreviewed ? [.isButton, .isSelected] : .isButton)
             .accessibilityIdentifier("events.art.row.\(row.id)")
             if row.canView {
@@ -74,13 +98,6 @@ struct EventArtworkConceptRow: View {
                 .accessibilityIdentifier("events.art.row.view.\(row.id)")
             }
         }
-        .opacity(row.isDisabled ? 0.75 : 1)
-        .background(background, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
-                .strokeBorder(ring, lineWidth: row.isPreviewed ? (contrast == .increased ? 2.5 : 2) : contrast == .increased ? 1 : 0.5)
-        )
-        .onHover { isHovered = $0 }
     }
 
     private var background: Color {

@@ -46,7 +46,7 @@ extension AutopilotCenter {
     /// extras. Throws when nothing asked for one.
     func receiveVariant(
         appID: StoreApp.ID, look: ScreenshotTemplate, design: AutopilotArtworkDesign? = nil, change: String, texts: [String: String],
-        phrases: [String: [String: String]] = [:], client: String, context: AutopilotContext
+        phrases: [String: [String: String]] = [:], layers: SuggestionLayers? = nil, client: String, context: AutopilotContext
     ) async throws -> ExtrasArtworkVariant {
         guard let run = runs[appID], let request = run.variantRequest else {
             throw AutopilotError(String(localized: "No variant was asked for. Call next_step to see what Atlas wants."))
@@ -85,7 +85,7 @@ extension AutopilotCenter {
         }
         let variant = ExtrasArtworkVariant(
             role: request.role, kind: request.kind, controlIdea: request.controlIdea, idea: request.variantIdea, change: change,
-            template: look, design: design, files: files, client: client, madeAt: now()
+            template: look, design: design, files: files, client: client, madeAt: now(), layers: layers
         )
         document.extras?.variant = variant
         try await services.saveDocument(document, for: context.app)

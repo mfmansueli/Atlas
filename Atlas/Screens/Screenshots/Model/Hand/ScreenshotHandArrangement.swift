@@ -33,6 +33,9 @@ struct ScreenshotHandArrangement: Codable, Hashable, Sendable, Identifiable {
     var evidence: [SuggestionEvidence] = []
     var status: ScreenshotProposalStatus = .waiting
     var decidedAt: Date?
+    /// Details and how sure, beside the why; nil when the assistant sent
+    /// neither and in suggestions saved before.
+    var layers: SuggestionLayers?
 
     var isWaiting: Bool { status == .waiting }
 

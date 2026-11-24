@@ -59,7 +59,19 @@ struct PageShotsLookCandidates: View {
 
     private func card(_ candidate: PageShotsLookCandidate) -> some View {
         let isChosen = design?.chosenID == candidate.id
-        return Button {
+        let width = 150 * PageShotsTile.aspect(.iPhone) + Spacing.xSmall * 2
+        return VStack(alignment: .leading, spacing: 2) {
+            lookButton(candidate, isChosen: isChosen, width: width)
+            if let details = candidate.layers?.details {
+                SuggestionDetailsDisclosure(details: details)
+                    .padding(.horizontal, Spacing.xSmall)
+                    .frame(width: width, alignment: .leading)
+            }
+        }
+    }
+
+    private func lookButton(_ candidate: PageShotsLookCandidate, isChosen: Bool, width: CGFloat) -> some View {
+        Button {
             flow.pick(lookID: candidate.id)
         } label: {
             VStack(alignment: .leading, spacing: 3) {
@@ -67,9 +79,12 @@ struct PageShotsLookCandidates: View {
                     source: drawn(with: candidate), screens: screens, position: 0, locale: flow.run?.primaryLocale ?? source.primary,
                     displayType: .iPhone, height: 150
                 )
-                Text(candidate.name)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
+                HStack(spacing: Spacing.xSmall) {
+                    Text(candidate.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                    if let confidence = candidate.layers?.confidence { HowSureMeter(confidence: confidence) }
+                }
                 Text(candidate.rationale)
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
@@ -77,7 +92,7 @@ struct PageShotsLookCandidates: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(Spacing.xSmall)
-            .frame(width: 150 * PageShotsTile.aspect(.iPhone) + Spacing.xSmall * 2, alignment: .leading)
+            .frame(width: width, alignment: .leading)
             .background(isChosen ? Palette.accent.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.field, style: .continuous)

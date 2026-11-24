@@ -29,6 +29,7 @@ struct GuidedLookRow: View {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 HStack(spacing: Spacing.xSmall) {
                     Text(direction.name).font(.callout.weight(.semibold))
+                    if let confidence = direction.layers?.confidence { HowSureMeter(confidence: confidence) }
                     if direction.id == GuidedPick.direction(in: run)?.id {
                         Pill(text: GuidedPick.label(design: run.designKind), style: .accent)
                             .accessibilityIdentifier("autopilot.guided.choose.look.pick")
@@ -51,6 +52,7 @@ struct GuidedLookRow: View {
                     .foregroundStyle(Palette.label2)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
+                if let details = direction.layers?.details { SuggestionDetailsDisclosure(details: details) }
                 // The look's own header and search (Claude's pages),
                 // when they aren't concepts chosen apart.
                 if Self.showsOwnArtwork(run) {

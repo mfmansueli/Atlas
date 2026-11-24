@@ -27,7 +27,8 @@ struct ReviewBulkPlan: Hashable, Sendable {
             }
             let code = ReviewTheme.base(reply.languageCode)
             rows[code, default: ReviewBulkRow(
-                languageCode: code, languageName: ReviewLanguage.name(of: code), territory: "", text: reply.text, reviewIDs: []
+                languageCode: code, languageName: ReviewLanguage.name(of: code), territory: "", text: reply.text, reviewIDs: [],
+                gloss: reply.gloss
             )].reviewIDs.append(review.id)
         }
         let territories = Dictionary(open.map { ($0.id, $0.territory) }) { first, _ in first }

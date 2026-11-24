@@ -30,14 +30,14 @@ struct ProposeScreenshotFileTool: MCPTool {
         propose_screenshot_removal, and to change their order propose_screenshot_order.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "locale": MCPToolDefinition.string("The language, e.g. de-DE."),
                 "displayType": MCPToolDefinition.string("iphone, iphone_duo, ipad, mac, watch or vision_pro."),
                 "position": ["type": "integer", "description": "The screenshot it replaces, from 1. Leave it out to add it after the last one."],
                 "fileId": MCPToolDefinition.string("The fileId the upload link returned."),
-                "reason": MCPToolDefinition.shortWhy("Why, for the person to read before accepting."),
-            ],
+                "reason": MCPToolDefinition.why("Why, for the person to read before accepting."),
+            ]),
             required: ["appId", "locale", "displayType", "fileId", "reason"]
         ),
         proposalKind: .screenshots
@@ -69,7 +69,7 @@ struct ProposeScreenshotFileTool: MCPTool {
         file.proposedBy = context.clientName
         let proposal = try ScreenshotHandProposal(
             id: ProposeTemplateTool.newID(), client: context.clientName, receivedAt: .now, locale: locale.code, displayType: display,
-            position: position.map { $0 - 1 }, file: file, reason: arguments.string("reason")
+            position: position.map { $0 - 1 }, file: file, reason: arguments.string("reason"), layers: arguments.layers()
         )
         var proposals = (draft.document.handProposals ?? []).filter { old in
             !(old.isWaiting && old.locale == proposal.locale && old.displayType == display && old.position == proposal.position)

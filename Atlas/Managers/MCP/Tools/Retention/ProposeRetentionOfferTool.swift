@@ -12,7 +12,7 @@ import Foundation
 struct ProposeRetentionOfferTool: MCPTool {
     var store = RetentionDraftStore.shared
 
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "subscription": MCPToolDefinition.string("The subscription's id, product ID or name, from get_retention."),
         "referenceName": MCPToolDefinition.string("The offer's internal name (≤64); left out, it's named after its terms."),
@@ -33,7 +33,7 @@ struct ProposeRetentionOfferTool: MCPTool {
             "items": ["type": "string"],
             "description": "Why this offer, e.g. Lumen/Store/Plans.swift:22 — monthly is 4.99",
         ],
-    ]
+    ])
 
     let definition = MCPToolDefinition(
         name: "propose_retention_offer",
@@ -72,7 +72,9 @@ struct ProposeRetentionOfferTool: MCPTool {
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         retention.queue.upsert(retention.builder().offerChange(for: offer, source: context.source, evidence: evidence))
+        retention.queue.attach(layers, to: changeID)
         let shows = retention.messages.first { $0.subscriptionIDs.contains(subscription.id) }
         var result: [String: JSONValue] = [
             "status": "queued",

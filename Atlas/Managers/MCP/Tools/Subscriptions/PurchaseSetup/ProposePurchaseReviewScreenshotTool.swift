@@ -14,7 +14,7 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
     var details = ReviewShotDetailsStore.shared
     var runs = ReviewShotsRunCenter.shared
 
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "productId": MCPToolDefinition.string("The subscription's or in-app purchase's product ID (or App Store Connect id); a queued one's too."),
         "file": MCPToolDefinition.string(MCPReviewScreenshotArgument.description),
@@ -29,7 +29,7 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
             "type": "array", "items": ["type": "string"],
             "description": "Optional: what you checked, e.g. [\"Price shows\", \"Monthly selected\", \"No test or debug banner\"].",
         ],
-    ]
+    ])
 
     let definition = MCPToolDefinition(
         name: "propose_purchase_review_screenshot",
@@ -84,6 +84,7 @@ struct ProposePurchaseReviewScreenshotTool: MCPTool {
             if case let .existing(product) = target.place { shot.expectedPlan = PricingViewModel.plan(of: product) }
             change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
             change.title = shot.reviewLine
+            change.layers = try arguments.layers()
             queue.upsert(change)
             details.set(shot, for: changeID)
             runs.arrived(appID: app.id, productID: target.productID)

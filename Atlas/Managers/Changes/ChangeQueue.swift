@@ -106,7 +106,8 @@ final class ChangeQueue {
             requests: assistant.requests,
             restoreRequests: assistant.restoreRequests,
             note: assistant.groupNote,
-            blockedReason: assistant.blockedReason
+            blockedReason: assistant.blockedReason,
+            layers: assistant.layers
         )
         return person
     }
@@ -181,6 +182,31 @@ final class ChangeQueue {
         save()
     }
 
+    /// Puts an assistant's details, how sure and gloss on the changes it
+    /// queued, after the section’s builder made them: on the change
+    /// when it's the assistant's, or on its alternative when the person's
+    /// version of the field stays primary. Nil `layers` leaves them as
+    /// they are.
+    func attach(_ layers: SuggestionLayers?, to ids: some Sequence<PendingChange.ID>) {
+        guard let layers else { return }
+        let ids = Set(ids)
+        var changed = false
+        for index in changes.indices where ids.contains(changes[index].id) {
+            if changes[index].source.isAssistant {
+                changes[index].layers = layers
+                changed = true
+            } else if changes[index].alternative?.source.isAssistant == true {
+                changes[index].alternative?.layers = layers
+                changed = true
+            }
+        }
+        if changed { save() }
+    }
+
+    func attach(_ layers: SuggestionLayers?, to id: PendingChange.ID) {
+        attach(layers, to: [id])
+    }
+
     // MARK: - Conflicts
 
     /// Records that App Store Connect has a different value now; the change
@@ -216,6 +242,7 @@ final class ChangeQueue {
                 change.restoreRequests = alternative.restoreRequests
                 change.blockedReason = alternative.blockedReason
                 if let note = alternative.note { change.groupNote = note }
+                change.layers = alternative.layers
             }
             change.alternative = nil
         }

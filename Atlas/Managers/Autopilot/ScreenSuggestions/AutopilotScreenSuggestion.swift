@@ -26,6 +26,9 @@ struct AutopilotScreenSuggestion: Codable, Hashable, Sendable, Identifiable {
     /// The primary language's headline; empty lets the assistant write it.
     var caption: String
     var status: Status = .open
+    /// Details and how sure, beside the reason; nil when none came and in
+    /// suggestions saved before.
+    var layers: SuggestionLayers?
 
     /// Added to `display`'s screens as `id`, marked as suggested by
     /// `client`. Apple Watch's has no caption.

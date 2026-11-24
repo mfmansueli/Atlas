@@ -24,26 +24,26 @@ struct ProposeInAppReviewNoteTool: MCPTool {
         nothing reaches App Store Connect until the person pushes.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "productId": MCPToolDefinition.string("The product ID, e.g. com.SimProps.complete (or its column, com.SimProps.complete.reviewNote)."),
                 "note": MCPToolDefinition.string("The whole Review Notes, within 4,000 characters."),
-                "reason": MCPToolDefinition.shortWhy("One sentence: why it changes."),
+                "reason": MCPToolDefinition.why("Why it changes."),
                 "evidence": ["type": "array", "items": evidenceSchema],
                 "notes": [
                     "type": "array",
                     "description": "Several at once, instead of productId and note.",
                     "items": MCPToolDefinition.schema(
-                        [
+                        MCPToolDefinition.withLayers([
                             "productId": MCPToolDefinition.string("The product ID."),
                             "note": MCPToolDefinition.string("The whole Review Notes."),
-                            "reason": MCPToolDefinition.shortWhy("Why it changes."),
+                            "reason": MCPToolDefinition.why("Why it changes."),
                             "evidence": ["type": "array", "items": evidenceSchema],
-                        ],
+                        ]),
                         required: ["productId", "note"]
                     ),
                 ],
-            ],
+            ]),
             required: ["appId"]
         ),
         proposalKind: .storeText
@@ -59,9 +59,12 @@ struct ProposeInAppReviewNoteTool: MCPTool {
         var productID: String
         var note: String
         var reason: String?
+        var layers: SuggestionLayers?
 
-        init(_ arguments: MCPToolArguments) throws {
+        /// `call`: the call's layers, for a batch item without its own.
+        init(_ arguments: MCPToolArguments, call: SuggestionLayers? = nil) throws {
             productID = try arguments.string("productId")
+            layers = try arguments.layers(over: call)
             // An empty note is refused as "empty", not as a bad call.
             guard arguments.values["note"]?.stringValue != nil else {
                 throw MCPToolError.invalidArgument(name: "note", expected: String(localized: "a string"))
@@ -82,12 +85,13 @@ struct ProposeInAppReviewNoteTool: MCPTool {
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let batch = try arguments.optionalArray("notes")
+        let callLayers = try arguments.layers()
         let proposals = try batch.map { items in
             try items.map { item in
                 guard let object = item.objectValue else {
                     throw MCPToolError.invalidArgument(name: "notes", expected: String(localized: "a list of {productId, note} objects"))
                 }
-                return try Proposal(MCPToolArguments(object))
+                return try Proposal(MCPToolArguments(object), call: callLayers)
             }
         } ?? [Proposal(arguments)]
 
@@ -103,6 +107,7 @@ struct ProposeInAppReviewNoteTool: MCPTool {
             switch notes.propose(proposal.note, productID: proposal.productID, source: context.source, reason: proposal.reason) {
             case let .queued(change):
                 queue.upsert(change)
+                queue.attach(proposal.layers, to: change.id)
                 result["status"] = "queued"
                 result["changeId"] = .string(change.id)
                 let productID = notes.builder.productID(of: change) ?? proposal.productID

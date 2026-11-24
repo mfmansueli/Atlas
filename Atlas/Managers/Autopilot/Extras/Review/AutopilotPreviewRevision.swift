@@ -17,4 +17,7 @@ struct AutopilotPreviewRevision: Codable, Hashable, Sendable {
     /// "Claude Code".
     var client: String
     var madeAt: Date
+    /// The design source's details and how sure, beside `changes`; nil
+    /// when none came and in versions saved before.
+    var layers: SuggestionLayers?
 }

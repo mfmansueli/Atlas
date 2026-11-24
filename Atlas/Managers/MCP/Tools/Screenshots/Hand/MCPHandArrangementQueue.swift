@@ -18,13 +18,13 @@ enum MCPHandArrangementQueue {
     )
 
     /// The arguments both tools take besides what they name.
-    static let commonProperties: [String: JSONValue] = [
+    static let commonProperties: [String: JSONValue] = MCPToolDefinition.withLayers([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "locale": MCPToolDefinition.string("The language, e.g. de-DE."),
         "displayType": MCPToolDefinition.string("iphone, iphone_duo, ipad, mac, watch or vision_pro."),
-        "reason": MCPToolDefinition.shortWhy("Why, for the person to read before accepting."),
+        "reason": MCPToolDefinition.why("Why, for the person to read before accepting."),
         "evidence": ["type": "array", "items": evidenceSchema],
-    ]
+    ])
 
     static func queue(
         _ action: ScreenshotHandArrangement.Action,
@@ -50,9 +50,9 @@ enum MCPHandArrangementQueue {
         case let .success(named): places = named
         case let .failure(refusal): return .refused(refusal.reason, target: target)
         }
-        let arrangement = ScreenshotHandArrangement(
+        let arrangement = try ScreenshotHandArrangement(
             id: ProposeTemplateTool.newID(), client: context.clientName, receivedAt: .now, locale: locale.code, displayType: display,
-            action: action, places: places, reason: reason, evidence: evidence
+            action: action, places: places, reason: reason, evidence: evidence, layers: arguments.layers()
         )
         let after: ScreenshotHandSet
         switch arrangement.applied(to: handSet.set, isPrimary: handSet.isPrimary) {

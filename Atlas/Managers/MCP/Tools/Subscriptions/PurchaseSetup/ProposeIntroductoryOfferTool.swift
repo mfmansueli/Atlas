@@ -12,7 +12,7 @@ import Foundation
 /// in every territory it runs in.
 struct ProposeIntroductoryOfferTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withLayers([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "productId": MCPToolDefinition.string("The subscription's product ID (or App Store Connect id), from get_subscriptions; a queued one's too."),
         "mode": [
@@ -37,13 +37,13 @@ struct ProposeIntroductoryOfferTool: MCPTool {
         ],
         "startDate": MCPToolDefinition.string("Optional first day, yyyy-MM-dd."),
         "endDate": MCPToolDefinition.string("Optional last day, yyyy-MM-dd."),
-        "reason": MCPToolDefinition.shortWhy("Why, in a sentence the person reads in Review & Push."),
+        "reason": MCPToolDefinition.why("Why, in a sentence the person reads in Review & Push."),
         "evidence": [
             "type": "array",
             "items": ["type": "string"],
             "description": "What it's based on, e.g. Bruma/Paywall/PaywallView.swift:40 — shows “7 days free”",
         ],
-    ]
+    ])
 
     let definition = MCPToolDefinition(
         name: "propose_introductory_offer",
@@ -87,9 +87,12 @@ struct ProposeIntroductoryOfferTool: MCPTool {
         }
         guard reasons.isEmpty else { return Self.refused(reasons, productID: target.productID, target: logTarget) }
         let evidence = try (arguments.optionalStrings("evidence") ?? []) + [arguments.optionalString("reason")].compactMap(\.self)
+        let layers = try arguments.layers()
         guard let changeID = setup.queueIntroductoryOffer(offer, for: target, source: context.source, evidence: evidence) else {
             return Self.refused([String(localized: "The new subscription left Review & Push.")], productID: target.productID, target: logTarget)
         }
+        // On a queued subscription the offer is a step of its change, which keeps the subscription's own layers.
+        if changeID == id { queue.attach(layers, to: changeID) }
         let result: JSONValue = [
             "status": "queued",
             "changeId": .string(changeID),

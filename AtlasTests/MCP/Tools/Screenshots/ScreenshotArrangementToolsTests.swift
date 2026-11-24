@@ -149,6 +149,35 @@ struct ScreenshotArrangementToolsTests {
         }
     }
 
+    @Test func aRemovalKeepsItsDetailsAndHowSure() async throws {
+        let extra: [String: JSONValue] = ["positions": [2], "details": "Screen 2 shows the same list as screen 4.", "confidence": 2]
+        let (_, services) = try await call(ProposeScreenshotRemovalTool(), arguments(extra))
+        let arrangement = try #require(services.storedDocument?.handArrangements?.first)
+        #expect(arrangement.layers == SuggestionLayers(details: "Screen 2 shows the same list as screen 4.", confidence: .fairlySure))
+    }
+
+    @Test func everyHandToolRefusesALongReasonAndPointsToDetails() {
+        let long = String(repeating: "r", count: 120)
+        let tools: [any MCPTool] = [ProposeScreenshotRemovalTool(), ProposeScreenshotOrderTool(), ProposeScreenshotFileTool()]
+        for tool in tools {
+            let refusal = AssistantTextCheck.refusal(["reason": .string(long)], schema: tool.definition.inputSchema)
+            #expect(refusal == "reason is 120 characters; at most 110. Move the rest to details.", "\(tool.definition.name)")
+            #expect(AssistantTextCheck.refusal(["confidence": 0], schema: tool.definition.inputSchema) != nil, "\(tool.definition.name)")
+        }
+    }
+
+    @Test func anArrangementSavedBeforeLayersStillDecodes() throws {
+        var arrangement = ScreenshotHandArrangement(
+            id: "sp-1", client: "Claude Code", receivedAt: Date(timeIntervalSinceReferenceDate: 0), locale: "de-DE", displayType: .iPhone,
+            action: .removal, places: [], reason: "Repeats screen 4.", layers: SuggestionLayers(confidence: .sure)
+        )
+        var object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(arrangement)) as? [String: Any])
+        object["layers"] = nil
+        let decoded = try JSONDecoder().decode(ScreenshotHandArrangement.self, from: JSONSerialization.data(withJSONObject: object))
+        arrangement.layers = nil
+        #expect(decoded == arrangement)
+    }
+
     @Test func bothToolsAreInTheToolboxAsScreenshotProposals() {
         let names = MCPToolbox.standard.tools.map(\.definition.name)
         #expect(names.contains("propose_screenshot_removal"))

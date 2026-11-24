@@ -47,6 +47,7 @@ struct PrivacyDataTypeRow: View {
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
+                if let details = entry.suggestion?.details { SuggestionDetailsDisclosure(details: details) }
             }
             if let entry {
                 PrivacyDataTypeReviewLine(viewModel: viewModel, type: type, entry: entry)

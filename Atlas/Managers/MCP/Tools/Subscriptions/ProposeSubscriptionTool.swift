@@ -11,7 +11,7 @@ import Foundation
 /// availability everywhere and the starting price, equalized everywhere.
 struct ProposeSubscriptionTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = [
+    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
         "group": MCPToolDefinition.string("An existing group's id or reference name, or a new group's reference name."),
         "groupDisplayName": MCPToolDefinition.string("A new group's name on the App Store, in locale (≤30)."),
@@ -37,7 +37,7 @@ struct ProposeSubscriptionTool: MCPTool {
             "items": ["type": "string"],
             "description": "Where the code sells it, e.g. Bruma/Store/Products.swift:12 — buys com.example.app.premium.monthly",
         ],
-    ]
+    ], gloss: true)
 
     let definition = MCPToolDefinition(
         name: "propose_subscription",
@@ -87,8 +87,10 @@ struct ProposeSubscriptionTool: MCPTool {
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
         }
         let evidence = try arguments.optionalStrings("evidence") ?? []
+        let layers = try arguments.layers()
         let change = builder.change(for: subscription, source: .assistant(client: context.clientName), evidence: evidence)
         queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: id), into: change))
+        queue.attach(layers, to: id)
         var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(id),
