@@ -35,24 +35,26 @@ struct WorkspaceToolbarLayoutTests {
 
     @Test func besideTheSidebarAnOrdinaryWindowKeepsTheLabels() {
         // A 1,100 pt window with the sidebar showing: 836 pt of column,
-        // with room left over even with the language picker.
-        #expect(layout(836).widthForLabels == 672)
+        // with room left over even with the language picker. The title's
+        // 12 pt off the sidebar's edge count too.
+        #expect(layout(836).widthForLabels == 684)
         #expect(!layout(836).isCompact)
         var withPicker = Self.labels
         withPicker[.languagePicker] = 121
-        #expect(layout(836, room: withPicker).widthForLabels == 801)
+        #expect(layout(836, room: withPicker).widthForLabels == 813)
         #expect(!layout(836, room: withPicker).isCompact)
         #expect(layout(800, room: withPicker).isCompact)
     }
 
     @Test func theLabelsFoldOnlyWithoutRoom() {
-        #expect(!layout(672).isCompact)
-        #expect(layout(671).isCompact)
+        #expect(!layout(684).isCompact)
+        #expect(layout(683).isCompact)
         // Pro takes room on Free.
         var free = Self.labels
         free[.proButton] = 72
         #expect(layout(700, room: free).isCompact)
-        #expect(!layout(752, room: free).isCompact)
+        #expect(layout(763, room: free).isCompact)
+        #expect(!layout(764, room: free).isCompact)
         // An item that went reports 0 and takes no room.
         free[.proButton] = 0
         #expect(!layout(700, room: free).isCompact)
@@ -85,7 +87,7 @@ struct WorkspaceToolbarLayoutTests {
         #expect(!same)
         #expect(wider && picker && gone)
         #expect(layout.room[.autopilotLabel] == 150)
-        #expect(abs(layout.widthForLabels - (WorkspaceToolbarLayout.fixedRoom + 150 + 101)) < 0.001)
+        #expect(abs(layout.widthForLabels - (WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + 150 + 101)) < 0.001)
     }
 
     @Test func aLabelsRoomIsItsWidthBeyondTheIcon() {

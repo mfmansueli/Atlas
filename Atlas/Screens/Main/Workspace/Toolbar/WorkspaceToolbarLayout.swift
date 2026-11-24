@@ -25,6 +25,8 @@ struct WorkspaceToolbarLayout: Equatable {
     /// The window's buttons, the sidebar button and the section menu, which
     /// share the toolbar while the sidebar is hidden.
     static let hiddenSidebarRoom: CGFloat = 190
+    /// Beside the sidebar, the title's room from the sidebar's edge.
+    static let titleInset: CGFloat = Spacing.medium
     /// Between an item of its own and the next.
     static let itemGap: CGFloat = 8
     /// Narrower than this, the title goes.
@@ -36,7 +38,7 @@ struct WorkspaceToolbarLayout: Equatable {
         let reported = room.reduce(CGFloat(0)) { total, entry in
             entry.value > 0 ? total + entry.value + (entry.key.isItem ? Self.itemGap : 0) : total
         }
-        return Self.fixedRoom + (isSidebarShown ? 0 : Self.hiddenSidebarRoom) + reported
+        return Self.fixedRoom + (isSidebarShown ? Self.titleInset : Self.hiddenSidebarRoom) + reported
     }
 
     /// The labels don't fit; not before the column is measured.

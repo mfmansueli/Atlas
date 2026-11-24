@@ -122,6 +122,8 @@ struct AppWorkspaceView: View {
                     WorkspaceToolbarTitle(title: navigator.section.toolbarTitle, status: sectionStatus) {
                         navigator.review(section: navigator.section)
                     }
+                    // Off the sidebar's edge; after the section menu it has its gap.
+                    .padding(.leading, navigator.isSidebarShown ? WorkspaceToolbarLayout.titleInset : 0)
                 }
                 .sharedBackgroundVisibility(.hidden)
             }
