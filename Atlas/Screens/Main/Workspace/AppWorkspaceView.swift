@@ -115,11 +115,12 @@ struct AppWorkspaceView: View {
             if !navigator.isSidebarShown {
                 ToolbarItem(placement: .navigation) {
                     SectionMenuButton(counts: counts, selection: $navigator.section, startsOpen: Self.opensSectionMenu)
+                        .reportsToolbarRoom(.sectionMenu)
                 }
             }
             if toolbarLayout.showsTitle {
                 ToolbarItem(placement: .navigation) {
-                    WorkspaceToolbarTitle(title: navigator.section.toolbarTitle, status: sectionStatus) {
+                    WorkspaceToolbarTitle(title: navigator.section.toolbarTitle, status: sectionStatus, maxWidth: toolbarLayout.titleRoom) {
                         navigator.review(section: navigator.section)
                     }
                     // Off the sidebar's edge; after the section menu it has its gap.

@@ -8,8 +8,9 @@ import Testing
 @testable import Atlas
 
 /// The workspace toolbar leads with the section's title and status; the
-/// Autopilot and Review & Push labels fold to their icons only when the
-/// toolbar has no room for them, and under 620 points the title goes too.
+/// actions keep the trailing edge: the title truncates first, then the
+/// Autopilot and Review & Push labels fold to their icons, and under 620
+/// points the title goes too.
 @Suite("WorkspaceToolbarLayout")
 struct WorkspaceToolbarLayoutTests {
     /// Labels about as wide as “Suggest Everything” and “Review & Push”.
@@ -62,12 +63,16 @@ struct WorkspaceToolbarLayoutTests {
 
     @Test func withTheSidebarHiddenTheMinimumWindowFolds() {
         // The window's buttons, the sidebar button and the section menu
-        // share the toolbar: at the 860 pt minimum the labels fold.
-        let hidden = layout(860, sidebar: false)
+        // (“Store Page”, 141 pt) share the toolbar: at the 860 pt minimum
+        // the labels fold.
+        var room = Self.labels
+        room[.sectionMenu] = 141
+        let hidden = layout(860, sidebar: false, room: room)
         #expect(hidden.showsTitle)
         #expect(hidden.isAutopilotCompact)
         #expect(hidden.isReviewCompact)
-        #expect(!layout(944, sidebar: false).isCompact)
+        #expect(layout(860, sidebar: false, room: room).widthForLabels == 949)
+        #expect(!layout(949, sidebar: false, room: room).isCompact)
     }
 
     @Test func under620PointsTheTitleGoesToo() {
@@ -87,7 +92,63 @@ struct WorkspaceToolbarLayoutTests {
         #expect(!same)
         #expect(wider && picker && gone)
         #expect(layout.room[.autopilotLabel] == 150)
-        #expect(abs(layout.widthForLabels - (WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + 150 + 101)) < 0.001)
+        let least = WorkspaceToolbarLayout.minimumTitleWidth
+        #expect(abs(layout.widthForLabels - (WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + least + 150 + 101)) < 0.001)
+    }
+
+    /// Alba's Overview: “Alba: Daily Motivation · Version 1.2.2 · Not
+    /// submitted yet” wants about 330 pt. In a 980 pt window the labels
+    /// fit when the title truncates, so it does, and the actions keep the
+    /// trailing edge instead of Review & Push going into “»”.
+    @Test func theTitleTruncatesBeforeTheLabelsFold() {
+        var room = Self.labels
+        room[.title] = 330
+        let layout = layout(724, room: room)
+        #expect(!layout.isCompact)
+        let title = layout.titleRoom ?? 0
+        #expect(title == 220)
+        #expect(title + WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + 232 <= 724)
+        // Wide, it's capped; folded, the labels' room goes to the title.
+        #expect(self.layout(1400, room: room).titleRoom == WorkspaceToolbarLayout.maxTitleWidth)
+        let folded = self.layout(560, room: room)
+        #expect(folded.isCompact)
+        #expect(folded.titleRoom == 560 - WorkspaceToolbarLayout.fixedRoom - WorkspaceToolbarLayout.titleInset)
+    }
+
+    @Test func theTitleIsOfferedNoRoomBeforeTheColumnIsMeasured() {
+        #expect(WorkspaceToolbarLayout().titleRoom == nil)
+    }
+
+    /// The labels fold only once the title is down to its least width,
+    /// or its own width when that's narrower.
+    @Test func theLabelsFoldOnceTheTitleIsAtItsLeast() {
+        var room = Self.labels
+        room[.title] = 330
+        #expect(layout(684, room: room).widthForLabels == 684)
+        #expect(!layout(684, room: room).isCompact)
+        #expect(layout(683, room: room).isCompact)
+        room[.title] = 100
+        #expect(layout(604, room: room).widthForLabels == 604)
+    }
+
+    /// Gone under 620 points, the title keeps its room, so the labels
+    /// don't unfold as it goes.
+    @Test func aTitleThatWentKeepsItsRoom() {
+        var room = Self.labels
+        room[.title] = 0
+        #expect(layout(604, room: room).isCompact)
+        #expect(layout(604, room: room).widthForLabels == 684)
+    }
+
+    /// A hidden sidebar with the language picker and Pro leaves the
+    /// title little; it's never offered less than its least.
+    @Test func theTitleIsNeverOfferedLessThanItsLeast() {
+        var room = Self.labels
+        room[.sectionMenu] = 141
+        room[.languagePicker] = 144
+        room[.proButton] = 72
+        #expect(layout(800, sidebar: false, room: room).titleRoom == WorkspaceToolbarLayout.leastTitleWidth)
+        #expect(layout(860, sidebar: false, room: room).titleRoom == 91)
     }
 
     @Test func aLabelsRoomIsItsWidthBeyondTheIcon() {

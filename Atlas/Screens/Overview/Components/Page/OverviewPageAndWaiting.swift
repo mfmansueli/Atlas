@@ -9,14 +9,12 @@ import SwiftUI
 /// lists"): what the version still needs, the suggestions to review per
 /// section and After release on the left; the App Store page, smaller, on
 /// the right. One above the other when the window is narrow, the lists
-/// first.
+/// first (`SideColumnLayout`).
 struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
     let app: StoreApp
     /// For the preview's screenshots and the captions waiting.
     let services: any StorePageServices
     let content: StorePageContent?
-    /// The Overview's width: side by side when both fit.
-    let width: CGFloat
     let storePage: StorePageSummary?
     let newLanguages: NewLanguagesSummary?
     /// The version on its way to the App Store; its card leads the column.
@@ -36,15 +34,26 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(FieldSuggestionStore.self) private var suggestions
 
-    /// The preview's column and the gap before it.
+    /// The preview's column.
     static var previewWidth: CGFloat { 300 }
+    /// The lists' least width beside the preview; narrower, the preview
+    /// goes under them.
+    static var minimumListsWidth: CGFloat { 380 }
+
+    /// The lists, then the preview beside them or under them. It decides
+    /// from the width it's offered: one measured after the fact never went
+    /// under the side-by-side minimum, which kept the window's content
+    /// wider than the window, centred and clipped (the sidebar cut on its
+    /// left, Review & Push in the toolbar's overflow menu).
+    static var columns: SideColumnLayout {
+        SideColumnLayout(
+            sideWidth: previewWidth, minimumMainWidth: minimumListsWidth, spacing: Spacing.xxLarge,
+            stacksSideBelow: true, stackedSpacing: Spacing.large
+        )
+    }
 
     var body: some View {
-        let isWide = width >= Self.previewWidth + Spacing.xxLarge + 380 + 2 * Spacing.xLarge
-        let layout = isWide
-            ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.xxLarge))
-            : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.large))
-        return layout {
+        Self.columns {
             VStack(alignment: .leading, spacing: Spacing.large) {
                 lead()
                 if let release, release.phase != nil {
@@ -63,7 +72,7 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
                 OverviewWaitingCard(rows: OverviewWaitingSection.rows(waitingFacts), onOpen: open)
                 OverviewAfterReleaseCard(rows: afterRelease, onOpen: openAfterRelease)
             }
-            .frame(minWidth: isWide ? 380 : nil, maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             if let content {
                 OverviewStorePreview(app: app, content: content, screenshots: services.screenshots, links: previewLinks)
             }

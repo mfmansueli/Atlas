@@ -36,7 +36,6 @@ struct OverviewSectionView: View {
     @State private var showsEverythingPopover = false
     /// The page the preview shows, read when Overview opens and on Refresh.
     @State private var content: StorePageContent?
-    @State private var width: CGFloat = 0
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
 
@@ -51,7 +50,7 @@ struct OverviewSectionView: View {
                             .accessibilityIdentifier("overview.error")
                     }
                     OverviewPageAndWaiting(
-                        app: app, services: services, content: shownContent, width: width, storePage: storePage, newLanguages: newLanguages,
+                        app: app, services: services, content: shownContent, storePage: storePage, newLanguages: newLanguages,
                         release: release, afterRelease: afterRelease
                     ) {
                         assistantCard
@@ -66,7 +65,6 @@ struct OverviewSectionView: View {
             .padding(EdgeInsets(top: Spacing.medium, leading: Spacing.xLarge, bottom: Spacing.xxLarge, trailing: Spacing.xLarge))
             .frame(maxWidth: 1080 + 2 * Spacing.xLarge)
             .frame(maxWidth: .infinity)
-            .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 }
         }
         .accessibilityIdentifier("workspace.overview")
         .task(id: app.id) { await summaries.load(app) }

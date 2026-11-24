@@ -8,7 +8,10 @@ import SwiftUI
 /// Measures, out of sight, how much wider a toolbar button is with its
 /// label than folded to its icon, and reports it (`reportToolbarRoom`), so
 /// the toolbar folds labels only when they don't fit. Goes in the button's
-/// background, where it takes no room.
+/// background, where it takes no room. Its room stays when the button
+/// goes: the buttons with labels are always in the toolbar, so one that
+/// went is in the toolbar's overflow menu, and taking its label back would
+/// keep the labels unfolded and the button there for good.
 struct ToolbarLabelRoom<Full: View, Folded: View>: View {
     let item: ToolbarRoomItem
     let full: Full
@@ -33,7 +36,6 @@ struct ToolbarLabelRoom<Full: View, Folded: View>: View {
         .onChange(of: Self.extra(full: fullWidth, folded: foldedWidth), initial: true) { _, extra in
             if let extra { report(item, extra) }
         }
-        .onDisappear { report(item, 0) }
     }
 
     /// The label's own width; nil before both forms are measured.
