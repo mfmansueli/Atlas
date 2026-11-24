@@ -6,10 +6,11 @@
 import CoreGraphics
 import Foundation
 
-/// App icons downloaded once per launch, without their margin
-/// (`AppIconMargin`), so the sidebar, the overview and the Studio draw them
-/// straight away after the first time. A failed download isn't kept: the
-/// next tile that shows the icon tries again.
+/// App icons without their margin (`AppIconMargin`), trimmed once per
+/// launch, so the sidebar, the overview and the Studio draw them straight
+/// away after the first time. The files come through `RemoteImageCache`,
+/// so after a relaunch they're read from disk. A failed download isn't
+/// kept: the next tile that shows the icon tries again.
 @MainActor
 final class AppIconImages {
     static let shared = AppIconImages()
@@ -18,7 +19,7 @@ final class AppIconImages {
     private var images: [URL: CGImage] = [:]
     private var loads: [URL: Task<CGImage?, Never>] = [:]
 
-    init(fetch: @escaping @Sendable (URL) async throws -> Data = { try await URLSession.shared.data(from: $0).0 }) {
+    init(fetch: @escaping @Sendable (URL) async throws -> Data = { try await RemoteImageCache.shared.data(for: $0) }) {
         self.fetch = fetch
     }
 

@@ -68,13 +68,17 @@ struct RatingsSummaryTests {
     }
 
     @Test func theStorefrontsAskedAreTheOnesWithMostReviewsAndTheUS() {
-        #expect(RatingsSummary.countries(for: Data.reviews) == ["US", "DE", "AT", "JP", "FR"])
-        #expect(RatingsSummary.countries(for: []) == ["US"])
+        #expect(RatingsSummary.countries(for: []) == RatingsSummary.largeStorefronts)
+        #expect(RatingsSummary.largeStorefronts.count == 40)
+        #expect(RatingsSummary.largeStorefronts.isSuperset(of: ["US", "IT", "BR", "JP"]))
+        // A small storefront joins when people review there.
+        let iceland = Data.review("is1", "IS")
+        #expect(RatingsSummary.countries(for: Data.reviews + [iceland]) == RatingsSummary.largeStorefronts.union(["IS"]))
         let many = (0..<50).flatMap { index in
             (0...index).map { Data.review("c\(index)-\($0)", String(format: "C%02d", index)) }
         }
-        let countries = RatingsSummary.countries(for: many)
-        #expect(countries.count == RatingsSummary.countryLimit + 1)
+        let countries = RatingsSummary.countries(for: many).subtracting(RatingsSummary.largeStorefronts)
+        #expect(countries.count == RatingsSummary.countryLimit)
         #expect(countries.contains("C49"))
         #expect(!countries.contains("C00"))
     }

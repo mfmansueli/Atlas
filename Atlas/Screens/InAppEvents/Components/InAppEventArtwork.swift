@@ -37,10 +37,10 @@ struct InAppEventArtwork: View {
                     ImageLoadingTile(systemImage: nil, fill: .clear)
                 }
             case let .remote(url):
-                AsyncImage(url: url) { phase in
+                CachedRemoteImage(url: url, maxPixelSize: maxPixel) { phase in
                     if let image = phase.image {
-                        image.resizable().scaledToFill()
-                    } else if phase.error == nil {
+                        Image(decorative: image, scale: 1).resizable().scaledToFill()
+                    } else if phase.isLoading {
                         ImageLoadingTile(systemImage: nil, fill: .clear)
                     }
                 }

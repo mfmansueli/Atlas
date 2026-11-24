@@ -42,7 +42,7 @@ extension ProductPagesServices {
 
     func screenshotImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
         guard let url = screenshot.imageURL(width: pixelWidth),
-              let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
+              let data = try? await RemoteImageCache.shared.data(for: url) else { return nil }
         return ScreenshotPNG.image(data)
     }
 }

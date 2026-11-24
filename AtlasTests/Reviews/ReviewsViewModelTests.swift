@@ -57,8 +57,9 @@ struct ReviewsViewModelTests {
         #expect(services.readCursors.count == 1)
         await model.load(force: true)
         #expect(services.readCursors.count == 2)
-        // Ratings are asked for the storefronts with reviews, and the U.S.
-        #expect(services.ratingCountries == ["DE", "AT", "JP", "US", "FR"])
+        // Ratings are asked for the largest storefronts and the ones with
+        // reviews; these reviews are all from large ones.
+        #expect(services.ratingCountries == RatingsSummary.largeStorefronts)
     }
 
     @Test func aFailedReadKeepsWhatWasThereAndSaysWhy() async {

@@ -262,7 +262,7 @@ struct GetEventArtworkBriefTool: MCPTool {
     /// The event's card from the App Store, as a JPEG.
     private static func card(of event: InAppEvent) async -> Data? {
         guard let url = event.media(.card)?.imageURL, !(event.media(.card)?.isVideo ?? false),
-              let (data, _) = try? await URLSession.shared.data(from: url),
+              let data = try? await RemoteImageCache.shared.data(for: url),
               let source = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateImageAtIndex(source, 0, nil)
         else { return nil }

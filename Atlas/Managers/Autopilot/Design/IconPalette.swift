@@ -76,7 +76,7 @@ struct IconPalette: Hashable, Sendable {
         case let .symbol(_, top, bottom):
             return IconPalette(light: hex(top), dark: hex(bottom))
         case let .remote(url):
-            guard let (data, _) = try? await URLSession.shared.data(from: url),
+            guard let data = try? await RemoteImageCache.shared.data(for: url),
                   let source = CGImageSourceCreateWithData(data as CFData, nil),
                   let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else { return nil }
             return palette(of: image)

@@ -15,12 +15,12 @@ struct RetentionArtworkView: View {
             if let sample = image.sampleArtwork {
                 RetentionSampleArtwork(name: sample)
             } else if let url = image.localPath.map({ URL(fileURLWithPath: $0) }) ?? image.thumbnailURL(width: 320) {
-                AsyncImage(url: url) { phase in
+                CachedRemoteImage(url: url) { phase in
                     if let loaded = phase.image {
-                        loaded.resizable().scaledToFill()
+                        Image(decorative: loaded, scale: 1).resizable().scaledToFill()
                     } else {
                         // A spinner while it downloads or is read.
-                        ImageLoadingTile(isLoading: phase.error == nil)
+                        ImageLoadingTile(isLoading: phase.isLoading)
                     }
                 }
             } else {

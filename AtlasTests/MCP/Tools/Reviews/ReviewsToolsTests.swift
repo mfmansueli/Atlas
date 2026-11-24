@@ -69,7 +69,7 @@ struct ReviewsToolsTests {
         #expect(ratings["countries"] == .int(2))
         #expect(ratings["written"] == .int(120))
         #expect(ratings["starsOnly"] == .int(380))
-        #expect(services.ratingCountries == ["US", "DE", "AT", "JP", "FR"])
+        #expect(services.ratingCountries == RatingsSummary.countries(for: Data.reviews))
     }
 
     @Test func withoutRatingsStarsOnlyIsNull() async throws {

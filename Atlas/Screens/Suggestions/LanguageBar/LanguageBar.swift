@@ -106,6 +106,7 @@ struct LanguageBar<Trailing: View>: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("languageBar.picker")
         .toolbarItemFit([AnyHashable(model.current.name), AnyHashable(model.hereCount)])
+        .reportsToolbarRoom(.languagePicker)
         .popover(isPresented: $showsMenu, arrowEdge: .bottom) { menu }
     }
 

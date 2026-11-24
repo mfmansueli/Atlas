@@ -59,6 +59,14 @@ struct ReviewPushToolbarButton: View {
         .help(help)
         // Its label folds and unfolds, the badge grows to “12/40”.
         .toolbarItemFit([AnyHashable(isCompact), AnyHashable(isUpToDate), AnyHashable(badge)])
+        // How much its label adds, folded or not.
+        .background {
+            ToolbarLabelRoom(
+                item: .reviewLabel,
+                full: label.labelStyle(.titleAndIcon),
+                folded: label.labelStyle(.iconOnly)
+            )
+        }
         .accessibilityLabel(Text("Review & Push"))
         .accessibilityValue(Text(accessibilityValue))
         .accessibilityIdentifier("workspace.reviewPushButton")

@@ -158,6 +158,7 @@ struct AppWorkspaceView: View {
             if pro.isFree {
                 ToolbarItem(placement: .primaryAction) {
                     ProToolbarButton { pro?.showPlans() }
+                        .reportsToolbarRoom(.proButton)
                 }
                 .sharedBackgroundVisibility(.hidden)
             }
@@ -172,6 +173,15 @@ struct AppWorkspaceView: View {
                 }
                 .tourTip(.reviewPush, arrowEdge: .bottom)
             }
+        }
+        // The items say how much room they take; the labels fold only
+        // when it isn't there.
+        .environment(\.reportToolbarRoom, ToolbarRoomReport { item, width in
+            var layout = toolbarLayout
+            if layout.report(item, width: width) { toolbarLayout = layout }
+        })
+        .onChange(of: navigator.isSidebarShown, initial: true) { _, shown in
+            toolbarLayout.isSidebarShown = shown
         }
     }
 

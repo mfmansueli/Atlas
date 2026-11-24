@@ -112,14 +112,14 @@ struct LiveScreenshotsServices: ScreenshotsServices {
             return data
         case let .live(shot):
             guard let url = shot.imageURL(width: shot.pixelSize?.width ?? 0),
-                  let (data, _) = try? await URLSession.shared.data(from: url) else { throw CaptureImportError.unreadable(candidate.path) }
+                  let data = try? await RemoteImageCache.shared.data(for: url) else { throw CaptureImportError.unreadable(candidate.path) }
             return data
         }
     }
 
     func liveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
         guard let url = screenshot.imageURL(width: pixelWidth),
-              let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
+              let data = try? await RemoteImageCache.shared.data(for: url) else { return nil }
         return ScreenshotPNG.image(data)
     }
 

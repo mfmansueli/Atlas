@@ -15,7 +15,7 @@ enum ArtworkIcon {
     static func image(of app: StoreApp) async -> CGImage? {
         switch app.icon {
         case let .remote(url):
-            guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
+            guard let data = try? await RemoteImageCache.shared.data(for: url) else { return nil }
             return AppIconMargin.decodeTrimmed(data, maxPixelSize: pixelSize)
         case .symbol:
             let renderer = ImageRenderer(content: AppIconTile(name: app.name, icon: app.icon, size: CGFloat(pixelSize)))

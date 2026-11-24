@@ -33,6 +33,15 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             // In the toolbar, the item takes the width of what it says now,
             // as runs start, need the person and end.
             .toolbarItemFit([AnyHashable(look), AnyHashable(title), AnyHashable(isPro), AnyHashable(isCompact)])
+            // How much its label adds, folded or not, so it folds only
+            // when the toolbar has no room for it.
+            .background {
+                ToolbarLabelRoom(
+                    item: .autopilotLabel,
+                    full: AutopilotButtonLabel(look: look, title: title, isPro: isPro, isCompact: false),
+                    folded: AutopilotButtonLabel(look: look, title: title, isPro: isPro, isCompact: true)
+                )
+            }
     }
 
     /// The toolbar's other buttons' height: Review & Push's prominent glass

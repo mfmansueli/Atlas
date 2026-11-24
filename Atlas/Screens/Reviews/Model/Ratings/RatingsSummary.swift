@@ -25,20 +25,28 @@ struct RatingsSummary: Hashable, Sendable {
     /// How far back the bars count written reviews.
     static let days = 90
 
-    /// How many storefronts are asked for their rating, besides the US.
+    /// How many storefronts with reviews are asked for their rating,
+    /// besides `largeStorefronts`.
     static let countryLimit = 40
 
+    /// The App Store's largest storefronts, always asked: ratings come
+    /// without a written review too, so an app with no reviews in a
+    /// country (Alba: 2 ratings in Italy, no reviews) can still be rated
+    /// there.
+    static let largeStorefronts: Set<String> = [
+        "US", "CN", "JP", "GB", "DE", "FR", "KR", "CA", "AU", "BR", "IT", "ES", "MX", "IN", "RU", "NL", "TR", "SA", "AE", "CH",
+        "SE", "TW", "HK", "ID", "TH", "PH", "VN", "PL", "BE", "AT", "PT", "NO", "DK", "IL", "SG", "MY", "ZA", "NZ", "AR", "CL",
+    ]
+
     /// The storefronts asked for their rating: the ones with the most
-    /// reviews, and the United States.
+    /// reviews, and the largest ones. Each answer is kept a day
+    /// (`StoreRatingLookup`).
     static func countries(for reviews: [AppReview]) -> Set<String> {
-        var countries = Set(
-            Dictionary(grouping: reviews.filter { !$0.territory.isEmpty }, by: \.territory)
-                .sorted { $0.value.count == $1.value.count ? $0.key < $1.key : $0.value.count > $1.value.count }
-                .prefix(countryLimit)
-                .map(\.key)
-        )
-        countries.insert("US")
-        return countries
+        let reviewed = Dictionary(grouping: reviews.filter { !$0.territory.isEmpty }, by: \.territory)
+            .sorted { $0.value.count == $1.value.count ? $0.key < $1.key : $0.value.count > $1.value.count }
+            .prefix(countryLimit)
+            .map(\.key)
+        return largeStorefronts.union(reviewed)
     }
 
     static func make(

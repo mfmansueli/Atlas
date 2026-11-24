@@ -14,7 +14,8 @@ import Foundation
 final class LocalDataStore {
     static let shared = LocalDataStore()
 
-    /// Made again when needed: renders and the ratings cache.
+    /// Made again when needed: renders, downloaded images and the ratings
+    /// cache.
     let cachesDirectory: URL
     /// Where everything else Atlas keeps is: drafts, suggestions, history,
     /// runs. Only `supportItems` in it are removed, never the rest.
@@ -66,6 +67,9 @@ final class LocalDataStore {
         clearedCaches += 1
         guard isLive else { return }
         try? FileManager.default.removeItem(at: cachesDirectory)
+        // Its downloaded images are in the caches folder; the ones in
+        // memory go too.
+        RemoteImageCache.shared.forgetMemory()
     }
 
     /// Every key in the Keychain (App Store Connect, AI providers, the

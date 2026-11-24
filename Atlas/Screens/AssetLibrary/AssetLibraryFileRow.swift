@@ -53,13 +53,13 @@ struct AssetLibraryFileRow: View {
 
     private var thumbnail: some View {
         let url = file.thumbnailURL(width: Self.thumbnailWidth)
-        return AsyncImage(url: url) { phase in
+        return CachedRemoteImage(url: url) { phase in
             if let image = phase.image {
-                image.resizable().scaledToFit()
+                Image(decorative: image, scale: 1).resizable().scaledToFit()
             } else {
                 // A spinner while it downloads; the file's kind if it can't.
                 ImageLoadingTile(
-                    isLoading: url != nil && phase.error == nil, systemImage: file.media == .video ? "film" : "photo", fill: .clear, controlSize: .mini
+                    isLoading: phase.isLoading, systemImage: file.media == .video ? "film" : "photo", fill: .clear, controlSize: .mini
                 )
             }
         }
