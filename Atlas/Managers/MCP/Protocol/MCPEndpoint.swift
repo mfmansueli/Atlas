@@ -137,7 +137,11 @@ enum MCPEndpoint {
     propose_event_artwork, for the primary language unless a language needs art of its own (the others show the \
     primary's): the person accepts it and pushes it. When the person asked for an event's artwork in Atlas \
     (Make the Artwork), read get_event_artwork_brief and send each concept with propose_event_artwork_concept: the \
-    person chooses one there. For custom product pages, read get_product_pages; suggest a whole page with \
+    person chooses one there. For featuring nominations (what Apple's editors read about a launch, new \
+    features or new content, weeks ahead), read get_nominations, suggest one or changes to a draft with \
+    propose_nomination (links go in its supplementalMaterialsUris, never the description) and ask to submit or \
+    archive with propose_nomination_submit and propose_nomination_archive: the person accepts and confirms each, \
+    you never submit, and never promise featuring. For custom product pages, read get_product_pages; suggest a whole page with \
     propose_product_page (who it's for, its evidence from Analytics, the reviews or the approved version's keywords, \
     keywords no other page uses, promotional text in each language, the screens' order) and texts for a page's \
     languages with propose_product_page_texts: the person accepts each, and pushing, submitting and making a page \

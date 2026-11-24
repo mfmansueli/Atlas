@@ -14,6 +14,7 @@ extension AppWorkspaceSection {
         case .screenshots: Palette.sectionScreenshots
         case .productPages: Palette.sectionProductPages
         case .inAppEvents: Palette.sectionEvents
+        case .nominations: Palette.sectionNominations
         case .appInformation: Palette.sectionAppInformation
         case .subscriptionPricing: Palette.sectionPricing
         case .reviews: Palette.sectionReviews
@@ -29,6 +30,7 @@ extension AppWorkspaceSection {
         case .screenshots: Palette.sectionScreenshotsTop
         case .productPages: Palette.sectionProductPagesTop
         case .inAppEvents: Palette.sectionEventsTop
+        case .nominations: Palette.sectionNominationsTop
         case .appInformation: Palette.sectionAppInformationTop
         case .subscriptionPricing: Palette.sectionPricingTop
         case .reviews: Palette.sectionReviewsTop

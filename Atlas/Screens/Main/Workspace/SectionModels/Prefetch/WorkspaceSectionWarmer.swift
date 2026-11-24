@@ -40,6 +40,8 @@ struct WorkspaceSectionWarmer: SectionWarming {
         // A push or Refresh since the last read reads the events again, so
         // their dates and "Before App Review" lists show what it wrote.
         case .inAppEvents: kept.events?.state.value == nil || kept.needsLoad(section, refreshCount: refreshCount)
+        // Read when it opens: a few small requests, nothing kept.
+        case .nominations: false
         default: kept.needsLoad(section, refreshCount: refreshCount)
         }
     }
@@ -84,6 +86,8 @@ struct WorkspaceSectionWarmer: SectionWarming {
             // morning when the person chose so; only the context is read
             // ahead.
             await AnalyticsSectionView.readContext(model, services: services, into: kept, refreshCount: refreshCount)
+        case .nominations:
+            break
         }
     }
 

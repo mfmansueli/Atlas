@@ -25,6 +25,9 @@
     " and %lld more" : {
       "comment" : "kind:error"
     },
+    " by %@" : {
+      "comment" : "kind:description"
+    },
     " for every App Preview. Atlas tracks are licensed for the App Store; for your own file, you confirm the rights. Plays under captions, fades out." : {
       "comment" : "kind:hint"
     },
@@ -91,8 +94,14 @@
     "% vs base" : {
       "comment" : "kind:section-title"
     },
+    "%@" : {
+      "comment" : "kind:button"
+    },
     "%@\nDetails: %@" : {
       "comment" : "kind:error"
+    },
+    "%@  %@" : {
+      "comment" : "kind:tooltip"
     },
     "%@  ⌘%@" : {
       "comment" : "kind:tooltip"
@@ -832,6 +841,9 @@
     "%@ has no text yet" : {
       "comment" : "kind:other"
     },
+    "%@ has passed. Apple will refuse it." : {
+      "comment" : "kind:error"
+    },
     "%@ hasn’t made its settings folder yet. Open it once, then try again." : {
       "comment" : "kind:error"
     },
@@ -1044,6 +1056,9 @@
     },
     "%@ is missing." : {
       "comment" : "kind:error"
+    },
+    "%@ is new content for people who already have the app." : {
+      "comment" : "kind:suggestion-why"
     },
     "%@ is now %@’s review screenshot. In Review & Push." : {
       "comment" : "kind:toast"
@@ -1792,10 +1807,16 @@
     "%@ suggests 3 concepts for %@, each a metaphor from the app’s world. Pick one from their stills in the Design step." : {
       "comment" : "kind:description"
     },
+    "%@ suggests archiving it" : {
+      "comment" : "kind:description"
+    },
     "%@ suggests pages from %@’s pages, reviews and numbers: who each is for, why, keywords and promotional text. Accepted ones become drafts you push and submit." : {
       "comment" : "kind:description"
     },
     "%@ suggests replies to %@’s reviews and groups them by subject. Nothing is sent until you press Send Reply." : {
+      "comment" : "kind:description"
+    },
+    "%@ suggests submitting it" : {
       "comment" : "kind:description"
     },
     "%@ suggests the subscriptions %@’s code sells. They wait in Review & Push until you push." : {
@@ -2083,6 +2104,15 @@
     "%@ · Message" : {
       "comment" : "kind:section-title"
     },
+    "%@ · Nominations" : {
+      "comment" : "kind:other"
+    },
+    "%@ · Nominations · %@" : {
+      "comment" : "kind:other"
+    },
+    "%@ · Nominations · new" : {
+      "comment" : "kind:other"
+    },
     "%@ · PRO" : {
       "comment" : "kind:button"
     },
@@ -2225,6 +2255,9 @@
       "comment" : "kind:other"
     },
     "%@ · no earlier period to compare yet" : {
+      "comment" : "kind:description"
+    },
+    "%@ · no end date" : {
       "comment" : "kind:description"
     },
     "%@ · not connected" : {
@@ -2776,6 +2809,9 @@
     "%@’s Mac window on a MacBook" : {
       "comment" : "kind:description"
     },
+    "%@’s What’s New" : {
+      "comment" : "kind:other"
+    },
     "%@’s accessibility couldn’t be read." : {
       "comment" : "kind:other"
     },
@@ -3046,6 +3082,9 @@
     "%lld characters wide" : {
       "comment" : "kind:other"
     },
+    "%lld characters · limit not confirmed" : {
+      "comment" : "kind:description"
+    },
     "%lld checked" : {
       "comment" : "kind:other"
     },
@@ -3117,6 +3156,9 @@
     },
     "%lld days" : {
       "comment" : "kind:section-title"
+    },
+    "%lld days ago" : {
+      "comment" : "kind:description"
     },
     "%lld days behind (usually 1 to 2). Newest data: %@." : {
       "comment" : "kind:description"
@@ -3374,6 +3416,9 @@
       "comment" : "kind:notification"
     },
     "%lld new to push" : {
+      "comment" : "kind:other"
+    },
+    "%lld nominations" : {
       "comment" : "kind:other"
     },
     "%lld not confirmed yet" : {
@@ -4003,6 +4048,9 @@
     ", and the App Preview is cut" : {
       "comment" : "kind:description"
     },
+    ", and up to 3 months for a launch." : {
+      "comment" : "kind:banner"
+    },
     ", code %@" : {
       "comment" : "kind:other"
     },
@@ -4011,6 +4059,12 @@
     },
     ", for you to watch and approve." : {
       "comment" : "kind:description"
+    },
+    ", from %@" : {
+      "comment" : "kind:other"
+    },
+    ", not pushed" : {
+      "comment" : "kind:accessibility-label"
     },
     ", plus a moving version of each." : {
       "comment" : "kind:other"
@@ -4026,6 +4080,9 @@
     },
     ". No cuts, no fast moves. The app name and the headline stay still and readable the whole time." : {
       "comment" : "kind:other"
+    },
+    ". You can still submit." : {
+      "comment" : "kind:banner"
     },
     ".cursor/mcp.json in your project, under “mcpServers”." : {
       "comment" : "kind:description"
@@ -4148,6 +4205,9 @@
       "comment" : "kind:section-title"
     },
     "1 character over the limit." : {
+      "comment" : "kind:description"
+    },
+    "1 character · limit not confirmed" : {
       "comment" : "kind:description"
     },
     "1 check failed" : {
@@ -4882,6 +4942,9 @@
     "A new In-App Event, created as a draft. Add its event card and details page images in App Store Connect, then submit it for review." : {
       "comment" : "kind:description"
     },
+    "A new app" : {
+      "comment" : "kind:description"
+    },
     "A new custom product page with its own link. It goes to App Review alone and can go visible once approved." : {
       "comment" : "kind:description"
     },
@@ -4905,6 +4968,9 @@
     },
     "A newer draft is in App Store Connect, not yet on the product page." : {
       "comment" : "kind:hint"
+    },
+    "A nomination tells Apple’s editors about a launch, big update or event, weeks ahead." : {
+      "comment" : "kind:description"
     },
     "A page captures at most %lld screens again." : {
       "comment" : "kind:other"
@@ -5085,6 +5151,9 @@
     },
     "API key" : {
       "comment" : "kind:section-title"
+    },
+    "API key %@" : {
+      "comment" : "kind:other"
     },
     "APP STORE PREVIEW" : {
       "comment" : "kind:section-title"
@@ -5323,6 +5392,9 @@
     "Accepted 1 suggestion. In Review & Push." : {
       "comment" : "kind:toast"
     },
+    "Accepted as a draft on this Mac. Fix what it needs, then add it to Review & Push." : {
+      "comment" : "kind:toast"
+    },
     "Accepted as template v%lld. Changed renders wait in Review & Push." : {
       "comment" : "kind:done-state"
     },
@@ -5333,6 +5405,9 @@
       "comment" : "kind:done-state"
     },
     "Accepted screenshot %lld’s caption. In Review & Push." : {
+      "comment" : "kind:toast"
+    },
+    "Accepted the %@. Nothing is sent until you push." : {
       "comment" : "kind:toast"
     },
     "Accepted · in Review & Push" : {
@@ -5346,6 +5421,9 @@
     },
     "Accepted. In Review & Push." : {
       "comment" : "kind:done-state"
+    },
+    "Accepted. It’s in Review & Push as a draft. Nothing is sent until you push." : {
+      "comment" : "kind:toast"
     },
     "Accepting" : {
       "comment" : "kind:section-title"
@@ -5416,6 +5494,9 @@
     "Add %@ to the version in App Store Connect, then refresh." : {
       "comment" : "kind:description"
     },
+    "Add %@." : {
+      "comment" : "kind:error"
+    },
     "Add %lld" : {
       "comment" : "kind:sheet-title"
     },
@@ -5478,6 +5559,9 @@
     },
     "Add Languages" : {
       "comment" : "kind:section-title"
+    },
+    "Add Link…" : {
+      "comment" : "kind:button"
     },
     "Add Locale" : {
       "comment" : "kind:section-title"
@@ -6301,6 +6385,9 @@
     "Anything else is refused and shown in the run’s output. Each run’s token expires when it ends. Claude Code uses your login and plan." : {
       "comment" : "kind:description"
     },
+    "Anything the editors should know" : {
+      "comment" : "kind:placeholder"
+    },
     "Anything to tell the designer?" : {
       "comment" : "kind:description"
     },
@@ -6318,6 +6405,9 @@
     },
     "App Crashes" : {
       "comment" : "kind:section-title"
+    },
+    "App Enhancements" : {
+      "comment" : "kind:field-label"
     },
     "App Functionality" : {
       "comment" : "kind:section-title"
@@ -6345,6 +6435,9 @@
     },
     "App Information · from the code" : {
       "comment" : "kind:progress-step"
+    },
+    "App Launch" : {
+      "comment" : "kind:field-label"
     },
     "App Preview" : {
       "comment" : "kind:section-title"
@@ -6745,6 +6838,9 @@
     "App Store Web Preview" : {
       "comment" : "kind:section-title"
     },
+    "App Store page" : {
+      "comment" : "kind:field-label"
+    },
     "App Store page artwork · iOS 27 and iPadOS 27" : {
       "comment" : "kind:description"
     },
@@ -6922,6 +7018,12 @@
     "Apple doesn’t give this number." : {
       "comment" : "kind:description"
     },
+    "Apple doesn’t report back on nominations, so nothing changes here after you submit." : {
+      "comment" : "kind:description"
+    },
+    "Apple doesn’t say whether it’s featured." : {
+      "comment" : "kind:description"
+    },
     "Apple doesn’t split starts and proceeds by source." : {
       "comment" : "kind:hint"
     },
@@ -7063,6 +7165,9 @@
     "Apple recognition" : {
       "comment" : "kind:section-title"
     },
+    "Apple refused it: see why" : {
+      "comment" : "kind:description"
+    },
     "Apple refused the availability. If you changed it in App Store Connect, discard this and refresh Pricing; otherwise change one country or region at a time. Pre-orders need an unreleased app and a release date Apple accepts." : {
       "comment" : "kind:error"
     },
@@ -7075,6 +7180,9 @@
     "Apple refused the last screenshot. Choose another." : {
       "comment" : "kind:error"
     },
+    "Apple refused the link in the description. Materials is the place for links." : {
+      "comment" : "kind:error"
+    },
     "Apple refused the price. Paid prices need the Paid Applications agreement in App Store Connect → Business; free needs Free Apps. Use an Admin or App Manager key." : {
       "comment" : "kind:error"
     },
@@ -7083,6 +7191,9 @@
     },
     "Apple refused this key. Check it in Settings → Accounts." : {
       "comment" : "kind:error"
+    },
+    "Apple refused this nomination." : {
+      "comment" : "kind:banner"
     },
     "Apple releases it on %@." : {
       "comment" : "kind:description"
@@ -7123,6 +7234,9 @@
     "Apple strongly discourages unverifiable claims in retention messages" : {
       "comment" : "kind:description"
     },
+    "Apple takes links, not files. Host a video, deck or mockups somewhere, then add the link." : {
+      "comment" : "kind:description"
+    },
     "Apple takes no retention image of %lld × %lld. Choose one 3840 wide and 160 to 2160 tall." : {
       "comment" : "kind:error"
     },
@@ -7146,6 +7260,12 @@
     },
     "Apple’s commission" : {
       "comment" : "kind:field-label"
+    },
+    "Apple’s editorial team, from %@." : {
+      "comment" : "kind:description"
+    },
+    "Apple’s editorial team." : {
+      "comment" : "kind:description"
     },
     "Apple’s equalized price" : {
       "comment" : "kind:section-title"
@@ -7279,6 +7399,9 @@
     "Approved by App Review; subscribers see it" : {
       "comment" : "kind:done-state"
     },
+    "Approved · %lld languages" : {
+      "comment" : "kind:description"
+    },
     "Approved · Apple releases it" : {
       "comment" : "kind:done-state"
     },
@@ -7305,6 +7428,9 @@
     },
     "Approximate, from bundled exchange rates" : {
       "comment" : "kind:tooltip"
+    },
+    "Apps" : {
+      "comment" : "kind:field-label"
     },
     "Apps and App Store Connect accounts" : {
       "comment" : "kind:description"
@@ -7333,8 +7459,41 @@
     "Arcade" : {
       "comment" : "kind:section-title"
     },
+    "Archive" : {
+      "comment" : "kind:other"
+    },
+    "Archive This Nomination" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Archive is in Review & Push. Nothing is sent until you push." : {
+      "comment" : "kind:toast"
+    },
+    "Archive it" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "Archive removed from Review & Push." : {
+      "comment" : "kind:toast"
+    },
+    "Archive waits in Review & Push" : {
+      "comment" : "kind:description"
+    },
+    "Archive. It stays in App Store Connect, read-only." : {
+      "comment" : "kind:description"
+    },
     "Archived" : {
       "comment" : "kind:section-title"
+    },
+    "Archived %@ · read-only" : {
+      "comment" : "kind:description"
+    },
+    "Archived on %@" : {
+      "comment" : "kind:description"
+    },
+    "Archived · read-only" : {
+      "comment" : "kind:description"
+    },
+    "Archive…" : {
+      "comment" : "kind:button"
     },
     "Arriving" : {
       "comment" : "kind:progress-step"
@@ -7465,6 +7624,9 @@
     "Ask Claude Code Something Else…" : {
       "comment" : "kind:section-title"
     },
+    "Ask Claude Code…" : {
+      "comment" : "kind:button"
+    },
     "Ask First" : {
       "comment" : "kind:button"
     },
@@ -7572,6 +7734,9 @@
     },
     "Asks Apple to start analytics reports for %@. Nothing else changes in App Store Connect. Stop anytime in Analytics settings." : {
       "comment" : "kind:description"
+    },
+    "Asks before anything is sent" : {
+      "comment" : "kind:tooltip"
     },
     "Asks your assistant for this section’s texts, screenshots, prices or replies. Or do it by hand." : {
       "comment" : "kind:tour-tip"
@@ -7706,6 +7871,9 @@
       "comment" : "kind:sheet-body"
     },
     "Atlas can’t tell whether %@ opens this link. %@" : {
+      "comment" : "kind:description"
+    },
+    "Atlas can’t unarchive it." : {
       "comment" : "kind:description"
     },
     "Atlas checks %@’s reviews hourly while running, even from the menu bar. Replies are in the review’s language and public, so you choose which go out by themselves." : {
@@ -7931,6 +8099,9 @@
       "comment" : "kind:sheet-body"
     },
     "Atlas sends this to %@, then shows the suggestions here. Nothing changes until you accept them." : {
+      "comment" : "kind:description"
+    },
+    "Atlas shows the nominations that include %@. Apple doesn’t say which ones get featured. Nothing is sent until you push." : {
       "comment" : "kind:description"
     },
     "Atlas started Claude Code in %@ and asked:" : {
@@ -8250,6 +8421,9 @@
     },
     "Back to all events" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Back to all nominations" : {
+      "comment" : "kind:description"
     },
     "Back to each language's screenshots, with their suggested captions" : {
       "comment" : "kind:tooltip"
@@ -8683,6 +8857,9 @@
     "Cancel  esc" : {
       "comment" : "kind:tooltip"
     },
+    "Cancel Archive" : {
+      "comment" : "kind:button"
+    },
     "Cancel Remaining" : {
       "comment" : "kind:button"
     },
@@ -8700,6 +8877,9 @@
     },
     "Cancel Submission…" : {
       "comment" : "kind:section-title"
+    },
+    "Cancel Submit" : {
+      "comment" : "kind:button"
     },
     "Cancel anytime" : {
       "comment" : "kind:description"
@@ -9010,6 +9190,9 @@
     "Change It in the Project…" : {
       "comment" : "kind:section-title"
     },
+    "Change Key…" : {
+      "comment" : "kind:button"
+    },
     "Change Price" : {
       "comment" : "kind:sheet-title"
     },
@@ -9072,6 +9255,9 @@
     },
     "Changes wait in Review & Push until you send them to App Store Connect." : {
       "comment" : "kind:description"
+    },
+    "Changes wait in Review & Push." : {
+      "comment" : "kind:banner"
     },
     "Change…" : {
       "comment" : "kind:button"
@@ -9271,6 +9457,12 @@
     "Choose App Previews…" : {
       "comment" : "kind:button"
     },
+    "Choose Countries and Regions" : {
+      "comment" : "kind:button"
+    },
+    "Choose Countries…" : {
+      "comment" : "kind:button"
+    },
     "Choose File" : {
       "comment" : "kind:sheet-title"
     },
@@ -9297,6 +9489,9 @@
     },
     "Choose a %@." : {
       "comment" : "kind:error"
+    },
+    "Choose a Date…" : {
+      "comment" : "kind:button"
     },
     "Choose a PNG for this capture" : {
       "comment" : "kind:tooltip"
@@ -10345,6 +10540,9 @@
     "Couldn’t read the library" : {
       "comment" : "kind:error"
     },
+    "Couldn’t read the nominations" : {
+      "comment" : "kind:banner"
+    },
     "Couldn’t read the prices of %@: %@" : {
       "comment" : "kind:error"
     },
@@ -10516,6 +10714,9 @@
     "Create a Team Key with the Admin or App Manager role, then connect again." : {
       "comment" : "kind:error"
     },
+    "Create a draft in App Store Connect. Apple doesn’t see it yet." : {
+      "comment" : "kind:description"
+    },
     "Create a new version in App Store Connect to edit them." : {
       "comment" : "kind:description"
     },
@@ -10531,6 +10732,9 @@
     "Create the First Page…" : {
       "comment" : "kind:button"
     },
+    "Create the draft" : {
+      "comment" : "kind:other"
+    },
     "Create version %@" : {
       "comment" : "kind:section-title"
     },
@@ -10539,6 +10743,15 @@
     },
     "Created" : {
       "comment" : "kind:section-title"
+    },
+    "Created %@" : {
+      "comment" : "kind:description"
+    },
+    "Created %@ by %@" : {
+      "comment" : "kind:description"
+    },
+    "Created %@%@" : {
+      "comment" : "kind:description"
     },
     "Created from the template “%@”" : {
       "comment" : "kind:hint"
@@ -10617,6 +10830,9 @@
     },
     "Custom product page" : {
       "comment" : "kind:description"
+    },
+    "Custom product page · %@" : {
+      "comment" : "kind:field-label"
     },
     "Custom regional tiers" : {
       "comment" : "kind:section-title"
@@ -10825,6 +11041,9 @@
     "Delete in %lld Languages" : {
       "comment" : "kind:sheet-title"
     },
+    "Delete is in Review & Push. Nothing is sent until you push." : {
+      "comment" : "kind:toast"
+    },
     "Delete it from" : {
       "comment" : "kind:sheet-title"
     },
@@ -10839,6 +11058,12 @@
     },
     "Delete screenshots %@" : {
       "comment" : "kind:section-title"
+    },
+    "Delete the draft" : {
+      "comment" : "kind:other"
+    },
+    "Delete the draft from App Store Connect." : {
+      "comment" : "kind:description"
     },
     "Delete the draft test" : {
       "comment" : "kind:section-title"
@@ -10863,6 +11088,9 @@
     },
     "Deleted in 30 days" : {
       "comment" : "kind:section-title"
+    },
+    "Deleted the draft." : {
+      "comment" : "kind:toast"
     },
     "Deletes every App Store Connect key, API key and paired assistant, and every unpushed draft, suggestion and change. Atlas quits. Nothing changes in App Store Connect." : {
       "comment" : "kind:confirmation"
@@ -11146,6 +11374,15 @@
     "Dismissed %@’s answer." : {
       "comment" : "kind:description"
     },
+    "Dismissed %@’s nomination." : {
+      "comment" : "kind:toast"
+    },
+    "Dismissed %@’s suggestion." : {
+      "comment" : "kind:toast"
+    },
+    "Dismissed the suggested %@." : {
+      "comment" : "kind:toast"
+    },
     "Dismissed. %@ still needs a review screenshot." : {
       "comment" : "kind:sheet-body"
     },
@@ -11230,6 +11467,9 @@
     "Done. See Pricing, under Retention." : {
       "comment" : "kind:done-state"
     },
+    "Done. Suggested descriptions wait on each draft." : {
+      "comment" : "kind:toast"
+    },
     "Done. Suggestions are in purple." : {
       "comment" : "kind:done-state"
     },
@@ -11253,6 +11493,9 @@
     },
     "Done. The person looks at the plan in Atlas and starts Autopilot." : {
       "comment" : "kind:other"
+    },
+    "Done. The suggestion is at the top of Drafts." : {
+      "comment" : "kind:toast"
     },
     "Done. What’s New is in Store Page, every language." : {
       "comment" : "kind:done-state"
@@ -11326,11 +11569,20 @@
     "Draft a retention message for %@ in Atlas: what subscribers see on Apple's Confirm Cancellation screen after they tap Cancel Subscription. Read the app's project, its paywall and its App Store listing (get_listing) for what the subscription gives people, and get_retention for the subscriptions, the messages and offers there already, and the limits. Write it in the app's voice: a header of at most 66 characters and a message of at most 144, honest, no pressure, saying what people keep and what ends. %@ Propose it with propose_retention_message in the source language for the subscriptions it fits; Atlas translates it. If a discount would keep people, propose one retention offer with propose_retention_offer. Pass evidence as \"file:line — finding\"." : {
       "comment" : "kind:other"
     },
+    "Draft in App Store Connect" : {
+      "comment" : "kind:description"
+    },
+    "Draft in App Store Connect · changed on this Mac" : {
+      "comment" : "kind:description"
+    },
     "Draft in App Store Connect, not on the product page." : {
       "comment" : "kind:done-state"
     },
     "Draft in App Store Connect; the product page doesn’t change." : {
       "comment" : "kind:done-state"
+    },
+    "Draft on this Mac · not in App Store Connect yet" : {
+      "comment" : "kind:description"
     },
     "Draft · %@" : {
       "comment" : "kind:section-title"
@@ -11340,6 +11592,9 @@
     },
     "Drafted automatically. Nothing goes out until you send it." : {
       "comment" : "kind:description"
+    },
+    "Drafts" : {
+      "comment" : "kind:section-title"
     },
     "Drafts a reply to each new review and tells you" : {
       "comment" : "kind:description"
@@ -11638,6 +11893,9 @@
     "Ends" : {
       "comment" : "kind:section-title"
     },
+    "Ends · optional" : {
+      "comment" : "kind:description"
+    },
     "English" : {
       "comment" : "kind:section-title"
     },
@@ -11862,6 +12120,9 @@
     },
     "Every direction has arrived. Revise one with revise_direction when next_step asks." : {
       "comment" : "kind:other"
+    },
+    "Every field below is suggested. Change anything before you accept." : {
+      "comment" : "kind:suggestion-why"
     },
     "Every field in %@" : {
       "comment" : "kind:description"
@@ -12178,6 +12439,9 @@
     "Features" : {
       "comment" : "kind:accessibility-label"
     },
+    "Featuring Nominations" : {
+      "comment" : "kind:button"
+    },
     "Feedback: %@" : {
       "comment" : "kind:section-title"
     },
@@ -12412,6 +12676,9 @@
     "Fix it and propose again." : {
       "comment" : "kind:other"
     },
+    "Fix it with propose_nomination first." : {
+      "comment" : "kind:error"
+    },
     "Fix the captions in `refused` and send them again with the same screens: the rest stay." : {
       "comment" : "kind:other"
     },
@@ -12477,6 +12744,9 @@
     },
     "For What’s New and privacy, use Claude Code. Claude Desktop sees code only with access." : {
       "comment" : "kind:hint"
+    },
+    "For a launch, Apple suggests up to 3 months ahead. You can still submit." : {
+      "comment" : "kind:description"
     },
     "For a subscription sold with a plan paid monthly, it can go to one plan only. It can’t change later." : {
       "comment" : "kind:sheet-body"
@@ -12843,6 +13113,9 @@
     },
     "Go to Captions" : {
       "comment" : "kind:button"
+    },
+    "Goes to" : {
+      "comment" : "kind:field-label"
     },
     "Goes to App Review with %@ %@" : {
       "comment" : "kind:hint"
@@ -13486,6 +13759,9 @@
     "In Review & Push. Goes to App Review when you push." : {
       "comment" : "kind:description"
     },
+    "In Review & Push. Nothing is sent until you push." : {
+      "comment" : "kind:toast"
+    },
     "In Review & Push. Nothing is sent yet." : {
       "comment" : "kind:done-state"
     },
@@ -13509,6 +13785,9 @@
     },
     "In a phased release, pause it while you fix it." : {
       "comment" : "kind:suggestion-why"
+    },
+    "In each country’s time zone" : {
+      "comment" : "kind:description"
     },
     "In every language, on every device." : {
       "comment" : "kind:description"
@@ -13825,6 +14104,9 @@
     "It goes to App Review on its own, without a version. Its texts can’t be changed while it’s in review." : {
       "comment" : "kind:confirmation"
     },
+    "It goes when you push. After you push, you can only archive it." : {
+      "comment" : "kind:description"
+    },
     "It has an introductory offer." : {
       "comment" : "kind:tooltip"
     },
@@ -13858,6 +14140,9 @@
     "It may still have gone through: refresh to see before you retry." : {
       "comment" : "kind:description"
     },
+    "It moves to Archived in App Store Connect when you push." : {
+      "comment" : "kind:description"
+    },
     "It opened %@ in Simulator, but nothing it tried led to a purchase screen." : {
       "comment" : "kind:banner"
     },
@@ -13884,6 +14169,15 @@
     },
     "It started, but its result didn’t reach Atlas. Show Output has what it did." : {
       "comment" : "kind:error"
+    },
+    "It starts in %lld days: Apple suggests nominating a few weeks ahead. It can still be submitted." : {
+      "comment" : "kind:other"
+    },
+    "It stays a draft. Fix what Apple names under Details, then add it to Review & Push again." : {
+      "comment" : "kind:banner"
+    },
+    "It stays a draft. Remove the link from the description, then add it to Review & Push again." : {
+      "comment" : "kind:banner"
     },
     "It suggests 3 ideas of its own for %@" : {
       "comment" : "kind:progress-step"
@@ -13954,8 +14248,14 @@
     "Its %lld-second loop is on the way · " : {
       "comment" : "kind:hint"
     },
+    "Its Archive row already waits in Review & Push." : {
+      "comment" : "kind:other"
+    },
     "Its Info.plist declares no URL scheme “%@” (URL Types), so the link opens nothing." : {
       "comment" : "kind:description"
+    },
+    "Its Submit row already waits in Review & Push." : {
+      "comment" : "kind:other"
     },
     "Its Xcode project builds %@, not %@. Claude Code would capture and read the wrong app." : {
       "comment" : "kind:description"
@@ -14401,6 +14701,9 @@
     "Latin" : {
       "comment" : "kind:section-title"
     },
+    "Launch in some markets first" : {
+      "comment" : "kind:description"
+    },
     "Launches with -AppleLanguages; without it, %@ captures would sit under translated captions" : {
       "comment" : "kind:description"
     },
@@ -14518,8 +14821,17 @@
     "Link" : {
       "comment" : "kind:section-title"
     },
+    "Link an Event…" : {
+      "comment" : "kind:button"
+    },
     "Link to “%@” copied." : {
       "comment" : "kind:description"
+    },
+    "Link · %@" : {
+      "comment" : "kind:field-label"
+    },
+    "Linked In-App Events" : {
+      "comment" : "kind:field-label"
     },
     "Linked to the user" : {
       "comment" : "kind:section-title"
@@ -14533,10 +14845,16 @@
     "Linked to you" : {
       "comment" : "kind:field-label"
     },
+    "Links Atlas already knows" : {
+      "comment" : "kind:description"
+    },
     "Links from other apps" : {
       "comment" : "kind:description"
     },
     "Links from websites" : {
+      "comment" : "kind:description"
+    },
+    "Links only" : {
       "comment" : "kind:description"
     },
     "List my apps in Atlas" : {
@@ -15061,6 +15379,9 @@
     "Matched" : {
       "comment" : "kind:accessibility-label"
     },
+    "Materials" : {
+      "comment" : "kind:field-label"
+    },
     "Mature or suggestive themes" : {
       "comment" : "kind:section-title"
     },
@@ -15262,6 +15583,9 @@
     "Move Keyword" : {
       "comment" : "kind:section-title"
     },
+    "Move Link to Materials" : {
+      "comment" : "kind:button"
+    },
     "Move down" : {
       "comment" : "kind:accessibility-label"
     },
@@ -15291,6 +15615,9 @@
     },
     "Move “Starts” and “Ends” later, and “Shows from” with them." : {
       "comment" : "kind:description"
+    },
+    "Moved the link to Materials. Add the draft to Review & Push again." : {
+      "comment" : "kind:toast"
     },
     "Moving" : {
       "comment" : "kind:progress-step"
@@ -15505,6 +15832,9 @@
     "New Apple Watch screen" : {
       "comment" : "kind:section-title"
     },
+    "New Content" : {
+      "comment" : "kind:field-label"
+    },
     "New Custom Product Page" : {
       "comment" : "kind:sheet-title"
     },
@@ -15524,6 +15854,12 @@
       "comment" : "kind:button"
     },
     "New Message" : {
+      "comment" : "kind:button"
+    },
+    "New Nomination" : {
+      "comment" : "kind:section-title"
+    },
+    "New Nomination…" : {
       "comment" : "kind:button"
     },
     "New Offer" : {
@@ -15562,6 +15898,9 @@
     "New apps" : {
       "comment" : "kind:section-title"
     },
+    "New content, like an event or season" : {
+      "comment" : "kind:description"
+    },
     "New countries and regions" : {
       "comment" : "kind:section-title"
     },
@@ -15573,6 +15912,9 @@
     },
     "New declaration" : {
       "comment" : "kind:section-title"
+    },
+    "New features in an existing app" : {
+      "comment" : "kind:description"
     },
     "New in this set; it isn’t on the App Store until you push." : {
       "comment" : "kind:description"
@@ -15805,6 +16147,9 @@
     "No In-App Events" : {
       "comment" : "kind:section-title"
     },
+    "No In-App Events yet" : {
+      "comment" : "kind:empty-state"
+    },
     "No Message" : {
       "comment" : "kind:section-title"
     },
@@ -15967,8 +16312,14 @@
     "No details provided" : {
       "comment" : "kind:section-title"
     },
+    "No devices yet" : {
+      "comment" : "kind:empty-state"
+    },
     "No direction “%@” in this run; it has %@." : {
       "comment" : "kind:description"
+    },
+    "No drafts. New Nomination… starts one." : {
+      "comment" : "kind:empty-state"
     },
     "No earlier period to compare yet" : {
       "comment" : "kind:section-title"
@@ -15979,6 +16330,9 @@
     "No encryption" : {
       "comment" : "kind:section-title"
     },
+    "No end date" : {
+      "comment" : "kind:description"
+    },
     "No event card (16:9) in any language." : {
       "comment" : "kind:description"
     },
@@ -15987,6 +16341,9 @@
     },
     "No event details image yet" : {
       "comment" : "kind:progress-step"
+    },
+    "No events linked. Link one when the nomination is about an event." : {
+      "comment" : "kind:description"
     },
     "No findings yet" : {
       "comment" : "kind:section-title"
@@ -16036,6 +16393,9 @@
     "No line: the app name only" : {
       "comment" : "kind:description"
     },
+    "No links yet." : {
+      "comment" : "kind:description"
+    },
     "No live %@ version yet: stays a draft until %@ is released." : {
       "comment" : "kind:hint"
     },
@@ -16061,6 +16421,12 @@
       "comment" : "kind:suggestion-title"
     },
     "No more suggestions. Ask for something specific below." : {
+      "comment" : "kind:description"
+    },
+    "No nomination “%@” includes %@. Read get_nominations for the ids." : {
+      "comment" : "kind:error"
+    },
+    "No nominations yet" : {
       "comment" : "kind:description"
     },
     "No numbers yet" : {
@@ -16225,6 +16591,9 @@
     "No settings match “%@”." : {
       "comment" : "kind:description"
     },
+    "No start date yet" : {
+      "comment" : "kind:empty-state"
+    },
     "No step is worse than before" : {
       "comment" : "kind:section-title"
     },
@@ -16281,6 +16650,9 @@
     },
     "No trials ended in this period." : {
       "comment" : "kind:description"
+    },
+    "No type yet" : {
+      "comment" : "kind:empty-state"
     },
     "No upload “%@” for %@ in this launch. Send the file to get_screenshot_context’s fileUploadURL first and pass the fileId it returns." : {
       "comment" : "kind:error"
@@ -16355,6 +16727,24 @@
       "comment" : "kind:description"
     },
     "Nobody pressed Make Screenshots for This Page on “%@” in Atlas. The person starts it from the page's screenshots in Product Pages; until then, describe the screenshots in propose_product_page's screens." : {
+      "comment" : "kind:other"
+    },
+    "Nominate %@" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "Nominations" : {
+      "comment" : "kind:button"
+    },
+    "Nominations didn’t load." : {
+      "comment" : "kind:error"
+    },
+    "Nominations · %@" : {
+      "comment" : "kind:section-title"
+    },
+    "Nominations · a new nomination" : {
+      "comment" : "kind:other"
+    },
+    "Nominations · descriptions" : {
       "comment" : "kind:other"
     },
     "Non-consumable" : {
@@ -16519,6 +16909,9 @@
     "Not everything was sent" : {
       "comment" : "kind:section-title"
     },
+    "Not in App Store Connect" : {
+      "comment" : "kind:other"
+    },
     "Not in this app" : {
       "comment" : "kind:section-title"
     },
@@ -16675,6 +17068,9 @@
     "Notes for the designer" : {
       "comment" : "kind:placeholder"
     },
+    "Notes for the editorial team" : {
+      "comment" : "kind:field-label"
+    },
     "Notes for the reviewer" : {
       "comment" : "kind:section-title"
     },
@@ -16683,6 +17079,9 @@
     },
     "Nothing answered yet. Show all 35 data types to answer them." : {
       "comment" : "kind:sheet-body"
+    },
+    "Nothing archived." : {
+      "comment" : "kind:empty-state"
     },
     "Nothing can be done until App Review finishes." : {
       "comment" : "kind:hint"
@@ -16762,6 +17161,12 @@
     "Nothing is sent until you press Send." : {
       "comment" : "kind:description"
     },
+    "Nothing is sent until you push." : {
+      "comment" : "kind:description"
+    },
+    "Nothing is sent until you push. Submitting is a separate step, and asks first." : {
+      "comment" : "kind:description"
+    },
     "Nothing is shared until an assistant connects with its token." : {
       "comment" : "kind:hint"
     },
@@ -16781,6 +17186,9 @@
       "comment" : "kind:sheet-body"
     },
     "Nothing missing: group name, subscription and in-app purchase texts" : {
+      "comment" : "kind:description"
+    },
+    "Nothing needs you · Apple doesn’t report back" : {
       "comment" : "kind:description"
     },
     "Nothing new for a while" : {
@@ -16812,6 +17220,9 @@
     },
     "Nothing selected. Turn on at least one row." : {
       "comment" : "kind:description"
+    },
+    "Nothing submitted yet." : {
+      "comment" : "kind:empty-state"
     },
     "Nothing that needs a Security Assessment" : {
       "comment" : "kind:suggestion-title"
@@ -17281,6 +17692,9 @@
     "One multiplier per region." : {
       "comment" : "kind:description"
     },
+    "One nomination can cover several of the account’s apps. It shows in Nominations for each of them." : {
+      "comment" : "kind:description"
+    },
     "One pair for all %lld languages" : {
       "comment" : "kind:other"
     },
@@ -17346,6 +17760,9 @@
     },
     "Only a spinner? In Device Hub: shut it down, start it, wait for the Home Screen, open it." : {
       "comment" : "kind:description"
+    },
+    "Only a submitted nomination is archived. A draft that isn’t needed is deleted by the person." : {
+      "comment" : "kind:error"
     },
     "Only an Admin key can ask Apple for reports" : {
       "comment" : "kind:description"
@@ -17497,6 +17914,9 @@
     "Open Help" : {
       "comment" : "kind:progress-step"
     },
+    "Open In-App Events" : {
+      "comment" : "kind:button"
+    },
     "Open In-App Texts" : {
       "comment" : "kind:section-title"
     },
@@ -17520,6 +17940,9 @@
     },
     "Open Retention" : {
       "comment" : "kind:section-title"
+    },
+    "Open Review & Push" : {
+      "comment" : "kind:button"
     },
     "Open Review & Push…" : {
       "comment" : "kind:section-title"
@@ -18028,6 +18451,9 @@
     "Paste a key first." : {
       "comment" : "kind:error"
     },
+    "Paste a link first." : {
+      "comment" : "kind:error"
+    },
     "Paste an API key" : {
       "comment" : "kind:section-title"
     },
@@ -18134,6 +18560,9 @@
       "comment" : "kind:pill"
     },
     "People can operate every control and enter text by speaking." : {
+      "comment" : "kind:description"
+    },
+    "People can order it before the start date." : {
       "comment" : "kind:description"
     },
     "People decide right before the first full-price charge. A message and offer reach them at Cancel Subscription." : {
@@ -18255,6 +18684,9 @@
     },
     "Pick %lld · empty" : {
       "comment" : "kind:empty-state"
+    },
+    "Pick a New Date…" : {
+      "comment" : "kind:button"
     },
     "Pick a template" : {
       "comment" : "kind:empty-state"
@@ -19273,6 +19705,9 @@
     "Read-only" : {
       "comment" : "kind:description"
     },
+    "Read-only. Apple doesn’t say whether a nomination is chosen." : {
+      "comment" : "kind:description"
+    },
     "Read: %@" : {
       "comment" : "kind:section-title"
     },
@@ -19401,6 +19836,9 @@
     },
     "Ready to Submit" : {
       "comment" : "kind:done-state"
+    },
+    "Ready to add to Review & Push" : {
+      "comment" : "kind:description"
     },
     "Ready to fill in App Store Connect" : {
       "comment" : "kind:pill"
@@ -19711,6 +20149,9 @@
     "Removed from App Store Connect for good. Files on a page stay." : {
       "comment" : "kind:confirmation"
     },
+    "Removed from Review & Push." : {
+      "comment" : "kind:toast"
+    },
     "Removed from Sale" : {
       "comment" : "kind:section-title"
     },
@@ -19965,6 +20406,12 @@
     },
     "Required · always on" : {
       "comment" : "kind:section-title"
+    },
+    "Required · limit not confirmed" : {
+      "comment" : "kind:description"
+    },
+    "Required. Tells the editors what kind of story it is." : {
+      "comment" : "kind:description"
     },
     "Required: %@" : {
       "comment" : "kind:tooltip"
@@ -20574,6 +21021,9 @@
     },
     "Saved. Waiting in Review & Push; nothing is sent yet." : {
       "comment" : "kind:done-state"
+    },
+    "Saves the draft in App Store Connect when you push" : {
+      "comment" : "kind:tooltip"
     },
     "Save…" : {
       "comment" : "kind:button"
@@ -22000,8 +22450,17 @@
     "Start Test" : {
       "comment" : "kind:button"
     },
+    "Start a draft. Nothing is sent until you push." : {
+      "comment" : "kind:tooltip"
+    },
     "Start date" : {
       "comment" : "kind:field-label"
+    },
+    "Start date %@: Apple suggests a few weeks ahead" : {
+      "comment" : "kind:description"
+    },
+    "Start date has passed: pick a new one" : {
+      "comment" : "kind:description"
     },
     "Start from" : {
       "comment" : "kind:sheet-title"
@@ -22078,6 +22537,12 @@
     "Starts %@" : {
       "comment" : "kind:section-title"
     },
+    "Starts %@. Apple suggests a few weeks ahead; you can still submit." : {
+      "comment" : "kind:banner"
+    },
+    "Starts %@. Apple suggests nominating a few weeks ahead%@" : {
+      "comment" : "kind:banner"
+    },
     "Starts Autopilot; it stops only where the plan says You." : {
       "comment" : "kind:tooltip"
     },
@@ -22106,6 +22571,9 @@
       "comment" : "kind:section-title"
     },
     "Starts with %@ screenshots, App Previews and promotional text in %@." : {
+      "comment" : "kind:description"
+    },
+    "Starts · required" : {
       "comment" : "kind:description"
     },
     "Start…" : {
@@ -22354,11 +22822,32 @@
     "Submit for review, release, the phased release. Waits on the version card for you." : {
       "comment" : "kind:other"
     },
+    "Submit is in Review & Push. Nothing is sent until you push." : {
+      "comment" : "kind:toast"
+    },
     "Submit it for App Review with the app’s next version." : {
       "comment" : "kind:sheet-body"
     },
     "Submit it soon, or move the event later." : {
       "comment" : "kind:error"
+    },
+    "Submit it to Apple’s editors" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "Submit removed from Review & Push." : {
+      "comment" : "kind:toast"
+    },
+    "Submit to Apple" : {
+      "comment" : "kind:other"
+    },
+    "Submit to Apple. After you push, you can only archive it." : {
+      "comment" : "kind:description"
+    },
+    "Submit to Apple’s Editors" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Submit waits in Review & Push" : {
+      "comment" : "kind:description"
     },
     "Submit “%@” for Review" : {
       "comment" : "kind:sheet-title"
@@ -22368,6 +22857,15 @@
     },
     "Submitted" : {
       "comment" : "kind:progress-step"
+    },
+    "Submitted on %@" : {
+      "comment" : "kind:pill"
+    },
+    "Submitted on %@%@" : {
+      "comment" : "kind:description"
+    },
+    "Submitted to Apple’s editors" : {
+      "comment" : "kind:other"
     },
     "Submitted with %@ %@" : {
       "comment" : "kind:done-state"
@@ -22486,6 +22984,9 @@
     "Suggest Texts…" : {
       "comment" : "kind:section-title"
     },
+    "Suggest a Nomination…" : {
+      "comment" : "kind:button"
+    },
     "Suggest a Shorter Version" : {
       "comment" : "kind:button"
     },
@@ -22493,6 +22994,9 @@
       "comment" : "kind:other"
     },
     "Suggest a better subtitle for %@ in its primary language with Atlas’s suggest_fields tool, read from the store page. Say in its reason that it’s a test sent from Settings. Propose nothing else." : {
+      "comment" : "kind:other"
+    },
+    "Suggest a featuring nomination for %@ in Atlas. Read get_nominations for what's already there, get_app_versions and get_listing with fields [\"whatsNew\"] for the version being prepared, and get_in_app_events for what's coming. Pick what Apple's editors would care about most: a new app is APP_LAUNCH, a version with real new features APP_ENHANCEMENTS, an event or season NEW_CONTENT. Send one with propose_nomination: a name, a description of what people can do (no links: links go in supplementalMaterialsUris), the start date, the devices, and the linked events. Say why in one sentence with how far ahead it starts. Never submit; the person does." : {
       "comment" : "kind:other"
     },
     "Suggest a page with propose_product_page: who it's for, its own evidence Atlas can show (those numbers, get_reviews, the approved keywords), keywords from keywords.<locale>.free that its audience searches (search results show the page's first three screenshots, not its text), promotional text in every language and the screens it leads with. Write promotional text for a page's languages with propose_product_page_texts. Don't suggest a dismissed suggestion again; send one of yours that's open again under its name to improve it. The person accepts, pushes and submits; you can't push, submit or make a page visible." : {
@@ -22558,6 +23062,9 @@
     "Suggested %@" : {
       "comment" : "kind:accessibility-label"
     },
+    "Suggested %@ by %@, accepted" : {
+      "comment" : "kind:description"
+    },
     "Suggested before this language was written." : {
       "comment" : "kind:description"
     },
@@ -22573,6 +23080,9 @@
     "Suggested by %@ · accepted by you" : {
       "comment" : "kind:history-entry"
     },
+    "Suggested by %@ · waits in Review & Push" : {
+      "comment" : "kind:description"
+    },
     "Suggested by %@, not by you: left for the person." : {
       "comment" : "kind:other"
     },
@@ -22584,6 +23094,12 @@
     },
     "Suggested by an assistant" : {
       "comment" : "kind:section-title"
+    },
+    "Suggested changes: %@" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "Suggested description" : {
+      "comment" : "kind:suggestion-title"
     },
     "Suggested for %@: %@." : {
       "comment" : "kind:description"
@@ -22822,6 +23338,9 @@
     "Take %@ back from App Review?" : {
       "comment" : "kind:description"
     },
+    "Take it out of Review & Push" : {
+      "comment" : "kind:tooltip"
+    },
     "Taken after one retry: %@" : {
       "comment" : "kind:error"
     },
@@ -22855,11 +23374,17 @@
     "Team name" : {
       "comment" : "kind:placeholder"
     },
+    "Tell Apple’s editors about launches, updates and events, weeks ahead." : {
+      "comment" : "kind:description"
+    },
     "Tell Claude what to change in this pair" : {
       "comment" : "kind:tooltip"
     },
     "Tell me when" : {
       "comment" : "kind:section-title"
+    },
+    "Tell the editors it starts in a few countries before the rest." : {
+      "comment" : "kind:description"
     },
     "Template" : {
       "comment" : "kind:field-label"
@@ -23194,6 +23719,9 @@
     "The Keychain couldn't store the key: %@" : {
       "comment" : "kind:error"
     },
+    "The Mac is offline: only drafts on this Mac are listed." : {
+      "comment" : "kind:error"
+    },
     "The Security Assessment report, with the app’s name, your name as provider, and your company’s seal." : {
       "comment" : "kind:description"
     },
@@ -23431,8 +23959,14 @@
     "The default page’s screenshots don’t change." : {
       "comment" : "kind:progress-step"
     },
+    "The description has a link, which Apple refuses. Put links in supplementalMaterialsUris." : {
+      "comment" : "kind:error"
+    },
     "The encryption isn’t exempt, so the key is YES and %@ names the approved encryption declaration %@: its code is %@. With generated Info.plist settings that's INFOPLIST_KEY_%@ = YES and INFOPLIST_KEY_%@ = %@; in an Info.plist, <key>%@</key><true/> and <key>%@</key><string>%@</string>." : {
       "comment" : "kind:other"
+    },
+    "The end date is before the start date." : {
+      "comment" : "kind:error"
     },
     "The event" : {
       "comment" : "kind:other"
@@ -23822,6 +24356,9 @@
       "comment" : "kind:other"
     },
     "The newest build is still waiting for its encryption answer, so the key isn’t in it." : {
+      "comment" : "kind:description"
+    },
+    "The next time you push from Review & Push." : {
       "comment" : "kind:description"
     },
     "The notes are empty. Propose the notes themselves." : {
@@ -24295,6 +24832,9 @@
     "The sound track couldn't be made." : {
       "comment" : "kind:description"
     },
+    "The start date has passed. Pick one that hasn’t." : {
+      "comment" : "kind:error"
+    },
     "The subhead %@ on %@. Write it shorter." : {
       "comment" : "kind:description"
     },
@@ -24312,6 +24852,9 @@
     },
     "The subscription waits in Review & Push: the push creates it first, then this offer. Discarding the subscription discards the offer too." : {
       "comment" : "kind:other"
+    },
+    "The suggested description is in the field. Edit it as you like." : {
+      "comment" : "kind:toast"
     },
     "The suggestion has no language to test." : {
       "comment" : "kind:description"
@@ -24601,6 +25144,9 @@
     "This account" : {
       "comment" : "kind:section-title"
     },
+    "This app" : {
+      "comment" : "kind:description"
+    },
     "This app has no App Store version yet." : {
       "comment" : "kind:description"
     },
@@ -24631,11 +25177,23 @@
     "This isn’t a fastlane app_privacy_details.json file." : {
       "comment" : "kind:error"
     },
+    "This key can’t change nominations" : {
+      "comment" : "kind:tooltip"
+    },
+    "This key can’t create nominations" : {
+      "comment" : "kind:tooltip"
+    },
+    "This key can’t create nominations." : {
+      "comment" : "kind:banner"
+    },
     "This key can’t do that. Use an Admin or App Manager key." : {
       "comment" : "kind:error"
     },
     "This key can’t read Sales and Trends or App Analytics, so suggestions are Not very sure." : {
       "comment" : "kind:banner"
+    },
+    "This key can’t read or create nominations: the person needs an Admin or App Manager key." : {
+      "comment" : "kind:error"
     },
     "This key isn’t an Admin key." : {
       "comment" : "kind:description"
@@ -25237,6 +25795,9 @@
     "Untitled message" : {
       "comment" : "kind:section-title"
     },
+    "Untitled nomination" : {
+      "comment" : "kind:empty-state"
+    },
     "Untouched until you choose Use Template Again in Locales." : {
       "comment" : "kind:hint"
     },
@@ -25266,6 +25827,12 @@
     },
     "Update Index Data" : {
       "comment" : "kind:button"
+    },
+    "Update the draft" : {
+      "comment" : "kind:other"
+    },
+    "Update the draft in App Store Connect." : {
+      "comment" : "kind:description"
     },
     "Updated" : {
       "comment" : "kind:sheet-title"
@@ -25396,6 +25963,9 @@
     "Use a full https:// address." : {
       "comment" : "kind:description"
     },
+    "Use a full link that starts with https://" : {
+      "comment" : "kind:error"
+    },
     "Use a number higher than %@, the latest version." : {
       "comment" : "kind:error"
     },
@@ -25404,6 +25974,9 @@
     },
     "Use an API key" : {
       "comment" : "kind:suggestion-title"
+    },
+    "Use an Admin or App Manager key." : {
+      "comment" : "kind:banner"
     },
     "Use and Edit" : {
       "comment" : "kind:button"
@@ -25582,6 +26155,9 @@
     "Version %@" : {
       "comment" : "kind:section-title"
     },
+    "Version %@ adds new features to an app already on the App Store." : {
+      "comment" : "kind:suggestion-why"
+    },
     "Version %@ averages %@ ★ from %lld reviews." : {
       "comment" : "kind:banner"
     },
@@ -25632,6 +26208,9 @@
     },
     "Version %@ is read-only." : {
       "comment" : "kind:error"
+    },
+    "Version %@ is the app’s first: nothing is on the App Store yet." : {
+      "comment" : "kind:suggestion-why"
     },
     "Version %@ isn’t in App Store Connect yet. Push it first, then its texts." : {
       "comment" : "kind:error"
@@ -25918,6 +26497,9 @@
     "Went on without recording %@ again; the earlier recording plays" : {
       "comment" : "kind:history-entry"
     },
+    "What" : {
+      "comment" : "kind:field-label"
+    },
     "What %@ collects" : {
       "comment" : "kind:section-title"
     },
@@ -25938,6 +26520,12 @@
     },
     "What App Review sees is what you edited" : {
       "comment" : "kind:description"
+    },
+    "What Apple tells you:" : {
+      "comment" : "kind:field-label"
+    },
+    "What Apple’s editors read about what’s coming" : {
+      "comment" : "kind:other"
     },
     "What Atlas tells you about while you’re doing something else." : {
       "comment" : "kind:description"
@@ -26074,6 +26662,9 @@
     "What to try next, from Apple’s reports" : {
       "comment" : "kind:description"
     },
+    "What was sent" : {
+      "comment" : "kind:description"
+    },
     "What you push, signed on this Mac with your key and sent straight to App Store Connect." : {
       "comment" : "kind:description"
     },
@@ -26113,6 +26704,9 @@
     "What’s live now, or what the push sends (↑ ↓)" : {
       "comment" : "kind:tooltip"
     },
+    "What’s new, who it’s for and why now" : {
+      "comment" : "kind:placeholder"
+    },
     "What’s on its way finishes; the rest stays in Review & Push." : {
       "comment" : "kind:tooltip"
     },
@@ -26135,6 +26729,9 @@
       "comment" : "kind:section-title"
     },
     "When a reply is written" : {
+      "comment" : "kind:field-label"
+    },
+    "When:" : {
       "comment" : "kind:field-label"
     },
     "Where" : {
@@ -26172,6 +26769,9 @@
     },
     "Where it’s shown" : {
       "comment" : "kind:field-label"
+    },
+    "Where people can use it" : {
+      "comment" : "kind:description"
     },
     "Where people drop off between seeing %@ and paying, and what to change next." : {
       "comment" : "kind:description"
@@ -26229,6 +26829,9 @@
     },
     "Who is it for, and what should it do?" : {
       "comment" : "kind:sheet-body"
+    },
+    "Who sees it" : {
+      "comment" : "kind:field-label"
     },
     "Why" : {
       "comment" : "kind:section-title"
@@ -26398,6 +27001,9 @@
     "Worse · %@" : {
       "comment" : "kind:section-title"
     },
+    "Worth it for:" : {
+      "comment" : "kind:field-label"
+    },
     "Write Event Texts…" : {
       "comment" : "kind:section-title"
     },
@@ -26437,8 +27043,14 @@
     "Write headline" : {
       "comment" : "kind:empty-state"
     },
+    "Write the Description…" : {
+      "comment" : "kind:button"
+    },
     "Write the captions" : {
       "comment" : "kind:progress-step"
+    },
+    "Write the descriptions of %@'s draft nominations in Atlas. Read get_nominations with state DRAFT, then for each draft without a good description read the version being prepared (get_listing with fields [\"whatsNew\"]) and its linked events (get_in_app_events). Write for Apple's editors: what's new, who it's for and why now, in plain sentences, with no links and no promises of featuring. Send it with propose_nomination and the draft's nominationId, changing only the description." : {
+      "comment" : "kind:other"
     },
     "Write the final text." : {
       "comment" : "kind:description"
@@ -26469,6 +27081,9 @@
     },
     "Written by you" : {
       "comment" : "kind:section-title"
+    },
+    "Written from %@." : {
+      "comment" : "kind:suggestion-why"
     },
     "Written from the event’s name and descriptions. Change anything, or leave it." : {
       "comment" : "kind:other"
@@ -26577,6 +27192,9 @@
     },
     "You can close this window; Autopilot keeps going." : {
       "comment" : "kind:sheet-body"
+    },
+    "You can only archive it later. It can’t be withdrawn or edited." : {
+      "comment" : "kind:description"
     },
     "You can push them with the submission" : {
       "comment" : "kind:description"
@@ -26785,6 +27403,9 @@
     "Your suggestion for it still waits for the person." : {
       "comment" : "kind:other"
     },
+    "Your team, read-only, under Archived." : {
+      "comment" : "kind:description"
+    },
     "Your template" : {
       "comment" : "kind:section-title"
     },
@@ -26854,8 +27475,14 @@
     "a day as yyyy-MM-dd" : {
       "comment" : "kind:other"
     },
+    "a day, e.g. 2027-02-02, or an ISO 8601 date and time" : {
+      "comment" : "kind:error"
+    },
     "a decoration with type (shape, laurel, badge or art), x, y, w, color and z (back or front; a prop is white and in front without them); shapes are %@; art is %@" : {
       "comment" : "kind:description"
+    },
+    "a description" : {
+      "comment" : "kind:other"
     },
     "a device the App Preview is made for: %@" : {
       "comment" : "kind:other"
@@ -26865,6 +27492,9 @@
     },
     "a draft in Atlas" : {
       "comment" : "kind:other"
+    },
+    "a few weeks before it starts; up to 3 months for a launch." : {
+      "comment" : "kind:description"
     },
     "a file Atlas can read: Atlas is sandboxed, so send it to reviewScreenshotUploadURL from get_subscriptions with curl --data-binary @file.png and pass the fileId it returns" : {
       "comment" : "kind:other"
@@ -26950,6 +27580,12 @@
     "a month" : {
       "comment" : "kind:other"
     },
+    "a name" : {
+      "comment" : "kind:other"
+    },
+    "a new app, a version with real new features, or an In-App Event." : {
+      "comment" : "kind:description"
+    },
     "a new group, %@" : {
       "comment" : "kind:description"
     },
@@ -27001,6 +27637,9 @@
     "a slot from 1 to %lld" : {
       "comment" : "kind:other"
     },
+    "a start date" : {
+      "comment" : "kind:other"
+    },
     "a string" : {
       "comment" : "kind:other"
     },
@@ -27011,6 +27650,9 @@
       "comment" : "kind:other"
     },
     "a territory code such as USA or US" : {
+      "comment" : "kind:other"
+    },
+    "a type" : {
       "comment" : "kind:other"
     },
     "a version number" : {
@@ -27156,6 +27798,9 @@
     },
     "an In-App Event" : {
       "comment" : "kind:error"
+    },
+    "an app" : {
+      "comment" : "kind:other"
     },
     "an iPad screenshot" : {
       "comment" : "kind:other"
@@ -27478,6 +28123,9 @@
     "e.g. Insights" : {
       "comment" : "kind:placeholder"
     },
+    "e.g. Lumen 1.4: Weekly reflections" : {
+      "comment" : "kind:placeholder"
+    },
     "e.g. Today’s mood" : {
       "comment" : "kind:placeholder"
     },
@@ -27771,6 +28419,9 @@
     },
     "in %@" : {
       "comment" : "kind:other"
+    },
+    "in %lld days" : {
+      "comment" : "kind:description"
     },
     "in %lld hours" : {
       "comment" : "kind:other"
@@ -28177,6 +28828,9 @@
     "notes and demo steps, from your code" : {
       "comment" : "kind:sheet-body"
     },
+    "nothing after you submit. Nominating is no promise of featuring." : {
+      "comment" : "kind:description"
+    },
     "nothing missing" : {
       "comment" : "kind:hint"
     },
@@ -28272,6 +28926,9 @@
     },
     "one real screen from the captures, without a device frame (cropped, rounded, floating)" : {
       "comment" : "kind:other"
+    },
+    "one sentence the person can check" : {
+      "comment" : "kind:description"
     },
     "only the end card" : {
       "comment" : "kind:description"
@@ -28864,8 +29521,14 @@
     "to come" : {
       "comment" : "kind:progress-step"
     },
+    "today" : {
+      "comment" : "kind:description"
+    },
     "today at %@" : {
       "comment" : "kind:other"
+    },
+    "tomorrow" : {
+      "comment" : "kind:description"
     },
     "tomorrow at %@" : {
       "comment" : "kind:other"
@@ -28896,6 +29559,9 @@
     },
     "turn %@°" : {
       "comment" : "kind:description"
+    },
+    "type" : {
+      "comment" : "kind:other"
     },
     "typeface (%@; the screenshots use %@)" : {
       "comment" : "kind:description"
@@ -29019,6 +29685,9 @@
     },
     "year" : {
       "comment" : "kind:other"
+    },
+    "yesterday" : {
+      "comment" : "kind:description"
     },
     "yesterday at %@" : {
       "comment" : "kind:other"
@@ -29188,6 +29857,9 @@
     "“%@” is already %@: choose another name, or suggest its texts with propose_product_page_texts." : {
       "comment" : "kind:other"
     },
+    "“%@” is already archived." : {
+      "comment" : "kind:error"
+    },
     "“%@” is already in App Store Connect. Open Custom Product Pages to link the draft and queue what’s missing." : {
       "comment" : "kind:error"
     },
@@ -29257,7 +29929,13 @@
     "“%@” isn’t a country or region code. Use App Store Connect’s, e.g. USA or BRA." : {
       "comment" : "kind:other"
     },
+    "“%@” isn’t a device family. Use IPHONE, IPAD, MAC, APPLE_WATCH, APPLE_TV or VISION." : {
+      "comment" : "kind:error"
+    },
     "“%@” isn’t a font file Atlas can read." : {
+      "comment" : "kind:error"
+    },
+    "“%@” isn’t a full link. Use one that starts with https://." : {
       "comment" : "kind:error"
     },
     "“%@” isn’t a priority. Use HIGH or NORMAL." : {
@@ -29277,6 +29955,9 @@
     },
     "“%@” isn’t an App Store Connect locale code." : {
       "comment" : "kind:other"
+    },
+    "“%@” isn’t an App Store Connect locale. Use codes like en-US or pt-BR." : {
+      "comment" : "kind:error"
     },
     "“%@” isn’t an App Store language code. Use one like en-US or pt-BR." : {
       "comment" : "kind:error"
@@ -29305,6 +29986,9 @@
     "“%@” isn’t in App Store Connect yet, so it can’t be copied. Push it first." : {
       "comment" : "kind:error"
     },
+    "“%@” isn’t in App Store Connect yet. Push its draft first, then the submit." : {
+      "comment" : "kind:error"
+    },
     "“%@” isn’t in App Store Connect yet. Push the page first, then its screenshots." : {
       "comment" : "kind:error"
     },
@@ -29318,6 +30002,12 @@
       "comment" : "kind:error"
     },
     "“%@” isn’t on this Mac anymore. Make the page’s screenshots again." : {
+      "comment" : "kind:error"
+    },
+    "“%@” isn’t one of the account’s apps. Use an id from list_apps." : {
+      "comment" : "kind:error"
+    },
+    "“%@” isn’t one of the app’s In-App Events. Read get_in_app_events for their ids." : {
       "comment" : "kind:error"
     },
     "“%@” isn’t one of the choices get_app_information lists for %@." : {
@@ -29335,8 +30025,14 @@
     "“%@” waits in Review & Push with the message." : {
       "comment" : "kind:description"
     },
+    "“%@” was already submitted." : {
+      "comment" : "kind:error"
+    },
     "“%@” was submitted to App Review." : {
       "comment" : "kind:description"
+    },
+    "“%@” was submitted: it can’t be changed, only archived." : {
+      "comment" : "kind:error"
     },
     "“%@” went to App Review with %@. It runs once it’s approved." : {
       "comment" : "kind:description"
@@ -29349,6 +30045,9 @@
     },
     "“%@” · NEW" : {
       "comment" : "kind:progress-step"
+    },
+    "“%@” · submitted on %@" : {
+      "comment" : "kind:other"
     },
     "“%@”: %@ Change “%@” on the event’s page (Fix…), then Submit again." : {
       "comment" : "kind:description"

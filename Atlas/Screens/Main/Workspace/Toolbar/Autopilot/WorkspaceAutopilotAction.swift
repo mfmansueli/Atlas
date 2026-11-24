@@ -32,6 +32,9 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
     case makeEventArtwork
     case writeEventTexts
     case checkEventsForReview
+    // Nominations
+    case suggestNomination
+    case writeNominationDescription
     // App Information
     case suggestAnswers
     case checkPrivacy
@@ -58,6 +61,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .screenshots: [.makeScreenshots, .makeAppPreview, .makeArtwork, .recaptureSome]
         case .productPages: [.suggestPages, .makePageScreenshots]
         case .inAppEvents: [.makeEventArtwork, .writeEventTexts, .checkEventsForReview]
+        case .nominations: [.suggestNomination, .writeNominationDescription]
         case .appInformation: [.suggestAnswers, .checkPrivacy]
         case .subscriptionPricing: [.suggestPrices, .makeReviewScreenshots, .writeRetentionOffer]
         case .reviews: [.draftReplies, .replyAutomatically, .summarizeRequests]
@@ -111,6 +115,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
             .makeEventArtwork: String(localized: "Make Event Artwork…"),
             .writeEventTexts: String(localized: "Write Event Texts…"),
             .checkEventsForReview: String(localized: "Check It Will Pass App Review…"),
+            .suggestNomination: String(localized: "Suggest a Nomination…"),
+            .writeNominationDescription: String(localized: "Write the Description…"),
             .suggestAnswers: String(localized: "Suggest Answers…"),
             .checkPrivacy: String(localized: "Check Privacy Against the Code…"),
             .suggestPrices: String(localized: "Suggest Prices…"),
@@ -161,7 +167,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .makeReviewScreenshots: .subscriptionPricing
         // Free sees the settings with Upgrade…; Turn On waits for Pro.
         case .replyAutomatically: .reviews
-        case .writeEventTexts, .checkEventsForReview, .writeWhatsNew, .suggestSourceLanguageOnly, .askSomethingElse, .recaptureSome,
+        case .writeEventTexts, .checkEventsForReview, .suggestNomination, .writeNominationDescription, .writeWhatsNew,
+             .suggestSourceLanguageOnly, .askSomethingElse, .recaptureSome,
              .suggestPrices, .writeRetentionOffer, .draftReplies, .summarizeRequests, .findWhatToTry, .explainChange:
             nil
         }

@@ -292,6 +292,7 @@ struct MainView: View {
                 ),
                 productPages: productPages.count(for: app.id),
                 releaseProposals: ReleaseProposalStore.shared.pending(for: app.id).count,
+                nominations: NominationsStore.shared.count(for: app.id),
                 needsYou: SectionBadgeCounts.needsYou(appID: app.id, repliesArePro: !pro.isFree)
             )
         )

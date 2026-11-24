@@ -30,8 +30,8 @@ struct SectionBadgeCounts: Equatable {
     /// The open field suggestions, captions an assistant suggested, from
     /// Pricing products with an open price suggestion, and what `extras`
     /// adds: Reviews' suggested replies, In-App Events' suggested
-    /// languages, the Overview's release proposals and Analytics' new
-    /// findings.
+    /// languages, the Overview's release proposals, assistants'
+    /// nominations and Analytics' new findings.
     @MainActor
     init(appID: StoreApp.ID, suggestions: FieldSuggestionStore, screenshots: ScreenshotsDocumentCenter? = nil, pricing: Int = 0, extras: Extras = Extras()) {
         var counts: [AppWorkspaceSection: Int] = [:]
@@ -45,6 +45,7 @@ struct SectionBadgeCounts: Equatable {
         counts[.appInformation, default: 0] += extras.complianceAnswers
         counts[.productPages, default: 0] += extras.productPages
         counts[.overview, default: 0] += extras.releaseProposals
+        counts[.nominations, default: 0] += extras.nominations
         self.counts = counts
         newFindings = extras.newFindings
         needsYou = extras.needsYou
@@ -66,6 +67,9 @@ struct SectionBadgeCounts: Equatable {
         /// Release actions an assistant proposed, waiting on the
         /// Overview's version card.
         var releaseProposals = 0
+        /// Nominations and requests to submit or archive an assistant
+        /// suggested (`NominationsStore.count(for:)`).
+        var nominations = 0
         /// Sections where Autopilot waits for the person.
         var needsYou: Set<AppWorkspaceSection> = []
     }

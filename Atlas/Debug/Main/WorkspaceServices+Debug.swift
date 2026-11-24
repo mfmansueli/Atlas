@@ -22,6 +22,7 @@ extension WorkspaceServices {
             release: DebugReleaseServices(),
             inAppEvents: DebugInAppEventsServices(),
             productPages: DebugProductPagesServices(),
+            nominations: DebugNominationsServices(),
             push: DebugPushTransport()
         )
     }

@@ -36,6 +36,8 @@ struct WorkspaceAutopilotAsk: Equatable {
             .recaptureSome: recapture(app:),
             .writeEventTexts: eventTexts(app:),
             .checkEventsForReview: eventsReview(app:),
+            .suggestNomination: NominationsAskPrompt.suggest(app:),
+            .writeNominationDescription: NominationsAskPrompt.describe(app:),
             .suggestPrices: prices(app:),
             .writeRetentionOffer: retention(app:),
             .draftReplies: replies(app:),

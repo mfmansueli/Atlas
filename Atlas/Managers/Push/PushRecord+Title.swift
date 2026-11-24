@@ -10,7 +10,8 @@ extension PushRecord {
     /// 8 locales", "Subscription Pricing · Mexico, Türkiye, India" or
     /// "Subscription Pricing · 14 territories".
     static func title(for changes: [PendingChange]) -> String {
-        let sections = Array(Set(changes.map(\.section))).sorted { $0.shortcutDigit < $1.shortcutDigit }
+        let order = AppWorkspaceSection.allCases
+        let sections = Array(Set(changes.map(\.section))).sorted { order.firstIndex(of: $0) ?? 0 < order.firstIndex(of: $1) ?? 0 }
         guard sections.count == 1, let section = sections.first else {
             let names = sections.map(\.fullTitle).formatted(.list(type: .and))
             return String(localized: "\(names) · \(changes.count) changes")
@@ -37,6 +38,11 @@ extension PushRecord {
             return changes.count == 1 ? changes[0].title : String(localized: "\(changes.count) screenshots")
         case .appInformation, .overview, .analytics, .reviews, .inAppEvents, .productPages:
             return changes.count == 1 ? changes[0].title : String(localized: "\(changes.count) fields")
+        case .nominations:
+            // "Nominations · Lumen 1.4: Weekly reflections", "2 nominations".
+            let names = unique(changes.map { $0.group.components(separatedBy: " · ").dropFirst().joined(separator: " · ") })
+            if names.count == 1, let name = names.first, !name.isEmpty { return name }
+            return String(localized: "\(names.count) nominations", comment: "kind:other")
         }
     }
 

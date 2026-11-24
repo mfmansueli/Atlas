@@ -3,11 +3,11 @@
 //  Atlas
 //
 
-import Foundation
+import SwiftUI
 
-/// The nine sections of an app's workspace, picked in the sidebar
-/// (⌘1–⌘9), in the sidebar's order: Overview, then the Store Listing's
-/// sections, then what happens after release.
+/// The ten sections of an app's workspace, picked in the sidebar
+/// (⌘1–⌘9, and ⇧⌘F for Nominations), in the sidebar's order: Overview,
+/// then the Store Listing's sections, then what happens after release.
 enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable {
     /// Summary cards and quick actions.
     case overview
@@ -21,6 +21,8 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
     case productPages
     /// The cards on the App Store for what's happening in the app.
     case inAppEvents
+    /// Featuring nominations: what the account tells Apple's editors about.
+    case nominations
     /// Categories, age rating, App Privacy, App Review and export compliance.
     case appInformation
     /// Per-territory prices for subscriptions and in-app purchases.
@@ -39,6 +41,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .screenshots: String(localized: "Screenshots")
         case .productPages: String(localized: "Custom Product Pages")
         case .inAppEvents: String(localized: "In-App Events")
+        case .nominations: String(localized: "Nominations")
         case .appInformation: String(localized: "App Information")
         case .subscriptionPricing: String(localized: "Pricing")
         case .reviews: String(localized: "Reviews")
@@ -52,6 +55,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         switch self {
         case .subscriptionPricing: String(localized: "Subscription Pricing")
         case .productPages: String(localized: "Custom Product Pages")
+        case .nominations: String(localized: "Featuring Nominations")
         case .reviews: String(localized: "Ratings & Reviews")
         default: title
         }
@@ -71,6 +75,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .screenshots: "iphone"
         case .productPages: "doc.on.doc.fill"
         case .inAppEvents: "calendar"
+        case .nominations: "rosette"
         case .appInformation: "info.circle.fill"
         case .subscriptionPricing: "tag.fill"
         case .reviews: "star.fill"
@@ -78,8 +83,9 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         }
     }
 
-    /// The digit for ⌘1–⌘9, in the sidebar's order: Product Pages took ⌘4
-    /// and moved the four after it by one.
+    /// The key for ⌘1–⌘9, in the sidebar's order: Product Pages took ⌘4
+    /// and moved the four after it by one. Nominations, the tenth, is ⇧⌘F
+    /// (`shortcutModifiers`).
     var shortcutDigit: Character {
         switch self {
         case .overview: "1"
@@ -87,6 +93,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .screenshots: "3"
         case .productPages: "4"
         case .inAppEvents: "5"
+        case .nominations: "F"
         case .appInformation: "6"
         case .subscriptionPricing: "7"
         case .reviews: "8"
@@ -94,11 +101,21 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         }
     }
 
+    /// ⇧ with ⌘ for Nominations (⌘F is Find); ⌘ alone for the rest.
+    var shortcutModifiers: EventModifiers {
+        self == .nominations ? [.command, .shift] : .command
+    }
+
+    /// "⌘5", "⇧⌘F": the shortcut as menus write it.
+    var shortcutText: String {
+        (self == .nominations ? "⇧⌘" : "⌘") + String(shortcutDigit)
+    }
+
     /// Where the sidebar lists it.
     var group: AppWorkspaceSectionGroup {
         switch self {
         case .overview: .overview
-        case .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing: .storeListing
+        case .storePage, .screenshots, .productPages, .inAppEvents, .nominations, .appInformation, .subscriptionPricing: .storeListing
         case .reviews, .analytics: .afterRelease
         }
     }

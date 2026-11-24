@@ -205,6 +205,18 @@
       "highContrastLight": "#EC5B8D",
       "highContrastDark": "#EC5B8D"
     },
+    "sectionNominations": {
+      "light": "#5F8418",
+      "dark": "#5F8418",
+      "highContrastLight": "#5F8418",
+      "highContrastDark": "#5F8418"
+    },
+    "sectionNominationsTop": {
+      "light": "#8DB33A",
+      "dark": "#8DB33A",
+      "highContrastLight": "#8DB33A",
+      "highContrastDark": "#8DB33A"
+    },
     "sectionOverview": {
       "light": "#2C2C30",
       "dark": "#2C2C30",
