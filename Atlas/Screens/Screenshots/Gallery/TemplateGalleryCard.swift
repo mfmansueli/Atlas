@@ -18,6 +18,9 @@ struct TemplateGalleryCard: View {
     let isProminent: Bool
     /// 1, 2, 3 when picked for an Autopilot run.
     var pickNumber: Int?
+    /// Part of Pro in Free: the button carries the PRO chip and opens the
+    /// paywall.
+    var isLocked = false
     var onUse: () -> Void
 
     var body: some View {
@@ -80,10 +83,16 @@ struct TemplateGalleryCard: View {
 
     @ViewBuilder
     private var button: some View {
-        let button = Button(buttonTitle, action: onUse)
-            .controlSize(.regular)
-            .accessibilityLabel(Text("\(buttonTitle): \(starter.title)"))
-            .accessibilityIdentifier("screenshots.starter.\(starter.rawValue)")
+        let button = Button(action: onUse) {
+            HStack(spacing: Spacing.xSmall) {
+                Text(buttonTitle)
+                if isLocked { ProChip() }
+            }
+        }
+        .controlSize(.regular)
+        .accessibilityLabel(Text("\(buttonTitle): \(starter.title)"))
+        .accessibilityValue(isLocked ? Text(String(localized: "Part of Pro", comment: "kind:accessibility-label")) : Text(verbatim: ""))
+        .accessibilityIdentifier("screenshots.starter.\(starter.rawValue)")
         if isProminent {
             button.buttonStyle(.borderedProminent)
         } else {

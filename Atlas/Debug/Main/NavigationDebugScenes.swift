@@ -12,7 +12,8 @@ import SwiftUI
 /// - `nav-ov`, `nav-sp` (Store Page in German), `nav-ev`, `nav-rv`,
 ///   `nav-an`: a section selected in the sidebar.
 /// - `nav-accounts`: Accounts and keys open; `nav-addapp`: Add App open,
-///   with two apps made since the first sync.
+///   with two apps made since the first sync; `nav-accounts-free`:
+///   Accounts and keys on the Free plan, Add Another Key… with the PRO chip.
 /// - `nav-apps`: the app menu open; `nav-ph`: Reviews with the footer
 ///   following a phased release; `nav-free`: the Free plan.
 /// - `nav-s`: the sidebar hidden, so the toolbar has the section menu and
@@ -21,8 +22,8 @@ import SwiftUI
 ///   Store Page and App Information taking `prefetchDelay` to read.
 enum NavigationDebugScenes {
     static let ids = [
-        "nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-accounts", "nav-addapp", "nav-ph", "nav-free", "nav-s", "nav-s-menu",
-        "nav-prefetch",
+        "nav-ov", "nav-sp", "nav-ev", "nav-rv", "nav-an", "nav-apps", "nav-accounts", "nav-accounts-free", "nav-addapp", "nav-ph",
+        "nav-free", "nav-s", "nav-s-menu", "nav-prefetch",
     ]
 
     /// How long each slow read of `nav-prefetch` takes.
@@ -37,6 +38,12 @@ enum NavigationDebugScenes {
         case "nav-accounts":
             NavigationDebugLaunch.opensMenuSheet = "accounts"
             return overview()
+        case "nav-accounts-free":
+            NavigationDebugLaunch.opensMenuSheet = "accounts"
+            return AnyView(DebugMainScene(
+                services: ReleaseDebugScenes.services(.prepare), section: .overview, suggestions: SuggestionsDebugData.store(),
+                release: DebugReleaseData.store(.prepare), isFree: true
+            ))
         case "nav-addapp":
             NavigationDebugLaunch.opensMenuSheet = "addApp"
             var services = ReleaseDebugScenes.services(.prepare)

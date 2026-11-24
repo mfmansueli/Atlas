@@ -83,6 +83,34 @@ final class PaywallUITests: XCTestCase {
         XCTAssertTrue(app.buttons["paywall.plan.yearly"].waitForExistence(timeout: 5))
     }
 
+    /// The Templates sheet in Free: Free's three templates switch as
+    /// before; the others carry the PRO chip and open the paywall.
+    func testAProTemplateOpensThePaywallInFree() {
+        launchFree(scene: "gallery")
+        let cinema = app.buttons["screenshots.starter.cinema"]
+        XCTAssertTrue(cinema.waitForExistence(timeout: 20))
+        XCTAssertEqual(cinema.value as? String, "Part of Pro")
+        XCTAssertNotEqual(app.buttons["screenshots.starter.band"].value as? String, "Part of Pro")
+        cinema.click()
+        XCTAssertTrue(element("paywall.context.title").waitForExistence(timeout: 5))
+        XCTAssertEqual(text(of: element("paywall.context.title")), "This template is part of Pro")
+        app.buttons["paywall.close"].click()
+        XCTAssertTrue(element("paywall.sheet").waitForNonExistence(timeout: 5))
+    }
+
+    /// Accounts and keys in Free, with a key saved: Add Another Key…
+    /// opens the paywall, not the connect form.
+    func testASecondKeyOpensThePaywallInFree() {
+        launchFree(scene: "nav-accounts")
+        let addKey = app.buttons["accounts.addKey"]
+        XCTAssertTrue(addKey.waitForExistence(timeout: 15))
+        XCTAssertTrue(element("pro.chip").exists)
+        addKey.click()
+        XCTAssertTrue(element("paywall.context.title").waitForExistence(timeout: 5))
+        XCTAssertEqual(text(of: element("paywall.context.title")), "More than one account is part of Pro")
+        XCTAssertFalse(element("connect.form").exists)
+    }
+
     func testBuyingEndsOnFinishingWhatWasStarted() {
         launchFree()
         let acceptAll = app.buttons["languageBar.acceptAll"]

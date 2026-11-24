@@ -29,6 +29,8 @@ struct AppSwitcher: View {
     @Environment(\.openSettings) private var openSettings
     /// For Add's toast; nil in previews.
     @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+    /// Free's one account, for Add Another Key…'s PRO chip; nil in previews.
+    @Environment(ProGate.self) private var pro: ProGate?
 
     /// The sheets the app menu opens.
     private enum MenuSheet: String, Identifiable {
@@ -90,7 +92,8 @@ struct AppSwitcher: View {
                     onManageKeys: {
                         SettingsNavigation.shared.pane = .accounts
                         openSettings()
-                    }
+                    },
+                    addKeyNeedsPro: !pro.mayAddAccount(accountCount: accounts.count)
                 )
             case .addApp:
                 AddAppSheet(viewModel: viewModel, teamName: current?.name) { app in

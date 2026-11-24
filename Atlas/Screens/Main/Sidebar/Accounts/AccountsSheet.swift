@@ -17,6 +17,8 @@ struct AccountsSheet: View {
     let onSwitch: (TeamAccount) -> Void
     let onAddKey: () -> Void
     let onManageKeys: () -> Void
+    /// Free with a key saved: Add Another Key… carries the PRO chip.
+    var addKeyNeedsPro = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -57,7 +59,10 @@ struct AccountsSheet: View {
                         dismiss()
                         onAddKey()
                     } label: {
-                        Label(String(localized: "Add Another Key…", comment: "kind:button"), systemImage: "plus")
+                        HStack(spacing: Spacing.xSmall) {
+                            Label(String(localized: "Add Another Key…", comment: "kind:button"), systemImage: "plus")
+                            if addKeyNeedsPro { ProChip() }
+                        }
                     }
                     .accessibilityIdentifier("accounts.addKey")
                     Text(String(localized: "Another team, a client’s account, or a new key for this one.", comment: "kind:hint"))

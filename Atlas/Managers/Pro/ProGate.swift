@@ -57,6 +57,49 @@ final class ProGate {
         }
     }
 
+    /// `require` from the Settings window: its paywall opens there.
+    func requireInSettings(_ context: PaywallContext, then action: @escaping () -> Void) {
+        if let feature = context.feature, !entitlements.canUse(feature) {
+            settingsPaywall = PaywallModel(context: context, entitlements: entitlements, onContinue: action)
+        } else {
+            action()
+        }
+    }
+
+    // MARK: - Free's limits
+
+    /// Whether another App Store Connect key may be added: any with Pro;
+    /// in Free only while fewer than `Entitlements.freeAppLimit` are saved
+    /// (the first key, or one put back after removing the old one).
+    func mayAddAccount(accountCount: Int) -> Bool {
+        !isFree || accountCount < Entitlements.freeAppLimit
+    }
+
+    /// Add Another Key…: the sheet, or in Free with a key saved already the
+    /// paywall (on the Settings window `inSettings`), whose continue button
+    /// opens the sheet once Pro is bought.
+    func requireNewAccount(accountCount: Int, inSettings: Bool = false, then action: @escaping () -> Void) {
+        if mayAddAccount(accountCount: accountCount) {
+            action()
+        } else if inSettings {
+            requireInSettings(.secondAccount, then: action)
+        } else {
+            require(.secondAccount, then: action)
+        }
+    }
+
+    /// Whether `starter` may be picked: any with Pro; in Free one of
+    /// `FreePlanLimits.templates`, or the one already in use.
+    func mayUse(_ starter: TemplateStarter, inUse: TemplateStarter? = nil) -> Bool {
+        !isFree || FreePlanLimits.includes(starter) || starter == inUse
+    }
+
+    /// Whether the template editor may show `display`: any with Pro; in
+    /// Free iPhone and iPad (`FreePlanLimits.displays`).
+    func mayShow(_ display: ScreenshotDisplayType) -> Bool {
+        !isFree || FreePlanLimits.includes(display)
+    }
+
     /// The toolbar's Pro button: the plans, with no card.
     func showPlans() {
         paywall = PaywallModel(context: .menu, entitlements: entitlements)
@@ -87,5 +130,25 @@ extension ProGate? {
 
     func require(_ context: PaywallContext, then action: @escaping () -> Void) {
         if let self { self.require(context, then: action) } else { action() }
+    }
+
+    func requireInSettings(_ context: PaywallContext, then action: @escaping () -> Void) {
+        if let self { self.requireInSettings(context, then: action) } else { action() }
+    }
+
+    func mayAddAccount(accountCount: Int) -> Bool {
+        self?.mayAddAccount(accountCount: accountCount) ?? true
+    }
+
+    func requireNewAccount(accountCount: Int, inSettings: Bool = false, then action: @escaping () -> Void) {
+        if let self { self.requireNewAccount(accountCount: accountCount, inSettings: inSettings, then: action) } else { action() }
+    }
+
+    func mayUse(_ starter: TemplateStarter, inUse: TemplateStarter? = nil) -> Bool {
+        self?.mayUse(starter, inUse: inUse) ?? true
+    }
+
+    func mayShow(_ display: ScreenshotDisplayType) -> Bool {
+        self?.mayShow(display) ?? true
     }
 }

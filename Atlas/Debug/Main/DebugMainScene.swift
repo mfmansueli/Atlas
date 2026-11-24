@@ -38,6 +38,8 @@ struct DebugMainScene: View {
     /// The unnamed key's own session; nil shows the sample accounts.
     @State private var keySession: AppSession?
     @Environment(AppSession.self) private var session
+    /// The launch's gate (`-AtlasPro`), when the scene has no Free one.
+    @Environment(ProGate.self) private var launchGate: ProGate?
 
     init(
         services: WorkspaceServices = .debug,
@@ -100,7 +102,10 @@ struct DebugMainScene: View {
             section: section,
             presentedSheet: presentedSheet,
             isFirstSync: isFirstSync,
-            onAddKey: { session.isAddingKey = true },
+            onAddKey: {
+                let accounts = keySession?.accounts ?? DebugFixtures.accounts
+                (freeGate ?? launchGate).requireNewAccount(accountCount: accounts.count) { session.isAddingKey = true }
+            },
             onTeamNameFound: { keySession?.recordTeamName($0, for: DebugFixtures.keyID) },
             prefetchesSections: prefetchesSections
         )

@@ -16,6 +16,8 @@ struct RootView: View {
     @Environment(BackgroundWork.self) private var background: BackgroundWork?
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) private var openWindow
+    /// Free's one account; nil in previews.
+    @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
         @Bindable var session = session
@@ -53,7 +55,8 @@ struct RootView: View {
                 accounts: session.accounts,
                 isFirstSync: session.firstSyncKeyID == credentials.keyID,
                 onSelectAccount: { session.select(keyID: $0.keyID) },
-                onAddKey: { session.isAddingKey = true },
+                // In Free a second key opens the paywall first.
+                onAddKey: { pro.requireNewAccount(accountCount: session.keys.count) { session.isAddingKey = true } },
                 onFirstSyncFinished: session.finishFirstSync,
                 onCancelFirstSync: { try? session.cancelFirstSync() },
                 onTeamNameFound: { session.recordTeamName($0, for: credentials.keyID) }
