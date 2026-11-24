@@ -14,7 +14,7 @@ enum ProFeature: String, CaseIterable, Hashable, Sendable, Identifiable {
     case acceptAll
     /// Screenshot Autopilot: screenshots, App Preview and header artwork.
     case autopilot
-    /// Recommended prices for every country.
+    /// Suggested prices for every country.
     case recommendedPrices
     /// Retention messages and offers.
     case retention

@@ -41,7 +41,7 @@ struct MenuBarDebugScene: View {
         if note {
             if isNoteShown {
                 StillRunningNote(
-                    onQuitWhenClosed: { done("Quit When I Close the Window") },
+                    onQuitWhenClosed: { done("Quit When Window Closes") },
                     onDismiss: { done("Got It") }
                 )
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))

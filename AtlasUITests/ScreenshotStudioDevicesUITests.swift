@@ -89,7 +89,7 @@ final class ScreenshotStudioDevicesUITests: XCTestCase {
         launch(scene: "st-live-watch")
         let note = element("studio.store.note")
         XCTAssertTrue(note.waitForExistence(timeout: 15))
-        XCTAssertEqual(text(of: note), "Live now · 2 English captures, uploaded by hand")
+        XCTAssertEqual(text(of: note), "Live now · 2 English captures, added by hand")
         XCTAssertTrue(element("studio.device.APP_WATCH_ULTRA").exists)
     }
 

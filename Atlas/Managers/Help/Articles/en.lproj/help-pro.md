@@ -14,7 +14,7 @@ related: assistant
 | Suggestions | Accept one at a time | Also Accept All Languages and Accept All Pages |
 | Screenshots | 3 templates, iPhone and iPad | All 14 templates, every device, Autopilot |
 | Artwork from Claude | — | ✓ |
-| Recommended prices and retention offers | — | ✓ |
+| Suggested prices and retention offers | — | ✓ |
 | Suggested replies and Reply to All | — | ✓ |
 
 > Pro’s price excludes assistant usage: you bring your own. If Pro ends, your work stays editable.

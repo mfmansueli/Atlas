@@ -41,7 +41,7 @@ struct StudioPreviewBuilderDevicesTests {
         #expect(preview.displayType == .watch)
         #expect(preview.shots.map(\.label) == ["1 · Mood check-in", "2 · Today’s prompt"])
         #expect(preview.shots.allSatisfy { $0.chip == nil })
-        #expect(preview.note == "Live now · 2 English captures, uploaded by hand")
+        #expect(preview.note == "Live now · 2 English captures, added by hand")
         #expect(preview.searchNote.hasPrefix("Apple Watch screenshots show only on the product page"))
     }
 

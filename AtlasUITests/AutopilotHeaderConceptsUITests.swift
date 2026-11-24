@@ -315,7 +315,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         XCTAssertTrue(text(of: line).contains(" languages · about "), text(of: line))
         XCTAssertFalse(element("autopilot.guided.review.approve").isEnabled)
         let note = text(of: element("autopilot.guided.review.approveNote"))
-        XCTAssertTrue(note.hasPrefix("You can approve once the new loop is made · about "), note)
+        XCTAssertTrue(note.hasPrefix("Approve once the new loop is made · about "), note)
         attachScreenshot("Review · new loop being made")
     }
 

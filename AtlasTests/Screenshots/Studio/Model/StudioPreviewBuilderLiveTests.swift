@@ -74,7 +74,7 @@ struct StudioPreviewBuilderLiveTests {
 
     @Test func aSetUploadedByHandDownloadsAndSaysSo() {
         let preview = StudioTestFixtures.builder(locale: "en-GB").preview()
-        #expect(preview.note == "Live now · uploaded by hand")
+        #expect(preview.note == "Live now · added by hand")
         #expect(preview.shots.allSatisfy { $0.chip == nil })
         #expect(preview.shots.allSatisfy { shot in
             if case .live = shot.image { return true }

@@ -125,7 +125,7 @@ struct StudioPreviewBuilder {
             default: String(localized: "\(count) screenshots")
             }
             let isAtlass = set.screenshots.allSatisfy { $0.checksum.map(pushedChecksums.contains) ?? false }
-            let made = isAtlass ? String(localized: "made with Atlas") : String(localized: "uploaded by hand")
+            let made = isAtlass ? String(localized: "made with Atlas") : String(localized: "added by hand")
             preview.note = String(localized: "Live now · \(shots), \(made)")
         }
     }
@@ -166,10 +166,10 @@ struct StudioPreviewBuilder {
         return .live(shot)
     }
 
-    /// "uploaded by hand" or "made with Atlas".
+    /// "added by hand" or "made with Atlas".
     private func madeTitle(locale: String, display: ScreenshotDisplayType) -> String {
         let states = matrix.row(locale: locale, displayType: display).map(\.state)
-        if states.contains(.uploadedByHand) { return String(localized: "uploaded by hand") }
+        if states.contains(.uploadedByHand) { return String(localized: "added by hand") }
         if states.contains(.live) || states.contains(.notPushed) { return String(localized: "made with Atlas") }
         return String(localized: "in App Store Connect")
     }

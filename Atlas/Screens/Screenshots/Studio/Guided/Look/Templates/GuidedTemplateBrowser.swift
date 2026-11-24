@@ -128,11 +128,11 @@ struct GuidedTemplateBrowser: View {
         .accessibilityIdentifier("autopilot.guided.look.template.\(starter.rawValue)")
     }
 
-    /// "Cinema, pick 2, in use now", "Arcade, new".
+    /// "Cinema, pick 2, in use", "Arcade, new".
     private func thumbnailLabel(_ starter: TemplateStarter, number: Int?, isInUse: Bool) -> String {
         var parts = [starter.title]
         if let number { parts.append(String(localized: "pick \(number)")) }
-        if isInUse { parts.append(String(localized: "in use now")) }
+        if isInUse { parts.append(String(localized: "in use")) }
         if starter.isNew { parts.append(String(localized: "new")) }
         return parts.joined(separator: ", ")
     }

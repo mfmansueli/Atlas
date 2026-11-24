@@ -136,7 +136,7 @@ final class EventArtworkUITests: XCTestCase {
         attach("ev-free")
         element("events.art.make").click()
         XCTAssertTrue(element("paywall.context.title").waitForExistence(timeout: 10))
-        XCTAssertEqual(text(of: element("paywall.context.title")), "Event artwork from Claude is part of Pro")
+        XCTAssertEqual(text(of: element("paywall.context.title")), "Event artwork is part of Pro")
         XCTAssertFalse(element("events.art.title").exists)
     }
 

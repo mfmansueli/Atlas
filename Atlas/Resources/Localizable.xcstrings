@@ -27043,6 +27043,9 @@
     "add the details image" : {
       "comment" : "kind:hint"
     },
+    "added by hand" : {
+      "comment" : "kind:section-title"
+    },
     "added to the Asset Library when you push" : {
       "comment" : "kind:description"
     },
@@ -27769,7 +27772,7 @@
     "in the project" : {
       "comment" : "kind:description"
     },
-    "in use now" : {
+    "in use" : {
       "comment" : "kind:other"
     },
     "inactive" : {
@@ -28872,9 +28875,6 @@
     },
     "upload a build from Xcode (none is ready yet)" : {
       "comment" : "kind:other"
-    },
-    "uploaded by hand" : {
-      "comment" : "kind:section-title"
     },
     "used for tracking" : {
       "comment" : "kind:sheet-body"

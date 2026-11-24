@@ -74,7 +74,7 @@ final class AutopilotSimulatorsUITests: XCTestCase {
         app.launch(debugScene: "st-duo-closed")
         let log = showDetails()
         XCTAssertTrue(wait(until: {
-            self.text(of: log).contains("iPhone Duo was closed: Atlas opened it in Device Hub")
+            self.text(of: log).contains("Opened iPhone Duo in Device Hub")
         }, timeout: 15), text(of: log))
         XCTAssertTrue(wait(until: { self.text(of: log).contains("iPhone Duo is open: its screens are captured next") }, timeout: 10), text(of: log))
         XCTAssertTrue(element("autopilot.problem").waitForNonExistence(timeout: 10))
@@ -89,10 +89,10 @@ final class AutopilotSimulatorsUITests: XCTestCase {
         let status = element("autopilot.problem.duo")
         XCTAssertTrue(status.waitForExistence(timeout: 15))
         XCTAssertTrue(wait(until: {
-            self.text(of: status).hasPrefix("Closed: allow Atlas in Privacy & Security › Accessibility, and it opens iPhone Duo itself.")
+            self.text(of: status).hasPrefix("Closed. Allow Atlas in Privacy & Security › Accessibility; it only presses Open in Device Hub.")
         }, timeout: 10), text(of: status))
         let note = element("autopilot.problem.note")
-        XCTAssertTrue(text(of: note).hasPrefix("Atlas uses it only to press Open in iPhone Duo’s window in Device Hub"), text(of: note))
+        XCTAssertTrue(text(of: note).hasPrefix("Atlas uses it only to press Open in Device Hub"), text(of: note))
         XCTAssertTrue(app.buttons["autopilot.problem.accessibility"].exists)
         XCTAssertTrue(app.buttons["autopilot.problem.deviceHub"].exists)
         XCTAssertFalse(element("autopilot.problem.fix").exists)
@@ -100,10 +100,10 @@ final class AutopilotSimulatorsUITests: XCTestCase {
 
         let log = showDetails()
         XCTAssertTrue(wait(until: {
-            self.text(of: log).contains("Atlas needs Accessibility to open iPhone Duo: macOS asked for it")
+            self.text(of: log).contains("Requested Accessibility to open iPhone Duo")
         }, timeout: 5), text(of: log))
         XCTAssertTrue(wait(until: {
-            self.text(of: log).contains("iPhone Duo was closed: Atlas opened it in Device Hub")
+            self.text(of: log).contains("Opened iPhone Duo in Device Hub")
         }, timeout: 20), text(of: log))
         XCTAssertTrue(element("autopilot.problem").waitForNonExistence(timeout: 10))
     }
@@ -118,7 +118,7 @@ final class AutopilotSimulatorsUITests: XCTestCase {
         XCTAssertTrue(problem.waitForNonExistence(timeout: 15))
         let log = showDetails()
         XCTAssertTrue(wait(until: { self.text(of: log).contains("iPhone Duo is open: its screens are captured next") }, timeout: 5), text(of: log))
-        XCTAssertFalse(text(of: log).contains("Atlas opened it"), text(of: log))
+        XCTAssertFalse(text(of: log).contains("Opened iPhone Duo"), text(of: log))
     }
 
     /// A stuck iPhone Duo (its SpringBoard crashed, a spinner on its inner
@@ -128,10 +128,10 @@ final class AutopilotSimulatorsUITests: XCTestCase {
         app.launch(debugScene: "st-duo-stuck")
         let log = showDetails()
         XCTAssertTrue(wait(until: {
-            self.text(of: log).contains("iPhone Duo was stuck, its SpringBoard crashed: Atlas restarted it")
+            self.text(of: log).contains("Restarted iPhone Duo: its SpringBoard crashed")
         }, timeout: 15), text(of: log))
         XCTAssertTrue(wait(until: {
-            self.text(of: log).contains("iPhone Duo was closed: Atlas opened it in Device Hub")
+            self.text(of: log).contains("Opened iPhone Duo in Device Hub")
         }, timeout: 15), text(of: log))
         XCTAssertTrue(element("autopilot.problem").waitForNonExistence(timeout: 10))
     }

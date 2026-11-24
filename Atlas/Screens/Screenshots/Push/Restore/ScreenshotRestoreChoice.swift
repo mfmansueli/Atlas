@@ -21,7 +21,7 @@ struct ScreenshotRestoreChoice: Identifiable, Hashable, Sendable {
         images.filter { $0.displayType == display }.sorted { $0.position < $1.position }
     }
 
-    /// "5 + 5 screenshots · uploaded by hand", "Had none · used English
+    /// "5 + 5 screenshots · added by hand", "Had none · used English
     /// (U.S.)".
     var note: String {
         guard let first = images.first else { return String(localized: "Had none · used \(primaryLocaleName)") }
