@@ -12,6 +12,9 @@ import Foundation
 struct LiveScreenshotPushServices: ScreenshotPushServices {
     let client: AppStoreConnectClient
     var backups: any ScreenshotBackupStore = FileScreenshotBackupStore()
+    /// Where a replaced screenshot's image is read before it's kept: one
+    /// already seen in Atlas comes without a download.
+    var images = RemoteImageCache.shared
     var state: any ScreenshotPushStateStore = FileScreenshotPushStateStore()
 
     var uploads: any ScreenshotUploadTransport { client }
@@ -28,6 +31,6 @@ struct LiveScreenshotPushServices: ScreenshotPushServices {
         if let missing = screenshot.missingImage { throw missing }
         let width = screenshot.pixelSize?.width ?? ScreenshotDisplayType.iPhone.portraitPixelSize.width
         guard let url = screenshot.imageURL(width: width) else { throw LiveScreenshotImageError.noImage }
-        return try await client.download(url)
+        return try await images.data(for: url)
     }
 }

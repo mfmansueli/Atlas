@@ -19,13 +19,4 @@ extension AppStoreConnectClient {
         guard let http = response as? HTTPURLResponse else { throw AppStoreConnectError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else { throw AppStoreConnectError(statusCode: http.statusCode, body: body) }
     }
-
-    /// A live screenshot's file from its image URL, to keep before it's
-    /// deleted.
-    func download(_ url: URL) async throws -> Data {
-        let (data, response) = try await transport.send(URLRequest(url: url))
-        guard let http = response as? HTTPURLResponse else { throw AppStoreConnectError.invalidResponse }
-        guard (200..<300).contains(http.statusCode) else { throw AppStoreConnectError(statusCode: http.statusCode, body: data) }
-        return data
-    }
 }

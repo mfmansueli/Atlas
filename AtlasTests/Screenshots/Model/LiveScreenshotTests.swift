@@ -44,4 +44,19 @@ struct LiveScreenshotTests {
         await #expect(throws: LiveScreenshotImageError.stillProcessing) { try await services.liveImageData(Self.withoutImage("UPLOAD_COMPLETE")) }
         #expect(transport.requests.isEmpty)
     }
+
+    @Test func aReplacedScreenshotIsKeptFromTheImageCache() async throws {
+        let server = RemoteImageTestServer()
+        let transport = FakeHTTPTransport([])
+        var services = LiveScreenshotPushServices(client: AppStoreConnectClient(credentials: TestKeys.credentials(), transport: transport))
+        services.images = RemoteImageCache(directory: nil, fetch: server.fetch)
+        let shot = Self.processed
+        let url = try #require(shot.imageURL(width: shot.pixelSize?.width ?? 0))
+        // Seen before in the Studio: the backup reads it without a download.
+        _ = try await services.images.data(for: url)
+        let data = try await services.liveImageData(shot)
+        #expect(!data.isEmpty)
+        #expect(server.downloads(of: url) == 1)
+        #expect(transport.requests.isEmpty)
+    }
 }
