@@ -1,0 +1,51 @@
+//
+//  AutopilotRun+MCPDuo.swift
+//  Atlas
+//
+
+import Foundation
+
+/// iPhone Duo's inner and cover displays, for `get_capture_plan` and
+/// `next_step`.
+extension AutopilotRun {
+    /// The iPhone Duo device's `poses`: which slots (1-based) are captured
+    /// open (the inner display) and which closed (the cover display).
+    var mcpDuoPoses: JSONValue {
+        [
+            "shows": .string(plan.runChoice.duoSlotPoses == nil ? plan.duoScreens.rawValue : "asCaptured"),
+            "both": plan.duoScreens == .both && plan.runChoice.duoSlotPoses == nil ? .string(plan.duoBoth.rawValue) : .null,
+            "open": .array(plan.duoSlots(.open).map { .int($0 + 1) }),
+            "closed": .array(plan.duoSlots(.closed).map { .int($0 + 1) }),
+            "rule": .string(Self.duoRule(plan)),
+        ]
+    }
+
+    /// What the person chose for iPhone Duo, for the assistant.
+    static func duoRule(_ plan: AutopilotPlan) -> String {
+        let steps = "The steps are the same screens as iPhone."
+        if plan.runChoice.duoSlotPoses != nil {
+            return """
+            iPhone Duo's screenshots keep the pose the set's captures have, slot by slot (open and closed above): each \
+            target says its pose. Capture the closed ones first: next_step folds the Duo before it gives them. \(steps)
+            """
+        }
+        switch (plan.duoScreens, plan.duoBoth) {
+        case (.inner, _):
+            return "iPhone Duo's screenshots show the inner display, unfolded: Atlas opens the Duo in Device Hub. \(steps)"
+        case (.cover, _):
+            return "iPhone Duo's screenshots show the cover display: keep the Duo folded. \(steps)"
+        case (.both, .sideBySide):
+            return """
+            Each iPhone Duo screen is captured twice, folded (pose closed, the cover display) and unfolded (pose open, \
+            the inner display); Atlas puts both in one image. Capture the closed ones first: next_step folds \
+            the Duo before it gives them. \(steps)
+            """
+        case (.both, .separate):
+            return """
+            iPhone Duo's set has an inner screenshot of each screen, then a cover one for the first \
+            \(plan.duoSeparateCovers) (Apple takes 10). Each target says its pose; capture the closed ones first: \
+            next_step folds the Duo before it gives them. \(steps)
+            """
+        }
+    }
+}

@@ -1,0 +1,323 @@
+//
+//  GetDesignBriefTool.swift
+//  Atlas
+//
+
+import CoreGraphics
+import Foundation
+
+/// `get_design_brief`: what the design AI needs to design the set — the
+/// picks (with their images), every caption in every language with its
+/// length, canvas sizes and safe areas, the longest caption per slot,
+/// right-to-left languages, the brand source, and what the app is in its
+/// own words (`aboutTheApp`).
+struct GetDesignBriefTool: MCPTool {
+    let definition = MCPToolDefinition(
+        name: "get_design_brief",
+        title: "Get the screenshot design brief",
+        description: """
+        The brief for designing the Autopilot run's screenshot set: the picked capture of each screen (images \
+        attached), every caption in every language with its length, the longest caption per slot, canvas sizes \
+        and safe areas per device, right-to-left languages, the design project to use, the starters you can \
+        base a direction on, the template fields you can set, and aboutTheApp: its subtitle, categories, \
+        description, keywords per language, icon colors and the look the project scan reported (what it does, who it's for, \
+        its personality, motifs, what it avoids, theme colors and fonts; lookMissing says to read it first), so each \
+        direction is about what this app does and looks like its brand. When the run also makes product page header and \
+        search results artwork or an App Preview, extras says which canvases and what each is for, and artworkDesign \
+        says how you design the header and search yourself, as HTML pages Atlas renders in every language \
+        (the app's icon is attached after the picks); its askedByThePerson, when there, is what the person asked \
+        those images to be, and comes first. When the run makes no screenshots, noScreenshots says what to design \
+        instead and the screenshot canvases are left out. personNote, when there, is what the person told the designer \
+        for the screenshots: every direction follows it. Design around the real captures; never draw the interface. \
+        Send each direction with propose_direction.
+        """,
+        inputSchema: MCPToolDefinition.schema(
+            [
+                "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
+            ],
+            required: ["appId"]
+        )
+    )
+
+    func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
+        let session = try await MCPAutopilotSession.load(arguments, in: context)
+        let run = session.run
+        let services = session.context.services
+        let document = try? await services.loadDocument(for: session.app, primaryLocale: session.context.primaryLocale)
+        var picks: [JSONValue] = []
+        var images: [MCPToolOutcome.ImageContent] = []
+        for (slot, screen) in run.plan.screens.enumerated() {
+            guard let capture = run.pickedCapture(for: screen.id) else { continue }
+            picks.append([
+                "slot": .int(slot + 1), "screen": .string(screen.id), "name": .string(screen.name),
+                "pixelSize": .string(capture.pixelSize.title), "notes": .string(capture.notes),
+            ])
+            if let image = await services.captureImage(capture.screenshotCapture(slot: slot), for: session.app, pixelWidth: 360),
+               let data = ScreenshotPNG.data(image)
+            {
+                images.append(.init(data: data, mimeType: "image/png"))
+            }
+        }
+        var result: [String: JSONValue] = [
+            "run": .string(run.id),
+            "app": .string(session.app.name),
+            "picks": .array(picks),
+            "captions": .array(captions(run: run, document: document)),
+            "canvases": .array(canvases(run: run, session: session)),
+            "rightToLeft": .array(run.plan.localeCodes.filter { StoreLocaleCatalog.locale(code: $0)?.isRTL == true }.map(JSONValue.string)),
+            "directions": .int(run.expectedDirections),
+            "bases": .array(TemplateStarter.allCases.map {
+                ["base": .string($0.rawValue), "style": .string($0.style.rawValue), "what": .string($0.summary)]
+            }),
+            "templateFields": .array(TemplateSchema.rules.keys.sorted().map(JSONValue.string)),
+            "contract": """
+            Send each direction as a template: the JSON get_template returns (any subset of its fields) and/or ops \
+            {op: "replace", path, value} on a base starter. Fonts must be ones Atlas has (system fonts, the \
+            bundled gallery fonts, or uploaded); colors are hex. Per-slot looks go in slots[i].over (a whole bg, \
+            device.tilt, device.dx/dy, deco…). Laurels and badges show a rating, so only use the app's real \
+            App Store rating. Right-to-left languages mirror automatically.
+            """,
+        ]
+        Self.leaveOutTheScreenshots(&result, run: run, live: document?.template)
+        let app = session.app
+        if let extras = run.mcpBriefExtras(referenceURL: { services.referenceURL($0, for: app) }) { result["extras"] = extras }
+        if run.plan.alsoMakes.makesArtwork {
+            result["artworkDesign"] = AutopilotArtworkDesign.mcpContract(for: run) { services.referenceURL($0, for: app) }
+            if let icon = await AutopilotArtworkPages(context: session.context).icon() {
+                images.append(.init(data: icon, mimeType: "image/png"))
+                result["icon"] = "The app's icon is the last image attached, after the picks: the header and search continue it."
+            }
+        }
+        if let profile = await AutopilotAppProfile.load(app: app, locales: run.plan.localeCodes, in: context.workspace) {
+            result["aboutTheApp"] = profile.mcpJSON
+            session.center.noteStoreNames(profile.names, appID: app.id)
+        }
+        Self.addLook(&result, look: context.workspace.services.storePage.appSupport?.profile(for: app.id)?.look)
+        Self.addKnowledge(&result, knowledge: context.workspace.services.storePage.appSupport?.knowledge(for: app.id))
+        addDesignSource(&result, project: session.center.designProject(for: session.app.id), run: run)
+        if let revision = run.revision { result["revisionNote"] = .string(revision.note) }
+        Self.addScreenshotStyle(&result, run: run)
+        Self.addPersonNote(&result, run: run) { services.referenceURL($0, for: app) }
+        if !run.directions.isEmpty {
+            result["directionsSoFar"] = .array(run.directions.map { ["id": .string($0.id), "name": .string($0.name)] })
+        }
+        session.center.noteBriefRead(appID: session.app.id, by: context.clientName)
+        return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: session.target, outcome: .read)], images: images)
+    }
+
+    /// The design project to design in, or without one, the app's own
+    /// design when the assistant designs the looks.
+    private func addDesignSource(_ result: inout [String: JSONValue], project: DesignProject?, run: AutopilotRun) {
+        if let project {
+            result["designProject"] = designProject(project)
+        } else if run.designsFromTheApp {
+            result["designFrom"] = .string("No design project: \(AutopilotRun.ownDesignHow).")
+        }
+    }
+
+    /// `aboutTheApp.knowledge`: what the assistant told Atlas of the
+    /// app: what sets it apart, its voice, what's off limits.
+    static func addKnowledge(_ result: inout [String: JSONValue], knowledge: AppKnowledge?) {
+        guard let knowledge, !knowledge.isEmpty else { return }
+        var about = result["aboutTheApp"]?.objectValue ?? [:]
+        about["knowledge"] = knowledge.mcpJSON
+        result["aboutTheApp"] = .object(about)
+    }
+
+    /// `aboutTheApp.look`: the app's look and design language as the
+    /// project scan reported it. Without a complete one, `lookMissing` says
+    /// to read the project and report it before designing, since a
+    /// direction made from the App Store texts alone can't know the brand.
+    static func addLook(_ result: inout [String: JSONValue], look: AppLookProfile?) {
+        var about = result["aboutTheApp"]?.objectValue ?? [:]
+        if let look { about["look"] = look.mcpJSON }
+        if !about.isEmpty { result["aboutTheApp"] = .object(about) }
+        guard look?.isComplete != true else { return }
+        result["lookMissing"] = .string("""
+        Atlas doesn't know the app's design language yet. Before designing, read it in the project and send \
+        report_app_support with look, then call get_design_brief again: \(AppLookProfile.scanHow)
+        """)
+    }
+
+    /// The Screenshot style: the design source's own directions, one per
+    /// picked template ("<Template> · for <App>"), or the current template
+    /// kept (nothing to design for the screenshots).
+    static func addScreenshotStyle(_ result: inout [String: JSONValue], run: AutopilotRun) {
+        let plan = run.plan
+        guard plan.makesScreenshots else { return }
+        result["shot_style"] = .string(plan.screenshotStyle.rawValue)
+        switch plan.screenshotStyle {
+        case .free:
+            break
+        case .templates:
+            result["shot_templates"] = .array(plan.screenshotTemplates.map { .string($0) })
+            let subjects = TemplateArt.subjects.map(\.rawValue).joined(separator: ", ")
+            result["shotStyleSays"] = .string("""
+            Make one direction per template in shot_templates, adapting that gallery template (its base and layout) to \
+            the app and the design project, named “<Template> · for \(result["app"]?.stringValue ?? "the app")”. The \
+            gallery's art props that show a subject (\(subjects)) were drawn for its sample app: keep one only where it \
+            fits this app, and hide the others (off: true on that decoration). Its hand-drawn marks suit any app.
+            """)
+        case .keep:
+            result["shotStyleSays"] = """
+            The person keeps their current screenshot template: Atlas adds it as the only direction, so design no \
+            screenshot direction.
+            """
+        }
+    }
+
+    /// A run without screenshots: no screenshot canvases, and no template
+    /// unless it styles the App Preview; `noScreenshots` says what to design
+    /// instead, and `liveScreenshots` what the header sits above. A run
+    /// with screenshots keeps everything.
+    static func leaveOutTheScreenshots(_ result: inout [String: JSONValue], run: AutopilotRun, live: ScreenshotTemplate?) {
+        let plan = run.plan
+        guard !plan.makesScreenshots else { return }
+        let stylesPreview = !plan.previewDisplays.isEmpty
+        result["canvases"] = nil
+        if !stylesPreview {
+            for key in ["captions", "bases", "templateFields", "contract"] { result[key] = nil }
+        }
+        result["noScreenshots"] = .string(noScreenshots(
+            makesArtwork: plan.alsoMakes.makesArtwork, stylesPreview: stylesPreview, places: plan.alsoMakes.artworkSize.mcpPlaces
+        ))
+        if plan.alsoMakes.makesArtwork, let live {
+            result["liveScreenshots"] = [
+                "background": .array(live.background.stops.map(JSONValue.string)),
+                "headlineFont": .string(live.caption.headline.font),
+                "says": """
+                The live screenshots stay, and the header sits above the first of them: continue these colors and this \
+                typeface (Atlas checks the header against them).
+                """,
+            ]
+        }
+    }
+
+    /// What a direction is when the run makes no screenshots.
+    static func noScreenshots(makesArtwork: Bool, stylesPreview: Bool, places: String = "the header and search") -> String {
+        switch (makesArtwork, stylesPreview) {
+        case (true, false):
+            """
+            This run makes no screenshots: the live set and its template stay as they are. Design only \(places): send \
+            each direction with propose_direction's artworkDesign, one page per canvas, and leave base, template and ops \
+            out.
+            """
+        case (true, true):
+            """
+            This run makes no screenshots: the live set stays as it is. Design \(places) as artworkDesign pages; a \
+            direction's base, template and ops only style the App Preview's captions and end card.
+            """
+        default:
+            """
+            This run makes no screenshots, only the App Preview: the live set stays as it is, and a direction's base, \
+            template and ops are the look of the App Preview's captions and end card.
+            """
+        }
+    }
+
+    /// The connected design project, what was found in it, and what to do
+    /// when it can't be opened from where the assistant runs (Claude Code
+    /// that Atlas started has only Atlas's tools): design
+    /// from the brief, never stop for it.
+    private func designProject(_ project: DesignProject) -> JSONValue {
+        var brand: [String: JSONValue] = [
+            "kind": .string(project.kind.rawValue), "source": .string(project.link),
+            "createDirectionsThere": .bool(project.createsInClaudeDesign),
+            "ifYouCantOpenIt": """
+            Don't stop: design the three directions from this brief (and the summary, when there is one), send each \
+            with propose_direction, and skip creating them in the design project.
+            """,
+        ]
+        if let summary = project.summary {
+            brand["summary"] = summary.mcpJSON
+        } else {
+            brand["readFirst"] = "Open the design project, then send what you found with report_design_source so the person sees it's the right one."
+        }
+        return .object(brand)
+    }
+
+    /// Each slot's captions per language with their length, and the longest.
+    private func captions(run: AutopilotRun, document: ScreenshotsDocument?) -> [JSONValue] {
+        run.plan.screens.enumerated().map { slot, screen in
+            var perLocale: [JSONValue] = []
+            var longest: (String, String)?
+            for code in run.plan.localeCodes {
+                var headline = document?.captions.caption(locale: code, slot: slot)?.headline ?? ""
+                if headline.isEmpty, code == run.plan.primaryLocale { headline = screen.caption }
+                guard !headline.isEmpty else { continue }
+                perLocale.append(["locale": .string(code), "headline": .string(headline), "length": .int(headline.count)])
+                if headline.count > (longest?.1.count ?? 0) { longest = (code, headline) }
+            }
+            var item: [String: JSONValue] = ["slot": .int(slot + 1), "screen": .string(screen.name), "captions": .array(perLocale)]
+            if let longest { item["longest"] = ["locale": .string(longest.0), "headline": .string(longest.1), "length": .int(longest.1.count)] }
+            return .object(item)
+        }
+    }
+
+    /// Canvas size, orientation and safe area per device, from the base
+    /// starter turned the way the device's captures are.
+    private func canvases(run: AutopilotRun, session: MCPAutopilotSession) -> [JSONValue] {
+        var template = ScreenshotTemplate.starter(.above, id: session.app.id, title: session.app.name, slotCount: max(run.plan.screens.count, 1))
+        // Each device's canvas lies the way its captures do, as it will once used.
+        template.canvas = AutopilotLocalizer.canvas(template.canvas, matching: run)
+        let engine = ScreenshotLayoutEngine(catalog: session.context.services.fonts)
+        // Apple Watch's screenshots are the captures themselves: nothing to design.
+        // iPhone Duo has one for each pose the plan uses: the unfolded Duo's
+        // and the folded phone's (its cover display framed on the same canvas).
+        let items = run.plan.displayTypes.filter(\.hasCaptions).flatMap { display -> [(ScreenshotDisplayType, AutopilotDuoPose?)] in
+            display == .iPhoneDuo
+                ? Self.duoPoses(run.plan).map { (display, $0) }
+                : [(display, nil)]
+        }
+        return items.map { display, pose in
+            let cover = pose == .closed ? CaptureSizeRules.duoOuterSize : nil
+            let layout = engine.layout(template, slot: 0, locale: session.context.primaryLocale, displayType: display, caption: nil, captureSize: cover)
+            let safe = layout.safeArea
+            var canvas: [String: JSONValue] = [
+                "displayType": .string(display.mcpValue),
+                "pixelSize": .string(layout.canvas.pixelSize.title),
+                "orientation": .string(layout.canvas.isLandscape ? "landscape" : "portrait"),
+                "safeArea": ["x": .int(Int(safe.minX)), "y": .int(Int(safe.minY)), "width": .int(Int(safe.width)), "height": .int(Int(safe.height))],
+            ]
+            if let pose {
+                canvas["pose"] = .string(pose.rawValue)
+                canvas["slots"] = .array(run.plan.duoSlots(pose).map { .int($0 + 1) })
+                canvas["note"] = .string(Self.duoNote(pose, plan: run.plan))
+            }
+            if display == .visionPro {
+                canvas["note"] = """
+                Atlas lays Apple Vision Pro out itself: the template's background and headline style, the headline centered at the \
+                top, the capture in a floating window below. Design for iPhone and iPad.
+                """
+            }
+            if display == .mac {
+                canvas["note"] = """
+                Always landscape, 16:10. The capture is the Mac's whole screen (menu bar and the app's window), shown on a MacBook: \
+                the template's device settings place the MacBook, a little narrower than the device width, and keep it and its \
+                base inside the canvas. A template's "lan" (landscape) overrides, as for iPad lying down, apply here too.
+                """
+            }
+            return .object(canvas)
+        }
+    }
+
+    /// The poses that get a canvas of their own: a side-by-side image is
+    /// one (the unfolded Duo's).
+    static func duoPoses(_ plan: AutopilotPlan) -> [AutopilotDuoPose] {
+        if plan.duoScreens == .both, plan.duoBoth == .sideBySide { return [.open] }
+        return AutopilotDuoPose.allCases.filter { !plan.duoSlots($0).isEmpty }
+    }
+
+    /// What iPhone Duo's screenshots in `pose` look like, for the designer.
+    static func duoNote(_ pose: AutopilotDuoPose, plan: AutopilotPlan) -> String {
+        switch (plan.duoScreens, plan.duoBoth, pose) {
+        case (.both, .sideBySide, _):
+            "Each screenshot shows the unfolded Duo with the folded phone (its cover display, 1398 × 2034) beside it; Atlas places both."
+        case (_, _, .closed):
+            "The folded phone on its cover display (1398 × 2034), framed on this canvas; every iPhone Duo screenshot is 2007 × 2853."
+        case (_, _, .open):
+            "The unfolded Duo's inner display, as Apple requires: 2007 × 2853."
+        }
+    }
+}

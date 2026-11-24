@@ -1,0 +1,173 @@
+//
+//  ReviseArtworkConceptTool.swift
+//  Atlas
+//
+
+import Foundation
+
+/// `revise_artwork_concept`: a concept's new pages. At Choose's "Ask for
+/// changes", the concepts the note is for; with Motion loop, each concept's
+/// animated pages at Design (the motion prompt, again after a note); in
+/// runs from before, the chosen header's after Localize and check; and at
+/// Watch the header loop, its new version for the person's note.
+struct ReviseArtworkConceptTool: MCPTool {
+    let definition = MCPToolDefinition(
+        name: "revise_artwork_concept",
+        title: "Revise a header and search concept",
+        description: """
+        Sends a concept's new pages. When next_step says revise (the person's note on concepts), send each concept the \
+        note is for, with artworkDesign holding the pages that change (whole pages; the others stay) and change_notes \
+        saying what changed; pass last: false on every one but the final. When next_step hands you a concept's motion \
+        prompt (artwork-motion) at design or revise, or says animate_header or revise_loop, send that concept's \
+        animated pages (every canvas) the same way: Atlas checks that every animation repeats evenly in the \
+        loop, frame 0 is the still, the last frame leads back to it, the data-al elements never move and no frame \
+        jumps; at Design the person then chooses among the loops, later Atlas makes them in every language. \
+        Rendered and checked like propose_artwork_concept.
+        """,
+        inputSchema: MCPToolDefinition.schema(
+            [
+                "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
+                "run": MCPToolDefinition.string("The run's ID from get_capture_plan."),
+                "concept_id": MCPToolDefinition.string("The concept's id (\"A\") or name."),
+                "artworkDesign": AutopilotArtworkDesign.mcpSchema,
+                "change_notes": MCPToolDefinition.string("What changed, in plain words, for the person to read."),
+                "last": [
+                    "type": "boolean",
+                    "description": "False when another concept for the same note follows; true (the default) for the final one.",
+                ],
+            ],
+            required: ["appId", "run", "concept_id"]
+        ),
+        proposalKind: .artwork
+    )
+
+    func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
+        let session = try await MCPAutopilotSession.load(arguments, in: context)
+        let run = session.run
+        let wanted = try arguments.string("concept_id")
+        guard run.usesConcepts, let concept = run.concept(wanted) else {
+            let ids = run.conceptList.map { "\($0.id) (\($0.name))" }.formatted(.list(type: .or))
+            return .refused(
+                run.usesConcepts
+                    ? String(localized: "No concept “\(wanted)” in this run; it has \(ids).")
+                    : String(localized: "This run has no header concepts: revise the direction with revise_direction."),
+                target: session.target
+            )
+        }
+        let design: AutopilotArtworkDesign?
+        do {
+            design = try AutopilotArtworkDesign.mcpPages(arguments, kinds: run.plan.artworkKinds)
+        } catch {
+            return .refused(error.localizedDescription, target: session.target)
+        }
+        let notes = try arguments.optionalString("change_notes")
+        if run.stage == .localize || run.stage == .watchPreview {
+            return await animate(concept, design: design, notes: notes, atDesign: false, session: session, context: context)
+        }
+        if Self.animatesAtDesign(concept, in: run) {
+            return await animate(concept, design: design, notes: notes, atDesign: true, session: session, context: context)
+        }
+        var previews: [MCPArtworkPreview.Page] = []
+        var checkedDesign = design
+        if let design {
+            let checked = await MCPArtworkPreview(session: session, workspace: context.workspace).check(design, requiresHeadline: false)
+            if let refusal = checked.refusal {
+                session.center.logAnswer("revise_artwork_concept", concept: concept, pages: design, checks: [refusal], run: run, provider: context.clientName)
+                return .refused(refusal, target: session.target)
+            }
+            previews = checked.pages
+            checkedDesign = checked.design
+        }
+        do {
+            try session.center.reviseConcept(
+                concept.id, design: checkedDesign, changeNotes: notes, isLast: arguments.values["last"]?.boolValue ?? true, appID: session.app.id
+            )
+        } catch {
+            return .refused(error.localizedDescription, target: session.target)
+        }
+        session.center.logAnswer(
+            "revise_artwork_concept", concept: concept, pages: design, checks: previews.flatMap(\.checks).map(\.text), run: run,
+            provider: context.clientName
+        )
+        var result: [String: JSONValue] = ["status": "revised", "concept": .string(concept.id)]
+        if session.center.run(for: session.app.id)?.stage == .design {
+            result["next"] = "Send the next concept or direction for the same note; pass last: true (or leave it out) on the final one."
+        }
+        if !previews.isEmpty { result["artwork"] = .array(previews.map(MCPArtworkPreview.json)) }
+        return MCPToolOutcome(
+            result: .object(result), isError: false, logLines: [.init(target: "\(session.target) · \(concept.name)", outcome: .proposed)],
+            images: previews.compactMap(MCPArtworkPreview.image)
+        )
+    }
+
+    /// At Design, the pages sent are `concept`'s loop when each concept is
+    /// animated: with no note, or for the note once its stills are revised.
+    static func animatesAtDesign(_ concept: AutopilotArtworkConcept, in run: AutopilotRun) -> Bool {
+        guard run.stage == .design, run.animatesEachConcept else { return false }
+        guard let revision = run.revision else { return true }
+        return (revision.revisedIDs ?? []).contains(concept.id)
+    }
+
+    /// A concept's animated pages, checked for motion: at Design its loop
+    /// to choose by, else the chosen header's, and the loops are made with
+    /// them.
+    private func animate(
+        _ concept: AutopilotArtworkConcept, design: AutopilotArtworkDesign?, notes: String?, atDesign: Bool, session: MCPAutopilotSession,
+        context: MCPToolContext
+    ) async -> MCPToolOutcome {
+        let run = session.run
+        guard let design else {
+            return .refused(String(localized: "Send artworkDesign with the animated pages, one per canvas."), target: session.target)
+        }
+        if atDesign, !concept.isDesigned(run.plan.artworkKinds) {
+            return .refused(
+                String(localized: "Send \(concept.name)’s still pages with propose_artwork_concept first, then animate them."), target: session.target
+            )
+        }
+        let preview = MCPArtworkPreview(session: session, workspace: context.workspace)
+        let checked = await preview.check(design, requiresHeadline: false)
+        if let refusal = checked.refusal {
+            session.center.logAnswer("revise_artwork_concept", concept: concept, pages: design, checks: [refusal], run: run, provider: context.clientName)
+            return .refused(refusal, target: session.target)
+        }
+        let moving = Dictionary(checked.pages.map { ($0.kind, $0.render.moving.map(\.rawValue)) }) { $1 }
+        let pages = checked.design.laid(over: concept.motion ?? concept.design)
+        let problems = await preview.motionProblems(pages, still: concept.design, moving: moving)
+        session.center.logAnswer("revise_artwork_concept", concept: concept, pages: design, checks: problems, run: run, provider: context.clientName)
+        let refuses = atDesign
+            ? session.center.refusesConceptMotion(problems, conceptID: concept.id, appID: session.app.id)
+            : session.center.refusesMotion(problems, appID: session.app.id)
+        if refuses {
+            let fix = problems.joined(separator: " ")
+            return .refused(String(localized: "\(fix) Fix it and send the animated pages again."), target: session.target)
+        }
+        do {
+            if atDesign {
+                try await session.center.addConceptMotion(
+                    concept.id, design: checked.design, client: context.clientName, appID: session.app.id, context: session.context
+                )
+            } else {
+                try await session.center.addLoop(
+                    concept.id, design: checked.design, changeNotes: notes, client: context.clientName, appID: session.app.id,
+                    context: session.context
+                )
+            }
+        } catch {
+            return .refused(error.localizedDescription, target: session.target)
+        }
+        let next: JSONValue = if !atDesign {
+            "Atlas makes the loops in every language now; call next_step."
+        } else if session.center.run(for: session.app.id)?.stage == .design {
+            "Its loop is in. Send the other concepts' animated pages, then call next_step."
+        } else {
+            "Every concept has its loop: the person chooses now. Call next_step."
+        }
+        var result: [String: JSONValue] = ["status": "animated", "concept": .string(concept.id), "next": next]
+        if !problems.isEmpty { result["warnings"] = .array(problems.map { .string($0) }) }
+        result["artwork"] = .array(checked.pages.map(MCPArtworkPreview.json))
+        return MCPToolOutcome(
+            result: .object(result), isError: false, logLines: [.init(target: "\(session.target) · \(concept.name) loop", outcome: .proposed)],
+            images: checked.pages.compactMap(MCPArtworkPreview.image)
+        )
+    }
+}
