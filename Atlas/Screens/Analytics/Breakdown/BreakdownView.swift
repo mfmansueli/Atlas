@@ -80,11 +80,11 @@ struct BreakdownView: View {
         if width >= Self.compactWidth {
             HStack(spacing: Spacing.xSmall) {
                 Text("Against the app’s average:")
-                Text("▲").font(.footnote)
+                Image(systemName: RateStanding.better.systemImage).font(.footnote)
                 Text("better")
-                Text("▼").font(.footnote).foregroundStyle(Palette.warn)
+                Image(systemName: RateStanding.worse.systemImage).font(.footnote).foregroundStyle(Palette.warn)
                 Text("worse")
-                Text("≈").font(.footnote)
+                Image(systemName: RateStanding.same.systemImage).font(.footnote)
                 Text("about the same ·")
                 ConfidenceMeter(bars: 2)
                 Text("how sure · “3 of 40” too few to tell")

@@ -90,10 +90,9 @@ struct GuidedChecksCard: View {
     private func row(_ check: GuidedCheck) -> some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
-                Text(mark(check.state))
-                    .fontWeight(.bold)
+                Image(systemName: mark(check.state))
                     .foregroundStyle(color(check.state))
-                    .frame(width: 12)
+                    .frame(width: Metrics.symbolColumn)
                     .accessibilityHidden(true)
                 Text(check.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -108,7 +107,7 @@ struct GuidedChecksCard: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .padding(.leading, 18)
+                .padding(.leading, Metrics.symbolColumn + Spacing.xSmall)
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("autopilot.guided.review.check.\(check.id).details")
             }
@@ -123,7 +122,7 @@ struct GuidedChecksCard: View {
                 }
                 .controlSize(.regular)
                 .buttonBorderShape(.capsule)
-                .padding(.leading, 18)
+                .padding(.leading, Metrics.symbolColumn + Spacing.xSmall)
             }
             if check.state == .toConfirm {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
@@ -143,7 +142,7 @@ struct GuidedChecksCard: View {
                     .controlSize(.regular)
                     .buttonBorderShape(.capsule)
                 }
-                .padding(.leading, 18)
+                .padding(.leading, Metrics.symbolColumn + Spacing.xSmall)
             }
         }
         .accessibilityElement(children: .contain)
@@ -151,11 +150,13 @@ struct GuidedChecksCard: View {
         .accessibilityIdentifier("autopilot.guided.review.check.\(check.id)")
     }
 
+    /// The check's status symbol (README-DS §13).
     private func mark(_ state: GuidedCheck.State) -> String {
         switch state {
-        case .passed: "✓"
-        case .toConfirm, .attention: "!"
-        case .working: "…"
+        case .passed: StatusSymbol.done.symbol
+        case .toConfirm: StatusSymbol.needsYou.symbol
+        case .attention: StatusSymbol.error.symbol
+        case .working: "ellipsis.circle"
         }
     }
 

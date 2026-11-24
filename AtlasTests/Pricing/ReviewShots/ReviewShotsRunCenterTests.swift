@@ -34,7 +34,7 @@ struct ReviewShotsRunCenterTests {
         center.report(appID: appID, productID: "annual", step: "Selecting Annual and waiting for its price")
 
         let run = try #require(center.run(for: appID))
-        #expect(run.steps == ["✓ Opened Lumen in Simulator · iPhone 17 Pro"])
+        #expect(run.steps == ["Opened Lumen in Simulator · iPhone 17 Pro"])
         #expect(run.step == "Selecting Annual and waiting for its price")
         #expect(run.toolbarText == "Capturing Annual · 2 of 3")
         #expect(run.menuText == "Making review screenshots · capturing Annual, 2 of 3")

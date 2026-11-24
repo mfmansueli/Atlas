@@ -15,7 +15,7 @@ struct PrivacyNotice<Content: View, Actions: View>: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.small) {
             if isWarning {
-                Image(systemName: "exclamationmark.triangle.fill")
+                Image(systemName: StatusSymbol.needsYou.symbol)
                     .foregroundStyle(Palette.warnMark)
                     .accessibilityHidden(true)
             }

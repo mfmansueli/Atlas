@@ -81,7 +81,7 @@ struct GenerateSuggestionsPopover: View {
             progress(String(localized: "Waiting for \(model.client)…"))
         case .ready, .failed:
             if case let .failed(reason) = model.phase {
-                Label(reason, systemImage: "exclamationmark.octagon")
+                Label(reason, systemImage: "exclamationmark.circle")
                     .font(.subheadline)
                     .foregroundStyle(Palette.err)
                     .fixedSize(horizontal: false, vertical: true)

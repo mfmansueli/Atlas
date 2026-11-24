@@ -35,12 +35,17 @@ struct PriceChange: Hashable, Sendable {
     /// "−50%", "+18%", "0%" (minus is U+2212).
     var percentText: String { PricingText.signedPercent(percent) }
 
-    /// The pill: "▼ −50%", "▲ +18%"; empty when unchanged.
+    /// The pill: "−50%", "+18%"; empty when unchanged.
     var pillText: String {
+        direction == .none ? "" : percentText
+    }
+
+    /// The pill's arrow symbol (README-DS §13); nil when unchanged.
+    var pillSystemImage: String? {
         switch direction {
-        case .increase: "▲ " + percentText
-        case .decrease: "▼ " + percentText
-        case .none: ""
+        case .increase: "arrowtriangle.up.fill"
+        case .decrease: "arrowtriangle.down.fill"
+        case .none: nil
         }
     }
 }

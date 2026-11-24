@@ -20,7 +20,7 @@ struct OverviewWaitingCard: View {
                     if row.count > 0 {
                         SuggestionBadge(count: row.count)
                     } else {
-                        Pill(text: String(localized: "✓ Reviewed"), style: .outline)
+                        Pill(text: String(localized: "Reviewed"), systemImage: "checkmark", style: .outline)
                             .fixedSize()
                     }
                     Button(row.buttonTitle) { onOpen(row.section) }

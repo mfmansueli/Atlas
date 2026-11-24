@@ -93,7 +93,7 @@ struct StudioArtworkDetailsCard: View {
         switch tone {
         case .positive: "checkmark.circle.fill"
         case .warning: "exclamationmark.triangle.fill"
-        case .danger: "xmark.octagon.fill"
+        case .danger: "exclamationmark.circle.fill"
         case .neutral, .accent: "minus.circle"
         }
     }

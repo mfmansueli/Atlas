@@ -30,7 +30,7 @@ struct EventArtworkViewerBottomBar: View {
                     .lineLimit(2)
                     .accessibilityIdentifier("events.art.viewer.why")
                 if !isNarrow {
-                    Text(flow.viewerChecks)
+                    checks
                         .font(.callout)
                         .foregroundStyle(EventArtworkViewerStyle.secondary(contrast))
                         .lineLimit(1)
@@ -50,7 +50,7 @@ struct EventArtworkViewerBottomBar: View {
                 }
                 .disabled(!flow.viewerCanAsk || viewer.isAsking)
                 if flow.viewerIsUsed {
-                    Text("✓ In use")
+                    Label("In use", systemImage: "checkmark")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(EventArtworkViewerStyle.inUse)
                         .accessibilityIdentifier("events.art.viewer.inUse")
@@ -108,11 +108,9 @@ struct EventArtworkViewerBottomBar: View {
             .opacity(isOn || contrast == .increased ? 1 : 0.78)
             .overlay(alignment: .topTrailing) {
                 if concept.id == flow.run.usedConceptID {
-                    Image(systemName: "checkmark")
-                        .font(.footnote.weight(.heavy))
-                        .foregroundStyle(.white)
-                        .frame(width: 16, height: 16)
-                        .background(EventArtworkViewerStyle.inUse, in: Circle())
+                    Image(systemName: StatusSymbol.done.symbol)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, EventArtworkViewerStyle.inUse)
                         .offset(x: 4, y: -4)
                         .accessibilityHidden(true)
                 }
@@ -124,6 +122,26 @@ struct EventArtworkViewerBottomBar: View {
         .accessibilityLabel(Text(concept.name))
         .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
         .accessibilityIdentifier("events.art.viewer.film.\(concept.id)")
+    }
+
+    /// What the concept was checked for, each with its status symbol
+    /// (README-DS §13); the event's own images say so in words.
+    @ViewBuilder
+    private var checks: some View {
+        let list = flow.viewerCheckList
+        if list.isEmpty {
+            Text(flow.viewerChecks)
+        } else {
+            HStack(spacing: Spacing.medium) {
+                ForEach(list, id: \.self) { check in
+                    Label {
+                        Text(check.title)
+                    } icon: {
+                        Image(systemName: check.isOK ? "checkmark" : StatusSymbol.needsYou.symbol)
+                    }
+                }
+            }
+        }
     }
 
     /// The language of the App Store's text: the one language picker

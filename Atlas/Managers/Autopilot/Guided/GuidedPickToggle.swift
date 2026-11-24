@@ -9,13 +9,19 @@ import Foundation
 /// it, take it out, or, with three picked, put it in the last one's place
 /// (as picking a fourth does).
 enum GuidedPickToggle {
-    /// "Add to My Picks", "✓ Pick 2 · Remove", "Replace Pick 3 With This".
+    /// "Add to My Picks", "Pick 2 · Remove", "Replace Pick 3 With This".
     /// `number` is the previewed one's pick (1-based), nil when it isn't
     /// picked.
     static func title(number: Int?, picked: Int, maximum: Int = AutopilotShotStyle.maximumTemplates) -> String {
-        if let number { return String(localized: "✓ Pick \(number) · Remove") }
+        if let number { return String(localized: "Pick \(number) · Remove") }
         if picked >= maximum { return String(localized: "Replace Pick \(maximum) with This") }
         return String(localized: "Add to My Picks")
+    }
+
+    /// The checkmark before a picked one's title (README-DS §13: a symbol,
+    /// not a text character); nil when it isn't picked.
+    static func systemImage(number: Int?) -> String? {
+        number == nil ? nil : "checkmark"
     }
 
     /// Adding is the prominent action; Remove isn't.

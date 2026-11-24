@@ -50,19 +50,24 @@ enum SettingsPane: String, CaseIterable, Identifiable, Hashable, Sendable {
         }
     }
 
-    var systemImage: String {
+    /// The pane's SF Symbol and system colour in the sidebar (README —
+    /// Design system §13, board 48): AI Assistants is the one purple, because
+    /// it is the AI.
+    var style: SectionStyle {
         switch self {
-        case .general: "gearshape.fill"
-        case .accounts: "key.horizontal.fill"
-        case .assistants: "sparkles"
-        case .suggestions: "text.badge.checkmark"
-        case .pricing: "tag.fill"
-        case .screenshots: "iphone"
-        case .notifications: "bell.badge.fill"
-        case .pro: "star.fill"
-        case .privacy: "hand.raised.fill"
+        case .general: .settingsGeneral
+        case .accounts: .settingsAccounts
+        case .assistants: .settingsAssistants
+        case .suggestions: .settingsSuggestions
+        case .pricing: .settingsPricing
+        case .screenshots: .settingsScreenshots
+        case .notifications: .settingsNotifications
+        case .pro: .settingsPro
+        case .privacy: .settingsPrivacy
         }
     }
+
+    var systemImage: String { style.symbol }
 
     /// The words on the pane that search finds it by, besides its title.
     var searchWords: [String] {

@@ -48,7 +48,7 @@ struct AutoReplyHistorySheet: View {
     private func row(_ entry: AutoReplyHistoryEntry) -> some View {
         HStack(alignment: .top, spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("\(entry.rating)★ · \(entry.reviewer)")
+                Text("\(entry.rating) \(Image(systemName: "star.fill")) · \(entry.reviewer)")
                     .font(.callout.weight(.semibold))
                 Text(entry.text)
                     .font(.callout)

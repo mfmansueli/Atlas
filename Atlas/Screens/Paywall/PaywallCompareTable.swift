@@ -35,13 +35,19 @@ struct PaywallCompareTable: View {
     }
 
     private func cell(_ text: String, isHeader: Bool = false, color: Color = Palette.label, weight: Font.Weight = .regular) -> some View {
-        Text(text)
-            .font(isHeader ? .callout.weight(.bold) : .callout.weight(weight))
-            .foregroundStyle(isHeader ? Palette.label2 : color)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, Spacing.small + 2)
-            .padding(.vertical, Spacing.xSmall + 1)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        Group {
+            if !isHeader, ProComparisonRow.isIncluded(text) {
+                Image(systemName: "checkmark").accessibilityLabel(Text(text))
+            } else {
+                Text(text)
+            }
+        }
+        .font(isHeader ? .callout.weight(.bold) : .callout.weight(weight))
+        .foregroundStyle(isHeader ? Palette.label2 : color)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, Spacing.small + 2)
+        .padding(.vertical, Spacing.xSmall + 1)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

@@ -117,10 +117,13 @@ struct ReviewShotsPreviewSheet: View {
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 if !details.checks.isEmpty {
-                    Text(details.checks.map { "✓ " + $0 }.joined(separator: " · "))
-                        .font(.subheadline)
-                        .foregroundStyle(Palette.label2)
-                        .fixedSize(horizontal: false, vertical: true)
+                    FlowLayout(spacing: Spacing.small) {
+                        ForEach(details.checks, id: \.self) { check in
+                            Label(check, systemImage: "checkmark")
+                        }
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(Palette.label2)
                 }
             }
             switch state {

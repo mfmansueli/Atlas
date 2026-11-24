@@ -78,7 +78,7 @@ struct AnalyticsSettingsSheet: View {
                 .font(.callout)
             }
             if let error = store.salesError {
-                Label(error, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.err)
+                Label(error, systemImage: "exclamationmark.circle.fill").font(.callout).foregroundStyle(Palette.err)
             }
         } header: {
             Text("Sales and Trends")
@@ -122,7 +122,7 @@ struct AnalyticsSettingsSheet: View {
                 }
             }
             if let errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.octagon.fill").font(.callout).foregroundStyle(Palette.err)
+                Label(errorMessage, systemImage: "exclamationmark.circle.fill").font(.callout).foregroundStyle(Palette.err)
             }
         }
     }

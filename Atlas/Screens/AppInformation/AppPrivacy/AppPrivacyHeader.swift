@@ -47,7 +47,7 @@ struct AppPrivacyHeader: View {
 
     private var notASync: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-            Image(systemName: "lock")
+            Image(systemName: "shield")
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
             Text("""

@@ -7,12 +7,6 @@ import Foundation
 
 /// How Reviews writes stars, counts, days and storefronts.
 enum ReviewText {
-    /// "★★★☆☆".
-    static func stars(_ rating: Int) -> String {
-        let filled = max(0, min(rating, 5))
-        return String(repeating: "★", count: filled) + String(repeating: "☆", count: 5 - filled)
-    }
-
     /// "1 star", "3 stars", for VoiceOver.
     static func starsSpoken(_ rating: Int) -> String {
         rating == 1 ? String(localized: "1 star") : String(localized: "\(rating) stars")

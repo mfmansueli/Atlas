@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// One moment Claude Code marked in the recording: whether it goes in the
-/// App Preview, where it is and why it works, ▶ Play, and Record Again.
+/// App Preview, where it is and why it works, Play, and Record Again.
 struct AutopilotMomentRow: View {
     @Bindable var studio: ScreenshotStudioModel
     let run: AutopilotRun
@@ -42,7 +42,8 @@ struct AutopilotMomentRow: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Button("▶ Play") { studio.playMoment(moment) }
+            Button("Play", systemImage: "play.fill") { studio.playMoment(moment) }
+                .labelStyle(.titleAndIcon)
                 .controlSize(.regular)
                 .accessibilityLabel(Text("Play \(name)"))
                 .accessibilityIdentifier("autopilot.moment.play.\(index)")

@@ -67,21 +67,8 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         self == .reviews ? fullTitle : title
     }
 
-    /// The glyph on the section's tile, in the sidebar and its own header.
-    var systemImage: String {
-        switch self {
-        case .overview: "square.grid.2x2.fill"
-        case .storePage: "doc.text.fill"
-        case .screenshots: "iphone"
-        case .productPages: "doc.on.doc.fill"
-        case .inAppEvents: "calendar"
-        case .nominations: "rosette"
-        case .appInformation: "info.circle.fill"
-        case .subscriptionPricing: "tag.fill"
-        case .reviews: "star.fill"
-        case .analytics: "chart.bar.fill"
-        }
-    }
+    /// The section's SF Symbol (`style`), in the sidebar and its own header.
+    var systemImage: String { style.symbol }
 
     /// The key for ⌘1–⌘9, in the sidebar's order: Product Pages took ⌘4
     /// and moved the four after it by one. Nominations, the tenth, is ⇧⌘F

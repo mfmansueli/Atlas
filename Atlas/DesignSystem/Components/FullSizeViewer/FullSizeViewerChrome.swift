@@ -7,7 +7,7 @@ import SwiftUI
 
 /// A full-size viewer's frame, Quick Look–style, over whatever it covers:
 /// the item's name and what else says what it is, an optional control,
-/// "2 of 5", previous and next (or ← →), ✕ or Esc to close, and Space for
+/// "2 of 5", previous and next (or the arrow keys), Close or Esc, and Space for
 /// the item (play or pause a movie, close a still). `content` gets the
 /// room between the arrows. Identifiers start with `identifier`
 /// (`studio.viewer`, `review.viewer`).
@@ -32,7 +32,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
         VStack(spacing: 0) {
             header
             HStack(spacing: Spacing.medium) {
-                Button("‹") { onStep(-1) }
+                Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
                     .buttonStyle(RoundButtonStyle())
                     .disabled(!hasPrevious)
                     .help(Text("Previous (←)"))
@@ -42,7 +42,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
                     content(proxy.size)
                         .frame(width: proxy.size.width, height: proxy.size.height)
                 }
-                Button("›") { onStep(1) }
+                Button { onStep(1) } label: { Image(systemName: "chevron.right") }
                     .buttonStyle(RoundButtonStyle())
                     .disabled(!hasNext)
                     .help(Text("Next (→)"))
@@ -121,7 +121,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
                     .foregroundStyle(.white.opacity(0.7))
                     .accessibilityIdentifier("\(identifier).count")
             }
-            Button("✕") { onClose() }
+            Button { onClose() } label: { Image(systemName: "xmark") }
                 .buttonStyle(RoundButtonStyle())
                 .help(Text("Close (Esc)"))
                 .accessibilityLabel(Text("Close"))
@@ -137,7 +137,7 @@ struct FullSizeViewerChrome<Accessory: View, Content: View>: View {
 
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .font(.title2.weight(.medium))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(.white.opacity(isEnabled ? 1 : 0.35))
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(.white.opacity(configuration.isPressed ? 0.28 : 0.16)))

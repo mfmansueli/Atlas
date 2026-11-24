@@ -41,7 +41,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         XCTAssertTrue(window.label.contains("pick 3"), window.label)
         XCTAssertFalse(hero.label.contains("pick"), hero.label)
         let pick = element("autopilot.guided.look.scene.pick")
-        XCTAssertEqual(pick.label, "✓ Pick 1 · Remove", "Day to Night, the first pick, is previewed")
+        XCTAssertEqual(pick.label, "Pick 1 · Remove", "Day to Night, the first pick, is previewed")
         attachScreenshot("Look · header from scene templates")
 
         click(hero)

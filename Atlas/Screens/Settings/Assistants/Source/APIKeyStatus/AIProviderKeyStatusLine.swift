@@ -52,7 +52,7 @@ struct AIProviderKeyStatusLine: View {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(Palette.ok)
         case .rejected:
-            Image(systemName: "xmark.octagon.fill")
+            Image(systemName: "exclamationmark.circle.fill")
                 .foregroundStyle(Palette.err)
         case .unchecked:
             Image(systemName: "exclamationmark.triangle.fill")

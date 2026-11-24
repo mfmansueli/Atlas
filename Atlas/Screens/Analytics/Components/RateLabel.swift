@@ -24,7 +24,7 @@ struct RateLabel: View {
             case let .measured(measured):
                 Text(rate.text)
                 if let standing = measured.standing {
-                    Text(standing.mark)
+                    Image(systemName: standing.systemImage)
                         .font(.footnote)
                         .foregroundStyle(Self.color(for: standing))
                 }

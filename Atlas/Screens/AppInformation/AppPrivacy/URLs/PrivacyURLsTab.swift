@@ -57,7 +57,8 @@ struct PrivacyURLsTab: View {
                 Button(String(localized: "Fill Missing from \(table.content.primaryLocale.name)"), action: viewModel.fillMissingPolicyURLs)
                     .disabled(table.missingPolicyLocales.allSatisfy { $0 == table.content.primaryLocale })
                     .accessibilityIdentifier("appInformation.appPrivacy.urls.fillMissing")
-                Button(String(localized: "Also in Store Page ↗")) { navigator.open(.storePage) }
+                Button(String(localized: "Also in Store Page"), systemImage: "arrow.forward.circle") { navigator.open(.storePage) }
+                    .labelStyle(.titleAndIcon)
                     .accessibilityIdentifier("appInformation.appPrivacy.urls.storePage")
             }
             .controlSize(.regular)

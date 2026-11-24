@@ -90,7 +90,9 @@ struct GuidedDefaultsTests {
     // MARK: - Pick toggle
 
     @Test func thePickButtonSaysWhatItDoes() {
-        #expect(GuidedPickToggle.title(number: 2, picked: 2) == "✓ Pick 2 · Remove")
+        #expect(GuidedPickToggle.title(number: 2, picked: 2) == "Pick 2 · Remove")
+        #expect(GuidedPickToggle.systemImage(number: 2) == "checkmark", "The checkmark is a symbol, not a text character")
+        #expect(GuidedPickToggle.systemImage(number: nil) == nil)
         #expect(GuidedPickToggle.title(number: nil, picked: 1) == "Add to My Picks")
         #expect(GuidedPickToggle.title(number: nil, picked: 3, maximum: 3) == "Replace Pick 3 with This")
         #expect(GuidedPickToggle.isProminent(number: nil))

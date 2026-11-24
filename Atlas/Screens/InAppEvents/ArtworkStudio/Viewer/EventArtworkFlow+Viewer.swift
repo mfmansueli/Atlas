@@ -120,10 +120,16 @@ extension EventArtworkFlow {
         return String(localized: "Event card and event details for \(event.referenceName).")
     }
 
-    /// "✓ The path stays clear of the text  ·  ✓ Reads with the longest name…".
+    /// What the viewer says under the art for the event's own images.
     var viewerChecks: String {
-        guard let concept = viewerConcept else { return String(localized: "The images this event was submitted with.") }
-        return concept.checks.map { check in "\(check.isOK ? "✓" : "⚠︎") \(check.title)" }.joined(separator: "  ·  ")
+        viewerConcept == nil ? String(localized: "The images this event was submitted with.") : ""
+    }
+
+    /// The concept's checks, drawn each with its status symbol: "The path
+    /// stays clear of the text", "Reads with the longest name"…; empty for
+    /// the event's own images.
+    var viewerCheckList: [EventArtworkConceptCheck] {
+        viewerConcept?.checks ?? []
     }
 
     var viewerIsRevising: Bool { viewer?.conceptID != nil && viewer?.conceptID == run.revisingID }

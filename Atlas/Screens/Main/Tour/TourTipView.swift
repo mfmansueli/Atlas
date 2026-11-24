@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// One tip of the tour, in its popover: the tip's glyph on a tinted tile,
+/// One tip of the tour, in its popover: the tip's symbol (no tile, §13),
 /// its title and text, then Next (Done on the last) and Skip the Tour
 /// (Connect an Assistant… on the last) beside "1 of 5", and a close button
 /// in the corner.
@@ -20,10 +20,9 @@ struct TourTipView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: step.systemImage)
-                .font(.title3.weight(.medium))
-                .foregroundStyle(Palette.accentText)
-                .frame(width: 30, height: 30)
-                .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+                .font(.title3)
+                .foregroundStyle(step == .autopilot ? Palette.ai : Palette.accentText)
+                .frame(width: Metrics.largeSymbolColumn)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(step.title)

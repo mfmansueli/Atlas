@@ -173,7 +173,7 @@ struct ExtrasReviewSection: View {
         if !errors.isEmpty || !warnings.isEmpty {
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(errors.enumerated()), id: \.offset) { _, line in
-                    Label(line, systemImage: "xmark.octagon.fill")
+                    Label(line, systemImage: "exclamationmark.circle.fill")
                         .foregroundStyle(Palette.err)
                 }
                 ForEach(Array(warnings.enumerated()), id: \.offset) { _, line in

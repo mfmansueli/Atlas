@@ -90,10 +90,19 @@ struct FullSizeViewer: View {
                 .controlSize(.regular)
                 .accessibilityIdentifier("studio.viewer.action")
         } else {
-            Button(title) { studio.performViewerAction(action) }
-                .controlSize(.regular)
-                .disabled(!action.isEnabled)
-                .accessibilityIdentifier("studio.viewer.action")
+            Button {
+                studio.performViewerAction(action)
+            } label: {
+                Label {
+                    Text(title)
+                } icon: {
+                    if let symbol = action.systemImage { Image(systemName: symbol) }
+                }
+                .labelStyle(.titleAndIcon)
+            }
+            .controlSize(.regular)
+            .disabled(!action.isEnabled)
+            .accessibilityIdentifier("studio.viewer.action")
         }
     }
 }

@@ -79,7 +79,8 @@ struct PriceIndexCard: View {
             }
             if let url = source.sourceURL {
                 Link(destination: url) {
-                    Text("Source ↗")
+                    Label("Source", systemImage: "arrow.up.right")
+                        .labelStyle(.titleAndIcon)
                 }
                 .font(.subheadline)
                 .accessibilityLabel(String(localized: "\(source.name) source, opens in your browser"))

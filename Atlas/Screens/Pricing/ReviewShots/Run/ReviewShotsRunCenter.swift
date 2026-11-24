@@ -54,12 +54,12 @@ final class ReviewShotsRunCenter {
     func report(appID: StoreApp.ID, productID: String?, step: String?) {
         guard var run = runs[appID], run.isWorking else { return }
         if let productID, productID != run.current {
-            if let current = run.current, current != productID, let step = run.step { run.steps.append("✓ " + step) }
+            if let current = run.current, current != productID, let step = run.step { run.steps.append(step) }
             run.current = productID
             run.step = nil
         }
         if let step, !step.isEmpty {
-            if let previous = run.step, previous != step { run.steps.append("✓ " + previous) }
+            if let previous = run.step, previous != step { run.steps.append(previous) }
             run.step = step
         }
         runs[appID] = run

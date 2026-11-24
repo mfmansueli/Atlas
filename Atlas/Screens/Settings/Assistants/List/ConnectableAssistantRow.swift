@@ -115,8 +115,15 @@ struct ConnectableAssistantRow: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("settings.ai.try.\(assistant.rawValue).text")
-            Button(testTitle(test)) {
+            Button {
                 Task { await connector.sendTest(assistant, appID: fresh.appID, appName: fresh.appName, launcher: launcher) }
+            } label: {
+                Label {
+                    Text(testTitle(test))
+                } icon: {
+                    if test == .arrived || test == .copied { Image(systemName: "checkmark") }
+                }
+                .labelStyle(.titleAndIcon)
             }
             .controlSize(.regular)
             .disabled(test == .sending || test == .arrived || test == .copied)
@@ -148,8 +155,8 @@ struct ConnectableAssistantRow: View {
     private func testTitle(_ test: AssistantConnector.TestState?) -> String {
         switch test {
         case .sending: String(localized: "Sending…")
-        case .arrived: String(localized: "Sent ✓")
-        case .copied: String(localized: "Copied ✓")
+        case .arrived: String(localized: "Sent")
+        case .copied: String(localized: "Copied")
         case nil, .failed: String(localized: "Send a Test Suggestion")
         }
     }

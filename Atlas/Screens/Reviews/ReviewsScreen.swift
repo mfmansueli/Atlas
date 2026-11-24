@@ -129,9 +129,14 @@ struct ReviewsScreen: View {
                 }
                 if reviews.isEmpty {
                     Card {
-                        Text(viewModel.emptyText)
-                            .font(.body.weight(.semibold))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Label {
+                            Text(viewModel.emptyText)
+                                .font(.body.weight(.semibold))
+                        } icon: {
+                            Image(systemName: "star.bubble")
+                                .foregroundStyle(Palette.label2)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .accessibilityIdentifier("reviews.empty")
                 }

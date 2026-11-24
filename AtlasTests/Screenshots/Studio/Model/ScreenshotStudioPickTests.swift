@@ -51,7 +51,8 @@ struct ScreenshotStudioPickTests {
         run.picks[week] = second.id
         #expect(model.studio.isYourPick(run, screenID: week))
         #expect(model.studio.pickBadge(run, screenID: week) == "Your pick")
-        #expect(model.studio.pickReason(run, screenID: week).hasPrefix("⚠︎ Ranked lower: "))
+        #expect(model.studio.pickReason(run, screenID: week).hasPrefix("Ranked lower: "))
+        #expect(model.studio.pickReasonIsWarning(run, screenID: week), "The card draws the needs-you symbol before it")
         #expect(model.studio.changedPickCount(run) == 1)
         #expect(model.studio.pickFooterText(run) == "1 pick changed by you; the rest are Claude Code’s · App Preview: 3 moments + end card, 0:24.")
         #expect(model.studio.pickAttempts(run, screenID: week).first { $0.isUsed }?.capture.id == second.id)

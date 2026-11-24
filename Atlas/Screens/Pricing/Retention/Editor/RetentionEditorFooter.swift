@@ -27,7 +27,8 @@ struct RetentionEditorFooter: View {
             }
             Group {
                 if isQueued {
-                    Button("✓ In Review & Push", action: model.toggleQueue)
+                    Button("In Review & Push", systemImage: "checkmark", action: model.toggleQueue)
+                        .labelStyle(.titleAndIcon)
                         .buttonStyle(.bordered)
                 } else {
                     Button("Add to Review & Push", action: model.toggleQueue)

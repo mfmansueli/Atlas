@@ -40,6 +40,19 @@ struct BackgroundNeedsBuilderTests {
         #expect(Set(needs.map(\.id)).count == needs.count)
     }
 
+    /// Board 46 after the SF Symbols pass: every line has its symbol in the
+    /// menu's symbol column.
+    @Test func everyLineHasItsSymbol() {
+        let lumen = BackgroundAppFacts(
+            appID: "1", appName: "Lumen Journal", openSuggestions: 12, approvedVersion: "2.4", reviewReplies: 6,
+            newFindings: 1, firstFindingTitle: "German page converts less"
+        )
+        let tempo = BackgroundAppFacts(appID: "2", appName: "Tempo", autopilotTurn: .choose)
+        let needs = BackgroundNeedsBuilder.needs(for: [lumen, tempo], namesApps: true)
+        #expect(needs.map(\.systemImage) == ["paintpalette", "checkmark.circle", "star.bubble", "chart.line.uptrend.xyaxis", "sparkles"])
+        #expect(Set([AutopilotTurn.pick, .choose, .review].map(BackgroundNeedsBuilder.systemImage(for:))).count == 3)
+    }
+
     @Test func oneAppNeedsNoName() {
         let facts = BackgroundAppFacts(appID: "1", appName: "Lumen Journal", openSuggestions: 1, reviewReplies: 1)
         let needs = BackgroundNeedsBuilder.needs(for: [facts], namesApps: false)

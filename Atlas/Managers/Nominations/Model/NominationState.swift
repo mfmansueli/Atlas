@@ -32,5 +32,14 @@ enum NominationState: String, CaseIterable, Hashable, Codable, Sendable {
     }
 
     /// Submitted and archived nominations can't be edited.
+    /// The symbol before `emptyText` (board 70 after the SF Symbols pass).
+    var emptySystemImage: String {
+        switch self {
+        case .draft: "doc"
+        case .submitted: "paperplane"
+        case .archived: "archivebox"
+        }
+    }
+
     var isEditable: Bool { self == .draft }
 }

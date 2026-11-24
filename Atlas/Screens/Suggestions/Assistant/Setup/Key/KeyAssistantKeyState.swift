@@ -7,7 +7,7 @@ import Foundation
 
 /// Check Key's answer, under the key field.
 enum KeyAssistantKeyState: Hashable, Sendable {
-    /// Nothing checked yet: the field shows "Get a key from Anthropic ↗".
+    /// Nothing checked yet: the field shows "Get a key from Anthropic" with its link symbol.
     case idle
     case checking
     /// "Key works · 3 models available".

@@ -13,19 +13,22 @@ struct HelpCommands: Commands {
     @FocusedValue(\.workspaceNavigator) private var navigator
 
     var body: some Commands {
+        // macOS 26 menus: a symbol column for the items that have a
+        // standard symbol (README-DS §13); System Status keeps the empty
+        // slot.
         CommandGroup(replacing: .help) {
-            Button("Atlas Help") { open(nil) }
+            Button("Atlas Help", systemImage: "questionmark.circle") { open(nil) }
                 .keyboardShortcut("?", modifiers: .command)
-            Button(String(localized: "Show the Tour", comment: "kind:section-title")) { navigator?.requestsTour = true }
+            Button(String(localized: "Show the Tour", comment: "kind:section-title"), systemImage: "lightbulb") { navigator?.requestsTour = true }
                 .disabled(navigator == nil)
-            Button("Keyboard Shortcuts") { open(Self.shortcutsArticleID) }
+            Button("Keyboard Shortcuts", systemImage: "keyboard") { open(Self.shortcutsArticleID) }
             Divider()
-            Button("Connect App Store Connect") { open("connect") }
-            Button("Fix a Problem") { open("fix") }
+            Button("Connect App Store Connect", systemImage: "key") { open("connect") }
+            Button("Fix a Problem", systemImage: "wrench.and.screwdriver") { open("fix") }
             Button("App Store Connect System Status") { HelpSupport.openSystemStatus() }
             Divider()
-            Button("Contact Support…") { HelpSupport.contactSupport() }
-            Button("Send Feedback…") { HelpSupport.sendFeedback() }
+            Button("Contact Support…", systemImage: "envelope") { HelpSupport.contactSupport() }
+            Button("Send Feedback…", systemImage: "text.bubble") { HelpSupport.sendFeedback() }
         }
     }
 

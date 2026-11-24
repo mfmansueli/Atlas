@@ -17,13 +17,13 @@ struct SidebarHelpMenu: View {
 
     var body: some View {
         Menu {
-            Button(String(localized: "Atlas Help", comment: "kind:button"), action: onHelp)
+            Button(String(localized: "Atlas Help", comment: "kind:button"), systemImage: "questionmark.circle", action: onHelp)
                 .keyboardShortcut("?", modifiers: .command)
             if showsTour {
-                Button(String(localized: "Show the Tour", comment: "kind:section-title"), action: onTour)
+                Button(String(localized: "Show the Tour", comment: "kind:section-title"), systemImage: "lightbulb", action: onTour)
             }
             Divider()
-            Button(String(localized: "Keyboard Shortcuts", comment: "kind:menu-item"), action: onShortcuts)
+            Button(String(localized: "Keyboard Shortcuts", comment: "kind:menu-item"), systemImage: "keyboard", action: onShortcuts)
         } label: {
             SidebarFooterTile(title: String(localized: "Help", comment: "kind:button"), systemImage: "questionmark.circle", opensMenu: true)
         }

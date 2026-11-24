@@ -59,7 +59,7 @@ struct ReviewCreationRows: View {
                 .accessibilityIdentifier("review.creation.\(creation.id).discard")
             }
             if let message = creation.blockingMessage {
-                Label(message, systemImage: "exclamationmark.octagon.fill")
+                Label(message, systemImage: "exclamationmark.circle.fill")
                     .font(.subheadline)
                     .foregroundStyle(Palette.err)
                     .padding(.leading, 26)

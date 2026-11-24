@@ -17,9 +17,10 @@ struct PrivacyChecklistIntro: View {
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {
-                Button(String(localized: "Open App Store Connect ↗")) {
+                Button(String(localized: "Open App Store Connect"), systemImage: "arrow.up.right.square") {
                     openURL(viewModel.appStoreConnectURL)
                 }
+                .labelStyle(.titleAndIcon)
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("appInformation.appPrivacy.checklist.openASC")
                 Button(String(localized: "Tile with Safari"), action: viewModel.tileWithSafari)

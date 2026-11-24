@@ -15,18 +15,18 @@ struct WorkspaceCommands: Commands {
     var body: some Commands {
         CommandGroup(before: .toolbar) {
             ForEach(AppWorkspaceSection.allCases) { section in
-                Button(section.fullTitle) { navigator?.open(section) }
+                Button(section.fullTitle, systemImage: section.systemImage) { navigator?.open(section) }
                     .keyboardShortcut(KeyEquivalent(Character(String(section.shortcutDigit).lowercased())), modifiers: section.shortcutModifiers)
             }
             .disabled(navigator == nil)
             Divider()
-            Button("Refresh") { navigator?.refresh() }
+            Button("Refresh", systemImage: "arrow.clockwise") { navigator?.refresh() }
                 .keyboardShortcut("r")
                 .disabled(navigator == nil)
             Divider()
         }
         CommandGroup(after: .textEditing) {
-            Button("Find") { navigator?.send(.search) }
+            Button("Find", systemImage: "magnifyingglass") { navigator?.send(.search) }
                 .keyboardShortcut("f")
                 .disabled(navigator == nil)
             Button("Find and Replace Across Locales…") { navigator?.open(.storePage, intent: .findAndReplace) }
@@ -35,37 +35,39 @@ struct WorkspaceCommands: Commands {
         }
         CommandMenu("Pricing") {
             Group {
-                Button("Review Suggestions") { navigator?.open(.subscriptionPricing, intent: .reviewSuggestions) }
-                Button("Apply Suggested Prices…") { navigator?.open(.subscriptionPricing, intent: .applyRecommendedPrices) }
-                Button("Schedule Pending Prices…") { navigator?.open(.subscriptionPricing, intent: .editPriceSchedule(productID: nil)) }
+                Button("Review Suggestions", systemImage: "sparkles") { navigator?.open(.subscriptionPricing, intent: .reviewSuggestions) }
+                Button("Apply Suggested Prices…", systemImage: "checkmark.circle") { navigator?.open(.subscriptionPricing, intent: .applyRecommendedPrices) }
+                Button("Schedule Pending Prices…", systemImage: "calendar.badge.clock") {
+                    navigator?.open(.subscriptionPricing, intent: .editPriceSchedule(productID: nil))
+                }
                 Divider()
                 Menu("Show Prices As") {
                     ForEach(PricingDisplay.allCases, id: \.self) { display in
                         Button(display.title) { navigator?.open(.subscriptionPricing, intent: .showPrices(display)) }
                     }
                 }
-                Button("Results") { navigator?.open(.subscriptionPricing, intent: .showResults) }
+                Button("Results", systemImage: "chart.line.uptrend.xyaxis") { navigator?.open(.subscriptionPricing, intent: .showResults) }
             }
             .disabled(navigator == nil)
         }
         CommandMenu("Store Page") {
             Group {
-                Button("Translate Missing…") { navigator?.open(.storePage, intent: .translateMissing) }
+                Button("Translate Missing…", systemImage: "translate") { navigator?.open(.storePage, intent: .translateMissing) }
                     .keyboardShortcut("t", modifiers: [.command, .shift])
-                Button("Import Translations…") { navigator?.open(.storePage, intent: .importTranslations) }
+                Button("Import Translations…", systemImage: "square.and.arrow.down") { navigator?.open(.storePage, intent: .importTranslations) }
                     .keyboardShortcut("i", modifiers: [.command, .shift])
             }
             .disabled(navigator == nil)
         }
         CommandMenu("Product") {
             Group {
-                Button("Run Autopilot") { navigator?.requestsAutopilot = true }
+                Button("Run Autopilot", systemImage: "play.circle") { navigator?.requestsAutopilot = true }
                     .keyboardShortcut("a", modifiers: [.command, .option])
-                Button("Review & Push…") { navigator?.isReviewPresented = true }
+                Button("Review & Push…", systemImage: "arrow.up.circle") { navigator?.isReviewPresented = true }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
-                Button("Activity") { navigator?.isActivityPresented = true }
+                Button("Activity", systemImage: "clock") { navigator?.isActivityPresented = true }
                 // The chat in the window's corner (board 69).
-                Button("Assistant Chat") { AssistantChatCenter.shared.toggle() }
+                Button("Assistant Chat", systemImage: "text.bubble") { AssistantChatCenter.shared.toggle() }
                     .keyboardShortcut("j")
             }
             .disabled(navigator == nil)

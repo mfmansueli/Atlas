@@ -44,14 +44,15 @@ enum TourStep: Int, CaseIterable, Identifiable, Hashable, Sendable {
         }
     }
 
-    /// The glyph on the tip's tinted tile.
+    /// The tip's symbol (board 63 after the SF Symbols pass): what the tip
+    /// points at, as the app draws it.
     var systemImage: String {
         switch self {
-        case .apps: "plus.square"
-        case .sections: "doc.plaintext"
+        case .apps: "apps.iphone"
+        case .sections: "sidebar.left"
         case .autopilot: "sparkles"
         case .reviewPush: "arrow.up.circle"
-        case .settings: "circle.circle"
+        case .settings: "gearshape"
         }
     }
 

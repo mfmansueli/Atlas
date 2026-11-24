@@ -14,7 +14,7 @@ import SwiftUI
 ///
 /// Two colours mean something: **blue** is what you do (`accent`), **purple**
 /// is what AI brings (`ai…`). Green, amber and red (`ok`, `warn`, `err`) only
-/// describe state. Section colours only fill the sidebar's tiles.
+/// describe state. Section colours only tint their SF Symbols (§13).
 enum Palette {
     // MARK: - Accent
 
@@ -97,31 +97,20 @@ enum Palette {
 
     // MARK: - Sections
 
-    /// The section tiles (§2): a soft vertical gradient, top lighter, like
-    /// System Settings. Purple is never one of them: it means AI. The flat
-    /// value is the tile's lower colour, for the few marks drawn in a
-    /// section's colour (stars, Analytics' funnel).
-    static let sectionOverview = Color(.sectionOverview)
-    static let sectionStorePage = Color(.sectionStorePage)
-    static let sectionScreenshots = Color(.sectionScreenshots)
-    static let sectionProductPages = Color(.sectionProductPages)
-    static let sectionEvents = Color(.sectionEvents)
-    static let sectionNominations = Color(.sectionNominations)
-    static let sectionAppInformation = Color(.sectionAppInformation)
-    static let sectionPricing = Color(.sectionPricing)
-    static let sectionReviews = Color(.sectionReviews)
-    static let sectionAnalytics = Color(.sectionAnalytics)
-    /// The upper colour of each tile's gradient.
-    static let sectionOverviewTop = Color(.sectionOverviewTop)
-    static let sectionStorePageTop = Color(.sectionStorePageTop)
-    static let sectionScreenshotsTop = Color(.sectionScreenshotsTop)
-    static let sectionProductPagesTop = Color(.sectionProductPagesTop)
-    static let sectionEventsTop = Color(.sectionEventsTop)
-    static let sectionNominationsTop = Color(.sectionNominationsTop)
-    static let sectionAppInformationTop = Color(.sectionAppInformationTop)
-    static let sectionPricingTop = Color(.sectionPricingTop)
-    static let sectionReviewsTop = Color(.sectionReviewsTop)
-    static let sectionAnalyticsTop = Color(.sectionAnalyticsTop)
+    /// Each section's system colour (README — Design system §13): its
+    /// symbol in the sidebar, and the few marks drawn in it (stars,
+    /// Analytics' funnel). Purple is never one of them: it means AI. The
+    /// values are `SectionStyle`'s.
+    static let sectionOverview = SectionStyle.overview.color
+    static let sectionStorePage = SectionStyle.storePage.color
+    static let sectionScreenshots = SectionStyle.screenshots.color
+    static let sectionProductPages = SectionStyle.productPages.color
+    static let sectionEvents = SectionStyle.inAppEvents.color
+    static let sectionNominations = SectionStyle.nominations.color
+    static let sectionAppInformation = SectionStyle.appInformation.color
+    static let sectionPricing = SectionStyle.pricing.color
+    static let sectionReviews = SectionStyle.reviews.color
+    static let sectionAnalytics = SectionStyle.analytics.color
 
     // MARK: - Brand
 

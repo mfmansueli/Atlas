@@ -123,9 +123,13 @@ struct AutoReplySettingsSheet: View {
             LabeledContent("Ratings") {
                 HStack(spacing: Spacing.xxSmall) {
                     ForEach(1...5, id: \.self) { stars in
-                        Toggle("\(stars)★", isOn: binding(stars, in: \.ratings))
-                            .toggleStyle(.button)
-                            .accessibilityIdentifier("autoReply.rating.\(stars)")
+                        Toggle(isOn: binding(stars, in: \.ratings)) {
+                            Label("\(stars)", systemImage: "star.fill")
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .toggleStyle(.button)
+                        .accessibilityLabel(Text(ReviewText.starsSpoken(stars)))
+                        .accessibilityIdentifier("autoReply.rating.\(stars)")
                     }
                 }
             }

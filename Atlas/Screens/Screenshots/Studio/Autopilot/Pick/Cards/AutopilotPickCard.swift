@@ -47,11 +47,17 @@ struct AutopilotPickCard: View {
                     .frame(width: Self.pickWidth, height: Self.pickWidth * 2.17)
                     .overlay(Text("No capture").font(.subheadline).foregroundStyle(Palette.label2))
             }
-            Text(studio.pickReason(run, screenID: screen.id))
-                .font(.subheadline)
-                .foregroundStyle(Palette.label2)
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityIdentifier("autopilot.pick.reason.\(index)")
+            Label {
+                Text(studio.pickReason(run, screenID: screen.id))
+            } icon: {
+                if studio.pickReasonIsWarning(run, screenID: screen.id) {
+                    Image(systemName: StatusSymbol.needsYou.symbol).foregroundStyle(StatusSymbol.needsYou.color)
+                }
+            }
+            .font(.subheadline)
+            .foregroundStyle(Palette.label2)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("autopilot.pick.reason.\(index)")
             if attempts.count > 1 {
                 HStack(spacing: 5) {
                     ForEach(attempts) { attempt in

@@ -162,8 +162,8 @@ struct InAppEventStorePreview: View {
 
     private var missingDetails: some View {
         VStack(spacing: Spacing.xSmall) {
-            Text("!")
-                .font(.system(size: 22, weight: .bold))
+            Image(systemName: StatusSymbol.needsYou.symbol)
+                .font(.system(size: 22))
                 .foregroundStyle(Palette.warn)
             Text("No event details image yet")
                 .font(.system(size: 12, weight: .semibold))
