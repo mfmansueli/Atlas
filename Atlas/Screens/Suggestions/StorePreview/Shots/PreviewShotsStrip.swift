@@ -71,6 +71,14 @@ struct PreviewShotsStrip {
         }
     }
 
+    /// Shows at once every screenshot whose image is already here (`kept`
+    /// gives it), so a strip seen before never spins again.
+    mutating func finishKept(_ kept: (LiveScreenshot) -> CGImage?) {
+        for shot in pending {
+            if let image = kept(shot) { finish(shot.id, with: image) }
+        }
+    }
+
     /// What VoiceOver (and the UI tests) hear for the whole strip.
     var accessibilityLabel: String {
         if isLoading { return String(localized: "Loading screenshots") }

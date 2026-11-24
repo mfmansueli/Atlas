@@ -9,8 +9,10 @@ import SwiftUI
 /// The first screenshots people swipe through in a language: what's live on
 /// the App Store, from an iPhone set when there is one (`PreviewShotsStrip`).
 /// Each tile shows a spinner until its screenshot has downloaded, the
-/// screenshots arriving one by one. A language without any shows the
-/// primary language's, and says so.
+/// screenshots arriving one by one. Shown again, it draws what it read
+/// last at once (`LiveShotsMemo`, images decoded before) and reads again
+/// behind it only when that's over a minute old. A language without any
+/// shows the primary language's, and says so.
 struct AppStorePreviewShots: View {
     let services: any ScreenshotsServices
     let app: StoreApp
@@ -19,24 +21,52 @@ struct AppStorePreviewShots: View {
     let locale: StoreLocale
     /// Whose screenshots a language without any shows.
     let primary: StoreLocale
-    var width: CGFloat = 78
+    var width: CGFloat
+    var memo: LiveShotsMemo
 
     /// The app's live screenshots, once read; `live` nil when they
     /// couldn't be.
     @State private var read: ReadShots?
-    @State private var strip = PreviewShotsStrip.reading
+    @State private var strip: PreviewShotsStrip
 
-    private struct ReadShots {
-        var appID: String
+    private struct ReadShots: Equatable {
+        var key: LiveShotsMemo.Key
         var live: LiveScreenshots?
     }
 
     private struct ChosenShots: Hashable {
-        var appID: String
+        var key: LiveShotsMemo.Key
         var locale: StoreLocale
-        /// Whose live screenshots are read, so the images load once
-        /// they are.
-        var readFor: String?
+        /// What was read, so the images load again once it changes.
+        var read: LiveScreenshots?
+        var readFor: LiveShotsMemo.Key?
+    }
+
+    init(
+        services: any ScreenshotsServices,
+        app: StoreApp,
+        localizations: [StoreLocale: String],
+        locale: StoreLocale,
+        primary: StoreLocale,
+        width: CGFloat = 78,
+        memo: LiveShotsMemo = .shared
+    ) {
+        self.services = services
+        self.app = app
+        self.localizations = localizations
+        self.locale = locale
+        self.primary = primary
+        self.width = width
+        self.memo = memo
+        // Seen before in this launch: the first frame shows it.
+        let key = LiveShotsMemo.Key(appID: app.id, localizations: localizations)
+        if let live = memo.kept(key) {
+            _read = State(initialValue: ReadShots(key: key, live: live))
+            _strip = State(initialValue: Self.strip(live, locale: locale, primary: primary, services: services, width: width))
+        } else {
+            _read = State(initialValue: nil)
+            _strip = State(initialValue: .reading)
+        }
     }
 
     var body: some View {
@@ -56,15 +86,26 @@ struct AppStorePreviewShots: View {
                     .foregroundStyle(Palette.label2)
             }
         }
-        .task(id: app.id) {
-            let appID = app.id
-            let live = try? await services.liveScreenshots(for: app, localizations: localizations)
+        .task(id: key) {
+            let key = key
+            if let kept = memo.kept(key), read?.key != key {
+                read = ReadShots(key: key, live: kept)
+            }
+            guard memo.needsRead(key) else { return }
+            let live = await memo.read(key) { [services, app, localizations] in
+                try await services.liveScreenshots(for: app, localizations: localizations)
+            }
             guard !Task.isCancelled else { return }
-            read = ReadShots(appID: appID, live: live)
+            let fresh = ReadShots(key: key, live: live)
+            if read != fresh { read = fresh }
         }
-        .task(id: ChosenShots(appID: app.id, locale: locale, readFor: read?.appID)) {
+        .task(id: ChosenShots(key: key, locale: locale, read: read?.live, readFor: read?.key)) {
             await loadImages()
         }
+    }
+
+    private var key: LiveShotsMemo.Key {
+        LiveShotsMemo.Key(appID: app.id, localizations: localizations)
     }
 
     private func tile(_ slot: PreviewShotSlot) -> some View {
@@ -87,10 +128,11 @@ struct AppStorePreviewShots: View {
         .animation(.easeOut(duration: 0.2), value: slot.phase.image != nil)
     }
 
-    /// The chosen language's screenshots, all at once; each shows as soon
-    /// as it has downloaded.
+    /// The chosen language's screenshots, all at once; the ones decoded
+    /// before show straight away, the others as soon as each has
+    /// downloaded.
     private func loadImages() async {
-        guard let read, read.appID == app.id else {
+        guard let read, read.key == key else {
             strip = .reading
             return
         }
@@ -98,8 +140,8 @@ struct AppStorePreviewShots: View {
             strip = .unreadable
             return
         }
-        strip = PreviewShotsStrip(live: live, locale: locale, primary: primary)
-        let pixelWidth = Int(width * 3)
+        strip = Self.strip(live, locale: locale, primary: primary, services: services, width: width)
+        let pixelWidth = Self.pixelWidth(width)
         // Every download starts now; each tile fills in, left to right, as
         // soon as its own and the ones before it are here.
         let loads = strip.pending.map { shot in
@@ -116,5 +158,20 @@ struct AppStorePreviewShots: View {
                 load.task.cancel()
             }
         }
+    }
+
+    /// The strip `locale` shows from `live`, with every image already
+    /// decoded in place.
+    private static func strip(
+        _ live: LiveScreenshots, locale: StoreLocale, primary: StoreLocale, services: any ScreenshotsServices, width: CGFloat
+    ) -> PreviewShotsStrip {
+        var strip = PreviewShotsStrip(live: live, locale: locale, primary: primary)
+        let pixelWidth = pixelWidth(width)
+        strip.finishKept { services.keptLiveImage($0, pixelWidth: pixelWidth) }
+        return strip
+    }
+
+    private static func pixelWidth(_ width: CGFloat) -> Int {
+        Int(width * 3)
     }
 }

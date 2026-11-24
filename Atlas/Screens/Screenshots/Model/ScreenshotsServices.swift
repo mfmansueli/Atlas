@@ -29,6 +29,10 @@ protocol ScreenshotsServices {
     /// A live screenshot's image, about `pixelWidth` pixels wide.
     func liveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage?
 
+    /// `liveImage` without waiting: the image when it was decoded before in
+    /// this launch, for a view's first frame. Nil by default.
+    func keptLiveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) -> CGImage?
+
     /// Why each display type templates don't render is left out, for the
     /// display-type menu's "Not in this app" section.
     func otherDisplayTypeNotes(for app: StoreApp) -> [ScreenshotDisplayType: String]

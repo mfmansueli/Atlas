@@ -19,7 +19,9 @@ import Observation
 @MainActor
 @Observable
 final class StorePageViewModel {
-    let app: StoreApp
+    /// Kept while other sections show, so the section hands it the icon
+    /// that arrives after it was made (`takeIcon`).
+    private(set) var app: StoreApp
     let services: any StorePageServices
     let queue: ChangeQueue
     let translation: TranslateMissingViewModel
@@ -116,6 +118,13 @@ final class StorePageViewModel {
         translation = TranslateMissingViewModel(translator: services.translator)
         inAppTexts = InAppTextsViewModel(app: app, services: services, queue: queue)
         translation.currentListing = { [weak self] in self?.listing }
+    }
+
+    /// The app's icon once it's known: models made (or read ahead) before
+    /// the icons arrived would otherwise draw its letter for good.
+    func takeIcon(_ icon: AppIcon?) {
+        guard let icon, app.icon != icon else { return }
+        app.icon = icon
     }
 
     // MARK: - Loading

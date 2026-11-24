@@ -43,6 +43,7 @@ struct ProductPagesSectionView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.productPages")
         .task(id: app.id) { await start() }
+        .onChange(of: app.icon) { shownModel?.takeIcon(app.icon) }
         .onChange(of: navigator.refreshCount) {
             Task {
                 if let viewModel {
@@ -183,6 +184,7 @@ struct ProductPagesSectionView: View {
         await kept?.finishWarming(.productPages)
         guard !Task.isCancelled else { return }
         let model = kept?.productPages ?? ProductPagesViewModel(app: app, services: services, store: store, queue: queue)
+        model.takeIcon(app.icon)
         kept?.productPages = model
         viewModel = model
         setUpPageShots(model)

@@ -12,7 +12,9 @@ import Observation
 @MainActor
 @Observable
 final class ProductPagesViewModel {
-    let app: StoreApp
+    /// Kept while other sections show, so the section hands it the icon
+    /// that arrives after it was made (`takeIcon`).
+    private(set) var app: StoreApp
     let services: any ProductPagesServices
     let store: ProductPagesStore
     let queue: ChangeQueue
@@ -73,6 +75,13 @@ final class ProductPagesViewModel {
         self.store = store
         self.queue = queue
         localeCode = app.primaryLocale ?? "en-US"
+    }
+
+    /// The app's icon once it's known: models made (or read ahead) before
+    /// the icons arrived would otherwise draw its letter for good.
+    func takeIcon(_ icon: AppIcon?) {
+        guard let icon, app.icon != icon else { return }
+        app.icon = icon
     }
 
     var builder: ProductPageChangeBuilder { ProductPageChangeBuilder(appID: app.id) }

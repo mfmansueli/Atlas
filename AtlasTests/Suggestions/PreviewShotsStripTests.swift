@@ -130,4 +130,14 @@ struct PreviewShotsStripTests {
         ])
         #expect(PreviewShotsStrip.bestSet(in: live, locale: english)?.id == "ipad")
     }
+
+    @Test func screenshotsDecodedBeforeShowAtOnce() throws {
+        let live = LiveScreenshots(screenshotSets: [set("iphone", locale: "en-US", count: 3)])
+        let kept = try image(width: 10, height: 20)
+        var strip = PreviewShotsStrip(live: live, locale: english, primary: english)
+        strip.finishKept { $0.id == "iphone.1" ? nil : kept }
+        #expect(strip.slots.map { $0.phase.image != nil } == [true, false, true])
+        #expect(strip.pending.map(\.id) == ["iphone.1"])
+        #expect(strip.isLoading)
+    }
 }

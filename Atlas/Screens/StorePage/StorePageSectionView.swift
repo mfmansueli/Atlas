@@ -38,6 +38,7 @@ struct StorePageSectionView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.storePage")
         .task(id: app.id) { await open() }
+        .onChange(of: app.icon) { shownModel?.takeIcon(app.icon) }
         .onChange(of: navigator.refreshCount) {
             Task {
                 if let viewModel { await load(viewModel) }
@@ -60,6 +61,7 @@ struct StorePageSectionView: View {
         await kept?.finishWarming(.storePage)
         guard !Task.isCancelled else { return }
         if let model = kept?.storePage, model.isLoaded {
+            model.takeIcon(app.icon)
             model.checksRepeatedWords = preferences.checksRepeatedWords
             viewModel = model
             // The queue may have changed while another section showed.

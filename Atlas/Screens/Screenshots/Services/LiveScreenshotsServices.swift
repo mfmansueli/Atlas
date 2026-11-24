@@ -117,10 +117,15 @@ struct LiveScreenshotsServices: ScreenshotsServices {
         }
     }
 
+    /// Decoded once per launch through `RemoteImageCache`, so a preview
+    /// shown again draws it in its first frame (`keptLiveImage`).
     func liveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage? {
-        guard let url = screenshot.imageURL(width: pixelWidth),
-              let data = try? await RemoteImageCache.shared.data(for: url) else { return nil }
-        return ScreenshotPNG.image(data)
+        guard let url = screenshot.imageURL(width: pixelWidth) else { return nil }
+        return await RemoteImageCache.shared.image(for: url)
+    }
+
+    func keptLiveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) -> CGImage? {
+        screenshot.imageURL(width: pixelWidth).flatMap { RemoteImageCache.shared.cachedImage(for: $0) }
     }
 
     func uploadFont(from url: URL) async throws -> String {
