@@ -96,7 +96,7 @@ struct MacCaptureTests {
             try AutopilotCenter.checkSize(PixelSize(width: 1100, height: 800), for: .mac)
             Issue.record("A window isn't the whole screen")
         } catch {
-            #expect(error.localizedDescription.contains("isn’t a Mac’s whole screen"), "\(error.localizedDescription)")
+            #expect(error.localizedDescription.contains("isn’t a full Mac screen"), "\(error.localizedDescription)")
         }
     }
 

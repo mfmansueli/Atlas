@@ -388,22 +388,6 @@ struct AppWorkspaceView: View {
         }
     }
 
-    private func undo(_ toast: WorkspaceToast) {
-        guard let undo = toast.undo else { return }
-        SuggestionRunAcceptance.undo(undo, queue: changes, store: suggestions)
-        navigator.toast = nil
-    }
-
-    private func act(on toast: WorkspaceToast) {
-        navigator.toast = nil
-        switch toast.action {
-        case let .openAnalytics(appID): navigator.open(.analytics, appID: appID)
-        case let .openOverview(appID): navigator.open(.overview, appID: appID)
-        case .suggestEverything: navigator.suggestEverything()
-        case nil: break
-        }
-    }
-
     /// Screenshot proposals waiting per app, and their sheet.
     private var screenshotDocuments: ScreenshotsDocumentCenter? {
         services.screenshots.documentCenter
@@ -483,5 +467,25 @@ extension AppWorkspaceView {
         if let runID = askCenter.ask(for: app.id)?.runID { launcher.stop(runID) }
         reviewShots.clear(appID: app.id)
         navigator.toast = WorkspaceToast(message: ToastMessage(text: String(localized: "Run cancelled. Finished screenshots stay as suggestions.")))
+    }
+}
+
+// MARK: - Toast
+
+extension AppWorkspaceView {
+    private func undo(_ toast: WorkspaceToast) {
+        guard let undo = toast.undo else { return }
+        SuggestionRunAcceptance.undo(undo, queue: changes, store: suggestions)
+        navigator.toast = nil
+    }
+
+    private func act(on toast: WorkspaceToast) {
+        navigator.toast = nil
+        switch toast.action {
+        case let .openAnalytics(appID): navigator.open(.analytics, appID: appID)
+        case let .openOverview(appID): navigator.open(.overview, appID: appID)
+        case .suggestEverything: navigator.suggestEverything()
+        case nil: break
+        }
     }
 }

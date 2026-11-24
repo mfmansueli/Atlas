@@ -77,7 +77,7 @@ struct CaptionsArtworkPhrasesTests {
         #expect(editor.isPhrase)
         #expect(editor.headline.isEmpty)
         #expect(editor.prompt == "The phrase in French")
-        #expect(editor.guidance.contains("not word by word"))
+        #expect(editor.guidance.contains("Write for its readers"))
         #expect(editor.sources.map(\.title) == ["Original · English (U.S.)"])
         #expect(editor.sources.map(\.text) == [Self.phrase])
         #expect(editor.countDetail == nil)
@@ -96,7 +96,7 @@ struct CaptionsArtworkPhrasesTests {
         editor.select(ArtworkTextKey(locale: "en-US", role: .search, phrase: Self.phrase))
         #expect(editor.headline == Self.phrase)
         #expect(editor.sources.isEmpty)
-        #expect(editor.guidance.contains("every language translates from the original words"))
+        #expect(editor.guidance.contains("every language translates from it"))
 
         editor.setHeadline("Small steps.")
         await editor.commitEdits()
