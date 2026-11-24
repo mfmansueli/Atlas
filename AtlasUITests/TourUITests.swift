@@ -86,12 +86,15 @@ final class TourUITests: XCTestCase {
         XCTAssertTrue(element("settings.pane.title").waitForExistence(timeout: 10))
     }
 
-    /// Show the Tour starts again from the first tip, on Overview.
+    /// Help ▾ → Show the Tour starts again from the first tip, on Overview.
     func testShowTheTourStartsItAgain() {
         app.launch(debugScene: "nav-sp")
-        let showTour = element("sidebar.showTour")
-        XCTAssertTrue(showTour.waitForExistence(timeout: 15))
+        let help = element("sidebar.help")
+        XCTAssertTrue(help.waitForExistence(timeout: 15))
         XCTAssertFalse(tip(1).exists, "Scenes other than the tour's don't start it")
+        help.click()
+        let showTour = help.menuItems["Show the Tour"]
+        XCTAssertTrue(showTour.waitForExistence(timeout: 5))
         showTour.click()
         XCTAssertTrue(tip(1).waitForExistence(timeout: 5))
         XCTAssertTrue(element("workspace.overview").waitForExistence(timeout: 10))

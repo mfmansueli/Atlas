@@ -18,6 +18,8 @@ related: menubar
 | Reviews | ⌘8 |
 | Analytics | ⌘9 |
 | Review & Push | ⇧⌘P |
+| Switch app | ⌘K |
+| Previous or next language with suggestions | ⌘[ or ⌘] |
 | Read App Store Connect again | ⌘R |
 | Show or hide the sidebar | ⌃⌘S |
 | Undo the last accept or edit | ⌘Z |

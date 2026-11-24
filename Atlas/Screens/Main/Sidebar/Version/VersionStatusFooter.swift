@@ -10,6 +10,8 @@ import SwiftUI
 /// Submit sheet before submitting, the Overview's version card after.
 struct VersionStatusFooter: View {
     let summary: VersionStatusSummary
+    /// A sidebar shorter than 600 pt: 6 pt above and below, not 8.
+    var isCompact = false
     let action: () -> Void
 
     var body: some View {
@@ -42,7 +44,7 @@ struct VersionStatusFooter: View {
             }
             .padding(.leading, 10)
             .padding(.trailing, Spacing.small)
-            .padding(.vertical, Spacing.small)
+            .padding(.vertical, isCompact ? Spacing.xSmall : Spacing.small)
             .background(Palette.fill1, in: shape)
             .overlay(shape.strokeBorder(Palette.separator, lineWidth: 0.5))
             .contentShape(shape)

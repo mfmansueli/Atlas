@@ -7,10 +7,11 @@ import SwiftUI
 
 /// The sidebar: "App" over the app being viewed (opening the app menu) at
 /// the top, its sections grouped by what the person is doing, each with
-/// its count, then Settings, Show the Tour (board 63) and Atlas Help over the
-/// version's status at the bottom. In a window too short for the sections and
-/// those rows, the three fold into a row of icons (`SidebarFooterFit`). Also
-/// the library's loading, empty and error states.
+/// its count, then Settings and Help ▾ side by side over the version's
+/// status at the bottom (board 71), the same at every height. A sidebar
+/// shorter than 600 pt drops the app card's "other apps" line and tightens
+/// the rows (`SidebarFit`). Also the library's loading, empty and error
+/// states.
 struct AppSidebar: View {
     @Bindable var viewModel: AppListViewModel
     let summaries: AppSummaryStore
@@ -29,13 +30,11 @@ struct AppSidebar: View {
     @Environment(ChangeQueue.self) private var changes
     @Environment(PricingModeStore.self) private var pricingModes
     @Environment(FieldSuggestionStore.self) private var suggestions
-    /// Nil in previews.
-    @Environment(FirstRunTour.self) private var tour: FirstRunTour?
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) private var openWindow
 
-    /// What the sidebar measured, for how its footer fits.
-    @State private var footerFit = SidebarFooterFit()
+    /// What the sidebar measured, for how its sections fit.
+    @State private var fit = SidebarFit()
 
     var body: some View {
         List(selection: selection) {
@@ -46,11 +45,16 @@ struct AppSidebar: View {
                             SidebarSectionRow(
                                 section: section, counts: counts, isSelected: navigator.section == section, appID: viewModel.selectedAppID
                             )
+                            // Under 600 pt: 27 pt rows (the list adds its
+                            // insets, the 22 pt tile overhangs them a little),
+                            // the name keeping its size.
+                            .frame(height: fit.isCompact ? Metrics.sidebarCompactRowHeight - Spacing.small : nil)
+                            .font(fit.isCompact ? .body : nil)
                             .tag(section)
                             .accessibilityIdentifier("sidebar.section.\(section.rawValue)")
                             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
-                                var fit = footerFit
-                                if fit.report(section: section, top: frame.minY, bottom: frame.maxY) { footerFit = fit }
+                                var next = fit
+                                if next.report(section: section, top: frame.minY, bottom: frame.maxY) { fit = next }
                             }
                             // The tour's second tip: what a section and its number are.
                             .tourTip(section == .storePage ? .sections : nil, arrowEdge: .trailing)
@@ -64,6 +68,8 @@ struct AppSidebar: View {
             }
         }
         .listStyle(.sidebar)
+        .environment(\.defaultMinListRowHeight, fit.rowHeight)
+        .environment(\.sidebarRowSize, fit.isCompact ? .small : .medium)
         .accessibilityIdentifier("sidebar.sections")
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
@@ -74,98 +80,41 @@ struct AppSidebar: View {
                     .accessibilityAddTraits(.isHeader)
                 AppSwitcher(
                     viewModel: viewModel, accounts: accounts, currentAccountID: currentAccountID, indicators: indicators,
-                    onSelectAccount: onSelectAccount, onAddKey: onAddKey, startsOpen: Self.opensAppMenu
+                    onSelectAccount: onSelectAccount, onAddKey: onAddKey, startsOpen: Self.opensAppMenu, showsOthers: !fit.isCompact
                 )
             }
             .padding(.horizontal, Spacing.small)
             .padding(.bottom, Spacing.xSmall)
             .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded() } action: { height in
-                if footerFit.headerHeight != height { footerFit.headerHeight = height }
+                if fit.headerHeight != height { fit.headerHeight = height }
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: Spacing.tiny) {
-                utilities
-                if let version, viewModel.selectedApp != nil {
-                    VersionStatusFooter(summary: version, action: onVersion)
-                        .padding(.top, Spacing.xxSmall)
-                }
-            }
-            .padding(.horizontal, Spacing.small)
-            .padding(.top, Spacing.xxSmall)
-            .padding(.bottom, Spacing.small)
+            SidebarFooter(
+                version: viewModel.selectedApp != nil ? version : nil,
+                showsTour: viewModel.selectedApp != nil,
+                isCompact: fit.isCompact,
+                sectionsScrollUnder: fit.sectionsScrollUnder,
+                onSettings: { openSettings() },
+                onHelp: { showHelp(nil) },
+                onTour: { navigator.requestsTour = true },
+                onShortcuts: { showHelp(HelpCommands.shortcutsArticleID) },
+                onVersion: onVersion
+            )
             .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded() } action: { height in
-                footerMeasured(height)
-            }
-            // Solid, with a line on top, only while sections scroll under
-            // it, so they never show through; otherwise the list's own look.
-            .background {
-                if footerFit.sectionsScrollUnder {
-                    SidebarMaterialBackground()
-                        .overlay(alignment: .top) { Divider() }
-                        .ignoresSafeArea()
-                }
+                if fit.footerHeight != height { fit.footerHeight = height }
             }
         }
         .overlay { state }
         .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded() } action: { height in
-            if footerFit.sidebarHeight != height { footerFit.sidebarHeight = height }
+            if fit.sidebarHeight != height { fit.sidebarHeight = height }
         }
     }
 
-    /// Settings, Show the Tour and Atlas Help: rows, or a row of icons in a
-    /// window too short for them.
-    @ViewBuilder
-    private var utilities: some View {
-        let settings = String(localized: "Settings")
-        let tour = String(localized: "Show the Tour")
-        let help = String(localized: "Atlas Help", comment: "kind:button")
-        if footerFit.isCompact {
-            HStack(spacing: Spacing.tiny) {
-                SidebarUtilityIconButton(title: settings, systemImage: "gearshape", shortcut: "⌘,") { openSettings() }
-                    .accessibilityIdentifier("sidebar.settings")
-                    .tourTip(.settings, arrowEdge: .trailing)
-                if viewModel.selectedApp != nil {
-                    SidebarUtilityIconButton(title: tour, systemImage: "questionmark", action: showTour)
-                        .accessibilityIdentifier("sidebar.showTour")
-                }
-                SidebarUtilityIconButton(title: help, systemImage: "book", shortcut: "⌘?", action: showHelp)
-                    .accessibilityIdentifier("sidebar.help")
-            }
-        } else {
-            SidebarUtilityRow(title: settings, systemImage: "gearshape", shortcut: "⌘,") { openSettings() }
-                .accessibilityIdentifier("sidebar.settings")
-                // The tour's last tip.
-                .tourTip(.settings, arrowEdge: .trailing)
-            if viewModel.selectedApp != nil {
-                SidebarUtilityRow(title: tour, systemImage: "questionmark", action: showTour)
-                    .accessibilityIdentifier("sidebar.showTour")
-            }
-            SidebarUtilityRow(title: help, systemImage: "book", shortcut: "⌘?", action: showHelp)
-                .accessibilityIdentifier("sidebar.help")
-        }
-    }
-
-    private func footerMeasured(_ height: CGFloat) {
-        var fit = footerFit
-        fit.footerMeasured(height)
-        if fit != footerFit { footerFit = fit }
-    }
-
-    /// Show the Tour: the tips start again from the first, on Overview.
-    private func showTour() {
-        navigator.section = .overview
-        // After the click that started it, so the first tip isn't closed
-        // as if by a click elsewhere.
-        Task {
-            try? await Task.sleep(for: .milliseconds(150))
-            tour?.start()
-        }
-    }
-
-    /// Atlas Help, on its home page, as Help → Atlas Help (⌘?) opens it.
-    private func showHelp() {
-        HelpNavigation.shared.goHome()
+    /// Atlas Help on its home page or on an article, as macOS's Help menu
+    /// opens it.
+    private func showHelp(_ articleID: String?) {
+        if let articleID { HelpNavigation.shared.open(articleID) } else { HelpNavigation.shared.goHome() }
         openWindow(id: HelpCommands.windowID)
     }
 

@@ -63,7 +63,7 @@ extension PricingViewModel {
             let details = ReviewShotDetails(origin: .capture(title: capture.title), device: capture.displayType.deviceName)
             setup.details.set(details, for: id)
             if var change = queue.change(id: id) {
-                change.title = details.reviewLine
+                change.title = details.reviewLine(product: product.name)
                 queue.upsert(change)
             }
             ids.append(id)

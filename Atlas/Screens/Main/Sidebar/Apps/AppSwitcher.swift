@@ -18,6 +18,9 @@ struct AppSwitcher: View {
     var onAddKey: () -> Void = {}
     /// Opens the menu right away (a DEBUG scene).
     var startsOpen = false
+    /// The "5 other apps" line; a sidebar shorter than 600 pt drops it
+    /// (board 71).
+    var showsOthers = true
 
     @State private var isPresented = false
     @State private var isHovered = false
@@ -105,7 +108,7 @@ struct AppSwitcher: View {
             #endif
         }
         // The tour's first tip, pointing at the app's row.
-        .tourTip(.apps, arrowEdge: .trailing, anchor: summary.hasOthers ? .point(UnitPoint(x: 1, y: 0.32)) : .rect(.bounds))
+        .tourTip(.apps, arrowEdge: .trailing, anchor: showsOthersLine ? .point(UnitPoint(x: 1, y: 0.32)) : .rect(.bounds))
     }
 
     private var label: some View {
@@ -137,7 +140,7 @@ struct AppSwitcher: View {
                     .overlay(Circle().strokeBorder(Palette.separator, lineWidth: 0.5))
             }
             .frame(minHeight: 46)
-            if summary.hasOthers {
+            if showsOthersLine {
                 othersLine
             }
         }
@@ -165,6 +168,8 @@ struct AppSwitcher: View {
                     .frame(height: 0.5)
             }
     }
+
+    private var showsOthersLine: Bool { showsOthers && summary.hasOthers }
 
     private var current: TeamAccount? {
         accounts.first { $0.id == currentAccountID }

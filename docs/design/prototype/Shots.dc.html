@@ -153,7 +153,7 @@ body{margin:0}
     <div style="max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px">
       <div class="box">
         <div class="frow" style="padding: 12px 14px"><span class="fl"><span class="t-c b">Local MCP server</span><span class="t-s l2 tn">{{setw.statusTxt}}</span></span><button class="{{setw.swCls}}" role="switch" aria-checked="{{setw.on}}" aria-label="Local MCP server" onClick="{{setw.toggle}}"></button></div>
-        <div class="frow" style="padding: 10px 14px"><span class="t-s l2">Off by default. Runs on this Mac only, at 127.0.0.1:47321, and only while Atlas is open.</span></div>
+        <div class="frow" style="padding: 10px 14px"><span class="t-s l2">Off by default. Runs only on this Mac (127.0.0.1:47321), while Atlas is open.</span></div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 6px"><span class="t-s l2 b">WHAT A PAIRED ASSISTANT CAN DO</span>
         <div class="box" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
@@ -161,13 +161,13 @@ body{margin:0}
           <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 6px"><span class="t-c b">It can’t</span><sc-for list="{{setw.cant}}" as="x" hint-placeholder-count="3"><span class="t-s" style="display: flex; gap: 6px; align-items: flex-start"><span class="l2" style="display: flex; padding-top: 1px"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg></span>{{x.t}}</span></sc-for></div>
         </div>
       </div>
-      <sc-if value="{{setw.off}}"><span class="t-s l2">Turn the server on to pair Claude Code, Claude Desktop, Cursor, Codex or any other MCP client.</span></sc-if>
+      <sc-if value="{{setw.off}}"><span class="t-s l2">Turn the server on to pair Claude Code, Claude Desktop, Cursor, Codex or any MCP client.</span></sc-if>
       <sc-if value="{{setw.on}}">
         <div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; align-items: center; justify-content: space-between"><span class="t-s l2 b">PAIRED ASSISTANTS</span><button class="btn sm" onClick="{{setw.pair}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg>Pair Assistant…</button></div><div class="box">
-          <sc-if value="{{setw.noClients}}"><div class="frow"><span class="t-s l2">Nothing paired yet. Pairing gives one assistant its own token, so you can revoke it without touching the others.</span></div></sc-if>
+          <sc-if value="{{setw.noClients}}"><div class="frow"><span class="t-s l2">Nothing paired yet. Each assistant gets its own token, so you can revoke one alone.</span></div></sc-if>
           <sc-for list="{{setw.clients}}" as="c" hint-placeholder-count="1"><div class="frow"><span class="who" style="height: 22px"><b>{{c.mono}}</b>{{c.name}}</span><span class="fl"><span class="t-s" style="display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{c.dot}}"></span>{{c.status}}</span><span class="mono t-f l3 ell">{{c.where}}</span></span><button class="btn sm destr" onClick="{{c.revoke}}">Revoke</button></div></sc-for>
         </div></div>
-        <div style="display: flex; flex-direction: column; gap: 6px"><span class="t-s l2 b">WHAT ASSISTANTS MAY PROPOSE</span><div class="box">
+        <div style="display: flex; flex-direction: column; gap: 6px"><span class="t-s l2 b">WHAT ASSISTANTS MAY SUGGEST</span><div class="box">
           <sc-for list="{{setw.perms}}" as="p" hint-placeholder-count="5"><label class="frow"><input type="checkbox" checked="{{p.on}}" onChange="{{p.cb}}" disabled="{{p.locked}}"><span class="fl"><span class="t-c">{{p.label}}</span><span class="t-f l2">{{p.note}}</span></span><sc-if value="{{p.isNew}}"><span class="pill p-neu">Screenshots</span></sc-if></label></sc-for>
         </div></div>
         <div style="display: flex; flex-direction: column; gap: 6px"><span class="t-s l2 b">ACTIVITY LOG</span><div class="box" style="overflow: hidden">
@@ -181,14 +181,14 @@ body{margin:0}
   <sc-if value="{{pair.open}}" hint-placeholder-val="{{false}}">
     <button class="scrim" aria-label="Close" onClick="{{pair.cancel}}"></button>
     <div class="sheet" role="dialog" aria-modal="true" aria-label="Pair an assistant" style="top: 20px; width: 600px; max-height: calc(100% - 32px)">
-      <div class="sh-h"><span class="t-2">Pair an assistant</span><span class="t-s l2">Atlas makes a token for this assistant only. Paste the command into the assistant; it connects the next time it starts.</span></div>
+      <div class="sh-h"><span class="t-2">Pair an assistant</span><span class="t-s l2">The token is for this assistant only. Paste the command into it; it connects on its next start.</span></div>
       <div class="scroll" style="padding: 0 22px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0">
         <div class="seg sm" role="tablist" aria-label="Client" style="align-self: flex-start"><sc-for list="{{pair.kinds}}" as="k" hint-placeholder-count="5"><button class="{{k.cls}}" onClick="{{k.pick}}">{{k.label}}</button></sc-for></div>
         <span class="t-s l2">{{pair.where}}</span>
         <div style="display: flex; gap: 8px; align-items: flex-start"><div class="code" style="flex: 1">{{pair.cmd}}</div><button class="btn sm" onClick="{{pair.copy}}"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6"/><path d="M3 10.5V3.6A1.1 1.1 0 0 1 4.1 2.5H10.5"/></svg>{{pair.copyLbl}}</button></div>
-        <div class="box frow" style="gap: 10px"><span class="mono t-s" style="letter-spacing: .12em">{{pair.code}}</span><span class="t-s l2 fl">Pairing code, if the assistant asks for one instead. It expires in 10 minutes if no one uses it.</span></div>
+        <div class="box frow" style="gap: 10px"><span class="mono t-s" style="letter-spacing: .12em">{{pair.code}}</span><span class="t-s l2 fl">Pairing code, if the assistant asks for one. Expires in 10 minutes if unused.</span></div>
         <sc-if value="{{pair.waiting}}"><span class="t-s" style="display: flex; align-items: center; gap: 6px"><svg class="ic sm spin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2a6 6 0 1 1-6 6"/></svg>Waiting for {{pair.name}} to connect…</span></sc-if>
-        <sc-if value="{{pair.done}}"><div class="ban b-neu" style="margin: 0"><span class="who"><b>{{pair.mono}}</b>{{pair.name}}</span><span style="flex: 1">Connected from <span class="mono">~/Developer/Lumen</span>. It can read and propose now.</span></div></sc-if>
+        <sc-if value="{{pair.done}}"><div class="ban b-neu" style="margin: 0"><span class="who"><b>{{pair.mono}}</b>{{pair.name}}</span><span style="flex: 1">Connected from <span class="mono">~/Developer/Lumen</span>. It can read and suggest now.</span></div></sc-if>
       </div>
       <div class="sh-f"><span style="flex: 1"></span><button class="btn" onClick="{{pair.cancel}}">{{pair.cancelLbl}}</button><sc-if value="{{pair.done}}"><button class="btn pri" onClick="{{pair.finish}}">Done</button></sc-if></div>
     </div>
@@ -251,7 +251,7 @@ body{margin:0}
     <div style="flex: none; display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 8px; border-bottom: .5px solid var(--sep); flex-wrap: wrap">
       <div style="display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 8px; min-width: 0">
         <span class="l2" style="width: 28px; height: 28px; border-radius: 7px; background: var(--fill-2); display: flex; align-items: center; justify-content: center; flex: none"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.8h5l3 3v9.4H4z"/><path d="M9 1.8v3h3"/></svg></span>
-        <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0"><span class="t-hl ell">{{bar.verTitle}}</span><span class="t-f l2 ell">Screenshots belong to a version; they go live with it</span></span>
+        <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0"><span class="t-hl ell">{{bar.verTitle}}</span><span class="t-f l2 ell">Screenshots go live with their version</span></span>
       </div>
       <sc-if value="{{bar.noVersion}}"><span class="pill p-out"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.2" y="7" width="9.6" height="7" rx="1.6"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7"/></svg>Live · read-only</span></sc-if>
       <span style="flex: 1"></span>
@@ -276,7 +276,7 @@ body{margin:0}
       <span class="l3" style="display: flex"><svg class="ic xl" viewBox="0 0 16 16" aria-hidden="true"><rect x="4.5" y="1.8" width="7" height="12.4" rx="1.8"/><path d="M7.2 12h1.6"/></svg></span>
       <span class="t-2">No captures yet</span>
       <span class="t-c l2" style="max-width: 470px">A capture is a real screenshot of Lumen, ideally taken in each language. Atlas puts it in a template with a caption; it never draws your interface.</span>
-      <div style="display: flex; gap: 8px"><button class="btn pri" onClick="{{st.goCaptures}}">Import Captures…</button><button class="btn" onClick="{{st.useLive}}">Use Live Screenshots</button><a class="btn" href="Studio.dc.html" style="text-decoration: none; color: var(--label)">Let Claude Code Capture Them</a></div>
+      <div style="display: flex; gap: 8px"><button class="btn pri" onClick="{{st.goCaptures}}">Real screenshots of Lumen, ideally one per language. Atlas adds template and caption; it never draws your interface.</button><button class="btn" onClick="{{st.useLive}}">Use Live Screenshots</button><a class="btn" href="Studio.dc.html" style="text-decoration: none; color: var(--label)">Capture with Claude Code</a></div>
       <span class="t-s l2">Folders, fastlane snapshot output and Xcode test results all work.</span>
     </div>
   </sc-if>
@@ -348,7 +348,7 @@ body{margin:0}
         <span style="flex: 1"></span>
         <label class="t-s" style="display: flex; align-items: center; gap: 6px">Safe areas and caption box<button class="{{tp.guidesCls}}" role="switch" aria-checked="{{tp.guides}}" aria-label="Show safe areas and caption box" onClick="{{tp.toggleGuides}}"></button></label>
       </div>
-      <sc-if value="{{tp.noCapNote}}"><div class="ban b-acc" style="margin: 0 14px 8px"><span style="flex: 1"><b>Write your captions next.</b> <span class="l2">The renders below have empty caption boxes until English (U.S.) has captions.</span></span><button class="btn sm" onClick="{{tp.goCaptions}}">Go to Captions</button></div></sc-if>
+      <sc-if value="{{tp.noCapNote}}"><div class="ban b-acc" style="margin: 0 14px 8px"><span style="flex: 1"><b>Write your captions next.</b> <span class="l2">Caption boxes stay empty until English (U.S.) has captions.</span></span><button class="btn sm" onClick="{{tp.goCaptions}}">Caption boxes stay empty until English (U.S.) has captions.</button></div></sc-if>
       <div class="scroll stg" style="flex: 1; min-height: 0; display: flex; gap: 28px; padding: 18px 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap">
         <div style="display: flex; flex-direction: column; gap: 8px; align-items: center">
           <dc-import name="Shot" spec="{{tp.big}}" w="{{tp.bigW}}" label="{{tp.bigAx}}" hint-size="{{tp.bigHint}}"></dc-import>
@@ -380,7 +380,7 @@ body{margin:0}
         <div class="seg sm" style="align-self: flex-start"><sc-for list="{{tp.bgSeg}}" as="x" hint-placeholder-count="4"><button class="{{x.cls}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div>
         <div class="irow"><span>Colors</span><div style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{tp.stops}}" as="x" hint-placeholder-count="2"><input type="color" value="{{x.v}}" onChange="{{x.on}}" aria-label="{{x.ax}}"></sc-for></div></div>
         <sc-if value="{{tp.isLinear}}"><label class="irow"><span>Angle</span><input type="range" min="0" max="360" step="1" value="{{tp.angle}}" onChange="{{tp.onAngle}}"><span class="tn t-s" style="width: 34px; text-align: right">{{tp.angle}}°</span></label></sc-if>
-        <sc-if value="{{tp.isPano}}"><span class="t-f l2">One background spans all {{tp.nSlots}} slots, so it continues when people swipe. Right-to-left locales get it reversed.</span></sc-if>
+        <sc-if value="{{tp.isPano}}"><span class="t-f l2">One background spans all {{tp.nSlots}} slots and continues as people swipe. Reversed for right-to-left locales.</span></sc-if>
         <sc-if value="{{tp.bgOwn}}"><div class="irow"><span class="t-f l2" style="flex: 1">Slot {{tp.slotN}} has its own background; these colors edit it.</span><button class="btn plain t-s" onClick="{{tp.bgReset}}">Use Template’s</button></div></sc-if>
         <sc-if value="{{tp.bgCanOwn}}"><button class="btn sm" onClick="{{tp.bgMakeOwn}}" style="align-self: flex-start">Give Slot {{tp.slotN}} Its Own Background</button></sc-if>
       </div>
@@ -394,9 +394,9 @@ body{margin:0}
           <label class="irow"><span>Rotate</span><input type="range" min="-30" max="30" step="1" value="{{tp.tiltZ}}" onChange="{{tp.onTiltZ}}"><span class="tn t-s" style="width: 34px; text-align: right">{{tp.tiltZ}}°</span></label>
           <label class="irow"><span>Turn</span><input type="range" min="-30" max="30" step="1" value="{{tp.tiltY}}" onChange="{{tp.onTiltY}}"><span class="tn t-s" style="width: 34px; text-align: right">{{tp.tiltY}}°</span></label>
           <label class="irow"><span>Lean back</span><input type="range" min="0" max="40" step="1" value="{{tp.tiltX}}" onChange="{{tp.onTiltX}}"><span class="tn t-s" style="width: 34px; text-align: right">{{tp.tiltX}}°</span></label>
-          <span class="t-f l2">Right-to-left locales get the angle mirrored. The capture itself is never redrawn.</span>
+          <span class="t-f l2">Mirrored for right-to-left locales. The capture is never redrawn.</span>
         </sc-if>
-        <sc-if value="{{tp.devOff}}"><span class="t-f l2">The capture fills the canvas. Captures must match the display type’s size, or the check fails.</span></sc-if>
+        <sc-if value="{{tp.devOff}}"><span class="t-f l2">The capture fills the canvas. It must match the display type’s size, or the check fails.</span></sc-if>
       </div>
       <div class="sec"><span class="sech">CAPTION</span>
         <div class="irow"><span>Placement</span><div class="seg sm"><sc-for list="{{tp.placeSeg}}" as="x" hint-placeholder-count="2"><button class="{{x.cls}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
@@ -407,8 +407,8 @@ body{margin:0}
         <div class="irow"><span>Uppercase</span><button class="{{tp.upperCls}}" role="switch" aria-checked="{{tp.upper}}" aria-label="Uppercase headline" onClick="{{tp.toggleUpper}}"></button><span class="t-f l2">Uses each language’s own rules</span></div>
         <div class="irow"><span>Emphasis</span><div class="seg sm"><sc-for list="{{tp.emphSeg}}" as="x" hint-placeholder-count="3"><button class="{{x.cls}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
         <sc-if value="{{tp.hasEmph}}"><div class="irow"><span>Emphasized line</span><div class="seg sm"><sc-for list="{{tp.emphWSeg}}" as="x" hint-placeholder-count="3"><button class="{{x.cls}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div></sc-if>
-        <div class="irow"><span>Highlight</span><button class="{{tp.markCls}}" role="switch" aria-checked="{{tp.mark}}" aria-label="Highlight bar behind each line" onClick="{{tp.toggleMark}}"></button><sc-if value="{{tp.mark}}"><input type="color" value="{{tp.markColor}}" onChange="{{tp.onMarkColor}}" aria-label="Highlight color"></sc-if></div>
-        <span class="t-f l2">Emphasis and highlights apply per line after wrapping, so they follow every language’s line breaks. 1 u is 1/1320 of the canvas’s short side.</span>
+        <div class="irow"><span>Highlight</span><button class="{{tp.markCls}}" role="switch" aria-checked="{{tp.mark}}" aria-label="Line highlight bar" onClick="{{tp.toggleMark}}"></button><sc-if value="{{tp.mark}}"><input type="color" value="{{tp.markColor}}" onChange="{{tp.onMarkColor}}" aria-label="Highlight color"></sc-if></div>
+        <span class="t-f l2">Emphasis and highlights follow each language’s line breaks. 1 u = 1/1320 of the canvas’s short side.</span>
       </div>
       <div class="sec"><span class="sech">DECORATIONS · SLOT {{tp.slotN}}</span>
         <sc-for list="{{tp.decos}}" as="d" hint-placeholder-count="2"><div class="irow" style="align-items: center"><span style="flex: 1; min-width: 0; opacity: {{d.rowOp}}" class="ell">{{d.label}}</span><sc-if value="{{d.isAuto}}"><span class="t-s l2" title="From the App Store, per country, refreshed daily" style="flex: 1.4; min-width: 0; line-height: 15px">{{d.autoTxt}}</span><button class="btn plain t-s" onClick="{{d.toCustom}}">Type It</button></sc-if><sc-if value="{{d.isRating}}"><input class="ta" value="{{d.value}}" onChange="{{d.onValue}}" aria-label="Value shown on the {{d.label}}" style="width: 58px; height: 22px; padding: 2px 6px; resize: none"></sc-if><sc-if value="{{d.isCustomR}}"><button class="btn plain t-s" onClick="{{d.toAuto}}">Use App Store</button></sc-if><sc-if value="{{d.hasColor}}"><input type="color" value="{{d.color}}" onChange="{{d.onColor}}" aria-label="{{d.label}} color"></sc-if><button class="btn plain t-s" onClick="{{d.toggle}}" aria-pressed="{{d.off}}" aria-label="{{d.hideLabel}} {{d.label}}">{{d.hideLabel}}</button><button class="btn plain t-s" onClick="{{d.remove}}" aria-label="Remove {{d.label}}">Remove</button></div></sc-for>
@@ -428,14 +428,14 @@ body{margin:0}
         <sc-for list="{{tp.fontRows}}" as="f" hint-placeholder-count="8"><div class="irow" style="align-items: center">
           <span>{{f.label}}</span>
           <sc-if value="{{f.isDisplay}}"><span class="t-s l2 ell" style="flex: 1">Display font</span></sc-if>
-          <sc-if value="{{f.hasSel}}"><select class="sel" value="{{f.v}}" onChange="{{f.on}}" aria-label="Fallback font for {{f.label}}" style="flex: 1; min-width: 0"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.t}}</option></sc-for></select></sc-if>
+          <sc-if value="{{f.hasSel}}"><select class="sel" value="{{f.v}}" onChange="{{f.on}}" aria-label="{{f.label}} fallback font" style="flex: 1; min-width: 0"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.t}}</option></sc-for></select></sc-if>
           <sc-if value="{{f.ok}}"><span class="l2" title="{{f.status}}" style="display: flex"><svg class="ic sm" viewBox="0 0 16 16" aria-label="{{f.status}}"><path d="M3.5 8.5l3 3 6-7"/></svg></span></sc-if>
           <sc-if value="{{f.bad}}"><span class="pill p-err" title="{{f.status}}">{{f.badTxt}}</span></sc-if>
         </div></sc-for>
       </div>
       <div class="sec"><span class="sech">RIGHT TO LEFT<button class="{{tp.mirrorCls}}" role="switch" aria-checked="{{tp.mirror}}" aria-label="Mirror the layout for Arabic and Hebrew" onClick="{{tp.toggleMirror}}"></button></span>
-        <span class="t-s">Mirror the layout for Arabic and Hebrew</span>
-        <span class="t-f l2">Flips device offsets, start-aligned captions and the panorama. Captures are never mirrored: they’re your real interface.</span>
+        <span class="t-s">Mirror for Arabic and Hebrew</span>
+        <span class="t-f l2">Flips device offsets, start-aligned captions and the panorama. Captures are never mirrored.</span>
       </div>
       <div class="sec"><span class="sech">SAFE AREAS</span>
         <label class="irow"><span>Top</span><input type="range" min="3" max="12" step="0.5" value="{{tp.safeTop}}" onChange="{{tp.onSafeTop}}"><span class="tn t-s" style="width: 40px; text-align: right">{{tp.safeTop}}%</span></label>
@@ -517,13 +517,13 @@ body{margin:0}
       <div class="{{ct.dzCls}}" style="width: min(560px, 100%); min-height: 210px">
         <span class="l2" style="display: flex"><svg class="ic xl" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h4l1.5 1.5H14v6.5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><path d="M8 7.5v4M6.2 9.6L8 11.5l1.8-1.9"/></svg></span>
         <span class="t-3">{{ct.dzTitle}}</span>
-        <span class="t-c l2" style="max-width: 420px">Locale folders like <span class="mono">de-DE/</span>, fastlane names like <span class="mono">iPhone 17 Pro Max-03_Search.png</span>, and Xcode test result attachments are matched to locale, display type and slot for you.</span>
+        <span class="t-c l2" style="max-width: 420px">Locale folders like <span class="mono">de-DE/</span>, fastlane names like <span class="mono">iPhone 17 Pro Max-03_Search.png</span>, and Xcode test attachments are matched to locale, display type and slot.</span>
         <button class="btn" onClick="{{ct.hover}}">Choose Folder…</button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(560px, 100%)">
         <sc-for list="{{ct.sources}}" as="x" hint-placeholder-count="3"><button class="box" onClick="{{x.pick}}" style="padding: 12px; display: flex; flex-direction: column; gap: 4px; text-align: left"><span class="t-c b">{{x.label}}</span><span class="t-s l2">{{x.sub}}</span></button></sc-for>
       </div>
-      <span class="t-s l2" style="max-width: 560px; text-align: center">App Review guideline 2.3 asks that screenshots show the app in use, so a capture must be a real screenshot. Take them in each language for the best result; a locale without its own uses English (U.S.) and is flagged “UI not localized”.</span>
+      <span class="t-s l2" style="max-width: 560px; text-align: center">App Review guideline 2.3 requires real screenshots of the app in use. Take them in each language; a locale without its own uses English (U.S.), flagged “UI not localized”.</span>
     </div>
   </sc-if>
   <sc-if value="{{ct.matching}}" hint-placeholder-val="{{false}}">
@@ -541,7 +541,7 @@ body{margin:0}
         </div></sc-for>
         <div class="t-s l2" style="padding: 8px 14px">{{ct.mMore}}</div>
       </div>
-      <div class="sh-f"><span class="t-s l2" style="flex: 1">Nothing is uploaded at this step. Captures stay on this Mac until you push renders.</span><button class="btn" onClick="{{ct.cancel}}">Cancel</button><button class="btn pri" onClick="{{ct.go}}">{{ct.goTxt}}</button></div>
+      <div class="sh-f"><span class="t-s l2" style="flex: 1">Captures stay on this Mac until you push renders.</span><button class="btn" onClick="{{ct.cancel}}">Cancel</button><button class="btn pri" onClick="{{ct.go}}">{{ct.goTxt}}</button></div>
     </div>
   </sc-if>
   <sc-if value="{{ct.ok}}" hint-placeholder-val="{{true}}">
@@ -584,18 +584,18 @@ body{margin:0}
     <span class="t-s l2 b" style="padding: 2px 10px 6px; display: block">TEMPLATE HISTORY</span>
     <sc-for list="{{hp.rows}}" as="h" hint-placeholder-count="4"><div style="display: flex; gap: 10px; padding: 8px 10px; border-radius: 8px; align-items: flex-start; background: {{h.bg}}">
       <span class="pill p-neu tn">v{{h.v}}</span>
-      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span class="t-c">{{h.note}}</span><span class="t-f l2">{{h.at}} · {{h.by}}</span><sc-if value="{{h.isAi}}"><span class="who" style="align-self: flex-start"><b>CC</b>Proposed by Claude Code · accepted by you</span></sc-if></div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span class="t-c">{{h.note}}</span><span class="t-f l2">{{h.at}} · {{h.by}}</span><sc-if value="{{h.isAi}}"><span class="who" style="align-self: flex-start"><b>CC</b>Suggested by Claude Code · accepted by you</span></sc-if></div>
       <sc-if value="{{h.cur}}"><span class="t-f l2">Current</span></sc-if>
       <sc-if value="{{h.canRestore}}"><button class="btn sm" onClick="{{h.restore}}">Restore This Version</button></sc-if>
     </div></sc-for>
-    <span class="t-f l2" style="padding: 6px 10px 2px; display: block">Restoring makes a new version from the old one, so nothing is lost.</span>
+    <span class="t-f l2" style="padding: 6px 10px 2px; display: block">Restoring makes a new version; nothing is lost.</span>
   </div>
 </sc-if>
 <sc-if value="{{pp.open}}" hint-placeholder-val="{{false}}">
-  <div class="pop" role="dialog" aria-label="Waiting proposals" style="right: 210px; top: 48px; width: 300px; padding: 10px 6px">
+  <div class="pop" role="dialog" aria-label="Waiting suggestions" style="right: 210px; top: 48px; width: 300px; padding: 10px 6px">
     <span class="t-s l2 b" style="padding: 2px 10px 6px; display: block">WAITING FOR YOU</span>
     <sc-for list="{{pp.apps}}" as="a" hint-placeholder-count="3"><div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px"><span class="t-c" style="flex: 1">{{a.name}}</span><span class="t-s {{a.cls}} tn">{{a.txt}}</span></div></sc-for>
-    <div style="padding: 8px 10px 2px; display: flex"><button class="btn sm pri" onClick="{{pp.review}}">Review Proposals…</button></div>
+    <div style="padding: 8px 10px 2px; display: flex"><button class="btn sm pri" onClick="{{pp.review}}">Review Suggestions…</button></div>
   </div>
 </sc-if>
 <sc-if value="{{sheetOn}}" hint-placeholder-val="{{false}}"><button class="scrim" aria-label="Close sheet" onClick="{{scrimClose}}"></button></sc-if>
@@ -613,12 +613,12 @@ body{margin:0}
           <button class="btn sm {{x.btnCls}}" onClick="{{x.pick}}" style="align-self: flex-start">{{x.btn}}</button>
         </div></sc-for>
     </div>
-    <div class="sh-f"><span class="t-s l2" style="flex: 1">Switching starts a new template version. Captions and captures stay as they are.</span><button class="btn" onClick="{{closeSheet}}">Cancel</button></div>
+    <div class="sh-f"><span class="t-s l2" style="flex: 1">Switching starts a new template version. Captions and captures stay.</span><button class="btn" onClick="{{closeSheet}}">Cancel</button></div>
   </div>
 </sc-if>
 <sc-if value="{{sc.open}}" hint-placeholder-val="{{false}}">
   <div class="sheet" role="dialog" aria-modal="true" aria-label="Locales with localized screenshots" style="top: 14px; width: 720px; height: min(640px, calc(100% - 28px))">
-    <div class="sh-h"><span class="t-2">Which locales get their own screenshots?</span><span class="t-s l2">The rest show English (U.S.) screenshots on the App Store. Leaving a locale out never deletes what’s already live there.</span></div>
+    <div class="sh-h"><span class="t-2">Which locales get their own screenshots?</span><span class="t-s l2">The rest show English (U.S.) screenshots. Leaving a locale out never deletes what’s live there.</span></div>
     <div style="display: flex; gap: 8px; padding: 0 22px 10px; flex: none"><button class="btn sm" onClick="{{sc.pickLocalized}}">Locales with Localized Captures</button><button class="btn sm" onClick="{{sc.pickAll}}">All 39</button><button class="btn sm" onClick="{{sc.pickNone}}">Only English (U.S.)</button></div>
     <div class="scroll" style="flex: 1; min-height: 0; border-top: .5px solid var(--sep)">
       <div style="display: grid; grid-template-columns: 22px minmax(0, 1fr) 120px 130px 140px; padding: 0 22px; position: sticky; top: 0; background: var(--raised); border-bottom: .5px solid var(--sep)"><span></span><span class="th">Locale</span><span class="th">Captions</span><span class="th">Captures</span><span class="th">Live now</span></div>
@@ -657,12 +657,12 @@ body{margin:0}
   </div>
 </sc-if>
 <sc-if value="{{pr.open}}" hint-placeholder-val="{{false}}">
-  <div class="sheet" role="dialog" aria-modal="true" aria-label="Proposals" style="top: 10px; width: 980px; height: min(700px, calc(100% - 20px))">
-    <div class="sh-h" style="flex-direction: row; align-items: center; gap: 10px"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="t-2">Proposals · Lumen Journal</span><span class="t-s l2">Nothing an assistant sends changes your screenshots until you accept it here. Accepted renders still go through Review &amp; Push.</span></div><span class="who" style="height: 22px"><b>CC</b>{{pr.connTxt}}</span></div>
-    <sc-if value="{{pr.disc}}"><div class="ban b-neu" style="margin: 0 22px 10px"><span style="flex: 1">Claude Code disconnected at 10:44. Its proposals stay here until you accept or reject them.</span></div></sc-if>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Suggestions" style="top: 10px; width: 980px; height: min(700px, calc(100% - 20px))">
+    <div class="sh-h" style="flex-direction: row; align-items: center; gap: 10px"><div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="t-2">Suggestions · Lumen Journal</span><span class="t-s l2">Assistant suggestions change nothing until you accept them here. Then they wait in Review &amp; Push.</span></div><span class="who" style="height: 22px"><b>CC</b>{{pr.connTxt}}</span></div>
+    <sc-if value="{{pr.disc}}"><div class="ban b-neu" style="margin: 0 22px 10px"><span style="flex: 1">Claude Code disconnected at 10:44. Its suggestions stay here until you decide.</span></div></sc-if>
     <div style="flex: 1; min-height: 0; display: flex; border-top: .5px solid var(--sep)">
       <div class="scroll" style="width: 270px; flex: none; padding: 12px; display: flex; flex-direction: column; gap: 8px; border-right: .5px solid var(--sep)">
-        <sc-if value="{{pr.empty}}"><span class="t-s l2" style="padding: 8px">No proposals yet. Ask your assistant to revise the template or shorten captions; what it sends lands here.</span></sc-if>
+        <sc-if value="{{pr.empty}}"><span class="t-s l2" style="padding: 8px">No suggestions yet. Ask your assistant to revise the template or shorten captions.</span></sc-if>
         <sc-for list="{{pr.list}}" as="p" hint-placeholder-count="2"><button class="{{p.cls}}" onClick="{{p.pick}}">
           <span style="display: flex; align-items: center; gap: 6px"><span class="who"><b>CC</b>{{p.client}}</span><span class="t-f l2 tn">{{p.at}}</span><span style="flex: 1"></span><span class="{{p.stCls}}">{{p.st}}</span></span>
           <span class="t-c b">{{p.title}}</span><span class="t-s l2">{{p.sub}}</span>
@@ -697,7 +697,7 @@ body{margin:0}
                   <span class="t-s l2 b">{{x.label}}</span>
                   <span class="t-c l3" style="text-decoration: line-through">{{x.from}}</span>
                   <span class="t-c b">{{x.to}}</span>
-                  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px"><div style="display: flex; flex-direction: column; gap: 3px"><div class="fmb {{x.mo.cls}}"><i style="width: {{x.mo.pct}}"></i><b style="left: {{x.mo.t1}}"></b><b style="left: {{x.mo.t2}}"></b></div><span class="t-f {{x.mo.tcls}}">Now · {{x.mo.label}}</span></div><div style="display: flex; flex-direction: column; gap: 3px"><div class="fmb {{x.mn.cls}}"><i style="width: {{x.mn.pct}}"></i><b style="left: {{x.mn.t1}}"></b><b style="left: {{x.mn.t2}}"></b></div><span class="t-f {{x.mn.tcls}}">Proposed · {{x.mn.label}}</span></div></div>
+                  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px"><div style="display: flex; flex-direction: column; gap: 3px"><div class="fmb {{x.mo.cls}}"><i style="width: {{x.mo.pct}}"></i><b style="left: {{x.mo.t1}}"></b><b style="left: {{x.mo.t2}}"></b></div><span class="t-f {{x.mo.tcls}}">Now · {{x.mo.label}}</span></div><div style="display: flex; flex-direction: column; gap: 3px"><div class="fmb {{x.mn.cls}}"><i style="width: {{x.mn.pct}}"></i><b style="left: {{x.mn.t1}}"></b><b style="left: {{x.mn.t2}}"></b></div><span class="t-f {{x.mn.tcls}}">Suggested · {{x.mn.label}}</span></div></div>
                   <sc-if value="{{x.hasState}}"><span class="{{x.stCls}}" style="align-self: flex-start">{{x.st}}</span></sc-if>
                 </div>
                 <dc-import name="Shot" spec="{{x.spec}}" w="{{x.w}}" label="Proposed render" hint-size="{{x.hint}}"></dc-import>
@@ -720,11 +720,11 @@ body{margin:0}
     <sc-if value="{{rv.notPushing}}" hint-placeholder-val="{{true}}">
       <div class="sh-h"><span class="t-2">Review changes</span><span class="t-s l2 tn">{{rv.sum}}</span></div>
       <div class="scroll" style="flex: 1; min-height: 0; border-top: .5px solid var(--sep); padding-bottom: 10px">
-        <sc-if value="{{rv.empty}}"><div style="padding: 60px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center"><span class="t-3">Nothing to push</span><span class="t-c l2" style="max-width: 400px">Renders that differ from what’s live collect here. Change a caption, a capture or the template and they appear.</span></div></sc-if>
+        <sc-if value="{{rv.empty}}"><div style="padding: 60px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center"><span class="t-3">Nothing to push</span><span class="t-c l2" style="max-width: 400px">Renders that differ from what’s live wait here. Edit a caption, capture or template.</span></div></sc-if>
         <sc-if value="{{rv.hasAny}}"><div class="t-s l2 b" style="padding: 12px 22px 2px">LUMEN JOURNAL · SCREENSHOTS · VERSION 1.4</div></sc-if>
         <sc-for list="{{rv.groups}}" as="g" hint-placeholder-count="2">
           <div style="margin: 8px 14px 4px; border-radius: 10px; box-shadow: 0 0 0 .5px var(--sep); overflow: hidden">
-            <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--fill-1)"><input type="checkbox" checked="{{g.checked}}" onChange="{{g.toggle}}" aria-label="Include {{g.name}} {{g.disp}}"><span class="flag">{{g.tile}}</span><span class="t-c b">{{g.name}}</span><span class="t-s l2">· {{g.disp}}</span><sc-if value="{{g.isRestore}}"><span class="pill p-neu">Restore from {{g.from}}</span></sc-if><sc-if value="{{g.ai}}"><span class="who"><b>CC</b>Includes Claude Code’s proposals</span></sc-if><span style="flex: 1"></span><span class="t-s l2 tn">{{g.n}}</span></div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--fill-1)"><input type="checkbox" checked="{{g.checked}}" onChange="{{g.toggle}}" aria-label="Include {{g.name}} {{g.disp}}"><span class="flag">{{g.tile}}</span><span class="t-c b">{{g.name}}</span><span class="t-s l2">· {{g.disp}}</span><sc-if value="{{g.isRestore}}"><span class="pill p-neu">Restore from {{g.from}}</span></sc-if><sc-if value="{{g.ai}}"><span class="who"><b>CC</b>Includes Claude Code’s suggestions</span></sc-if><span style="flex: 1"></span><span class="t-s l2 tn">{{g.n}}</span></div>
             <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 12px">
               <sc-for list="{{g.items}}" as="x" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: 9px; box-shadow: inset 0 0 0 .5px var(--sep-2); opacity: {{x.op}}">
                 <div style="display: flex; align-items: center; gap: 6px"><input type="checkbox" checked="{{x.checked}}" onChange="{{x.toggle}}" aria-label="Include {{x.ax}}"><span class="t-f b tn" style="flex: 1">{{x.slot}}</span><button class="btn sm" onClick="{{x.discard}}" aria-label="Discard {{x.ax}}" title="Keep what’s live" style="height: 16px; width: 16px; padding: 0"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true" style="width: 9px; height: 9px"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg></button></div>
@@ -763,7 +763,7 @@ body{margin:0}
         </div></sc-for>
       </div>
       <div class="sh-f">
-        <sc-if value="{{rv.running}}"><span class="t-s l2" style="flex: 1">New images are committed before the old ones are deleted, so a set is never left with a gap.</span><button class="btn" onClick="{{rv.cancelRest}}">Cancel Remaining</button></sc-if>
+        <sc-if value="{{rv.running}}"><span class="t-s l2" style="flex: 1">Old images are deleted only after new ones are in.</span><button class="btn" onClick="{{rv.cancelRest}}">Cancel Remaining</button></sc-if>
         <sc-if value="{{rv.done}}"><span class="t-s l2" style="flex: 1">{{rv.doneTxt}}</span><sc-if value="{{rv.hasFail}}"><button class="btn" onClick="{{rv.retry}}">Retry Failed</button></sc-if><button class="btn pri" onClick="{{rv.finish}}">Done</button></sc-if>
       </div>
     </sc-if>
@@ -776,21 +776,21 @@ body{margin:0}
       <div class="box" role="radiogroup" aria-label="Translation provider">
         <sc-for list="{{tr.provs}}" as="p" hint-placeholder-count="3"><button role="radio" aria-checked="{{p.on}}" onClick="{{p.pick}}" class="frow" style="width: 100%; text-align: left; align-items: flex-start"><span class="{{p.rc}}" style="margin-top: 2px"></span><span class="fl"><span class="t-c b">{{p.label}}</span><span class="t-s l2">{{p.desc}}</span></span></button></sc-for>
       </div>
-      <sc-if value="{{tr.isMcp}}"><div class="box" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 6px"><span class="t-c b">Ask your assistant</span><span class="t-s l2">Its captions arrive as proposals and are measured against the template before you see them.</span><div class="code">/mcp__atlas__translate_captions Lumen Journal</div></div></sc-if>
+      <sc-if value="{{tr.isMcp}}"><div class="box" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 6px"><span class="t-c b">Ask your assistant</span><span class="t-s l2">Its captions arrive as suggestions, measured against the template first.</span><div class="code">/mcp__atlas__translate_captions Lumen Journal</div></div></sc-if>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
         <div style="display: flex; flex-direction: column; gap: 5px"><span class="t-s l2 b">TONE</span><span class="t-c">Warm and simple</span></div>
         <div style="display: flex; flex-direction: column; gap: 5px"><span class="t-s l2 b">DON’T TRANSLATE</span><div style="display: flex; flex-wrap: wrap; gap: 4px"><span class="chip" style="height: 20px; font-size: 11px">Lumen</span><span class="chip" style="height: 20px; font-size: 11px">Lumen Plus</span><span class="chip" style="height: 20px; font-size: 11px">Face ID</span></div></div>
       </div>
       <span class="t-s l2 b">LOCALES IN SCOPE</span>
       <div class="box"><sc-for list="{{tr.locs}}" as="l" hint-placeholder-count="6"><label class="frow" style="min-height: 30px; padding: 4px 12px"><input type="checkbox" checked="{{true}}" aria-label="{{l.name}}"><span class="fl t-c">{{l.name}}</span><span class="t-s l2 tn">{{l.n}}</span></label></sc-for></div>
-      <span class="t-f l2">Each caption is measured as it arrives. Ones that don’t fit are flagged, never cut. Accepted text stays tagged “machine-translated” until someone reviews it.</span>
+      <span class="t-f l2">Captions that don’t fit are flagged, never cut. Accepted ones stay tagged “machine-translated” until someone reviews them.</span>
     </div>
     <div class="sh-f"><span style="flex: 1"></span><button class="btn" onClick="{{closeSheet}}">Cancel</button><button class="btn pri" onClick="{{tr.start}}" disabled="{{tr.none}}">{{tr.btn}}</button></div>
   </div>
 </sc-if>
 <sc-if value="{{act.open}}" hint-placeholder-val="{{false}}">
   <div class="sheet" role="dialog" aria-modal="true" aria-label="Activity" style="top: 24px; width: 660px; max-height: calc(100% - 36px)">
-    <div class="sh-h"><span class="t-2">Activity</span><span class="t-s l2">Every push from this Mac, newest first. Replaced screenshots are kept on this Mac so you can put them back.</span></div>
+    <div class="sh-h"><span class="t-2">Activity</span><span class="t-s l2">Every push from this Mac, newest first. Replaced screenshots are kept to restore.</span></div>
     <div class="scroll" style="min-height: 0; border-top: .5px solid var(--sep)">
       <sc-for list="{{act.rows}}" as="h" hint-placeholder-count="3"><div style="display: flex; gap: 12px; padding: 12px 22px; border-bottom: .5px solid var(--sep); align-items: flex-start">
         <span class="l2" style="display: flex; padding-top: 2px"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 11V5.2M5.6 7.4L8 5l2.4 2.4"/></svg></span>
@@ -878,7 +878,7 @@ body{margin:0}
     <sc-for list="{{pa.themes}}" as="th" hint-placeholder-count="2">
       <div class="{{th.cls}}" style="background: var(--window); color: var(--label); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 26px; box-shadow: 0 0 0 .5px rgba(0,0,0,.18)">
         <span class="t-1">{{th.label}}</span>
-        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Screenshot thumbnail cell</span><span class="t-s l2">The state sits under the render, so color is never the only signal. “UI” marks a capture that shows the English interface.</span>
+        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Screenshot thumbnail cell</span><span class="t-s l2">State shows under the render, so color is never the only signal. “UI” marks an English-interface capture.</span>
           <div class="box" style="padding: 12px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
             <sc-for list="{{pa.cells}}" as="c" hint-placeholder-count="12"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
               <button class="{{c.cls}}" aria-label="{{c.ax}}">
@@ -893,7 +893,7 @@ body{margin:0}
             </div></sc-for>
           </div>
         </section>
-        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Fit meter</span><span class="t-s l2">Replaces a character counter. Ticks mark what fits at full size and at the smallest size; past the second tick the caption overflows.</span>
+        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Fit meter</span><span class="t-s l2">Replaces a character counter. Ticks mark full size and smallest size; past the second, the caption overflows.</span>
           <div class="box" style="padding: 12px 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
             <sc-for list="{{pa.meters}}" as="x" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 4px"><span class="t-s b">{{x.name}}</span><span class="t-f l2 clamp2">{{x.text}}</span><div class="fmb {{x.m.cls}}"><i style="width: {{x.m.pct}}"></i><b style="left: {{x.m.t1}}"></b><b style="left: {{x.m.t2}}"></b></div><span class="t-f {{x.m.tcls}}">{{x.m.label}}</span></div></sc-for>
           </div>
@@ -910,11 +910,11 @@ body{margin:0}
           <div style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Template inspector sections</span>
             <div class="box" style="overflow: hidden">
               <div class="sec"><span class="sech">FIT</span><div class="irow"><span>Max lines</span><div class="seg sm"><button>1</button><button class="on">2</button><button>3</button></div></div><label class="irow"><span>Smallest size</span><input type="range" min="56" max="120" value="80"><span class="tn t-s" style="width: 40px; text-align: right">80 u</span></label><div class="irow"><span>Shrink to fit</span><button class="sw on" role="switch" aria-checked="true" aria-label="Shrink to fit"></button></div><div class="irow"><span>Hyphenate</span><button class="sw" role="switch" aria-checked="false" aria-label="Hyphenate"></button></div></div>
-              <div class="sec" style="border-bottom: 0"><span class="sech">RIGHT TO LEFT<button class="sw on" role="switch" aria-checked="true" aria-label="Mirror layout"></button></span><span class="t-s">Mirror the layout for Arabic and Hebrew</span><span class="t-f l2">Captures are never mirrored.</span></div>
+              <div class="sec" style="border-bottom: 0"><span class="sech">RIGHT TO LEFT<button class="sw on" role="switch" aria-checked="true" aria-label="Mirror layout"></button></span><span class="t-s">Mirror for Arabic and Hebrew</span><span class="t-f l2">Captures are never mirrored.</span></div>
             </div>
           </div>
         </section>
-        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Font-per-script row</span><span class="t-s l2">A script the display font can’t draw needs a fallback. With none set, every locale in that script fails its check.</span>
+        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Font-per-script row</span><span class="t-s l2">Scripts the display font can’t draw need a fallback, or every locale in them fails its check.</span>
           <div class="box" style="padding: 6px 14px">
             <sc-for list="{{pa.fontRows}}" as="f" hint-placeholder-count="4"><div class="irow" style="min-height: 32px"><span>{{f.label}}</span><span class="t-s ell" style="flex: 1">{{f.font}}</span><sc-if value="{{f.ok}}"><span class="t-s l2">{{f.status}}</span></sc-if><sc-if value="{{f.bad}}"><span class="pill p-err">{{f.status}}</span></sc-if></div></sc-for>
           </div>
@@ -931,21 +931,21 @@ body{margin:0}
           </div>
         </section>
         <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
-          <div style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Proposal card</span>
+          <div style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Suggestion card</span>
             <sc-for list="{{pa.cards}}" as="p" hint-placeholder-count="4"><div class="{{p.cls}}"><span style="display: flex; align-items: center; gap: 6px"><span class="who"><b>CC</b>Claude Code</span><span class="t-f l2 tn">{{p.at}}</span><span style="flex: 1"></span><span class="{{p.stCls}}">{{p.st}}</span></span><span class="t-c b">{{p.title}}</span><span class="t-s l2">{{p.sub}}</span></div></sc-for>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">AI provenance badge</span><span class="t-s l2">Neutral, like every assistant tag: no new color. It stays after you accept, until a person edits the item.</span>
+          <div style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">AI provenance badge</span><span class="t-s l2">Neutral like every assistant tag. Stays after you accept, until a person edits the item.</span>
             <div class="box" style="padding: 12px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
-              <span class="who"><b>CC</b>Proposed by Claude Code · 10:42</span>
-              <span class="who"><b>CC</b>Proposed by Claude Code · accepted by you</span>
+              <span class="who"><b>CC</b>Suggested by Claude Code · 10:42</span>
+              <span class="who"><b>CC</b>Suggested by Claude Code · accepted by you</span>
               <span style="display: flex; gap: 6px; align-items: center"><span class="who mini"><b>CC</b></span><span class="t-s l2">Compact, in cells and thumbnails</span></span>
               <span style="display: flex; gap: 6px; align-items: center"><span class="pill p-mt">Machine-translated</span><span class="t-s l2">For comparison</span></span>
             </div>
             <span class="t-hl" style="margin-top: 6px">Tokens</span>
-            <div class="box" style="padding: 12px; display: flex; gap: 10px; align-items: center"><span class="stg" style="width: 40px; height: 40px; border-radius: 9px; box-shadow: inset 0 0 0 .5px var(--sep-2); flex: none"></span><span class="t-s"><b class="mono">stage</b> · the only new token: the neutral ground behind renders, so a white or dark screenshot never melts into the window. State colors reuse error, warning, accent and the existing assistant tag.</span></div>
+            <div class="box" style="padding: 12px; display: flex; gap: 10px; align-items: center"><span class="stg" style="width: 40px; height: 40px; border-radius: 9px; box-shadow: inset 0 0 0 .5px var(--sep-2); flex: none"></span><span class="t-s"><b class="mono">stage</b> · the only new token: a neutral ground behind renders, so white or dark screenshots stand out from the window. State colors reuse error, warning, accent and the assistant tag.</span></div>
           </div>
         </section>
-        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Upload progress row</span>
+        <section style="display: flex; flex-direction: column; gap: 10px"><span class="t-hl">Push progress row</span>
           <div class="box" style="overflow: hidden">
             <sc-for list="{{pa.prog}}" as="x" hint-placeholder-count="6"><div style="display: grid; grid-template-columns: 18px 24px minmax(0, 1fr) 190px; gap: 10px; align-items: center; padding: 5px 12px; border-top: .5px solid var(--sep); font-size: 12px">
               <span style="display: flex; justify-content: center"><sc-if value="{{x.q}}"><span class="l3" style="display: flex"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg></span></sc-if><sc-if value="{{x.act}}"><span style="color: var(--accent-text); display: flex"><svg class="ic sm spin" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2a6 6 0 1 1-6 6"/></svg></span></sc-if><sc-if value="{{x.done}}"><span class="l2" style="display: flex"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></span></sc-if><sc-if value="{{x.failed}}"><span style="color: var(--err-mark); display: flex"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.8v3.9M8 11v.1"/></svg></span></sc-if></span>
@@ -1030,7 +1030,7 @@ class Component extends DCLogic {
       duo: { id: 'APP_IPHONE_DUO', label: 'iPhone Duo', short: 'Duo', por: [2007, 2853], lan: [2853, 2007], dev: 'iPhone Duo', fl: 'iPhone Duo', logical: [669, 951], also: 'inner display; the cover display uses the iPhone set' },
       ipad: { id: 'APP_IPAD_PRO_3GEN_129', label: 'iPad 13″', short: 'iPad', por: [2064, 2752], lan: [2752, 2064], dev: 'iPad Pro 13″', fl: 'iPad Pro 13-inch (M5)', logical: [1032, 1376], also: '2048 × 2732 is also accepted' }
     };
-    const OTHERDISP = [['Mac', 'Lumen runs on Mac as an iPad app, so the Mac App Store shows its iPad screenshots.'], ['Apple Watch', 'Lumen has no watchOS app.'], ['Apple TV', 'Lumen has no tvOS app.'], ['Apple Vision Pro', 'Shown with the iPad screenshots in compatible mode.']];
+    const OTHERDISP = [['Mac', 'On Mac, Lumen runs as an iPad app, so the Mac App Store shows its iPad screenshots.'], ['Apple Watch', 'Lumen has no watchOS app.'], ['Apple TV', 'Lumen has no tvOS app.'], ['Apple Vision Pro', 'Shown with the iPad screenshots in compatible mode.']];
     const SCRIPTS = [['latin', 'Latin'], ['cyrillic', 'Cyrillic'], ['greek', 'Greek'], ['vietnamese', 'Vietnamese'], ['arabic', 'Arabic'], ['hebrew', 'Hebrew'], ['ja', 'Japanese'], ['zh-Hans', 'Chinese (Simpl.)'], ['zh-Hant', 'Chinese (Trad.)'], ['ko', 'Korean'], ['thai', 'Thai'], ['devanagari', 'Devanagari']];
     const FONTS = {
       'SF Pro Display': { css: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Helvetica Neue", Arial, sans-serif', k: 1, covers: ['latin', 'cyrillic', 'greek', 'vietnamese'] },
@@ -1077,8 +1077,8 @@ class Component extends DCLogic {
     const FALLBACK = { latin: 'SF Pro Display', cyrillic: 'SF Pro Display', greek: 'SF Pro Display', vietnamese: 'SF Pro Display', arabic: 'SF Arabic', hebrew: 'SF Hebrew', ja: 'Hiragino Sans', 'zh-Hans': 'PingFang SC', 'zh-Hant': 'PingFang TC', ko: 'Apple SD Gothic Neo', thai: 'Thonburi', devanagari: 'Kohinoor Devanagari' };
     const STARTERS = {
       above: { name: 'Caption above device', desc: 'A headline over a framed device, on your brand colors. Works for almost any app.', bg: { kind: 'linear', angle: 168, stops: ['#7A80FF', '#3A2FB8'] }, ink: '#FFFFFF', subInk: 'rgba(255,255,255,0.84)', placement: 'above', align: 'center', device: { show: true, width: 0.8, color: '#141416', offset: 0, bleed: 0.07 }, font: 'SF Pro Display', hl: { weight: 700, size: 112, min: 80, lh: 1.08, maxLines: 2 }, sh: { font: 'SF Pro Text', weight: 500, size: 50, min: 42, lh: 1.24, maxLines: 2 } },
-      band: { name: 'Full-bleed with caption band', desc: 'The capture fills the screenshot and a solid band carries the caption. Shows the most of your interface.', bg: { kind: 'solid', stops: ['#17143D'] }, ink: '#FFFFFF', subInk: 'rgba(255,255,255,0.8)', placement: 'band', align: 'center', band: { color: '#17143D', pos: 'bottom' }, device: { show: false, width: 1, color: '#141416', offset: 0, bleed: 0 }, font: 'SF Pro Display', hl: { weight: 700, size: 96, min: 72, lh: 1.08, maxLines: 2 }, sh: { font: 'SF Pro Text', weight: 500, size: 46, min: 40, lh: 1.24, maxLines: 2 } },
-      pano: { name: 'Panorama', desc: 'One background runs across every slot, so the set reads as one scene when people swipe.', bg: { kind: 'panorama', stops: ['#FFD8C4', '#F6D3EC', '#DCDDFF', '#C8E5FF', '#D6F1E6'] }, ink: '#221E4D', subInk: 'rgba(34,30,77,0.74)', placement: 'above', align: 'start', device: { show: true, width: 0.74, color: '#141416', offset: 0.075, bleed: 0.08 }, font: 'New York', hl: { weight: 700, size: 108, min: 78, lh: 1.06, maxLines: 2 }, sh: { font: 'SF Pro Text', weight: 500, size: 48, min: 40, lh: 1.24, maxLines: 2 } },
+      band: { name: 'Full-bleed with caption band', desc: 'The capture fills the screenshot; a solid band carries the caption. Shows the most interface.', bg: { kind: 'solid', stops: ['#17143D'] }, ink: '#FFFFFF', subInk: 'rgba(255,255,255,0.8)', placement: 'band', align: 'center', band: { color: '#17143D', pos: 'bottom' }, device: { show: false, width: 1, color: '#141416', offset: 0, bleed: 0 }, font: 'SF Pro Display', hl: { weight: 700, size: 96, min: 72, lh: 1.08, maxLines: 2 }, sh: { font: 'SF Pro Text', weight: 500, size: 46, min: 40, lh: 1.24, maxLines: 2 } },
+      pano: { name: 'Panorama', desc: 'One background runs across every slot, so swiping reads as one scene.', bg: { kind: 'panorama', stops: ['#FFD8C4', '#F6D3EC', '#DCDDFF', '#C8E5FF', '#D6F1E6'] }, ink: '#221E4D', subInk: 'rgba(34,30,77,0.74)', placement: 'above', align: 'start', device: { show: true, width: 0.74, color: '#141416', offset: 0.075, bleed: 0.08 }, font: 'New York', hl: { weight: 700, size: 108, min: 78, lh: 1.06, maxLines: 2 }, sh: { font: 'SF Pro Text', weight: 500, size: 48, min: 40, lh: 1.24, maxLines: 2 } },
       market: { name: 'Bold Stack', cat: 'bold', tags: ['Uppercase', 'Angled phone', 'Rating'], desc: 'Heavy uppercase over a lighter first line, angled phones and a rating laurel on warm paper. Slot 1 flips to ink.',
         bg: { kind: 'solid', stops: ['#EFE8DC'] }, ink: '#2B2547', subInk: 'rgba(43,37,71,0.78)', placement: 'above', align: 'start', safe: { top: 0.055, side: 0.075, bottom: 0 },
         device: { show: true, width: 0.72, color: '#1C1C22', offset: 0.05, bleed: 0.1, tilt: { rz: 5, ry: -16, rx: 6 } }, font: 'Archivo Black',
@@ -1157,7 +1157,7 @@ class Component extends DCLogic {
         { layout: 'standard', over: { 'device.width': 0.72, 'device.dx': 0.1, deco: [{ type: 'shape', shape: 'moon', x: -0.12, y: 0.55, w: 0.62, color: '#B6A4CB', z: 'front' }, { type: 'shape', shape: 'sparkle', x: 0.38, y: 0.56, w: 0.12, color: '#F5C24B', z: 'front' }, { type: 'shape', shape: 'sparkle', x: 0.04, y: 0.5, w: 0.07, color: '#F5C24B', z: 'front' }] } },
         { layout: 'standard', over: { bg: { kind: 'solid', stops: ['#B6A4CB'] }, 'device.tilt': { rz: 6, ry: -22, rx: 10 }, 'device.dx': 0.2, 'device.dy': 0.02 } },
         { layout: 'standard', over: { 'device.tilt': { rz: -18, ry: 8, rx: 6 }, 'device.dx': 0.06, 'device.dy': 0.05, 'device.width': 0.7, deco: [{ type: 'shape', shape: 'palm', x: 0.3, y: 0.62, w: 0.76, h: 0.42, color: '#E2B593', z: 'back' }, { type: 'shape', shape: 'fingers', x: 0.8, y: 0.55, w: 0.24, h: 0.2, rot: -16, color: '#D9A984', z: 'front' }] } }] };
-    STARTERS.arcade = { name: 'Arcade', cat: 'bold', tags: ['Condensed caps', 'Two phones', 'Props across slots'], desc: 'Huge white caps on electric blue, big straight phones that run off the bottom, hand-drawn marks and props. Slot 3 stacks two phones, and one figure spans slots 4 and 5.',
+    STARTERS.arcade = { name: 'Arcade', cat: 'bold', tags: ['Condensed caps', 'Two phones', 'Props across slots'], desc: 'Huge white caps on electric blue, big phones running off the bottom, hand-drawn marks and props. Slot 3 stacks two phones; one figure spans slots 4 and 5.',
       bg: { kind: 'linear', angle: 165, stops: ['#4B70FF', '#3F63FB', '#3A5CF2'] }, ink: '#FFFFFF', subInk: 'rgba(255,255,255,0.88)', placement: 'above', align: 'center', safe: { top: 0.05, side: 0.05, bottom: 0 },
       device: { show: true, width: 0.85, color: '#A9ACB4', offset: 0, bleed: 0.3, top: 0.267, empty: 'black' }, font: 'Boldonse',
       lan: { 'device.top': null, 'caption.headline.size': 92, 'caption.headline.min': 64, 'caption.headline.maxLines': 3, 'device.dx': 0, 'device.pair': { dx: -0.2, top: null } },
@@ -1211,7 +1211,7 @@ class Component extends DCLogic {
   legacyTpl() {
     if (this._leg) return this._leg;
     const t = this.makeTpl('above', 0);
-    t.id = 'legacy'; t.name = 'Uploaded by hand'; t.bg = { kind: 'solid', stops: ['#F2F2F4'] }; t.caption.ink = '#1C1C1E'; t.caption.align = 'start'; t.caption.headline.size = 92; t.caption.headline.min = 92; t.caption.headline.font = 'SF Pro Text'; t.fonts.display = 'SF Pro Text';
+    t.id = 'legacy'; t.name = 'Added by hand'; t.bg = { kind: 'solid', stops: ['#F2F2F4'] }; t.caption.ink = '#1C1C1E'; t.caption.align = 'start'; t.caption.headline.size = 92; t.caption.headline.min = 92; t.caption.headline.font = 'SF Pro Text'; t.fonts.display = 'SF Pro Text';
     t.device.width = 0.7; t.rtl.mirror = false; t.slots.forEach(function (s) { s.layout = 'standard'; });
     this._leg = t; return t;
   }
@@ -1540,8 +1540,8 @@ class Component extends DCLogic {
   props0() {
     const S = Component.sdata();
     return [
-      { id: 'p1', kind: 'template', client: 'Claude Code', at: '10:42', basedOn: 4, status: 'pending', title: 'Smaller headline, hyphenation on', reason: 'German and Finnish shrink to the smallest size or overflow in three slots. A slightly smaller headline with hyphenation for long words keeps every locale on two lines, and English stays at full size.', ops: [{ path: 'caption.headline.size', label: 'Headline size', from: 112, to: 104, unit: ' u' }, { path: 'caption.headline.min', label: 'Smallest headline size', from: 80, to: 72, unit: ' u' }, { path: 'fit.hyphenate', label: 'Hyphenate long words', from: false, to: true }, { path: 'device.width', label: 'Device width', from: 0.8, to: 0.78, pct: true }] },
-      { id: 'p2', kind: 'captions', client: 'Claude Code', at: '10:43', basedOn: 4, status: 'pending', title: 'Shorter German captions', reason: 'These three German captions are the longest in the set. The shorter versions keep the meaning and fit at full size, so the German screenshots look as calm as the English ones.', items: [{ loc: 'de-DE', i: 1, to: S.SHORT['de-DE|1'] }, { loc: 'de-DE', i: 2, to: S.SHORT['de-DE|2'] }, { loc: 'de-DE', i: 4, to: S.SHORT['de-DE|4'] }], sel: { 0: true, 1: true, 2: true }, decided: {} }
+      { id: 'p1', kind: 'template', client: 'Claude Code', at: '10:42', basedOn: 4, status: 'pending', title: 'Smaller headline, hyphenation on', reason: 'German and Finnish shrink or overflow in 3 slots. This keeps every locale on two lines, English at full size.', ops: [{ path: 'caption.headline.size', label: 'Headline size', from: 112, to: 104, unit: ' u' }, { path: 'caption.headline.min', label: 'Smallest headline size', from: 80, to: 72, unit: ' u' }, { path: 'fit.hyphenate', label: 'Hyphenate long words', from: false, to: true }, { path: 'device.width', label: 'Device width', from: 0.8, to: 0.78, pct: true }] },
+      { id: 'p2', kind: 'captions', client: 'Claude Code', at: '10:43', basedOn: 4, status: 'pending', title: 'Shorter German captions', reason: 'The 3 longest captions in the set. Shorter versions keep the meaning and fit at full size.', items: [{ loc: 'de-DE', i: 1, to: S.SHORT['de-DE|1'] }, { loc: 'de-DE', i: 2, to: S.SHORT['de-DE|2'] }, { loc: 'de-DE', i: 4, to: S.SHORT['de-DE|4'] }], sel: { 0: true, 1: true, 2: true }, decided: {} }
     ];
   }
   baseState(ap) {
@@ -1608,7 +1608,7 @@ class Component extends DCLogic {
       case 'prop-list': set({ menu: 'props' }); break;
       case 'prop-tpl': set({ sheet: 'props', propSel: 'p1' }); break;
       case 'prop-cap': set({ sheet: 'props', propSel: 'p2' }); break;
-      case 'prop-stale': { const t = this.clone(s.tpl); t.device.width = 0.78; t.version = 4; s.tpl = t; s.tplHist[3] = Object.assign({}, s.tplHist[3], { note: 'Device width 80% → 78%', tpl: t }); s.props = [{ id: 'p3', kind: 'template', client: 'Claude Code', at: 'Oct 20 · 18:05', basedOn: 3, status: 'pending', title: 'More room above the caption', reason: 'Captions sit close to the top edge on iPad landscape. Moving them down and shrinking the device a little gives the headline more air.', ops: [{ path: 'safe.top', label: 'Space above the caption', from: 0.06, to: 0.08, pct: true }, { path: 'device.width', label: 'Device width', from: 0.8, to: 0.76, pct: true }] }].concat(s.props); set({ sheet: 'props', propSel: 'p3' }); break; }
+      case 'prop-stale': { const t = this.clone(s.tpl); t.device.width = 0.78; t.version = 4; s.tpl = t; s.tplHist[3] = Object.assign({}, s.tplHist[3], { note: 'Device width 80% → 78%', tpl: t }); s.props = [{ id: 'p3', kind: 'template', client: 'Claude Code', at: 'Oct 20 · 18:05', basedOn: 3, status: 'pending', title: 'More room above the caption', reason: 'On iPad landscape, captions sit close to the top edge. Lower captions and a smaller device give more room.', ops: [{ path: 'safe.top', label: 'Space above the caption', from: 0.06, to: 0.08, pct: true }, { path: 'device.width', label: 'Device width', from: 0.8, to: 0.76, pct: true }] }].concat(s.props); set({ sheet: 'props', propSel: 'p3' }); break; }
       case 'prop-disc': s.mcp.clients[0].status = 'disconnected'; s.mcp.clients[0].last = '10:44'; set({ sheet: 'props', propSel: 'p2' }); break;
       case 'set-ai-off': set({ screen: 'settings', mcp: Object.assign({}, s.mcp, { on: false, clients: [] }) }); break;
       case 'set-ai-pair': set({ screen: 'settings', mcp: Object.assign({}, s.mcp, { clients: [] }), pair: { kind: 'code', step: 'waiting', copied: true } }); break;
@@ -1641,7 +1641,7 @@ class Component extends DCLogic {
   }
   tplEdit(path, v) { this.setState((st) => { const t = this.clone(st.tpl); this.tset(t, path, v); return { tpl: t, tplDraft: true, tplBy: null }; }); }
   slotEdit(i, path, v) { this.setState((st) => { const t = this.clone(st.tpl); const o = t.slots[i].over || {}; if (v === null) delete o[path]; else o[path] = v; t.slots[i].over = o; return { tpl: t, tplDraft: true, tplBy: null }; }); }
-  saveVersion() { this.setState((st) => { const t = this.clone(st.tpl); t.version = st.tpl.version + 1; return { tpl: t, tplDraft: false, tplHist: st.tplHist.concat([{ v: t.version, at: 'Today ' + this.clock(), by: 'You', note: 'Edited in the template editor', tpl: t }]) }; }); this.say('Saved as a new template version. Every render that changed is waiting in Review & Push.', 'review'); }
+  saveVersion() { this.setState((st) => { const t = this.clone(st.tpl); t.version = st.tpl.version + 1; return { tpl: t, tplDraft: false, tplHist: st.tplHist.concat([{ v: t.version, at: 'Today ' + this.clock(), by: 'You', note: 'Edited in the template editor', tpl: t }]) }; }); this.say('Saved as a new template version. Changed renders wait in Review & Push.', 'review'); }
   restoreVersion(v) { this.setState((st) => { const h = st.tplHist.filter(function (x) { return x.v === v; })[0]; const t = this.clone(h.tpl); t.version = st.tpl.version + 1; return { tpl: t, tplDraft: false, menu: null, tplHist: st.tplHist.concat([{ v: t.version, at: 'Today ' + this.clock(), by: 'You', note: 'Restored v' + v, tpl: t }]) }; }); this.startRender(60); }
   pickStarter(id) {
     this.setState((st) => { const v = st.tpl ? st.tpl.version + 1 : 1; const t = this.makeTpl(id, v); const S = Component.sdata(); return { tpl: t, tplDraft: false, tplBy: null, sheet: null, view: 'tpl', sidebar: false, tplLoc: 'en-US', tplSlot: 0, tplHist: st.tplHist.concat([{ v: v, at: 'Today ' + this.clock(), by: 'You', note: 'Created from the starter “' + S.STARTERS[id].name + '”', tpl: t }]) }; });
@@ -1669,7 +1669,7 @@ class Component extends DCLogic {
   importGo() {
     const S = Component.sdata();
     this.setState((st) => ({ capLoaded: true, importStage: null, scope: st.scope.length ? st.scope : S.CAPLOC.iphone.slice(), view: 'sets', sidebar: true }));
-    this.say('52 captures imported for 10 locales. The other 29 locales will show English (U.S.) screenshots unless you add them.');
+    this.say('Imported 52 captures for 10 locales. The other 29 use English (U.S.).');
   }
   // proposals
   fmtVal(o, v) { if (typeof v === 'boolean') return v ? 'On' : 'Off'; if (o.pct) return Math.round(v * 100) + '%'; return v + (o.unit || ''); }
@@ -1698,7 +1698,7 @@ class Component extends DCLogic {
   assistantPropose() {
     this.setState({ aiWork: { n: 0 }, screen: 'main', props: [] });
     let n = 0;
-    this.every(500, () => { n++; if (n < 5) { this.setState({ aiWork: { n: n } }); return; } this.setState((st) => ({ aiWork: null, props: this.props0(), mcp: Object.assign({}, st.mcp, { log: Component.sdata().LOG0.slice() }) })); this.say('Claude Code sent 2 proposals: a template revision and shorter German captions.', 'props', 'Review'); return false; });
+    this.every(500, () => { n++; if (n < 5) { this.setState({ aiWork: { n: n } }); return; } this.setState((st) => ({ aiWork: null, props: this.props0(), mcp: Object.assign({}, st.mcp, { log: Component.sdata().LOG0.slice() }) })); this.say('Claude Code sent 2 suggestions: a template revision and shorter German captions.', 'props', 'Review'); return false; });
   }
   // pairing
   pairStart() { this.setState({ pair: { kind: 'code', step: 'ready', copied: false } }); }
@@ -1753,7 +1753,7 @@ class Component extends DCLogic {
   tw(disp, size) { return ({ iphone: { s: 44, m: 64, l: 92 }, ipad: { s: 84, m: 116, l: 164 } })[disp][size]; }
   hint(spec, w) { const h = spec ? Math.round(w * spec.ch / spec.cw) : Math.round(w * 2.17); return w + 'px,' + h + 'px'; }
   stateLook(st, why) {
-    const m = { live: ['Live', 'cb', 'iLive'], rendered: ['Not pushed', 'cb rend', 'iDot'], failed: [why || 'Check failed', 'cb fail', 'iWarn'], nocap: ['No caption', 'cb fbk', ''], nocapt: ['No capture', 'cb fbk', ''], fallback: ['English (U.S.)', 'cb fbk', 'iBack'], unmanaged: ['Uploaded by hand', 'cb', 'iLive'], restored: ['Restored', 'cb rest', 'iRest'], restore: ['Restore · not pushed', 'cb rend', 'iRest'], held: ['Discarded', 'cb fbk', ''], none: ['—', 'cb fbk', ''], rendering: ['Rendering', 'cb fbk', ''] };
+    const m = { live: ['Live', 'cb', 'iLive'], rendered: ['Not pushed', 'cb rend', 'iDot'], failed: [why || 'Check failed', 'cb fail', 'iWarn'], nocap: ['No caption', 'cb fbk', ''], nocapt: ['No capture', 'cb fbk', ''], fallback: ['English (U.S.)', 'cb fbk', 'iBack'], unmanaged: ['Added by hand', 'cb', 'iLive'], restored: ['Restored', 'cb rest', 'iRest'], restore: ['Restore · not pushed', 'cb rend', 'iRest'], held: ['Discarded', 'cb fbk', ''], none: ['—', 'cb fbk', ''], rendering: ['Rendering', 'cb fbk', ''] };
     return m[st] || m.none;
   }
   cellVm(s, loc, disp, i, w, idx, c0) {
@@ -1777,7 +1777,7 @@ class Component extends DCLogic {
     const pend = s.props.filter(function (p) { return p.status === 'pending'; }).length;
     return { segs: segs, pending: n, revBg: n > 0 ? 'var(--accent)' : 'var(--glass)', revFg: n > 0 ? '#fff' : 'var(--label)', revAx: 'Review and Push, ' + n + ' pending changes',
       review: () => this.setState({ sheet: 'review', push: null, menu: null }), activity: () => this.setState({ sheet: 'activity', menu: null }),
-      aiOn: !!s.aiWork, aiTxt: s.aiWork ? 'is drafting proposals · ' + s.aiWork.n + ' calls' : '',
+      aiOn: !!s.aiWork, aiTxt: s.aiWork ? 'is drafting suggestions · ' + s.aiWork.n + ' calls' : '',
       hasProps: pend > 0 && !s.aiWork, propsTxt: pend + (pend === 1 ? ' proposal' : ' proposals'), propsAx: pend + ' proposals from Claude Code are waiting', openProps: () => this.setState({ menu: s.menu === 'props' ? null : 'props' }) };
   }
   vmBar(s, items) {
@@ -1819,7 +1819,7 @@ class Component extends DCLogic {
       if (counts.restored) parts.push('Restored Oct 26 · not rendered');
       if (counts.nocap) parts.push('No captions yet');
       if (counts.live === 5) parts.push('Live');
-      if (counts.unmanaged) parts.push('Uploaded by hand · not managed');
+      if (counts.unmanaged) parts.push('Added by hand · not managed');
       if (counts.fallback) parts.push('Uses English (U.S.)');
       if (counts.ui && !counts.fallback) parts.push('UI not localized');
       return { tile: S.LOC[loc].tile, name: S.LOC[loc].name, primary: loc === 'en-US', sub: parts.join(' · ') || 'Live', subCls: cls, hasPrev: disp === 'iphone' && (loc === 'en-US' || loc === 'ja'), noPrev: !(disp === 'iphone' && (loc === 'en-US' || loc === 'ja')), prevTxt: '0:24', cells: cells };
@@ -1827,7 +1827,7 @@ class Component extends DCLogic {
     const scoped = this.scopeOrder(s).filter(function (l) { return !s.pinned[l]; });
     out.groups.push({ label: 'LOCALIZED SETS', n: scoped.length, rows: scoped.map(row), hasToggle: false, hasNote: false });
     const pinned = Object.keys(s.pinned).filter(function (l) { return s.pinned[l]; });
-    if (pinned.length) out.groups.push({ label: 'RESTORED · NOT RENDERED', n: pinned.length, rows: pinned.map(row), hasToggle: false, hasNote: true, note: 'Atlas leaves these alone until you choose Use Template Again in Locales.' });
+    if (pinned.length) out.groups.push({ label: 'RESTORED · NOT RENDERED', n: pinned.length, rows: pinned.map(row), hasToggle: false, hasNote: true, note: 'Untouched until you choose Use Template Again in Locales.' });
     const others = S.LOCALES.map(function (l) { return l[0]; }).filter(function (l) { return s.scope.indexOf(l) < 0 && l !== 'en-US' && !s.pinned[l]; });
     out.groups.push({ label: 'USE ENGLISH (U.S.) SCREENSHOTS', n: others.length, rows: s.showOthers ? others.map(row) : [], hasToggle: true, toggleTxt: s.showOthers ? 'Hide' : 'Show All', toggle: () => this.setState((st) => ({ showOthers: !st.showOthers })), hasNote: !s.showOthers, note: 'On the App Store these locales use the English (U.S.) set.' });
     return out;
@@ -1863,7 +1863,7 @@ class Component extends DCLogic {
     return { open: true, title: 'Slot ' + (v.i + 1) + ' · ' + S.SLOTNAMES[v.i], sub: S.DISP[disp].label + ' · ' + S.DISP[disp][disp === 'iphone' ? 'por' : 'lan'].join(' × ') + ' px · steps through the ' + locs.length + ' localized sets', n: v.i + 1,
       spec: spec, w: w, hint: this.hint(spec, w), pos: (idx + 1) + ' of ' + locs.length, prev: go(-1), next: go(1),
       tile: S.LOC[v.loc].tile, locName: S.LOC[v.loc].name, stateTxt: look[0], stateCls: look[1], checks: checks,
-      hasCap: !!(cap && f), h: cap ? cap.h : '', s: cap ? cap.s : '', hasS: !!(cap && cap.s && v.i === 0), dir: this.isRtl(v.loc) ? 'rtl' : 'ltr', m: f ? this.meter(f.h, f.hs) : {}, ai: !!(cap && cap.src === 'ai'), aiTxt: cap && cap.src === 'ai' ? 'Proposed by Claude Code · ' + cap.at : '',
+      hasCap: !!(cap && f), h: cap ? cap.h : '', s: cap ? cap.s : '', hasS: !!(cap && cap.s && v.i === 0), dir: this.isRtl(v.loc) ? 'rtl' : 'ltr', m: f ? this.meter(f.h, f.hs) : {}, ai: !!(cap && cap.src === 'ai'), aiTxt: cap && cap.src === 'ai' ? 'Suggested by Claude Code · ' + cap.at : '',
       file: c.capt ? c.capt.file : 'No capture', capTxt: c.capt ? (c.capt.bad ? '2064 × 2752 · fastlane snapshot · an iPad capture in an iPhone slot' : c.capt.px + ' · fastlane snapshot · ' + (c.capt.fallback ? 'English (U.S.) interface, not localized' : 'localized interface')) : '',
       locs: locs.map((l) => { const cc = this.cellState(s, l, disp, v.i); return { tile: S.LOC[l].tile, name: S.LOC[l].name, bg: l === v.loc ? 'var(--fill-3)' : 'transparent', dot: cc.state === 'failed' ? 'var(--err-mark)' : cc.state === 'rendered' ? 'var(--accent)' : cc.ui ? 'var(--warn-mark)' : 'var(--fill-3)', st: this.stateLook(cc.state, cc.why)[0], pick: () => this.setState({ viewer: { loc: l, i: v.i } }) }; }),
       editCap: () => this.setState({ sheet: null, view: 'cap', capSel: { loc: v.loc, i: v.i }, sidebar: true }), editTpl: () => this.setState({ sheet: null, view: 'tpl', sidebar: false, tplLoc: v.loc, tplSlot: v.i }) };
@@ -1900,7 +1900,7 @@ class Component extends DCLogic {
     const bgEff = g('bg') || t.bg;
     return {
       name: t.name, vTxt: 'v' + t.version, draft: s.tplDraft, nextV: 'v' + (t.version + 1), save: () => this.saveVersion(),
-      byAi: !!s.tplBy && !s.tplDraft, byAiTxt: s.tplBy ? 'Proposed by Claude Code · ' + s.tplBy.at : '',
+      byAi: !!s.tplBy && !s.tplDraft, byAiTxt: s.tplBy ? 'Suggested by Claude Code · ' + s.tplBy.at : '',
       toggleHist: () => this.setState({ menu: s.menu === 'hist' ? null : 'hist' }), histOpen: s.menu === 'hist', openStarters: () => this.setState({ sheet: 'starter' }),
       slots: S.SLOTNAMES.map((n, j) => ({ label: (j + 1) + ' ' + n, cls: j === i ? 'on' : '', pick: () => this.setState({ tplSlot: j }) })),
       loc: loc, locOpts: S.LOCALES.map(function (l) { return { v: l[0], t: l[1] }; }), onLoc: (e) => this.setState({ tplLoc: e.target.value }),
@@ -1931,7 +1931,7 @@ class Component extends DCLogic {
         autoTxt: (function () { const rt = S.RATING[s.tplLoc] || null; return rt && rt[1] != null ? rt[1].toFixed(1) + ' ★ · ' + rt[2] + ' ratings in ' + rt[0] : 'No ratings in ' + (rt ? rt[0] : 'this country') + ' yet · hidden there'; })(),
         toCustom: () => setDeco(j, { src: 'custom', value: d.value || '4.8' }), toAuto: () => setDeco(j, { src: 'store' }), value: d.value || '', onValue: (e) => setDeco(j, { value: e.target.value }), color: d.color, onColor: (e) => setDeco(j, { color: e.target.value }), remove: () => this.slotEdit(i, 'deco', decos.filter(function (x, k) { return k !== j; })) })),
       noDeco: !decos.length, decoAdd: [['Rating', { type: 'laurel', x: 0.3, y: 0.78, w: 0.4, color: g('caption.ink'), value: '4.8', stars: true, z: 'front' }], ['Sparkle', { type: 'shape', shape: 'sparkle', x: 0.82, y: 0.3, w: 0.1, color: g('caption.ink'), z: 'front' }], ['Shape', { type: 'shape', shape: 'blob', x: 0.6, y: 0.3, w: 0.55, color: '#FFFFFF', z: 'back', op: 0.9 }], ['Badge', { type: 'badge', x: 0.06, y: 0.78, w: 0.28, color: '#111111', ink: '#FFFFFF', value: '4.8 ★', rot: -12, z: 'front' }]].map((x) => ({ label: 'Add ' + x[0], pick: () => this.slotEdit(i, 'deco', decos.concat([this.clone(x[1])])) })),
-      ratingNote: decos.some(function (d) { return d.type === 'art'; }) ? 'Props are vector stand-ins drawn by the template, never taken from your captures. Hide or remove any that don’t fit your app. Props that would cover the caption in a language move below it or step aside on their own.' : 'Rating laurels show this app’s real App Store rating in each country, read daily from the App Store (average and count per storefront); where the app has no ratings yet, the laurel is left out. Ratings show only numbers and stars, so they need no translation. Type It sets a value by hand; before pushing, Atlas checks it against Lumen’s rating in that country, since Apple rejects misleading screenshots.',
+      ratingNote: decos.some(function (d) { return d.type === 'art'; }) ? 'Props are drawn by the template, never taken from your captures. Hide or remove any that don’t fit. Props move aside if they’d cover a caption.' : 'Rating laurels show this app’s real App Store rating in each country, read daily from the App Store (average and count per storefront); where the app has no ratings yet, the laurel is left out. Ratings show only numbers and stars, so they need no translation. Type It sets a value by hand; before pushing, Atlas checks it against Lumen’s rating in that country, since Apple rejects misleading screenshots.',
       devW: Math.round(t.device.width * 100), onDevW: (e) => this.tplEdit('device.width', +e.target.value / 100),
       placeSeg: seg([['above', 'Above'], ['below', 'Below'], ['band', 'Band']], t.caption.placement, (v) => { this.tplEdit('caption.placement', v); }),
       alignSeg: seg([['center', 'Center'], ['start', 'Start']], t.caption.align, (v) => this.tplEdit('caption.align', v)),
@@ -1947,7 +1947,7 @@ class Component extends DCLogic {
       safeTop: pct(t.safe.top), onSafeTop: (e) => this.tplEdit('safe.top', +e.target.value / 100), safeSide: pct(t.safe.side), onSafeSide: (e) => this.tplEdit('safe.side', +e.target.value / 100),
       layoutSeg: seg([['standard', 'Standard'], ['hero', 'Hero'], ['pair', 'Two phones'], ['quotes', 'Reviews']], t.slots[i].layout, (v) => this.tplEdit('slots.' + i + '.layout', v)),
       ovSize: ovSize != null ? ovSize : t.caption.headline.size, onOvSize: (e) => this.slotEdit(i, 'caption.headline.size', +e.target.value), hasOv: Object.keys(t.slots[i].over || {}).length > 0 || false, resetSlot: () => this.setState((s2) => { const t2 = this.clone(s2.tpl); t2.slots[i].over = {}; return { tpl: t2, tplDraft: true }; }),
-      ovNote: t.slots[i].layout === 'pair' ? 'Two phones: this slot’s capture is in front, and the capture before it sits behind, higher up and partly off the edge. Both phones keep their real shape; the canvas crops what runs off.' : t.slots[i].layout === 'quotes' ? 'Reviews: no device. Three real 5-star App Store reviews in this language sit under the headline, with the reviewer’s name. Where a language has fewer than three, Atlas uses the primary language’s and marks them as translated for you to approve.' : t.slots[i].layout === 'hero' ? 'Hero: a 6% larger headline, room for a subhead and a slightly smaller device. Slot 1 is the one people see first.' : (ovSize != null ? 'This slot overrides the headline size. Everything else follows the template.' : 'Follows the template. Change a value here to override it for this slot only.')
+      ovNote: t.slots[i].layout === 'pair' ? 'Two phones: this slot’s capture is in front, and the capture before it sits behind, higher up and partly off the edge. Both phones keep their real shape; the canvas crops what runs off.' : t.slots[i].layout === 'quotes' ? 'Reviews: no device. Three real 5-star reviews in this language, with reviewer names, under the headline. With fewer than three, Atlas uses the primary language’s, marked translated for you to approve.' : t.slots[i].layout === 'hero' ? 'Hero: 6% larger headline, a subhead and a slightly smaller device. People see slot 1 first.' : (ovSize != null ? 'This slot overrides the headline size. Everything else follows the template.' : 'Follows the template. Change a value to override it here only.')
     };
   }
   vmHist(s) {
@@ -1994,9 +1994,9 @@ class Component extends DCLogic {
     if (sugg && sugg.text) { const sp2 = this.specFor(tpl, loc, disp, i, { h: sugg.text, s: c.s }, this.capOf(loc, disp, i), false); sm = this.meter(sp2.fit.h, sp2.fit.hs); }
     return {
       title: S.LOC[loc].name + ' · slot ' + (i + 1), sub: S.SLOTNAMES[i] + ' · ' + S.DISP[disp].label, hasSrc: loc !== 'en-US' && !!en, src: en ? en.h : '',
-      h: c.h || '', onH: (e) => this.setCap(loc, i, 'h', e.target.value), hasS: i === 0, s: c.s || '', onS: (e) => this.setCap(loc, i, 's', e.target.value), dir: this.isRtl(loc) ? 'rtl' : 'ltr', ph: loc === 'en-US' ? 'Say what this screen does for people' : 'Translate or write a caption',
+      h: c.h || '', onH: (e) => this.setCap(loc, i, 'h', e.target.value), hasS: i === 0, s: c.s || '', onS: (e) => this.setCap(loc, i, 's', e.target.value), dir: this.isRtl(loc) ? 'rtl' : 'ltr', ph: loc === 'en-US' ? 'Your week on one calm page' : 'Translate or write a caption',
       taCls: 'ta' + (m.over ? ' err' : ''), m: m, sizeTxt: cap ? (f.h.lines.length + (f.h.lines.length === 1 ? ' line' : ' lines') + ' of ' + f.hs.maxLines + ' · ' + Math.round(f.h.size / f.u) + ' u (template ' + Math.round(f.hs.size / f.u) + ', smallest ' + Math.round(f.hs.min / f.u) + ')') : 'Fit is measured as you type.',
-      spec: sp, w: w, hint: this.hint(sp, w), isMt: c.src === 'mt', review: () => this.markReviewed(loc, i), isAi: c.src === 'ai', aiTxt: 'Proposed by Claude Code · ' + (c.at || ''),
+      spec: sp, w: w, hint: this.hint(sp, w), isMt: c.src === 'mt', review: () => this.markReviewed(loc, i), isAi: c.src === 'ai', aiTxt: 'Suggested by Claude Code · ' + (c.at || ''),
       canSuggest: !!cap && (m.over || f.h.shrunk) && !sugg && loc !== 'en-US', suggest: () => this.setState({ sugg: { loc: loc, i: i, text: S.SHORT[loc + '|' + i] || null } }),
       hasSugg: !!(sugg && sugg.text), sugg: sugg ? sugg.text : '', sm: sm, provTxt: s.tr === 'ai' ? 'AI provider' : 'Apple Translation', useSugg: () => { this.setCap(loc, i, 'h', sugg.text); }, dropSugg: () => this.setState({ sugg: null }),
       close: () => this.setState({ capSel: null, sugg: null })
@@ -2036,7 +2036,7 @@ class Component extends DCLogic {
     const out = { open: s.sheet === 'props', list: list, empty: !s.props.length, has: !!p, disc: !!(cl && cl.status === 'disconnected'), connTxt: cl ? (cl.status === 'connected' ? 'Claude Code · connected' : 'Claude Code · disconnected ' + cl.last) : 'No assistant paired', d: { ops: [], slots: [], colh: [], before: [], after: [], items: [], since: [], conflicts: [] }, actTpl: false, actCap: false, actNone: true };
     if (!p || !s.tpl) return out;
     const pending = p.status === 'pending'; const stale = p.kind === 'template' && pending && p.basedOn < s.tpl.version;
-    const d = { title: p.title, meta: 'From ' + p.client + ' at ' + p.at + ' · based on template v' + p.basedOn + (p.rebased ? ' (rebased)' : ''), reason: p.reason, basedOn: p.basedOn, cur: s.tpl.version, next: s.tpl.version + 1, stale: stale, isTpl: p.kind === 'template', isCap: p.kind === 'captions', ops: [], slots: [], colh: [], before: [], after: [], items: [], since: [], conflicts: [], done: !pending, doneTxt: p.status === 'accepted' ? (p.kind === 'template' ? 'Accepted. It’s template v' + s.tpl.version + ' now, and the changed renders are waiting in Review & Push.' : 'Accepted. The captions keep the “Proposed by Claude Code” tag until someone edits them.') : p.status === 'partial' ? 'Partly accepted. Rejected captions stay as they were.' : p.status === 'rejected' ? 'Rejected. Nothing changed.' : '' };
+    const d = { title: p.title, meta: 'From ' + p.client + ' at ' + p.at + ' · based on template v' + p.basedOn + (p.rebased ? ' (rebased)' : ''), reason: p.reason, basedOn: p.basedOn, cur: s.tpl.version, next: s.tpl.version + 1, stale: stale, isTpl: p.kind === 'template', isCap: p.kind === 'captions', ops: [], slots: [], colh: [], before: [], after: [], items: [], since: [], conflicts: [], done: !pending, doneTxt: p.status === 'accepted' ? (p.kind === 'template' ? 'Accepted. It’s template v' + s.tpl.version + ' now. Changed renders wait in Review & Push.' : 'Accepted. Captions keep the “Suggested by Claude Code” tag until edited.') : p.status === 'partial' ? 'Partly accepted. Rejected captions stay as they were.' : p.status === 'rejected' ? 'Rejected. Nothing changed.' : '' };
     if (p.kind === 'template') {
       const ops = this.opsNow(s, p);
       d.ops = ops.map((o) => ({ label: o.label, from: this.fmtVal(o, stale ? o.from : o.cur), to: this.fmtVal(o, o.to), conflict: stale && o.conflict }));
@@ -2106,7 +2106,7 @@ class Component extends DCLogic {
   }
   vmTranslate(s) {
     const S = Component.sdata(); const q = this.missingCaps(s); const per = {}; q.forEach(function (x) { per[x[0]] = (per[x[0]] || 0) + 1; });
-    const provs = [['device', 'Apple Translation · on this Mac', 'Free and private. Translates the caption as written.'], ['ai', 'AI provider · Anthropic', 'Can write shorter, natural captions. Uses the API key in Settings.'], ['mcp', 'Your AI assistant · MCP', 'Claude Code or another paired assistant, on its own plan. Arrives as proposals.']];
+    const provs = [['device', 'Apple Translation · on this Mac', 'Free and private. Translates the caption as written.'], ['ai', 'AI provider · Anthropic', 'Shorter, natural captions. Uses your API key in Settings.'], ['mcp', 'Your AI assistant · MCP', 'Claude Code or another paired assistant, on its own plan. Arrives as suggestions.']];
     return { open: s.sheet === 'translate', sum: q.length + ' empty captions in ' + Object.keys(per).length + ' locales.', provs: provs.map((p) => ({ label: p[1], desc: p[2], on: s.tr === p[0], rc: s.tr === p[0] ? 'rdo on' : 'rdo', pick: () => this.setState({ tr: p[0] }) })), isMcp: s.tr === 'mcp',
       locs: Object.keys(per).map(function (l) { return { name: S.LOC[l].name, n: per[l] + (per[l] === 1 ? ' caption' : ' captions') }; }), none: !q.length, btn: s.tr === 'mcp' ? 'Copy Prompt' : 'Translate ' + q.length, start: () => this.startTranslate() };
   }
@@ -2124,14 +2124,14 @@ class Component extends DCLogic {
       rows: locs.map((l) => ({ tile: S.LOC[l].tile, name: S.LOC[l].name, on: l === loc, rc: l === loc ? 'rdo on' : 'rdo', bg: l === loc ? 'var(--fill-2)' : 'transparent', note: has(l) ? '5 + 5 screenshots · uploaded by hand' : 'Had none · used English (U.S.)', pick: () => this.setState({ rsLoc: l }) })),
       dispSeg: [['iphone', 'iPhone 6.9″'], ['ipad', 'iPad 13″']].map((x) => ({ label: x[1], cls: disp === x[0] ? 'on' : '', pick: () => this.setState({ rsDisp: x[0] }) })),
       shots: shots, noShots: !shots.length, noTxt: 'German had no screenshots of its own then. To go back to that, take it out of the localized locales; nothing live is deleted.',
-      note: 'Restoring takes ' + S.LOC[loc].name + ' out of re-rendering until you choose Use Template Again, so the next push doesn’t replace these again.', goTxt: 'Queue ' + (shots.length * 2) + ' Screenshots for Review', go: () => this.queueRestore(loc) };
+      note: 'Restoring takes ' + S.LOC[loc].name + ' out of re-rendering until you choose Use Template Again, so the next push keeps them.', goTxt: 'Queue ' + (shots.length * 2) + ' Screenshots for Review', go: () => this.queueRestore(loc) };
   }
   vmScope(s) {
     const S = Component.sdata(); if (s.sheet !== 'scope') return { open: false, rows: [] };
     const d = s.scopeDraft || s.scope;
     const rows = S.LOCALES.map((l) => { const code = l[0]; const on = d.indexOf(code) >= 0 || code === 'en-US'; const n = [0, 1, 2, 3, 4].filter((i) => this.captionOf(s, code, i)).length; const own = S.CAPLOC.iphone.indexOf(code) >= 0; const live = s.live[code + '|iphone|0'];
       return { tile: S.LOC[code].tile, name: l[1], on: on, primary: code === 'en-US', pinned: !!s.pinned[code], unpin: () => this.setState((st) => { const p = Object.assign({}, st.pinned); delete p[code]; return { pinned: p }; }), cb: (e) => { const v = e.target.checked; this.setState((st) => { const dd = (st.scopeDraft || st.scope).filter(function (x) { return x !== code; }); if (v) dd.push(code); return { scopeDraft: dd }; }); },
-        cap: n === 5 ? '5 of 5' : n ? n + ' of 5' : 'None yet', capCls: n === 5 ? 'l2' : 'l3', cpt: own ? 'Own interface' : 'English interface', cptCls: own ? 'l2' : 'l3', live: live ? (live.legacy ? 'Uploaded by hand' : 'Localized set') : 'Uses English (U.S.)' }; });
+        cap: n === 5 ? '5 of 5' : n ? n + ' of 5' : 'None yet', capCls: n === 5 ? 'l2' : 'l3', cpt: own ? 'Own interface' : 'English interface', cptCls: own ? 'l2' : 'l3', live: live ? (live.legacy ? 'Added by hand' : 'Localized set') : 'Uses English (U.S.)' }; });
     const n = rows.filter(function (r) { return r.on; }).length; const imgs = n * 5 * 2; const req = imgs * 5;
     return { open: true, rows: rows, est: n + ' locales × 5 slots × 2 display types = ' + imgs + ' images · about ' + req.toLocaleString('en-US') + ' requests, ' + Math.round(req / 3600 * 100) + '% of the hourly limit',
       pickLocalized: () => this.setState({ scopeDraft: S.CAPLOC.iphone.slice() }), pickAll: () => this.setState({ scopeDraft: S.LOCALES.map(function (l) { return l[0]; }) }), pickNone: () => this.setState({ scopeDraft: ['en-US'] }),
@@ -2144,11 +2144,11 @@ class Component extends DCLogic {
   vmSettings(s) {
     const S = Component.sdata(); const m = s.mcp;
     const tabs = ['Account', 'Pricing', 'Translation', 'AI Assistants', 'General'].map(function (t) { const on = t === 'AI Assistants'; return { label: t, on: on, off: !on, isAi: on, notAi: !on, bg: on ? 'var(--fill-3)' : 'transparent', fg: on ? 'var(--accent-text)' : 'var(--label-2)', op: on ? 1 : 0.45 }; });
-    const perms = [['read', 'Read captures, captions, templates, listings and prices', 'Always on while the server runs.', true], ['shots', 'Propose screenshot templates and captions', 'Template revisions and captions arrive as proposals you accept or reject.', false, true], ['text', 'Propose store text', 'Listing text, translations, keywords and What’s New.', false], ['prices', 'Propose prices', 'Always refused for apps set to Keep my prices.', false], ['info', 'Propose app information', 'Age rating, App Privacy, App Review and export compliance answers.', false]].map((p) => ({ label: p[1], note: p[2], on: !!m.perms[p[0]], locked: p[3], isNew: !!p[4], cb: (e) => { const v = e.target.checked; this.setState((st) => ({ mcp: Object.assign({}, st.mcp, { perms: Object.assign({}, st.mcp.perms, { [p[0]]: v }) }) })); } }));
+    const perms = [['read', 'Read captures, captions, templates, listings and prices', 'Always on while the server runs.', true], ['shots', 'Suggest screenshot templates and captions', 'Templates and captions arrive as suggestions you accept or reject.', false, true], ['text', 'Suggest store text', 'Listing text, translations, keywords and What’s New.', false], ['prices', 'Suggest prices', 'Always refused for apps set to Keep my prices.', false], ['info', 'Suggest app information', 'Age rating, App Privacy, App Review and export compliance answers.', false]].map((p) => ({ label: p[1], note: p[2], on: !!m.perms[p[0]], locked: p[3], isNew: !!p[4], cb: (e) => { const v = e.target.checked; this.setState((st) => ({ mcp: Object.assign({}, st.mcp, { perms: Object.assign({}, st.mcp.perms, { [p[0]]: v }) }) })); } }));
     const nConn = m.clients.filter(function (c) { return c.status === 'connected'; }).length;
     return { tabs: tabs, on: m.on, off: !m.on, swCls: 'sw' + (m.on ? ' on' : ''), toggle: () => this.setState((st) => ({ mcp: Object.assign({}, st.mcp, { on: !st.mcp.on }) })), close: () => this.setState({ screen: 'main', pair: null }),
       statusTxt: !m.on ? 'Off' : nConn ? 'Running · ' + nConn + (nConn === 1 ? ' assistant connected' : ' assistants connected') + ' · 127.0.0.1:47321' : 'Running · no assistant connected · 127.0.0.1:47321',
-      can: [{ t: 'Read this app’s captures, captions and templates' }, { t: 'Measure a caption and render a preview to check its own work' }, { t: 'Send proposals: a template revision, captions for a locale' }],
+      can: [{ t: 'Read this app’s captures, captions and templates' }, { t: 'Measure captions and render previews to check its work' }, { t: 'Send suggestions: a template revision, captions for a locale' }],
       cant: [{ t: 'Push anything to App Store Connect' }, { t: 'Change a template or caption without your review' }, { t: 'Draw your app’s interface, or see your API key' }],
       noClients: !m.clients.length, clients: m.clients.map((c) => ({ name: c.name, mono: c.mono, where: c.where, dot: c.status === 'connected' ? '#34C759' : c.status === 'disconnected' ? 'var(--label-3)' : 'var(--fill-3)', status: c.status === 'connected' ? 'Connected · last call ' + c.last : c.status === 'disconnected' ? 'Disconnected · last seen ' + c.last : 'Paired · not connected since ' + c.last, revoke: () => { this.setState((st) => ({ mcp: Object.assign({}, st.mcp, { clients: st.mcp.clients.filter(function (x) { return x.id !== c.id; }) }) })); this.say(c.name + '’s token was revoked. It can’t connect until you pair it again.'); } })),
       pair: () => this.pairStart(), perms: perms,
@@ -2190,10 +2190,10 @@ class Component extends DCLogic {
     const sp = (l, i, c, capt, tpl) => this.specFor(tpl || t, l, 'iphone', i, c === undefined ? cap(l, i) : c, capt || this.capOf(l, 'iphone', i), false);
     const bad = this.clone(t); bad.fonts.display = 'Northpier Display'; bad.caption.headline.font = 'Northpier Display'; bad.fonts.fallback.thai = null;
     const cells = [
-      ['Live', { state: 'live', spec: sp('en-US', 0) }], ['Rendered, not pushed', { state: 'rendered', spec: sp('zh-Hans', 1) }], ['Proposal waiting', { state: 'live', spec: sp('de-DE', 1), prop: true }],
+      ['Live', { state: 'live', spec: sp('en-US', 0) }], ['Rendered, not pushed', { state: 'rendered', spec: sp('zh-Hans', 1) }], ['Suggestion waiting', { state: 'live', spec: sp('de-DE', 1), prop: true }],
       ['Overflow', { state: 'failed', why: 'Overflow', spec: sp('de-DE', 2) }], ['Missing glyph', { state: 'failed', why: 'Missing glyphs', spec: sp('th', 0, undefined, this.capOf('th', 'iphone', 0), bad) }], ['Wrong size', { state: 'failed', why: 'Wrong size', spec: sp('ko', 3, undefined, this.capOf('ko', 'iphone', 3, 'ko|iphone|3')) }],
       ['UI not localized', { state: 'rendered', spec: sp('nl-NL', 0), ui: true }], ['Missing · falls back', { state: 'fallback', spec: sp('en-US', 2) }], ['Rendering', { state: 'rendered', spec: sp('fr-FR', 3) }, true],
-      ['Restored', { state: 'restored', spec: this.legacySpec('de-DE', 'iphone', 0) }], ['No caption yet', { state: 'nocap', spec: sp('pl', 4, null) }], ['Uploaded by hand', { state: 'unmanaged', spec: this.legacySpec('en-GB', 'iphone', 1) }]
+      ['Restored', { state: 'restored', spec: this.legacySpec('de-DE', 'iphone', 0) }], ['No caption yet', { state: 'nocap', spec: sp('pl', 4, null) }], ['Added by hand', { state: 'unmanaged', spec: this.legacySpec('en-GB', 'iphone', 1) }]
     ].map((x) => { const v = this.cellVm(Object.assign({}, b, { rendering: x[2] ? { done: 0, total: 1 } : null }), 'en-US', 'iphone', 0, w, x[2] ? 0 : null, x[1]); v.name = x[0]; v.ax = x[0]; return v; });
     const mt = (l, i, c) => { const s2 = sp(l, i, c); return this.meter(s2.fit.h, s2.fit.hs); };
     const meters = [['Fits', 'en-US', 2], ['Shrinks', 'fi', 2], ['Overflows', 'de-DE', 2], ['Empty', 'pl', 2, null]].map((x) => ({ name: x[0], text: x[3] === null ? 'No caption yet' : cap(x[1], x[2]).h, m: mt(x[1], x[2], x[3]) }));

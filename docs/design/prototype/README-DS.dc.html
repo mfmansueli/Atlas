@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design system — README</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.rd{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Helvetica Neue",Arial,sans-serif;color:#1D1D1F;background:#FFFFFF;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.6}
+.rd *{box-sizing:border-box}
+.rd h1{font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
+.rd h2{font-size:26px;line-height:1.2;letter-spacing:-.01em;margin:56px 0 14px;padding-top:24px;border-top:1px solid #E3E3E8;font-weight:650}
+.rd h3{font-size:18px;line-height:1.3;margin:30px 0 8px;font-weight:650}
+.rd p{margin:0 0 12px}
+.rd ul,.rd ol{margin:0 0 14px;padding-left:22px}
+.rd li{margin:3px 0}
+.rd .m{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:.86em;background:#F2F2F5;border-radius:5px;padding:1px 5px}
+.rd pre{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.55;background:#F5F5F7;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 16px;white-space:pre}
+.rd table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45}
+.rd th{text-align:left;font-weight:600;color:#55555A;font-size:12px;padding:7px 10px;border-bottom:1px solid #D8D8DD;background:#FAFAFB}
+.rd td{padding:7px 10px;border-bottom:1px solid #ECECF0;vertical-align:top}
+.rd .tw{overflow-x:auto;margin:0 0 18px}
+.rd .tw table{min-width:640px}
+.rd .note{background:#F5F5F7;border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:14px}
+.rd .warn{background:#FFF6D9;border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:14px;color:#3D2E00}
+.rd .lead{font-size:18px;line-height:1.55;color:#45454A}
+.rd a{color:#0066CC}
+.rd .pri{display:inline-block;min-width:22px;padding:0 6px;border-radius:6px;font-size:11px;font-weight:700;text-align:center}
+.rd .p1{background:#FFE1E1;color:#A3001B}.rd .p2{background:#FFF0CC;color:#6B4A00}.rd .p3{background:#E8EEF8;color:#2A4A7A}
+.rd .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2)}
+@media (max-width:640px){.rd h1{font-size:30px}}
+</style>
+</helmet>
+<div class="rd" style="width: 100%; min-height: 100vh; padding: 64px 24px 96px">
+<div style="max-width: 920px; margin: 0 auto">
+<p style="font-size: 12px; font-weight: 600; letter-spacing: .06em; color: #6B6B70; margin-bottom: 8px">ATLAS · DESIGN SYSTEM · REVIEW AND HANDOFF · 22 NOVEMBER 2026 · MOTION V2 AND RULE ZERO, 23 NOVEMBER</p>
+<h1>The design system, and what the prototype gets wrong</h1>
+<p class="lead">A complete review of the clickable app and the other prototypes: colour, section icons, type, buttons, badges, shape, depth and motion. For each, the rule to build, the SwiftUI to build it with, and every place where the prototype breaks the rule.</p>
+<div class="warn"><b>For Claude Code: this README and the board beside it win over the prototype.</b> The prototype was built screen by screen over several weeks and drifted. When a screen disagrees with a rule here, build the rule. Every disagreement found is listed in “What to fix”, with where it is.</div>
+<div class="note" style="background:#E9F7EE;color:#0F4A24"><b>Applied to the current design, 23 November.</b> Everything in “What to fix” is in the clickable app (with the Settings, Help and screenshot components it uses), the Welcome and menu bar prototype, the toolbar prototype and the Analytics prototype. All eight AI effects in section 7 play in the clickable app.<br><b>Fixed on 23 November, after the first pass:</b> the Screenshots component’s styles applied to the whole app on any screen that shows a screenshot, and they loaded last. So on those screens footnotes stayed 10 pt and tertiary grey, chips kept their old size and radios were drawn at 14 pt. Settings did the same to the section icons while it was open. Both now only style their own boards (last row of “What to fix”).<br><b>Kept as they were, on purpose:</b> pages <i>Estados</i> and <i>Documentação e componentes</i>, which hold boards 1–28, the component sheets and “Foundations”. They show the earlier design and are kept as history. Where they disagree with this README, this README wins.<br><b>Checked:</b> all 71 scenes of the clickable app against the previous version: no text newly cut off and no script errors. The Settings, Welcome, toolbar, Help and screenshot boards were compared before and after. Every Accept and Send Reply was clicked.</div>
+<div class="note"><b>On the canvas</b> (page <i>Design system</i>): board <b>64 · Design system</b> shows every token, the section icons before and after, the type scale, the seven buttons in light and dark, badges and pills, shape and depth, eight AI effects playing, and do / don’t pairs.</div>
+
+<h2>Rule zero · one source of design truth (development rule, 23 November)</h2>
+<p><b>Design consistency is a rule of development, not a finishing step.</b> Atlas must be easy to navigate because every screen speaks the same language: the same blue for “do it”, the same purple for “AI brought this”, the same type, the same buttons and the same motion. So:</p>
+<ol>
+<li><b>One module holds every decision:</b> <span class="m">DesignSystem</span> (Swift package in the app’s repo) with colour, type, spacing, radius, button, badge, pill, card and motion tokens, plus the five AI effects as view modifiers. Its values come from <span class="m">design-tokens.json</span>, the same values as this README.</li>
+<li><b>No raw values in views.</b> No hex colour, font size, corner radius, padding number, duration or spring in a screen’s code. Views use tokens: <span class="m">Color.ai</span>, <span class="m">.atlasTextStyle(.headline)</span>, <span class="m">AtlasButtonStyle.rowAction</span>, <span class="m">Motion.base</span>, <span class="m">.aiArrived()</span>. A value that doesn’t exist becomes a token first, here and in the module.</li>
+<li><b>The app shows its own design system.</b> Debug builds have <b>Debug → Design System Catalog… (⌥⌘D)</b>: a window drawn by the module itself with every colour (light, dark, high contrast), the type scale, the seven buttons, badges, pills and cards, and the five AI effects playing, each with Reduce Motion. It’s the first place to look when building or refining a screen, and the place to compare against.</li>
+<li><b>Before a screen is done:</b> it uses only tokens; one filled blue per card or sheet; purple only on AI; motion only from the five effects; light, dark, high contrast and Reduce Motion checked in the catalog and the screen.</li>
+<li><b>Changing the system:</b> change this README and board 64/68 first, then <span class="m">design-tokens.json</span> and the module, then the screens. Never the other way round.</li>
+</ol>
+<p>The files that start this (tokens JSON, the module skeleton, the catalog window and the rule for the repo’s <span class="m">CLAUDE.md</span>) are in the handoff <b>atlas-design-system</b>.</p>
+
+<h2>State colours (added 23 November)</h2>
+<ul>
+<li><b>Blue for an action even near AI when no AI made it:</b> “Use This Capture” (a capture you already have) is a tinted blue row action.</li>
+<li><b>Accepted suggestions stay in place,</b> neutral, with “Not pushed”; after the push they read the state Atlas reads back from Apple.</li>
+<li><b>Failure is amber</b> (warn tint), never purple, with what to do next. <b>Loading data</b> is a grey skeleton.</li>
+<li><b>Starting AI from inside a page</b> stays a secondary button with the sparkles glyph and purple label (Make Review Screenshots…, Try Again, Add StoreKit Configuration…, Scan the Code Again…).</li>
+</ul>
+
+<h2>How the review was done</h2>
+<ul>
+<li>Read every colour token, button class and icon colour in the six prototypes: the clickable app (Redesign), Settings, Welcome, Help, the toolbar prototype and Analytics.</li>
+<li>Opened nine screens of the clickable app in light and dark and measured what the browser actually drew: every text size, every button height, every filled button.</li>
+<li>Computed WCAG contrast for every text colour on its background, and the hue distance between the section colours.</li>
+<li>All six prototypes share the same colour values, so the system already has one source; the toolbar and Analytics prototypes only lack the high-contrast set.</li>
+</ul>
+
+<h2>The idea in one paragraph</h2>
+<p>Atlas is a calm, native Mac tool with one extra voice: the assistant. So the interface has <b>two colours that mean something</b> and keeps everything else quiet. <b>Blue</b> is what you do (the one main action, selection, what you changed). <b>Purple</b> is what AI brings (suggestions, their counts, the assistant at work). Green, amber and red only describe state. The section colours exist to help people find places, never to mean anything. And <b>motion belongs only to the assistant</b>: when it works, arrives, writes or is accepted, something moves, gently and once; the rest of the app is still. That restraint is what makes the AI moments feel special.</p>
+
+<h2>What to fix</h2>
+<p>Ordered by how much each one costs the experience. <span class="pri p1">1</span> breaks meaning or accessibility · <span class="pri p2">2</span> makes the app feel less finished · <span class="pri p3">3</span> cleanup for the build.</p>
+<div class="tw"><table>
+<tr><th></th><th>Problem</th><th>Where, and evidence</th><th>Fix</th></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Accept All is blue on some pages and purple on others</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Blue (<span class="m">btn pri accb</span>) in Store Page, Screenshots, App Information; purple (<span class="m">btn accb mtb</span>) in In-App Events and Product Pages. Same action, two meanings.</td><td>Always the primary blue button; its count badge is the purple part. Purple says “these came from AI”; blue says “do it”.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Buttons that start AI work are filled purple inside pages</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>“Make the Artwork…” (In-App Events) and “Suggest Pages…” (Product Pages) use <span class="m">accb mtb</span>.</td><td>Secondary button with the sparkles glyph and purple label (the same look as the Autopilot button at rest). A purple fill is kept for one thing only: the assistant is waiting for you.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Tertiary gray used for text people must read</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td><span class="m">--label-3</span> (#9A9AA0) is 2.8:1 on white, 2.8:1 on dark raised surfaces. Used for about 40 pieces of readable text: sentences such as “Checked again whenever Lumen’s category…”, “No details provided”, “How sure: …”, chart axis labels, the paywall’s Terms and Privacy links, and the field hints on the Connect screen.</td><td>Readable text uses <span class="m">--label-2</span> (5.3:1). <span class="m">--label-3</span> only for placeholders, disabled controls and separators.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Text smaller than macOS allows</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Measured in the working UI: 7.5 pt (language monograms, 46 times), 9 and 9.5 pt (deltas, counts) and 10 pt for whole lines (“Northpier Studio · Admin”, version status: 173 times).</td><td>Nothing under 10 pt; 10 pt only for counters and timestamps; lines of text start at 11 pt. Language monograms become 10 pt or the flag emoji.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Section icons collide</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Screenshots #F08A1C and Reviews #F5A30A are 8° of hue apart; Overview #636366 and App Information #7D7D86 are both gray; In-App Events #E5484D is the error red’s family.</td><td>New palette below: Screenshots red-orange, Reviews yellow, In-App Events pink, Overview graphite. Nine colours, at least 23° apart where they sit near each other.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>Atlas Pro is purple</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>The PRO chip, the Upgrade button and the paywall’s left panel use an indigo-to-purple gradient (#4B3BD6 → #8A3CD6). Next to suggestions, “Pro” reads as “AI”.</td><td>Pro takes the brand blue gradient. Pro is Atlas; purple stays AI.</td></tr>
+<tr><td><span class="pri p2">2</span></td><td><b>Too many filled blue buttons on one screen</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Pricing: Accept All 3, two Accept and the selected country are all filled blue. Reviews: every review card has a filled Send Reply (two or three on screen), plus the selected filter.</td><td>One filled blue per card or sheet. Repeated row actions (Accept, Send Reply) use the tinted style. Selected filters and segments use the segmented control, not a blue button.</td></tr>
+<tr><td><span class="pri p2">2</span></td><td><b>15 text sizes in the working UI</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 14, 15, 17, 18, 34, plus 7.5. Half-points (10.5, 11.5, 12.5) are 137 pieces of text.</td><td>The ten macOS text styles below. Half-points round to the style they were meant to be.</td></tr>
+<tr><td><span class="pri p2">2</span></td><td><b>Odd control heights</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Besides 24 / 28 / 32: segmented options at 20 (None / Infrequent / Frequent on Age Rating, 31 on one screen), language chips at 26 (In-App Events), country chips at 22 (Pricing), topic chips at 16 (Product Pages).</td><td>Segmented 24 (20 when small); every chip 24; icon-only buttons drawn at 16 with a 24 pt hit area.</td></tr>
+<tr><td><span class="pri p2">2</span></td><td><b>21 corner radii and 78 different shadows</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Radii 1, 2, 3, 4, 5, 6, 6.5, 7, 7.5, 8, 9 … 22.</td><td>Seven radii (4, 6, 8, 10, 12, 16, 20) plus capsule; four depth levels: flat, card, popover, sheet.</td></tr>
+<tr><td><span class="pri p2">2</span></td><td><b>Settings uses two purples as tiles</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>AI Assistants #8A3CD6 and Suggestions #BF5AF2 sit side by side in the Settings sidebar.</td><td>AI Assistants keeps the AI purple (it is the AI). Suggestions takes indigo #6866E0.</td></tr>
+<tr><td><span class="pri p3">3</span></td><td><b>Colour tokens copied in six files</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td>Identical values, two class names (<span class="m">.alx-l</span>, <span class="m">.ax-l</span>); the toolbar and Analytics copies have no high-contrast set.</td><td>One asset catalogue in the app: every colour a named Color Set with Any, Dark and High Contrast variants. (In the prototypes, all six now carry the same values.)</td></tr>
+<tr><td><span class="pri p3">3</span></td><td><b>An unused colour</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied</span></td><td><span class="m">--dec</span> is defined and used twice.</td><td>Dropped, with the unused pill that used it.</td></tr>
+<tr><td><span class="pri p1">1</span></td><td><b>One component’s styles overrode the app’s</b><br><span style="color:#1D7A3A;font-size:12px;font-weight:600">✓ Applied 23 Nov</span></td><td>The Screenshots component (used for every screenshot image) defined <span class="m">.t-f</span>, <span class="m">.l3</span>, <span class="m">.chip</span>, <span class="m">.who b</span>, <span class="m">.flag</span>, <span class="m">.rdo</span> and the colour tokens again, with the old values, and loaded after the app. Settings did the same for the section icons. So several fixes above never showed on Overview, Store Page or Screenshots.</td><td>Each component styles only its own root (the screenshot styles now sit under <span class="m">.shx</span>), and shared rules carry the same values everywhere. In the app: one stylesheet of tokens and styles; views never redefine a shared style.</td></tr>
+</table></div>
+
+<h2>1 · Colour</h2>
+<p>Every colour has a job and a “never”. Values are the prototype’s; they all pass where they are used, except tertiary text.</p>
+<div class="tw"><table>
+<tr><th>Token</th><th>Light</th><th>Dark</th><th>High contrast (L / D)</th><th>Job</th></tr>
+<tr><td><span class="m">label</span></td><td><span class="sw" style="background:#1D1D1F"></span>#1D1D1F</td><td><span class="sw" style="background:#F2F2F5"></span>#F2F2F5</td><td>system</td><td>Text. Use <span class="m">.primary</span>.</td></tr>
+<tr><td><span class="m">label2</span></td><td><span class="sw" style="background:#6B6B70"></span>#6B6B70 · 5.3:1</td><td><span class="sw" style="background:#A3A3AA"></span>#A3A3AA · 7.2:1</td><td>system</td><td>Secondary text. Use <span class="m">.secondary</span>.</td></tr>
+<tr><td><span class="m">label3</span></td><td><span class="sw" style="background:#9A9AA0"></span>#9A9AA0 · 2.8:1</td><td><span class="sw" style="background:#6E6E75"></span>#6E6E75 · 3.6:1</td><td>system</td><td>Placeholders, disabled, separators. <b>Never readable text.</b> Use <span class="m">.tertiary</span>.</td></tr>
+<tr><td><span class="m">accent</span></td><td><span class="sw" style="background:#0071E3"></span>#0071E3</td><td><span class="sw" style="background:#0A72E8"></span>#0A72E8</td><td>#0040DD / #0A64D6</td><td>The primary button, selection, focus, switches, “changed, not pushed”. White on it: 4.7 / 4.6:1. Set as the app’s AccentColor.</td></tr>
+<tr><td><span class="m">accentText</span></td><td><span class="sw" style="background:#0066CC"></span>#0066CC · 5.6:1</td><td><span class="sw" style="background:#4DA3FF"></span>#4DA3FF · 6.9:1</td><td>–</td><td>Links and plain buttons.</td></tr>
+<tr><td><span class="m">ai</span> (mt)</td><td><span class="sw" style="background:#7A35B0"></span>#7A35B0 · 7.1:1</td><td><span class="sw" style="background:#D4A3FF"></span>#D4A3FF · 9.0:1</td><td>–</td><td>Text that came from an assistant or Atlas’s checks and waits for you; the sparkles glyph.</td></tr>
+<tr><td><span class="m">aiFill</span> (mtb)</td><td><span class="sw" style="background:#8A3CD6"></span>#8A3CD6</td><td><span class="sw" style="background:#B98CFF"></span>#B98CFF</td><td>#5C1E91 / #E6C8FF</td><td>Suggestion count badges, the Autopilot button when the assistant waits for you, AI motion. Label on it: white 5.7:1 / dark #1B0A2E 7.3:1. <b>Never a section tile, never a filled action button.</b></td></tr>
+<tr><td><span class="m">aiSurface</span> (mt-tint, mt-edge)</td><td>rgba(150,70,210,.08), edge .22</td><td>rgba(200,140,255,.10)</td><td>–</td><td>Suggestion cards and inline suggestions.</td></tr>
+<tr><td><span class="m">ok</span></td><td><span class="sw" style="background:#1D7A3A"></span>#1D7A3A · 4.8:1 on tint</td><td><span class="sw" style="background:#5FD38A"></span>#5FD38A</td><td>–</td><td>Live, Accepted, Connected, a check that passes.</td></tr>
+<tr><td><span class="m">warn</span></td><td><span class="sw" style="background:#7A5600"></span>#7A5600 · 6.0:1 on tint</td><td><span class="sw" style="background:#FFD34D"></span>#FFD34D</td><td>–</td><td>Needs an answer; close to a limit.</td></tr>
+<tr><td><span class="m">err</span></td><td><span class="sw" style="background:#C8102E"></span>#C8102E · 5.9:1</td><td><span class="sw" style="background:#FF7A70"></span>#FF7A70</td><td>–</td><td>Errors, rejected, destructive button text. Never decoration.</td></tr>
+<tr><td><span class="m">brand</span></td><td colspan="2"><span class="sw" style="background:linear-gradient(135deg,#1FC2FF,#0A5CF2)"></span>#1FC2FF → #0A5CF2</td><td>–</td><td>The app icon, the Welcome header, About, and Atlas Pro (the PRO chip, Upgrade, the paywall). Nowhere else.</td></tr>
+</table></div>
+<p>Surfaces (window #EFEFF2 / #1E1E21, content #FFFFFF / #161618, raised #FFFFFF / #2A2A2E, sidebar, glass) come from the system in the app: <span class="m">NavigationSplitView</span>, toolbar and sheets draw their own materials. Don’t paint them.</p>
+
+<h2>2 · Section icons</h2>
+<p>Rounded-square tiles with a white SF Symbol, the way System Settings does it. A soft vertical gradient (top lighter) gives them the same finish as macOS’s own. Purple is never used: it means AI.</p>
+<div class="tw"><table>
+<tr><th>Section</th><th>Colour (top → bottom)</th><th>SF Symbol</th><th>Change</th></tr>
+<tr><td>Overview</td><td><span class="sw" style="background:linear-gradient(#4A4A50,#2C2C30)"></span>#4A4A50 → #2C2C30 graphite</td><td><span class="m">square.grid.2x2.fill</span></td><td>Darker, so it no longer matches App Information.</td></tr>
+<tr><td>Store Page</td><td><span class="sw" style="background:linear-gradient(#3D86F7,#2869D2)"></span>#3D86F7 → #2869D2 blue</td><td><span class="m">doc.text.fill</span></td><td>–</td></tr>
+<tr><td>Screenshots</td><td><span class="sw" style="background:linear-gradient(#F57A35,#CE5619)"></span>#F57A35 → #CE5619 red-orange</td><td><span class="m">iphone</span></td><td>Moved toward red, away from Reviews.</td></tr>
+<tr><td>Custom Product Pages</td><td><span class="sw" style="background:linear-gradient(#16A9B6,#0C848F)"></span>#16A9B6 → #0C848F teal</td><td><span class="m">doc.on.doc.fill</span></td><td>Apple’s name for the section (24 Nov).</td></tr>
+<tr><td>In-App Events</td><td><span class="sw" style="background:linear-gradient(#EC5B8D,#C03B69)"></span>#EC5B8D → #C03B69 pink</td><td><span class="m">calendar</span></td><td>Pink instead of the error red.</td></tr>
+<tr><td>Nominations</td><td><span class="sw" style="background:linear-gradient(#8DB33A,#5F8418)"></span>#8DB33A → #5F8418 olive</td><td><span class="m">rosette</span></td><td>New (24 Nov). In the widest free gap of the hue wheel (80°), far from Events’ pink, Screenshots’ orange and the error red.</td></tr>
+<tr><td>App Information</td><td><span class="sw" style="background:linear-gradient(#8E8E96,#6B6B73)"></span>#8E8E96 → #6B6B73 gray</td><td><span class="m">info.circle.fill</span></td><td>The neutral one.</td></tr>
+<tr><td>Pricing</td><td><span class="sw" style="background:linear-gradient(#3BB466,#288F4D)"></span>#3BB466 → #288F4D green</td><td><span class="m">tag.fill</span></td><td>–</td></tr>
+<tr><td>Reviews</td><td><span class="sw" style="background:linear-gradient(#F7BE1A,#D99700)"></span>#F7BE1A → #D99700 yellow</td><td><span class="m">star.fill</span></td><td>Yellow, clearly apart from Screenshots.</td></tr>
+<tr><td>Analytics</td><td><span class="sw" style="background:linear-gradient(#6866E0,#4B49B8)"></span>#6866E0 → #4B49B8 indigo</td><td><span class="m">chart.bar.fill</span></td><td>–</td></tr>
+</table></div>
+<ul>
+<li>Size: 22 pt tiles in the sidebar (radius 6), 30 pt in Overview rows (radius 8), symbol at 58% of the tile, weight medium.</li>
+<li>The tile is decoration: the label always sits beside it, so the white symbol on yellow (2.6:1) is acceptable, as it is in System Settings.</li>
+<li>Badges beside them: purple counts suggestions; gray counts anything else (Analytics findings).</li>
+<li>Settings panes follow the same palette: General gray, Accounts blue, AI Assistants the AI purple (the one purple tile, because it is the AI), Suggestions indigo, Pricing green, Screenshots red-orange, Notifications red (system convention), Atlas Pro brand gradient, Privacy graphite.</li>
+<li>SF Symbol names are from memory; check each in the SF Symbols app.</li>
+</ul>
+
+<h2>3 · Type</h2>
+<p>The macOS text styles, so the app follows the system’s sizes and accessibility settings. Sizes are macOS’s defaults as far as I know; check them against Apple’s typography table before building.</p>
+<div class="tw"><table>
+<tr><th>Style</th><th>Size / line</th><th>Weight</th><th>SwiftUI</th><th>Use</th></tr>
+<tr><td>Display</td><td>32 / 38</td><td>Bold</td><td><span class="m">.system(size: 32, weight: .bold)</span></td><td>Welcome title only.</td></tr>
+<tr><td>Large Title</td><td>26 / 32</td><td>Bold</td><td><span class="m">.largeTitle.bold()</span></td><td>Onboarding and empty states.</td></tr>
+<tr><td>Title 1</td><td>22 / 28</td><td>Semibold</td><td><span class="m">.title.weight(.semibold)</span></td><td>Big numbers.</td></tr>
+<tr><td>Title 2</td><td>17 / 22</td><td>Semibold</td><td><span class="m">.title2.weight(.semibold)</span></td><td>Sheet and Settings pane titles.</td></tr>
+<tr><td>Title 3</td><td>15 / 20</td><td>Semibold</td><td><span class="m">.title3.weight(.semibold)</span></td><td>Card titles; section titles inside a page.</td></tr>
+<tr><td>Headline</td><td>13 / 16</td><td>Semibold</td><td><span class="m">.body.weight(.semibold)</span></td><td>Row titles, field labels.</td></tr>
+<tr><td>Body</td><td>13 / 18</td><td>Regular</td><td><span class="m">.body</span></td><td>Everything else, fields, buttons.</td></tr>
+<tr><td>Callout</td><td>12 / 16</td><td>Regular</td><td><span class="m">.callout</span></td><td>Descriptions under titles, helper text.</td></tr>
+<tr><td>Subheadline</td><td>11 / 14</td><td>Regular; Semibold in pills</td><td><span class="m">.subheadline</span></td><td>Metadata, pills, badges, column headers.</td></tr>
+<tr><td>Footnote</td><td>10 / 13</td><td>Regular</td><td><span class="m">.footnote</span></td><td>Counters and timestamps only.</td></tr>
+</table></div>
+<ul>
+<li>Monospaced only for IDs, keys and code: <span class="m">.monospaced()</span>. Numbers that change (counts, prices, progress) use <span class="m">.monospacedDigit()</span>.</li>
+<li>One weight jump per level. Never bold and semibold next to each other in the same line.</li>
+<li>Titles 17 pt and up get −1.5% tracking, as the system does.</li>
+</ul>
+
+<h2>4 · Buttons</h2>
+<p>Seven kinds. The rule people will feel: <b>one filled blue button per card or sheet</b>, so the eye always knows the next step.</p>
+<div class="tw"><table>
+<tr><th>Kind</th><th>Look</th><th>Height</th><th>Where</th><th>SwiftUI (check on macOS 26)</th></tr>
+<tr><td>Hero</td><td>Liquid Glass, deep blue tint</td><td>38</td><td>Welcome Get Started, the paywall’s buy button. One per screen.</td><td><span class="m">.buttonStyle(.glassProminent)</span> · <span class="m">.controlSize(.extraLarge)</span> · <span class="m">.tint(Color("HeroBlue"))</span> (#0B63D6)</td></tr>
+<tr><td>Toolbar</td><td>Glass capsule</td><td>32</td><td>Autopilot, Review &amp; Push, Up to Date.</td><td>Toolbar items; the system gives them glass. Review &amp; Push with pending changes: <span class="m">.buttonStyle(.glassProminent)</span>.</td></tr>
+<tr><td>Primary</td><td>Filled blue, white label</td><td>28</td><td>The one main action of a card or sheet: Submit for Review…, Accept All Languages, Connect.</td><td><span class="m">.borderedProminent</span> · <span class="m">.controlSize(.large)</span> · <span class="m">.keyboardShortcut(.defaultAction)</span> in sheets</td></tr>
+<tr><td>Secondary</td><td>Neutral capsule</td><td>28</td><td>Everything else: Review, Choose Folder…, Cancel.</td><td><span class="m">.bordered</span> · <span class="m">.controlSize(.large)</span></td></tr>
+<tr><td>Row action</td><td>Tinted blue (Accept, Send Reply); neutral for the rest</td><td>24</td><td>Actions repeated in a list or inside a suggestion.</td><td><span class="m">.bordered</span> · <span class="m">.tint(.accentColor)</span> · <span class="m">.controlSize(.regular)</span></td></tr>
+<tr><td>Plain</td><td>Blue text</td><td>–</td><td>Show Me How, What to Try, links inside text.</td><td><span class="m">.buttonStyle(.link)</span> or <span class="m">.borderless</span></td></tr>
+<tr><td>Destructive</td><td>Secondary with red label</td><td>28 / 24</td><td>Delete…, Disconnect…, Remove….</td><td><span class="m">Button(role: .destructive)</span>; confirm in place</td></tr>
+</table></div>
+<ul>
+<li><b>Starting AI from inside a page</b> (Make the Artwork…, Suggest Pages…, an empty slot): secondary button with the <span class="m">sparkles</span> symbol and purple label. Never filled.</li>
+<li><b>AI waiting for you</b>: the Autopilot button fills with aiFill and says what it needs (“Choose the Look”). This is the only purple fill.</li>
+<li><b>Accept All</b>: primary blue with a purple count badge. Same in every section.</li>
+<li>Labels are verbs in title case; “…” when the button opens something that asks more. Buttons never wrap.</li>
+<li>Selected filters and segments are segmented controls (<span class="m">Picker(...).pickerStyle(.segmented)</span>), not blue buttons.</li>
+<li>If <span class="m">.controlSize(.large)</span> on macOS 26 is not 28 pt, keep the system’s sizes and the ladder (hero &gt; toolbar &gt; primary = secondary &gt; row) rather than forcing pixels.</li>
+</ul>
+
+<h2>5 · Badges, pills, sources</h2>
+<ul>
+<li><b>Badge</b> = a count. Capsule 17 pt high, 11 pt semibold, tabular digits. Purple when it counts suggestions waiting for you, gray otherwise. Gone at zero. VoiceOver reads it in the label (“Store Page, 32 suggestions to review”).</li>
+<li><b>Pill</b> = a state. 20 pt, 11 pt semibold, tinted background with its own text colour: Live (ok), Not pushed (accent, with a dot), Suggested (ai, with edge), Needs an answer (warn), Rejected (err), and neutral states (gray).</li>
+<li><b>Source chip</b> = who made it: Claude Code, Built-in, AI provider, Claude Design. Neutral outline with a monogram; never coloured, so it doesn’t compete with the suggestion itself.</li>
+</ul>
+
+<h2>6 · Shape and depth</h2>
+<ul>
+<li>Radii: 4 tags · 6 menu rows, small tiles · 8 fields, sidebar rows · 10 banners, suggestions · 12 cards · 16 popovers, tips · 20 sheets · capsule for buttons, pills, badges, segmented controls. Use <span class="m">.rect(cornerRadius:, style: .continuous)</span>.</li>
+<li>Depth: flat (content) · card (0.5 pt line + 3 pt soft shadow) · popover and menu (system) · sheet (system, with scrim). Cards are the only depth the app draws itself.</li>
+<li>Spacing on a 4 pt grid: 4, 8, 12, 16, 20, 24, 32. Page padding 20; card padding 16; between cards 16.</li>
+</ul>
+
+<h2>7 · AI motion · v2, the spark (approved 23 November)</h2>
+<p>One element tells the whole story: the Autopilot’s spark ✦ leaves where you asked, goes to Autopilot, lands where the work happens and signs the result when it arrives. The running edge light is gone. Eight effects become five, each with a text version, an image version and a Reduce Motion version. Board <b>68 · Movimento v2</b> plays today against v2 side by side. The clickable app plays v2.</p>
+<div class="tw"><table>
+<tr><th>Effect</th><th>When</th><th>Spec</th><th>SwiftUI</th><th>Reduce Motion</th></tr>
+<tr><td><b>1 · Trail</b></td><td>Any request to the assistant</td><td>The spark travels button → Autopilot → the place of the work, 0.7 s per leg on <span class="m">motion.base</span>; one bloom (scale 1 → 1.5, fade) when it signs the result. From the toolbar itself it only goes down to the place.</td><td><span class="m">matchedGeometryEffect</span> or a keyframe path on an overlay; <span class="m">Image(systemName: "sparkle")</span></td><td>No travel: the spark appears still at the place.</td></tr>
+<tr><td><b>2 · Working</b></td><td>While work is really running</td><td>The spark sits still on the active item. A progress bar only when there are countable units, moving in steps of one unit, each step sliding 0.5 s easeInOut; between steps a soft sweep (2.8 s, pause between passes) runs over the filled part only. Up to ~20 items: “2 of 3”; above: “38% · 97 of 255”. Time left only after a few units, from the real average. No units: only the step’s name.</td><td><span class="m">ProgressView(value:total:)</span> styled; sweep with <span class="m">.phaseAnimator</span> on a masked gradient</td><td>Count and bar, no sweep.</td></tr>
+<tr><td><b>3 · Arrived</b></td><td>A suggestion appears</td><td>Tint fades in 0.4 s, no light pass. Text: word by word, 0.28 s each, 35 ms apart, from 2 px blur, with a caret that leaves at the end. Image: develops 0.8 s from blur 9 px, low saturation and scale 0.97. Lists: 70 ms apart, at most 6 animated; arrivals off screen become “3 new below”. The sidebar badge ticks once (spring 0.45 s).</td><td>A <span class="m">TextRenderer</span>; <span class="m">.blur</span>/<span class="m">.saturation</span>/<span class="m">.scaleEffect</span> on appear; <span class="m">.contentTransition(.numericText())</span></td><td>Fade 0.2 s.</td></tr>
+<tr><td><b>4 · Accepted · Dismissed · Undone</b></td><td>You decide</td><td>Accept: purple → neutral 0.25 s and a check draws 0.3 s; the item stays, now “Not pushed”. Dismiss: the purple drains and the card closes (spring 0.35 s). Undo: the item comes back sliding down 6 px, no light.</td><td><span class="m">withAnimation(.spring(response: 0.35, dampingFraction: 0.8))</span>; <span class="m">.symbolEffect(.drawOn)</span> if available</td><td>Direct swap, fade 0.15 s.</td></tr>
+<tr><td><b>5 · Needs you</b></td><td>The assistant waits for you</td><td>Autopilot fills with aiFill and says what it needs; one scale nudge 1 → 1.06 → 1 (spring), then still. Failure is never purple and never shakes: an amber banner slides in 4 px and stays.</td><td><span class="m">.symbolEffect(.bounce, value:)</span>-like spring once</td><td>Colour only.</td></tr>
+<tr><td>Hero glass (not AI)</td><td>Get Started, the paywall’s buy button</td><td>System Liquid Glass.</td><td><span class="m">.buttonStyle(.glassProminent)</span></td><td>System.</td></tr>
+</table></div>
+<p>Folded in: the count tick (part of Arrived), “assistant is typing” (Working with no units), the arrival light pass (gone). Removed: the first-time glint, replaced by the Trail of the first request.</p>
+<h3>Motion tokens</h3>
+<div class="tw"><table>
+<tr><th>Token</th><th>Value</th><th>SwiftUI</th></tr>
+<tr><td class="m">motion.fast</td><td>150 ms, easeOut</td><td class="m">.easeOut(duration: 0.15)</td></tr>
+<tr><td class="m">motion.base</td><td>250 ms, curve (.2, .7, .2, 1)</td><td class="m">.timingCurve(0.2, 0.7, 0.2, 1, duration: 0.25)</td></tr>
+<tr><td class="m">motion.slow</td><td>400 ms, same curve</td><td class="m">.timingCurve(0.2, 0.7, 0.2, 1, duration: 0.4)</td></tr>
+<tr><td class="m">motion.step</td><td>500 ms, easeInOut (a progress step)</td><td class="m">.timingCurve(0.65, 0, 0.35, 1, duration: 0.5)</td></tr>
+<tr><td class="m">motion.layout</td><td>spring 0.35 / 0.8</td><td class="m">.spring(response: 0.35, dampingFraction: 0.8)</td></tr>
+<tr><td class="m">motion.tick</td><td>spring 0.45 / 0.6</td><td class="m">.spring(response: 0.45, dampingFraction: 0.6)</td></tr>
+<tr><td class="m">motion.stagger</td><td>70 ms, at most 6 items</td><td class="m">.delay(Double(min(i, 5)) * 0.07)</td></tr>
+<tr><td class="m">motion.sweep</td><td>2.8 s with a pause; the one loop</td><td class="m">.phaseAnimator</td></tr>
+</table></div>
+<h3>Where progress numbers come from</h3>
+<ul>
+<li>Units of the plan (captures, screens × languages, products), one MCP call per suggestion (fields), MCP progress notifications when the assistant sends them, requests and bytes on push. Apple’s processing after an upload and Analytics reports have no percentage: say “processing at Apple” or “usually 1–2 days”.</li>
+<li>Never a bar driven by time. Never a bar for “reading the project” or a single image being made.</li>
+</ul>
+<details style="margin: 0 0 16px"><summary style="cursor: pointer; color: #6B6B70">The earlier eight effects (v1, replaced)</summary>
+<div class="tw"><table>
+<tr><th>Effect</th><th>When it plays</th><th>Spec</th><th>SwiftUI</th><th>Reduce Motion</th></tr>
+<tr><td><b>1 · Working light</b> (exists, approved)</td><td>While an assistant works for this section.</td><td>Purple light runs round the Autopilot button, 2.2 s linear loop; sparkles breathe 1.5 s; 2 pt progress bar.</td><td>Angular gradient stroke with <span class="m">.phaseAnimator</span>; <span class="m">Image(systemName: "sparkles").symbolEffect(.breathe)</span></td><td>Still light at the front; bar only.</td></tr>
+<tr><td><b>2 · Arrival</b></td><td>A suggestion arrives in the part of the page you are looking at.</td><td>Tint fades in 0.4 s; one light pass round its edge, 1.1 s ease-out, once.</td><td><span class="m">.transition(.opacity)</span> + a trimmed stroke animated once</td><td>Tint only.</td></tr>
+<tr><td><b>3 · Text arriving</b></td><td>Streamed suggestion text, the assistant’s first hello.</td><td>Word by word: 0.28 s each, 35 ms apart, from 2 px blur and 2 px lower.</td><td>A <span class="m">TextRenderer</span> that animates each run</td><td>Whole text fades in 0.2 s.</td></tr>
+<tr><td><b>4 · Count tick</b></td><td>A badge goes up because new suggestions came.</td><td>Scale 1 → 1.18 → 1, spring 0.45 s. Going down: no motion.</td><td><span class="m">.contentTransition(.numericText())</span> + <span class="m">.symbolEffect(.bounce)</span>-like spring on scale</td><td>Number changes, no scale.</td></tr>
+<tr><td><b>5 · Accept settles</b></td><td>You accept a suggestion.</td><td>Purple tint goes 0.25 s; a check draws 0.3 s; the card’s height springs closed 0.35 s.</td><td><span class="m">withAnimation(.spring(duration: 0.35))</span>; check with <span class="m">.symbolEffect(.drawOn)</span> if available, else a trimmed path</td><td>Cross-fade 0.15 s.</td></tr>
+<tr><td><b>6 · First-time glint</b></td><td>Once, 0.8 s after an assistant first connects, so people find the Autopilot button.</td><td>One soft purple sheen across the button, 1.2 s. Never again on this Mac.</td><td>Masked gradient offset animated once; <span class="m">@AppStorage</span> flag</td><td>None.</td></tr>
+<tr><td><b>7 · Assistant is typing</b></td><td>The connection hello, a reply being drafted.</td><td>Three dots in a purple-tinted bubble, 1.2 s loop; bubble scales .96 → 1 in 0.25 s.</td><td><span class="m">Image(systemName: "ellipsis").symbolEffect(.variableColor.iterative)</span></td><td>Static “…”.</td></tr>
+<tr><td><b>8 · Hero glass</b> (exists)</td><td>Get Started, the paywall’s buy button.</td><td>System Liquid Glass; swells under the pointer, squeezes on click.</td><td><span class="m">.buttonStyle(.glassProminent)</span></td><td>System handles it.</td></tr>
+</table></div>
+<h3>Rules</h3>
+<ul>
+<li>Only one looping effect on screen at a time, and only while work is actually running.</li>
+<li>Nothing animates on page load or when switching sections. Motion means “something just happened”.</li>
+<li>Purple light for AI; blue never animates.</li>
+<li>Springs, not bounces: response about 0.35 s, damping about 0.8 for layout; 0.6 only for the count tick.</li>
+<li>Every effect reads <span class="m">@Environment(\.accessibilityReduceMotion)</span>; translucency effects read <span class="m">accessibilityReduceTransparency</span>.</li>
+<li>Pair the end of real work with sound or haptics only when the window isn’t in front (a notification), never inside the window.</li>
+</ul>
+<h3>In the prototype</h3>
+<ul>
+<li><b>2, 3, 4</b> play together when an Autopilot run finishes: the visible suggestion cards fade their tint in with one light pass round the edge, their suggested text comes in from a light blur, and the section’s badge in the sidebar swells once. Scene <span class="m">ap-arrive</span>.</li>
+<li><b>5</b> on every Accept of an assistant’s suggestion: Store Page, App Information, Pricing, Retention, Screenshot captions, Product Pages (new pages and their captions), In-App Events and What’s New in the submit sheet. Also on Send Reply in Reviews. The card goes neutral, a check replaces the button label, and the card fades before the toast. Undo still works.</li>
+<li><b>7 then 3</b> in the connect sheet: “is writing” dots for 1.5 s, then the hello arrives sentence by sentence (the app does it word by word). Settings scenes <span class="m">set-wiz-typing</span>, <span class="m">set-wiz-hello</span>.</li>
+<li><b>6</b> once, 0.8 s after Settings closes following the first connection; never again in that session. Scene <span class="m">ap-glint</span>.</li>
+<li>With Reduce Motion, each falls back as the table says; Accept skips the delay.</li>
+</ul>
+<h3>Where each one appears</h3>
+<ul>
+<li><b>Store Page, Screenshots captions, App Information:</b> 1 while suggesting; 3 and 2 as each suggestion lands; 4 on the sidebar badge; 5 on Accept.</li>
+<li><b>Reviews:</b> 1 while drafting replies; 3 for the drafted reply; 5 on Send Reply (the card moves to Replied).</li>
+<li><b>Connect an assistant (Settings):</b> 7 then 3 for the hello; 6 on the Autopilot button after the sheet closes.</li>
+<li><b>In-App Events artwork, Screenshots made by Autopilot:</b> 1 while making; each new image fades in (2 without the edge pass).</li>
+<li><b>Welcome and paywall:</b> 8 only.</li>
+</ul>
+</details>
+<h3>Rules (v2)</h3>
+<ul>
+<li>At most one loop on screen (the progress sweep), and only while work is really running.</li>
+<li>No one-shot effect longer than 1.2 s. Nothing animates on opening a screen or switching sections.</li>
+<li>Purple only for AI. Loading data that isn’t AI is a grey skeleton. Errors are amber. Blue never animates.</li>
+<li>Every effect reads <span class="m">accessibilityReduceMotion</span>; translucency reads <span class="m">accessibilityReduceTransparency</span>.</li>
+<li>The menu bar icon uses the same spark. With the window behind, the end of work is a notification; never a sound inside the window.</li>
+</ul>
+
+<h2>8 · Accessibility checklist</h2>
+<ul>
+<li>All readable text ≥ 4.5:1 (checked above); controls and focus rings ≥ 3:1.</li>
+<li>Colour never alone: suggestions also have the “Suggested” pill and source chip; not pushed has the dot and the word.</li>
+<li>Increase Contrast: the high-contrast accent and AI colours above; card lines go from 0.5 to 1 pt.</li>
+<li>Full keyboard: Return is the primary button in sheets; ⌘K apps; ⌘, Settings; ⇧⌘P Review &amp; Push.</li>
+<li>VoiceOver: badges and pills are part of the element’s label; motion is never the only signal that work finished (the toast and the button label change too).</li>
+</ul>
+
+<h2>9 · Voice and content (23 November)</h2>
+<p class="lead">Atlas makes many decisions easy. Every word has to make the next decision faster. Short, clear, and enough to decide with full confidence.</p>
+<h3>Voice</h3>
+<ul>
+<li><b>Close and direct</b>, like the Welcome screens: “Your key stays on this Mac.” Second person, active verbs, no hype, no exclamation marks.</li>
+<li><b>Lead with the result</b>, never the mechanism: “Lifetime: $79.99 → $59.99”, not “Claude Code analysed your pricing and suggests…”.</li>
+<li><b>One idea per sentence, one number per sentence.</b> Round numbers people read (“a third”, “2.4×”, “9 reviews”); exact numbers live in Details.</li>
+<li><b>The first words earn the rest</b>: put the reason the person cares first (“9 reviews call it too expensive.”).</li>
+<li>Interface language: English, written to survive translation: no idioms, no wordplay, 30% room for German.</li>
+</ul>
+<h3>Every decision has three layers</h3>
+<div class="tw"><table>
+<tr><th>Layer</th><th>What</th><th>Limit</th><th>Example</th></tr>
+<tr><td><b>Title</b></td><td>What changes, result first</td><td>≤ 8 words</td><td>Lifetime: $79.99 → $59.99</td></tr>
+<tr><td><b>Why</b></td><td>The strongest evidence, one number</td><td>≤ 110 characters, one sentence</td><td>9 of your last 220 reviews call it too expensive.</td></tr>
+<tr><td><b>Details</b></td><td>Every number, the source, the risk, the countries</td><td>On demand: “Why?”, “Show Countries”, “Evidence”</td><td>Lifetime costs 16 months of Monthly; 12 is common for journaling apps…</td></tr>
+</table></div>
+<p>Two optional lines, always in the same place: a <b>gloss</b> when the content is in a language the person may not read (“Means: Your week on one calm page”), and the <b>how sure</b> meter with its fixed words: Not very sure · Fairly sure · Sure.</p>
+<h3>Safety by risk level</h3>
+<p>Say what happens, once per screen, in the words of its level. Never repeat it on every card.</p>
+<div class="tw"><table>
+<tr><th>Level</th><th>Examples</th><th>Pattern</th><th>Standard words</th></tr>
+<tr><td>0 · See</td><td>Open, show details, filter</td><td>Nothing</td><td>—</td></tr>
+<tr><td>1 · Local, reversible</td><td>Accept, Dismiss, Use This Capture, edit a field</td><td>Toast with Undo</td><td>“In Review &amp; Push. Nothing is sent yet.”</td></tr>
+<tr><td>2 · Sent to Apple, not public</td><td>Push texts, screenshots, review screenshots</td><td>One line in Review &amp; Push</td><td>“Goes to App Store Connect now. People see it after {version} is approved.”</td></tr>
+<tr><td>3 · Public or money</td><td>Prices, release, phased release, price increase for subscribers, submit for review</td><td>Confirmation sheet: what, who, when, how to undo</td><td>“{n} countries change price on {date}. Existing subscribers keep theirs.”</td></tr>
+<tr><td>4 · Irreversible</td><td>Delete a page, remove a key, delete a product</td><td>Confirm in place, naming what goes</td><td>“Delete “Private diary”? This can’t be undone.”</td></tr>
+</table></div>
+<h3>Templates, one per kind of text</h3>
+<div class="tw"><table>
+<tr><th>Kind</th><th>Rule</th><th>Limit</th><th>Good</th></tr>
+<tr><td>Section description</td><td>What this place is for, in the person’s words</td><td>≤ 12 words</td><td>What Lumen costs, in every country.</td></tr>
+<tr><td>Section summary</td><td>What waits, then time</td><td>≤ 8 words</td><td>3 decisions · about 2 min</td></tr>
+<tr><td>Field label · hint</td><td>Noun · where it shows</td><td>≤ 3 · ≤ 8 words</td><td>Subtitle · Under the name in search</td></tr>
+<tr><td>Placeholder</td><td>An example, never an instruction</td><td>≤ 6 words</td><td>Your week on one calm page</td></tr>
+<tr><td>Button · menu item</td><td>Verb first, title case, “…” if it asks more</td><td>≤ 4 words</td><td>Make Review Screenshots…</td></tr>
+<tr><td>Tooltip</td><td>What it does, not its name</td><td>≤ 10 words</td><td>Sends every accepted change to App Store Connect.</td></tr>
+<tr><td>VoiceOver label</td><td>Name, state, count</td><td>—</td><td>Pricing, 3 suggestions to review</td></tr>
+<tr><td>Pill · badge</td><td>A state or a count</td><td>≤ 2 words</td><td>Not pushed · Suggested</td></tr>
+<tr><td>Banner</td><td>Count + what to do; one per screen</td><td>≤ 14 words + 1 button</td><td>3 prices to review. [Accept All 3]</td></tr>
+<tr><td>Toast</td><td>What happened + Undo</td><td>≤ 12 words</td><td>Accepted 3 prices. Nothing is sent yet. [Undo]</td></tr>
+<tr><td>Error</td><td>What happened · what to do · (code in Details)</td><td>≤ 20 words</td><td>Apple didn’t answer. Try again in a minute.</td></tr>
+<tr><td>Apple’s errors</td><td>Never shown raw; translated into the error template</td><td>—</td><td>403 → This key can’t change prices. Use an Admin key.</td></tr>
+<tr><td>Empty state</td><td>Why it’s empty + one way forward</td><td>Title ≤ 6, body ≤ 18</td><td>No pages yet. Make one for each reason people download Lumen.</td></tr>
+<tr><td>Loading</td><td>What is loading, not “Loading…”</td><td>≤ 6 words</td><td>Reading 6 apps from Apple…</td></tr>
+<tr><td>All done</td><td>Calm, no celebration</td><td>≤ 6 words</td><td>Every price is reviewed.</td></tr>
+<tr><td>Sheet</td><td>Title = the action; one sentence; one primary</td><td>Body ≤ 25 words</td><td>Submit 1.4 for Review · Apple usually answers in a day.</td></tr>
+<tr><td>Progress step</td><td>Step + count</td><td>≤ 6 words</td><td>Capturing Annual · 2 of 3</td></tr>
+<tr><td>Notification</td><td>Result + where</td><td>Title ≤ 6, body ≤ 14</td><td>Screenshots are ready · 15 languages in Lumen</td></tr>
+<tr><td>History entry</td><td>Past tense + what + Undo</td><td>≤ 10 words</td><td>Accepted Lumen Plus Annual’s price · Undo</td></tr>
+<tr><td>Help article</td><td>Task title, steps, one tip</td><td>Steps ≤ 15 words each</td><td>Get your App Store Connect key</td></tr>
+</table></div>
+<h3>Words</h3>
+<ul>
+<li><b>Apple’s terms stay</b> where people meet them in App Store Connect (Missing Metadata, Ready to Submit, Phased Release, Product Page, In-App Event), with one tooltip that says what they mean.</li>
+<li><b>Atlas’s terms are one each:</b> suggestion (not proposal, idea or recommendation), push (not upload, sync, publish), Review &amp; Push, Autopilot, assistant, capture, set, template.</li>
+<li><b>Plain words for Apple’s jargon in sentences:</b> “Apple’s automatic prices” for equalized prices; “people who share analytics” for opt-in data.</li>
+<li><b>Never:</b> simply, just, easily, seamlessly, powerful, leverage, AI-powered, magic, please, oops, successfully.</li>
+<li><b>Numbers and variables</b> use ICU plurals and the person’s locale for numbers, dates and currency; prices show the country’s currency.</li>
+</ul>
+<h3>Text written by the assistant</h3>
+<p>Suggestions arriving through MCP must fill separate fields, and Atlas enforces the same limits: <span class="m">title</span> (≤ 8 words), <span class="m">why</span> (≤ 110 characters), <span class="m">details</span>, <span class="m">evidence[]</span>, <span class="m">gloss</span> (when not in the interface language) and <span class="m">confidence</span> (1–3). Longer text is refused with the reason, so the assistant rewrites it. Built-in checks and Analytics findings are templates with variables that follow the same three layers.</p>
+
+<h2>10 · Information hierarchy on every screen (23 November)</h2>
+<ol>
+<li><b>Top of every section answers three things, in order:</b> what waits for you (summary line), what matters most (the first card), what happens if you accept (the one safety line of the screen).</li>
+<li><b>Order by impact:</b> what blocks App Review → revenue → reach → polish. Inside a level, newest first.</li>
+<li><b>Budget per screen:</b> one banner; one filled blue per card or sheet; details folded; at most 6 cards before “Show 9 More”.</li>
+<li><b>Group repeated decisions:</b> “12 countries: lower price” or “5 languages: shorter subtitle”, with 3 examples visible and the rest one click away.</li>
+<li><b>Same card order everywhere:</b> title · why · (gloss) · actions · details. Source chip and how-sure on the title line.</li>
+<li><b>Check the hard cases:</b> 860 × 560 window, dark, Increase Contrast, larger text, German, Arabic.</li>
+</ol>
+<p>The before/after of every text is in the spreadsheet <b>Textos do Atlas</b> (inventory, status per text and per action, the real app’s strings when Claude Code exports them).</p>
+
+<h2>11 · Sidebar footer and short windows (approved 24 November)</h2>
+<ol>
+<li><b>Two rows, the same at every height:</b> <b>Settings</b> and <b>Help ▾</b> side by side, always with their names; below them the Version card with Submit…. Never icon-only.</li>
+<li><b>Help ▾</b> opens a menu: Atlas Help (⌘?), Show the Tour, Keyboard Shortcuts. The same items stay in macOS’s Help menu; Settings stays at ⌘, in the Atlas menu.</li>
+<li><b>Fixed footer:</b> it sits on the sidebar’s glass and never scrolls. The section list scrolls under it only if it ever doesn’t fit, with a 14 pt fade at its bottom.</li>
+<li><b>When height runs short</b> (rules on the sidebar’s own height, not the window’s): under 600 pt the app card drops its “5 other apps” line and group titles and rows tighten (rows 27 pt). At 560 pt every section stays visible without scrolling.</li>
+<li><b>SwiftUI:</b> <span class="m">List</span> with <span class="m">.safeAreaInset(edge: .bottom)</span> for the footer; read the height with <span class="m">GeometryReader</span> or <span class="m">onGeometryChange</span> to switch the compact rules; the Help button is a <span class="m">Menu</span> with <span class="m">.menuStyle(.button)</span>. Board <b>71</b> shows 780, 700, 600 and 560 pt.</li>
+</ol>
+
+<h2>For Claude Code: building it</h2>
+<ul>
+<li>An asset catalogue with Color Sets named as the tokens above (Any, Dark, and High Contrast for accent and aiFill), and <span class="m">AccentColor</span> = accent.</li>
+<li>A small <span class="m">DesignSystem</span> module: <span class="m">Color</span> extensions for the tokens, <span class="m">SectionStyle</span> (colour pair + SF Symbol per section), <span class="m">Badge</span>, <span class="m">Pill</span>, <span class="m">SourceChip</span>, <span class="m">SuggestionCard</span>, <span class="m">Motion</span> tokens and view modifiers for the five v2 effects (each reading Reduce Motion itself), and the <b>Design System Catalog</b> window for debug builds (Rule zero).</li>
+<li>Use system controls everywhere a system control exists; draw only cards, badges, pills, suggestion cards and the effects.</li>
+<li>Build the screens from this README; use the prototype for layout and content, not for sizes and colours.</li>
+<li><b>Check before building:</b> SF Symbol names, macOS 26 control heights and the Liquid Glass and symbol-effect API names are written from memory.</li>
+</ul>
+<div class="warn"><b>Still to check in the real app:</b> SF Symbol names, macOS 26 control heights, and the Liquid Glass and symbol-effect API names, all written from memory. The App Store and event-card mockups inside the prototype keep Apple’s own sizes on purpose: they copy Apple’s pages, not Atlas’s UI.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":16300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

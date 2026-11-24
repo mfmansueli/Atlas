@@ -67,6 +67,21 @@ struct LanguageBarModelTests {
         #expect(model(current: .englishUS).menuAcceptAllTitle == "Accept All Languages…")
     }
 
+    @Test func findALanguageMatchesNamesRegionsAndCodes() {
+        let bar = model(current: .englishUS)
+        #expect(bar.matchingEntries("").count == 4)
+        #expect(bar.matchingEntries("  ").count == 4)
+        #expect(bar.matchingEntries("fren").map(\.locale) == [french])
+        #expect(bar.matchingEntries("Japanese").map(\.locale) == [japanese])
+        #expect(bar.matchingEntries("de").map(\.locale) == [.german])
+        #expect(bar.matchingEntries("en").map(\.locale) == [.englishUS, french])
+        #expect(bar.matchingEntries("zz").isEmpty)
+    }
+
+    @Test func theMenuCountsEveryLanguage() {
+        #expect(model(current: .englishUS).countText == "4 languages")
+    }
+
     @Test func aMenuRowReadsItsCountAndANewPage() {
         let entry = LanguageBarEntry(locale: .german, count: 5, comingCount: 2, isNewPage: true)
         #expect(entry.accessibilityText == "German, 5 suggestions to review, 2 coming, not on the App Store yet")

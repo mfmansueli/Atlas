@@ -88,7 +88,7 @@ extension PricingViewModel {
         )
         if var change = queue.change(id: id) {
             change.awaitingAcceptance = String(localized: "Look at it, then accept it in Pricing or here.")
-            change.title = details.reviewLine
+            change.title = details.reviewLine(product: product.name)
             queue.upsert(change)
         }
         setup.details.set(details, for: id)

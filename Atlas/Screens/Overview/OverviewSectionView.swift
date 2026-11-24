@@ -55,7 +55,9 @@ struct OverviewSectionView: View {
                         release: release, afterRelease: afterRelease
                     ) {
                         assistantCard
-                        stabilityAlert
+                        if !versionCardFollowsRelease { stabilityAlert }
+                    } versionNotice: {
+                        if versionCardFollowsRelease { stabilityAlert }
                     }
                 }
             }
@@ -190,6 +192,13 @@ struct OverviewSectionView: View {
                 preferences.showsAssistantIntro = false
             }
         }
+    }
+
+    /// The version card follows a submitted version: the crash banner goes
+    /// inside it, under the steps.
+    private var versionCardFollowsRelease: Bool {
+        guard let phase = release?.phase else { return false }
+        return phase != .prepare
     }
 
     /// The newest version crashes clearly more than the one before.

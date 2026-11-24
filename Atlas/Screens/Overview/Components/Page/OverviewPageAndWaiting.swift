@@ -10,7 +10,7 @@ import SwiftUI
 /// section and After release on the left; the App Store page, smaller, on
 /// the right. One above the other when the window is narrow, the lists
 /// first.
-struct OverviewPageAndWaiting<Lead: View>: View {
+struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
     let app: StoreApp
     /// For the preview's screenshots and the captions waiting.
     let services: any StorePageServices
@@ -23,8 +23,12 @@ struct OverviewPageAndWaiting<Lead: View>: View {
     var release: ReleaseViewModel?
     /// Analytics, Ratings & Reviews and Product Pages.
     let afterRelease: [OverviewAfterReleaseRow]
-    /// Above the lists: the assistant's card and a stability alert.
+    /// Above the lists: the assistant's card, and the stability alert
+    /// while the version card doesn't follow a submitted version.
     @ViewBuilder var lead: () -> Lead
+    /// In the version card, under its steps once submitted: the stability
+    /// alert (Redesign, 24 November).
+    @ViewBuilder var versionNotice: () -> VersionNotice
 
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(ChangeQueue.self) private var changes
@@ -52,6 +56,8 @@ struct OverviewPageAndWaiting<Lead: View>: View {
                         navigator.open(.appInformation, intent: .openAppInformationPage(.appReview))
                     } onSeeReviews: {
                         navigator.open(.reviews)
+                    } notice: {
+                        versionNotice()
                     }
                 }
                 OverviewWaitingCard(rows: OverviewWaitingSection.rows(waitingFacts), onOpen: open)

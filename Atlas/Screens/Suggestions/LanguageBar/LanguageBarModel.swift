@@ -79,6 +79,25 @@ struct LanguageBarModel: Equatable, Sendable {
         return order.first { $0.count > 0 }?.locale
     }
 
+    /// The menu's languages for what was typed in Find a language: a name
+    /// that contains it, a flag's region that is it ("DE"), or a code that
+    /// starts with it ("pt"). Nothing typed matches every language.
+    func matchingEntries(_ query: String) -> [LanguageBarEntry] {
+        let query = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !query.isEmpty else { return entries }
+        return entries.filter { entry in
+            entry.locale.name.lowercased().contains(query)
+                || entry.locale.regionCode.lowercased() == query
+                || entry.locale.code.lowercased().hasPrefix(query)
+        }
+    }
+
+    /// "39 languages", beside Find a language.
+    var countText: String {
+        entries.count == 1 ? String(localized: "1 language", comment: "kind:description")
+            : String(localized: "\(entries.count) languages", comment: "kind:description")
+    }
+
     /// "English" for "English (U.S.)": the button stays short.
     static func shortName(_ locale: StoreLocale) -> String {
         locale.name.components(separatedBy: " (").first ?? locale.name

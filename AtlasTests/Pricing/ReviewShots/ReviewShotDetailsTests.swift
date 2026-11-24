@@ -28,7 +28,7 @@ struct ReviewShotDetailsTests {
         #expect(details.capturedLine(now: now.addingTimeInterval(5))
             == "Captured in Simulator on iPhone 17 Pro, English (U.S.), a moment ago. Monthly is selected and shows $4.99.")
         #expect(details.acceptedLine == "From Claude Code · Monthly selected · uploads when you push")
-        #expect(details.reviewLine == "Review screenshot · Monthly selected · from Claude Code")
+        #expect(details.reviewLine(product: "Monthly") == "Monthly · Monthly selected · from Claude Code")
         #expect(details.isFromAssistant)
         #expect(details.client == "Claude Code")
     }
@@ -38,7 +38,7 @@ struct ReviewShotDetailsTests {
         #expect(!details.isFromAssistant)
         #expect(details.heading == "Review screenshot")
         #expect(details.acceptedLine == "Capture 14 · Paywall from Screenshots · uploads when you push")
-        #expect(details.reviewLine == "Review screenshot · Capture 14 · Paywall from Screenshots")
+        #expect(details.reviewLine(product: "Annual") == "Annual · Capture 14 · Paywall from Screenshots")
     }
 
     @Test func theStoreKeepsThemAndForgetsWhatLeftTheQueue() throws {
@@ -64,7 +64,7 @@ struct ReviewShotDetailsTests {
         #expect(details.showsOtherPlan)
         #expect(details.heading == "Review screenshot · Monthly shows, Annual selected")
         #expect(details.capturedLine(now: details.madeAt).hasSuffix("Monthly shows $6.99, with Annual selected."))
-        #expect(details.reviewLine == "Review screenshot · Monthly shows, Annual selected · from Claude Code")
+        #expect(details.reviewLine(product: "Monthly") == "Monthly · Monthly shows, Annual selected · from Claude Code")
         details.expectedPlan = "annual"
         #expect(!details.showsOtherPlan)
         #expect(details.heading == "Review screenshot · Annual selected")

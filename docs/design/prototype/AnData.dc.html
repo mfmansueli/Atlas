@@ -161,7 +161,8 @@ body{margin:0}
 .btn.tint{background:var(--accent-tint);color:var(--accent-text);box-shadow:none;font-weight:600}.btn.tint:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}.alx-hc .btn.tint{box-shadow:inset 0 0 0 1px var(--accent)}
 </style>
 </helmet>
-<div class="ax a2 {{theme}}" style="position: relative; width: 100%; height: {{H}}; background: var(--window); display: flex; overflow: hidden">
+<div class="ax a2 {{theme}}" style="position: relative; width: 100%; height: {{H}}; background: {{bg}}; display: flex; overflow: hidden">
+  <sc-if value="{{chrome}}" hint-placeholder-val="{{true}}">
   <div style="width: 232px; flex: none; padding: 8px 0 8px 8px; display: flex">
     <nav aria-label="Sections" style="flex: 1; min-width: 0; border-radius: 18px; background: var(--sidebar); box-shadow: 0 0 0 .5px var(--sep); display: flex; flex-direction: column; overflow: hidden">
       <div style="height: 44px; flex: none; display: flex; align-items: center; padding: 0 14px"><div class="tl" aria-hidden="true"><i style="background: #FF5F57"></i><i style="background: #FEBC2E"></i><i style="background: #28C840"></i></div></div>
@@ -183,18 +184,21 @@ body{margin:0}
       </div>
     </nav>
   </div>
-  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--content)">
+  </sc-if>
+  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: {{colBg}}">
+    <sc-if value="{{chrome}}" hint-placeholder-val="{{true}}">
     <div style="height: 52px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 18px">
       <div style="flex: 0 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px"><span class="ell" style="font-size: 15px; line-height: 19px; font-weight: 600">{{title}}</span><span class="t-f l2 ell">{{subtitle}}</span></div>
       <span style="flex: 1"></span>
       <div class="grp ap"><button aria-label="Autopilot: {{apLabel}}"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8l1.3 3.4 3.4 1.3-3.4 1.3L8 11.2 6.7 7.8 3.3 6.5l3.4-1.3z"></path><path d="M12.6 10.6l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z"></path></svg><span>{{apLabel}}</span></button><span class="dv" aria-hidden="true"></span><button aria-label="More Autopilot actions" style="min-width: 30px; padding: 0 8px 0 6px"><svg class="ic sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5L8 10l3.5-3.5"></path></svg></button></div>
       <button class="glassb rp zero" aria-label="Review and Push, nothing to push" style="padding: 0 12px 0 10px"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 11V5.2M5.6 7.4L8 5l2.4 2.4"></path></svg><span>Up to Date</span></button>
     </div>
-    <div class="scroll" style="flex: 1; min-height: 0; padding: 6px 20px 24px; display: flex; flex-direction: column; gap: 12px">
-      <div style="display: flex; align-items: center; gap: 10px; flex: none; min-height: 28px"><p class="t-c l2" style="margin: 0; flex: 1">{{desc}}</p>
+    </sc-if>
+    <div class="scroll" style="flex: 1; min-height: 0; padding: {{bodyPad}}; display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{chrome}}" hint-placeholder-val="{{true}}"><div style="display: flex; align-items: center; gap: 10px; flex: none; min-height: 28px"><p class="t-c l2" style="margin: 0; flex: 1">{{desc}}</p>
         <sc-if value="{{hasPeriod}}" hint-placeholder-val="{{true}}"><div class="seg lg" role="tablist" aria-label="Period"><button role="tab" aria-selected="false">7 days</button><button role="tab" aria-selected="true" class="on">28 days</button><button role="tab" aria-selected="false">90 days</button></div></sc-if>
         <sc-if value="{{hasSecSeg}}" hint-placeholder-val="{{false}}"><div class="seg lg" role="tablist" aria-label="View"><sc-for list="{{secSeg}}" as="t" hint-placeholder-count="2"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div></sc-if>
-      </div>
+      </div></sc-if>
       <sc-if value="{{hasTabs}}" hint-placeholder-val="{{true}}"><div style="display: flex; align-items: center; gap: 10px; flex: none"><div class="seg lg" role="tablist" aria-label="Analytics views"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}"><span class="bdg neu">{{t.n}}</span></sc-if><sc-if value="{{t.isNew}}"><span class="newp" style="height: 16px; padding: 0 5px; font-size: 10px; margin-left: 5px">NEW</span></sc-if></button></sc-for></div><span style="flex: 1"></span><span class="dpill">{{through}}</span></div></sc-if>
       <sc-if value="{{hasSub}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 10px; flex: none"><div class="seg" role="tablist" aria-label="{{subAx}}"><sc-for list="{{subs}}" as="t" hint-placeholder-count="4"><button role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.isNew}}"><span class="newp" style="height: 16px; padding: 0 5px; font-size: 10px; margin-left: 5px">NEW</span></sc-if></button></sc-for></div><span class="t-f l2" style="flex: 1; text-align: right">{{subNote}}</span></div></sc-if>
       <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; align-items: stretch">
@@ -243,7 +247,7 @@ class Component extends DCLogic {
   static d() {
     if (Component._d) return Component._d;
     const P = { ov: 'M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z', store: 'M3 5.5h10l-.8 8H3.8zM5.8 5.5V4.3a2.2 2.2 0 0 1 4.4 0v1.2', shots: 'M5 1.8h6a1.2 1.2 0 0 1 1.2 1.2v10a1.2 1.2 0 0 1-1.2 1.2H5A1.2 1.2 0 0 1 3.8 13V3A1.2 1.2 0 0 1 5 1.8zM7 12h2', pages: 'M3 2.5h7l3 3v8H3zM10 2.5v3h3M5.5 8.5h5M5.5 11h3.5', events: 'M2.5 4h11v9.5h-11zM2.5 7h11M5.5 2.5v3M10.5 2.5v3', info: 'M8 14.2A6.2 6.2 0 1 0 8 1.8a6.2 6.2 0 0 0 0 12.4zM8 7.2v4M8 4.9v.2', pricing: 'M2.5 8.6l6-6h5v5l-6 6zM10.8 5.2v.1', reviews: 'M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2l-3.6 1.9.7-4-2.9-2.8 4-.6z', analytics: 'M3 13.5V9.5M6.5 13.5V5.5M10 13.5V8M13.5 13.5V3', clock: 'M8 14.2A6.2 6.2 0 1 0 8 1.8a6.2 6.2 0 0 0 0 12.4zM8 4.8V8l2.2 1.6' };
-    const NAV = [['', [['overview', 'Overview', 'linear-gradient(180deg,#4A4A50,#2C2C30)', P.ov, 0]]], ['Store Listing', [['store', 'Store Page', 'linear-gradient(180deg,#3D86F7,#2869D2)', P.store, 32], ['shots', 'Screenshots', 'linear-gradient(180deg,#F57A35,#CE5619)', P.shots, 10], ['pages', 'Product Pages', 'linear-gradient(180deg,#16A9B6,#0C848F)', P.pages, 4], ['events', 'In-App Events', 'linear-gradient(180deg,#EC5B8D,#C03B69)', P.events, 9], ['info', 'App Information', 'linear-gradient(180deg,#8E8E96,#6B6B73)', P.info, 19], ['pricing', 'Pricing', 'linear-gradient(180deg,#3BB466,#288F4D)', P.pricing, 4]]], ['After Release', [['reviews', 'Reviews', 'linear-gradient(180deg,#F7BE1A,#D99700)', P.reviews, 6], ['analytics', 'Analytics', 'linear-gradient(180deg,#6866E0,#4B49B8)', P.analytics, 4, true]]]];
+    const NAV = [['', [['overview', 'Overview', 'linear-gradient(180deg,#4A4A50,#2C2C30)', P.ov, 0]]], ['Store Listing', [['store', 'Store Page', 'linear-gradient(180deg,#3D86F7,#2869D2)', P.store, 32], ['shots', 'Screenshots', 'linear-gradient(180deg,#F57A35,#CE5619)', P.shots, 10], ['pages', 'Custom Product Pages', 'linear-gradient(180deg,#16A9B6,#0C848F)', P.pages, 4], ['events', 'In-App Events', 'linear-gradient(180deg,#EC5B8D,#C03B69)', P.events, 9], ['info', 'App Information', 'linear-gradient(180deg,#8E8E96,#6B6B73)', P.info, 19], ['pricing', 'Pricing', 'linear-gradient(180deg,#3BB466,#288F4D)', P.pricing, 4]]], ['After Release', [['reviews', 'Reviews', 'linear-gradient(180deg,#F7BE1A,#D99700)', P.reviews, 6], ['analytics', 'Analytics', 'linear-gradient(180deg,#6866E0,#4B49B8)', P.analytics, 4, true]]]];
     // ----- block builders -----
     const head = (title, sub, o) => Object.assign({ type: 'Head', span: 12, title: title, sub: sub || '' }, o || {});
     const stat = (span, label, value, sub, o) => Object.assign({ type: 'Stat', span: span, label: label, value: value, sub: sub || '' }, o || {});
@@ -254,7 +258,7 @@ class Component extends DCLogic {
     const note = (t) => ({ type: 'Note', span: 12, t: t });
     const msg = (name, typ, st, text, meta, value, counts, verdict, o) => Object.assign({ type: 'Msg', span: 12, name: name, typ: typ, st: st, text: text, meta: meta, value: value, counts: counts, verdict: verdict }, o || {});
     const N = (t, sub, o) => [t, sub || '', Object.assign({ num: true }, o || {})];
-    const OPT = 'Deletions and sessions come from people who share analytics with developers, so they’re a sample. Apple leaves out rows with fewer than 5 people.';
+    const OPT = 'Deletions and sessions are a sample: only people who share analytics. Apple omits rows under 5 people.';
     const RETFOOT = 'Save rate = 1 − cancels ÷ people who opened the cancel screen. Apple completes each day up to 4 days later, so this ends Nov 5. History starts Apr 20, 2026.';
     const byMsg = table(12, 'Save rate by message', 'minmax(0,2.2fr) 1.5fr .7fr .7fr 1fr 1.5fr', ['Message', 'Type', ['Opened', 'num'], ['Stayed', 'num'], ['Save rate', 'num'], 'Against No Message'], [
       [['Keep your weekly reflections', 'Annual and Monthly · 6 languages'], ['', '', { typ: 'Text with offer' }], N('168'), N('52'), N('31.0%', '', { m: 2, b: true }), ['Better, fairly sure', '25.4–37.2%', { v: 'up' }]],
@@ -272,13 +276,13 @@ class Component extends DCLogic {
       ['App Crashes', 'Crashes by version and device', 'Ready', 'through Nov 9 · a sample', 'ok'],
       ['App Store Installations and Deletions', 'Installs and deletions by version, source and page', 'Ready', 'through Nov 9 · a sample', 'ok'],
       ['App Sessions', 'Sessions, duration and active devices', 'Ready', 'through Nov 9 · a sample', 'ok'],
-      ['App Store Web Preview', 'apps.apple.com page views and taps', 'No rows yet', 'Apple has sent the report, empty', 'none'],
+      ['App Store Web Preview', 'apps.apple.com page views and taps', 'No rows yet', 'Report arrived empty', 'none'],
       ['Home Screen Widget Installs', 'Devices that added a widget', 'Ready', 'through Nov 9 · a sample', 'ok']
     ];
     const repTable = (mode) => table(12, 'Reports from Apple', 'minmax(0,1.6fr) minmax(0,2.4fr) 1.5fr', ['Report', 'What it adds', 'Status'], REPORTS.map((r, i) => {
       const asked = mode === 'first' && i > 0;
       return [[r[0], '', { b: true }], [r[1]], asked ? ['Asked Nov 20', 'expected by Nov 22', {}] : [r[2], r[3], r[4] === 'none' ? { few: true } : {}]];
-    }), 'Atlas asks once per app, with an Admin key. Nothing else changes in App Store Connect. Reports marked “a sample” only count people who share analytics with developers.');
+    }), 'Atlas asks once per app, with an Admin key, and changes nothing else. “A sample” counts only people who share analytics.');
     const A = (label, kind, go) => ({ label: label, kind: kind || '', go: go || '' });
 
     const SC = {
@@ -288,7 +292,7 @@ class Component extends DCLogic {
         head('Retention', 'When someone taps Cancel Subscription', { pill: 'Through Nov 5', btn: 'See Retention', go: 'sub-ret' }),
         stat(3, 'Save rate', '22.8%', '94 of 412 stayed · 90%: 19.6–26.4%', { m: 3 }), withWithout(4), saveType(5),
         head('Billing', 'Subscribers Apple couldn’t charge'),
-        ban('wrn', '54 subscribers left in 28 days because Apple couldn’t charge them.', 'Billing Grace Period is off for Lumen.', [A('See Billing and Plans', '', 'sub-bill')]),
+        ban('wrn', '54 lost to failed charges in 28 days', 'Billing Grace Period is off for Lumen.', [A('See Billing and Plans', '', 'sub-bill')]),
         head('Where subscribers come from', ''),
         ban('neu', 'Trials and paid subscribers are now split by product page, In-App Event, campaign and source.', '', [A('Break It Down by Page', '', 'bd-page')]),
         note('Renewal rates, cancellations by reason, subscriptions and trial → paid by territory stay below, as on board 35.')
@@ -302,12 +306,12 @@ class Component extends DCLogic {
         saveType(6)
       ] },
       'sub-ret-none': { sec: 'analytics', tab: 'sub', sub: 'sub-ret', app: 'Tidepool: Sleep Sounds', appShort: 'Tidepool', through: 'Checked today, 8:02', blocks: [
-        { type: 'Empty', span: 12, icon: P.clock, t: 'No one has opened Cancel Subscription yet', s: 'Apple’s Retention Messaging report starts when a subscriber reaches the cancel screen. Tidepool’s message went live on Nov 12 and nobody has been there since. That’s good news; the save rate appears here when someone does.', acts: [A('Open Retention', '', 'ret-none')], foot: 'Atlas checks each morning. A day’s numbers are complete up to 4 days later.' }
+        { type: 'Empty', span: 12, icon: P.clock, t: 'No one has opened Cancel Subscription yet', s: 'Apple’s Retention Messaging report starts when a subscriber reaches the cancel screen. Tidepool’s message went live on Nov 12 and nobody has been there since. That’s good news; the save rate appears here when someone does.', acts: [A('Open Retention', '', 'ret-none')], foot: 'Atlas checks each morning. Apple completes a day’s numbers within 4 days.' }
       ] },
       'sub-ret-few': { sec: 'analytics', tab: 'sub', sub: 'sub-ret', app: 'Quiet Timer', appShort: 'Quiet Timer', through: 'Retention through Nov 5', blocks: [
         stat(4, 'Opened Cancel Subscription', '14', 'in 28 days'), stat(4, 'Stayed', '3', ''), stat(4, 'Save rate', '3 of 14', 'Too few to tell', { few: true }),
-        ban('neu', 'Too few to tell.', 'Rates this small move by chance, so they’re shown as counts until 30 people have opened the cancel screen.'),
-        ban('neu', 'Nov 6 to Nov 9 are still arriving.', 'Apple completes each day up to 4 days later, so the newest days are left out until then.'),
+        ban('neu', 'Too few to tell.', 'Small rates move by chance, so counts show until 30 people open the cancel screen.'),
+        ban('neu', 'Nov 6 to Nov 9 are still arriving.', 'Apple completes each day within 4 days, so the newest days wait until then.'),
         table(12, 'Save rate by message', 'minmax(0,2.2fr) 1.5fr .7fr .7fr 1fr', ['Message', 'Type', ['Opened', 'num'], ['Stayed', 'num'], ['Save rate', 'num']], [[['One more quiet minute', 'English'], ['', '', { typ: 'Text message' }], N('9'), N('2'), N('2 of 9', '', { few: true })], [['No Message', '3 languages without a message'], ['', '', { typ: 'Apple’s plain screen' }], N('5'), N('1'), N('1 of 5', '', { few: true })]], 'No “better” or “worse” until both rows have 30 people.')
       ] },
       'ret': { sec: 'pricing', seg: 'ret', h: 880, blocks: [
@@ -315,18 +319,18 @@ class Component extends DCLogic {
         msg('Keep your weekly reflections', 'Text with offer', 'Live · 6 languages', '“Before you go: keep your weekly reflections and every entry. Stay with Lumen Plus and get 3 months at half price.”', 'Offer: 3 months at half price · Lumen Plus Annual and Monthly', '31.0%', '52 of 168 stayed · 41 redeemed the offer', 'Better than No Message (11.3%), fairly sure', { m: 2, v: 'up' }),
         msg('Switch to Monthly', 'Text with switch plan', 'Live · English', '“Not ready for a year? Switch to Monthly and keep everything you’ve written.”', 'Switch to: Lumen Plus Monthly · shown on Lumen Plus Annual', '23.0%', '14 of 61 stayed · 14 switched plan', 'About the same as No Message', { m: 1, v: 'eq' }),
         msg('Before you go', 'Text message', 'Live · German, French, Spanish', '“Bevor du gehst: Behalte deine Wochenrückblicke und alle Einträge.”', 'No offer · Lumen Plus Monthly', '17.4%', '21 of 121 stayed', 'About the same as No Message. The offer message keeps 31%.', { m: 2, v: 'eq' }),
-        msg('No Message', 'Apple’s plain cancel screen', '11 languages', 'Italian, Portuguese (Brazil), Korean and 8 more have no message, so people there see only Apple’s screen.', 'Add a message for a language and it appears here', '11.3%', '7 of 62 stayed', 'The reference the others are compared with', { m: 1 }),
+        msg('No Message', 'Apple’s plain cancel screen', '11 languages', 'Italian, Portuguese (Brazil), Korean and 8 more have no message, so they see only Apple’s screen.', 'Add a message for a language and it appears here', '11.3%', '7 of 62 stayed', 'The reference the others are compared with', { m: 1 }),
         table(12, 'Retention offers', 'minmax(0,2fr) 1.6fr .8fr .8fr 1fr', ['Retention offer', 'Used by', ['Shown', 'num'], ['Redeemed', 'num'], ['Redeem rate', 'num']], [[['3 months at half price', 'Lumen Plus Annual and Monthly'], ['Keep your weekly reflections'], N('168'), N('41'), N('24.4%', '', { m: 2 })]], 'Editing a message, its image or its offer keeps its design from board 28.')
       ] },
       'ret-none': { sec: 'pricing', seg: 'ret', app: 'Tidepool: Sleep Sounds', appShort: 'Tidepool', blocks: [
-        msg('Keep your quiet nights', 'Text message', 'Live since Nov 12 · English', '“Before you go: your saved mixes and every sound stay with Tidepool Plus.”', 'No offer · Tidepool Plus Monthly and Yearly', '—', 'No one has opened Cancel Subscription yet', 'The save rate appears after the first person does. Apple’s numbers arrive up to 4 days later.', { few: true }),
-        note('Nothing to compare yet, so there is no “better” or “worse”, and no finding.')
+        msg('Keep your quiet nights', 'Text message', 'Live since Nov 12 · English', '“Before you go: your saved mixes and every sound stay with Tidepool Plus.”', 'No offer · Tidepool Plus Monthly and Yearly', '—', 'No one has opened Cancel Subscription yet', 'The save rate appears once someone does. Apple’s numbers take up to 4 days.', { few: true }),
+        note('Nothing to compare yet, so no “better”, “worse” or finding.')
       ] },
       'find-ret': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
         head('4 findings from the last 28 days', ''),
-        find('AL', 'Retention', 'Fairly sure', 'The offer message keeps 31% of people. The text-only one keeps 17%.', 'German, French and Spanish still show “Before you go”, which has no offer.', [['With an offer', '31.0%', '52 of 168'], ['Text only', '17.4%', '21 of 121'], ['Opened in de, fr, es', '121', '28 days']], 'How sure: 90% ranges 25.4–37.2% and 12.4–23.9% barely overlap. The two messages run in different languages, so part of the gap may be the language.', [A('Dismiss'), A('Try an Offer Message…'), A('Show This Message in German, French, Spanish…', 'pri', 'ret')], { isNew: true }),
-        find('AL', 'Retention', 'Fairly sure', 'People who see no message stay half as often.', '11 languages have no retention message, so 62 people saw only Apple’s cancel screen.', [['With a message', '24.9%', '87 of 350'], ['No Message', '11.3%', '7 of 62'], ['Languages without one', '11', '']], 'How sure: 7 of 62 is a small group; its range is 6.2–19.7%, below the 21.4–28.8% of people who saw a message.', [A('Dismiss'), A('Write Messages for 11 Languages…', 'pri', 'ret')], { isNew: true }),
-        find('CC', 'Retention', 'Not very sure', '“Before you go” may lose people at the header.', 'It’s the only message whose header doesn’t say what they keep. Claude Code read the three messages and their save rates.', [['Before you go', '17.4%', 'header: “Before you go”'], ['Keep your weekly reflections', '31.0%', 'header names what stays']], 'How sure: one comparison between two messages that also differ by offer and language. Worth a try, not proven.', [A('Dismiss'), A('Rewrite the Header…', 'pri', 'ret')], { wait: 'Claude Code also sent a new header in German, French and Spanish. It’s waiting in Retention.' })
+        find('AL', 'Retention', 'Fairly sure', 'The offer message keeps 31% of people. The text-only one keeps 17%.', 'German, French and Spanish still show “Before you go”, which has no offer.', [['With an offer', '31.0%', '52 of 168'], ['Text only', '17.4%', '21 of 121'], ['Opened in de, fr, es', '121', '28 days']], 'How sure: 90% ranges 25.4–37.2% and 12.4–23.9% barely overlap. Different languages may explain part of the gap.', [A('Dismiss'), A('Try an Offer Message…'), A('Show This Message in German, French, Spanish…', 'pri', 'ret')], { isNew: true }),
+        find('AL', 'Retention', 'Fairly sure', 'People who see no message stay half as often.', '11 languages have no retention message, so 62 people saw only Apple’s cancel screen.', [['With a message', '24.9%', '87 of 350'], ['No Message', '11.3%', '7 of 62'], ['Languages without one', '11', '']], 'How sure: 7 of 62 is a small group; its range is 6.2–19.7%, below the 21.4–28.8% of people who saw a message.', [A('Dismiss'), A('Write 11 Messages…', 'pri', 'ret')], { isNew: true }),
+        find('CC', 'Retention', 'Not very sure', '“Before you go” may lose people at the header.', 'It’s the only header that doesn’t say what people keep.', [['Before you go', '17.4%', 'header: “Before you go”'], ['Keep your weekly reflections', '31.0%', 'header names what stays']], 'How sure: one comparison, and the messages also differ by offer and language. Worth a try, not proven.', [A('Dismiss'), A('Rewrite the Header…', 'pri', 'ret')], { wait: 'Claude Code also sent a new header in German, French and Spanish. It’s waiting in Retention.' })
       ] },
       // ============ 2 · Subscribers by page and campaign ============
       'bd-page': { sec: 'analytics', tab: 'bd', sub: 'bd-page', h: 820, blocks: [
@@ -337,7 +341,7 @@ class Component extends DCLogic {
           [['Mood tracking', 'Custom product page · your website'], N('120'), N('21'), N('3'), N('3 of 21', '', { few: true }), N('44%', '', { v: 'dn', wr: true }), N('1.9', '', { v: 'dn', wr: true }), ['', '', { btn: 'Open Page' }]],
           [['Mood Calendar', 'In-App Event page'], N('86'), N('7'), N('3'), N('3 of 7', '', { few: true }), N('18%', '', { v: 'eq' }), N('4.0', '', { v: 'eq' }), ['', '', { btn: 'Open Event' }]],
           [['Sleep & wind-down', 'Custom product page · newsletter'], N('34'), N('4'), N('1'), N('1 of 4', '', { few: true }), N('too few', '', { few: true }), N('too few', '', { few: true }), ['', '', { btn: 'Open Page' }]]
-        ], 'Trials and paid come from Apple’s subscription reports, which name the page, campaign and source each subscriber came from. Impressions, page views and download rate are one column group to the left. ' + OPT),
+        ], 'Trials and paid come from Apple’s subscription reports, which name each subscriber’s page, campaign and source. Impressions, page views and download rate are one column group left. ' + OPT),
         ban('wrn', 'Mood tracking: people delete Lumen twice as often and open it half as much.', 'The page may promise something the app doesn’t do.', [A('See the Finding', '', 'find-q'), A('Open Page')])
       ] },
       'bd-camp': { sec: 'analytics', tab: 'bd', sub: 'bd-camp', h: 880, blocks: [
@@ -347,7 +351,7 @@ class Component extends DCLogic {
           [['tiktok-mood', 'Mood tracking page'], ['App Referrer'], N('210'), N('12'), N('1'), N('1 of 12', '', { few: true }), N('$18')],
           [['podcast-calm', 'Default product page'], ['Web Referrer'], N('60'), N('9'), N('4'), N('4 of 9', '', { few: true }), N('$96')],
           [['No campaign', ''], ['Search, Browse, others'], N('2,710'), N('360'), N('148'), N('41.1%', '', { m: 3, v: 'eq' }), N('$4,394')]
-        ], 'A campaign is the ct value in a link you shared. The funnel used to stop at downloads here: Apple’s sales reports don’t say where a subscriber came from, and these reports do.'),
+        ], 'A campaign is the ct value in a link you shared. Sales reports stopped at downloads; these follow it to subscribers.'),
         table(12, 'Subscribers by source', 'minmax(0,2fr) .8fr .6fr .6fr 1fr', ['Source', ['Downloads', 'num'], ['Trials', 'num'], ['Paid', 'num'], ['Trial → paid', 'num']], [
           [['App Store Search'], N('1,870'), N('262'), N('112'), N('42.7%', '', { m: 3, v: 'eq' })],
           [['App Store Browse'], N('520'), N('61'), N('22'), N('36.1%', '', { m: 2, v: 'eq' })],
@@ -363,7 +367,7 @@ class Component extends DCLogic {
           [['Mood tracking', '6 languages · your website'], ['Approved', 'Visible'], ['9,200 → 470 → 120'], ['25.5%', '6.1 pt below default', { wr: true }], N('3', 'of 21 trials'), N('3 of 21', '', { few: true })],
           [['Sleep & wind-down', '4 languages · newsletter'], ['Approved', 'Visible'], ['1,240 → 96 → 34'], ['35.4%', '96 views is too few to compare', { few: true }], N('1', 'of 4 trials'), N('1 of 4', '', { few: true })],
           [['Private diary', '4 languages'], ['Prepare for Submission', 'Not on the App Store yet'], ['Numbers start once it’s approved', '', { few: true }], [''], N('—', '', { few: true }), N('—', '', { few: true })]
-        ], 'Last 28 days, data through Nov 9. Paid subscribers are people who downloaded from the page and later paid, from Apple’s subscription reports. The same numbers as Analytics → Break It Down → Product Page.')
+        ], 'Last 28 days, through Nov 9. Paid subscribers downloaded from the page and paid later, per Apple’s subscription reports. Same as Analytics → Break It Down → Product Page.')
       ] },
       'sub-offers': { sec: 'analytics', tab: 'sub', sub: 'sub-offers', blocks: [
         table(12, 'Offers by name', 'minmax(0,2.2fr) 1.2fr .9fr 1fr 1fr 1.3fr', ['Offer', 'Type', ['Started', 'num'], ['Paid afterwards', 'num'], ['Rate', 'num'], 'Against Lumen’s average'], [
@@ -373,12 +377,12 @@ class Component extends DCLogic {
           [['3 months at half price', 'Shown on the cancel screen'], ['', '', { typ: 'Retention' }], N('41'), N('—', 'first renewals from Jan 6', { few: true }), N('—', '', { few: true }), ['Still measuring']],
           [['Back to journaling', 'Sent in the app to people who stopped writing'], ['', '', { typ: 'Promotional' }], N('38'), N('22'), N('57.9%', '', { m: 1 }), ['About the same', '', { v: 'eq' }]],
           [['PODCAST30', 'podcast-calm campaign'], ['', '', { typ: 'Offer code' }], N('60'), N('4'), N('6.7%', '', { m: 2, wr: true }), ['Worse, fairly sure', '', { v: 'dn' }]]
-        ], '“Paid afterwards” is the first charge at the regular price. An offer that hasn’t reached that date yet says so instead of showing a rate.'),
-        ban('wrn', 'PODCAST30 brought 60 people and 4 stayed at full price.', 'The code gives the first month free to anyone; consider a shorter code or a paid first month.', [A('Open Pricing')])
+        ], '“Paid afterwards” is the first charge at full price. Offers before that date say so instead of a rate.'),
+        ban('wrn', 'PODCAST30: 4 of 60 stayed at full price', 'The code gives the first month free to anyone; consider a shorter code or a paid first month.', [A('Open Pricing')])
       ] },
       'sub-bill': { sec: 'analytics', tab: 'sub', sub: 'sub-bill', h: 960, blocks: [
         stat(3, 'Couldn’t be charged', '83', 'Entered billing retry in 28 days'), stat(3, 'Recovered', '29', '35% paid again while Apple retried'), stat(3, 'Lost', '54', '23% of all cancellations'), stat(3, 'Billing Grace Period', 'Off', 'In grace period now: 0'),
-        find('AL', 'Billing', 'Sure', 'You lose about 54 subscribers a month to billing issues. Turn on Billing Grace Period.', 'With it on, people keep Lumen Plus while Apple retries their payment (3, 16 or 28 days), and a recovered payment keeps their renewal date. Today they lose access the day the charge fails.', [['Couldn’t be charged', '83', '28 days'], ['Recovered', '29', '35%'], ['Lost', '54', 'about $190 a month']], 'How sure: these are Apple’s own counts of billing retry, recovery and expiry, not an estimate. How many more would recover with grace period on isn’t known until it’s on.', [A('Dismiss'), A('How It Works'), A('Turn On Billing Grace Period…', 'pri')], { isNew: true }),
+        find('AL', 'Billing', 'Sure', 'You lose about 54 subscribers a month to billing issues. Turn on Billing Grace Period.', 'With it on, people keep Lumen Plus while Apple retries (3, 16 or 28 days), and keep their renewal date if it works. Today they lose access when a charge fails.', [['Couldn’t be charged', '83', '28 days'], ['Recovered', '29', '35%'], ['Lost', '54', 'about $190 a month']], 'How sure: these are Apple’s own billing counts, not estimates. Extra recoveries with grace period are unknown until it’s on.', [A('Dismiss'), A('How It Works'), A('Turn On Billing Grace Period…', 'pri')], { isNew: true }),
         bars(6, 'Plan changes', '49 in 28 days', [['Upgraded', 'Monthly → Annual', '35', 71, 'var(--accent)'], ['Downgraded', 'Annual → Monthly', '14', 29], ['Crossgraded', '', '0', 0]], { foot: 'All 14 downgrades came from the “Switch to Monthly” retention message.' }),
         bars(6, 'Why people canceled', '236 · Apple’s reasons', [['Canceled', 'The subscriber turned off renewal', '158 · 67%', 67], ['Billing issue', 'Apple couldn’t charge them', '54 · 23%', 23, 'var(--warn)'], ['Price increase', 'Didn’t agree to a new price', '0', 0], ['Other', '', '24 · 10%', 10]], { foot: 'No cancellations from price increases: Lumen hasn’t raised a price for existing subscribers.' })
       ] },
@@ -392,14 +396,14 @@ class Component extends DCLogic {
           [['iPhone 12 to 14'], N('2.0'), N('5.1', '', { wr: true, m: 2 }), ['2.6× higher, fairly sure', '', { v: 'dn' }]],
           [['iPhone 15 and later'], N('2.1'), N('2.2', '', { m: 3 }), ['About the same', '', { v: 'eq' }]],
           [['iPad'], N('2.3'), N('2.5', '', { m: 1 }), ['About the same', '', { v: 'eq' }]]
-        ], 'Crashes per 1,000 sessions, from Apple’s App Crashes and App Sessions reports. Both only count people who share analytics with developers. For stack traces, open Xcode → Organizer.')
+        ], 'Crashes per 1,000 sessions, from Apple’s App Crashes and App Sessions reports (people who share analytics only). For stack traces, open Xcode → Organizer.')
       ] },
       'rel': { sec: 'overview', ver: ['#FF9F0A', 'Version 1.4', 'Rolling out · 5% of people'], blocks: [
         head('Version 1.4', 'Phased release · day 3 of 7 · 5% of people', {}),
         ban('wrn', 'Crashes are 3.2× higher on 1.4 than on 1.3.', '6.8 per 1,000 sessions against 2.1, mostly on iPhone 11 and earlier. Pausing keeps 1.4 away from the other 95% while you fix it; people who have it keep it.', [A('See Stability', '', 'crash'), A('Pause Phased Release…', 'pri')]),
-        bars(6, 'Phased release', 'day 3 of 7', [['People who can get 1.4', 'Tomorrow: 10%', '5%', 5, 'var(--accent)']], { foot: 'Apple’s steps: 1%, 2%, 5%, 10%, 20%, 50%, 100%. A pause can last up to 30 days in total.' }),
+        bars(6, 'Phased release', 'day 3 of 7', [['People who can get 1.4', 'Tomorrow: 10%', '5%', 5, 'var(--accent)']], { foot: 'Apple’s steps: 1%, 2%, 5%, 10%, 20%, 50%, 100%. Pauses can total up to 30 days.' }),
         stat(3, 'Reviews on 1.4', '3.9 ★', '11 reviews · 1.3 averaged 4.7 ★', { v: 'dn', wr: true }), stat(3, 'Deleted in the first week', '27%', '1.3: 19% · worse, fairly sure', { m: 2, v: 'dn', wr: true }),
-        note('The alert shows only when crashes are worse than the previous version and Atlas is at least fairly sure. It also goes to the menu bar and a notification. The rest of Overview stays as on board 38.')
+        note('The alert shows only when crashes are worse than the last version and Atlas is at least fairly sure. It also goes to the menu bar and notifications. The rest of Overview stays as on board 38.')
       ] },
       'rev': { sec: 'reviews', ver: ['#FF9F0A', 'Version 1.4', 'Rolling out · 5% of people'], blocks: [
         ban('wrn', 'Version 1.4 averages 3.9 ★ from 11 reviews; 1.3 averaged 4.7 ★.', '6 of the 11 mention a crash, and crashes are 3.2× higher on 1.4.', [A('See Stability', '', 'crash'), A('Pause Phased Release…', 'pri')]),
@@ -412,9 +416,9 @@ class Component extends DCLogic {
       // ============ 4, 5, 7 as findings ============
       'find-q': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
         head('Findings from what happens after the download', ''),
-        find('AL', 'Product Pages', 'Fairly sure', 'People who arrive through “Mood tracking” delete Lumen twice as often.', 'The page’s screenshots show a mood chart that needs two weeks of entries before it appears.', [['Deleted in 30 days', '44%', 'default page 21%'], ['Sessions a week', '1.9', 'default page 4.1'], ['Downloads', '120', '28 days']], 'How sure: 53 of 120 against 536 of 2,550. A sample: only people who share analytics are counted.', [A('Dismiss'), A('Make Screenshots for This Page…'), A('Open “Mood tracking”', 'pri', 'pages')], { isNew: true }),
-        find('AL', 'Version', 'Fairly sure', 'Deletions rose with version 1.3.1.', 'More people removed Lumen in their first week after 1.3.1 than after 1.3. Crashes didn’t change, so it isn’t stability.', [['1.3', '19%', 'deleted in the first week'], ['1.3.1', '27%', 'deleted in the first week'], ['What changed', 'Paywall', 'moved before the first entry']], 'How sure: 212 of 780 against 148 of 780 installs.', [A('Dismiss'), A('See After Changes', 'pri')], {}),
-        find('AL', 'Screenshots', 'Not very sure', '2% of people add the widget, and screenshot 4 is about it.', 'A screenshot is worth more on something most people use. The first three are the ones search shows.', [['Added the widget', '212', '2.3% of 9,400 active devices'], ['Screenshot 4', 'Widget', 'in 12 languages']], 'How sure: widget installs are a sample, and a low number can also mean people don’t know the widget exists.', [A('Dismiss'), A('Open Screenshots', 'pri')], {})
+        find('AL', 'Custom Product Pages', 'Fairly sure', 'People who arrive through “Mood tracking” delete Lumen twice as often.', 'The page’s screenshots show a mood chart that needs two weeks of entries before it appears.', [['Deleted in 30 days', '44%', 'default page 21%'], ['Sessions a week', '1.9', 'default page 4.1'], ['Downloads', '120', '28 days']], 'How sure: 53 of 120 against 536 of 2,550. A sample of people who share analytics.', [A('Dismiss'), A('Make Screenshots for This Page…'), A('Open “Mood tracking”', 'pri', 'pages')], { isNew: true }),
+        find('AL', 'Version', 'Fairly sure', 'Deletions rose with version 1.3.1.', 'More people removed Lumen in week one after 1.3.1 than after 1.3. Crashes didn’t change, so it’s not stability.', [['1.3', '19%', 'deleted in the first week'], ['1.3.1', '27%', 'deleted in the first week'], ['What changed', 'Paywall', 'moved before the first entry']], 'How sure: 212 of 780 against 148 of 780 installs.', [A('Dismiss'), A('See After Changes', 'pri')], {}),
+        find('AL', 'Screenshots', 'Not very sure', '2% of people add the widget, and screenshot 4 is about it.', 'A screenshot is worth more on a feature most people use. Search shows the first three.', [['Added the widget', '212', '2.3% of 9,400 active devices'], ['Screenshot 4', 'Widget', 'in 12 languages']], 'How sure: widget installs are a sample, and a low number can also mean people don’t know the widget exists.', [A('Dismiss'), A('Open Screenshots', 'pri')], {})
       ] },
       // ============ 6, 7 · detail, second phase ============
       'more': { sec: 'analytics', tab: 'funnel', h: 820, blocks: [
@@ -424,12 +428,12 @@ class Component extends DCLogic {
         bars(9, 'What people tap there', 'of 2,140 views', [['Ratings and reviews', '', '310 · 14%', 14, 'var(--accent)'], ['App Privacy', '', '140 · 7%', 7], ['Developer website', '', '85 · 4%', 4]], { foot: 'People read reviews first. The newest reviews are the ones they see: 4 have no reply.' }),
         head('After the download', 'From people who share analytics', { pill: 'A sample' }),
         stat(3, 'Installs', '3,480', 'First-time and again'), stat(3, 'Deletions', '742', '21 for every 100 installs'), stat(3, 'Sessions a week', '4.1', 'per active device · 2 min 40 s each'), stat(3, 'Added a widget', '212', '2.3% of 9,400 active devices'),
-        ban('neu', 'By version, source and product page:', 'these are columns in Break It Down, and each becomes a finding when a page or version stands out.', [A('Break It Down by Page', '', 'bd-page')])
+        ban('neu', 'By version, source and product page:', 'columns in Break It Down. Each becomes a finding when a page or version stands out.', [A('Break It Down by Page', '', 'bd-page')])
       ] },
       // ============ MCP ============
       'mcp': { sec: 'analytics', tab: 'find', h: 1010, blocks: [
-        find('CC', 'Retention', 'Fairly sure', 'Italian and Portuguese (Brazil) cancel most and have no message.', 'They are 38 of the 62 people who saw Apple’s plain cancel screen. Claude Code wrote a message with the half-price offer for both.', [['Opened, no message', '38', 'it and pt-BR'], ['Stayed', '4', '11%'], ['Offer message elsewhere', '31.0%', '52 of 168']], 'How sure: small groups; the offer message’s result is from other languages.', [A('Dismiss'), A('Open Retention', 'pri', 'ret')], { isNew: true, wait: 'Claude Code sent 2 retention messages. They’re waiting in Retention, in purple.', reads: 'read  analytics_retention(app: "Lumen Journal", days: 28, by: ["message", "language"])\nread  retention_messages(app: "Lumen Journal")\nread  analytics_subscription_states(app: "Lumen Journal", days: 28, by: ["territory"])\nwrite add_finding(area: "Retention", sure: "fairly", …)\nwrite suggest_retention_message(language: "it", …)   ×2' }),
-        { type: 'Reads', span: 12, title: 'What Claude Code can read, and what it can do', text: 'analytics_retention            page views, cancels, saves · by message, type, offer, save type, subscription, country, device\nanalytics_subscribers          trials, paid, trial → paid, proceeds · by page, In-App Event, campaign, source, offer\nanalytics_subscription_states  active, billing retry, grace period, recovered, plan changes, cancel reasons\nanalytics_crashes              crashes per 1,000 sessions · by version, device\nanalytics_after_download       installs, deletions, sessions, widget installs · by version, source, page\nanalytics_web_preview          web page views and taps\n\nadd_finding                    lands in What to Try, marked CC, with what it read\nsuggest_*                      retention messages, product pages, texts: purple, waiting for you', foot: 'Reading is free of side effects. Claude Code never pauses a release, changes billing settings or pushes: those stay buttons for you.' }
+        find('CC', 'Retention', 'Fairly sure', 'Italian and Portuguese (Brazil) cancel most and have no message.', 'They’re 38 of the 62 who saw Apple’s plain cancel screen. Claude Code wrote a half-price offer message for both.', [['Opened, no message', '38', 'it and pt-BR'], ['Stayed', '4', '11%'], ['Offer message elsewhere', '31.0%', '52 of 168']], 'How sure: small groups; the offer message’s result is from other languages.', [A('Dismiss'), A('Open Retention', 'pri', 'ret')], { isNew: true, wait: 'Claude Code sent 2 retention messages. They’re waiting in Retention, in purple.', reads: 'read  analytics_retention(app: "Lumen Journal", days: 28, by: ["message", "language"])\nread  retention_messages(app: "Lumen Journal")\nread  analytics_subscription_states(app: "Lumen Journal", days: 28, by: ["territory"])\nwrite add_finding(area: "Retention", sure: "fairly", …)\nwrite suggest_retention_message(language: "it", …)   ×2' }),
+        { type: 'Reads', span: 12, title: 'What Claude Code can read, and what it can do', text: 'analytics_retention            page views, cancels, saves · by message, type, offer, save type, subscription, country, device\nanalytics_subscribers          trials, paid, trial → paid, proceeds · by page, In-App Event, campaign, source, offer\nanalytics_subscription_states  active, billing retry, grace period, recovered, plan changes, cancel reasons\nanalytics_crashes              crashes per 1,000 sessions · by version, device\nanalytics_after_download       installs, deletions, sessions, widget installs · by version, source, page\nanalytics_web_preview          web page views and taps\n\nadd_finding                    lands in What to Try, marked CC, with what it read\nsuggest_*                      retention messages, product pages, texts: purple, waiting for you', foot: 'Reading has no side effects. Claude Code never pauses releases, changes billing or pushes: those buttons stay yours.' }
       ] },
       // ============ report states ============
       'reports': { sec: 'analytics', tab: '', h: 840, blocks: [head('Reports from Apple', 'What Atlas has asked for, and what has arrived', { btn: 'Check Now' }), repTable('ready')] },
@@ -444,7 +448,12 @@ class Component extends DCLogic {
 
   constructor(p) { super(p); this.state = { scene: (p && p.scene) || 'sub', toast: null }; this.timers = []; }
   componentWillUnmount() { this.timers.forEach(clearTimeout); }
-  go(sc) { const D = Component.d(); if (sc && D.SC[sc]) this.setState({ scene: sc }); }
+  componentDidUpdate(prev) { const p = this.props || {}; if (prev && prev.scene !== p.scene && p.scene) this.setState({ scene: p.scene, toast: null }); }
+  go(sc) {
+    const D = Component.d(); const p = this.props || {}; if (!sc || !D.SC[sc]) return;
+    if (p.embed === 'yes' && typeof p.onOut === 'function') { const cur = D.SC[this.state.scene] || {}; const t = D.SC[sc]; if (t.sec !== cur.sec || (t.sec === 'analytics' && (t.tab || '') !== (cur.tab || ''))) { p.onOut(sc); return; } }
+    this.setState({ scene: sc });
+  }
   say(t) { this.setState({ toast: t }); this.timers.push(setTimeout(() => this.setState({ toast: null }), 2600)); }
 
   meter(o, m) { const AX = ['', 'Not very sure', 'Fairly sure', 'Sure']; o.hasM = m > 0; o.m1 = m >= 1 ? 'f' : ''; o.m2 = m >= 2 ? 'f' : ''; o.m3 = m >= 3 ? 'f' : ''; o.mAx = AX[m] || ''; return o; }
@@ -483,7 +492,7 @@ class Component extends DCLogic {
     const D = Component.d(); const pr = this.props; const s = this.state;
     const sc = D.SC[s.scene] || D.SC.sub; const sec = sc.sec;
     const app = sc.app || 'Lumen Journal'; const short = sc.appShort || 'Lumen';
-    const TT = { analytics: ['Analytics', app + ' · last 28 days', 'Where people drop off between seeing ' + short + ' and paying, and what to change next.', 'Find What to Try…'], pricing: ['Pricing', app + ' · retention', 'What ' + short + '’s subscriptions cost, and what subscribers see when they cancel.', 'Suggest Prices…'], pages: ['Product Pages', app + ' · custom product pages', 'Other versions of ' + short + '’s App Store page, each with its own link, for an audience, a campaign or a search.', 'Suggest Pages…'], overview: ['Overview', app + ' · Version 1.4 · rolling out', short + ' on the App Store, and everything waiting for you.', 'Suggest Everything…'], reviews: ['Ratings & Reviews', app + ' · every country', 'Ratings and reviews from every country, and your replies.', 'Draft Replies…'] }[sec];
+    const TT = { analytics: ['Analytics', app + ' · last 28 days', 'Where people drop off between seeing ' + short + ' and paying, and what to change next.', 'Find What to Try…'], pricing: ['Pricing', app + ' · retention', 'What ' + short + '’s subscriptions cost, and what subscribers see when they cancel.', 'Suggest Prices…'], pages: ['Custom Product Pages', app + ' · custom product pages', 'Other versions of ' + short + '’s App Store page, each with its own link, for an audience, a campaign or a search.', 'Suggest Pages…'], overview: ['Overview', app + ' · Version 1.4 · rolling out', short + ' on the App Store, and everything waiting for you.', 'Suggest Everything…'], reviews: ['Ratings & Reviews', app + ' · every country', 'Ratings and reviews from every country, and your replies.', 'Draft Replies…'] }[sec];
     const HOME = { overview: 'rel', pricing: 'ret', pages: 'pages', reviews: 'rev', analytics: 'sub' };
     const groups = D.NAV.map((g) => ({ title: g[0], hasT: !!g[0], items: g[1].map((x) => ({ label: x[1], col: x[2], path: x[3], n: String(x[4]), hasN: x[4] > 0, bcls: x[5] ? 'bdg neu' : 'bdg', cls: x[0] === sec ? 'nvi on' : 'nvi', cur: x[0] === sec ? 'page' : 'false', pick: HOME[x[0]] ? () => this.go(HOME[x[0]]) : () => this.say(x[1] + ' isn’t part of this prototype.') })) }));
     const tab = (id, label, to, o) => Object.assign({ label: label, on: sc.tab === id ? 'true' : 'false', cls: sc.tab === id ? 'on' : '', hasN: false, n: '', isNew: false, pick: to ? () => this.go(to) : () => this.say(label + ' stays as on boards 31–34.') }, o || {});
@@ -494,11 +503,12 @@ class Component extends DCLogic {
     if (sc.tab === 'bd') { subs = [st('t', 'Territory'), st('l', 'Language'), st('s', 'Source'), st('d', 'Device'), st('bd-page', 'Product Page', 'bd-page'), st('bd-camp', 'Campaign', 'bd-camp', true)]; subAx = 'Break down by'; subNote = '▲ better  ▼ worse  ≈ about the same · “3 of 21” too few to tell'; }
     const ver = sc.ver || ['#8E8E94', 'Version 1.4', 'Not submitted yet'];
     return {
-      theme: pr.appearance === 'dark' ? 'ax-d' : 'ax-l', H: (pr.frameH || 780) + 'px', appName: app, groups: groups,
+      theme: pr.appearance === 'dark' ? 'ax-d' : 'ax-l', H: pr.embed === 'yes' ? 'auto' : (pr.frameH || 780) + 'px', appName: app, groups: groups,
+      chrome: pr.embed !== 'yes', bg: pr.embed === 'yes' ? 'transparent' : 'var(--window)', colBg: pr.embed === 'yes' ? 'transparent' : 'var(--content)', bodyPad: pr.embed === 'yes' ? '2px 2px 24px' : '6px 20px 24px',
       ver: { dot: ver[0], name: ver[1], st: ver[2] },
       title: TT[0], subtitle: TT[1], desc: TT[2], apLabel: TT[3],
       hasPeriod: sec === 'analytics', hasSecSeg: sec === 'pricing', secSeg: [{ label: 'Prices', on: 'false', cls: '', pick: () => this.say('Prices stays as it is.') }, { label: 'Retention', on: 'true', cls: 'on', pick: () => {} }],
-      hasTabs: sec === 'analytics', tabs: tabs, through: sc.through || 'Data through Nov 9',
+      hasTabs: pr.embed !== 'yes' && sec === 'analytics', tabs: tabs, through: sc.through || 'Data through Nov 9',
       hasSub: subs.length > 0, subs: subs, subAx: subAx, subNote: subNote,
       blocks: sc.blocks.map((b) => this.block(b)),
       hasToast: !!s.toast, toast: s.toast || ''

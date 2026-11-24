@@ -108,7 +108,7 @@ struct ProposePurchaseReviewScreenshotToolTests {
         #expect(saved.plan == "Lifetime")
         #expect(saved.price == "$59.99")
         #expect(saved.checks == ["Price shows", "Lifetime selected"])
-        #expect(changes.change(id: id)?.title == "Review screenshot · Lifetime selected · from Claude Code")
+        #expect(changes.change(id: id)?.title == "Lumen Lifetime · Lifetime selected · from Claude Code")
         #expect(runs.run(for: DebugFixtures.AppID.lumen)?.arrived == ["lumen.lifetime"])
         #expect(runs.run(for: DebugFixtures.AppID.lumen)?.current == nil)
         #expect(saved.expectedPlan == "Lifetime")
