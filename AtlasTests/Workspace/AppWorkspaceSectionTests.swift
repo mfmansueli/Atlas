@@ -6,22 +6,25 @@
 import Testing
 @testable import Atlas
 
-/// The workspace's eight sections, in the sidebar's order: Overview, the
-/// Store Listing's five, then Reviews and Analytics after release.
+/// The workspace's ten sections, in the sidebar's order: Overview, the
+/// Store Listing's seven, then Reviews and Analytics after release.
 @Suite("AppWorkspaceSection")
 struct AppWorkspaceSectionTests {
     @Test func theSectionsAreInTheSidebarsOrder() {
         #expect(AppWorkspaceSection.allCases == [
-            .overview, .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing, .reviews, .analytics,
+            .overview, .storePage, .screenshots, .productPages, .inAppEvents, .nominations, .appInformation, .subscriptionPricing, .reviews, .analytics,
         ])
-        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "F", "6", "7", "8", "9"])
+        // ⌘F is Find, so Nominations is ⇧⌘F.
+        #expect(AppWorkspaceSection.nominations.shortcutText == "⇧⌘F")
+        #expect(AppWorkspaceSection.inAppEvents.shortcutText == "⌘5")
     }
 
     @Test func theSidebarGroupsThemByWhatYouAreDoing() {
         #expect(AppWorkspaceSectionGroup.allCases.map(\.title) == [nil, "Store Listing", "After Release"])
         #expect(AppWorkspaceSectionGroup.overview.sections == [.overview])
         #expect(AppWorkspaceSectionGroup.storeListing.sections == [
-            .storePage, .screenshots, .productPages, .inAppEvents, .appInformation, .subscriptionPricing,
+            .storePage, .screenshots, .productPages, .inAppEvents, .nominations, .appInformation, .subscriptionPricing,
         ])
         #expect(AppWorkspaceSectionGroup.afterRelease.sections == [.reviews, .analytics])
         // Every section is in exactly one group.

@@ -33,6 +33,6 @@ struct SidebarSectionRow: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(counts.accessibilityText(for: section)))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .help("\(section.fullTitle)  ⌘\(String(section.shortcutDigit))")
+        .help("\(section.fullTitle)  \(section.shortcutText)")
     }
 }

@@ -474,7 +474,7 @@ extension PushController {
     /// One of a change's requests, its placeholders filled in.
     private func send(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws {
         let queued = try await resolvingQueuedVersion(checkingQueuedSubscription(in: request), at: index, transport: transport)
-        let request = try await resolvingSetupPlaceholders(queued.request, at: index, transport: transport)
+        let request = try await resolvingSetupPlaceholders(resolvingNomination(queued.request, at: index, via: transport), at: index, transport: transport)
         defer { noteReviewDetail(madeBy: queued, at: index) }
         if try await sendSetupStep(request, at: index, transport: transport) { return }
         let resolved = try request.resolved(createdID: items[index].createdID) { try secrets.secret(named: $0) }

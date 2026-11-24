@@ -13,6 +13,7 @@ related: menubar
 | Screenshots | ⌘3 |
 | Custom Product Pages | ⌘4 |
 | In-App Events | ⌘5 |
+| Featuring Nominations | ⇧⌘F |
 | App Information | ⌘6 |
 | Pricing | ⌘7 |
 | Reviews | ⌘8 |

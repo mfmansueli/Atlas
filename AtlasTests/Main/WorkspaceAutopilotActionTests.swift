@@ -21,6 +21,7 @@ struct WorkspaceAutopilotActionTests {
         case .screenshots: "Make Screenshots…"
         case .productPages: "Suggest Pages…"
         case .inAppEvents: "Make Event Artwork…"
+        case .nominations: "Suggest a Nomination…"
         case .appInformation: "Suggest Answers…"
         case .subscriptionPricing: "Suggest Prices…"
         case .reviews: "Draft Replies…"

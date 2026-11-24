@@ -29,6 +29,8 @@ struct WorkspaceServices {
     var inAppEvents: any InAppEventsServices
     /// Custom product pages, and the default page they start from.
     var productPages: any ProductPagesServices
+    /// Featuring nominations, and what Atlas suggests them from.
+    var nominations: any NominationsServices
     /// Where Review & Push sends writes.
     var push: any PushTransport
 
@@ -48,6 +50,7 @@ struct WorkspaceServices {
             release: LiveReleaseServices(client: client),
             inAppEvents: LiveInAppEventsServices(client: client),
             productPages: LiveProductPagesServices(client: client),
+            nominations: LiveNominationsServices(client: client),
             push: client
         )
     }

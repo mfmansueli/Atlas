@@ -16,7 +16,7 @@ struct WorkspaceCommands: Commands {
         CommandGroup(before: .toolbar) {
             ForEach(AppWorkspaceSection.allCases) { section in
                 Button(section.fullTitle) { navigator?.open(section) }
-                    .keyboardShortcut(KeyEquivalent(section.shortcutDigit))
+                    .keyboardShortcut(KeyEquivalent(Character(String(section.shortcutDigit).lowercased())), modifiers: section.shortcutModifiers)
             }
             .disabled(navigator == nil)
             Divider()

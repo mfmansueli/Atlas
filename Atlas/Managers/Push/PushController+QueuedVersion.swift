@@ -37,6 +37,7 @@ extension PushController {
     /// waits in the queue.
     static func waitingStatus(_ error: any Error) -> PushItemStatus? {
         if let error = error as? QueuedSubscriptionPlaceholder.NotCreated { return .notSent(error.errorDescription ?? "") }
+        if let error = error as? NominationPlaceholder.NotCreated { return .notSent(error.errorDescription ?? "") }
         guard let error = error as? QueuedVersionPlaceholder.NotCreated else { return nil }
         return .notSent(error.errorDescription ?? "")
     }

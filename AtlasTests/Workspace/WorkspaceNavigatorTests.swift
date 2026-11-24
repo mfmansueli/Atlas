@@ -73,6 +73,6 @@ struct WorkspaceNavigatorTests {
     }
 
     @Test func sectionsMapToCommandDigits() {
-        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        #expect(AppWorkspaceSection.allCases.map(\.shortcutDigit) == ["1", "2", "3", "4", "5", "F", "6", "7", "8", "9"])
     }
 }

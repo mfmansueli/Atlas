@@ -91,6 +91,7 @@ struct DebugSceneView: View {
             ReleaseDebugScenes.view(for:),
             ReleaseEventsDebugScenes.view(for:),
             InAppEventsDebugScenes.view(for:),
+            NominationsDebugScenes.view(for:),
             InAppEventsDeepLinkDebugScenes.view(for:),
             InAppEventsDatesDebugScenes.view(for:),
             InAppEventsSuggestionDebugScenes.view(for:),

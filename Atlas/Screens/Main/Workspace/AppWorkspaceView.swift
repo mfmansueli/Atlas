@@ -428,6 +428,8 @@ struct AppWorkspaceView: View {
             ReviewsSectionView(app: app, services: services.reviews)
         case .inAppEvents:
             InAppEventsSectionView(app: app, services: services)
+        case .nominations:
+            NominationsSectionView(app: app, services: services)
         }
     }
 }

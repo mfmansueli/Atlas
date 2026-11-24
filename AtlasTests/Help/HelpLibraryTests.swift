@@ -70,7 +70,7 @@ struct HelpLibraryTests {
             return
         }
         for section in AppWorkspaceSection.allCases {
-            let row = rows.first { $0.last == "⌘\(section.shortcutDigit)" }
+            let row = rows.first { $0.last == section.shortcutText }
             #expect(row != nil, "\(section)")
         }
     }
