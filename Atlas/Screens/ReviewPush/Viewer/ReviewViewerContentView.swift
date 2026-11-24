@@ -90,7 +90,13 @@ struct ReviewViewerContentView: View {
     /// poster, or the still read at the size it's drawn.
     @ViewBuilder
     private func fileContent(_ file: ReviewViewerFile) -> some View {
-        if file.isVideo {
+        if file.hasSound {
+            // An App Preview being pushed plays as in review: with its sound.
+            AppPreviewPlayer(
+                model: previewPlayer, file: file.previewFile, url: file.url, musicTitle: nil, poster: nil, width: width.rounded(),
+                zoomIdentifier: Self.zoomIdentifier
+            )
+        } else if file.isVideo {
             // Its length is read from the movie.
             FullSizeLoopPlayer(
                 model: loopPlayer, url: file.url, poster: large, width: width, aspect: aspect, identifier: "review.viewer.loop",
@@ -132,6 +138,8 @@ struct ReviewViewerContentView: View {
             max(160, min(380, size.width, (size.height - Self.previewControlsHeight) / aspect))
         case let .artwork(extra) where extra.isMotion:
             max(80, min(size.width, (size.height - Self.loopControlsHeight) / aspect))
+        case let .file(file) where file.hasSound:
+            max(160, min(380, size.width, (size.height - Self.previewControlsHeight) / aspect))
         case let .file(file) where file.isVideo:
             max(80, min(size.width, (size.height - Self.loopControlsHeight) / aspect))
         default:
