@@ -24,7 +24,7 @@ struct TranslateCaptionsSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Translate missing captions")
+                Text("Translate Missing Captions")
                     .font(.title2.weight(.semibold))
                 Text("\(translation.selectedPlan.summary) Source: Settings → AI Assistants. Glossary and tone: Settings → Suggestions.")
                     .font(.subheadline)

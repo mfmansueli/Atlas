@@ -37,7 +37,7 @@ enum AppWorkspaceSection: String, CaseIterable, Identifiable, Codable, Sendable 
         case .overview: String(localized: "Overview")
         case .storePage: String(localized: "Store Page")
         case .screenshots: String(localized: "Screenshots")
-        case .productPages: String(localized: "Product Pages")
+        case .productPages: String(localized: "Custom Product Pages")
         case .inAppEvents: String(localized: "In-App Events")
         case .appInformation: String(localized: "App Information")
         case .subscriptionPricing: String(localized: "Pricing")

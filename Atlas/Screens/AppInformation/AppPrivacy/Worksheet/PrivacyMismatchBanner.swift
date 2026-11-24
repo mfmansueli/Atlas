@@ -20,7 +20,7 @@ struct PrivacyMismatchBanner: View {
                 viewModel.markCollected(mismatch.type)
             }
             .accessibilityIdentifier("appInformation.appPrivacy.mismatch.\(mismatch.type.rawValue).collected")
-            Button(String(localized: "Not Collected, Explain…")) {
+            Button(String(localized: "Keep Not Collected…")) {
                 viewModel.explainingType = mismatch.type
             }
             .accessibilityIdentifier("appInformation.appPrivacy.mismatch.\(mismatch.type.rawValue).explain")

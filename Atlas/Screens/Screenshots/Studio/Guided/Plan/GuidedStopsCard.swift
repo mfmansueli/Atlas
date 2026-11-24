@@ -32,7 +32,7 @@ struct GuidedStopsCard: View {
             }
             if !plan.runDisplays.isEmpty, !run.skipsCapture {
                 let isOpen = studio.guided.showsSimulator
-                Button(isOpen ? String(localized: "Hide Simulator options") : "\(GuidedPlanTimeline.simulatorLine(plan)) · " + String(localized: "Change…")) {
+                Button(isOpen ? String(localized: "Hide Simulator Options") : "\(GuidedPlanTimeline.simulatorLine(plan)) · " + String(localized: "Change…")) {
                     studio.guided.showsSimulator.toggle()
                 }
                 .buttonStyle(.link)

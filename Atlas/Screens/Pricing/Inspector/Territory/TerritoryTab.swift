@@ -24,10 +24,10 @@ struct TerritoryTab: View {
                 }
                 .padding(Spacing.large)
                 .overlay(alignment: .bottom) { Divider() }
-                section(String(localized: "Price Breakdown")) {
+                section(String(localized: "Price breakdown")) {
                     PriceBreakdownSteps(summary: row.calculation.summary, steps: row.calculation.steps)
                 }
-                section(String(localized: "Compare Sources")) {
+                section(String(localized: "Compare sources")) {
                     CompareSourcesView(
                         territoryID: row.id,
                         comparisons: matrix.comparison(for: row),
@@ -57,7 +57,7 @@ struct TerritoryTab: View {
             .accessibilityIdentifier("pricing.territoryTab")
         } else {
             ContentUnavailableView(
-                "No Territory Selected",
+                "No territory selected",
                 systemImage: "globe",
                 description: Text("Select a territory to see its breakdown and compare sources.")
             )

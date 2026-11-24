@@ -69,7 +69,7 @@ struct ThumbnailCell: View {
     /// "German, slot 3, Overflow, UI not localized, suggestion waiting".
     private var accessibilityText: String {
         var parts = [localeName, String(localized: "slot \(cell.key.slot + 1)"), isRendering ? String(localized: "Rendering") : cell.state.title]
-        if cell.showsPrimaryInterface { parts.append(String(localized: "UI not localized")) }
+        if cell.showsPrimaryInterface { parts.append(String(localized: "Interface not localized")) }
         if cell.proposal != nil { parts.append(String(localized: "suggestion waiting")) }
         return parts.joined(separator: ", ")
     }

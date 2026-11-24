@@ -27,7 +27,7 @@ struct HelpSearchField: View {
                         .foregroundStyle(Palette.label3)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(Text("Clear Search"))
+                .accessibilityLabel(Text("Clear search"))
             }
         }
         .padding(.horizontal, Spacing.small)

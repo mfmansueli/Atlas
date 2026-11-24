@@ -61,15 +61,15 @@ struct ProposeProductPageTextsTool: MCPTool {
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
         let pageID = try arguments.string("pageId")
-        guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: "\(app.name) · Product Pages") }
+        guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: "\(app.name) · Custom Product Pages") }
         let state = try await MCPProductPages.load(app: app, workspace: context.workspace, store: store, analytics: analytics)
         guard let page = state.page(pageID) else {
             if state.isQueuedForDeletion(pageID) {
-                return .refused(String(localized: "That page is deleted when the person pushes: it takes no texts."), target: "\(app.name) · Product Pages")
+                return .refused(String(localized: "That page is deleted when the person pushes: it takes no texts."), target: "\(app.name) · Custom Product Pages")
             }
             throw MCPToolError.notFound(String(localized: "\(app.name) has no product page “\(pageID)”. Use the ids get_product_pages lists."))
         }
-        let target = "\(app.name) · Product Pages · \(page.name)"
+        let target = "\(app.name) · Custom Product Pages · \(page.name)"
         if let blocker = state.textBlocker(page) { return .refused(blocker, target: target) }
         let reason = try arguments.string("reason")
         let evidence = try MCPProductPageEvidence.read(arguments.values["evidence"])
@@ -93,7 +93,7 @@ struct ProposeProductPageTextsTool: MCPTool {
             "status": "suggested",
             "languages": .array(read.kept.filter { !$0.isRefused }.map { .string($0.locale) }),
             "skipped": .array(read.skipped),
-            "showsIn": .string(String(localized: "Product Pages (⌘4) → \(page.name)")),
+            "showsIn": .string(String(localized: "Custom Product Pages (⌘4) → \(page.name)")),
         ]
         if !read.notOffered.isEmpty { result["notOffered"] = .array(read.notOffered) }
         if let note = state.newVersionNote(page) { result["newVersionNote"] = .string(note) }

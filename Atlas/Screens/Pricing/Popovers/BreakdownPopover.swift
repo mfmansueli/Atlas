@@ -31,7 +31,7 @@ struct BreakdownPopover: View {
             }
             PriceBreakdownSteps(summary: summary, steps: steps)
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text("Nearby Price Points")
+                Text("Nearby price points")
                     .font(.subheadline.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)

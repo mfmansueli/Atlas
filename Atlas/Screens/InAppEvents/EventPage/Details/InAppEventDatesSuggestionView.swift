@@ -39,8 +39,8 @@ struct InAppEventDatesSuggestionView: View {
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
                     Color.clear.frame(width: 74, height: 1)
-                    heading(String(localized: "YOURS"), color: Palette.label2)
-                    heading(String(localized: "SUGGESTED"), color: Palette.ai)
+                    heading(String(localized: "Yours"), color: Palette.label2)
+                    heading(String(localized: "Suggested"), color: Palette.ai)
                 }
                 ForEach(InAppEventDateField.allCases) { field in
                     let differs = yours[field] != suggested[field]

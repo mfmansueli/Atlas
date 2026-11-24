@@ -45,7 +45,7 @@ final class AutopilotHeaderConceptsUITests: XCTestCase {
         attachScreenshot("Look · header from scene templates")
 
         click(hero)
-        XCTAssertTrue(waitUntil { pick.label == "Replace Pick 3 With This" }, pick.label)
+        XCTAssertTrue(waitUntil { pick.label == "Replace Pick 3 with This" }, pick.label)
         click(pick)
         XCTAssertTrue(waitUntil { hero.label.contains("pick 3") }, hero.label)
         XCTAssertFalse(window.label.contains("pick"), "A fourth replaces the last")

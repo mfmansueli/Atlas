@@ -122,7 +122,7 @@ struct SuggestEverythingPopover: View {
 
     private var coverage: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text("WHAT IT COVERS")
+            Text("What it covers")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             VStack(spacing: 0) {

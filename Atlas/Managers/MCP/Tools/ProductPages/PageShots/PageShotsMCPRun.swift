@@ -23,7 +23,7 @@ struct PageShotsMCPRun {
         guard let run = studio.runs.values.first(where: { $0.appID == app.id && ($0.pageID == page || $0.key.page == key) }) else {
             return .failure(PageShotsMCPRefusal(target: target, message: String(localized: """
             Nobody pressed Make Screenshots for This Page on “\(page)” in Atlas. The person starts it from the page's \
-            screenshots in Product Pages; until then, describe the screenshots in propose_product_page's screens.
+            screenshots in Custom Product Pages; until then, describe the screenshots in propose_product_page's screens.
             """)))
         }
         // As the run makes its set: its Look and the screens captured again.

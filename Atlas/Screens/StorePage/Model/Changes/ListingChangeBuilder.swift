@@ -74,7 +74,7 @@ struct ListingChangeBuilder: Hashable, Sendable {
     /// "Store Page · App information" for name, subtitle and privacy URL.
     func group(at level: ListingFieldLevel) -> String {
         switch level {
-        case .app: String(localized: "Store Page · App information")
+        case .app: String(localized: "Store Page · App Information")
         case .version:
             platformTitle.map { String(localized: "Store Page · \($0) Version \(versionString)") }
                 ?? String(localized: "Store Page · Version \(versionString)")

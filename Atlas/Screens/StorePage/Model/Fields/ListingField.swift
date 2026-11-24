@@ -28,7 +28,7 @@ enum ListingField: String, CaseIterable, Identifiable, Hashable, Sendable, Codab
         case .name: String(localized: "Name")
         case .subtitle: String(localized: "Subtitle")
         case .privacyPolicyURL: String(localized: "Privacy Policy URL")
-        case .promotionalText: String(localized: "Promotional Text")
+        case .promotionalText: String(localized: "Promotional text")
         case .description: String(localized: "Description")
         case .keywords: String(localized: "Keywords")
         case .whatsNew: String(localized: "What’s New")

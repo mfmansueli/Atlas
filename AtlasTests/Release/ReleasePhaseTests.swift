@@ -58,7 +58,7 @@ struct ReleasePhaseTests {
         #expect(PhasedRelease.percentage(day: 0) == 1)
         #expect(PhasedRelease.percentage(day: 12) == 100)
         #expect(ReleasePhase.phased(day: 3, isPaused: false).pillTitle == "Phased Release · Day 3 of 7")
-        #expect(ReleasePhase.phased(day: 3, isPaused: true).pillTitle == "Phased Release Paused")
+        #expect(ReleasePhase.phased(day: 3, isPaused: true).pillTitle == "Phased Release paused")
     }
 
     @Test func theSidebarSaysTheStatusAndWhatToDo() {

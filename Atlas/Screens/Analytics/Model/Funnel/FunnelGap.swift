@@ -32,7 +32,7 @@ enum FunnelGap: Hashable, Sendable {
     var actionTitle: String? {
         switch self {
         case .needsVendorNumber: String(localized: "Add Vendor Number…")
-        case .keyCannotReadSales: String(localized: "How to Fix…")
+        case .keyCannotReadSales: String(localized: "See How to Fix…")
         case .salesWaiting, .engagementWaiting: nil
         }
     }

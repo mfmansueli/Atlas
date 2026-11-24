@@ -23,7 +23,7 @@ struct GuidedSheetHeader: View {
                 .background(Palette.accentTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
-                Text(step == .done ? String(localized: "Sent to the App Store") : String(localized: "New App Store assets"))
+                Text(step == .done ? String(localized: "Sent to the App Store") : String(localized: "New App Store Assets"))
                     .font(.body.weight(.semibold))
                     .accessibilityIdentifier("autopilot.guided.sheetTitle")
                 Text(subtitle)

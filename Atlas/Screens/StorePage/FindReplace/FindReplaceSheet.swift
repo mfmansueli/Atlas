@@ -17,7 +17,7 @@ struct FindReplaceSheet: View {
         let matches = viewModel.findMatches
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Find and replace across locales")
+                Text("Find and Replace Across Locales")
                     .font(.title2.weight(.semibold))
                 Text(scopeDescription)
                     .font(.subheadline)

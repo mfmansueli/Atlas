@@ -37,7 +37,7 @@ struct ProposeProductPageTextsToolTests {
         #expect(outcome.result["status"] == "suggested")
         #expect(outcome.result["languages"] == ["fr-FR", "de-DE"])
         #expect(outcome.result["skipped"] == [])
-        #expect(outcome.result["showsIn"] == "Product Pages (⌘4) → Private diary")
+        #expect(outcome.result["showsIn"] == "Custom Product Pages (⌘4) → Private diary")
         #expect(outcome.result["newVersionNote"] == nil)
         #expect(outcome.logLines.first?.outcome == MCPCallOutcome.proposed)
 

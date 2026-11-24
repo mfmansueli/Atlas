@@ -29,12 +29,12 @@ enum ProductPageField: String, Codable, Hashable, Sendable, CaseIterable {
 
     var title: String {
         switch self {
-        case .promotionalText: String(localized: "Promotional Text")
-        case .keywords: String(localized: "Search Keywords")
-        case .deepLink: String(localized: "Deep Link")
+        case .promotionalText: String(localized: "Promotional text")
+        case .keywords: String(localized: "Search keywords")
+        case .deepLink: String(localized: "Deep link")
         case .name: String(localized: "Name")
         case .visible: String(localized: "Visible on the App Store")
-        case .delete: String(localized: "Delete Page")
+        case .delete: String(localized: "Delete page")
         case .screenshots: String(localized: "Screenshots")
         case .appPreviews: String(localized: "App Previews")
         }

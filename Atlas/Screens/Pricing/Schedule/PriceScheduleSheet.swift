@@ -43,7 +43,7 @@ struct PriceScheduleSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Schedule price changes")
+                Text("Schedule Price Changes")
                     .font(.title2.weight(.semibold))
                 Text("Applies to every price change in this push for \(productName).")
                     .font(.callout)

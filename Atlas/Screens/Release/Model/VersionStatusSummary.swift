@@ -52,7 +52,7 @@ struct VersionStatusSummary: Hashable, Sendable {
             text = String(localized: "Approved · Apple releases it")
             tone = .good
         case let .phased(day, isPaused):
-            text = isPaused ? String(localized: "Phased release paused") : String(localized: "Rolling out · day \(day) of \(PhasedRelease.dayCount)")
+            text = isPaused ? String(localized: "Phased Release paused") : String(localized: "Rolling out · day \(day) of \(PhasedRelease.dayCount)")
             tone = isPaused ? .warning : .good
         case .live:
             text = String(localized: "On the App Store")

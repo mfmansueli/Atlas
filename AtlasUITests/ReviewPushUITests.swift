@@ -197,7 +197,7 @@ final class ReviewPushUITests: XCTestCase {
     func testOfflineBanner() {
         launch(scene: "banner-offline")
         XCTAssertTrue(element("workspace.banner").waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["You're offline"].exists)
+        XCTAssertTrue(app.staticTexts["You’re offline"].exists)
     }
 
     // MARK: - Helpers

@@ -37,7 +37,7 @@ struct RetentionOfferSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("New retention offer")
+                Text("New Retention Offer")
                     .font(.title2.weight(.semibold))
                 Text("Only for people about to cancel. Apple picks who’s eligible and shows each the best offer.")
                     .font(.callout)

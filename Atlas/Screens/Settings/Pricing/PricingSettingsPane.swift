@@ -95,7 +95,7 @@ struct PricingSettingsPane: View {
                 SettingsRowLabel(title: "Strength", caption: String(localized: "How far prices move toward purchasing power."))
             }
             Toggle(isOn: strategy(\.discountOnly)) {
-                SettingsRowLabel(title: "Only lower prices", caption: String(localized: "Never above Apple’s equalized price."))
+                SettingsRowLabel(title: "Only lower prices", caption: String(localized: "Never above Apple’s automatic price."))
             }
             .toggleStyle(.switch)
             LabeledContent {

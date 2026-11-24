@@ -52,7 +52,7 @@ enum AutopilotPreflight {
         if locale == "de" || locale.hasPrefix("de-") {
             return "Its long words show labels that don't fit."
         }
-        return "Another language than \(primaryLocale)."
+        return "A language other than \(primaryLocale)."
     }
 
     /// `get_capture_plan`'s `rehearsal`; nil with one language.

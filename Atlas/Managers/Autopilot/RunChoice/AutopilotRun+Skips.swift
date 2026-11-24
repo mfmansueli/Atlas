@@ -69,7 +69,7 @@ extension AutopilotRun {
                 ? String(localized: "Skipped · no App Preview")
                 : String(localized: "Skipped · nothing moves in this run")
         }
-        if !plan.stopsToWatchPreview, stage != .watchPreview { return String(localized: "Skipped: approved as made") }
+        if !plan.stopsToWatchPreview, stage != .watchPreview { return String(localized: "Skipped · approved as made") }
         return nil
     }
 

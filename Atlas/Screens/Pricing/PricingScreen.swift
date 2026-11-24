@@ -149,7 +149,7 @@ struct PricingScreen: View {
         } else if viewModel.needsStartingPrice {
             StartingPriceView(viewModel: viewModel)
         } else if viewModel.hasNoPrice, let message = viewModel.sheetError {
-            ContentUnavailableView("No Price Yet", systemImage: "tag", description: Text(message))
+            ContentUnavailableView("No price yet", systemImage: "tag", description: Text(message))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .accessibilityIdentifier("pricing.noPrice")
         } else if let message = viewModel.sheetError {

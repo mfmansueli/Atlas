@@ -17,9 +17,9 @@ enum AppSortOrder: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .name: String(localized: "Name")
-        case .unpushedChanges: String(localized: "Unpushed changes")
-        case .lowestCoverage: String(localized: "Lowest locale coverage")
-        case .mostSuggestions: String(localized: "Most price suggestions")
+        case .unpushedChanges: String(localized: "Unpushed Changes")
+        case .lowestCoverage: String(localized: "Lowest Locale Coverage")
+        case .mostSuggestions: String(localized: "Most Price Suggestions")
         }
     }
 }

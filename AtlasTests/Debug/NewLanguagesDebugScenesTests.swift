@@ -42,7 +42,7 @@ struct NewLanguagesDebugScenesTests {
         #expect(creations.count == 1)
         #expect(polish.title == "Create the Polish page")
         #expect(polish.fields.map(\.title) == [
-            "Name", "Subtitle", "Promotional Text", "Description", "Keywords", "What’s New", "Support URL", "Marketing URL",
+            "Name", "Subtitle", "Promotional text", "Description", "Keywords", "What’s New", "Support URL", "Marketing URL",
         ])
         #expect(polish.fields.last?.source == .builtInSuggestion)
     }

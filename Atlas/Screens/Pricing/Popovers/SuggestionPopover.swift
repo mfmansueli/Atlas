@@ -38,7 +38,7 @@ struct SuggestionPopover: View {
                 .font(.body.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("What It’s Based On")
+                Text("What it’s based on")
                     .font(.subheadline.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.label2)

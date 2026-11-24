@@ -32,7 +32,7 @@ struct PairAssistantSheet: View {
     private func content(_ pairing: MCPPendingPairing) -> some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Pair an assistant")
+                Text("Pair an Assistant")
                     .font(.title2.weight(.semibold))
                 Text("Atlas makes a token for this assistant only. Paste the command into the assistant; it connects the next time it starts.")
                     .font(.callout)

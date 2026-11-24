@@ -92,7 +92,7 @@ struct GuidedDefaultsTests {
     @Test func thePickButtonSaysWhatItDoes() {
         #expect(GuidedPickToggle.title(number: 2, picked: 2) == "✓ Pick 2 · Remove")
         #expect(GuidedPickToggle.title(number: nil, picked: 1) == "Add to My Picks")
-        #expect(GuidedPickToggle.title(number: nil, picked: 3, maximum: 3) == "Replace Pick 3 With This")
+        #expect(GuidedPickToggle.title(number: nil, picked: 3, maximum: 3) == "Replace Pick 3 with This")
         #expect(GuidedPickToggle.isProminent(number: nil))
         #expect(!GuidedPickToggle.isProminent(number: 1))
     }

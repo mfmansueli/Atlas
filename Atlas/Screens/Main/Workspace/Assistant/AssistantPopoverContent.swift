@@ -133,7 +133,7 @@ struct AssistantPopoverContent: View {
                         .truncationMode(.middle)
                 }
                 if !recentCalls.isEmpty {
-                    Text("RECENT CALLS")
+                    Text("Recent calls")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                     ForEach(recentCalls) { call in
@@ -173,7 +173,7 @@ struct AssistantPopoverContent: View {
                     .truncationMode(.middle)
             }
             if !recentRequests.isEmpty {
-                Text("RECENT REQUESTS")
+                Text("Recent requests")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 ForEach(recentRequests) { request in
@@ -253,7 +253,7 @@ struct AssistantPopoverContent: View {
 
     private var capabilities: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text("WHAT IT CAN SUGGEST HERE")
+            Text("What it can suggest here")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: Spacing.small, verticalSpacing: Spacing.xxSmall) {

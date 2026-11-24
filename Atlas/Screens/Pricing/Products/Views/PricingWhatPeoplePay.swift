@@ -52,7 +52,7 @@ struct PricingWhatPeoplePay: View {
                     .accessibilityElement(children: .combine)
                 }
                 if rows.isEmpty {
-                    Text("Prices are loading…")
+                    Text("Reading prices…")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                 }

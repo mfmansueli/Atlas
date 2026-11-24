@@ -14,7 +14,7 @@ enum ReviewViewerSide: String, CaseIterable, Hashable, Sendable {
     /// "Live Now", "New".
     var title: String {
         switch self {
-        case .live: String(localized: "Live Now")
+        case .live: String(localized: "Live now")
         case .new: String(localized: "New")
         }
     }

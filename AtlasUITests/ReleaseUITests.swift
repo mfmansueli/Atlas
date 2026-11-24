@@ -121,7 +121,7 @@ final class ReleaseUITests: XCTestCase {
         pause.click()
         let paused = NSPredicate(format: "label == %@", "Resume Phased Release")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: paused, object: pause)], timeout: 10), .completed, pause.label)
-        XCTAssertEqual(text(of: element("overview.version.pill")), "Phased Release Paused")
+        XCTAssertEqual(text(of: element("overview.version.pill")), "Phased Release paused")
         attach("rel-paused")
     }
 

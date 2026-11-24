@@ -209,7 +209,7 @@ struct GuidedMakingStepView: View {
     private var details: some View {
         let entries = run.log
         if !entries.isEmpty {
-            Button(studio.guided.showsDetails ? String(localized: "Hide details") : String(localized: "Show details (\(entries.count))")) {
+            Button(studio.guided.showsDetails ? String(localized: "Hide Details") : String(localized: "Show Details (\(entries.count))")) {
                 studio.guided.showsDetails.toggle()
             }
             .buttonStyle(.link)

@@ -32,7 +32,7 @@ struct AccessibilityEmptyState: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: Spacing.small) {
-                        Button(String(localized: "Declare for \(firstFamily.name)"), action: onDeclare)
+                        Button(String(localized: "Declare for \(firstFamily.name)…"), action: onDeclare)
                             .buttonStyle(.borderedProminent)
                             .accessibilityIdentifier("appInformation.accessibility.declareFirst")
                         ExternalLinkButton(title: String(localized: "How Apple Evaluates Support"), url: AccessibilityFeature.overviewURL)

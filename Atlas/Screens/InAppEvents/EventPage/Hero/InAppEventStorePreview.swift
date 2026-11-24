@@ -104,7 +104,7 @@ struct InAppEventStorePreview: View {
                     Text(app.name)
                         .font(.system(size: 13, weight: .semibold))
                         .lineLimit(1)
-                    Text("In-app purchases")
+                    Text("In-App Purchases")
                         .font(.system(size: 10.5))
                         .foregroundStyle(Palette.label2)
                 }

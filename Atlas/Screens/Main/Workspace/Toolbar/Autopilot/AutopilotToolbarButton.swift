@@ -217,7 +217,7 @@ struct AutopilotToolbarButton: View {
                     onAction(item.action)
                 } label: {
                     Label {
-                        Text(item.isPro ? String(localized: "\(item.title) · PRO") : item.title)
+                        Text(item.isPro ? String(localized: "\(item.title) · Pro") : item.title)
                         if let note = item.note { Text(note) }
                     } icon: {
                         Image(systemName: item.action.systemImage)

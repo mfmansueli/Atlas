@@ -56,7 +56,7 @@ enum FindingAction: Hashable, Sendable, Codable {
         case .inAppTexts: return String(localized: "Open In-App Texts")
         case let .productPage(name):
             if let name { return String(localized: "Open \(name)") }
-            return String(localized: "Open Product Pages")
+            return String(localized: "Open Custom Product Pages")
         case .stability: return String(localized: "Open Stability")
         case .billing: return String(localized: "Turn On Billing Grace Period…")
         }

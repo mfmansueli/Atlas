@@ -45,7 +45,7 @@ struct StorePageVersionPlatformTests {
         #expect(builder.group(at: .version) == "Store Page · Version 2.0")
         builder.platformTitle = "macOS"
         #expect(builder.group(at: .version) == "Store Page · macOS Version 2.0")
-        #expect(builder.group(at: .app) == "Store Page · App information")
+        #expect(builder.group(at: .app) == "Store Page · App Information")
     }
 
     @Test func aFirstVersionIsCountedPerPlatform() {

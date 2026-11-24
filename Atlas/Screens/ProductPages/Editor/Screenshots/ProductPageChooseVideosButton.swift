@@ -28,7 +28,7 @@ struct ProductPageChooseVideosButton: View {
             if isReading {
                 HStack(spacing: Spacing.xSmall) {
                     ProgressView().controlSize(.mini)
-                    Text("Reading…")
+                    Text("Reading App Previews…")
                 }
             } else {
                 Text("Choose App Previews…")

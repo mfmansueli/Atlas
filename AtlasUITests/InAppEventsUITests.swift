@@ -222,7 +222,7 @@ final class InAppEventsUITests: XCTestCase {
         let purchase = element("events.new.purchase")
         XCTAssertTrue(purchase.exists)
         purchase.click()
-        app.menuItems["Needs an in-app purchase"].firstMatch.click()
+        app.menuItems["Needs an In-App Purchase"].firstMatch.click()
         attach("ev-new-filled")
         element("events.new.add").click()
         XCTAssertTrue(element("events.new.sheet").waitForNonExistence(timeout: 10))

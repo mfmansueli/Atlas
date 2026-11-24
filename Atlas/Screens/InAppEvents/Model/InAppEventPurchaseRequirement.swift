@@ -18,7 +18,7 @@ enum InAppEventPurchaseRequirement: String, CaseIterable, Identifiable, Hashable
     var title: String {
         switch self {
         case .noCostAssociated: String(localized: "No purchase needed")
-        case .inAppPurchase: String(localized: "Needs an in-app purchase")
+        case .inAppPurchase: String(localized: "Needs an In-App Purchase")
         }
     }
 }

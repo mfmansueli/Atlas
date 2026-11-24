@@ -21,7 +21,7 @@ struct FallbackChainSection: View {
                 HStack {
                     Text(strategy.indexSource.name).font(.callout.weight(.medium))
                     Spacer()
-                    Pill(text: String(localized: "chosen"), style: .accent)
+                    Pill(text: String(localized: "Chosen"), style: .accent)
                 }
                 .padding(.vertical, 2)
                 ForEach(Array(steps.enumerated()), id: \.element) { position, step in

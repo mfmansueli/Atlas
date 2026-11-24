@@ -37,7 +37,7 @@ final class AppPreviewSegmentReader {
         reader.timeRange = CMTimeRange(
             start: CMTime(seconds: segment.start, preferredTimescale: 600), duration: CMTime(seconds: segment.duration + 0.5, preferredTimescale: 600)
         )
-        guard reader.canAdd(output) else { throw AppPreviewError.readerFailed(String(localized: "Its video can't be decoded.")) }
+        guard reader.canAdd(output) else { throw AppPreviewError.readerFailed(String(localized: "Its video can’t be decoded.")) }
         provider = reader.outputProvider(for: output)
         do {
             try reader.start()

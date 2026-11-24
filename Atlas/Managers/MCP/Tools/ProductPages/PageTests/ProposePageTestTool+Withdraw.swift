@@ -52,7 +52,7 @@ extension ProposePageTestTool {
             return .refused(String(localized: "No proposed test “\(id)” for \(pageTests.app.name). Use get_page_tests."), target: target, details: ["code": "unknown_proposal"])
         }
         guard proposal.client == context.clientName else {
-            return .refused(String(localized: "Proposed by \(proposal.client), not by you: left for the person."), target: target, details: ["code": "not_yours"])
+            return .refused(String(localized: "Suggested by \(proposal.client), not by you: left for the person."), target: target, details: ["code": "not_yours"])
         }
         guard proposal.isOpen else {
             let why = proposal.status == .made

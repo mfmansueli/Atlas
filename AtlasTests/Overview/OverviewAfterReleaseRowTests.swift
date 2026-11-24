@@ -48,6 +48,6 @@ struct OverviewAfterReleaseRowTests {
         #expect(row.detail == "6 pages · 3 visible on the App Store · 1 rejected")
         #expect(row.count == 4)
         #expect(row.countsSuggestions)
-        #expect(row.accessibilityText == "Open Product Pages, 4 suggestions to review")
+        #expect(row.accessibilityText == "Open Custom Product Pages, 4 suggestions to review")
     }
 }

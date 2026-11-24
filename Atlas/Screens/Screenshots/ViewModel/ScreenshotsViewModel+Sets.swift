@@ -11,19 +11,19 @@ extension ScreenshotsViewModel {
     var groups: [SetsGroup] {
         guard hasTemplate, hasCaptures else { return [] }
         var groups = [SetsGroup(
-            kind: .localized, title: String(localized: "Localized Sets"), count: matrix.localizedLocales.count,
+            kind: .localized, title: String(localized: "Localized sets"), count: matrix.localizedLocales.count,
             rows: matrix.localizedLocales.compactMap(row(for:)), note: nil
         )]
         if !matrix.restoredLocales.isEmpty {
             groups.append(SetsGroup(
-                kind: .restored, title: String(localized: "Restored · Not Rendered"), count: matrix.restoredLocales.count,
+                kind: .restored, title: String(localized: "Restored · not rendered"), count: matrix.restoredLocales.count,
                 rows: matrix.restoredLocales.compactMap(row(for:)),
                 note: String(localized: "Untouched until you choose Use Template Again in Locales.")
             ))
         }
         let primaryName = context.primaryLocale.name
         groups.append(SetsGroup(
-            kind: .fallback, title: String(localized: "Use \(primaryName) Screenshots"), count: matrix.fallbackLocales.count,
+            kind: .fallback, title: String(localized: "Use \(primaryName) screenshots"), count: matrix.fallbackLocales.count,
             rows: showsFallbackRows ? matrix.fallbackLocales.compactMap(row(for:)) : [],
             note: showsFallbackRows ? nil : String(localized: "On the App Store these locales use the \(primaryName) set.")
         ))

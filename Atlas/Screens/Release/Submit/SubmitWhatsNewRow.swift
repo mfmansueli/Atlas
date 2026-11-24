@@ -60,7 +60,7 @@ struct SubmitWhatsNewRow: View {
     private func suggestionBox(_ suggestion: FieldSuggestion) -> some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
-                Text("SUGGESTED · \(row.locale.name)")
+                Text("Suggested · \(row.locale.name)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Palette.ai)
                     .frame(maxWidth: .infinity, alignment: .leading)

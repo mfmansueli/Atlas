@@ -13,7 +13,7 @@ struct RetentionOffersBox: View {
     @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
-        RetentionBox(title: String(localized: "Retention Offers")) {
+        RetentionBox(title: String(localized: "Retention offers")) {
             Button("New Offer…") {
                 pro.require(.retention) { model.isOfferSheetPresented = true }
             }

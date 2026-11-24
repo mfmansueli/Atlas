@@ -19,9 +19,9 @@ struct ListingFieldTests {
     @Test func nameSubtitleAndPrivacyAreAppLevel() {
         #expect(ListingField.appLevel == [.name, .subtitle, .privacyPolicyURL])
         #expect(ListingField.versionLevel.count == 6)
-        #expect(ListingFieldLevel.app.groupTitle(version: "1.4") == "App information · all versions")
+        #expect(ListingFieldLevel.app.groupTitle(version: "1.4") == "App Information · all versions")
         #expect(ListingFieldLevel.version.groupTitle(version: "1.4") == "Version 1.4")
-        #expect(ListingFieldLevel.app.badgeTitle(version: "1.4") == "App information")
+        #expect(ListingFieldLevel.app.badgeTitle(version: "1.4") == "App Information")
     }
 
     @Test func limits() {

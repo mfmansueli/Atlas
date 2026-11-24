@@ -70,7 +70,7 @@ struct InAppEventFieldBox: View {
             }
             if let suggested {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                    Text("SUGGESTED")
+                    Text("Suggested")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.ai)
                     Text(suggested)

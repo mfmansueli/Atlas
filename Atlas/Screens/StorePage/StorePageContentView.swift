@@ -101,7 +101,7 @@ struct StorePageContentView: View {
     @ViewBuilder
     private var banners: some View {
         if let message = viewModel.errorMessage {
-            Banner(kind: .apiError, title: String(localized: "Couldn’t refresh the store page"), message: message) {
+            Banner(kind: .apiError, title: String(localized: "Couldn’t refresh the Store Page"), message: message) {
                 Button("Try Again") {
                     Task { await viewModel.load() }
                 }

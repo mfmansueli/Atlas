@@ -20,7 +20,7 @@ struct WorkspaceSectionStatusTests {
         #expect(WorkspaceSectionStatus(section: .screenshots, waiting: 12).waitingText == "12 captions suggested")
         #expect(WorkspaceSectionStatus(section: .reviews, waiting: 1).waitingText == "1 reply suggested")
         #expect(WorkspaceSectionStatus(section: .analytics, waiting: 2).waitingText == "2 new findings")
-        #expect(WorkspaceSectionStatus(section: .productPages, waiting: 2).waitingText == "2 ideas")
+        #expect(WorkspaceSectionStatus(section: .productPages, waiting: 2).waitingText == "2 pages suggested")
         #expect(WorkspaceSectionStatus(section: .appInformation, waiting: 1).waitingText == "1 suggestion")
     }
 

@@ -305,7 +305,7 @@ struct EventArtworkToolsTests {
         let winter = try #require(outcome.result["events"]?.arrayValue?.first)
         #expect(winter["media"]?["en-US"]?["card"] == "image 1920 × 1080")
         #expect(winter["media"]?["en-US"]?["details"] == "image 1080 × 1920")
-        #expect(winter["media"]?["de-DE"]?["card"] == "none · shows en-US's image 1920 × 1080")
+        #expect(winter["media"]?["de-DE"]?["card"] == "none · shows en-US’s image 1920 × 1080")
         #expect(winter["stillMissing"]?["neededToSubmit"]?.arrayValue == [])
         #expect(winter["stillMissing"]?["cardWithoutOwn"]?.arrayValue == ["de-DE"])
         #expect(winter["stillMissing"]?["detailsWithoutOwn"]?.arrayValue == ["de-DE"])

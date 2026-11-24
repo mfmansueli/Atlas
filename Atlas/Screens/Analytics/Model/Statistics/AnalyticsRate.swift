@@ -48,7 +48,7 @@ enum AnalyticsRate: Hashable, Sendable {
     func detail(averageName: String? = nil, average: Double? = nil) -> String {
         switch self {
         case .missing:
-            return String(localized: "Apple doesn't give this number.")
+            return String(localized: "Apple doesn’t give this number.")
         case let .tooFew(count, total):
             return String(localized: "Too few to tell: \(AnalyticsText.count(count)) of \(AnalyticsText.count(total)). Rates this small move by chance.")
         case let .measured(rate):

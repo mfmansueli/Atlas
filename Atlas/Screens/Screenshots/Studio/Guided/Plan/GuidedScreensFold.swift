@@ -16,7 +16,7 @@ struct GuidedScreensFold: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Button(studio.guided.showsScreens ? String(localized: "Hide screens") : String(localized: "\(summary) · Show")) {
+            Button(studio.guided.showsScreens ? String(localized: "Hide Screens") : String(localized: "\(summary) · Show")) {
                 studio.guided.showsScreens.toggle()
             }
             .buttonStyle(.link)

@@ -18,7 +18,7 @@ struct AutoReplyHistorySheet: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Sent Automatically")
+                Text("Sent automatically")
                     .font(.title3.weight(.semibold))
                 Spacer()
             }

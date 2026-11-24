@@ -214,7 +214,7 @@ struct AppSidebar: View {
                     SkeletonBlock(height: 22, cornerRadius: Radius.menuRow)
                 }
                 // The app menu's footer says it too, but nothing opens it yet.
-                Text("Syncing with App Store Connect…")
+                Text("Reading apps from App Store Connect…")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .padding(.top, Spacing.xSmall)
@@ -225,7 +225,7 @@ struct AppSidebar: View {
             .accessibilityIdentifier("sidebar.loading")
         } else if let message = viewModel.errorMessage, viewModel.apps.isEmpty {
             ContentUnavailableView {
-                Label("Couldn't load apps", systemImage: "exclamationmark.triangle")
+                Label("Couldn’t load apps", systemImage: "exclamationmark.triangle")
             } description: {
                 Text(message)
                     .accessibilityIdentifier("sidebar.errorMessage")

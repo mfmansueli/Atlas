@@ -75,7 +75,7 @@ final class ReleaseProposalUITests: XCTestCase {
         XCTAssertTrue(element("overview.version.proposal.evidence").exists)
         attach("rel-proposed-pause")
         confirm.click()
-        let paused = NSPredicate(format: "label == %@ OR value == %@", "Phased Release Paused", "Phased Release Paused")
+        let paused = NSPredicate(format: "label == %@ OR value == %@", "Phased Release paused", "Phased Release paused")
         let pill = element("overview.version.pill")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: paused, object: pill)], timeout: 10), .completed, text(of: pill))
         XCTAssertTrue(element("overview.version.proposal").waitForNonExistence(timeout: 5))

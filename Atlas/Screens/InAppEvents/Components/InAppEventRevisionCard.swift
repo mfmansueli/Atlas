@@ -98,7 +98,7 @@ struct InAppEventRevisionCard: View {
                 .font(.subheadline.weight(.semibold))
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
-                    label(String(localized: "NOW"), color: Palette.label2)
+                    label(String(localized: "Now"), color: Palette.label2)
                     MarkedDiffText(diff: diff, side: .now)
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
@@ -109,7 +109,7 @@ struct InAppEventRevisionCard: View {
                         .accessibilityIdentifier("events.revision.\(field.rawValue).now")
                 }
                 GridRow {
-                    label(String(localized: "SUGGESTED"), color: Palette.ai)
+                    label(String(localized: "Suggested"), color: Palette.ai)
                     MarkedDiffText(diff: diff, side: .suggested)
                         .font(.callout)
                         .textSelection(.enabled)

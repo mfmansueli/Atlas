@@ -121,7 +121,7 @@ struct NewSubscriptionSheet: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("New subscription")
+            Text("New Subscription")
                 .font(.title2.weight(.semibold))
             Text("For \(appName). Nothing is created in App Store Connect until you push.")
                 .font(.callout)

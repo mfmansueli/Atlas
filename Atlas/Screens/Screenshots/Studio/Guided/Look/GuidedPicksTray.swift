@@ -20,7 +20,7 @@ struct GuidedPicksTray<Item: Hashable, Thumbnail: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("\(Text("My picks").fontWeight(.semibold)) \(Text("· \(text)").foregroundStyle(Palette.label2))")
+            Text("\(Text("My Picks").fontWeight(.semibold)) \(Text("· \(text)").foregroundStyle(Palette.label2))")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("\(identifier).text")

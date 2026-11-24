@@ -46,7 +46,7 @@ struct AcceptAllItemRow: View {
     private var values: some View {
         Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 3) {
             GridRow {
-                Text("NOW")
+                Text("Now")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                     .gridColumnAlignment(.leading)
@@ -55,7 +55,7 @@ struct AcceptAllItemRow: View {
                     .lineLimit(3)
             }
             GridRow {
-                Text("NEW")
+                Text("New")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.ai)
                 value(item.suggested, isRightToLeft: isRightToLeft)

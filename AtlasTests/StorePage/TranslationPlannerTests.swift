@@ -78,7 +78,7 @@ struct TranslationPlannerTests {
 
         job.start(Fixtures.key(.german, .promotionalText))
         #expect(job.current?.key.field == .promotionalText)
-        #expect(job.progressLine == "3 of 6 · German · Promotional Text")
+        #expect(job.progressLine == "3 of 6 · German · Promotional text")
 
         job.complete(Fixtures.key(.german, .promotionalText), with: "Wochenrückblicke sind da.")
         job.fail(Fixtures.key(.german, .keywords), message: "Unsupported language pair")

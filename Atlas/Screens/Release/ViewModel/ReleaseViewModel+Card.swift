@@ -229,7 +229,7 @@ extension ReleaseViewModel {
     }
 
     private static func phasedState(day: Int, isPaused: Bool) -> String {
-        if isPaused { return String(localized: "Phased release paused") }
+        if isPaused { return String(localized: "Phased Release paused") }
         return String(localized: "Phased release, day \(day) of \(PhasedRelease.dayCount)")
     }
 }

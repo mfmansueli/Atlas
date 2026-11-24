@@ -88,7 +88,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .eventArtwork: String(localized: "In-App Event art")
         case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
         case .encryptionKey: String(localized: "Export compliance key")
-        case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Product page screenshots")
+        case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Custom Product Page screenshots")
         case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply, .hello, .reviewScreenshots: title
         }
     }

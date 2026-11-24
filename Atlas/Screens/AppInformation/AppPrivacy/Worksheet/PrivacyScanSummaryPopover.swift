@@ -12,7 +12,7 @@ struct PrivacyScanSummaryPopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text("Scan summary")
+            Text("Scan Summary")
                 .font(.body.weight(.semibold))
             Grid(alignment: .topLeading, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.xSmall) {
                 row(String(localized: "Assistant"), scan.assistant)

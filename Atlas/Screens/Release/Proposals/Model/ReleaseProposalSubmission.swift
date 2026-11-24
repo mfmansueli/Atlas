@@ -42,7 +42,7 @@ struct ReleaseProposalSubmission: Hashable, Codable, Sendable {
         case .manual: lines.append(String(localized: "You release it yourself"))
         case let .scheduled(date): lines.append(String(localized: "Release on \(date.formatted(date: .abbreviated, time: .shortened))"))
         }
-        lines.append(isPhased ? String(localized: "Phased release over 7 days") : String(localized: "Everyone on the first day"))
+        lines.append(isPhased ? String(localized: "Phased Release over 7 days") : String(localized: "Everyone on the first day"))
         if let answer = encryptionAnswer { lines.append(answer.title) }
         if let eventIDs {
             lines.append(eventIDs.isEmpty

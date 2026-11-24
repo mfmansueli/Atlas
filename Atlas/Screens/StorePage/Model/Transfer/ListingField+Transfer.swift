@@ -43,10 +43,10 @@ extension ListingField {
         case .name: "Name"
         case .subtitle: "Subtitle"
         case .privacyPolicyURL: "Privacy Policy URL"
-        case .promotionalText: "Promotional Text"
+        case .promotionalText: "Promotional text"
         case .description: "Description"
         case .keywords: "Keywords"
-        case .whatsNew: "What's New"
+        case .whatsNew: "What’s New"
         case .supportURL: "Support URL"
         case .marketingURL: "Marketing URL"
         }

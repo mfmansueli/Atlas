@@ -156,7 +156,7 @@ struct AppSwitcherMenu: View {
 
     private func footerText(now: Date) -> String {
         if viewModel.isLoading, viewModel.apps.isEmpty {
-            return String(localized: "Syncing with App Store Connect…")
+            return String(localized: "Reading apps from App Store Connect…")
         }
         let count = String(localized: "\(viewModel.apps.count) apps")
         guard let synced = viewModel.lastSyncedAt else { return count }

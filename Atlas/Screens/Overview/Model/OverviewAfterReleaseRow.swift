@@ -21,7 +21,7 @@ struct OverviewAfterReleaseRow: Identifiable, Hashable, Sendable {
     var title: String {
         switch section {
         case .reviews: String(localized: "Ratings & Reviews")
-        case .productPages: String(localized: "Product Pages")
+        case .productPages: String(localized: "Custom Product Pages")
         default: section.title
         }
     }

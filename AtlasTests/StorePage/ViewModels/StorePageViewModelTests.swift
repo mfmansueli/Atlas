@@ -91,7 +91,7 @@ struct StorePageViewModelTests {
         let path = "/v1/appInfoLocalizations/il-de"
         #expect(change.appID == "app1")
         #expect(change.section == .storePage)
-        #expect(change.group == "Store Page · App information")
+        #expect(change.group == "Store Page · App Information")
         #expect(change.title == "German · Subtitle")
         #expect(change.flagRegion == "DE")
         #expect(change.oldValue == "Private Notizen, sanfte Fragen")

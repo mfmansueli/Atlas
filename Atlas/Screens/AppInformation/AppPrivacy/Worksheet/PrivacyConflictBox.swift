@@ -18,7 +18,7 @@ struct PrivacyConflictBox: View {
             Text("**\(theirs.client)’s answer differs from yours.** Pick one.")
                 .font(.subheadline)
             FlowLayout(spacing: Spacing.xSmall) {
-                Button(String(localized: "Keep yours · \(yours.summary)"), action: onKeepYours)
+                Button(String(localized: "Keep Yours · \(yours.summary)"), action: onKeepYours)
                     .accessibilityIdentifier("appInformation.appPrivacy.conflict.keepYours")
                 Button(String(localized: "Use \(theirs.client)’s · \(theirs.answer.summary)"), action: onUseTheirs)
                     .accessibilityIdentifier("appInformation.appPrivacy.conflict.useTheirs")

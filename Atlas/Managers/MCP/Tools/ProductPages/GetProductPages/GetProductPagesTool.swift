@@ -22,7 +22,7 @@ struct GetProductPagesTool: MCPTool {
         name: "get_product_pages",
         title: "Get custom product pages",
         description: """
-        Reads an app's custom product pages as Atlas's Product Pages section shows them. `defaultPage` is the page every \
+        Reads an app's custom product pages as Atlas's Custom Product Pages section shows them. `defaultPage` is the page every \
         custom one is compared with and starts from: the version it starts from, the last approved version (whose \
         keywords pages choose), its promotional text per language and its numbers. `keywords` has, per language, the \
         approved version's keywords still `free` and the ones a page uses (`usedBy`: keyword → page name): a keyword \
@@ -93,7 +93,7 @@ struct GetProductPagesTool: MCPTool {
             result["textsLeftOut"] = .string(String(localized: "Pages' texts are left out past \(Self.pagesWithTexts) pages: pass pageId to read one."))
         }
         if state.archive.keyCannotChange { result["keyCannotChange"] = true }
-        return .read(.object(result), target: "\(app.name) · Product Pages")
+        return .read(.object(result), target: "\(app.name) · Custom Product Pages")
     }
 
     /// The default page: its versions, its text per language, its numbers.

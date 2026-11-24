@@ -23,7 +23,7 @@ struct PricingProduct: Identifiable, Hashable, Sendable {
 
     /// “1 year” for subscriptions, the type for in-app purchases.
     var durationText: String {
-        period?.title ?? inAppPurchaseType ?? String(localized: "In-app purchase")
+        period?.title ?? inAppPurchaseType ?? String(localized: "In-App Purchase")
     }
 
     /// The base price as the browser and section bar show it (“$39.99”),

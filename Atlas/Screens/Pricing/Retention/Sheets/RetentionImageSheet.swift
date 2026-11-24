@@ -16,7 +16,7 @@ struct RetentionImageSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Image for the message")
+                Text("Image for the Message")
                     .font(.title2.weight(.semibold))
                 Text("From the Asset Library. PNG, 3840 wide, 160 to 2160 tall, no transparency. Apple shows it in light and dark.")
                     .font(.callout)

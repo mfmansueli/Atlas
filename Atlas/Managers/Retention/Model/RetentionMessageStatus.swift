@@ -40,7 +40,7 @@ enum RetentionMessageStatus: Hashable, Sendable {
         switch self {
         case .draft: String(localized: "Not sent to Apple yet")
         case .queued: String(localized: "Waiting in Review & Push")
-        case .inReview: String(localized: "Waiting for App Review")
+        case .inReview: String(localized: "Waiting for Review")
         case .live: String(localized: "Approved by App Review; subscribers see it")
         case .rejected: String(localized: "Rejected by App Review; change it and push again")
         }

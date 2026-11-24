@@ -34,7 +34,7 @@ struct ProductPageLinkCard: View {
 
     private var link: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            label("LINK")
+            label("Link")
             if let url = page.url {
                 HStack(spacing: Spacing.small) {
                     Text(verbatim: url.absoluteString)
@@ -107,7 +107,7 @@ struct ProductPageLinkCard: View {
 
     private var deepLink: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            label("DEEP LINK")
+            label("Deep link")
             let check = viewModel.deepLinkCheck(for: page)
             TextField(
                 "Deep link",

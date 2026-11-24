@@ -18,7 +18,7 @@ struct NewProductPageSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("New Product Page")
+                Text("New Custom Product Page")
                     .font(.title3.weight(.semibold))
                 Text("Its own App Store page and link. Starts as a draft in Atlas.")
                     .font(.callout)

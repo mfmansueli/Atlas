@@ -28,7 +28,7 @@ struct TranslateMissingSheet: View {
         @Bindable var translation = translation
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text(translation.isSendingWhatsNew ? "Send What’s New to every locale" : "Translate missing fields")
+                Text(translation.isSendingWhatsNew ? "Send What’s New to every locale" : "Translate Missing Fields")
                     .font(.title2.weight(.semibold))
                 Text(translation.selectedPlan.summary)
                     .font(.subheadline)

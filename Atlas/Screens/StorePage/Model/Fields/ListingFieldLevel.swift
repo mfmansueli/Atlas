@@ -15,7 +15,7 @@ enum ListingFieldLevel: Hashable, Sendable {
     /// or "Version 1.4".
     func groupTitle(version: String) -> String {
         switch self {
-        case .app: String(localized: "App information · all versions")
+        case .app: String(localized: "App Information · all versions")
         case .version: String(localized: "Version \(version)")
         }
     }
@@ -23,7 +23,7 @@ enum ListingFieldLevel: Hashable, Sendable {
     /// The editor's badge next to a field: "App information" or "Version 1.4".
     func badgeTitle(version: String) -> String {
         switch self {
-        case .app: String(localized: "App information")
+        case .app: String(localized: "App Information")
         case .version: String(localized: "Version \(version)")
         }
     }

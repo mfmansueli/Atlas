@@ -28,7 +28,7 @@ struct ScreenshotRowSummary: Hashable, Sendable {
         if cells.contains(where: { $0.state == .uploadedByHand }) { parts.append(String(localized: "Added by hand · not managed")) }
         let isFallback = cells.contains { $0.state == .fallback }
         if isFallback { parts.append(String(localized: "Uses English (U.S.)")) }
-        if !isFallback, cells.contains(where: \.showsPrimaryInterface) { parts.append(String(localized: "UI not localized")) }
+        if !isFallback, cells.contains(where: \.showsPrimaryInterface) { parts.append(String(localized: "Interface not localized")) }
         text = parts.isEmpty ? String(localized: "Live") : parts.joined(separator: " · ")
         isFailing = failed > 0
     }

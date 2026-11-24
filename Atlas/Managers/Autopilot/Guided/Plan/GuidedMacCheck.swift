@@ -66,7 +66,7 @@ struct GuidedMacCheck: Hashable, Sendable {
     var summary: String {
         switch state {
         case .unknown, .checking:
-            return String(localized: "Checking…")
+            return String(localized: "Checking this Mac…")
         case .noHelper:
             return String(localized: "Not checked: no helper")
         case .oldHelper:
@@ -95,7 +95,7 @@ struct GuidedMacCheck: Hashable, Sendable {
     func detail(for display: ScreenshotDisplayType, appName: String) -> String {
         if display == .mac { return String(localized: "This Mac · \(appName) for Mac runs here directly") }
         guard let status = status(for: display) else {
-            return state == .checking || state == .unknown ? String(localized: "Checking…") : ""
+            return state == .checking || state == .unknown ? String(localized: "Checking this Mac…") : ""
         }
         return status.detail
     }

@@ -53,7 +53,7 @@ struct AssistantEvidencePopover: View {
 
     private var evidenceList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("EVIDENCE")
+            Text("Evidence")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.bottom, Spacing.xxSmall)

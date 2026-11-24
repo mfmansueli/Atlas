@@ -50,7 +50,7 @@ struct InAppTextsView: View {
         case let .loaded(loaded):
             if loaded.isEmpty {
                 ContentUnavailableView(
-                    "No subscriptions or in-app purchases",
+                    "No subscriptions or In-App Purchases",
                     systemImage: "cart",
                     description: Text("Names and descriptions show here once the app sells something in App Store Connect.")
                 )

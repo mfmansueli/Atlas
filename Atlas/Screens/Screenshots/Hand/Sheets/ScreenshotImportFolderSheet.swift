@@ -95,10 +95,10 @@ struct ScreenshotImportFolderSheet: View {
     private func table(_ rows: [ScreenshotFolderImportRow]) -> some View {
         Grid(alignment: .leading, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.xSmall) {
             GridRow {
-                Text("LANGUAGE")
-                Text("DEVICE")
-                Text("FILES")
-                Text("WHAT HAPPENS")
+                Text("Language")
+                Text("Device")
+                Text("Files")
+                Text("What happens")
             }
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(Palette.label2)

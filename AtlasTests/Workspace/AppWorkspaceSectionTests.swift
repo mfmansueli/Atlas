@@ -33,15 +33,15 @@ struct AppWorkspaceSectionTests {
         #expect(AppWorkspaceSection.subscriptionPricing.fullTitle == "Subscription Pricing")
         #expect(AppWorkspaceSection.reviews.title == "Reviews")
         #expect(AppWorkspaceSection.reviews.fullTitle == "Ratings & Reviews")
-        // README — redesign: "Product Pages" in the sidebar and toolbar.
-        #expect(AppWorkspaceSection.productPages.title == "Product Pages")
+        // Canvas 24 Nov: "Custom Product Pages" in the sidebar and toolbar too.
+        #expect(AppWorkspaceSection.productPages.title == "Custom Product Pages")
         #expect(AppWorkspaceSection.productPages.fullTitle == "Custom Product Pages")
     }
 
     /// The toolbar names the section as the design does.
     @Test func theToolbarUsesTheDesignsNames() {
         #expect(AppWorkspaceSection.subscriptionPricing.toolbarTitle == "Pricing")
-        #expect(AppWorkspaceSection.productPages.toolbarTitle == "Product Pages")
+        #expect(AppWorkspaceSection.productPages.toolbarTitle == "Custom Product Pages")
         #expect(AppWorkspaceSection.reviews.toolbarTitle == "Ratings & Reviews")
         #expect(AppWorkspaceSection.storePage.toolbarTitle == "Store Page")
     }

@@ -36,7 +36,7 @@ struct ProductPageTextSuggestionCard: View {
             }
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
-                    Text("NOW")
+                    Text("Now")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(width: 74, alignment: .leading)
@@ -49,7 +49,7 @@ struct ProductPageTextSuggestionCard: View {
                         .environment(\.layoutDirection, isRightToLeft && !current.isEmpty ? .rightToLeft : .leftToRight)
                 }
                 GridRow {
-                    Text("SUGGESTED")
+                    Text("Suggested")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.ai)
                         .frame(width: 74, alignment: .leading)

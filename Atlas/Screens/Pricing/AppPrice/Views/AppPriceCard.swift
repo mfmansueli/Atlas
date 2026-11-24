@@ -16,7 +16,7 @@ struct AppPriceCard: View {
 
     var body: some View {
         AppSaleCard(
-            title: String(localized: "App Price"),
+            title: String(localized: "App price"),
             caption: String(localized: "What \(model.app.name) costs to download."),
             figure: current?.formattedPrice,
             figureCaption: current.map { String(localized: "\(AppTerritory.name(of: $0.baseTerritoryID)) · base") },

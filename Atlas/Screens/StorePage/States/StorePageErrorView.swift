@@ -12,7 +12,7 @@ struct StorePageErrorView: View {
 
     var body: some View {
         ContentUnavailableView {
-            Label("Couldn’t load the store page", systemImage: "exclamationmark.triangle")
+            Label("Couldn’t load the Store Page", systemImage: "exclamationmark.triangle")
         } description: {
             Text(message)
         } actions: {

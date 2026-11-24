@@ -27,7 +27,7 @@ struct ScreenshotRestoreSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Restore previous screenshots")
+                Text("Restore Previous Screenshots")
                     .font(.title2.weight(.semibold))
                 Text(subtitle)
                     .font(.callout)

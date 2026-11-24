@@ -78,7 +78,7 @@ enum ReleasePhase: Hashable, Sendable {
     }
 
     private static func phasedTitle(day: Int, isPaused: Bool) -> String {
-        if isPaused { return String(localized: "Phased Release Paused") }
+        if isPaused { return String(localized: "Phased Release paused") }
         return String(localized: "Phased Release · Day \(day) of \(PhasedRelease.dayCount)")
     }
 }

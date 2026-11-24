@@ -93,7 +93,7 @@ struct NewInAppEventChangeTests {
         #expect(creation.detail.contains("Add its event card and details page images in App Store Connect"))
         let fields = Dictionary(uniqueKeysWithValues: creation.fields.map { ($0.id, $0.newValue) })
         #expect(fields["event.badge"] == "New Season")
-        #expect(fields["event.purchaseRequirement"] == "Needs an in-app purchase")
+        #expect(fields["event.purchaseRequirement"] == "Needs an In-App Purchase")
         #expect(fields["event.deepLink"] == "https://lumen.app/events/spring")
         #expect(fields["event.territories"] == "All")
         #expect(fields["event.en-US.name"] == "Spring Reset")

@@ -22,7 +22,7 @@ struct ProductPagePromoBox: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 if isPending { UnsavedDot(size: 6) }
-                Text("Promotional Text")
+                Text("Promotional text")
                     .font(.body.weight(.semibold))
                 Text("Above the description. The only words a page can change.")
                     .font(.subheadline)
@@ -32,7 +32,7 @@ struct ProductPagePromoBox: View {
                 counter(text.count, isOver: isOver)
             }
             TextField(
-                "Promotional Text",
+                "Promotional text",
                 text: Binding { viewModel.text(of: page, locale: locale) } set: { viewModel.editText($0) },
                 prompt: Text("Same as the default page"),
                 axis: .vertical
@@ -46,7 +46,7 @@ struct ProductPagePromoBox: View {
             .overlay(shape.strokeBorder(isOver ? Palette.err : Palette.separator2, lineWidth: isOver ? 1.5 : 1))
             .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
             .disabled(!viewModel.canEdit(page))
-            .accessibilityLabel(Text("Promotional Text, \(ProductPageChangeBuilder.localeName(locale))"))
+            .accessibilityLabel(Text("Promotional text, \(ProductPageChangeBuilder.localeName(locale))"))
             .accessibilityIdentifier("pages.promo")
             if text.isEmpty, suggestion == nil {
                 Text("\(ProductPageChangeBuilder.localeName(locale)): default page’s promotional text. Write one for this page.")

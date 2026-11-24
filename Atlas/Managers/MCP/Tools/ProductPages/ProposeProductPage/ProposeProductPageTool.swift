@@ -6,7 +6,7 @@
 import Foundation
 
 /// `propose_product_page`: an assistant suggests a whole custom product
-/// page, kept on this Mac (`ProductPagesStore`) and shown in Product Pages
+/// page, kept on this Mac (`ProductPagesStore`) and shown in Custom Product Pages
 /// with its reason and evidence, Dismiss and Accept. Accepting makes a draft
 /// page in Atlas; nothing reaches App Store Connect until the person pushes
 /// it, and only they submit it or make it visible.
@@ -19,7 +19,7 @@ struct ProposeProductPageTool: MCPTool {
         name: "propose_product_page",
         title: "Suggest a custom product page",
         description: """
-        Suggests a custom product page for an app, shown in Atlas's Product Pages (⌘4) with Dismiss and Accept; \
+        Suggests a custom product page for an app, shown in Atlas's Custom Product Pages (⌘4) with Dismiss and Accept; \
         accepting makes a draft page in Atlas. Read get_product_pages first. Send `name` (the page's reference name, \
         one no page has), `audience` (who it's for and what it should do, ≤200 characters), `reason` (why, from the \
         evidence, one sentence, at most \(AssistantTextLimits.why) characters), optional `details` (the rest, at most \
@@ -74,7 +74,7 @@ struct ProposeProductPageTool: MCPTool {
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
         let name = try arguments.optionalString("name") ?? ""
-        let target = "\(app.name) · Product Pages · \(name)"
+        let target = "\(app.name) · Custom Product Pages · \(name)"
         guard context.allows(.storeText) else { return .refused(MCPProposalKind.storeText.refusal, target: target) }
         let state = try await MCPProductPages.load(app: app, workspace: context.workspace, store: store, analytics: analytics)
         if state.archive.keyCannotChange {
@@ -107,7 +107,7 @@ struct ProposeProductPageTool: MCPTool {
             "name": .string(suggestion.name),
             "languages": .array(suggestion.promotionalTexts.keys.sorted().map(JSONValue.string)),
             "keywords": .object(suggestion.keywords.mapValues { .array($0.map(JSONValue.string)) }),
-            "showsIn": .string(String(localized: "Product Pages (⌘4) → Suggested pages")),
+            "showsIn": .string(String(localized: "Custom Product Pages (⌘4) → Suggested pages")),
             "pageLimit": state.reading(store).limitJSON,
         ]
         if !proposal.notOffered.isEmpty {

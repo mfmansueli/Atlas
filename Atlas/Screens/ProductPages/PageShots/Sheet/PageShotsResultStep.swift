@@ -75,7 +75,7 @@ struct PageShotsResultStep: View {
                     .accessibilityIdentifier("pages.shots.result.device")
                 }
             }
-            Text("DEFAULT PAGE")
+            Text("Default page")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             ProductPageScreenshotStrip(

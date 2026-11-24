@@ -15,7 +15,7 @@ struct AssistantLaunchedRunsList: View {
     var body: some View {
         if !runs.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                Text("STARTED FROM ATLAS")
+                Text("Started from Atlas")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
                 VStack(spacing: 0) {

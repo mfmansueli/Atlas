@@ -19,7 +19,7 @@ struct RemoteConflictView: View {
                 .font(.callout.weight(.semibold))
                 .labelStyle(ConflictLabelStyle())
             HStack(spacing: Spacing.small) {
-                Button("Keep mine · \(mine)", action: onKeepMine)
+                Button("Keep Mine · \(mine)", action: onKeepMine)
                     .accessibilityIdentifier("review.keepMine")
                 Button("Use App Store Connect's · \(conflict.remoteDisplayValue)", action: onUseRemote)
                     .accessibilityIdentifier("review.useRemote")

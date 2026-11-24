@@ -225,7 +225,7 @@ final class AutopilotGuidedUITests: XCTestCase {
         // view above the footer, and adding it works.
         element("autopilot.guided.look.scene.horizon").click()
         let pick = element("autopilot.guided.look.scene.pick")
-        XCTAssertTrue(waitUntil { pick.label == "Replace Pick 3 With This" }, pick.label)
+        XCTAssertTrue(waitUntil { pick.label == "Replace Pick 3 with This" }, pick.label)
         let next = element("autopilot.guided.next")
         XCTAssertTrue(waitUntil { pick.frame.maxY < next.frame.minY }, "\(pick.frame) under the footer at \(next.frame)")
         pick.click()

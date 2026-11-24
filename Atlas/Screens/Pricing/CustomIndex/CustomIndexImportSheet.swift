@@ -18,7 +18,7 @@ struct CustomIndexImportSheet: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                    Text("Import a custom index").font(.title3.weight(.semibold))
+                    Text("Import a Custom Index").font(.title3.weight(.semibold))
                     Text(subtitle)
                         .font(.subheadline.monospaced())
                         .foregroundStyle(Palette.label2)

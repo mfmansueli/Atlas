@@ -44,8 +44,8 @@ struct ProposedCaptionCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             HStack(alignment: .top, spacing: Spacing.medium) {
-                text(String(localized: "NOW"), current.isEmpty ? String(localized: "Empty") : current, isEmpty: current.isEmpty)
-                text(String(localized: "SUGGESTED"), caption.item.headline, isSuggested: true)
+                text(String(localized: "Now"), current.isEmpty ? String(localized: "Empty") : current, isEmpty: current.isEmpty)
+                text(String(localized: "Suggested"), caption.item.headline, isSuggested: true)
             }
             if let gloss = caption.layers?.gloss { GlossLine(gloss: gloss) }
             HStack(spacing: Spacing.small) {

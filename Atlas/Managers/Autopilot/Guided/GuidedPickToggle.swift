@@ -14,7 +14,7 @@ enum GuidedPickToggle {
     /// picked.
     static func title(number: Int?, picked: Int, maximum: Int = AutopilotShotStyle.maximumTemplates) -> String {
         if let number { return String(localized: "✓ Pick \(number) · Remove") }
-        if picked >= maximum { return String(localized: "Replace Pick \(maximum) With This") }
+        if picked >= maximum { return String(localized: "Replace Pick \(maximum) with This") }
         return String(localized: "Add to My Picks")
     }
 

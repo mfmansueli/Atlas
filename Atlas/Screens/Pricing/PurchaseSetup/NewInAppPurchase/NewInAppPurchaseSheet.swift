@@ -86,7 +86,7 @@ struct NewInAppPurchaseSheet: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("New in-app purchase")
+            Text("New In-App Purchase")
                 .font(.title2.weight(.semibold))
             Text("For \(appName). Nothing is created in App Store Connect until you push.")
                 .font(.callout)
@@ -114,7 +114,7 @@ struct NewInAppPurchaseSheet: View {
                     .accessibilityIdentifier("pricing.newInAppPurchase.familySharing")
             }
         } header: {
-            Text("In-app purchase")
+            Text("In-App Purchase")
         } footer: {
             note("The product ID is what \(appName)’s code buys; it can’t change or be reused. Family Sharing, once on, stays on.")
         }

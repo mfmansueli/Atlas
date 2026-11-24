@@ -22,7 +22,7 @@ struct ProposeCaptionsTool: MCPTool {
         locale is unknown, or when App Review would reject it: pricing such as “free”, prices, discounts or trials \
         (Guideline 2.3.7), other platforms (2.3.10), beta or demo (2.2), placeholders (2.1), “coming soon” (2.3) \
         or “For Kids” (2.3.8). The others are queued together in Atlas's Proposals sheet; nothing changes \
-        until the person accepts them, and accepted captions read "Proposed by" you until someone edits them. \
+        until the person accepts them, and accepted captions read "Suggested by" you until someone edits them. \
         Keep brand names and the glossary's terms untranslated. During a Screenshot Autopilot run, when \
         next_step asks for write_captions, pass the run's ID as run: the captions are saved right away instead \
         of queued, and the run checks them again. When it asks for write_artwork_texts, send items {locale, \

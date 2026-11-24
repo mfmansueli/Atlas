@@ -42,7 +42,7 @@ enum ScreenshotChecker {
                 checks.append(RenderCheck(
                     kind: .interfaceLocalized, status: .warning,
                     text: String(localized: "UI not localized: this capture shows the \(primaryLocaleName) interface"),
-                    shortReason: String(localized: "UI not localized")
+                    shortReason: String(localized: "Interface not localized")
                 ))
             }
         } else {

@@ -28,7 +28,7 @@ enum PushNotice: Hashable, Sendable {
     var title: String {
         switch self {
         case .offline:
-            String(localized: "You're offline")
+            String(localized: "You’re offline")
         case .rateLimited:
             String(localized: "App Store Connect's hourly limit was reached")
         case .apiError:

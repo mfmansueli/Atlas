@@ -67,7 +67,7 @@ extension ArtworkChecker {
         }
         guard let pixels else { return checks }
         let edges = pixels.edgeColors
-        for (page, mode) in [(ArtworkContrast.lightPage, String(localized: "Light Mode")), (ArtworkContrast.darkPage, String(localized: "Dark Mode"))] {
+        for (page, mode) in [(ArtworkContrast.lightPage, String(localized: "Light mode")), (ArtworkContrast.darkPage, String(localized: "Dark mode"))] {
             let ratios = edges.map { ArtworkContrast.ratio(ArtworkContrast.over($0, page), page) }.sorted()
             guard !ratios.isEmpty else { continue }
             let median = ratios[ratios.count / 2]

@@ -54,7 +54,7 @@ struct EventArtworkViewerTopBar: View {
                 identifier: "events.art.viewer.textArea", isNarrow: isNarrow
             )
             EventArtworkViewerButton(
-                systemImage: "arrow.up.left.and.arrow.down.right", shape: .circle(28), label: String(localized: "Enter full screen"),
+                systemImage: "arrow.up.left.and.arrow.down.right", shape: .circle(28), label: String(localized: "Enter Full Screen"),
                 help: String(localized: "Enter Full Screen  ⌃⌘F"), identifier: "events.art.viewer.full", action: onFullScreen
             )
         }

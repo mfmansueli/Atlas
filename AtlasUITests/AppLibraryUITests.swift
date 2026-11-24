@@ -169,7 +169,7 @@ final class AppLibraryUITests: XCTestCase {
     func testFirstSyncShowsSkeletons() {
         launch(scene: "lib-loading")
         XCTAssertTrue(element("overview.skeleton").waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["Syncing with App Store Connect…"].exists)
+        XCTAssertTrue(app.staticTexts["Reading apps from App Store Connect…"].exists)
     }
 
     // MARK: - Helpers

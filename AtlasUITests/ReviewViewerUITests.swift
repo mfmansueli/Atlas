@@ -38,7 +38,7 @@ final class ReviewViewerUITests: XCTestCase {
         app.typeKey(.rightArrow, modifierFlags: [])
         XCTAssertTrue(text(of: element("review.viewer.count")).contains("2 of"), "→ steps to the next slot")
 
-        element("review.viewer.side").radioButtons["Live Now"].click()
+        element("review.viewer.side").radioButtons["Live now"].click()
         let live = text(of: element("review.viewer.subtitle"))
         XCTAssertTrue(live.contains("Live now") || live.contains("Nothing live"), live)
         attach("Screenshot, live side")

@@ -15,7 +15,7 @@ struct AgeRatingPreviewCard: View {
 
     var body: some View {
         Card {
-            Text("RATING PREVIEW")
+            Text("Rating preview")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             HStack(alignment: .top, spacing: Spacing.medium) {
@@ -37,7 +37,7 @@ struct AgeRatingPreviewCard: View {
             if changesWithPush {
                 Pill(text: String(localized: "Changes on push"), systemImage: "circle.fill", style: .accent)
             }
-            Text("BY REGION")
+            Text("By region")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.top, Spacing.xxSmall)

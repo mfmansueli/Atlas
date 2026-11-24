@@ -26,7 +26,7 @@ enum AnalyticsArea: String, Hashable, Sendable, Codable, CaseIterable {
         case .pricing: String(localized: "Pricing")
         case .retention: String(localized: "Retention")
         case .inAppTexts: String(localized: "In-App Texts")
-        case .productPages: String(localized: "Product Pages")
+        case .productPages: String(localized: "Custom Product Pages")
         case .stability: String(localized: "Stability")
         case .billing: String(localized: "Billing")
         }

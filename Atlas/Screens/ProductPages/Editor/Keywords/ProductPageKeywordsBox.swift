@@ -20,7 +20,7 @@ struct ProductPageKeywordsBox: View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
                 if isPending { UnsavedDot(size: 6) }
-                Text("Search Keywords")
+                Text("Search keywords")
                     .font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if viewModel.defaultPage.hasApprovedVersion, !available.isEmpty {

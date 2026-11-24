@@ -265,7 +265,7 @@ struct SubmitForReviewSheet: View {
                     .accessibilityIdentifier("submit.releaseDate")
             }
             Toggle(isOn: $viewModel.options.isPhased) {
-                caption(String(localized: "Phased release"), viewModel.phasedDetail)
+                caption(String(localized: "Phased Release"), viewModel.phasedDetail)
             }
             .toggleStyle(.switch)
             .controlSize(.small)

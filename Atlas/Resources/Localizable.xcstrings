@@ -2083,6 +2083,9 @@
     "%@ · PRO" : {
       "comment" : "kind:button"
     },
+    "%@ · Pro" : {
+      "comment" : "kind:button"
+    },
     "%@ · Product Page Optimization" : {
       "comment" : "kind:other"
     },
@@ -4252,9 +4255,6 @@
     "1 hour" : {
       "comment" : "kind:section-title"
     },
-    "1 idea" : {
-      "comment" : "kind:other"
-    },
     "1 image" : {
       "comment" : "kind:other"
     },
@@ -5081,9 +5081,6 @@
       "comment" : "kind:section-title"
     },
     "APP STORE PREVIEW" : {
-      "comment" : "kind:section-title"
-    },
-    "AS A TRADER" : {
       "comment" : "kind:section-title"
     },
     "About %@" : {
@@ -6337,6 +6334,9 @@
     "App Information · %@" : {
       "comment" : "kind:section-title"
     },
+    "App Information · all versions" : {
+      "comment" : "kind:section-title"
+    },
     "App Information · from the code" : {
       "comment" : "kind:progress-step"
     },
@@ -6408,9 +6408,6 @@
     },
     "App Previews · %lld of %lld" : {
       "comment" : "kind:progress-step"
-    },
-    "App Price" : {
-      "comment" : "kind:section-title"
     },
     "App Privacy" : {
       "comment" : "kind:section-title"
@@ -6745,6 +6742,9 @@
     "App Store page artwork · iOS 27 and iPadOS 27" : {
       "comment" : "kind:description"
     },
+    "App Store preview" : {
+      "comment" : "kind:section-title"
+    },
     "App Store prices, with tax. Apple’s automatic prices follow exchange rates; prices you set stay." : {
       "comment" : "kind:description"
     },
@@ -6910,10 +6910,10 @@
     "Apple didn’t answer; it may have gone through. Refresh before you retry." : {
       "comment" : "kind:description"
     },
-    "Apple doesn't give this number." : {
+    "Apple doesn’t ask about %@ on %@." : {
       "comment" : "kind:description"
     },
-    "Apple doesn’t ask about %@ on %@." : {
+    "Apple doesn’t give this number." : {
       "comment" : "kind:description"
     },
     "Apple doesn’t split starts and proceeds by source." : {
@@ -7356,6 +7356,9 @@
     },
     "Artwork, full size" : {
       "comment" : "kind:accessibility-label"
+    },
+    "As a trader" : {
+      "comment" : "kind:section-title"
     },
     "As declared in App Store Connect." : {
       "comment" : "kind:description"
@@ -8215,9 +8218,6 @@
     "Average of everything kept" : {
       "comment" : "kind:section-title"
     },
-    "BY REGION" : {
-      "comment" : "kind:section-title"
-    },
     "Back" : {
       "comment" : "kind:button"
     },
@@ -8622,6 +8622,9 @@
     },
     "By hand, in App Store Connect" : {
       "comment" : "kind:description"
+    },
+    "By region" : {
+      "comment" : "kind:section-title"
     },
     "By subscription" : {
       "comment" : "kind:section-title"
@@ -9187,6 +9190,9 @@
     "Checking this Mac’s simulators…" : {
       "comment" : "kind:loading"
     },
+    "Checking this Mac…" : {
+      "comment" : "kind:loading"
+    },
     "Checking with %@…" : {
       "comment" : "kind:loading"
     },
@@ -9640,14 +9646,14 @@
     "Clear" : {
       "comment" : "kind:accessibility-label"
     },
-    "Clear Search" : {
-      "comment" : "kind:accessibility-label"
-    },
     "Clear Selection" : {
       "comment" : "kind:button"
     },
     "Clear rendered images and ratings?" : {
       "comment" : "kind:confirmation"
+    },
+    "Clear search" : {
+      "comment" : "kind:accessibility-label"
     },
     "Clear the %@ override" : {
       "comment" : "kind:accessibility-label"
@@ -9820,7 +9826,7 @@
     "Compare Free and Pro" : {
       "comment" : "kind:button"
     },
-    "Compare Sources" : {
+    "Compare sources" : {
       "comment" : "kind:section-title"
     },
     "Compare the pages with get_analytics_breakdown by productPage, and look for new audiences by source, language and territory." : {
@@ -10183,9 +10189,6 @@
     "Corner curve" : {
       "comment" : "kind:section-title"
     },
-    "Couldn't load apps" : {
-      "comment" : "kind:error"
-    },
     "Couldn’t add it to Review & Push. Try again." : {
       "comment" : "kind:error"
     },
@@ -10228,6 +10231,12 @@
     "Couldn’t load app information" : {
       "comment" : "kind:error"
     },
+    "Couldn’t load apps" : {
+      "comment" : "kind:error"
+    },
+    "Couldn’t load the Store Page" : {
+      "comment" : "kind:error"
+    },
     "Couldn’t load the live screenshots" : {
       "comment" : "kind:banner"
     },
@@ -10235,9 +10244,6 @@
       "comment" : "kind:error"
     },
     "Couldn’t load the screenshots" : {
-      "comment" : "kind:error"
-    },
-    "Couldn’t load the store page" : {
       "comment" : "kind:error"
     },
     "Couldn’t make the App Preview again; the earlier one stays" : {
@@ -10348,7 +10354,7 @@
     "Couldn’t refresh app information" : {
       "comment" : "kind:banner"
     },
-    "Couldn’t refresh the store page" : {
+    "Couldn’t refresh the Store Page" : {
       "comment" : "kind:banner"
     },
     "Couldn’t render the %@ artwork in %@." : {
@@ -10573,6 +10579,15 @@
     "Custom" : {
       "comment" : "kind:pill\nkind:section-title"
     },
+    "Custom Code for “%@”" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Custom Product Page captures" : {
+      "comment" : "kind:section-title"
+    },
+    "Custom Product Page screenshots" : {
+      "comment" : "kind:section-title"
+    },
     "Custom Product Pages" : {
       "comment" : "kind:section-title"
     },
@@ -10633,15 +10648,6 @@
     "Czech" : {
       "comment" : "kind:section-title"
     },
-    "DEEP LINK" : {
-      "comment" : "kind:section-title"
-    },
-    "DEFAULT PAGE" : {
-      "comment" : "kind:progress-step"
-    },
-    "DEVICE" : {
-      "comment" : "kind:sheet-title"
-    },
     "Danish" : {
       "comment" : "kind:section-title"
     },
@@ -10651,11 +10657,11 @@
     "Dark Interface" : {
       "comment" : "kind:section-title"
     },
-    "Dark Mode" : {
-      "comment" : "kind:section-title"
-    },
     "Dark captures are made only if the look asks for them" : {
       "comment" : "kind:description"
+    },
+    "Dark mode" : {
+      "comment" : "kind:section-title"
     },
     "Data Linked to You" : {
       "comment" : "kind:section-title"
@@ -10759,9 +10765,6 @@
     "Decrease, %lld percent" : {
       "comment" : "kind:pill"
     },
-    "Deep Link" : {
-      "comment" : "kind:section-title"
-    },
     "Deep link" : {
       "comment" : "kind:placeholder"
     },
@@ -10802,7 +10805,7 @@
       "comment" : "kind:button"
     },
     "Delete Page" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:button"
     },
     "Delete Screenshot %lld?" : {
       "comment" : "kind:sheet-title"
@@ -10818,6 +10821,9 @@
     },
     "Delete one to make another. Hidden and rejected pages count." : {
       "comment" : "kind:banner"
+    },
+    "Delete page" : {
+      "comment" : "kind:section-title"
     },
     "Delete screenshot %@" : {
       "comment" : "kind:section-title"
@@ -11281,6 +11287,9 @@
     "Downloading Apple’s reports for %@" : {
       "comment" : "kind:section-title"
     },
+    "Downloading Apple’s reports for %@…" : {
+      "comment" : "kind:section-title"
+    },
     "Downloads" : {
       "comment" : "kind:section-title"
     },
@@ -11379,9 +11388,6 @@
     },
     "Dutch" : {
       "comment" : "kind:section-title"
-    },
-    "EVIDENCE" : {
-      "comment" : "kind:sheet-title"
     },
     "Each app can still switch from its Pricing section." : {
       "comment" : "kind:description"
@@ -11647,6 +11653,9 @@
     "Enter %@’s price above zero, with up to two decimals." : {
       "comment" : "kind:error"
     },
+    "Enter Full Screen" : {
+      "comment" : "kind:section-title"
+    },
     "Enter Full Screen  ⌃⌘F" : {
       "comment" : "kind:tooltip"
     },
@@ -11658,9 +11667,6 @@
     },
     "Enter a price in US dollars: zero for free, or more with up to two decimals." : {
       "comment" : "kind:error"
-    },
-    "Enter full screen" : {
-      "comment" : "kind:section-title"
     },
     "Enter it in App Store Connect, then mark it as declared." : {
       "comment" : "kind:description"
@@ -12040,7 +12046,7 @@
     "Excluded" : {
       "comment" : "kind:section-title\nkind:pill"
     },
-    "Excluded from the Index" : {
+    "Excluded from the index" : {
       "comment" : "kind:section-title"
     },
     "Excluded from the index, so it stays equalized" : {
@@ -12085,6 +12091,9 @@
     "Explains the suggestion" : {
       "comment" : "kind:accessibility-label"
     },
+    "Export Answers" : {
+      "comment" : "kind:sheet-title"
+    },
     "Export Compliance" : {
       "comment" : "kind:section-title"
     },
@@ -12118,9 +12127,6 @@
     "Extend the card you have" : {
       "comment" : "kind:section-title"
     },
-    "FILES" : {
-      "comment" : "kind:sheet-title"
-    },
     "Factor" : {
       "comment" : "kind:sheet-title"
     },
@@ -12141,9 +12147,6 @@
     },
     "Fairly sure." : {
       "comment" : "kind:description"
-    },
-    "Fallback Chain" : {
-      "comment" : "kind:section-title"
     },
     "Fallback chain" : {
       "comment" : "kind:section-title"
@@ -12205,6 +12208,9 @@
     "Filed as" : {
       "comment" : "kind:field-label"
     },
+    "Files" : {
+      "comment" : "kind:sheet-title"
+    },
     "Files on a page can’t be deleted until you remove them there. Replaced files are on no page." : {
       "comment" : "kind:sheet-body"
     },
@@ -12263,6 +12269,9 @@
       "comment" : "kind:placeholder"
     },
     "Find a price, e.g. 2.99" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Find and Replace Across Locales" : {
       "comment" : "kind:sheet-title"
     },
     "Find and Replace Across Locales…" : {
@@ -13066,16 +13075,19 @@
     "Hide Countries" : {
       "comment" : "kind:button"
     },
+    "Hide Details" : {
+      "comment" : "kind:button"
+    },
     "Hide Page" : {
       "comment" : "kind:section-title"
     },
-    "Hide Simulator options" : {
+    "Hide Screens" : {
+      "comment" : "kind:button"
+    },
+    "Hide Simulator Options" : {
       "comment" : "kind:button"
     },
     "Hide Untouched Types" : {
-      "comment" : "kind:button"
-    },
-    "Hide details" : {
       "comment" : "kind:button"
     },
     "Hide iPhone Area" : {
@@ -13083,9 +13095,6 @@
     },
     "Hide password" : {
       "comment" : "kind:accessibility-label"
-    },
-    "Hide screens" : {
-      "comment" : "kind:button"
     },
     "Hide the list" : {
       "comment" : "kind:section-title"
@@ -13213,9 +13222,6 @@
     "How they stayed" : {
       "comment" : "kind:section-title"
     },
-    "How to Fix…" : {
-      "comment" : "kind:section-title"
-    },
     "How to get there" : {
       "comment" : "kind:section-title"
     },
@@ -13276,7 +13282,7 @@
     "Image %@" : {
       "comment" : "kind:section-title"
     },
-    "Image for the message" : {
+    "Image for the Message" : {
       "comment" : "kind:sheet-title"
     },
     "Image, loading" : {
@@ -13324,17 +13330,20 @@
     "Import More…" : {
       "comment" : "kind:button"
     },
+    "Import Translations" : {
+      "comment" : "kind:sheet-title"
+    },
     "Import Translations…" : {
       "comment" : "kind:menu-item"
+    },
+    "Import a Custom Index" : {
+      "comment" : "kind:sheet-title"
     },
     "Import a Folder" : {
       "comment" : "kind:sheet-title"
     },
     "Import a Folder…" : {
       "comment" : "kind:menu-item"
-    },
-    "Import a custom index" : {
-      "comment" : "kind:sheet-title"
     },
     "Import from fastlane" : {
       "comment" : "kind:section-title"
@@ -13579,20 +13588,17 @@
     "In-App Events · texts" : {
       "comment" : "kind:section-title"
     },
+    "In-App Purchase" : {
+      "comment" : "kind:section-title"
+    },
     "In-App Purchases" : {
       "comment" : "kind:section-title"
     },
     "In-App Texts" : {
       "comment" : "kind:section-title"
     },
-    "In-app purchase" : {
-      "comment" : "kind:section-title"
-    },
     "In-app purchase prices are read-only here for now." : {
       "comment" : "kind:description"
-    },
-    "In-app purchases" : {
-      "comment" : "kind:section-title"
     },
     "In-app texts didn’t load." : {
       "comment" : "kind:error"
@@ -13642,7 +13648,7 @@
     "Increases only" : {
       "comment" : "kind:field-label"
     },
-    "Index Data" : {
+    "Index data" : {
       "comment" : "kind:section-title"
     },
     "Index factor" : {
@@ -13711,10 +13717,13 @@
     "Intensity" : {
       "comment" : "kind:section-title"
     },
-    "Intensity and Limits" : {
+    "Intensity and limits" : {
       "comment" : "kind:section-title"
     },
     "Interface" : {
+      "comment" : "kind:section-title"
+    },
+    "Interface not localized" : {
       "comment" : "kind:section-title"
     },
     "International Monetary Fund" : {
@@ -14017,7 +14026,7 @@
     "Its subtitle, categories, description, the keywords in each language and the icon’s colors, so the idea, the scene and the search headline are about what this app does, not any app in its category." : {
       "comment" : "kind:other"
     },
-    "Its video can't be decoded." : {
+    "Its video can’t be decoded." : {
       "comment" : "kind:description"
     },
     "Its work so far is dropped. Captures stay for next time." : {
@@ -14092,7 +14101,13 @@
     "Keep Mine" : {
       "comment" : "kind:button"
     },
+    "Keep Mine · %@" : {
+      "comment" : "kind:button"
+    },
     "Keep Not Collected" : {
+      "comment" : "kind:button"
+    },
+    "Keep Not Collected…" : {
       "comment" : "kind:button"
     },
     "Keep Reports" : {
@@ -14100,6 +14115,9 @@
     },
     "Keep Running" : {
       "comment" : "kind:confirmation"
+    },
+    "Keep Yours · %@" : {
+      "comment" : "kind:button"
     },
     "Keep active users informed" : {
       "comment" : "kind:description"
@@ -14273,15 +14291,6 @@
       "comment" : "kind:section-title"
     },
     "L" : {
-      "comment" : "kind:section-title"
-    },
-    "LANGUAGE" : {
-      "comment" : "kind:sheet-title"
-    },
-    "LINK" : {
-      "comment" : "kind:section-title"
-    },
-    "LIVE NOW → AFTER PUBLISHING" : {
       "comment" : "kind:section-title"
     },
     "LLM" : {
@@ -14464,9 +14473,6 @@
     "Light" : {
       "comment" : "kind:section-title"
     },
-    "Light Mode" : {
-      "comment" : "kind:section-title"
-    },
     "Light and airy" : {
       "comment" : "kind:section-title"
     },
@@ -14474,6 +14480,9 @@
       "comment" : "kind:section-title"
     },
     "Light first line" : {
+      "comment" : "kind:section-title"
+    },
+    "Light mode" : {
       "comment" : "kind:section-title"
     },
     "Line %lld needs a territory code and a value." : {
@@ -14490,6 +14499,9 @@
     },
     "Line highlight bar" : {
       "comment" : "kind:field-label"
+    },
+    "Link" : {
+      "comment" : "kind:section-title"
     },
     "Link to “%@” copied." : {
       "comment" : "kind:description"
@@ -14566,6 +14578,9 @@
     "Live now · no %@ screenshots, so %@ shows these" : {
       "comment" : "kind:done-state"
     },
+    "Live now → after publishing" : {
+      "comment" : "kind:section-title"
+    },
     "Live on the App Store once version %@ is released." : {
       "comment" : "kind:progress-step"
     },
@@ -14633,9 +14648,6 @@
       "comment" : "kind:progress-step"
     },
     "Localized" : {
-      "comment" : "kind:section-title"
-    },
-    "Localized Sets" : {
       "comment" : "kind:section-title"
     },
     "Localized set" : {
@@ -14758,14 +14770,14 @@
     "Lower the price in %@" : {
       "comment" : "kind:suggestion-title"
     },
+    "Lowest Locale Coverage" : {
+      "comment" : "kind:section-title"
+    },
     "Lowest Rating" : {
       "comment" : "kind:section-title"
     },
     "Lowest and highest, relative to the base country" : {
       "comment" : "kind:description"
-    },
-    "Lowest locale coverage" : {
-      "comment" : "kind:section-title"
     },
     "M" : {
       "comment" : "kind:section-title"
@@ -15055,7 +15067,7 @@
     "Means: %@" : {
       "comment" : "kind:description"
     },
-    "Measuring…" : {
+    "Measuring the cache…" : {
       "comment" : "kind:loading"
     },
     "Median %@ vs equalized · %lld below · %lld at equalized · %lld above" : {
@@ -15208,6 +15220,9 @@
     "More: Discard Changes, Delete" : {
       "comment" : "kind:accessibility-label"
     },
+    "Most Price Suggestions" : {
+      "comment" : "kind:section-title"
+    },
     "Most affected device" : {
       "comment" : "kind:section-title"
     },
@@ -15219,9 +15234,6 @@
     },
     "Most of its text is in %@, not %@." : {
       "comment" : "kind:error"
-    },
-    "Most price suggestions" : {
-      "comment" : "kind:section-title"
     },
     "Motion loop" : {
       "comment" : "kind:section-title"
@@ -15292,16 +15304,13 @@
     "Music: %@ · you confirmed the rights" : {
       "comment" : "kind:description"
     },
-    "My picks" : {
+    "My Picks" : {
       "comment" : "kind:section-title"
     },
     "NEW" : {
       "comment" : "kind:section-title"
     },
     "NEW · VERSION %lld, IN PREPARATION" : {
-      "comment" : "kind:section-title"
-    },
-    "NOW" : {
       "comment" : "kind:section-title"
     },
     "Name" : {
@@ -15343,7 +15352,7 @@
     "Navigation" : {
       "comment" : "kind:section-title"
     },
-    "Nearby Price Points" : {
+    "Nearby price points" : {
       "comment" : "kind:sheet-title"
     },
     "Nearest price point at or above %@ → %@" : {
@@ -15397,6 +15406,9 @@
     "Needs an Admin, Finance or Sales key: add one in Settings → Account, or change this key’s role in Users and Access." : {
       "comment" : "kind:sheet-body"
     },
+    "Needs an In-App Purchase" : {
+      "comment" : "kind:section-title"
+    },
     "Needs an MCP assistant: %@" : {
       "comment" : "kind:sheet-title"
     },
@@ -15405,9 +15417,6 @@
     },
     "Needs an assistant" : {
       "comment" : "kind:pill"
-    },
-    "Needs an in-app purchase" : {
-      "comment" : "kind:section-title"
     },
     "Needs answer" : {
       "comment" : "kind:pill"
@@ -15436,7 +15445,7 @@
     "Never" : {
       "comment" : "kind:field-label"
     },
-    "Never above Apple’s equalized price." : {
+    "Never above Apple’s automatic price." : {
       "comment" : "kind:hint"
     },
     "Never above the equalized price, even where the factor is above 1 (Switzerland, Norway). Turn off to allow premiums." : {
@@ -15472,11 +15481,17 @@
     "New %@ version, in Prepare for Submission. Edit its texts after the push." : {
       "comment" : "kind:description"
     },
+    "New App Store Assets" : {
+      "comment" : "kind:sheet-title"
+    },
     "New App Store assets" : {
       "comment" : "kind:sheet-title"
     },
     "New Apple Watch screen" : {
       "comment" : "kind:section-title"
+    },
+    "New Custom Product Page" : {
+      "comment" : "kind:sheet-title"
     },
     "New Event…" : {
       "comment" : "kind:button"
@@ -15485,6 +15500,9 @@
       "comment" : "kind:sheet-title"
     },
     "New In-App Event" : {
+      "comment" : "kind:sheet-title"
+    },
+    "New In-App Purchase" : {
       "comment" : "kind:sheet-title"
     },
     "New In-App Purchase…" : {
@@ -15505,7 +15523,7 @@
     "New Page…" : {
       "comment" : "kind:button"
     },
-    "New Product Page" : {
+    "New Retention Offer" : {
       "comment" : "kind:sheet-title"
     },
     "New Run…" : {
@@ -15513,6 +15531,9 @@
     },
     "New Season" : {
       "comment" : "kind:other"
+    },
+    "New Subscription" : {
+      "comment" : "kind:sheet-title"
     },
     "New Subscription…" : {
       "comment" : "kind:sheet-title"
@@ -15541,9 +15562,6 @@
     "New in this set; it isn’t on the App Store until you push." : {
       "comment" : "kind:description"
     },
-    "New in-app purchase" : {
-      "comment" : "kind:sheet-title"
-    },
     "New is available while a new set waits in Review & Push" : {
       "comment" : "kind:description"
     },
@@ -15564,9 +15582,6 @@
     },
     "New prices in %@: %lld lower, %lld higher" : {
       "comment" : "kind:suggestion-title"
-    },
-    "New retention offer" : {
-      "comment" : "kind:sheet-title"
     },
     "New review for %@" : {
       "comment" : "kind:notification"
@@ -15630,9 +15645,6 @@
     },
     "New subscribers · %lld countries or regions" : {
       "comment" : "kind:description"
-    },
-    "New subscription" : {
-      "comment" : "kind:sheet-title"
     },
     "New term" : {
       "comment" : "kind:placeholder"
@@ -15784,14 +15796,8 @@
     "No PNG screenshots found. Choose fastlane’s screenshots folder, a folder per locale, or an Xcode result bundle." : {
       "comment" : "kind:error"
     },
-    "No Price Yet" : {
-      "comment" : "kind:empty-state"
-    },
     "No Terminal, nothing to paste. Save a small helper once. Atlas then runs Claude Code in the project folder, with a token per run, and shows what it does." : {
       "comment" : "kind:progress-step"
-    },
-    "No Territory Selected" : {
-      "comment" : "kind:empty-state"
     },
     "No alert, prompt, cut-off text or blank screen" : {
       "comment" : "kind:description"
@@ -16210,7 +16216,7 @@
     "No subscription yet" : {
       "comment" : "kind:section-title"
     },
-    "No subscriptions or in-app purchases" : {
+    "No subscriptions or In-App Purchases" : {
       "comment" : "kind:empty-state"
     },
     "No suggestion" : {
@@ -16239,6 +16245,9 @@
     },
     "No terms" : {
       "comment" : "kind:section-title"
+    },
+    "No territory selected" : {
+      "comment" : "kind:empty-state"
     },
     "No text" : {
       "comment" : "kind:section-title"
@@ -17290,6 +17299,9 @@
     "One word people type, e.g. from a podcast. Letters and digits, unique in the app. People see it: no other platforms, betas or placeholders." : {
       "comment" : "kind:description"
     },
+    "One-Time Codes for “%@”" : {
+      "comment" : "kind:sheet-title"
+    },
     "One-time codes" : {
       "comment" : "kind:section-title"
     },
@@ -17458,6 +17470,9 @@
     "Open Checklist" : {
       "comment" : "kind:button"
     },
+    "Open Custom Product Pages" : {
+      "comment" : "kind:section-title"
+    },
     "Open Help" : {
       "comment" : "kind:progress-step"
     },
@@ -17481,9 +17496,6 @@
     },
     "Open Privacy URLs" : {
       "comment" : "kind:button"
-    },
-    "Open Product Pages" : {
-      "comment" : "kind:section-title"
     },
     "Open Retention" : {
       "comment" : "kind:section-title"
@@ -17920,6 +17932,9 @@
     "Pair Claude Code" : {
       "comment" : "kind:section-title"
     },
+    "Pair an Assistant" : {
+      "comment" : "kind:sheet-title"
+    },
     "Pair an assistant" : {
       "comment" : "kind:sheet-title"
     },
@@ -18163,23 +18178,23 @@
     "Petals" : {
       "comment" : "kind:section-title"
     },
-    "Phased Release Paused" : {
+    "Phased Release" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Phased Release over 7 days" : {
+      "comment" : "kind:section-title"
+    },
+    "Phased Release paused" : {
       "comment" : "kind:progress-step"
     },
     "Phased Release · Day %lld of %lld" : {
       "comment" : "kind:progress-step"
     },
-    "Phased release" : {
-      "comment" : "kind:sheet-title"
+    "Phased Release, 7 days" : {
+      "comment" : "kind:accessibility-label"
     },
     "Phased release over 7 days" : {
       "comment" : "kind:section-title"
-    },
-    "Phased release paused" : {
-      "comment" : "kind:section-title"
-    },
-    "Phased release, 7 days" : {
-      "comment" : "kind:accessibility-label"
     },
     "Phased release, day %lld of %lld" : {
       "comment" : "kind:progress-step"
@@ -18475,13 +18490,10 @@
     "Price (United States)" : {
       "comment" : "kind:field-label"
     },
-    "Price Breakdown" : {
-      "comment" : "kind:section-title"
-    },
     "Price Increase" : {
       "comment" : "kind:section-title"
     },
-    "Price Index" : {
+    "Price breakdown" : {
       "comment" : "kind:section-title"
     },
     "Price breakdown · %@" : {
@@ -18525,9 +18537,6 @@
     },
     "Prices are kept as they are." : {
       "comment" : "kind:description"
-    },
-    "Prices are loading…" : {
-      "comment" : "kind:section-title"
     },
     "Prices by country" : {
       "comment" : "kind:section-title"
@@ -18715,16 +18724,10 @@
     "Product Personalization" : {
       "comment" : "kind:section-title"
     },
-    "Product page captures" : {
-      "comment" : "kind:section-title"
-    },
     "Product page header · 21:9 · %@" : {
       "comment" : "kind:section-title"
     },
     "Product page header · 21:9 · 3840 × 1646" : {
-      "comment" : "kind:section-title"
-    },
-    "Product page screenshots" : {
       "comment" : "kind:section-title"
     },
     "Product page views" : {
@@ -18801,6 +18804,9 @@
     },
     "Promotional text in %@" : {
       "comment" : "kind:section-title"
+    },
+    "Promotional text, %@" : {
+      "comment" : "kind:accessibility-label"
     },
     "Prompt" : {
       "comment" : "kind:sheet-title"
@@ -19111,17 +19117,8 @@
     "Quit When Window Closes" : {
       "comment" : "kind:button"
     },
-    "RATING PREVIEW" : {
-      "comment" : "kind:section-title"
-    },
     "RAW" : {
       "comment" : "kind:section-title"
-    },
-    "RECENT CALLS" : {
-      "comment" : "kind:sheet-title"
-    },
-    "RECENT REQUESTS" : {
-      "comment" : "kind:sheet-title"
     },
     "RTL" : {
       "comment" : "kind:pill"
@@ -19170,6 +19167,9 @@
     },
     "Rating not earned: the app has no App Store rating in %@ yet" : {
       "comment" : "kind:description"
+    },
+    "Rating preview" : {
+      "comment" : "kind:section-title"
     },
     "Rating too high" : {
       "comment" : "kind:section-title"
@@ -19261,6 +19261,9 @@
     "Reading %lld SDKs, %lld manifests · %lld suggestions" : {
       "comment" : "kind:progress-step"
     },
+    "Reading App Previews…" : {
+      "comment" : "kind:button"
+    },
     "Reading App Store screenshots…" : {
       "comment" : "kind:loading"
     },
@@ -19270,11 +19273,17 @@
     "Reading accessibility labels from Apple…" : {
       "comment" : "kind:accessibility-label"
     },
+    "Reading apps from App Store Connect…" : {
+      "comment" : "kind:loading"
+    },
     "Reading its store page, screenshots and prices." : {
       "comment" : "kind:progress-step"
     },
     "Reading prices from Apple…" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Reading prices…" : {
+      "comment" : "kind:section-title"
     },
     "Reading retention messages…" : {
       "comment" : "kind:loading"
@@ -19329,9 +19338,6 @@
     },
     "Reading your team and its apps." : {
       "comment" : "kind:progress-step"
-    },
-    "Reading…" : {
-      "comment" : "kind:button"
     },
     "Reads color and text styles, the logo and screenshot frames from a Figma file." : {
       "comment" : "kind:description"
@@ -19411,8 +19417,14 @@
     "Rebase onto v%lld" : {
       "comment" : "kind:button"
     },
+    "Recent calls" : {
+      "comment" : "kind:sheet-title"
+    },
     "Recent commit messages" : {
       "comment" : "kind:other"
+    },
+    "Recent requests" : {
+      "comment" : "kind:sheet-title"
     },
     "Recommended" : {
       "comment" : "kind:section-title"
@@ -19522,7 +19534,7 @@
     "Region tier" : {
       "comment" : "kind:pill"
     },
-    "Regional Tiers" : {
+    "Regional tiers" : {
       "comment" : "kind:section-title"
     },
     "Regional values follow Apple’s published tables. Regulators in Australia and Brazil can replace them with an official rating." : {
@@ -19753,6 +19765,9 @@
     "Replace Pick %lld With This" : {
       "comment" : "kind:section-title"
     },
+    "Replace Pick %lld with This" : {
+      "comment" : "kind:section-title"
+    },
     "Replace Review Screenshot…" : {
       "comment" : "kind:menu-item"
     },
@@ -19975,6 +19990,9 @@
     "Restore Dismissed Suggestions" : {
       "comment" : "kind:button"
     },
+    "Restore Previous Screenshots" : {
+      "comment" : "kind:sheet-title"
+    },
     "Restore Previous Screenshots…" : {
       "comment" : "kind:button"
     },
@@ -19993,9 +20011,6 @@
     "Restore from %@" : {
       "comment" : "kind:pill"
     },
-    "Restore previous screenshots" : {
-      "comment" : "kind:sheet-title"
-    },
     "Restore the old price in %@" : {
       "comment" : "kind:accessibility-label"
     },
@@ -20008,7 +20023,7 @@
     "Restored v%lld" : {
       "comment" : "kind:history-entry"
     },
-    "Restored · Not Rendered" : {
+    "Restored · not rendered" : {
       "comment" : "kind:section-title"
     },
     "Restoring makes a new version; nothing is lost." : {
@@ -20053,9 +20068,6 @@
     "Retention Messaging" : {
       "comment" : "kind:section-title"
     },
-    "Retention Offers" : {
-      "comment" : "kind:section-title"
-    },
     "Retention is part of Pro" : {
       "comment" : "kind:section-title"
     },
@@ -20078,6 +20090,9 @@
       "comment" : "kind:section-title"
     },
     "Retention offer · %@" : {
+      "comment" : "kind:section-title"
+    },
+    "Retention offers" : {
       "comment" : "kind:section-title"
     },
     "Retry" : {
@@ -20377,12 +20392,6 @@
     "SDKs" : {
       "comment" : "kind:sheet-title"
     },
-    "STARTED FROM ATLAS" : {
-      "comment" : "kind:section-title"
-    },
-    "SUGGESTED" : {
-      "comment" : "kind:section-title"
-    },
     "SUGGESTED · %@" : {
       "comment" : "kind:section-title"
     },
@@ -20590,9 +20599,6 @@
     "Scan of %@ · changes since %@" : {
       "comment" : "kind:banner"
     },
-    "Scan summary" : {
-      "comment" : "kind:sheet-title"
-    },
     "Scan the Code Again…" : {
       "comment" : "kind:button"
     },
@@ -20614,7 +20620,7 @@
     "Schedule Pending Prices…" : {
       "comment" : "kind:menu-item"
     },
-    "Schedule price changes" : {
+    "Schedule Price Changes" : {
       "comment" : "kind:sheet-title"
     },
     "Scheduled" : {
@@ -20809,9 +20815,6 @@
     "Search History" : {
       "comment" : "kind:section-title"
     },
-    "Search Keywords" : {
-      "comment" : "kind:section-title"
-    },
     "Search Results" : {
       "comment" : "kind:section-title"
     },
@@ -20822,6 +20825,9 @@
       "comment" : "kind:section-title"
     },
     "Search for “%@”" : {
+      "comment" : "kind:section-title"
+    },
+    "Search keywords" : {
       "comment" : "kind:section-title"
     },
     "Search names" : {
@@ -20912,6 +20918,9 @@
       "comment" : "kind:button"
     },
     "See Billing and Plans" : {
+      "comment" : "kind:section-title"
+    },
+    "See How to Fix…" : {
       "comment" : "kind:section-title"
     },
     "See Prices…" : {
@@ -21175,7 +21184,7 @@
     "Sensitive Info" : {
       "comment" : "kind:section-title"
     },
-    "Sent Automatically" : {
+    "Sent automatically" : {
       "comment" : "kind:history-entry"
     },
     "Sent automatically %@ · %@" : {
@@ -21415,6 +21424,9 @@
     "Show Countries" : {
       "comment" : "kind:button"
     },
+    "Show Details (%lld)" : {
+      "comment" : "kind:button"
+    },
     "Show Hidden and Rejected" : {
       "comment" : "kind:button"
     },
@@ -21438,6 +21450,9 @@
     },
     "Show Output has what it did before it stopped." : {
       "comment" : "kind:error"
+    },
+    "Show Price Suggestions" : {
+      "comment" : "kind:button"
     },
     "Show Prices As" : {
       "comment" : "kind:menu-item"
@@ -21501,9 +21516,6 @@
     },
     "Show password" : {
       "comment" : "kind:accessibility-label"
-    },
-    "Show price suggestions" : {
-      "comment" : "kind:button"
     },
     "Show suggestions" : {
       "comment" : "kind:section-title"
@@ -21714,6 +21726,9 @@
     },
     "Skipped capturing: reuses the %@ captures and picks" : {
       "comment" : "kind:description"
+    },
+    "Skipped · approved as made" : {
+      "comment" : "kind:hint"
     },
     "Skipped · no App Preview" : {
       "comment" : "kind:hint"
@@ -22003,6 +22018,9 @@
     "Started" : {
       "comment" : "kind:section-title"
     },
+    "Started from Atlas" : {
+      "comment" : "kind:section-title"
+    },
     "Started iPhone Duo (it starts closed)" : {
       "comment" : "kind:description"
     },
@@ -22206,6 +22224,9 @@
     },
     "Store Page · %@ and %lld more" : {
       "comment" : "kind:other"
+    },
+    "Store Page · App Information" : {
+      "comment" : "kind:section-title"
     },
     "Store Page · App information" : {
       "comment" : "kind:section-title"
@@ -22761,9 +22782,6 @@
     },
     "Swoosh" : {
       "comment" : "kind:section-title"
-    },
-    "Syncing with App Store Connect…" : {
-      "comment" : "kind:loading"
     },
     "Tab “Insights” → wait for the chart" : {
       "comment" : "kind:placeholder"
@@ -24832,6 +24850,12 @@
     "Translate All…" : {
       "comment" : "kind:section-title"
     },
+    "Translate Missing Captions" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Translate Missing Fields" : {
+      "comment" : "kind:sheet-title"
+    },
     "Translate Missing…" : {
       "comment" : "kind:menu-item"
     },
@@ -25168,7 +25192,7 @@
     "Unlocked in this build." : {
       "comment" : "kind:description"
     },
-    "Unpushed changes" : {
+    "Unpushed Changes" : {
       "comment" : "kind:section-title"
     },
     "Unrated" : {
@@ -25272,6 +25296,9 @@
     },
     "Use %@ in the App Preview" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Use %@ screenshots" : {
+      "comment" : "kind:section-title"
     },
     "Use %@, %@" : {
       "comment" : "kind:accessibility-label"
@@ -25723,15 +25750,6 @@
     "WB 2024" : {
       "comment" : "kind:pill"
     },
-    "WHAT HAPPENS" : {
-      "comment" : "kind:sheet-title"
-    },
-    "WHAT IT CAN SUGGEST HERE" : {
-      "comment" : "kind:sheet-title"
-    },
-    "WHAT IT COVERS" : {
-      "comment" : "kind:sheet-title"
-    },
     "Wait before sending" : {
       "comment" : "kind:field-label"
     },
@@ -25761,9 +25779,6 @@
     },
     "Waiting for %@…" : {
       "comment" : "kind:button"
-    },
-    "Waiting for App Review" : {
-      "comment" : "kind:section-title"
     },
     "Waiting for Apple" : {
       "comment" : "kind:section-title"
@@ -25909,9 +25924,6 @@
     "What Claude gets" : {
       "comment" : "kind:other"
     },
-    "What It’s Based On" : {
-      "comment" : "kind:sheet-title"
-    },
     "What Pro adds" : {
       "comment" : "kind:section-title"
     },
@@ -25939,6 +25951,15 @@
     "What goes to Apple" : {
       "comment" : "kind:sheet-title"
     },
+    "What happens" : {
+      "comment" : "kind:sheet-title"
+    },
+    "What it can suggest here" : {
+      "comment" : "kind:sheet-title"
+    },
+    "What it covers" : {
+      "comment" : "kind:sheet-title"
+    },
     "What it does" : {
       "comment" : "kind:section-title"
     },
@@ -25953,6 +25974,9 @@
     },
     "What it unlocks" : {
       "comment" : "kind:placeholder"
+    },
+    "What it’s based on" : {
+      "comment" : "kind:sheet-title"
     },
     "What leaves this Mac" : {
       "comment" : "kind:section-title"
@@ -26482,9 +26506,6 @@
     "Xcode test results · %lld attachments" : {
       "comment" : "kind:section-title"
     },
-    "YOURS" : {
-      "comment" : "kind:section-title"
-    },
     "Yearly" : {
       "comment" : "kind:section-title"
     },
@@ -26757,6 +26778,9 @@
     },
     "You’ll need an App Store Connect key. It never leaves this Mac." : {
       "comment" : "kind:description"
+    },
+    "You’re offline" : {
+      "comment" : "kind:section-title"
     },
     "You’re offline." : {
       "comment" : "kind:error"
@@ -28087,7 +28111,7 @@
     "none" : {
       "comment" : "kind:other"
     },
-    "none · shows %@'s %@" : {
+    "none · shows %@’s %@" : {
       "comment" : "kind:other"
     },
     "not collected" : {

@@ -60,7 +60,7 @@ struct PricingBottomBar: View {
             Text("Prices are kept as they are.")
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
-            Button("Show price suggestions") { viewModel.showPriceSuggestions() }
+            Button("Show Price Suggestions") { viewModel.showPriceSuggestions() }
                 .buttonStyle(.link)
                 .accessibilityIdentifier("pricing.showSuggestions")
         }

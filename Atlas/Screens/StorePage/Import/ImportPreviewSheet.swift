@@ -14,7 +14,7 @@ struct ImportPreviewSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text("Import translations")
+                Text("Import Translations")
                     .font(.title2.weight(.semibold))
                 if let preview = viewModel.importPreview {
                     Text(preview.summary)

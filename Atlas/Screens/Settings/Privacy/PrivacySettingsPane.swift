@@ -90,7 +90,7 @@ struct PrivacySettingsPane: View {
     }
 
     private var cacheCaption: String {
-        guard let cacheSize else { return String(localized: "Measuring…") }
+        guard let cacheSize else { return String(localized: "Measuring the cache…") }
         let size = ByteCountFormatter.string(fromByteCount: cacheSize, countStyle: .file)
         return String(localized: "\(size) · made again when needed.")
     }

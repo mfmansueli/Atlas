@@ -26,7 +26,7 @@ struct WorkspaceSectionStatus: Equatable {
         guard waiting > 0 else { return nil }
         let (one, many): (String, String) = switch section {
         case .screenshots: (String(localized: "1 caption suggested"), String(localized: "\(waiting) captions suggested"))
-        case .productPages: (String(localized: "1 idea"), String(localized: "\(waiting) ideas"))
+        case .productPages: (String(localized: "1 page suggested"), String(localized: "\(waiting) pages suggested"))
         case .inAppEvents: (String(localized: "1 language suggested"), String(localized: "\(waiting) languages suggested"))
         case .reviews: (String(localized: "1 reply suggested"), String(localized: "\(waiting) replies suggested"))
         case .analytics: (String(localized: "1 new finding"), String(localized: "\(waiting) new findings"))

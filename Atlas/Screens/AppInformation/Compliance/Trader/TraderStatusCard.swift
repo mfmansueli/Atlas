@@ -51,7 +51,7 @@ struct TraderStatusCard: View {
             }
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: Spacing.xxSmall) {
                 GridRow {
-                    Text("NOW")
+                    Text("Now")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.label2)
                         .frame(width: 74, alignment: .leading)
@@ -61,7 +61,7 @@ struct TraderStatusCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 GridRow {
-                    Text(showsBuiltInSuggestion ? "SUGGESTED" : "AS A TRADER")
+                    Text(showsBuiltInSuggestion ? "Suggested" : "As a trader")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(showsBuiltInSuggestion ? Palette.ai : Palette.label2)
                         .frame(width: 74, alignment: .leading)

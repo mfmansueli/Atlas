@@ -319,7 +319,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .deepLinkCheck: String(localized: "In-App Event deep link check")
         case .deepLinkWork: String(localized: "In-App Event deep link fix")
         case .encryptionKey: String(localized: "Export compliance key")
-        case .pageCaptures: String(localized: "Product page captures")
+        case .pageCaptures: String(localized: "Custom Product Page captures")
         case .reviewShots: String(localized: "Pricing review screenshots")
         case .reviewShotsStoreKit: String(localized: "Pricing review screenshots with StoreKit")
         }

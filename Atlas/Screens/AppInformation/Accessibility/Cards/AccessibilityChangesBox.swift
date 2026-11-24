@@ -13,7 +13,7 @@ struct AccessibilityChangesBox: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            Text("LIVE NOW → AFTER PUBLISHING")
+            Text("Live now → after publishing")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Palette.label2)
             ForEach(added) { feature in

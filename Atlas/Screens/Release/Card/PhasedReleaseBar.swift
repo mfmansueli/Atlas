@@ -29,7 +29,7 @@ struct PhasedReleaseBar: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Phased release, 7 days"))
+        .accessibilityLabel(Text("Phased Release, 7 days"))
         .accessibilityValue(Text(isPaused ? "Paused on day \(day), \(PhasedRelease.percentage(day: day))%" : "Day \(day), \(PhasedRelease.percentage(day: day))%"))
         .accessibilityIdentifier("overview.version.phased")
     }

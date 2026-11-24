@@ -58,7 +58,7 @@ struct ScreenshotCheckerTests {
         )
         let warning = checks.first { $0.kind == .interfaceLocalized }
         #expect(warning?.status == .warning)
-        #expect(warning?.text == "UI not localized: this capture shows the English (U.S.) interface")
+        #expect(warning?.text == "Interface not localized: this capture shows the English (U.S.) interface")
         #expect(ScreenshotChecker.firstFailure(in: checks) == nil)
     }
 

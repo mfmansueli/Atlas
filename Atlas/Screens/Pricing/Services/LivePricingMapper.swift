@@ -66,7 +66,7 @@ enum LivePricingMapper {
         case "CONSUMABLE": String(localized: "Consumable")
         case "NON_CONSUMABLE": String(localized: "Non-consumable")
         case "NON_RENEWING_SUBSCRIPTION": String(localized: "Non-renewing subscription")
-        default: String(localized: "In-app purchase")
+        default: String(localized: "In-App Purchase")
         }
     }
 
