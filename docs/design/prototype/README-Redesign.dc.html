@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redesign — README</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.rd{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Helvetica Neue",Arial,sans-serif;color:#1D1D1F;background:#FFFFFF;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.6}
+.rd *{box-sizing:border-box}
+.rd h1{font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
+.rd h2{font-size:26px;line-height:1.2;letter-spacing:-.01em;margin:56px 0 14px;padding-top:24px;border-top:1px solid #E3E3E8;font-weight:650}
+.rd h3{font-size:18px;line-height:1.3;margin:30px 0 8px;font-weight:650}
+.rd p{margin:0 0 12px}
+.rd ul,.rd ol{margin:0 0 14px;padding-left:22px}
+.rd li{margin:3px 0}
+.rd .m{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:.86em;background:#F2F2F5;border-radius:5px;padding:1px 5px}
+.rd pre{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.55;background:#F5F5F7;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 16px;white-space:pre}
+.rd table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45}
+.rd th{text-align:left;font-weight:600;color:#55555A;font-size:12px;padding:7px 10px;border-bottom:1px solid #D8D8DD;background:#FAFAFB}
+.rd td{padding:7px 10px;border-bottom:1px solid #ECECF0;vertical-align:top}
+.rd .tw{overflow-x:auto;margin:0 0 18px}
+.rd .tw table{min-width:640px}
+.rd .note{background:#F5F5F7;border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:14px}
+.rd .warn{background:#FFF6D9;border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:14px;color:#3D2E00}
+.rd .lead{font-size:18px;line-height:1.55;color:#45454A}
+.rd a{color:#0066CC}
+@media (max-width:640px){.rd h1{font-size:30px}}
+</style>
+</helmet>
+<div class="rd" style="width: 100%; min-height: 100vh; padding: 64px 24px 96px">
+<div style="max-width: 880px; margin: 0 auto">
+<p style="font-size: 12px; font-weight: 600; letter-spacing: .06em; color: #6B6B70; margin-bottom: 8px">ATLAS · PROPOSAL · NOVEMBER 2026</p>
+<h1>Overview, Pricing, Store Page, Screenshots and App Information: a clearer design</h1>
+<p class="lead">A redesign of the five sections, with two goals: make it obvious what each section changes on the App Store, and make suggestions easy to find and accept, without going language by language.</p>
+<div class="warn"><b>Navigation update, November 16.</b> The sections moved from the toolbar to the sidebar, grouped as Overview · Store Listing · After Release, with the app list in a menu at the top and the version’s status at the bottom (page <i>Proposta · Navegação</i>, boards 41–43). Where this README says “tab bar” or “toolbar” for sections, read “sidebar”. Every board on the canvas already shows the new navigation.</div>
+
+<div class="warn"><b>Toolbar update, November 21 (accepted).</b> Each section’s title and status now sit in the toolbar, and the title row inside the page is gone. One <b>Autopilot</b> button, top right, does what Claude Code can do in that section (Suggest Texts…, Make Screenshots…, Draft Replies…). It replaces Ask Claude Code… and Start Autopilot… in the pages, and the Assistant button. <b>Review &amp; Push</b> in the toolbar is the only way to push. See <i>Toolbar e ações</i> and its README.</div>
+<div class="warn"><b>Update, November 22: buttons, Overview, App Information.</b><br><b>One button size.</b> Buttons are 28 pt high (13 pt text) everywhere in a page or a sheet; a smaller 24 pt button (12 pt text) is only for actions inside a suggestion, a table row or a toast. Before they were 24 and 20. Text fields, menus and segmented controls are 28 pt too, so a row of controls lines up. The toolbar keeps 32 pt. Blue is the one main action of a card or sheet; purple is Accept All; red text is destructive.<br><b>Overview is three lists.</b> What 1.4 still needs before App Review (only what is missing, then Submit for Review…); the suggestions to review, one row per section; and After release (Analytics, Ratings &amp; Reviews, Product Pages) with one line each. The App Store preview is smaller and on the right. Removed: the app’s name and version at the top (they are in the toolbar), the tags on the preview, “How a change reaches the App Store”, and the new-languages banner (the Store Page row says it).<br><b>App Information</b> shows its title once, in the toolbar; the title above the page list is gone.</div>
+<div class="warn"><b>Update, November 22 (2): the app switcher and a first-run tour</b> (board 63 on <i>▶ App clicável</i>).<br><b>App switcher.</b> It has a label, “App”, like the other groups of the sidebar; the first two lines stay about this app (name; team and role); a third line, under a hairline, is about the others: “5 other apps · 3 suggestions in Habitat” (purple when there are suggestions; “2 with suggestions” when more than one app has them; hidden with a single app). It replaces the purple dot. The arrows sit in a round control. ⌘K opens it.<br><b>Tour.</b> Five tips, one at a time, each pointing at the thing it explains: the app switcher, the sections and their purple numbers, the Autopilot button, Review &amp; Push, and Settings. Each has Next and Skip the Tour, a close button and “2 of 5”. The last one offers Connect an Assistant…. It starts once, after the first sync, and <b>Show the Tour</b> in the sidebar (also in the Help menu) starts it again.<br><b>For Claude Code:</b> build the tips with <span class="m">TipKit</span>: one <span class="m">Tip</span> per step, shown with <span class="m">.popoverTip(_:arrowEdge:)</span> on the control, in order with a <span class="m">TipGroup(.ordered)</span>. Next is a tip action that invalidates the current tip; the close button and Skip the Tour invalidate all five. Show the Tour calls <span class="m">Tips.resetDatastore()</span> and configures again. The “2 of 5” counter isn’t part of TipKit’s standard view, so it needs a custom <span class="m">TipViewStyle</span>; drop it if the standard look is preferred. Check the TipKit API names against the current SDK before building.</div>
+<div class="note"><b>On the canvas.</b> The page <i>Proposta · Novo design</i> has the clickable prototype (press Play), the board <b>Redesign · every state</b> with 23 states, and this README. The current design stays on the other pages until this proposal is approved.</div>
+
+<h2>What was hard</h2>
+<ul>
+  <li><b>The sections don’t say what they change.</b> Store Page, App Information and Pricing were lists of fields. Someone new to Atlas couldn’t tell which field shows where on the App Store, or that most of App Information never shows at all.</li>
+  <li><b>Suggestions were hidden until you opened a section.</b> The tab bar didn’t say where suggestions were waiting, and the language tabs only showed counts for the few languages that fit in the row.</li>
+  <li><b>Accepting meant visiting every language.</b> “Accept All (2)” worked for one language. “Accept All 32 in Every Language” was a small link under the bar, and accepted everything without showing what it was accepting.</li>
+</ul>
+
+<h2>Principles</h2>
+<ol>
+  <li><b>Say what it changes, and show it.</b> Every section starts with one sentence about what it controls. Store Page, App Information and Pricing have a preview of the App Store beside the editor; Screenshots are their own preview. The preview has <b>Now | Suggested</b>, so you can see the page with the suggestions before accepting them. Each Store Page field says where it appears (“Under the name, on the page and in search results”; “Not shown on the page. Only App Store search reads them”).</li>
+  <li><b>One meaning per color.</b> Purple is a suggestion waiting for you: badges, suggestion cards, highlighted text in the preview, rings around screenshots. Blue is accepted or edited and waiting in Review &amp; Push (“Not pushed”). Plain is what’s live.</li>
+  <li><b>Suggestions are visible from anywhere.</b> A purple count is shown wherever you navigate: on the tab bar, the app in the sidebar, each language in the language menu, each App Information page, iPhone and Apple Watch in Accessibility, Prices and Retention in Pricing, and each language in Screenshots.</li>
+  <li><b>Accept everything without going language by language, but see it first.</b> Accept All Languages sits right beside the language you’re viewing, and shows every suggestion before accepting, unless you’ve told it not to ask.</li>
+  <li><b>Accepting is never pushing.</b> Accepted suggestions wait in Review &amp; Push, and every accept can be undone from the toast.</li>
+</ol>
+
+<h2>Badges</h2>
+<div class="tw"><table>
+<tr><th>Where</th><th>What the number counts</th></tr>
+<tr><td>Tab bar: Pricing, Store Page, Screenshots, App Information</td><td>Suggestions in that section not yet accepted or dismissed. Overview has no badge: it is the summary.</td></tr>
+<tr><td>App in the sidebar</td><td>All of the app’s open suggestions.</td></tr>
+<tr><td>Language picker</td><td>“5 suggestions here” under the language’s name. One picker drives the editor and the preview; ‹ › beside it go to the previous and next language (⌘[ and ⌘]).</td></tr>
+<tr><td>Language menu (Store Page, Screenshots)</td><td>Languages with suggestions first, each with its count; then “Up to date” languages with a check. A language the app supports but the App Store doesn’t have yet is marked <b>New page</b>. A <b>Find a language</b> field sits at the top with the total (“15 languages”); typing filters at once, “No language matches” when nothing does. Full names always (“English (U.K.)”, never “U.K.”).</td></tr>
+<tr><td>App Information pages</td><td>Count plus a short status: “7 suggested · 7 unanswered”, “In progress”, “Exempt · done”.</td></tr>
+<tr><td>Inside a page</td><td>Accessibility’s iPhone and Apple Watch, and Pricing’s Prices and Retention, each have their own count.</td></tr>
+</table></div>
+<p>A badge disappears at zero. Badges are purple with white text (dark text in dark mode); in High Contrast they use the darker purple. VoiceOver reads them as part of the label: “Store Page, 32 suggestions to review”.</p>
+
+<h2>Accept All Languages</h2>
+<ul>
+  <li><b>Where:</b> right beside the language picker in Store Page and Screenshots, with the total count. App Information has the same button, <b>Accept All Pages</b>, beside the page’s description. Pricing has <b>Accept All 3</b> above its products.</li>
+  <li><b>The sheet:</b> languages on the left (or pages), each with a checkbox and “5 of 5”; the selected language’s suggestions on the right, each with a checkbox, Now and New, who suggested it and why. Screenshots show the screenshot before and after. Untick a whole language or a single field. A new language says that accepting creates its page when you push.</li>
+  <li><b>Don’t ask again:</b> a checkbox in the sheet’s footer. When it’s on, the next Accept All Languages accepts everything at once and says so in the toast. A line under the button reads “Accepts right away” with <b>Ask First</b> to turn it off. It’s also in Settings → Suggestions. It is one setting for Store Page, Screenshots and App Information.</li>
+  <li><b>After:</b> a toast “Accepted 23 suggestions in 5 languages. They’re in Review &amp; Push.” with <b>Undo</b> and <b>Review &amp; Push</b>. Badges drop to what’s left.</li>
+  <li>The arrows beside the button jump to the previous or next language with suggestions. <b>Accept 5 in English</b> accepts only the language you’re viewing.</li>
+</ul>
+
+<h2>Each section</h2>
+<h3>Overview</h3>
+<p>Left: three cards. What 1.4 still needs before App Review, with Submit for Review…; “65 suggestions to review”, one row per section with Review; “After release”, one row each for Analytics, Ratings &amp; Reviews and Product Pages. Right: the top of the App Store page (name, rating, screenshots) in English, German or Japanese; clicking a part opens the section that edits it.</p>
+<h3>Store Page</h3>
+<p>Language picker + Accept All Languages + arrows; the fields, each with where it appears and its counter; suggestions inline under the field; the App Store preview on the right with the store’s own words in that language (Laden, Neue Funktionen, In-App-Käufe). Hebrew and Arabic run right to left in the fields and the preview. Ask Claude Code… and Editor | In-App Texts move to the header.</p>
+<h3>Screenshots</h3>
+<p>The same language bar. One language at a time, large, drawn by the template engine; a suggested caption appears on the screenshot itself with a purple ring and “Caption suggested”. <b>All Languages</b> shows every language at a glance with its count. Device switch (iPhone, iPad, Mac) and Start Autopilot… stay.</p>
+<h3>App Information</h3>
+<p>Pages on the left with counts and status. Each page says what it changes on the App Store (“Not on the App Store. Only App Review reads it.”). Yes/No and None/Infrequent/Frequent questions are one line each, with the suggestion on a line under them. The preview shows the Information and Accessibility sections.</p>
+<h3>Pricing</h3>
+<p>One card per product: its U.S. price and a bar showing how its 175 prices are set (equalized, recommended, suggested). Suggestions sit inside the product; Show Countries lists now and suggested per country. “What people pay” shows the In-App Purchases list in the U.S., Germany, Brazil, India or Japan, now or with the suggestions. Retention is a tab with its own badge.</p>
+
+<h2>What doesn’t change</h2>
+<ul>
+  <li>Review &amp; Push and the push itself (board 7), In-App Texts (boards 26–27), Retention’s editor (board 28), App Privacy (boards 15–16), Autopilot (board 21), the Assistant popover and setup.</li>
+  <li>How suggestions are made, who makes them, and the MCP tools.</li>
+</ul>
+
+<h2>For Claude Code</h2>
+<ul>
+  <li>Badges come from the same open-suggestions query everywhere (not accepted, not dismissed), grouped by section, language, page or product, so they always agree.</li>
+  <li>The tab bar is a custom segmented control so each segment can show a badge; keep ⌘1–⌘5.</li>
+  <li>Setting: <span class="m">acceptAllWithoutAsking</span>, default off, shared by Store Page, Screenshots and App Information; shown in Settings → Suggestions and under the button when on.</li>
+  <li>Accept All accepts only what’s ticked, as one undoable change. Undo restores the exact set.</li>
+  <li>Accepting a new language’s suggestions queues “create the page”, as today.</li>
+  <li>The App Store previews use the store’s strings for each language and the app’s real rating per storefront; the screenshots come from the template engine.</li>
+</ul>
+<div class="warn">To validate: whether the previews earn their width on smaller windows (they could fold to a button under 1100 pt); whether one “Don’t ask again” for every section is right, or Store Page and App Information should be separate.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
