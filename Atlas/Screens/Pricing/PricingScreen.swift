@@ -18,6 +18,8 @@ struct PricingScreen: View {
 
     @State private var isImporterPresented = false
     @Environment(\.openSettings) private var openSettings
+    /// Recommended prices for many countries are Pro's; nil in previews.
+    @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
         @Bindable var strategy = viewModel.strategy
@@ -73,11 +75,25 @@ struct PricingScreen: View {
                 appName: viewModel.app.name,
                 bundleID: viewModel.app.bundleID,
                 groups: viewModel.subscriptionGroups,
-                initial: viewModel.newSubscriptionDefaults(),
+                initial: newSubscriptionDefaults,
                 problems: viewModel.problems(for:),
                 onCancel: { viewModel.isNewSubscriptionSheetPresented = false },
-                onAdd: viewModel.queueNewSubscription
+                onAdd: addNewSubscription,
+                recommend: viewModel.recommendation(forPrice:),
+                isFree: pro.isFree
             )
+        }
+        .sheet(isPresented: isReviewingLater) {
+            if let productID = viewModel.reviewLaterProductID, let product = viewModel.catalog?.product(id: productID) {
+                RecommendedPricesReviewSheet(
+                    productName: product.name,
+                    places: viewModel.reviewLaterPlaces(productID: productID),
+                    onApply: { applyRecommendations($0, productID: productID) },
+                    onKeep: { viewModel.keepApplePrices(productID: productID) },
+                    onLater: { viewModel.reviewLaterProductID = nil }
+                )
+                .pageControlSize()
+            }
         }
         .modifier(PurchaseSetupSheets(viewModel: viewModel))
         .sheet(isPresented: $viewModel.isStartingPriceSheetPresented) {
@@ -205,6 +221,48 @@ struct PricingScreen: View {
                 )
                 .accessibilityIdentifier("pricing.noSalesBanner")
             }
+        }
+    }
+
+    /// Create Subscription's defaults: the recommended prices with Pro,
+    /// Apple's equalized ones in Free.
+    private var newSubscriptionDefaults: NewSubscription {
+        var subscription = viewModel.newSubscriptionDefaults()
+        subscription.priceChoice = pro.isFree ? .equalized : .recommended
+        return subscription
+    }
+
+    /// Add to Review & Push. With the recommended prices in Free, the
+    /// sheet closes for the paywall, whose continue button adds it.
+    private func addNewSubscription(_ subscription: NewSubscription) {
+        guard subscription.priceChoice.needsPro, pro.isFree else {
+            viewModel.queueNewSubscription(subscription)
+            return
+        }
+        let countries = subscription.price.flatMap(viewModel.recommendation(forPrice:))?.changed.count ?? 0
+        viewModel.isNewSubscriptionSheetPresented = false
+        Task {
+            // One sheet at a time: after this one has left.
+            try? await Task.sleep(for: .milliseconds(350))
+            pro.require(.recommendedPrices(countries: countries)) { viewModel.queueNewSubscription(subscription) }
+        }
+    }
+
+    private var isReviewingLater: Binding<Bool> {
+        Binding { viewModel.reviewLaterProductID != nil } set: { if !$0 { viewModel.reviewLaterProductID = nil } }
+    }
+
+    /// Apply Selected or Apply All: one country stays free; more are Pro's.
+    private func applyRecommendations(_ territoryIDs: [String], productID: String) {
+        let apply = { _ = Task.immediate { await viewModel.applyRecommendations(productID: productID, territoryIDs: territoryIDs) } }
+        guard territoryIDs.count > 1, pro.isFree else {
+            apply()
+            return
+        }
+        viewModel.reviewLaterProductID = nil
+        Task {
+            try? await Task.sleep(for: .milliseconds(350))
+            pro.require(.recommendedPrices(countries: territoryIDs.count), then: apply)
         }
     }
 

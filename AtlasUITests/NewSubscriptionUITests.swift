@@ -78,6 +78,50 @@ final class NewSubscriptionUITests: XCTestCase {
     }
 
     /// Whether `element` gets the keyboard focus within a few seconds.
+    /// The other countries' prices: recommended by default (Pro in the
+    /// UI test host), with how many are lower and the table on demand;
+    /// Review Later and Apple's automatic prices beside it.
+    func testThePriceChoicesShowTheRecommendedPrices() {
+        app.launch(debugScene: "pricing-nosubs")
+        let create = app.buttons["pricing.createSubscription"]
+        XCTAssertTrue(create.waitForExistence(timeout: 10))
+        create.click()
+        XCTAssertTrue(element("pricing.newSubscription").waitForExistence(timeout: 5))
+        let price = app.textFields["pricing.newSubscription.price"]
+        price.click()
+        price.typeText("9.99")
+
+        let recommended = element("pricing.newSubscription.prices.recommended")
+        XCTAssertTrue(recommended.waitForExistence(timeout: 5))
+        XCTAssertTrue(element("pricing.newSubscription.prices.review_later").exists)
+        XCTAssertTrue(element("pricing.newSubscription.prices.equalized").exists)
+        let summary = element("pricing.newSubscription.prices.summary")
+        XCTAssertTrue(summary.waitForExistence(timeout: 5))
+        XCTAssertTrue(text(of: summary).contains("lower than Apple’s automatic price"))
+        app.buttons["pricing.newSubscription.prices.showCountries"].click()
+        XCTAssertTrue(element("pricing.recommendedPrices.IND").waitForExistence(timeout: 5))
+
+        element("pricing.newSubscription.prices.equalized").click()
+        XCTAssertTrue(summary.waitForNonExistence(timeout: 5))
+    }
+
+    /// Review… for the recommendations left for later: every country
+    /// selected, the filter, and Apply Selected counting them.
+    func testReviewingTheRecommendationsLater() {
+        app.launch(debugScene: "newsub-review-later")
+        let review = element("pricing.recommendedPrices.review")
+        XCTAssertTrue(review.waitForExistence(timeout: 15))
+        let apply = app.buttons["pricing.recommendedPrices.applySelected"]
+        XCTAssertTrue(apply.isEnabled)
+        let all = app.buttons["pricing.recommendedPrices.applyAll"].label
+        XCTAssertTrue(apply.label.contains(all.replacingOccurrences(of: "Apply All ", with: "")))
+        app.checkBoxes["pricing.recommendedPrices.IND.check"].click()
+        XCTAssertFalse(apply.label == all.replacingOccurrences(of: "Apply All", with: "Apply Selected"))
+        app.checkBoxes["pricing.recommendedPrices.muchLower"].click()
+        XCTAssertTrue(app.buttons["pricing.recommendedPrices.keep"].exists)
+        XCTAssertTrue(app.buttons["pricing.recommendedPrices.later"].exists)
+    }
+
     private func waitForFocus(on element: XCUIElement) -> Bool {
         let focused = NSPredicate(format: "hasKeyboardFocus == true")
         return XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: focused, object: element)], timeout: 5) == .completed

@@ -25,8 +25,14 @@ struct NewSubscription: Hashable, Sendable {
     var displayName: String
     var description: String
     /// The price in the United States, in US dollars; every other country
-    /// or region gets Apple's equalized price.
+    /// or region gets Apple's equalized price, or the recommended one
+    /// (`priceChoice`).
     var price: Decimal?
+    /// What it costs in the other countries and regions.
+    var priceChoice: NewSubscriptionPriceChoice = .equalized
+    /// With `.recommended`, the local prices that differ from Apple's
+    /// equalized ones, by alpha-3 (`NewSubscriptionRecommendation.prices`).
+    var recommendedPrices: [String: Decimal] = [:]
     /// For App Review, e.g. how to reach the paywall.
     var reviewNote = ""
     /// What App Review sees: the paywall. Without one the subscription
@@ -35,6 +41,11 @@ struct NewSubscription: Hashable, Sendable {
 
     /// Where the starting price is set; the others are equalized with it.
     static let baseTerritoryID = "USA"
+
+    /// The prices the push sets apart from Apple's equalized ones.
+    var priceOverrides: [String: Decimal] {
+        priceChoice == .recommended ? recommendedPrices : [:]
+    }
 
     /// The price as the App Store writes it in the United States: "$9.99".
     var formattedPrice: String? {

@@ -27,6 +27,7 @@ final class PricingModeStore {
             .compactMapValues(PricingMode.init(rawValue:))
         self.modes = saved.merging(modes) { _, new in new }
         dismissedPriceSuggestions = (defaults?.dictionary(forKey: Self.dismissalsKey) as? [String: [String]] ?? [:]).mapValues(Set.init)
+        reviewLaterProductIDs = (defaults?.dictionary(forKey: Self.reviewLaterKey) as? [String: [String]] ?? [:]).mapValues(Set.init)
     }
 
     /// The mode the person picked for this app, or nil before the first visit.
@@ -64,10 +65,32 @@ final class PricingModeStore {
         saveDismissals()
     }
 
+    // MARK: - Recommendations to review later
+
+    /// Per app, the product IDs (`com.example.app.premium.weekly`) of new
+    /// subscriptions added with Apple's prices and the recommendations to
+    /// review after the push: Pricing shows a banner with Review… for them.
+    private(set) var reviewLaterProductIDs: [StoreApp.ID: Set<String>]
+
+    func isReviewingLater(productID: String, appID: StoreApp.ID) -> Bool {
+        reviewLaterProductIDs[appID]?.contains(productID) == true
+    }
+
+    func setReviewLater(_ isOn: Bool, productID: String, appID: StoreApp.ID) {
+        if isOn {
+            reviewLaterProductIDs[appID, default: []].insert(productID)
+        } else {
+            reviewLaterProductIDs[appID]?.remove(productID)
+            if reviewLaterProductIDs[appID]?.isEmpty == true { reviewLaterProductIDs[appID] = nil }
+        }
+        defaults?.set(reviewLaterProductIDs.mapValues { $0.sorted() }, forKey: Self.reviewLaterKey)
+    }
+
     private func saveDismissals() {
         defaults?.set(dismissedPriceSuggestions.mapValues { $0.sorted() }, forKey: Self.dismissalsKey)
     }
 
     private static let key = "pricingModes"
     private static let dismissalsKey = "dismissedPriceSuggestions"
+    private static let reviewLaterKey = "reviewLaterPriceSuggestions"
 }

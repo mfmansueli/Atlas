@@ -11,7 +11,11 @@ import SwiftUI
 /// price in the United States. Add to Review & Push queues it; the push
 /// creates it. Names and the product ID follow the group and duration
 /// until the person edits them. Add with a problem scrolls to the first
-/// field that has one and puts the cursor there.
+/// field that has one and puts the cursor there. Under the price, the
+/// person decides what it costs everywhere else (board 18): the
+/// recommended prices (with how many are lower, samples and the table),
+/// Apple's prices now with the recommendations for later, or Apple's
+/// equalized prices.
 struct NewSubscriptionSheet: View {
     let appID: StoreApp.ID
     let appName: String
@@ -20,8 +24,13 @@ struct NewSubscriptionSheet: View {
     let problems: (NewSubscription) -> [NewSubscriptionProblem]
     let onCancel: () -> Void
     let onAdd: (NewSubscription) -> Void
+    /// The recommended prices for a US price; nil when there's none.
+    var recommend: (Decimal) -> NewSubscriptionRecommendation? = { _ in nil }
+    /// Free: the recommended prices carry the PRO chip.
+    var isFree = false
 
     @State private var draft: NewSubscription
+    @State private var recommendation: NewSubscriptionRecommendation?
     @State private var groupChoice: String
     @State private var newGroupReferenceName: String
     @State private var newGroupDisplayName: String
@@ -42,7 +51,9 @@ struct NewSubscriptionSheet: View {
         initial: NewSubscription,
         problems: @escaping (NewSubscription) -> [NewSubscriptionProblem],
         onCancel: @escaping () -> Void,
-        onAdd: @escaping (NewSubscription) -> Void
+        onAdd: @escaping (NewSubscription) -> Void,
+        recommend: @escaping (Decimal) -> NewSubscriptionRecommendation? = { _ in nil },
+        isFree: Bool = false
     ) {
         self.appID = appID
         self.appName = appName
@@ -51,6 +62,8 @@ struct NewSubscriptionSheet: View {
         self.problems = problems
         self.onCancel = onCancel
         self.onAdd = onAdd
+        self.recommend = recommend
+        self.isFree = isFree
         _draft = State(initialValue: initial)
         switch initial.group {
         case let .existing(id, _):
@@ -75,6 +88,7 @@ struct NewSubscriptionSheet: View {
             .existing(id: groupChoice, referenceName: groups.first { $0.id == groupChoice }?.name ?? groupChoice)
         }
         subscription.price = NewSubscription.price(from: priceText)
+        subscription.recommendedPrices = subscription.priceChoice == .recommended ? recommendation?.prices ?? [:] : [:]
         return subscription
     }
 
@@ -96,6 +110,7 @@ struct NewSubscriptionSheet: View {
                     subscriptionSection
                     storeSection
                     priceSection
+                    NewSubscriptionPricesSection(choice: $draft.priceChoice, recommendation: recommendation, isFree: isFree)
                     reviewSection
                 }
                 .formStyle(.grouped)
@@ -115,6 +130,12 @@ struct NewSubscriptionSheet: View {
         .onChange(of: draft.period) { updateSuggestions() }
         .onChange(of: groupChoice) { updateSuggestions() }
         .onChange(of: newGroupReferenceName) { updateSuggestions() }
+        .task(id: priceText) {
+            // Lets the typing settle before working out 174 prices.
+            try? await Task.sleep(for: .milliseconds(250))
+            guard !Task.isCancelled else { return }
+            recommendation = NewSubscription.price(from: priceText).flatMap(recommend)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.newSubscription")
     }
@@ -206,7 +227,7 @@ struct NewSubscriptionSheet: View {
         } header: {
             Text("Starting price")
         } footer: {
-            note("Available everywhere, at Apple’s automatic prices outside the US. Change prices in Pricing after the push.")
+            note("Available everywhere. Change prices in Pricing after the push.")
         }
     }
 

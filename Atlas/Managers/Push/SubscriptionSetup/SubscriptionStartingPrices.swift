@@ -11,7 +11,9 @@ import Foundation
 /// exists; the push reads them then, sets the price in that territory and
 /// Apple's equalized price everywhere else, like App Store Connect's
 /// "Set Starting Price". A territory that has a price by then keeps it, so
-/// a retry picks up where it stopped.
+/// a retry picks up where it stopped. A new subscription with the
+/// recommended prices carries them as `overrides`: those territories get
+/// their own point nearest that price instead of the equalized one.
 ///
 /// The prices go in a few `PATCH /v1/subscriptions/{id}` with up to
 /// `batchSize` inline price creates each (`SubscriptionUpdateRequest`'s
@@ -23,19 +25,26 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
     /// The base territory, `USA`.
     var territoryID: String
     var customerPrice: Decimal
+    /// Local prices by alpha-3 that replace the equalized ones.
+    var overrides: [String: Decimal] = [:]
 
     static let placeholderPrefix = "{startingPrice:"
 
-    static func placeholder(territoryID: String, price: Decimal) -> String {
-        "\(placeholderPrefix)\(territoryID):\(NSDecimalNumber(decimal: price).stringValue)}"
+    /// `{startingPrice:USA:9.99}`, or with overrides
+    /// `{startingPrice:USA:9.99:BRA=5.9,IND=69}`.
+    static func placeholder(territoryID: String, price: Decimal, overrides: [String: Decimal] = [:]) -> String {
+        let base = "\(placeholderPrefix)\(territoryID):\(NSDecimalNumber(decimal: price).stringValue)"
+        guard !overrides.isEmpty else { return base + "}" }
+        let list = overrides.keys.sorted().compactMap { key in overrides[key].map { "\(key)=\(NSDecimalNumber(decimal: $0).stringValue)" } }
+        return base + ":" + list.joined(separator: ",") + "}"
     }
 
     /// The queued request: `subscriptionID` may be `{createdID:subscriptions}`.
-    static func request(subscriptionID: String, territoryID: String, price: Decimal) -> PushRequest {
+    static func request(subscriptionID: String, territoryID: String, price: Decimal, overrides: [String: Decimal] = [:]) -> PushRequest {
         let body = SubscriptionPriceCreateRequest(
             subscriptionID: subscriptionID,
             territoryID: territoryID,
-            pricePointID: placeholder(territoryID: territoryID, price: price),
+            pricePointID: placeholder(territoryID: territoryID, price: price, overrides: overrides),
             preserveCurrentPrice: false
         )
         return (try? PushRequest.json(.post, path, body)) ?? PushRequest(method: .post, path: path)
@@ -50,10 +59,21 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
         let point = document.data.relationships.subscriptionPricePoint.data.id
         guard point.hasPrefix(Self.placeholderPrefix), point.hasSuffix("}") else { return nil }
         let parts = point.dropFirst(Self.placeholderPrefix.count).dropLast().split(separator: ":").map(String.init)
-        guard parts.count == 2, let price = Decimal(string: parts[1], locale: Locale(identifier: "en_US_POSIX")) else { return nil }
+        guard parts.count == 2 || parts.count == 3, let price = Self.decimal(parts[1]) else { return nil }
         subscriptionID = document.data.relationships.subscription.data.id
         territoryID = parts[0]
         customerPrice = price
+        if parts.count == 3 {
+            for pair in parts[2].split(separator: ",") {
+                let item = pair.split(separator: "=").map(String.init)
+                guard item.count == 2, let value = Self.decimal(item[1]) else { continue }
+                overrides[item[0]] = value
+            }
+        }
+    }
+
+    private static func decimal(_ text: String) -> Decimal? {
+        Decimal(string: text, locale: Locale(identifier: "en_US_POSIX"))
     }
 
     /// One territory's price to set.
@@ -73,8 +93,25 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
 
     /// `GET` the subscription's price points in the base territory.
     var pricePointsPath: String {
+        pricePointsPath(territoryID: territoryID)
+    }
+
+    /// `GET` the subscription's price points in one territory.
+    func pricePointsPath(territoryID: String) -> String {
         "/v1/subscriptions/\(subscriptionID)/pricePoints?filter%5Bterritory%5D=\(territoryID)"
             + "&fields%5BsubscriptionPricePoints%5D=customerPrice&limit=8000"
+    }
+
+    /// The point closest to `price` (an exact one first); ties go higher.
+    static func nearestPointID(to price: Decimal, in resources: [[String: Any]]) -> String? {
+        let priced = resources.compactMap { resource -> (id: String, price: Decimal)? in
+            guard let id = resource["id"] as? String, let value = Self.price(of: resource) else { return nil }
+            return (id, value)
+        }
+        return priced.min { lhs, rhs in
+            let left = (lhs.price - price).magnitude, right = (rhs.price - price).magnitude
+            return left == right ? lhs.price > rhs.price : left < right
+        }?.id
     }
 
     /// `GET` the points Apple equalizes with the base one, with their territory.
@@ -176,7 +213,8 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
         progress: (Int, Int) -> Void,
         note: (AppStoreConnectRateLimit?) -> Void
     ) async throws -> AppStoreConnectError? {
-        let missing = try await missingPrices(via: transport, note: note)
+        let equalized = try await missingPrices(via: transport, note: note)
+        let missing = try await applyingOverrides(to: equalized, via: transport, slots: slots, note: note)
         guard !missing.isEmpty else { return nil }
         var set = 0
         var left = missing[...]
@@ -223,6 +261,34 @@ struct SubscriptionStartingPrices: Hashable, Sendable {
             wanted.append(TerritoryPrice(territoryID: territory, pricePointID: id))
         }
         return wanted.filter { !priced.contains($0.territoryID) }
+    }
+
+    /// The territories with a recommended price get their own point
+    /// nearest it, read a few territories at once; the others, and any
+    /// territory whose points don't come back, keep the equalized one.
+    @MainActor
+    func applyingOverrides(
+        to prices: [TerritoryPrice],
+        via transport: any PushTransport,
+        slots: PushSlots,
+        note: (AppStoreConnectRateLimit?) -> Void
+    ) async throws -> [TerritoryPrice] {
+        let wanted = prices.filter { $0.territoryID != territoryID && overrides[$0.territoryID] != nil }
+        guard !wanted.isEmpty else { return prices }
+        var chosen: [String: String] = [:]
+        try await slots.forEach(wanted, key: Self.slotKey) { [self] price in
+            try await transport.fetch(pricePointsPath(territoryID: price.territoryID))
+        } finished: { price, response in
+            note(response.rateLimit)
+            let object = try? JSONSerialization.jsonObject(with: response.data) as? [String: Any]
+            let points = object?["data"] as? [[String: Any]] ?? []
+            if let target = overrides[price.territoryID], let id = Self.nearestPointID(to: target, in: points) {
+                chosen[price.territoryID] = id
+            }
+        }
+        return prices.map { price in
+            chosen[price.territoryID].map { TerritoryPrice(territoryID: price.territoryID, pricePointID: $0) } ?? price
+        }
     }
 
     /// Every page's `data`, following `links.next`.
