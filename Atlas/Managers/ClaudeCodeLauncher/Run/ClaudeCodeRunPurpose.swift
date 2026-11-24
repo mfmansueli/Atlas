@@ -46,6 +46,9 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     /// Connect's hello (Settings → AI Assistants): Claude Code reads the
     /// app (and its project, when it has one) and introduces itself.
     case hello(readsProject: Bool)
+    /// The assistant chat in the window's corner (board 69): one question,
+    /// or a follow-up that resumes the chat's session.
+    case chat
 
     /// Make Screenshots for This Page's sessions: the plan's, the looks'
     /// and the captures'.
@@ -77,6 +80,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .reviewScreenshots: String(localized: "Review screenshots")
         case .autoReply: String(localized: "Replies to new reviews")
         case .hello: String(localized: "Connection hello")
+        case .chat: String(localized: "Chat")
         }
     }
 
@@ -89,13 +93,15 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .deepLinkCheck, .deepLinkWork: String(localized: "In-App Event deep link")
         case .encryptionKey: String(localized: "Export compliance key")
         case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Custom Product Page screenshots")
-        case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply, .hello, .reviewScreenshots: title
+        case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply, .hello,
+             .reviewScreenshots, .chat: title
         }
     }
 
     var permissions: ClaudeCodePermissions {
         switch self {
         case .test, .hello(readsProject: false): .atlasOnly
+        case .chat: .chat
         case .hello(readsProject: true): .readProject
         case .autopilot: .autopilot
         case .eventArtwork, .eventArtworkConcepts: .eventArtwork

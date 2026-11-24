@@ -107,6 +107,7 @@ struct MCPToolbox {
             GetAnalyticsAfterDownloadTool(),
             GetAnalyticsWebPreviewTool(),
             AddFindingTool(),
+            AskInChatTool(),
             GetReviewsTool(),
             ProposeReviewRepliesTool(),
             ProposeReviewThemesTool(),

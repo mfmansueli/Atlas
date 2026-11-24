@@ -34,6 +34,19 @@ enum Metrics {
     /// The main window's unified toolbar: its content's minimum height is
     /// `minimumWindowHeight` less this, so the whole window gets to 560.
     static let windowToolbarHeight: CGFloat = 52
+    /// The assistant chat in the window's corner (board 69): closed, a
+    /// pill; open, a panel over the content that never reaches the
+    /// toolbar (at most the window's height less `chatPanelClearance`).
+    static let chatPillWidth: CGFloat = 340
+    static let chatPillHeight: CGFloat = 36
+    static let chatPanelWidth: CGFloat = 420
+    static let chatPanelHeight: CGFloat = 500
+    static let chatPanelClearance: CGFloat = 72
+    /// The send and stop buttons, and the chat's lead mark.
+    static let chatButtonSize: CGFloat = 28
+    static let chatLeadSize: CGFloat = 18
+    /// A push's meter in the closed chat.
+    static let chatMeterWidth: CGFloat = 44
     /// Overview cards wrap into as many columns as fit at this width.
     static let overviewCardMinimumWidth: CGFloat = 270
 }

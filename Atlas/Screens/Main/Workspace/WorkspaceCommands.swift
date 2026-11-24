@@ -64,6 +64,9 @@ struct WorkspaceCommands: Commands {
                 Button("Review & Push…") { navigator?.isReviewPresented = true }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
                 Button("Activity") { navigator?.isActivityPresented = true }
+                // The chat in the window's corner (board 69).
+                Button("Assistant Chat") { AssistantChatCenter.shared.toggle() }
+                    .keyboardShortcut("j")
             }
             .disabled(navigator == nil)
         }

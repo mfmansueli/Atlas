@@ -269,8 +269,12 @@ final class ClaudeCodeLauncher {
     /// going, for the same purpose), or nil when it can't start here: no
     /// helper, or no folder chosen. Callers copy the prompt then. `folder`
     /// starts it somewhere else than the app's project folder, e.g. Connect
-    /// without a project.
-    func start(_ purpose: ClaudeCodeRunPurpose, appID: StoreApp.ID, appName: String, prompt: String, folder chosen: String? = nil) async -> ClaudeCodeRun.ID? {
+    /// without a project. `resuming` continues that Claude Code session,
+    /// as the chat's follow-ups do.
+    func start(
+        _ purpose: ClaudeCodeRunPurpose, appID: StoreApp.ID, appName: String, prompt: String, folder chosen: String? = nil,
+        resuming sessionID: String? = nil
+    ) async -> ClaudeCodeRun.ID? {
         // Asked right as Atlas opens, before or during the first
         // check.
         if helper == .unknown || helper == .checking { await refreshHelper() }
@@ -314,7 +318,8 @@ final class ClaudeCodeLauncher {
             permissions: purpose.permissions,
             port: assistants.port,
             token: token,
-            sessionName: "Atlas · \(purpose.title) · \(appName)"
+            sessionName: "Atlas · \(purpose.title) · \(appName)",
+            resumeSessionID: sessionID
         )
         launch(run.id, helperURL: helperURL, invocation: invocation)
         return run.id

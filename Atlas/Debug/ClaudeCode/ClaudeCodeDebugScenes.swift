@@ -47,6 +47,7 @@ enum ClaudeCodeDebugScenes {
     static func scriptRunner(for id: String) -> any UnixScriptRunning {
         if isLive(id) { return LiveUnixScriptRunner() }
         if AssistantConnectDebugScenes.ids.contains(id) { return AssistantConnectDebugScenes.runner() }
+        if AssistantChatDebugScenes.ids.contains(id) { return AssistantChatDebugScenes.runner(for: id) }
         return runner(for: id)
     }
 
@@ -74,7 +75,7 @@ enum ClaudeCodeDebugScenes {
     /// Open panel.
     @MainActor
     static func configure(_ launcher: ClaudeCodeLauncher, for id: String) {
-        guard ids.contains(id) || helperScenes.contains(id) else { return }
+        guard ids.contains(id) || helperScenes.contains(id) || AssistantChatDebugScenes.ids.contains(id) else { return }
         AssistantsSettingsPane.debugScrollsToLauncher = id == "cc-settings"
         launcher.folderChooser = { _, _ in ProjectFolderPath.expanded("~/Developer/Tempo") }
         let folder = isLive(id)

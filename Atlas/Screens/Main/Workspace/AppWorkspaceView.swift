@@ -70,6 +70,9 @@ struct AppWorkspaceView: View {
                 .pageControlSize()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollEdgeEffectStyle(.hard, for: .top)
+                // The assistant chat in the corner (board 69), over the
+                // section, above the toast while one shows.
+                .overlay(alignment: .bottomTrailing) { chatCorner }
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
         // The toast, or else what arrived out of sight: “3 new below”.
@@ -501,6 +504,34 @@ extension AppWorkspaceView {
         case let .openOverview(appID): navigator.open(.overview, appID: appID)
         case .suggestEverything: navigator.suggestEverything()
         case nil: break
+        }
+    }
+}
+
+// MARK: - Chat
+
+extension AppWorkspaceView {
+    private var chatCorner: some View {
+        AssistantChatCorner(
+            context: chatContext, client: MCPClientKind.claudeCode.title, canAsk: canChat,
+            onConnect: { navigator.isAssistantSetupPresented = true },
+            onShow: { navigator.open($0, appID: app.id) }
+        )
+        .padding(.trailing, Spacing.large)
+        .padding(.bottom, navigator.toast == nil ? Spacing.medium : Spacing.large + Metrics.chatPillHeight + Spacing.small)
+    }
+
+    /// Where the chat's questions are asked from.
+    private var chatContext: AssistantChatContext {
+        AssistantChatContext(appID: app.id, appName: app.name, section: navigator.section, version: version?.versionString)
+    }
+
+    /// The chat can start Claude Code: the helper is saved and found it,
+    /// or hasn't been looked at yet (a question looks first).
+    private var canChat: Bool {
+        switch launcher.helper {
+        case .notInstalled, .claudeMissing, .outdated, .failed: false
+        case .unknown, .checking, .ready, .atlasReplaced: true
         }
     }
 }

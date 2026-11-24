@@ -48,12 +48,15 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// configuration to the project (and set it in the scheme's Run
     /// action) so the paywall shows prices in Simulator.
     case reviewShotsStoreKit
+    /// The assistant chat in the window's corner (board 69): read Atlas
+    /// and the project like suggestions do, with the person there to ask.
+    case chat
 
     /// `--tools`: the built-in tools available at all.
     var tools: [String] {
         switch self {
         case .atlasOnly: []
-        case .readProject, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
+        case .readProject, .chat, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
         case .deepLinkWork, .reviewShotsStoreKit, .encryptionKey: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
@@ -65,7 +68,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         switch self {
         case .atlasOnly:
             return atlas
-        case .readProject:
+        case .readProject, .chat:
             return atlas + reading
         case .eventArtwork:
             // Art goes to the event art upload link, and nowhere else.
@@ -161,7 +164,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// on every start until the simulator was restarted.
     var denyRules: [String] {
         switch self {
-        case .atlasOnly, .readProject, .eventArtwork: []
+        case .atlasOnly, .readProject, .eventArtwork, .chat: []
         case .autopilot: ["Bash(xcrun simctl io * screenConfig*)"]
         case .deepLinkCheck, .deepLinkWork, .pageCaptures, .reviewShots, .reviewShotsStoreKit:
             Self.uploadCommands + ["Bash(xcrun simctl io * screenConfig*)"]
@@ -183,13 +186,13 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     var systemPrompt: String {
         var lines = [
             "Atlas, a Mac app, started this Claude Code session for the person, without a terminal.",
-            "Nobody is watching it live: don't ask questions, and don't wait for an answer.",
+            self == .chat ? Self.chatWatching : "Nobody is watching it live: don't ask questions, and don't wait for an answer.",
             "Permission prompts are refused automatically, so stay within the allowed tools: Atlas's MCP tools"
                 + (self == .atlasOnly ? "." : ", reading files in this project and read-only git commands."),
             "Never push or change App Store Connect directly; everything goes through Atlas's tools, and the person reviews it there.",
             "If something you need is refused or missing, say so in one sentence in your last message and finish.",
         ]
-        if [.readProject, .eventArtwork, .deepLinkCheck, .deepLinkWork, .encryptionKey, .pageCaptures, .reviewShots, .reviewShotsStoreKit]
+        if [.readProject, .chat, .eventArtwork, .deepLinkCheck, .deepLinkWork, .encryptionKey, .pageCaptures, .reviewShots, .reviewShotsStoreKit]
             .contains(self)
         {
             lines.append(
@@ -262,6 +265,9 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
                     + "instructions, such as its CLAUDE.md, say changes are committed. Never push."
             )
         }
+        if self == .chat {
+            lines.append(Self.chatPrompt)
+        }
         if self == .autopilot {
             lines.append(
                 "For screenshots you may also run xcodebuild, xcrun simctl, xcrun xcresulttool, open -a Simulator, mkdir, ls, sleep and echo, "
@@ -309,6 +315,21 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     Run xcodebuild in the foreground and wait for it. Never buy anything, and never archive, export or upload a build.
     """
 
+    /// The chat's second line: the person is there, and asks are made
+    /// with ask_in_chat.
+    static let chatWatching = "The person is reading this chat in Atlas. Ask them something only with ask_in_chat, then end your turn."
+
+    /// What the chat's answers look like (README-DS §9): its last message
+    /// is shown in a small panel.
+    static let chatPrompt = """
+    Your last message is the answer shown in Atlas's chat panel: at most three short sentences, result first, with the \
+    number that matters, in plain words and second person, no headings, tables or lists. Never describe yourself or how \
+    you worked. When the answer is a change, send it with Atlas's propose_ and suggest_ tools: it waits in its section \
+    as a suggestion and nothing reaches App Store Connect until the person pushes. Don't say you changed or pushed \
+    anything. When you need the person to choose before you can answer, call ask_in_chat with the question and two to \
+    four short choices, then end your turn: their answer arrives as the next message.
+    """
+
     /// For Settings: "Suggestions, translations, privacy".
     var title: String {
         switch self {
@@ -322,6 +343,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .pageCaptures: String(localized: "Custom Product Page captures")
         case .reviewShots: String(localized: "Pricing review screenshots")
         case .reviewShotsStoreKit: String(localized: "Pricing review screenshots with StoreKit")
+        case .chat: String(localized: "Chat with the assistant")
         }
     }
 
@@ -338,6 +360,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .pageCaptures: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of captures to Atlas")
         case .reviewShots: String(localized: "Reading the project, xcodebuild, xcrun simctl and uploads of review screenshots to Atlas")
         case .reviewShotsStoreKit: String(localized: "Also adds a StoreKit configuration in the project folder; never uploads a build")
+        case .chat: String(localized: "Atlas’s tools, reading the project, read-only git; asks you in the chat")
         }
     }
 }

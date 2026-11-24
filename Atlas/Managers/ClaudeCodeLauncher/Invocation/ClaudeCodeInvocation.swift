@@ -20,6 +20,9 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
     /// The session's name in Claude Code's history, e.g. "Atlas ·
     /// Suggest Everything · Lumen Journal".
     var sessionName: String
+    /// A session to continue (`--resume`): the chat's follow-ups go on in
+    /// the session of its first question.
+    var resumeSessionID: String?
 
     /// `run <folder> -- <claude arguments>`, for the helper.
     var helperArguments: [String] {
@@ -27,7 +30,7 @@ struct ClaudeCodeInvocation: Hashable, Sendable {
     }
 
     var claudeArguments: [String] {
-        [
+        (resumeSessionID.map { ["--resume", $0] } ?? []) + [
             "-p", prompt,
             "--output-format", "stream-json",
             "--verbose",

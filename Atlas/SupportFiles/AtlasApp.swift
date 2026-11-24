@@ -84,6 +84,7 @@ struct AtlasApp: App {
             EventArtworkStudio.shared.claudeRunEnded(session)
             PageShotsStudio.shared.claudeRunEnded(session)
             AssistantAskCenter.shared.runEnded(session)
+            AssistantChatCenter.shared.runEnded(session, log: assistants.log)
         }
         _translation = State(initialValue: translation)
         _keyAssistant = State(initialValue: keyAssistant)

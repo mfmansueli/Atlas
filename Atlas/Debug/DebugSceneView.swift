@@ -85,6 +85,7 @@ struct DebugSceneView: View {
             NewLanguagesDebugScenes.view(for:),
             StudioDebugScenes.view(for:),
             ClaudeCodeDebugScenes.view(for:),
+            AssistantChatDebugScenes.view(for:),
             AnalyticsDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
             AutoReplyDebugScenes.view(for:),
