@@ -19,9 +19,12 @@ struct AppleErrorCopy: Equatable, Hashable, Sendable {
     /// Apple's own words and code, shown only on demand. Nil when Apple
     /// said nothing more than the summary does.
     let details: String?
+    /// Where Fix a Problem lands in Help; nil when there's no such link.
+    let fixTopic: HelpFixTopic?
 
-    init(summary: String, details: String?) {
+    init(summary: String, details: String?, fixTopic: HelpFixTopic? = nil) {
         self.summary = summary
+        self.fixTopic = fixTopic
         let trimmed = details?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.details = (trimmed?.isEmpty ?? true) ? nil : trimmed
     }
@@ -31,7 +34,7 @@ struct AppleErrorCopy: Equatable, Hashable, Sendable {
     init(_ what: String, error: any Error) {
         let step = Self.nextStep(for: error)
         let summary = step.map { "\(what) \($0)" } ?? what
-        self.init(summary: summary, details: Self.details(for: error))
+        self.init(summary: summary, details: Self.details(for: error), fixTopic: HelpFixTopic(error: error))
     }
 
     /// For a place that can only show one string: the summary, then Apple's

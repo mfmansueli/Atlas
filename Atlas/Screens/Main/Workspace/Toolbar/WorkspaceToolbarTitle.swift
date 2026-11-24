@@ -8,7 +8,8 @@ import SwiftUI
 /// The section's title in the toolbar, over its state: “32 suggestions in
 /// 6 languages · 3 not pushed”. The not-pushed count is a link that opens
 /// Review & Push showing only this section. It replaces the title row the
-/// pages had under the toolbar.
+/// pages had under the toolbar. The ? beside the title opens the section's
+/// Help article.
 struct WorkspaceToolbarTitle: View {
     let title: String
     let status: WorkspaceSectionStatus
@@ -42,11 +43,17 @@ struct WorkspaceToolbarTitle: View {
 
     private var texts: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.title3.weight(.semibold))
-                .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("workspace.title")
+            HStack(spacing: Spacing.xxSmall) {
+                Text(title)
+                    .font(.title3.weight(.semibold))
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityIdentifier("workspace.title")
+                SectionHelpButton(section: status.section)
+                    // A 24 pt hit area in a two-line title: it overhangs
+                    // the line rather than heightening it.
+                    .frame(height: 0)
+            }
+            .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
             HStack(spacing: 0) {
                 if let leading = status.leadingText {
                     Text(leading)

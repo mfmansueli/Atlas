@@ -23,6 +23,26 @@ What already landed stays on the App Store. The rest is still in Review & Push, 
 
 Your edits are kept on this Mac. Atlas tries again when the connection is back. Check Apple’s system status from the Help menu.
 
+## The key can’t do that
+
+The key’s role doesn’t allow this change. Pushing needs an Admin or App Manager key. Add one in Settings → Accounts.
+
+## Apple can’t find it
+
+It was deleted or renamed in App Store Connect since Atlas read it. Refresh the section, then make the change again.
+
+## Apple refused a change
+
+Apple’s reason is under Details. Fix the field it names, then push again. The other changes aren’t affected.
+
+## Apple’s hourly limit was reached
+
+App Store Connect allows a few thousand requests an hour per key. Nothing is lost: wait a few minutes and try again.
+
+## Apple didn’t answer
+
+App Store Connect is slow or down for a moment. Try again in a minute, or check Apple’s system status from the Help menu.
+
 ## An assistant won’t connect
 
 Check that Let assistants connect is on and that Atlas is running. If you made a new token, pair the assistant again.

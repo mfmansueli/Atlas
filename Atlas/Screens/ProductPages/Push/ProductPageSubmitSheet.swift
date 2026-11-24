@@ -37,7 +37,7 @@ struct ProductPageSubmitSheet: View {
                         message: String(localized: "An assistant can prepare a page, not push or submit it.")
                     )
                     if let error = viewModel.submitError {
-                        Banner(kind: .apiError, title: error.summary, message: error.details, isInline: true)
+                        Banner(kind: .apiError, title: error.summary, message: error.details, isInline: true, fixTopic: error.fixTopic)
                             .accessibilityIdentifier("pages.submit.error")
                     }
                 }

@@ -37,7 +37,7 @@ struct NominationsBanner: View {
             }
             .accessibilityIdentifier("nominations.banner.offline")
         } else if case let .failed(copy) = viewModel.problem, viewModel.state.value != nil {
-            Banner(kind: .apiError, title: copy.summary, message: copy.details, isInline: true) {
+            Banner(kind: .apiError, title: copy.summary, message: copy.details, isInline: true, fixTopic: copy.fixTopic) {
                 Button("Try Again") { Task { await viewModel.load(force: true) } }
             }
             .accessibilityIdentifier("nominations.banner.failed")

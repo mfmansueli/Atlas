@@ -115,6 +115,34 @@ final class HelpUITests: XCTestCase {
         XCTAssertTrue(waitForText("Keyboard shortcuts", in: title))
     }
 
+    /// Fix a problem opened at a heading scrolls to it.
+    func testFixAProblemOpensAtItsHeading() {
+        app.launch(debugScene: "help-fix-heading")
+        XCTAssertTrue(waitForText("Fix a problem", in: element("help.article.title"), timeout: 15))
+        let heading = app.staticTexts["The key can’t do that"].firstMatch
+        XCTAssertTrue(heading.waitForExistence(timeout: 5))
+        XCTAssertTrue(heading.isHittable)
+        attach("help-fix-heading")
+    }
+
+    /// An error's Fix a Problem and a section's ? open the Help window.
+    func testFixAProblemAndTheSectionsQuestionMarkOpenHelp() {
+        app.launch(debugScene: "help-fix-links")
+        let fix = app.descendants(matching: .any).matching(identifier: "help.fixProblem").firstMatch
+        XCTAssertTrue(fix.waitForExistence(timeout: 15))
+        attach("help-fix-links")
+        fix.click()
+        let window = app.windows["Atlas Help"]
+        XCTAssertTrue(window.waitForExistence(timeout: 10))
+        let title = window.descendants(matching: .any)["help.article.title"].firstMatch
+        XCTAssertTrue(waitForText("Fix a problem", in: title))
+
+        let help = app.buttons["workspace.help"].firstMatch
+        XCTAssertTrue(help.waitForExistence(timeout: 5))
+        help.click()
+        XCTAssertTrue(waitForText("Pricing by country", in: title, timeout: 10))
+    }
+
     // MARK: - Helpers
 
     private func element(_ identifier: String) -> XCUIElement {

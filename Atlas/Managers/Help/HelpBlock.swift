@@ -23,4 +23,9 @@ enum HelpBlock: Hashable, Sendable {
         case let .table(header, rows): (header + rows.flatMap(\.self)).joined(separator: " ")
         }
     }
+
+    /// A heading's scroll anchor in the article (Fix a Problem's target).
+    static func anchor(for heading: String) -> String {
+        "heading." + heading
+    }
 }
