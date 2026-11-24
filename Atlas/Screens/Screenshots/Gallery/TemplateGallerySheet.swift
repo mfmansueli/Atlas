@@ -11,6 +11,7 @@ import SwiftUI
 struct TemplateGallerySheet: View {
     @Bindable var viewModel: ScreenshotsViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(ProGate.self) private var pro: ProGate?
 
     private var model: TemplateEditorViewModel { viewModel.templateEditor }
 
@@ -38,7 +39,7 @@ struct TemplateGallerySheet: View {
             .padding(.horizontal, Spacing.xLarge)
             .padding(.bottom, Spacing.medium)
             ScrollView {
-                TemplateGalleryGrid(viewModel: viewModel, isFirstRun: false) { starter in
+                TemplateGalleryGrid(viewModel: viewModel, isFirstRun: false, onLocked: needingPro) { starter in
                     Task { await model.switchStarter(starter) }
                 }
                 .padding(.horizontal, Spacing.xLarge)
@@ -60,5 +61,16 @@ struct TemplateGallerySheet: View {
         .task { await viewModel.renderStarterPreviews() }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.templateGallery")
+    }
+
+    /// A template that's part of Pro, in Free: the sheet closes for the
+    /// paywall, whose continue button switches to it once Pro is bought.
+    private func needingPro(_ starter: TemplateStarter) {
+        dismiss()
+        Task {
+            // One sheet at a time: after this one has left.
+            try? await Task.sleep(for: .milliseconds(350))
+            pro.require(.template) { Task { await model.switchStarter(starter) } }
+        }
     }
 }

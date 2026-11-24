@@ -8,7 +8,9 @@ import Foundation
 /// `propose_subscription`: an assistant's new subscription, checked like
 /// Create Subscription in Pricing and queued for review as one change. The
 /// push creates the group when it's new, the subscription, its texts,
-/// availability everywhere and the starting price, equalized everywhere.
+/// availability everywhere and the starting price, equalized everywhere,
+/// recommended where the purchasing-power model differs (`prices`
+/// recommended), or equalized with the recommendations to review later.
 struct ProposeSubscriptionTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
     private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence([
@@ -27,6 +29,14 @@ struct ProposeSubscriptionTool: MCPTool {
         "price": [
             "type": ["number", "string"],
             "description": "The starting price in the United States in US dollars, e.g. 9.99.",
+        ],
+        "prices": [
+            "type": "string",
+            "enum": .array(NewSubscriptionPriceChoice.allCases.map { .string($0.rawValue) }),
+            "description": """
+            The other countries' prices: recommended (purchasing power, where it differs from Apple's), \
+            review_later (Apple's now, the recommendations offered for review after the push) or equalized (the default).
+            """,
         ],
         "familySharing": ["type": "boolean", "description": "Whether Family Sharing is on. It can't be turned off later."],
         "reviewNote": MCPToolDefinition.string("Optional notes for App Review, e.g. how to reach the paywall."),
@@ -49,7 +59,10 @@ struct ProposeSubscriptionTool: MCPTool {
         exactly the one the app's code uses; it can't be changed or reused once created. duration is ONE_WEEK, \
         ONE_MONTH, TWO_MONTHS, THREE_MONTHS, SIX_MONTHS or ONE_YEAR. displayName (≤30) and description (≤45) are \
         written in locale (the app's primary language when left out); price is the starting price in the United \
-        States in US dollars, and every other territory gets Apple's equalized price. reviewScreenshot is the App \
+        States in US dollars. prices picks the other territories' prices: equalized (Apple's, the default), \
+        recommended (the purchasing-power price Pricing suggests, where it differs from Apple's; the result's \
+        recommendedCountries counts them) or review_later (Apple's now; Pricing offers the recommendations after \
+        the push). reviewScreenshot is the App \
         Review screenshot of the paywall (without one it stays in Missing Metadata): send the file to \
         get_subscriptions' reviewScreenshotUploadURL and pass the fileId; add an introductory offer to it with \
         propose_introductory_offer while it's queued. Anything App Store Connect \
@@ -67,7 +80,11 @@ struct ProposeSubscriptionTool: MCPTool {
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let catalog = try await MCPPriceCatalog.load(app: arguments.string("appId"), in: context.workspace)
         let app = catalog.app
-        let subscription = try Self.subscription(from: arguments, app: app, catalog: catalog.catalog)
+        var subscription = try Self.subscription(from: arguments, app: app, catalog: catalog.catalog)
+        subscription.priceChoice = try Self.priceChoice(from: arguments)
+        if subscription.priceChoice == .recommended, let price = subscription.price {
+            subscription.recommendedPrices = await Self.recommendation(forPrice: price, catalog: catalog)?.prices ?? [:]
+        }
         let builder = NewSubscriptionChangeBuilder(app: app)
         let productID = NewSubscription.trimmed(subscription.productID)
         let id = NewSubscriptionChangeBuilder.changeID(appID: app.id, productID: productID)
@@ -82,6 +99,9 @@ struct ProposeSubscriptionTool: MCPTool {
         let groupNames = catalog.catalog.groups.filter { !$0.isInAppPurchases }.map(\.name)
         reasons += subscription.problems(takenProductIDs: taken, groupNames: groupNames).map(\.message)
         reasons += Self.guidelineReasons(subscription)
+        if subscription.priceChoice != .equalized, catalog.mode == .keepPrices {
+            reasons.append(catalog.keepPricesRefusal)
+        }
         guard reasons.isEmpty else {
             let result: JSONValue = ["status": "refused", "productId": .string(productID), "reasons": .array(reasons.map { .string($0) })]
             return MCPToolOutcome(result: result, isError: false, logLines: [.init(target: target, outcome: .refused, reason: reasons.joined(separator: " "))])
@@ -91,6 +111,7 @@ struct ProposeSubscriptionTool: MCPTool {
         let change = builder.change(for: subscription, source: .assistant(client: context.clientName), evidence: evidence)
         queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: id), into: change))
         queue.attach(layers, to: id)
+        context.workspace.pricingModes.setReviewLater(subscription.priceChoice == .reviewLater, productID: productID, appID: app.id)
         var result: [String: JSONValue] = [
             "status": "queued",
             "changeId": .string(id),
@@ -102,6 +123,10 @@ struct ProposeSubscriptionTool: MCPTool {
             propose_in_app_texts once it exists.
             """,
         ]
+        result["prices"] = .string(subscription.priceChoice.rawValue)
+        if subscription.priceChoice == .recommended {
+            result["recommendedCountries"] = .int(subscription.priceOverrides.count)
+        }
         if subscription.reviewScreenshot == nil {
             result["missing"] = "reviewScreenshot: without one it stays in Missing Metadata. Add it with propose_purchase_review_screenshot."
         }
@@ -120,6 +145,33 @@ struct ProposeSubscriptionTool: MCPTool {
             let issues = StoreTextGuidelineCheck.issues(in: text, for: field)
             return issues.isEmpty ? nil : "\(argument): \(issues.assistantReason)"
         }
+    }
+
+    /// `prices`: equalized when left out.
+    static func priceChoice(from arguments: MCPToolArguments) throws -> NewSubscriptionPriceChoice {
+        guard let text = try arguments.optionalString("prices") else { return .equalized }
+        let normalized = text.trimmingCharacters(in: .whitespaces).lowercased().replacingOccurrences(of: "-", with: "_")
+        guard let choice = NewSubscriptionPriceChoice(rawValue: normalized) else {
+            throw MCPToolError.invalidArgument(name: "prices", expected: "recommended, review_later or equalized")
+        }
+        return choice
+    }
+
+    /// The recommended prices for `price`, with Apple's ratios from the
+    /// app's first priced subscription when it has one.
+    @MainActor
+    static func recommendation(forPrice price: Decimal, catalog: MCPPriceCatalog) async -> NewSubscriptionRecommendation? {
+        var reference: MCPPriceSheet?
+        for product in catalog.catalog.products where !product.isInAppPurchase {
+            if let sheet = try? await catalog.sheetIfPriced(for: product) {
+                reference = sheet
+                break
+            }
+        }
+        let services = catalog.workspace.services.pricing
+        let calculator = reference?.calculator
+            ?? PriceCalculator(catalog: .standard, snapshot: services.indexSnapshot(), commission: catalog.workspace.commission())
+        return NewSubscriptionRecommendation.make(basePrice: price, reference: reference?.sheet, calculator: calculator, strategy: .recommended)
     }
 
     /// The arguments as a new subscription; throws for one that isn't

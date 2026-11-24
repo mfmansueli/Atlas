@@ -17,7 +17,8 @@ import Foundation
 ///    `{createdID:subscriptions}`.
 /// 4. Availability in every country or region App Store Connect has, and
 ///    in new ones (`SubscriptionAvailabilityEverywhere`).
-/// 5. The starting price in the United States, equalized everywhere else
+/// 5. The starting price in the United States, equalized everywhere else,
+///    or with the recommended price where it differs
 ///    (`SubscriptionStartingPrices`).
 /// 6. Its App Review screenshot, when it has one, and an introductory
 ///    offer added while it waits (`PurchaseSetupQueue`).
@@ -152,7 +153,9 @@ struct NewSubscriptionChangeBuilder {
         ))
         requests.append(SubscriptionAvailabilityEverywhere.request(subscriptionID: subscriptionID))
         if let price = subscription.price {
-            requests.append(SubscriptionStartingPrices.request(subscriptionID: subscriptionID, territoryID: NewSubscription.baseTerritoryID, price: price))
+            requests.append(SubscriptionStartingPrices.request(
+                subscriptionID: subscriptionID, territoryID: NewSubscription.baseTerritoryID, price: price, overrides: subscription.priceOverrides
+            ))
         }
         if let file = subscription.reviewScreenshot {
             requests.append(PurchaseReviewScreenshotChangeBuilder(app: app, folder: folder).step(file, owner: .subscription, ownerID: subscriptionID).request)
@@ -202,6 +205,27 @@ struct NewSubscriptionChangeBuilder {
         [subscription.period.title, subscription.formattedPrice].compactMap(\.self).joined(separator: " · ")
     }
 
+    /// "$9.99 in the United States · recommended in 112 countries and
+    /// regions, equalized in 62".
+    static func priceText(_ formatted: String, subscription: NewSubscription) -> String {
+        switch subscription.priceChoice {
+        case .equalized:
+            return String(localized: "\(formatted) in the United States · equalized everywhere else")
+        case .reviewLater:
+            return String(
+                localized: "\(formatted) in the United States · equalized everywhere else; recommendations to review after the push",
+                comment: "kind:change-detail"
+            )
+        case .recommended:
+            let recommended = subscription.priceOverrides.count
+            let others = max(0, TerritoryCatalog.standard.territories.count - 1 - recommended)
+            return String(
+                localized: "\(formatted) in the United States · recommended in \(recommended) countries and regions, equalized in \(others)",
+                comment: "kind:change-detail"
+            )
+        }
+    }
+
     private func detail(of subscription: NewSubscription) -> String {
         let group = subscription.group.isNew
             ? String(localized: "a new group, \(subscription.group.referenceName)")
@@ -227,9 +251,7 @@ struct NewSubscriptionChangeBuilder {
             ("period", String(localized: "Duration"), subscription.period.title),
             ("name", String(localized: "Display name · \(language)"), NewSubscription.trimmed(subscription.displayName)),
             ("description", String(localized: "Description · \(language)"), NewSubscription.trimmed(subscription.description)),
-            ("price", NewSubscriptionField.price.title, subscription.formattedPrice.map {
-                String(localized: "\($0) in the United States · equalized everywhere else")
-            } ?? ""),
+            ("price", NewSubscriptionField.price.title, subscription.formattedPrice.map { Self.priceText($0, subscription: subscription) } ?? ""),
             ("familySharing", String(localized: "Family Sharing"), subscription.isFamilySharable ? String(localized: "On") : String(localized: "Off")),
         ]
         let note = NewSubscription.trimmed(subscription.reviewNote)

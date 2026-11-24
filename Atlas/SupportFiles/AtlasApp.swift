@@ -138,7 +138,7 @@ struct AtlasApp: App {
         .windowResizability(.contentMinSize)
         .commands {
             WorkspaceCommands()
-            AccountCommands(session: session)
+            AccountCommands(session: session, pro: pro)
             SidebarCommands()
             HelpCommands()
             QuitCommands()

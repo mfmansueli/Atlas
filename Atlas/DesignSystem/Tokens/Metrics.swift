@@ -32,6 +32,11 @@ enum Metrics {
     /// A search field at the top of a menu or popover (Find a language).
     static let menuFieldHeight: CGFloat = 28
     static let tableHeaderHeight: CGFloat = 28
+    /// A price table's checkbox, price and change columns (the recommended
+    /// prices of a new subscription).
+    static let tableCheckboxWidth: CGFloat = 20
+    static let tablePriceColumnWidth: CGFloat = 96
+    static let tableChangeColumnWidth: CGFloat = 56
     /// Smallest window the layout is designed for (README — redesign, and
     /// every section's 860 × 560 boards): at this width the sidebar may be
     /// hidden, labels fold into the toolbar's overflow and pages stack.

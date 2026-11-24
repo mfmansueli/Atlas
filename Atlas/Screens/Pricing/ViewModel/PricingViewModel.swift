@@ -40,6 +40,9 @@ final class PricingViewModel {
     var isScheduleSheetPresented = false
     /// Create Subscription, from the empty state or the product browser.
     var isNewSubscriptionSheetPresented = false
+    /// The product whose recommendations Review… shows (a new subscription
+    /// added with Review Later), or nil.
+    var reviewLaterProductID: String?
     /// The selected subscription has no price yet, so Pricing offers Set
     /// Starting Price instead of a failure.
     private(set) var needsStartingPrice = false

@@ -69,6 +69,7 @@ struct DebugSceneView: View {
             HelpDebugScenes.view(for:),
             ReviewPushDebugScenes.view(for:),
             PricingDebugScenes.view(for:),
+            NewSubscriptionPricesDebugScenes.view(for:),
             AppPriceDebugScenes.view(for:),
             RetentionDebugScenes.view(for:),
             StorePageDebugScenes.view(for:),

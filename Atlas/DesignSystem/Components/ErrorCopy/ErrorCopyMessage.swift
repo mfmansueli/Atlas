@@ -7,7 +7,8 @@ import SwiftUI
 
 /// An Apple error as the error template shows it: what happened and what
 /// to do, in the error tint, with a "Details" button that shows Apple's
-/// own text in a popover. Apple's text is never the message.
+/// own text in a popover, and Fix a Problem, which opens Help at the
+/// heading for this kind of error. Apple's text is never the message.
 struct ErrorCopyMessage: View {
     let copy: AppleErrorCopy
     @State private var showsDetails = false
@@ -31,6 +32,9 @@ struct ErrorCopyMessage: View {
                         .padding(Spacing.medium)
                 }
                 .accessibilityHint(Text(String(localized: "Shows Apple’s own message.", comment: "kind:accessibility-label")))
+            }
+            if let topic = copy.fixTopic {
+                FixProblemLink(topic: topic)
             }
         }
     }

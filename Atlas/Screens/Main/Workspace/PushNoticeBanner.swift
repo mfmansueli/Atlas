@@ -14,7 +14,7 @@ struct PushNoticeBanner: View {
     let onReviewFailed: () -> Void
 
     var body: some View {
-        Banner(kind: notice.kind, title: notice.title, message: notice.message) {
+        Banner(kind: notice.kind, title: notice.title, message: notice.message, fixTopic: fixTopic) {
             if case .partialFailure = notice {
                 Button("Review Failed", action: onReviewFailed)
                     .accessibilityIdentifier("banner.reviewFailed")
@@ -28,5 +28,15 @@ struct PushNoticeBanner: View {
             .accessibilityLabel(Text("Dismiss"))
         }
         .accessibilityIdentifier("workspace.banner")
+    }
+
+    /// A push's problems are Apple's: Fix a Problem lands on their heading.
+    private var fixTopic: HelpFixTopic? {
+        switch notice.kind {
+        case .partialFailure: .pushStopped
+        case .rateLimited: .hourlyLimit
+        case .offline: .offline
+        case .apiError, .info, .warning: nil
+        }
     }
 }

@@ -101,9 +101,13 @@ struct AccountsSettingsPane: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             HStack(spacing: Spacing.small) {
                 Button {
-                    isAddingKey = true
+                    // In Free, with a key saved, the paywall opens first.
+                    pro.requireNewAccount(accountCount: viewModel.keys.count, inSettings: true) { isAddingKey = true }
                 } label: {
-                    Label("Add Another Key…", systemImage: "plus")
+                    HStack(spacing: Spacing.xSmall) {
+                        Label("Add Another Key…", systemImage: "plus")
+                        if !pro.mayAddAccount(accountCount: viewModel.keys.count) { ProChip() }
+                    }
                 }
                 .accessibilityIdentifier("settings.addKey")
                 if pro?.isFree == true {

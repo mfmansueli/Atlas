@@ -10,6 +10,7 @@ import SwiftUI
 /// way.
 struct StarterPickerView: View {
     @Bindable var viewModel: ScreenshotsViewModel
+    @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
         ScrollView {
@@ -23,9 +24,12 @@ struct StarterPickerView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 TemplateStyleFilter(style: $viewModel.galleryStyle)
-                TemplateGalleryGrid(viewModel: viewModel, isFirstRun: true) { starter in
-                    Task { await viewModel.chooseStarter(starter) }
-                }
+                TemplateGalleryGrid(
+                    viewModel: viewModel,
+                    isFirstRun: true,
+                    onLocked: { starter in pro.require(.template) { Task { await viewModel.chooseStarter(starter) } } },
+                    onUse: { starter in Task { await viewModel.chooseStarter(starter) } }
+                )
             }
             .padding(Spacing.xxLarge)
         }

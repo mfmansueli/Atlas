@@ -30,9 +30,9 @@ final class Entitlements {
     var override: Bool?
 
     /// Free's apps and App Store Connect accounts.
-    static let freeAppLimit = 1
-    /// Free's screenshot templates, of the gallery's 14.
-    static let freeTemplateLimit = 3
+    nonisolated static let freeAppLimit = 1
+    /// Free's screenshot templates, of the gallery's 14 (`FreePlanLimits`).
+    nonisolated static let freeTemplateLimit = 3
 
     init(store: any ProStore, override: Bool? = nil) {
         self.store = store

@@ -57,11 +57,30 @@ extension PricingViewModel {
         return subscription.problems(takenProductIDs: taken, groupNames: subscriptionGroups.map(\.name))
     }
 
-    /// Create Subscription's Add to Review & Push.
+    /// Create Subscription's Add to Review & Push. With the recommended
+    /// prices, they're worked out for its US price now; with Review Later,
+    /// Pricing remembers to offer them once it's pushed.
     func queueNewSubscription(_ subscription: NewSubscription) {
+        var subscription = subscription
+        if subscription.priceChoice == .recommended, let price = subscription.price {
+            subscription.recommendedPrices = recommendation(forPrice: price)?.prices ?? [:]
+        }
         let change = newSubscriptionBuilder.change(for: subscription, problems: problems(for: subscription), at: today())
         queue.upsert(PurchaseSetupQueue.carryingExtras(from: queue.change(id: change.id), into: change))
+        modes.setReviewLater(
+            subscription.priceChoice == .reviewLater, productID: NewSubscription.trimmed(subscription.productID), appID: app.id
+        )
         isNewSubscriptionSheetPresented = false
+    }
+
+    /// The recommended prices a new subscription at `price` would get, with
+    /// the strategy Pricing uses and Apple's ratios from one of the app's
+    /// subscriptions when their prices are read.
+    func recommendation(forPrice price: Decimal) -> NewSubscriptionRecommendation? {
+        let reference = productMatrices.values.first { !$0.product.isInAppPurchase }?.sheet ?? matrix?.sheet
+        return NewSubscriptionRecommendation.make(
+            basePrice: price, reference: reference, calculator: strategy.calculator, strategy: strategy.strategy
+        )
     }
 
     func discardNewSubscription(id: PendingChange.ID) {

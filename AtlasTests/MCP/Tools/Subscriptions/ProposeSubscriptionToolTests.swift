@@ -104,6 +104,44 @@ struct ProposeSubscriptionToolTests {
         #expect(changes.changes.first?.newValue == "1 month · $3.99")
     }
 
+    @Test func pricesAreEqualizedWhenLeftOut() async throws {
+        let outcome = try await call(ProposeSubscriptionTool(), arguments())
+        #expect(outcome.result["prices"] == "equalized")
+        #expect(outcome.result["recommendedCountries"] == nil)
+        let price = try #require(changes.changes.first?.requests.last)
+        #expect(SubscriptionStartingPrices(price)?.overrides.isEmpty == true)
+    }
+
+    @Test func recommendedPricesGoInTheStartingPrice() async throws {
+        let outcome = try await call(ProposeSubscriptionTool(), arguments(["prices": "recommended", "price": .double(9.99)]))
+        #expect(outcome.result["status"] == "queued")
+        #expect(outcome.result["prices"] == "recommended")
+        let count = try #require(outcome.result["recommendedCountries"]?.intValue)
+        #expect(count > 0)
+        let change = try #require(changes.changes.first)
+        let prices = try #require(change.requests.last.flatMap(SubscriptionStartingPrices.init))
+        #expect(prices.overrides.count == count)
+        #expect(prices.overrides["USA"] == nil)
+        #expect(change.creation?.fields.first { $0.id == "price" }?.newValue.contains("recommended in \(count)") == true)
+    }
+
+    @Test func reviewLaterIsRememberedForPricing() async throws {
+        let workspace = MCPTestFixtures.workspace(apps: MCPTestFixtures.apps + [Self.quiet], changes: changes)
+        let outcome = try await ProposeSubscriptionTool().call(
+            MCPToolArguments(arguments(["prices": "review_later"])), in: MCPToolContext(workspace: workspace, clientName: "Claude Code")
+        )
+        #expect(outcome.result["prices"] == "review_later")
+        #expect(workspace.pricingModes.isReviewingLater(productID: "dev.northpier.quiet.plus.monthly", appID: Self.quiet.id))
+        let price = try #require(changes.changes.first?.requests.last.flatMap(SubscriptionStartingPrices.init))
+        #expect(price.overrides.isEmpty)
+    }
+
+    @Test func anUnknownPriceChoiceIsAnArgumentError() async {
+        await #expect(throws: MCPToolError.self) {
+            _ = try await call(ProposeSubscriptionTool(), arguments(["prices": "cheapest"]))
+        }
+    }
+
     @Test func anUnknownDurationIsAnArgumentError() async {
         await #expect(throws: MCPToolError.self) {
             _ = try await call(ProposeSubscriptionTool(), arguments(["duration": "ONE_DAY"]))

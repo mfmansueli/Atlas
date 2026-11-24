@@ -18,6 +18,7 @@ struct HelpBlockView: View {
                 .font(.title3.weight(.semibold))
                 .padding(.top, Spacing.xSmall)
                 .accessibilityAddTraits(.isHeader)
+                .id(HelpBlock.anchor(for: text))
         case let .steps(items):
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in

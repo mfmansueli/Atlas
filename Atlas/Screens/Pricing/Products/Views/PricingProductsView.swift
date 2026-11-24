@@ -23,7 +23,11 @@ struct PricingProductsView: View {
                 if let appPriceAvailability = viewModel.appPriceAvailability {
                     AppPriceAvailabilityCards(model: appPriceAvailability)
                 }
-                if viewModel.openPriceSuggestionCount > 0 {
+                // One banner: a new subscription's recommendations waiting
+                // for review come first.
+                if let product = viewModel.reviewLaterProducts.first {
+                    reviewLaterBanner(product)
+                } else if viewModel.openPriceSuggestionCount > 0 {
                     banner
                 }
                 ReviewShotsBanner(viewModel: viewModel)
@@ -61,6 +65,36 @@ struct PricingProductsView: View {
         } set: {
             if !$0 { viewModel.setup.reviewShotsPreviewProductID = nil }
         }
+    }
+
+    /// A new subscription added with Apple's prices and the recommendations
+    /// for later: what waits, and Review….
+    private func reviewLaterBanner(_ product: PricingProduct) -> some View {
+        HStack(spacing: Spacing.small) {
+            Image(systemName: "sparkles")
+                .foregroundStyle(Palette.ai)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.reviewLaterTitle(product))
+                    .font(.callout.weight(.semibold))
+                Text(viewModel.reviewLaterDetail(product))
+                    .font(.callout)
+                    .foregroundStyle(Palette.label2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            Button(String(localized: "Review…", comment: "kind:button")) {
+                viewModel.reviewLaterProductID = product.id
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .accessibilityIdentifier("pricing.reviewLater.review")
+        }
+        .padding(.horizontal, Spacing.medium)
+        .padding(.vertical, 10)
+        .background(Palette.aiSurface, in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("pricing.reviewLater")
     }
 
     private var banner: some View {

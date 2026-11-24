@@ -32,14 +32,24 @@ final class HelpNavigation {
 
     /// What Show Me last opened.
     var shown: String?
+    /// The heading the open article scrolls to (Fix a Problem's), or nil
+    /// for its top.
+    private(set) var heading: String?
 
     var canGoBack: Bool { !history.isEmpty }
 
-    func open(_ articleID: String) {
+    /// Opens an article, at `heading` when given (one of its `## ` lines).
+    func open(_ articleID: String, heading: String? = nil) {
+        self.heading = heading
         guard place != .article(articleID) else { return }
         history.append(place)
         place = .article(articleID)
         shown = nil
+    }
+
+    /// Opens Fix a problem at the topic's heading.
+    func open(_ topic: HelpFixTopic) {
+        open(HelpFixTopic.articleID, heading: topic.heading)
     }
 
     func goHome() {
@@ -48,10 +58,12 @@ final class HelpNavigation {
         setQuietly("")
         place = .home
         shown = nil
+        heading = nil
     }
 
     func back() {
         guard let previous = history.popLast() else { return }
+        heading = nil
         place = previous
         if case let .search(text) = previous { setQuietly(text) } else { setQuietly("") }
         shown = nil

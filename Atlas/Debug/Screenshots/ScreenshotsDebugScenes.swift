@@ -29,6 +29,8 @@ import SwiftUI
 ///   sheet over `tpl`.
 /// - `gallery`, `gallery-elegant`: the Templates sheet showing all twelve
 ///   templates, and only the three elegant ones.
+/// - `gallery-free`: the Templates sheet on the Free plan: past Free's
+///   three templates each button carries the PRO chip.
 /// - `tpl-cinema`, `tpl-highlight-ar`, `tpl-market-de`, `tpl-poster-ja`,
 ///   `tpl-swoosh-deco`: switched to a gallery template (v5), on English
 ///   slot 2, Arabic slot 1, German slot 3, Japanese slot 1 and English
@@ -49,7 +51,7 @@ enum ScreenshotsDebugScenes {
         "sets", "sets-ipad", "sets-fallback", "sets-rendering", "sets-failed", "viewer", "viewer-fail", "scope",
         "sets-empty", "sets-notpl", "sets-noversion",
         "tpl", "tpl-ipad", "tpl-glyph", "tpl-pano", "tpl-history", "starter",
-        "gallery", "gallery-elegant", "tpl-cinema", "tpl-highlight-ar", "tpl-market-de", "tpl-poster-ja", "tpl-swoosh-deco",
+        "gallery", "gallery-elegant", "gallery-free", "tpl-cinema", "tpl-highlight-ar", "tpl-market-de", "tpl-poster-ja", "tpl-swoosh-deco",
         "cap", "cap-edit", "cap-translate", "cap-translating", "cap-artwork", "cap-artwork-phrases",
     ]
 
@@ -144,8 +146,8 @@ enum ScreenshotsDebugScenes {
                 model.openTemplateEditor(at: target)
             }
         }
-        guard id == "gallery" || id == "gallery-elegant" else { return nil }
-        return scene { model in
+        guard ["gallery", "gallery-elegant", "gallery-free"].contains(id) else { return nil }
+        return scene(isFree: id == "gallery-free") { model in
             model.openTemplateEditor(at: LocaleSlot(locale: "de-DE", slot: 2))
             model.galleryStyle = id == "gallery-elegant" ? .elegant : nil
             model.templateEditor.isStarterSheetPresented = true
@@ -233,6 +235,7 @@ enum ScreenshotsDebugScenes {
         renderHoldCount: Int? = nil,
         hasEditableVersion: Bool = true,
         translator: DebugCaptionTranslator? = nil,
+        isFree: Bool = false,
         opening: (@MainActor (ScreenshotsViewModel) async -> Void)? = nil
     ) -> AnyView {
         let screenshots = DebugScreenshotsServices(
@@ -245,7 +248,7 @@ enum ScreenshotsDebugScenes {
         storePage.screenshots = screenshots
         var services = WorkspaceServices.debug
         services.storePage = storePage
-        return AnyView(DebugMainScene(services: services, section: .screenshots, pendingChanges: DebugWorkspace.pendingChanges))
+        return AnyView(DebugMainScene(services: services, section: .screenshots, pendingChanges: DebugWorkspace.pendingChanges, isFree: isFree))
     }
 }
 #endif

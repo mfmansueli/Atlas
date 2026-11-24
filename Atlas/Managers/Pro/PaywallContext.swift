@@ -16,7 +16,11 @@ enum PaywallContext: Hashable, Sendable {
     case recommendedPrices(countries: Int)
     case retention
     case secondApp
+    /// Add Another Key… in Free, with one account already saved.
+    case secondAccount
     case template
+    /// A template on a device Free's editor doesn't lay out: "iPhone Duo".
+    case templateDevice(String)
     /// Make the Artwork… on an In-App Event.
     case eventArtwork
     case menu
@@ -28,8 +32,8 @@ enum PaywallContext: Hashable, Sendable {
         case .autopilot, .eventArtwork: .autopilot
         case .recommendedPrices: .recommendedPrices
         case .retention: .retention
-        case .secondApp: .multipleApps
-        case .template: .allTemplates
+        case .secondApp, .secondAccount: .multipleApps
+        case .template, .templateDevice: .allTemplates
         case .menu: nil
         }
     }
@@ -44,7 +48,9 @@ enum PaywallContext: Hashable, Sendable {
         case .recommendedPrices: String(localized: "Suggested prices are part of Pro")
         case .retention: String(localized: "Retention is part of Pro")
         case .secondApp: String(localized: "More than one app is part of Pro")
+        case .secondAccount: String(localized: "More than one account is part of Pro", comment: "kind:sheet-title")
         case .template: String(localized: "This template is part of Pro")
+        case let .templateDevice(device): String(localized: "Templates on \(device) are part of Pro", comment: "kind:sheet-title")
         case .eventArtwork: String(localized: "Event artwork is part of Pro")
         case .menu: nil
         }
@@ -66,7 +72,12 @@ enum PaywallContext: Hashable, Sendable {
             String(localized: "Messages and offers for people who are about to cancel, in every language.")
         case .secondApp:
             String(localized: "All your apps and App Store Connect accounts in one window. Your first app, and its work, stays free.")
-        case .template:
+        case .secondAccount:
+            String(
+                localized: "Every App Store Connect account and its apps in one window. Your first account, and its work, stays free.",
+                comment: "kind:sheet-body"
+            )
+        case .template, .templateDevice:
             String(localized: "All 14 templates for every device: Mac, iPad, iPhone Duo, Vision Pro, Apple Watch. 3 iPhone and iPad templates stay free.")
         case .eventArtwork:
             String(localized: "A matching event card and details image, in three concepts. Using your own files stays free.")
@@ -85,7 +96,9 @@ enum PaywallContext: Hashable, Sendable {
         case .recommendedPrices: String(localized: "Accept Suggested Prices")
         case .retention: String(localized: "Open Retention")
         case .secondApp: String(localized: "Open the App")
+        case .secondAccount: String(localized: "Add the Key…", comment: "kind:button")
         case .template: String(localized: "Use the Template")
+        case let .templateDevice(device): String(localized: "Show \(device)", comment: "kind:button")
         case .eventArtwork: String(localized: "Make the Artwork…")
         case .menu: nil
         }

@@ -7,9 +7,11 @@ import SwiftUI
 
 /// The display type the Sets matrix shows: the sizes Apple requires
 /// (iPhone Duo's from April 2027), then the ones this app has no template
-/// for, with why.
+/// for, with why. In Free, the devices past iPhone and iPad say they're
+/// part of Pro, and picking one opens the paywall.
 struct DisplayTypeMenu: View {
     @Bindable var viewModel: ScreenshotsViewModel
+    @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
         Menu {
@@ -17,7 +19,7 @@ struct DisplayTypeMenu: View {
                 ForEach(viewModel.renderedDisplays) { type in
                     Toggle(isOn: selection(type)) {
                         Text(type.title)
-                        Text(verbatim: Self.subtitle(type, size: viewModel.pixelSize(for: type)))
+                        Text(verbatim: subtitle(type))
                     }
                     .accessibilityIdentifier("screenshots.display.\(type.shortTitle)")
                 }
@@ -45,6 +47,14 @@ struct DisplayTypeMenu: View {
         .accessibilityIdentifier("screenshots.displayType")
     }
 
+    /// The size, and "Part of Pro" for a device Free's templates don't lay out.
+    private func subtitle(_ type: ScreenshotDisplayType) -> String {
+        let size = Self.subtitle(type, size: viewModel.pixelSize(for: type))
+        return pro.mayShow(type) ? size : size + " · " + Self.proNote
+    }
+
+    static let proNote = String(localized: "Part of Pro", comment: "kind:menu-item")
+
     /// "1320 × 2868 px"; iPhone Duo's "2007 × 2853 px · from April 2027".
     static func subtitle(_ type: ScreenshotDisplayType, size: PixelSize) -> String {
         guard type.upcomingRequirement != nil else { return "\(size.title) px" }
@@ -55,7 +65,12 @@ struct DisplayTypeMenu: View {
         Binding {
             viewModel.displayType == type
         } set: { isOn in
-            if isOn { viewModel.displayType = type }
+            guard isOn else { return }
+            if pro.mayShow(type) {
+                viewModel.displayType = type
+            } else {
+                pro.require(.templateDevice(type.title)) { viewModel.displayType = type }
+            }
         }
     }
 }

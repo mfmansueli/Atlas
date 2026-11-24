@@ -19,16 +19,24 @@ struct HelpWindow: View {
             VStack(alignment: .leading, spacing: 0) {
                 HelpTopBar(library: library)
                 Divider()
-                ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.large) {
-                        if let shown = navigation.shown {
-                            HelpShownBanner(text: shown)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: Spacing.large) {
+                            if let shown = navigation.shown {
+                                HelpShownBanner(text: shown)
+                            }
+                            content
                         }
-                        content
+                        .frame(maxWidth: 640, alignment: .leading)
+                        .padding(Spacing.xLarge)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: 640, alignment: .leading)
-                    .padding(Spacing.xLarge)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    // Fix a Problem's heading, once the article is laid out.
+                    .task(id: navigation.heading) {
+                        guard let heading = navigation.heading else { return }
+                        await Task.yield()
+                        proxy.scrollTo(HelpBlock.anchor(for: heading), anchor: .top)
+                    }
                 }
                 .id(navigation.place)
             }
