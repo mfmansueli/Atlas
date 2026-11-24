@@ -21,8 +21,13 @@ enum EventArtworkSheetSize {
         )
     }
 
+    /// The size for the app's window. With Atlas in the background (no
+    /// main or key window) it reads the visible document window, so the
+    /// sheet still fits a small one.
     static var current: CGSize {
-        fitting((NSApp.mainWindow ?? NSApp.keyWindow)?.contentLayoutRect.size)
+        let window = NSApp.mainWindow ?? NSApp.keyWindow
+            ?? NSApp.windows.first { $0.isVisible && $0.sheetParent == nil && $0.styleMask.contains(.titled) }
+        return fitting(window?.contentLayoutRect.size)
     }
 
     /// A design project is connected to the app, so Claude can draw

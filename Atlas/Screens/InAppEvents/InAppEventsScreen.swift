@@ -37,8 +37,11 @@ struct InAppEventsScreen: View {
         SectionHeader(
             subtitle: String(localized: "Cards on the App Store for what’s happening in \(viewModel.app.name), in every language.")
         ) {
-            // Writing and artwork are the toolbar's Autopilot (board 57).
+            // The general request (board 40's `ask-ev`) goes to the
+            // toolbar like the Autopilot menu's (boards 56 and 57).
             if viewModel.state.value != nil {
+                InAppEventsAskButton(app: viewModel.app)
+                    .buttonBorderShape(.capsule)
                 Button {
                     viewModel.isNewEventPresented = true
                 } label: {

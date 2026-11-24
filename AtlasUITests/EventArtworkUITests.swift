@@ -63,6 +63,36 @@ final class EventArtworkUITests: XCTestCase {
         attach("ea-brief-nods")
     }
 
+    /// The minimum window (boards 40 and 47), the sidebar hidden: the
+    /// gallery, the page, the viewer and the Brief keep their controls in
+    /// view.
+    func testTheMinimumWindowKeepsEverything() {
+        app.launch(debugScene: "ev-s")
+        XCTAssertTrue(element("events.gallery").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("events.gallery").isHittable)
+        attach("ev-s")
+        app.terminate()
+
+        app.launch(debugScene: "ev-event-s")
+        XCTAssertTrue(element("events.hero").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("events.hero").isHittable)
+        attach("ev-event-s")
+        app.terminate()
+
+        app.launch(debugScene: "ev-view-s")
+        XCTAssertTrue(element("events.art.viewer.close").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("events.art.viewer.close").isHittable)
+        XCTAssertTrue(element("events.art.viewer.use").isHittable)
+        attach("ev-view-s")
+        app.terminate()
+
+        app.launch(debugScene: "ea-brief-s")
+        XCTAssertTrue(element("events.art.make").waitForExistence(timeout: 15))
+        XCTAssertTrue(element("events.art.make").isHittable)
+        XCTAssertTrue(element("events.art.cancel").isHittable)
+        attach("ea-brief-s")
+    }
+
     // MARK: - The Artwork panel
 
     func testNothingMadeAsksForTheMissingImage() {

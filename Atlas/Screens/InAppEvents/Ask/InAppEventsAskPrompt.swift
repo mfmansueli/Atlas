@@ -11,6 +11,14 @@ enum InAppEventsAskPrompt {
     /// The run's purpose, so the button finds its own run.
     static var purpose: ClaudeCodeRunPurpose { .ask(area: String(localized: "In-App Events")) }
 
+    /// What the toolbar and the toast say the request is about.
+    static var subject: String { String(localized: "In-App Events", comment: "kind:label") }
+
+    /// The toast once the run finished: where the texts are.
+    static func done(client: String) -> String {
+        String(localized: "\(client) finished. Its event texts are marked in purple.", comment: "kind:toast")
+    }
+
     static func text(app: String) -> String {
         String(localized: """
         Suggest the texts of \(app)’s In-App Events in Atlas. Read them with get_in_app_events: each event’s name \
