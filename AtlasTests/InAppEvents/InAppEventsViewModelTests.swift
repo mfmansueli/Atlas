@@ -50,7 +50,7 @@ struct InAppEventsViewModelTests {
         #expect(model.events.count == 3)
     }
 
-    @Test func anEventsLanguagesAreItsOwnThePagesAndTheSuggestedOnes() async {
+    @Test func anEventsLanguagesAreItsOwnThePagesAndTheSuggestedOnes() async throws {
         store.add([Data.suggestion("ja"), Data.suggestion("ko")], for: Data.app.id)
         let model = await makeModel()
         let languages = model.languages(of: Data.winter)
@@ -58,7 +58,16 @@ struct InAppEventsViewModelTests {
         #expect(languages.map(\.code) == ["en-US", "de-DE", "ja", "ko", "pt-BR"])
         #expect(languages.map(\.state) == [.written, .written, .suggested, .suggested, .missing])
         #expect(model.suggestedCount == 2)
-        #expect(model.suggestionsTitle == "2 languages suggested by Claude Code")
+        // A language picker, not a chip per language (README-DS §12).
+        let bar = try #require(model.languageBarModel(of: Data.winter))
+        #expect(bar.current.code == "en-US")
+        #expect(bar.totalCount == 2)
+        #expect(bar.restText == "2 more in 2 other languages")
+        #expect(bar.menuAcceptAllTitle == "Accept All Languages", "It accepts at once, with Undo")
+        // Not written yet: Portuguese shows English, listed last.
+        let groups = bar.menuGroups(matching: "")
+        #expect(groups.map(\.title) == ["Suggestions to review", "Up to date", "Uses English (U.S.)"])
+        #expect(groups.last?.entries.map(\.locale.code) == ["pt-BR"])
         // A live event isn't offered the page's other languages.
         #expect(model.languages(of: Data.update).map(\.code) == ["en-US"])
     }
@@ -77,6 +86,7 @@ struct InAppEventsViewModelTests {
         #expect(model.text(.shortDescription) == "Mit 31 Impulsen sanft ins neue Jahr")
         #expect(model.isPending(.shortDescription))
         #expect(model.languages(of: Data.winter).first { $0.code == "de-DE" }?.state == .notPushed)
+        #expect(model.languageBarModel(of: Data.winter)?.currentEntry?.note == "Not pushed")
         // Typing the App Store's text back takes the change out.
         model.edit(.shortDescription, to: "")
         #expect(queue.changes(for: Data.app.id).isEmpty)

@@ -142,4 +142,25 @@ struct ProductPagesSuggestionTests {
         let page = try ProductPagesTestModel.page(model, Sample.PageID.privateDiary)
         #expect(model.acceptableTextSuggestions(of: page).map(\.locale).sorted() == ["de-DE", "ja"])
     }
+
+    /// One language picker, not a chip per language (README-DS §12): a
+    /// suggested text is one suggestion to review; the languages showing
+    /// the default page's content are listed last.
+    @Test func theLanguageBarCountsTheSuggestedTexts() async throws {
+        let model = await ProductPagesTestModel.make()
+        model.open(Sample.PageID.privateDiary)
+        model.localeCode = "de-DE"
+        let page = try ProductPagesTestModel.page(model, Sample.PageID.privateDiary)
+        let bar = try #require(model.languageBarModel(of: page))
+        #expect(bar.current.code == "de-DE")
+        #expect(bar.hereText == "1 suggestion here")
+        #expect(bar.totalCount == 2)
+        #expect(bar.restText == "1 more in 1 other language")
+        #expect(bar.menuAcceptAllTitle == "Accept All Languages", "It accepts at once, with Undo")
+        let same = model.languages(of: page).filter { $0.state == .same }.map(\.code)
+        #expect(bar.entries.filter(\.usesPrimary).map(\.locale.code) == same)
+        if !same.isEmpty {
+            #expect(bar.menuGroups(matching: "").last?.title == "Uses the default page")
+        }
+    }
 }

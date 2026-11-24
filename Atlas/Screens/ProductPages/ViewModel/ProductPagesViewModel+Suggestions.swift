@@ -119,21 +119,6 @@ extension ProductPagesViewModel {
         return store.textSuggestions(for: app.id, pageID: page.id).filter { !$0.isRefused }
     }
 
-    /// "2 languages have a suggestion · the others use the default page’s
-    /// text and screenshots".
-    func languageHeadline(of page: ProductPage) -> String {
-        let count = acceptableTextSuggestions(of: page).count
-        let others = String(localized: "the others use the default page’s text and screenshots")
-        if count > 0 {
-            let lead = count == 1 ? String(localized: "1 language has a suggestion") : String(localized: "\(count) languages have a suggestion")
-            return "\(lead) · \(others)"
-        }
-        let own = languages(of: page).filter { $0.state == .own }.map(\.name)
-        guard !own.isEmpty else { return String(localized: "Every language uses the default page’s text and screenshots") }
-        if own.count <= 2 { return String(localized: "Own text in \(own.formatted(.list(type: .and))) · \(others)") }
-        return String(localized: "No suggestions waiting · \(others)")
-    }
-
     func acceptText(_ suggestion: ProductPageTextSuggestion) {
         guard !suggestion.isRefused, let page = page(suggestion.pageID), canEdit(page) else { return }
         write(text: suggestion.text, locale: suggestion.locale, of: page, source: .assistant(client: suggestion.source))

@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// "Screenshots", the version line, and the device, language and
-/// Live · New controls. Many languages go in a menu.
+/// Live · New controls.
 struct StudioHeader: View {
     @Bindable var studio: ScreenshotStudioModel
     @Bindable var screenshots: ScreenshotsViewModel
@@ -57,24 +57,13 @@ struct StudioHeader: View {
         }
     }
 
+    /// The one language picker (README-DS §12), compact: tabs don't scale.
     @ViewBuilder
     private var languages: some View {
-        if studio.locales.count <= 5 {
-            StudioSegmentedControl(
-                label: String(localized: "Language"),
-                options: studio.locales.map { .init(value: $0.code, title: $0.shortName, key: $0.code) },
-                selection: $studio.selectedLocale,
-                identifier: "studio.language"
-            )
-        } else {
-            Picker(String(localized: "Language"), selection: $studio.selectedLocale) {
-                ForEach(studio.locales) { locale in
-                    Text(locale.name).tag(locale.code)
-                }
+        if let model = LanguageBarModel.plain(codes: studio.locales.map(\.code), current: studio.selectedLocale) {
+            LanguagePickerButton(model: model, style: .compact, identifier: "studio.language") { locale in
+                studio.selectedLocale = locale.code
             }
-            .labelsHidden()
-            .fixedSize()
-            .accessibilityIdentifier("studio.language")
         }
     }
 

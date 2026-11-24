@@ -32,6 +32,12 @@ struct ScreenshotsLanguagePageTests {
         let bar = model.languageBarModel(acceptsRightAway: false)
         #expect(bar.hereText == "3 suggestions here")
         #expect(bar.totalCount == 3)
+        // The menu lists last the languages that reuse the primary set;
+        // the primary itself never does.
+        #expect(bar.reuseGroupTitle == "Uses English (U.S.) screenshots")
+        #expect(bar.entries.first?.usesPrimary == false)
+        let reusing = bar.entries.filter(\.usesPrimary).map(\.locale.code)
+        #expect(reusing.allSatisfy { model.ownCount(locale: $0, displayType: model.displayType) == 0 })
         #expect(model.pageStatus(of: StoreLocale.german) == "3 captions suggested")
         #expect(model.proposedCaption(locale: "de-DE", slot: 1)?.item.headline == "Deine Woche auf einen Blick")
         #expect(model.proposedCaption(locale: "de-DE", slot: 0) == nil)

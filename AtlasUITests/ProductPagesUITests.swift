@@ -120,7 +120,7 @@ final class ProductPagesUITests: XCTestCase {
         app.launch(debugScene: "cp-edit")
         XCTAssertTrue(element("pages.editor.name").waitForExistence(timeout: 15))
         XCTAssertTrue(element("pages.linkCard").exists)
-        XCTAssertTrue(element("pages.languageBar").exists)
+        XCTAssertTrue(element("languageBar.picker").exists, "One language picker, not a chip per language")
         XCTAssertTrue(text(of: element("pages.promo.counter")).contains("/ 170"))
         XCTAssertTrue(element("pages.keywordsBox").exists)
         XCTAssertEqual(element("pages.editor.submit").label, "Submit for Review…")

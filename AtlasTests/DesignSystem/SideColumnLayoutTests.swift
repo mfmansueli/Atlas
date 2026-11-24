@@ -54,7 +54,7 @@ struct SideColumnLayoutTests {
     /// page had before, so the page never holds the window wider.
     @MainActor
     @Test func overviewStacksUnder704Points() {
-        let columns = OverviewPageAndWaiting<EmptyView>.columns
+        let columns = OverviewPageAndWaiting<EmptyView, EmptyView>.columns
         #expect(columns.stacksSideBelow)
         #expect(columns.placesBeside(in: 704, mainMinimumWidth: 300))
         #expect(!columns.placesBeside(in: 703, mainMinimumWidth: 300))

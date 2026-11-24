@@ -88,21 +88,106 @@ struct LanguageBarModelTests {
         #expect(LanguageBarEntry(locale: .german, count: 1).accessibilityText == "German, 1 suggestion to review")
     }
 
-    @Test func aShortNameALanguageBeforeItHasBecomesTheRegion() throws {
-        let american = try #require(StoreLocaleCatalog.locale(code: "en-US"))
-        let australian = try #require(StoreLocaleCatalog.locale(code: "en-AU"))
-        let shown = [american, australian, StoreLocale.german]
-        #expect(LanguageBarModel.shortName(american, among: shown) == "English")
-        #expect(LanguageBarModel.shortName(australian, among: shown) == "Australia")
-        #expect(LanguageBarModel.shortName(.german, among: shown) == "German")
-        // The first one shown keeps the language's name, whichever it is.
-        #expect(LanguageBarModel.shortName(australian, among: [australian, american]) == "English")
-        #expect(LanguageBarModel.shortName(american, among: [australian, american]) == "U.S.")
+    @Test func aMenuRowSaysItsNote() {
+        let entry = LanguageBarEntry(locale: .german, count: 0, note: "Not pushed")
+        #expect(entry.accessibilityText == "German, nothing to review, Not pushed")
+        #expect(entry.accessibilityText(countsSuggestions: false) == "German, Not pushed")
     }
 
-    @Test func aShortNameOnItsOwnStaysShort() throws {
-        let american = try #require(StoreLocaleCatalog.locale(code: "en-US"))
-        #expect(LanguageBarModel.shortName(american, among: [american, .german]) == "English")
-        #expect(LanguageBarModel.shortName(american, among: []) == "English")
+    /// "Accept 5 in English": the language, never a region alone ("U.K.").
+    @Test func theShortNameIsTheLanguage() {
+        #expect(LanguageBarModel.shortName(.englishUS) == "English")
+        #expect(LanguageBarModel.shortName(.englishUK) == "English")
+        #expect(LanguageBarModel.shortName(.german) == "German")
+    }
+
+    // MARK: - The menu (README-DS §12)
+
+    @Test func theMenuGroupsSuggestionsFirstThenUpToDate() {
+        let groups = model(current: .englishUS).menuGroups(matching: "")
+        #expect(groups.map(\.kind) == [.toReview, .upToDate])
+        #expect(groups.map(\.title) == ["Suggestions to review", "Up to date"])
+        #expect(groups[0].entries.map(\.locale) == [.englishUS, french])
+        #expect(groups[1].entries.map(\.locale) == [.german, japanese])
+    }
+
+    @Test func typingKeepsTheGroupsAndDropsTheEmptyOnes() {
+        let bar = model(current: .englishUS)
+        #expect(bar.menuGroups(matching: "ja").map(\.kind) == [.upToDate])
+        #expect(bar.menuGroups(matching: "en").map(\.kind) == [.toReview])
+        #expect(bar.menuGroups(matching: "zz").isEmpty, "The menu then says No language matches")
+    }
+
+    /// Screenshots: languages that reuse the primary set are listed last.
+    @Test func languagesThatUseThePrimarySetAreListedLast() {
+        var bar = LanguageBarModel(
+            entries: [
+                LanguageBarEntry(locale: .englishUS, count: 0),
+                LanguageBarEntry(locale: .german, count: 2, usesPrimary: true),
+                LanguageBarEntry(locale: french, count: 0, usesPrimary: true),
+                LanguageBarEntry(locale: japanese, count: 0),
+            ],
+            current: .englishUS,
+            reuseGroupTitle: "Uses English (U.S.) screenshots"
+        )
+        let groups = bar.menuGroups(matching: "")
+        #expect(groups.map(\.title) == ["Suggestions to review", "Up to date", "Uses English (U.S.) screenshots"])
+        // A suggestion comes first, whatever the language shows.
+        #expect(groups[0].entries.map(\.locale) == [.german])
+        #expect(groups[1].entries.map(\.locale) == [.englishUS, japanese])
+        #expect(groups[2].entries.map(\.locale) == [french])
+        // Without a title for them, they stay under Up to date.
+        bar.reuseGroupTitle = nil
+        #expect(bar.menuGroups(matching: "").map(\.kind) == [.toReview, .upToDate])
+    }
+
+    @Test func aSwitchWithNothingToReviewIsOneList() throws {
+        let bar = try #require(LanguageBarModel.plain(codes: ["en-US", "de-DE", "ja"], current: "de-DE"))
+        #expect(bar.current == .german)
+        #expect(!bar.countsSuggestions)
+        let groups = bar.menuGroups(matching: "")
+        #expect(groups.map(\.kind) == [.all])
+        #expect(groups[0].title == nil)
+        #expect(groups[0].entries.count == 3)
+        #expect(bar.pickerAccessibilityText == "Language: German. Choose another language.")
+        // One language: nothing to switch.
+        #expect(LanguageBarModel.plain(codes: ["en-US"], current: "en-US") == nil)
+        // An unknown current one shows the first.
+        #expect(LanguageBarModel.plain(codes: ["en-US", "de-DE"], current: "xx")?.current == .englishUS)
+    }
+
+    /// In-App Events and Product Pages accept at once, with Undo.
+    @Test func acceptAllThatNeverAsksHasNoEllipsisNorAcceptsRightAwayLine() {
+        var bar = model(current: .englishUS)
+        bar.acceptAllShowsSuggestionsFirst = false
+        #expect(bar.menuAcceptAllTitle == "Accept All Languages")
+        #expect(!bar.showsAcceptsRightAway)
+        #expect(bar.acceptAllAccessibilityText.hasSuffix("accepts right away"))
+        bar.acceptsRightAway = true
+        #expect(!bar.showsAcceptsRightAway)
+        #expect(model(current: .englishUS, acceptsRightAway: true).showsAcceptsRightAway)
+        #expect(!model(current: .englishUS).showsAcceptsRightAway)
+    }
+
+    // MARK: - Pickers elsewhere
+
+    /// Overview's App Store preview: the primary first, the counts of
+    /// the Store Page's suggestions.
+    @Test func theStorePreviewPickerListsThePrimaryFirst() {
+        let bar = LanguageBarModel.storePreview(
+            locales: [.german, .englishUS, french], primary: .englishUS, current: french, counts: ["fr-FR": 3]
+        )
+        #expect(bar.entries.map(\.locale) == [.englishUS, .german, french])
+        #expect(bar.current == french)
+        #expect(bar.hereText == "3 suggestions here")
+        #expect(bar.countsSuggestions)
+    }
+
+    @Test func theRetentionPickerSaysWhichRunTooLong() throws {
+        let bar = try #require(LanguageBarModel.retention(languages: [.englishUS, .german], selectedCode: "de-DE", tooLong: ["de-DE"]))
+        #expect(bar.current == .german)
+        #expect(!bar.countsSuggestions)
+        #expect(bar.entries.map(\.note) == [nil, "Too long"])
+        #expect(LanguageBarModel.retention(languages: [], selectedCode: "en-US", tooLong: []) == nil)
     }
 }

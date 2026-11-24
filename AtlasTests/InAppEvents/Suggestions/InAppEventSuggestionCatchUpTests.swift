@@ -109,7 +109,7 @@ struct InAppEventSuggestionCatchUpTests {
         let revised = model.languages(of: event).filter { $0.state == .revision }.map(\.code)
         #expect(Set(revised) == Set(Alba.differing.keys))
         #expect(model.suggestedCount == 4)
-        #expect(model.suggestionsTitle == "4 languages suggested by Claude Code")
+        #expect(model.languageBarModel(of: event)?.totalCount == 4)
 
         // Brazil's revision: Now is App Store Connect's name, Suggested Claude Code's.
         model.localeCode = "pt-BR"

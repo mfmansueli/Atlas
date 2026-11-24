@@ -14,8 +14,8 @@ import CoreGraphics
 /// first (`titleRoom`), down to `minimumTitleWidth`; then the Autopilot and
 /// Review & Push labels fold to their icons, their counts staying
 /// (`isCompact`). The room is the fixed part plus what the items reported
-/// (`ToolbarRoomItem`: the title, the labels, the section menu, the
-/// language picker, Pro). Under 620 points the title goes too.
+/// (`ToolbarRoomItem`: the title, the labels, the section menu, Pro).
+/// Under 620 points the title goes too.
 struct WorkspaceToolbarLayout: Equatable {
     var detailWidth: CGFloat = 0
     var isSidebarShown = true
@@ -41,11 +41,11 @@ struct WorkspaceToolbarLayout: Equatable {
     /// The title truncates down to this before the labels fold.
     static let minimumTitleWidth: CGFloat = 180
     /// The least the title is offered when even folded labels leave less
-    /// (a hidden sidebar with the language picker and Pro): “Overv…”.
+    /// (a hidden sidebar with Pro): “Overv…”.
     static let leastTitleWidth: CGFloat = 60
 
     /// What the items other than the title and the section menu take: the
-    /// labels, or else the items of their own (the language picker, Pro)
+    /// labels, or else the items of their own (Pro)
     /// with their gaps.
     private func reported(labels: Bool) -> CGFloat {
         room.reduce(CGFloat(0)) { total, entry in

@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// One language of an event in the language bar.
+/// One language of an event, for its language bar.
 struct InAppEventLanguage: Identifiable, Hashable, Sendable {
     enum State: Hashable, Sendable {
         /// In App Store Connect.
@@ -31,19 +31,5 @@ struct InAppEventLanguage: Identifiable, Hashable, Sendable {
 
     var name: String { locale?.name ?? code }
 
-    /// "German", for a chip.
-    var shortName: String { locale?.shortName ?? code }
-
     var isRightToLeft: Bool { locale?.isRTL ?? false }
-
-    /// "German, suggestion to review"; "German, revision to review".
-    var accessibilityText: String {
-        switch state {
-        case .written: name
-        case .notPushed: String(localized: "\(name), not pushed")
-        case .suggested: String(localized: "\(name), suggestion to review")
-        case .revision: String(localized: "\(name), revision to review")
-        case .missing: String(localized: "\(name), not written")
-        }
-    }
 }

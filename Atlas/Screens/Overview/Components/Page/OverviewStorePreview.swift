@@ -15,6 +15,7 @@ struct OverviewStorePreview: View {
     let links: AppStorePreviewLinks
 
     @Environment(AppSummaryStore.self) private var summaries
+    @Environment(FieldSuggestionStore.self) private var suggestions
     @State private var selected: StoreLocale?
     @State private var ratings = StoreRatings.unchecked
 
@@ -71,46 +72,28 @@ struct OverviewStorePreview: View {
             .accessibilityAddTraits(.isHeader)
     }
 
-    /// The primary language, then the next two the page has, and the one
-    /// picked from the menu.
-    private var shownLocales: [StoreLocale] {
-        var locales = [content.primaryLocale] + content.locales.filter { $0 != content.primaryLocale }.prefix(2)
-        if !locales.contains(locale) { locales.append(locale) }
-        return locales
-    }
-
     private var locale: StoreLocale {
         selected.flatMap { content.locales.contains($0) ? $0 : nil } ?? content.primaryLocale
     }
 
+    /// The one language picker (README-DS §12), compact: the card is too
+    /// narrow for the whole bar, and tabs don't scale. The menu counts each
+    /// language's Store Page suggestions, as the Store Page does.
+    @ViewBuilder
     private var languagePicker: some View {
-        HStack(spacing: Spacing.xxSmall) {
-            Picker("Language", selection: Binding(get: { locale }, set: { selected = $0 })) {
-                ForEach(shownLocales, id: \.self) { locale in
-                    Text(LanguageBarModel.shortName(locale, among: shownLocales)).tag(locale)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .controlSize(.small)
-            .fixedSize()
-            .accessibilityIdentifier("overview.storePreview.language")
-            if content.locales.count > 3 {
-                Menu {
-                    ForEach(content.locales, id: \.self) { locale in
-                        Button(locale.name) { selected = locale }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                }
-                .menuStyle(.button)
-                .menuIndicator(.hidden)
-                .buttonStyle(.borderless)
-                .fixedSize()
-                .help("Another language")
-                .accessibilityLabel(Text("Another language"))
+        if content.locales.count > 1 {
+            LanguagePickerButton(model: languageModel, style: .compact, identifier: "overview.storePreview.language") { locale in
+                selected = locale
             }
         }
+    }
+
+    private var languageModel: LanguageBarModel {
+        var counts: [String: Int] = [:]
+        for suggestion in suggestions.toReview(for: app.id, area: .storePage) {
+            if case let .storePage(code) = suggestion.target.scope { counts[code, default: 0] += 1 }
+        }
+        return .storePreview(locales: content.locales, primary: content.primaryLocale, current: locale, counts: counts)
     }
 
     private var model: AppStorePreviewModel {

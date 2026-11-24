@@ -174,10 +174,14 @@ final class EventArtworkUITests: XCTestCase {
     func testTheTextReadsInAnotherLanguageRightToLeft() {
         app.launch(debugScene: "ev-view-ar")
         XCTAssertTrue(element("events.art.viewer").waitForExistence(timeout: 15))
-        XCTAssertTrue(element("events.art.viewer.locale.ar-SA").isSelected)
+        let language = element("events.art.viewer.language")
+        XCTAssertTrue(language.label.hasPrefix("Language: Arabic."), language.label)
         XCTAssertTrue(text(of: element("events.art.viewer.storeText")).contains("تحدي تأملات الشتاء"))
         attach("ev-view-ar")
-        element("events.art.viewer.locale.en-US").click()
+        language.click()
+        let english = element("languageBar.menu.en-US")
+        XCTAssertTrue(english.waitForExistence(timeout: 5))
+        english.click()
         XCTAssertTrue(waitForText("Winter Reflection Challenge", containedIn: element("events.art.viewer.storeText")))
     }
 

@@ -36,15 +36,15 @@ struct WorkspaceToolbarLayoutTests {
 
     @Test func besideTheSidebarAnOrdinaryWindowKeepsTheLabels() {
         // A 1,100 pt window with the sidebar showing: 836 pt of column,
-        // with room left over even with the language picker. The title's
-        // 12 pt off the sidebar's edge count too.
+        // with room left over even with an item of its own as wide as 121
+        // pt. The title's 12 pt off the sidebar's edge count too.
         #expect(layout(836).widthForLabels == 684)
         #expect(!layout(836).isCompact)
-        var withPicker = Self.labels
-        withPicker[.languagePicker] = 121
-        #expect(layout(836, room: withPicker).widthForLabels == 813)
-        #expect(!layout(836, room: withPicker).isCompact)
-        #expect(layout(800, room: withPicker).isCompact)
+        var withItem = Self.labels
+        withItem[.proButton] = 121
+        #expect(layout(836, room: withItem).widthForLabels == 813)
+        #expect(!layout(836, room: withItem).isCompact)
+        #expect(layout(800, room: withItem).isCompact)
     }
 
     @Test func theLabelsFoldOnlyWithoutRoom() {
@@ -87,10 +87,10 @@ struct WorkspaceToolbarLayoutTests {
         var layout = layout(836)
         let same = layout.report(.autopilotLabel, width: 131.2)
         let wider = layout.report(.autopilotLabel, width: 150)
-        let picker = layout.report(.languagePicker, width: 121)
-        let gone = layout.report(.languagePicker, width: 0)
+        let pro = layout.report(.proButton, width: 72)
+        let gone = layout.report(.proButton, width: 0)
         #expect(!same)
-        #expect(wider && picker && gone)
+        #expect(wider && pro && gone)
         #expect(layout.room[.autopilotLabel] == 150)
         let least = WorkspaceToolbarLayout.minimumTitleWidth
         #expect(abs(layout.widthForLabels - (WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + least + 150 + 101)) < 0.001)
@@ -140,15 +140,15 @@ struct WorkspaceToolbarLayoutTests {
         #expect(layout(604, room: room).widthForLabels == 684)
     }
 
-    /// A hidden sidebar with the language picker and Pro leaves the
-    /// title little; it's never offered less than its least.
+    /// A hidden sidebar with Pro leaves the title little; it's never
+    /// offered less than its least.
     @Test func theTitleIsNeverOfferedLessThanItsLeast() {
         var room = Self.labels
         room[.sectionMenu] = 141
-        room[.languagePicker] = 144
         room[.proButton] = 72
-        #expect(layout(800, sidebar: false, room: room).titleRoom == WorkspaceToolbarLayout.leastTitleWidth)
-        #expect(layout(860, sidebar: false, room: room).titleRoom == 91)
+        // Folded: 260 fixed + 136 + 141 lead + 72 + 8 for Pro = 617.
+        #expect(layout(660, sidebar: false, room: room).titleRoom == WorkspaceToolbarLayout.leastTitleWidth)
+        #expect(layout(708, sidebar: false, room: room).titleRoom == 91)
     }
 
     @Test func aLabelsRoomIsItsWidthBeyondTheIcon() {
