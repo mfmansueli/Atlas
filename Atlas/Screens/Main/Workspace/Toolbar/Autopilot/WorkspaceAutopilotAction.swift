@@ -130,16 +130,26 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         ]
     }
 
+    /// The menu's symbol column (README-DS §13, board 57 after the SF
+    /// Symbols pass): one symbol per verb, sparkles for Suggest and for
+    /// what has no verb of its own.
     var systemImage: String {
         switch self {
-        case .makeScreenshots, .makePageScreenshots, .recaptureSome, .makeReviewScreenshots: "camera.viewfinder"
-        case .makeAppPreview: "play.rectangle"
-        case .makeArtwork, .makeEventArtwork: "photo.artframe"
-        case .translateNewLanguage: "globe"
+        case .makeScreenshots, .makePageScreenshots: "iphone"
+        case .makeAppPreview: "film"
+        case .makeArtwork, .makeEventArtwork: "photo"
+        case .recaptureSome: "arrow.clockwise"
+        case .writeWhatsNew, .writeEventTexts, .writeNominationDescription, .writeRetentionOffer: "square.and.pencil"
+        case .translateNewLanguage: "translate"
+        case .askSomethingElse, .draftReplies: "text.bubble"
         case .checkPrivacy, .checkEventsForReview: "checkmark.shield"
-        case .findWhatToTry, .explainChange: "chart.line.uptrend.xyaxis"
-        case .replyAutomatically: "arrowshape.turn.up.left.2"
-        default: "sparkles"
+        case .replyAutomatically: "bolt"
+        case .summarizeRequests: "doc.text"
+        case .findWhatToTry: "lightbulb"
+        case .explainChange: "questionmark.circle"
+        case .suggestEverything, .suggestTexts, .suggestSourceLanguageOnly, .suggestPages, .suggestNomination, .suggestAnswers,
+             .suggestPrices, .makeReviewScreenshots:
+            "sparkles"
         }
     }
 

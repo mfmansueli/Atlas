@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// One section in the sidebar or the section menu: its tile, its name and
+/// One section in the sidebar or the section menu: its symbol, its name and
 /// its count, and Autopilot's mark when it waits for the person there. A
 /// purple count that goes up because suggestions came ticks (effect 4).
 struct SidebarSectionRow: View {
@@ -17,7 +17,7 @@ struct SidebarSectionRow: View {
 
     var body: some View {
         HStack(spacing: 9) {
-            SectionIconTile(section: section)
+            SectionSymbol(style: section.style)
             Text(section.title)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .lineLimit(1)

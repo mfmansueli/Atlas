@@ -33,7 +33,7 @@ struct DesignTokensTests {
     /// Light and dark as the app resolves them from its asset catalogue.
     @Test func everyColourMatchesInLightAndDark() throws {
         let colors = try section("color")
-        #expect(colors.count >= 50)
+        #expect(colors.count >= 35)
         let appearances: [(String, NSAppearance.Name)] = [("light", .aqua), ("dark", .darkAqua)]
         for (name, value) in colors {
             let variants = try #require(value as? [String: String], "\(name)")
@@ -86,11 +86,69 @@ struct DesignTokensTests {
         #expect(light("err") == "#C8102E")
         #expect(light("brandTop") == "#1FC2FF")
         #expect(light("brandBottom") == "#0A5CF2")
-        // README §2's section tiles, top → bottom.
-        #expect(light("sectionScreenshotsTop") == "#F57A35")
-        #expect(light("sectionScreenshots") == "#CE5619")
-        #expect(light("sectionReviewsTop") == "#F7BE1A")
-        #expect(light("sectionEvents") == "#C03B69")
+        // §13: the sections have no colour sets of their own any more,
+        // only system colours (`symbol`).
+        #expect(colors.keys.allSatisfy { !$0.hasPrefix("section") })
+    }
+
+    // MARK: - Symbols (§13)
+
+    @Test func everySectionHasTheBoardsSymbolAndColour() throws {
+        let sections = try #require(try section("symbol")["section"] as? [String: [String: String]])
+        #expect(Set(sections.keys) == Set(AppWorkspaceSection.allCases.map(\.rawValue)))
+        for section in AppWorkspaceSection.allCases {
+            let entry = try #require(sections[section.rawValue], "\(section)")
+            #expect(section.style.symbol == entry["symbol"], "\(section) symbol")
+            #expect(section.style.tint.rawValue == entry["tint"], "\(section) tint")
+            #expect(section.systemImage == section.style.symbol, "\(section)")
+        }
+    }
+
+    @Test func everySettingsPaneHasTheBoardsSymbolAndColour() throws {
+        let panes = try #require(try section("symbol")["settings"] as? [String: [String: String]])
+        #expect(Set(panes.keys) == Set(SettingsPane.allCases.map(\.rawValue)))
+        for pane in SettingsPane.allCases {
+            let entry = try #require(panes[pane.rawValue], "\(pane)")
+            #expect(pane.style.symbol == entry["symbol"], "\(pane) symbol")
+            #expect(pane.style.tint.rawValue == entry["tint"], "\(pane) tint")
+        }
+    }
+
+    @Test func everyStatusHasItsSymbolAndColour() throws {
+        let statuses = try #require(try section("symbol")["status"] as? [String: [String: String]])
+        #expect(Set(statuses.keys) == Set(StatusSymbol.allCases.map(\.rawValue)))
+        for status in StatusSymbol.allCases {
+            let entry = try #require(statuses[status.rawValue], "\(status)")
+            #expect(status.symbol == entry["symbol"], "\(status) symbol")
+            #expect(status.tint.rawValue == entry["tint"], "\(status) tint")
+        }
+    }
+
+    /// Every tint the JSON names is a `SymbolTint`.
+    @Test func everyTintIsASymbolTint() throws {
+        let symbols = try section("symbol")
+        for group in ["section", "settings", "status"] {
+            let entries = try #require(symbols[group] as? [String: [String: String]], "\(group)")
+            for (name, entry) in entries {
+                #expect(SymbolTint(rawValue: entry["tint"] ?? "") != nil, "\(group).\(name)")
+            }
+        }
+    }
+
+    /// The board's main symbols, written out so the JSON can't drift from
+    /// README-DS §13 either.
+    @Test func theReadmesSymbolsAreTheSwifts() {
+        #expect(AppWorkspaceSection.overview.style == SectionStyle(symbol: "square.grid.2x2", tint: .systemGray))
+        #expect(AppWorkspaceSection.productPages.style == SectionStyle(symbol: "rectangle.stack", tint: .systemTeal))
+        #expect(AppWorkspaceSection.nominations.style == SectionStyle(symbol: "rosette", tint: .systemBrown))
+        #expect(AppWorkspaceSection.reviews.style == SectionStyle(symbol: "star", tint: .systemYellow))
+        #expect(AppWorkspaceSection.analytics.style == SectionStyle(symbol: "chart.bar", tint: .systemIndigo))
+        #expect(SettingsPane.assistants.style.tint == .ai, "the one purple pane")
+        #expect(StatusSymbol.error.symbol == "exclamationmark.circle.fill")
+        // No section is drawn with a filled symbol any more.
+        #expect(AppWorkspaceSection.allCases.allSatisfy { !$0.style.symbol.hasSuffix(".fill") })
+        // Purple is AI's: no section is.
+        #expect(AppWorkspaceSection.allCases.allSatisfy { $0.style.tint != .ai })
     }
 
     // MARK: - Type

@@ -99,8 +99,8 @@ struct EventArtworkViewerStage: View {
 
     private var missing: some View {
         VStack(spacing: Spacing.small) {
-            Text("!")
-                .font(.largeTitle.weight(.bold))
+            Image(systemName: StatusSymbol.needsYou.symbol)
+                .font(.largeTitle)
                 .foregroundStyle(Palette.warn)
             Text(viewer.kind == .card ? "No event card yet" : "No event details image yet")
                 .font(.body.weight(.semibold))

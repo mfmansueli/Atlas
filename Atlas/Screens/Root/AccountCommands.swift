@@ -11,7 +11,7 @@ struct AccountCommands: Commands {
 
     var body: some Commands {
         CommandGroup(after: .appSettings) {
-            Button("Add Another Key…") { session.isAddingKey = true }
+            Button("Add Another Key…", systemImage: "key") { session.isAddingKey = true }
                 // The connect screen already asks for the first key.
                 .disabled(session.keys.isEmpty)
         }

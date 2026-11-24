@@ -5,24 +5,33 @@
 
 import SwiftUI
 
-/// A price change as a signed whole percent: teal ▼ for decreases, orange ▲
-/// for increases, never red and green (a lower price isn't an error). The
-/// arrow and sign keep it readable without color.
+/// A price change as a signed whole percent: teal arrow down for decreases,
+/// orange arrow up for increases, never red and green (a lower price isn't
+/// an error). The arrow symbol and sign keep it readable without color.
 struct DeltaPill: View {
     /// Signed whole percent, e.g. -50.
     let percent: Int
 
     var body: some View {
-        Pill(text: text, style: style)
+        Pill(text: text, systemImage: systemImage, style: style)
             .accessibilityElement()
             .accessibilityLabel(accessibilityText)
     }
 
     private var text: String {
         switch percent {
-        case ..<0: String(localized: "▼ −\(-percent)%", comment: "kind:pill")
-        case 1...: String(localized: "▲ +\(percent)%", comment: "kind:pill")
+        case ..<0: String(localized: "−\(-percent)%", comment: "kind:pill")
+        case 1...: String(localized: "+\(percent)%", comment: "kind:pill")
         default: "0%"
+        }
+    }
+
+    /// README-DS §13: arrow symbols, not "▼ ▲" characters.
+    private var systemImage: String? {
+        switch percent {
+        case ..<0: "arrowtriangle.down.fill"
+        case 1...: "arrowtriangle.up.fill"
+        default: nil
         }
     }
 

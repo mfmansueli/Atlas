@@ -88,7 +88,9 @@ final class AppPreviewReviewUITests: XCTestCase {
         approve.click()
         // On to the screenshots, the part still to approve.
         let tab = element("autopilot.guided.review.tabs.appPreview")
-        XCTAssertTrue(waitUntil { tab.label == "✓ App Preview" }, tab.label)
+        // The checkmark is a symbol now (README-DS §13); VoiceOver hears "Approved".
+        XCTAssertTrue(waitUntil { tab.label == "App Preview" && (tab.value as? String) == "Approved" }, tab.label)
+        XCTAssertTrue(tab.images["checkmark"].exists, "The approved tab shows the checkmark symbol")
         tab.click()
         XCTAssertTrue(waitUntil { approve.isSelected }, "Approved")
         XCTAssertFalse(element("autopilot.watch.askBox").exists, "Approved, it's final: nothing more to ask")

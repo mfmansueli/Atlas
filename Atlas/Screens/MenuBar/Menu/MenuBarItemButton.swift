@@ -6,10 +6,13 @@
 import SwiftUI
 
 /// One clickable line of the menu bar's menu, drawn as a menu item: the
-/// accent colour under the pointer, a second line when there's one, then
-/// a count and the key equivalent on the right.
+/// symbol column (README-DS §13: secondary label, an empty slot when the
+/// line has no standard symbol, so the names line up), the accent colour
+/// under the pointer, a second line when there's one, then a count and the
+/// key equivalent on the right.
 struct MenuBarItemButton: View {
     let title: String
+    var systemImage: String?
     var detail: String?
     var count: Int?
     var shortcut: String?
@@ -20,7 +23,13 @@ struct MenuBarItemButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: Spacing.small) {
+            HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
+                // The empty slot keeps a symbol's baseline and width.
+                Image(systemName: systemImage ?? "circle")
+                    .opacity(systemImage == nil ? 0 : 1)
+                    .foregroundStyle(isHovered ? Color.white : Palette.label2)
+                    .frame(width: Metrics.symbolColumn)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
                         .font(.body)
@@ -63,9 +72,9 @@ struct MenuBarItemButton: View {
 
 #Preview {
     VStack(spacing: 1) {
-        MenuBarItemButton(title: "Open Atlas", shortcut: "⌘O") {}
-        MenuBarItemButton(title: "Review & Push…", count: 4) {}
-        MenuBarItemButton(title: "6 reviews need a reply", detail: "Replies are suggested in each language") {}
+        MenuBarItemButton(title: "Open Atlas", systemImage: "arrow.up.forward.app", shortcut: "⌘O") {}
+        MenuBarItemButton(title: "Review & Push…", systemImage: "arrow.up.circle", count: 4) {}
+        MenuBarItemButton(title: "6 reviews need a reply", systemImage: "star.bubble", detail: "Replies are suggested in each language") {}
     }
     .padding(6)
     .frame(width: 330)

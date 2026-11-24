@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// Step 2 with a key: the provider, the key with Check Key, what the check
-/// found (or "Get a key from Anthropic ↗"), the model, whether
+/// found (or "Get a key from Anthropic", a link), the model, whether
 /// translations use the key too, and where the key goes.
 struct KeyAssistantSetupKeyStep: View {
     @Bindable var viewModel: KeyAssistantSetupViewModel
@@ -86,7 +86,10 @@ struct KeyAssistantSetupKeyStep: View {
         Group {
             switch viewModel.keyState {
             case .idle:
-                Link("Get a key from \(viewModel.vendor.title) ↗", destination: viewModel.vendor.keyPageURL)
+                Link(destination: viewModel.vendor.keyPageURL) {
+                    Label("Get a key from \(viewModel.vendor.title)", systemImage: "arrow.up.right")
+                        .labelStyle(.titleAndIcon)
+                }
             case .checking:
                 HStack(spacing: Spacing.xSmall) {
                     ProgressView().controlSize(.small)

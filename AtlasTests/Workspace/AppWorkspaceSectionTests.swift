@@ -67,6 +67,20 @@ struct AppWorkspaceSectionTests {
         #expect(Set(symbols).count == symbols.count)
         #expect(AppWorkspaceSection.screenshots.systemImage == "iphone")
         #expect(AppWorkspaceSection.inAppEvents.systemImage == "calendar")
+        // Board 72: outline symbols; Custom Product Pages is a stack.
+        #expect(AppWorkspaceSection.productPages.systemImage == "rectangle.stack")
+        #expect(AppWorkspaceSection.storePage.systemImage == "doc.text")
+    }
+
+    /// README-DS §13: a system colour per section, Nominations brown; the
+    /// two neutral places gray.
+    @Test(arguments: [
+        (AppWorkspaceSection.overview, SymbolTint.systemGray), (.storePage, .systemBlue), (.screenshots, .systemOrange),
+        (.productPages, .systemTeal), (.inAppEvents, .systemPink), (.nominations, .systemBrown), (.appInformation, .systemGray),
+        (.subscriptionPricing, .systemGreen), (.reviews, .systemYellow), (.analytics, .systemIndigo),
+    ])
+    func eachSectionHasItsSystemColour(section: AppWorkspaceSection, tint: SymbolTint) {
+        #expect(section.style.tint == tint)
     }
 
     @Test func theRawValuesStayAsTheyWereSaved() {

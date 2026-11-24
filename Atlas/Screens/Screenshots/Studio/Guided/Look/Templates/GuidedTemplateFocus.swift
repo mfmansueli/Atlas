@@ -191,7 +191,13 @@ struct GuidedTemplateFocus: View {
     @ViewBuilder
     private func pickButton(number: Int?) -> some View {
         let title = GuidedPickToggle.title(number: number, picked: studio.shotTemplatePicks.count)
-        let label = Text(title).frame(minWidth: 150)
+        let label = Label {
+            Text(title)
+        } icon: {
+            if let symbol = GuidedPickToggle.systemImage(number: number) { Image(systemName: symbol) }
+        }
+        .labelStyle(.titleAndIcon)
+        .frame(minWidth: 150)
         if GuidedPickToggle.isProminent(number: number) {
             Button { studio.toggleShotTemplate(starter) } label: { label }
                 .buttonStyle(.borderedProminent)

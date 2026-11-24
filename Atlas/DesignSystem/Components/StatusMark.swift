@@ -5,18 +5,21 @@
 
 import SwiftUI
 
-/// A small round mark: a check when something is there and fine, an
-/// exclamation mark when something is missing.
+/// A small status symbol (README-DS §13): done when something is there and
+/// fine, needs you when something is missing. The system's filled symbol,
+/// no circle drawn behind it.
 struct StatusMark: View {
     let isOK: Bool
     var size: CGFloat = 20
 
     var body: some View {
-        Image(systemName: isOK ? "checkmark" : "exclamationmark")
-            .font(.system(size: size * 0.52, weight: .bold))
-            .foregroundStyle(isOK ? Palette.ok : Palette.warn)
+        let status: StatusSymbol = isOK ? .done : .needsYou
+        Image(systemName: status.symbol)
+            .resizable()
+            .scaledToFit()
+            .foregroundStyle(status.color)
+            .frame(width: size * 0.8, height: size * 0.8)
             .frame(width: size, height: size)
-            .background(isOK ? Palette.ok.opacity(0.16) : Palette.warnTint, in: Circle())
             .accessibilityLabel(Text(isOK ? "Ready" : "Missing"))
     }
 }

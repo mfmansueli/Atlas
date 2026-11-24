@@ -17,6 +17,18 @@ struct SettingsPaneTests {
         }
     }
 
+    /// Board 48 after the SF Symbols pass (README-DS §13): outline symbols,
+    /// each pane in its system colour, AI Assistants the one purple.
+    @Test(arguments: [
+        (SettingsPane.general, "gearshape", SymbolTint.systemGray), (.accounts, "key", .systemBlue), (.assistants, "sparkles", .ai),
+        (.suggestions, "tag", .systemIndigo), (.pricing, "dollarsign.circle", .systemGreen), (.screenshots, "iphone", .systemOrange),
+        (.notifications, "bell", .systemRed), (.pro, "star", .systemBlue), (.privacy, "hand.raised", .systemBlue),
+    ])
+    func eachPaneHasTheBoardsSymbolAndColour(pane: SettingsPane, symbol: String, tint: SymbolTint) {
+        #expect(pane.systemImage == symbol)
+        #expect(pane.style.tint == tint)
+    }
+
     @Test func theDesignsOrder() {
         #expect(SettingsPane.allCases.map(\.title) == [
             "General", "Accounts", "AI Assistants", "Suggestions", "Pricing", "Screenshots", "Notifications", "Atlas Pro", "Privacy & Data",

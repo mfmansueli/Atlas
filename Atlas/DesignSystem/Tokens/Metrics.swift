@@ -21,6 +21,12 @@ enum Metrics {
     /// The fade at the bottom of the sections when they scroll under the
     /// footer.
     static let sidebarFadeHeight: CGFloat = 14
+    /// The column a row's SF Symbol sits in (README-DS §13): the sidebar,
+    /// the section menu, Settings' sidebar and the menu bar's menu, so the
+    /// names line up whatever the symbol's width.
+    static let symbolColumn: CGFloat = 20
+    /// The same in Overview's rows, where the symbol is Title 3.
+    static let largeSymbolColumn: CGFloat = 28
     static let inspectorWidth: CGFloat = 300
     static let tableRowHeight: CGFloat = 26
     /// A search field at the top of a menu or popover (Find a language).

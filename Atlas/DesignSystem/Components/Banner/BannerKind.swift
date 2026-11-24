@@ -20,14 +20,15 @@ enum BannerKind: Sendable {
     /// Warning that blocks part of the work, e.g. "No version to push to."
     case warning
 
+    /// The status symbol the banner starts with (README-DS §13). The quota
+    /// keeps its hourglass: it says when, not only that something's wrong.
     var systemImage: String {
         switch self {
-        case .offline: "wifi.slash"
+        case .offline: StatusSymbol.offline.symbol
         case .rateLimited: "hourglass"
-        case .apiError: "exclamationmark.octagon.fill"
-        case .partialFailure: "exclamationmark.triangle.fill"
-        case .info: "info.circle"
-        case .warning: "exclamationmark.triangle.fill"
+        case .apiError, .partialFailure: StatusSymbol.error.symbol
+        case .info: StatusSymbol.info.symbol
+        case .warning: StatusSymbol.needsYou.symbol
         }
     }
 

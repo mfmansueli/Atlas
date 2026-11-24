@@ -11,7 +11,7 @@ import SwiftUI
 struct QuitCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .appTermination) {
-            Button("Quit Atlas") { AtlasLifecycle.shared.quit() }
+            Button("Quit Atlas", systemImage: "power") { AtlasLifecycle.shared.quit() }
                 .keyboardShortcut("q", modifiers: .command)
         }
     }

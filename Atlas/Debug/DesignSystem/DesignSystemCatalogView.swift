@@ -10,7 +10,8 @@ import SwiftUI
 /// Design system): the design system drawn by its own components, the
 /// first place to look when building or refining a screen. Every colour in
 /// light, dark and high contrast; the type scale; the seven buttons;
-/// badges, pills and cards; and the five AI effects playing. The bar on top
+/// badges, pills and cards; the SF Symbols of §13; and the five AI effects
+/// playing. The bar on top
 /// switches the whole catalog to light or dark, Increase Contrast and Reduce
 /// Motion, so each effect shows its Reduce Motion version too.
 struct DesignSystemCatalogView: View {
@@ -24,6 +25,7 @@ struct DesignSystemCatalogView: View {
                 CatalogEffectsSection()
                 CatalogButtonsSection()
                 CatalogBadgesSection()
+                CatalogSymbolsSection()
                 CatalogTypeSection()
                 CatalogColorsSection()
             }

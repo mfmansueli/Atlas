@@ -83,10 +83,16 @@ struct AssistantsAdvancedSection: View {
                     .padding(Spacing.small)
                     .background(Palette.fill1, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
                     .accessibilityIdentifier("settings.ai.byHandLine")
-                Button(line == nil ? String(localized: "Copy") : String(localized: "Copied ✓"), action: copy)
-                    .controlSize(.regular)
-                    .disabled(!server.isRunning)
-                    .accessibilityIdentifier("settings.ai.byHandCopy")
+                Button(action: copy) {
+                    if line == nil {
+                        Text("Copy")
+                    } else {
+                        Label(String(localized: "Copied"), systemImage: "checkmark")
+                    }
+                }
+                .controlSize(.regular)
+                .disabled(!server.isRunning)
+                .accessibilityIdentifier("settings.ai.byHandCopy")
             }
             Text(server.isRunning
                 ? String(localized: "Copy makes the token for that assistant alone. It’s paired under its own name when it first connects.")

@@ -89,7 +89,7 @@ struct OffersView: View {
         if offer.isTooYoung {
             Text("Still measuring").foregroundStyle(Palette.label2)
         } else if let standing = offer.standing {
-            Text("\(standing.mark) \(standing.title)")
+            Label(standing.title, systemImage: standing.systemImage)
                 .foregroundStyle(standing == .better ? Palette.ok : standing == .worse ? Palette.err : Palette.label2)
         } else {
             Text(offer.rate.isTooFew ? String(localized: "Too few to tell") : "—").foregroundStyle(Palette.label2)

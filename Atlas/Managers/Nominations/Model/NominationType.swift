@@ -31,9 +31,11 @@ enum NominationType: String, CaseIterable, Identifiable, Hashable, Codable, Send
         }
     }
 
+    /// Board 70 after the SF Symbols pass; a nomination with no type yet
+    /// shows `questionmark.circle`.
     var systemImage: String {
         switch self {
-        case .appLaunch: "paperplane"
+        case .appLaunch: "plus.app"
         case .appEnhancements: "arrow.up.circle"
         case .newContent: "calendar"
         }

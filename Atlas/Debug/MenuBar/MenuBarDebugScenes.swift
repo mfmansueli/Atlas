@@ -56,7 +56,7 @@ enum MenuBarDebugScenes {
             MenuBarSnapshot(
                 needs: [BackgroundNeed(
                     id: "autoreply-lumen", title: "1 review needs your reply", detail: "Lumen Journal · Reply Automatically left them for you",
-                    destination: .section(.reviews, appID: DebugFixtures.AppID.lumen)
+                    destination: .section(.reviews, appID: DebugFixtures.AppID.lumen), systemImage: "star.bubble"
                 )],
                 checkLine: checkLine, reviewPushCount: 4, autoReplyPaused: false
             )
@@ -84,21 +84,23 @@ enum MenuBarDebugScenes {
     static let needs = [
         BackgroundNeed(
             id: "autopilot-\(DebugFixtures.AppID.tempo)", title: "Choose the look for Tempo Metronome’s screenshots",
-            detail: "Autopilot waits here", destination: .section(.screenshots, appID: DebugFixtures.AppID.tempo)
+            detail: "Autopilot waits here", destination: .section(.screenshots, appID: DebugFixtures.AppID.tempo),
+            systemImage: "paintpalette"
         ),
         BackgroundNeed(
             id: "release-\(DebugFixtures.AppID.lumen)", title: "Lumen Journal 2.4 was approved",
-            detail: "You chose to release it yourself · Release…", destination: .version(appID: DebugFixtures.AppID.lumen)
+            detail: "You chose to release it yourself · Release…", destination: .version(appID: DebugFixtures.AppID.lumen),
+            systemImage: "checkmark.circle"
         ),
         BackgroundNeed(
             id: "reviews-\(DebugFixtures.AppID.lumen)", title: "6 reviews need a reply",
             detail: "Lumen Journal · Replies are suggested in each language",
-            destination: .section(.reviews, appID: DebugFixtures.AppID.lumen)
+            destination: .section(.reviews, appID: DebugFixtures.AppID.lumen), systemImage: "star.bubble"
         ),
         BackgroundNeed(
             id: "suggestions-\(DebugFixtures.AppID.habitat)", title: "12 suggestions to review",
             detail: "Habitat — Plant Care · Nothing changes until you accept it",
-            destination: .section(.overview, appID: DebugFixtures.AppID.habitat)
+            destination: .section(.overview, appID: DebugFixtures.AppID.habitat), systemImage: "sparkles"
         ),
     ]
 }

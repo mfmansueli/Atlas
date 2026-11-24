@@ -20,7 +20,7 @@ struct PushProgressFailures: View {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(groups) { group in
                         HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
-                            Image(systemName: "xmark.octagon.fill")
+                            Image(systemName: "exclamationmark.circle.fill")
                                 .foregroundStyle(Palette.err)
                                 .frame(width: 14)
                                 .accessibilityHidden(true)

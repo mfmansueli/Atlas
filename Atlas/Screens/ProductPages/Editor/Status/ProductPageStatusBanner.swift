@@ -65,7 +65,7 @@ struct ProductPageStatusBanner: View {
         switch tone {
         case .waiting: "clock"
         case .fine: "checkmark.circle.fill"
-        case .problem: "exclamationmark.octagon.fill"
+        case .problem: "exclamationmark.circle.fill"
         }
     }
 

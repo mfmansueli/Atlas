@@ -19,9 +19,7 @@ struct RatingsCard: View {
                     Text(summary.averageText)
                         .font(.title.weight(.semibold))
                         .monospacedDigit()
-                    Text(ReviewText.stars(Int((summary.average ?? 0).rounded())))
-                        .font(.subheadline)
-                        .foregroundStyle(Palette.sectionReviews)
+                    ReviewStars(rating: Int((summary.average ?? 0).rounded()), tint: Palette.sectionReviews)
                         .accessibilityHidden(true)
                 }
                 .fixedSize()
@@ -101,25 +99,30 @@ struct RatingsCard: View {
     private func comparisonLines(_ comparison: VersionRatingComparison) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
-                Text("\(ReviewText.rating(comparison.average)) ★")
+                Text("\(ReviewText.rating(comparison.average)) \(Image(systemName: "star.fill"))")
                     .font(.body.weight(.semibold))
                     .monospacedDigit()
                 Text(comparison.sinceText)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
-            Text(mark(comparison.outcome) + comparison.againstText)
-                .font(.subheadline)
-                .foregroundStyle(comparison.outcome.isLower ? Palette.warn : Palette.label2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Label {
+                Text(comparison.againstText)
+            } icon: {
+                if let symbol = mark(comparison.outcome) { Image(systemName: symbol) }
+            }
+            .font(.subheadline)
+            .foregroundStyle(comparison.outcome.isLower ? Palette.warn : Palette.label2)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("reviews.ratings.version")
     }
 
-    private func mark(_ outcome: ComparisonOutcome) -> String {
-        if outcome.isLower { return "▼ " }
-        if outcome.isHigher { return "▲ " }
-        return ""
+    /// The arrow before "lower than before" (README-DS §13).
+    private func mark(_ outcome: ComparisonOutcome) -> String? {
+        if outcome.isLower { return RateStanding.worse.systemImage }
+        if outcome.isHigher { return RateStanding.better.systemImage }
+        return nil
     }
 }

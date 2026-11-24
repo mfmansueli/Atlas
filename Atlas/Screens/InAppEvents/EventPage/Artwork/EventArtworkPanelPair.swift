@@ -35,8 +35,8 @@ struct EventArtworkPanelPair: View {
                     .frame(width: width, height: Self.height)
             }
         } else {
-            Text("!")
-                .font(.title3.weight(.bold))
+            Image(systemName: StatusSymbol.needsYou.symbol)
+                .font(.title3)
                 .foregroundStyle(Palette.warn)
                 .frame(width: width, height: Self.height)
                 .background(Palette.warnTint, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))

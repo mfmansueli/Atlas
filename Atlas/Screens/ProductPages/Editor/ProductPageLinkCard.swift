@@ -144,7 +144,7 @@ struct ProductPageLinkCard: View {
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .incomplete(message):
-            InlineMessage(text: message, systemImage: "exclamationmark.octagon.fill", tint: Palette.err)
+            InlineMessage(text: message, systemImage: "exclamationmark.circle.fill", tint: Palette.err)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         case let .unfamiliar(message):

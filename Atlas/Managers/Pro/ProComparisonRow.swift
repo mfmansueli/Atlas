@@ -17,7 +17,11 @@ struct ProComparisonRow: Hashable, Sendable, Identifiable {
     var isMissingInFree: Bool { free == Self.none }
 
     static let none = "—"
-    static let yes = "✓"
+    /// Included: the table draws a checkmark symbol for it (README-DS §13).
+    static let yes = String(localized: "Included", comment: "kind:label")
+
+    /// Whether `text` is `yes`, drawn as a checkmark.
+    static func isIncluded(_ text: String) -> Bool { text == yes }
 
     static var all: [ProComparisonRow] {
         [

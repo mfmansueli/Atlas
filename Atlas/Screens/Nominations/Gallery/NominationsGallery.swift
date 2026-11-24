@@ -41,7 +41,7 @@ struct NominationsGallery: View {
             }
             .accessibilityElement(children: .combine)
             if nominations.isEmpty, proposals.isEmpty {
-                Text(state.emptyText)
+                Label(state.emptyText, systemImage: state.emptySystemImage)
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }

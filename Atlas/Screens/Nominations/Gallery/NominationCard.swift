@@ -21,7 +21,7 @@ struct NominationCard: View {
             Card {
                 HStack(spacing: Spacing.xSmall) {
                     Label(nomination.content.type?.title ?? String(localized: "No type yet", comment: "kind:empty-state"),
-                          systemImage: nomination.content.type?.systemImage ?? "rosette")
+                          systemImage: nomination.content.type?.systemImage ?? "questionmark.circle")
                         .font(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)

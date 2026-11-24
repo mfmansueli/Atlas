@@ -138,13 +138,15 @@ struct ReviewShotsCardPanel: View {
                 Text("\(client) is capturing the \(plan) plan")
                     .font(.callout.weight(.semibold))
             }
+            // Done steps with a checkmark, the current one with an
+            // ellipsis (README-DS §13: symbols, not text characters).
             ForEach(steps, id: \.self) { done in
-                Text(done)
+                Label(done, systemImage: "checkmark")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
             }
             if let step {
-                Text("•  \(step)")
+                Label(step, systemImage: "ellipsis")
                     .font(.subheadline)
             }
         }

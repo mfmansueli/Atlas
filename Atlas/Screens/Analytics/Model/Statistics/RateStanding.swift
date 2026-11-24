@@ -13,12 +13,13 @@ enum RateStanding: String, Hashable, Sendable, Codable {
     /// The range includes the average: the difference could be chance.
     case same
 
-    /// ▲ ▼ ≈, always shown with `title` for VoiceOver and the tooltip.
-    var mark: String {
+    /// The SF Symbol drawn beside the rate (README-DS §13, the Analytics
+    /// board), always with `title` for VoiceOver and the tooltip.
+    var systemImage: String {
         switch self {
-        case .better: "▲"
-        case .worse: "▼"
-        case .same: "≈"
+        case .better: "arrowtriangle.up.fill"
+        case .worse: "arrowtriangle.down.fill"
+        case .same: "equal"
         }
     }
 

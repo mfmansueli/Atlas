@@ -139,9 +139,12 @@ struct GuidedHeaderBrowser: View {
                         .buttonBorderShape(.capsule)
                         .accessibilityIdentifier("autopilot.guided.look.scene.pick")
                 } else {
-                    Button(title) { studio.toggleHeaderTemplate(template) }
-                        .buttonBorderShape(.capsule)
-                        .accessibilityIdentifier("autopilot.guided.look.scene.pick")
+                    Button(title, systemImage: GuidedPickToggle.systemImage(number: number) ?? "checkmark") {
+                        studio.toggleHeaderTemplate(template)
+                    }
+                    .labelStyle(.titleAndIcon)
+                    .buttonBorderShape(.capsule)
+                    .accessibilityIdentifier("autopilot.guided.look.scene.pick")
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

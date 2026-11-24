@@ -29,7 +29,7 @@ struct ConnectHelpSteps: View {
                 }
             }
             Link(destination: Self.integrationsURL) {
-                Label("Open App Store Connect", systemImage: "arrow.up.forward.square")
+                Label("Open App Store Connect", systemImage: "arrow.up.right.square")
                     .labelStyle(TrailingIconLabelStyle())
             }
             .padding(.leading, Spacing.xLarge)
@@ -40,7 +40,7 @@ struct ConnectHelpSteps: View {
         .padding(.top, Spacing.small)
     }
 
-    /// "Open App Store Connect ↗": the icon after the title.
+    /// "Open App Store Connect" with arrow.up.right.square after the title.
     private struct TrailingIconLabelStyle: LabelStyle {
         func makeBody(configuration: Configuration) -> some View {
             HStack(spacing: 4) {

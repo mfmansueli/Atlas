@@ -28,9 +28,13 @@ struct HelpArticleView: View {
                 HelpBlockView(block: block)
             }
             if let showMe = article.showMe {
-                Button("Show Me: \(showMe.title)") { show(showMe) }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityIdentifier("help.showMe")
+                Button {
+                    show(showMe)
+                } label: {
+                    Label("Show Me: \(showMe.title)", systemImage: "arrow.up.right.square")
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("help.showMe")
             }
             if !related.isEmpty {
                 Divider()

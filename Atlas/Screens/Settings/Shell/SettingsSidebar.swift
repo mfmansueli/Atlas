@@ -51,7 +51,7 @@ struct SettingsSidebar: View {
             Label {
                 Text(pane.title)
             } icon: {
-                SettingsPaneTile(pane: pane)
+                SectionSymbol(style: pane.style)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 3)

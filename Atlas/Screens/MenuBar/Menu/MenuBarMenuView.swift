@@ -24,21 +24,31 @@ struct MenuBarMenuView: View {
             if !snapshot.needs.isEmpty {
                 header("Needs you")
                 ForEach(snapshot.needs) { need in
-                    MenuBarItemButton(title: need.title, detail: need.detail, identifier: "menuBar.need.\(need.id)") {
+                    MenuBarItemButton(title: need.title, systemImage: need.systemImage, detail: need.detail, identifier: "menuBar.need.\(need.id)") {
                         actions.open(need.destination)
                     }
                 }
                 separator
             }
-            MenuBarItemButton(title: String(localized: "Open Atlas"), shortcut: "⌘O", identifier: "menuBar.openAtlas", action: actions.openAtlas)
-                .keyboardShortcut("o", modifiers: .command)
-            MenuBarItemButton(title: String(localized: "Review & Push…"), count: snapshot.reviewPushCount, identifier: "menuBar.reviewPush") {
+            MenuBarItemButton(
+                title: String(localized: "Open Atlas"), systemImage: "arrow.up.forward.app", shortcut: "⌘O",
+                identifier: "menuBar.openAtlas", action: actions.openAtlas
+            )
+            .keyboardShortcut("o", modifiers: .command)
+            MenuBarItemButton(
+                title: String(localized: "Review & Push…"), systemImage: "arrow.up.circle",
+                count: snapshot.reviewPushCount, identifier: "menuBar.reviewPush"
+            ) {
                 actions.open(.reviewPush)
             }
-            MenuBarItemButton(title: String(localized: "Check Now"), shortcut: "⌘R", identifier: "menuBar.checkNow", action: actions.checkNow)
-                .keyboardShortcut("r", modifiers: .command)
+            MenuBarItemButton(
+                title: String(localized: "Check Now"), systemImage: "arrow.clockwise", shortcut: "⌘R",
+                identifier: "menuBar.checkNow", action: actions.checkNow
+            )
+            .keyboardShortcut("r", modifiers: .command)
             MenuBarItemButton(
                 title: snapshot.isPaused ? String(localized: "Resume Background Work") : String(localized: "Pause Background Work"),
+                systemImage: snapshot.isPaused ? "play.circle" : "pause.circle",
                 identifier: "menuBar.pause"
             ) {
                 actions.setPaused(!snapshot.isPaused)
@@ -46,15 +56,19 @@ struct MenuBarMenuView: View {
             if let autoReplyPaused = snapshot.autoReplyPaused {
                 MenuBarItemButton(
                     title: autoReplyPaused ? String(localized: "Resume Auto-Reply") : String(localized: "Pause Auto-Reply"),
+                    systemImage: autoReplyPaused ? "play.circle" : "pause.circle",
                     identifier: "menuBar.autoReplyPause"
                 ) {
                     actions.setAutoReplyPaused(!autoReplyPaused)
                 }
             }
             separator
-            MenuBarItemButton(title: String(localized: "Settings…"), shortcut: "⌘,", identifier: "menuBar.settings", action: actions.openSettings)
-                .keyboardShortcut(",", modifiers: .command)
-            MenuBarItemButton(title: String(localized: "Quit Atlas"), shortcut: "⌘Q", identifier: "menuBar.quit", action: actions.quit)
+            MenuBarItemButton(
+                title: String(localized: "Settings…"), systemImage: "gearshape", shortcut: "⌘,",
+                identifier: "menuBar.settings", action: actions.openSettings
+            )
+            .keyboardShortcut(",", modifiers: .command)
+            MenuBarItemButton(title: String(localized: "Quit Atlas"), systemImage: "power", shortcut: "⌘Q", identifier: "menuBar.quit", action: actions.quit)
                 .keyboardShortcut("q", modifiers: .command)
         }
         .padding(6)
@@ -119,7 +133,7 @@ struct MenuBarMenuView: View {
             )],
             needs: [BackgroundNeed(
                 id: "reviews", title: "6 reviews need a reply", detail: "Replies are suggested in each language",
-                destination: .reviewPush
+                destination: .reviewPush, systemImage: "star.bubble"
             )],
             checkLine: "Last checked today at 18:20 · next check at 19:20",
             reviewPushCount: 4

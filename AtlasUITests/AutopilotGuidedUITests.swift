@@ -88,7 +88,7 @@ final class AutopilotGuidedUITests: XCTestCase {
         app.launch(debugScene: "ap-look-tpl")
         let pick = element("autopilot.guided.look.template.pick")
         XCTAssertTrue(pick.waitForExistence(timeout: 20))
-        XCTAssertEqual(pick.label, "✓ Pick 1 · Remove", "Cinema, the first pick, is in focus")
+        XCTAssertEqual(pick.label, "Pick 1 · Remove", "Cinema, the first pick, is in focus")
         XCTAssertTrue(element("autopilot.guided.look.template.tray").exists)
         // At the sheet's narrowest, the header scenes still fit: nothing is cut off on either side.
         let sheet = element("autopilot.guided.sheet")
@@ -106,7 +106,7 @@ final class AutopilotGuidedUITests: XCTestCase {
         let next = element("autopilot.guided.next")
         XCTAssertTrue(waitUntil { pick.frame.maxY < next.frame.minY }, "\(pick.frame) under the footer at \(next.frame)")
         pick.click()
-        XCTAssertTrue(waitUntil { pick.label == "✓ Pick 3 · Remove" }, pick.label)
+        XCTAssertTrue(waitUntil { pick.label == "Pick 3 · Remove" }, pick.label)
     }
 
     func testATemplateIsPreviewedInGerman() {
@@ -229,7 +229,7 @@ final class AutopilotGuidedUITests: XCTestCase {
         let next = element("autopilot.guided.next")
         XCTAssertTrue(waitUntil { pick.frame.maxY < next.frame.minY }, "\(pick.frame) under the footer at \(next.frame)")
         pick.click()
-        XCTAssertTrue(waitUntil { pick.label == "✓ Pick 3 · Remove" }, pick.label)
+        XCTAssertTrue(waitUntil { pick.label == "Pick 3 · Remove" }, pick.label)
     }
 
     // MARK: - Plan

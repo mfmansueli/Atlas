@@ -48,14 +48,15 @@ enum ProFeature: String, CaseIterable, Hashable, Sendable, Identifiable {
         }
     }
 
+    /// The paywall's symbols (README-DS §13, the paywall's board).
     var systemImage: String {
         switch self {
-        case .acceptAll: "checkmark.circle"
-        case .autopilot: "wand.and.stars"
-        case .recommendedPrices: "globe"
-        case .retention: "arrow.uturn.backward.circle"
-        case .multipleApps: "square.stack.3d.up"
-        case .allTemplates: "rectangle.on.rectangle"
+        case .acceptAll: "sparkles"
+        case .autopilot: "wand.and.sparkles"
+        case .recommendedPrices: "tag"
+        case .retention: "arrow.uturn.backward"
+        case .multipleApps: "square.grid.2x2"
+        case .allTemplates: "macbook.and.iphone"
         }
     }
 }

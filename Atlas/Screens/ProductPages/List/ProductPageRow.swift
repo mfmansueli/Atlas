@@ -131,11 +131,15 @@ struct ProductPageRow: View {
                     .monospacedDigit()
                     .foregroundStyle(comparison?.isTooFew == true ? Palette.label3 : Palette.label)
                 if let comparison {
-                    Text(comparison.text)
-                        .font(.subheadline)
-                        .foregroundStyle(Self.color(comparison))
-                        .lineLimit(1)
-                        .accessibilityLabel(Text(comparison.spoken))
+                    Label {
+                        Text(comparison.text)
+                    } icon: {
+                        if let symbol = comparison.systemImage { Image(systemName: symbol) }
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(Self.color(comparison))
+                    .lineLimit(1)
+                    .accessibilityLabel(Text(comparison.spoken))
                 }
             }
         } else {

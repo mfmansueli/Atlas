@@ -32,14 +32,24 @@ enum ProductPageComparison: Hashable, Sendable {
         }
     }
 
-    /// "about the same as default", "▲ 2.1 pt above default",
-    /// "▼ 6.1 pt below default", "96 views is too few to compare".
+    /// "about the same as default", "2.1 pt above default",
+    /// "6.1 pt below default", "96 views is too few to compare"; the row
+    /// puts `systemImage` before above and below.
     var text: String {
         switch self {
         case .aboutTheSame: String(localized: "about the same as default")
-        case let .above(points): String(localized: "▲ \(Self.points(points)) pt above default")
-        case let .below(points): String(localized: "▼ \(Self.points(points)) pt below default")
+        case let .above(points): String(localized: "\(Self.points(points)) pt above default")
+        case let .below(points): String(localized: "\(Self.points(points)) pt below default")
         case let .tooFewViews(views): String(localized: "\(ProductPageNumbersText.number(views)) views is too few to compare")
+        }
+    }
+
+    /// The arrow symbol before above and below (README-DS §13).
+    var systemImage: String? {
+        switch self {
+        case .above: "arrowtriangle.up.fill"
+        case .below: "arrowtriangle.down.fill"
+        case .aboutTheSame, .tooFewViews: nil
         }
     }
 

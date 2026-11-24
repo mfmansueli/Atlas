@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// The toolbar's section button while the sidebar is hidden: the current
-/// section's tile and name, opening the same groups and counts as the
+/// section's symbol and name, opening the same groups and counts as the
 /// sidebar.
 struct SectionMenuButton: View {
     let counts: SectionBadgeCounts
@@ -21,7 +21,7 @@ struct SectionMenuButton: View {
             isPresented.toggle()
         } label: {
             HStack(spacing: 7) {
-                SectionIconTile(section: selection, size: 20)
+                SectionSymbol(style: selection.style)
                 Text(selection.title)
                     .lineLimit(1)
                 Image(systemName: "chevron.down")

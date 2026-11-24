@@ -32,7 +32,7 @@ struct GuidedReviewStepView: View {
                     if parts.count > 1, let part {
                         StudioSegmentedControl(
                             label: String(localized: "Parts"),
-                            options: parts.map { .init(value: $0, title: tabTitle($0), key: $0.identifier) },
+                            options: parts.map { tabOption($0) },
                             selection: Binding { part } set: { studio.guided.reviewPart = $0 },
                             identifier: "autopilot.guided.review.tabs"
                         )
@@ -93,10 +93,15 @@ struct GuidedReviewStepView: View {
         GuidedReviewPart.watched(in: run).contains(part)
     }
 
-    /// "✓ Screenshots" once approved.
-    private func tabTitle(_ part: GuidedReviewPart) -> String {
-        let title = part.title(plan: plan)
-        return studio.isApproved(part) ? "✓ " + title : title
+    /// "Screenshots", with a checkmark once approved (README-DS §13: a
+    /// symbol, not a text character).
+    private func tabOption(_ part: GuidedReviewPart) -> StudioSegmentedControl<GuidedReviewPart>.Option {
+        let isApproved = studio.isApproved(part)
+        return .init(
+            value: part, title: part.title(plan: plan), key: part.identifier,
+            systemImage: isApproved ? "checkmark" : nil,
+            accessibilityValue: isApproved ? String(localized: "Approved", comment: "kind:accessibility") : nil
+        )
     }
 
     /// "Look: Night Ink · saved as template v5, replacing Caption above

@@ -58,7 +58,7 @@ struct ReviewChangeRow: View {
             } else if let alternative = change.alternative {
                 AlternativeConflictView(yours: change.newValue, alternative: alternative, onPick: onPickAlternative)
             } else if let reason = change.blockedReason {
-                Label(reason, systemImage: "exclamationmark.octagon.fill")
+                Label(reason, systemImage: "exclamationmark.circle.fill")
                     .font(.subheadline)
                     .foregroundStyle(Palette.err)
                     .padding(.leading, 26)

@@ -54,10 +54,12 @@ struct SubscriptionsView: View {
                     products
                     territories
                 }
-                Text("Trial → paid: trials ended in this period. ▲ ▼ ≈ compare with \(appName)’s overall rate. Pacific Time.")
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(
+                    "Trial → paid: trials ended in this period. \(Image(systemName: RateStanding.better.systemImage)) \(Image(systemName: RateStanding.worse.systemImage)) \(Image(systemName: RateStanding.same.systemImage)) compare with \(appName)’s overall rate. Pacific Time."
+                )
+                .font(.subheadline)
+                .foregroundStyle(Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.bottom, Spacing.xLarge)
         }

@@ -27,7 +27,8 @@ enum BackgroundNeedsBuilder {
                     id: "autopilot-\(facts.appID)",
                     title: title(for: turn, appName: facts.appName),
                     detail: String(localized: "Autopilot waits here"),
-                    destination: .section(.screenshots, appID: facts.appID)
+                    destination: .section(.screenshots, appID: facts.appID),
+                    systemImage: systemImage(for: turn)
                 ))
             }
             for ready in facts.readyArtwork {
@@ -37,7 +38,8 @@ enum BackgroundNeedsBuilder {
                         ? String(localized: "A concept is ready for “\(ready.eventName)”")
                         : String(localized: "\(ready.count) concepts are ready for “\(ready.eventName)”"),
                     detail: prefix + String(localized: "Choose one to finish the event’s images"),
-                    destination: .eventArtwork(appID: facts.appID, eventID: ready.eventID)
+                    destination: .eventArtwork(appID: facts.appID, eventID: ready.eventID),
+                    systemImage: "photo"
                 ))
             }
             if let version = facts.approvedVersion {
@@ -45,7 +47,8 @@ enum BackgroundNeedsBuilder {
                     id: "approved-\(facts.appID)",
                     title: String(localized: "\(facts.appName) \(version) was approved"),
                     detail: String(localized: "You chose to release it yourself · Release…"),
-                    destination: .version(appID: facts.appID)
+                    destination: .version(appID: facts.appID),
+                    systemImage: "checkmark.circle"
                 ))
             }
             if let crash = facts.crashHeadline {
@@ -53,29 +56,11 @@ enum BackgroundNeedsBuilder {
                     id: "stability-\(facts.appID)",
                     title: crash,
                     detail: prefix + String(localized: "See the Overview to pause the phased release"),
-                    destination: .section(.overview, appID: facts.appID)
+                    destination: .section(.overview, appID: facts.appID),
+                    systemImage: "exclamationmark.triangle"
                 ))
             }
-            if facts.autoReplyNeeds > 0 {
-                reviews.append(BackgroundNeed(
-                    id: "autoreply-\(facts.appID)",
-                    title: facts.autoReplyNeeds == 1
-                        ? String(localized: "1 review needs your reply")
-                        : String(localized: "\(facts.autoReplyNeeds) reviews need your reply"),
-                    detail: prefix + String(localized: "Reply Automatically left them for you"),
-                    destination: .section(.reviews, appID: facts.appID)
-                ))
-            }
-            if facts.reviewReplies > 0 {
-                reviews.append(BackgroundNeed(
-                    id: "reviews-\(facts.appID)",
-                    title: facts.reviewReplies == 1
-                        ? String(localized: "1 review needs a reply")
-                        : String(localized: "\(facts.reviewReplies) reviews need a reply"),
-                    detail: prefix + String(localized: "Replies are suggested in each language"),
-                    destination: .section(.reviews, appID: facts.appID)
-                ))
-            }
+            reviews += reviewNeeds(for: facts, prefix: prefix)
             if facts.newFindings > 0 {
                 findings.append(BackgroundNeed(
                     id: "findings-\(facts.appID)",
@@ -84,12 +69,42 @@ enum BackgroundNeedsBuilder {
                         : String(localized: "\(facts.newFindings) new findings in Analytics"),
                     detail: prefix + (facts.firstFindingTitle ?? String(localized: "What to try next, from Apple’s reports")),
                     destination: .section(.analytics, appID: facts.appID),
-                    isSuggestion: true
+                    isSuggestion: true,
+                    systemImage: "chart.line.uptrend.xyaxis"
                 ))
             }
             suggestions += suggestionNeeds(for: facts, prefix: prefix)
         }
         return autopilot + artwork + approved + reviews + findings + suggestions
+    }
+
+    /// Reviews Reply Automatically left for the person, then reviews with
+    /// suggested replies.
+    private static func reviewNeeds(for facts: BackgroundAppFacts, prefix: String) -> [BackgroundNeed] {
+        var reviews: [BackgroundNeed] = []
+        if facts.autoReplyNeeds > 0 {
+            reviews.append(BackgroundNeed(
+                id: "autoreply-\(facts.appID)",
+                title: facts.autoReplyNeeds == 1
+                    ? String(localized: "1 review needs your reply")
+                    : String(localized: "\(facts.autoReplyNeeds) reviews need your reply"),
+                detail: prefix + String(localized: "Reply Automatically left them for you"),
+                destination: .section(.reviews, appID: facts.appID),
+                systemImage: "star.bubble"
+            ))
+        }
+        if facts.reviewReplies > 0 {
+            reviews.append(BackgroundNeed(
+                id: "reviews-\(facts.appID)",
+                title: facts.reviewReplies == 1
+                    ? String(localized: "1 review needs a reply")
+                    : String(localized: "\(facts.reviewReplies) reviews need a reply"),
+                detail: prefix + String(localized: "Replies are suggested in each language"),
+                destination: .section(.reviews, appID: facts.appID),
+                systemImage: "star.bubble"
+            ))
+        }
+        return reviews
     }
 
     /// Release actions an assistant proposed for the app, one line each,
@@ -102,7 +117,8 @@ enum BackgroundNeedsBuilder {
                 title: String(localized: "\(proposal.client) suggests: \(proposal.title)"),
                 detail: prefix + String(localized: "Confirm or dismiss it on the version card"),
                 destination: .version(appID: facts.appID),
-                isSuggestion: true
+                isSuggestion: true,
+                systemImage: "sparkles"
             ))
         }
         if facts.openSuggestions > 0 {
@@ -113,7 +129,8 @@ enum BackgroundNeedsBuilder {
                     : String(localized: "\(facts.openSuggestions) suggestions to review"),
                 detail: prefix + String(localized: "Nothing changes until you accept it"),
                 destination: .section(.overview, appID: facts.appID),
-                isSuggestion: true
+                isSuggestion: true,
+                systemImage: "sparkles"
             ))
         }
         return suggestions
@@ -125,6 +142,17 @@ enum BackgroundNeedsBuilder {
         case .pick: String(localized: "Pick the captures for \(appName)’s screenshots")
         case .choose: String(localized: "Choose the look for \(appName)’s screenshots")
         case .review: String(localized: "Review and approve \(appName)’s screenshots")
+        }
+    }
+
+    /// The symbol of the line Autopilot's turn gets: Choose the Look is
+    /// the board's palette; picking captures and reviewing the set follow
+    /// the same idea.
+    static func systemImage(for turn: AutopilotTurn) -> String {
+        switch turn {
+        case .pick: "hand.tap"
+        case .choose: "paintpalette"
+        case .review: "checkmark.rectangle.stack"
         }
     }
 

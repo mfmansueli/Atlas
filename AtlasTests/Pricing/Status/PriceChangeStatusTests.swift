@@ -28,14 +28,17 @@ struct PriceChangeStatusTests {
 
     @Test func pillsShowTheDirection() {
         #expect(cut.direction == .decrease)
-        #expect(cut.pillText == "▼ −50%")
+        #expect(cut.pillText == "−50%")
+        #expect(cut.pillSystemImage == "arrowtriangle.down.fill")
         let raise = PriceChange(old: 100, new: 118)
         #expect(raise.direction == .increase)
-        #expect(raise.pillText == "▲ +18%")
+        #expect(raise.pillText == "+18%")
+        #expect(raise.pillSystemImage == "arrowtriangle.up.fill")
         let same = PriceChange(old: money("39.99"), new: money("39.9905"))
         #expect(!same.isChanged)
         #expect(same.direction == .none)
         #expect(same.pillText.isEmpty)
+        #expect(same.pillSystemImage == nil)
     }
 
     @Test func unchangedRowsAreUnchangedOrExcluded() {

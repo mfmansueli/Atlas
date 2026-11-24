@@ -151,7 +151,7 @@ struct CatalogEffectsSection: View {
                 ArrivingText("Deine Woche auf einer ruhigen Seite, jeden Sonntag")
                     .atlasTextStyle(.callout)
                 HStack(spacing: Spacing.small) {
-                    LinearGradient(colors: [Palette.sectionEventsTop, Palette.sectionEvents], startPoint: .top, endPoint: .bottom)
+                    Palette.sectionEvents
                         .frame(width: 64, height: 40)
                         .clipShape(RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                         .aiArrivedImage(key: "\(key).image", arrivedAt: arrivedAt)

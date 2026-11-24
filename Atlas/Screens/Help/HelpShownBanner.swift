@@ -10,7 +10,7 @@ struct HelpShownBanner: View {
     let text: String
 
     var body: some View {
-        Label(text, systemImage: "arrow.up.forward.app")
+        Label(text, systemImage: "arrow.up.right.square")
             .font(.callout)
             .padding(Spacing.small)
             .frame(maxWidth: .infinity, alignment: .leading)

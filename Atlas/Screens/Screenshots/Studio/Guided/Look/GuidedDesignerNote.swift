@@ -36,7 +36,7 @@ struct GuidedDesignerNote: View {
                         Button {
                             studio.addArtworkAddition(addition)
                         } label: {
-                            Pill(text: "+ " + addition, style: .outline)
+                            Pill(text: addition, systemImage: "plus", style: .outline)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(Text("Add “\(addition)”"))
@@ -45,10 +45,14 @@ struct GuidedDesignerNote: View {
                     ForEach(direction.references) { reference in
                         HStack(spacing: Spacing.xxSmall) {
                             Text(reference.name).lineLimit(1)
-                            Button("✕") { studio.removeArtworkReference(reference) }
-                                .buttonStyle(.plain)
-                                .opacity(0.7)
-                                .accessibilityLabel(Text("Remove \(reference.name)"))
+                            Button {
+                                studio.removeArtworkReference(reference)
+                            } label: {
+                                Image(systemName: "xmark")
+                            }
+                            .buttonStyle(.plain)
+                            .opacity(0.7)
+                            .accessibilityLabel(Text("Remove \(reference.name)"))
                         }
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(Palette.accentText)

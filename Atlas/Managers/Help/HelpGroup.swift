@@ -22,4 +22,15 @@ enum HelpGroup: String, CaseIterable, Identifiable, Sendable {
         case .atlas: String(localized: "Atlas")
         }
     }
+
+    /// The group's symbol in Help's sidebar and home (board 49 after the SF
+    /// Symbols pass).
+    var systemImage: String {
+        switch self {
+        case .start: "flag"
+        case .listing: "doc.text"
+        case .after: "chart.bar"
+        case .atlas: "macwindow"
+        }
+    }
 }

@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// A row of an Overview list: the section's tile, its name over one line
+/// A row of an Overview list: the section's symbol, its name over one line
 /// of detail, then what's at the end (a count, Review or Open).
 struct OverviewListRow<Trailing: View>: View {
     let section: AppWorkspaceSection
@@ -17,7 +17,7 @@ struct OverviewListRow<Trailing: View>: View {
         VStack(spacing: 0) {
             Divider()
             HStack(spacing: Spacing.medium) {
-                SectionIconTile(section: section, size: 26)
+                SectionSymbol(style: section.style, isLarge: true)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
                         .font(.headline)

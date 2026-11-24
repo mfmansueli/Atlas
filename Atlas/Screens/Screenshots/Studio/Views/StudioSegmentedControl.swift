@@ -19,6 +19,11 @@ struct StudioSegmentedControl<Value: Hashable>: View {
         var help: String?
         /// Shown fainter unless it's picked.
         var isDimmed = false
+        /// A symbol before the title (README-DS §13): the checkmark on an
+        /// approved part, never a text character.
+        var systemImage: String?
+        /// What VoiceOver adds to the title, as "Approved".
+        var accessibilityValue: String?
     }
 
     let label: String
@@ -33,17 +38,24 @@ struct StudioSegmentedControl<Value: Hashable>: View {
                 Button {
                     selection = option.value
                 } label: {
-                    Text(option.title)
-                        .font(.callout)
-                        .lineLimit(1)
-                        .padding(.horizontal, 9)
-                        .padding(.vertical, 3)
-                        .background {
-                            if isSelected {
-                                Capsule().fill(Palette.raised).depth(.card)
-                            }
+                    Label {
+                        Text(option.title)
+                    } icon: {
+                        if let systemImage = option.systemImage {
+                            Image(systemName: systemImage)
                         }
-                        .contentShape(Capsule())
+                    }
+                    .labelStyle(.titleAndIcon)
+                    .font(.callout)
+                    .lineLimit(1)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 3)
+                    .background {
+                        if isSelected {
+                            Capsule().fill(Palette.raised).depth(.card)
+                        }
+                    }
+                    .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(option.isEnabled ? Palette.label : Palette.label3)
@@ -51,6 +63,7 @@ struct StudioSegmentedControl<Value: Hashable>: View {
                 .disabled(!option.isEnabled)
                 .help(option.help.map { Text($0) } ?? Text(""))
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
+                .accessibilityValue(Text(option.accessibilityValue ?? ""))
                 .accessibilityIdentifier("\(identifier).\(option.key)")
             }
         }

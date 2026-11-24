@@ -34,14 +34,19 @@ struct RetentionSubscriptionChips: View {
         return Button {
             model.toggleSubscription(subscription.id)
         } label: {
-            Text(isOn ? String(localized: "✓ \(subscription.name)", comment: "kind:button") : subscription.name)
-                .font(.callout.weight(isOn ? .medium : .regular))
-                .foregroundStyle(isOn ? Palette.accentText : Palette.label2)
-                .padding(.horizontal, Spacing.small)
-                .padding(.vertical, 2)
-                .background(isOn ? Palette.accentTint : .clear, in: Capsule())
-                .overlay { if !isOn { Capsule().strokeBorder(Palette.separator2, lineWidth: 0.5) } }
-                .contentShape(Capsule())
+            Label {
+                Text(subscription.name)
+            } icon: {
+                if isOn { Image(systemName: "checkmark") }
+            }
+            .labelStyle(.titleAndIcon)
+            .font(.callout.weight(isOn ? .medium : .regular))
+            .foregroundStyle(isOn ? Palette.accentText : Palette.label2)
+            .padding(.horizontal, Spacing.small)
+            .padding(.vertical, 2)
+            .background(isOn ? Palette.accentTint : .clear, in: Capsule())
+            .overlay { if !isOn { Capsule().strokeBorder(Palette.separator2, lineWidth: 0.5) } }
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .help(help(subscription, isOn: isOn, isLocked: isLocked))

@@ -16,6 +16,9 @@ struct BackgroundNeed: Identifiable, Hashable, Sendable {
     /// Something suggested (a finding, a suggestion to review) rather than
     /// something waiting for the person: the Dock count leaves it out.
     var isSuggestion = false
+    /// The line's symbol in the menu's symbol column (board 46 after the SF
+    /// Symbols pass); nil keeps the slot empty.
+    var systemImage: String?
 
     var needsYou: Bool { !isSuggestion }
 }

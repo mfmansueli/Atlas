@@ -92,12 +92,18 @@ extension ScreenshotStudioModel {
     }
 
     /// The pick's reason, or why it was ranked lower when it's the
-    /// person's.
+    /// person's (`pickReasonIsWarning`: the card puts the needs-you symbol
+    /// before it).
     func pickReason(_ run: AutopilotRun, screenID: String) -> String {
         guard let picked = run.pickedCapture(for: screenID) else { return "" }
         let notes = picked.notes.trimmingCharacters(in: .whitespacesAndNewlines)
         guard isYourPick(run, screenID: screenID) else { return notes }
-        return String(localized: "⚠︎ Ranked lower: \(notes.prefix(1).lowercased() + notes.dropFirst())")
+        return String(localized: "Ranked lower: \(notes.prefix(1).lowercased() + notes.dropFirst())")
+    }
+
+    /// Whether `pickReason` says the person's pick was ranked lower.
+    func pickReasonIsWarning(_ run: AutopilotRun, screenID: String) -> Bool {
+        run.pickedCapture(for: screenID) != nil && isYourPick(run, screenID: screenID)
     }
 
     /// How many screens the person picked differently.
