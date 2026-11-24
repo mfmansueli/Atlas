@@ -11,7 +11,8 @@ import Synchronization
 /// Connect would and logs every call in order (`sets loc-en APP_IPHONE_67`,
 /// `create set loc-en APP_IPHONE_67`, `reserve 1.png set-new`, `upload
 /// shot-1 0`, `commit shot-1`, `status shot-1`, `delete old-1`, `reorder
-/// set-new shot-1 shot-2`). Nothing reaches the network.
+/// set-new shot-1 shot-2`); a version localization's App Preview sets
+/// too. Nothing reaches the network.
 final class FakePageScreenshotsTransport: PushTransport, ScreenshotUploadTransport {
     struct Script: Sendable {
         /// The localization's set of the device and its screenshots.
@@ -52,7 +53,8 @@ final class FakePageScreenshotsTransport: PushTransport, ScreenshotUploadTranspo
         let parts = request.path.split(separator: "/").map(String.init)
         switch (request.method, parts.count > 1 ? parts[1] : "") {
         case (.post, "appScreenshotSets"), (.post, "appPreviewSets"):
-            let localization = (relationships?["appCustomProductPageLocalization"] as? [String: Any])?["data"] as? [String: Any]
+            let localization = (relationships?["appCustomProductPageLocalization"] as? [String: Any]
+                ?? relationships?["appStoreVersionLocalization"] as? [String: Any])?["data"] as? [String: Any]
             let kind = attributes?["screenshotDisplayType"] as? String ?? attributes?["previewType"] as? String ?? ""
             append("create \(parts[1]) \(localization?["id"] as? String ?? "") \(kind)".replacingOccurrences(of: "create appScreenshotSets", with: "create set"))
             return try response(["data": ["type": parts[1], "id": "set-new"]])
@@ -89,7 +91,7 @@ final class FakePageScreenshotsTransport: PushTransport, ScreenshotUploadTranspo
 
     func fetch(_ path: String) async throws -> AppStoreConnectResponse {
         let parts = path.split(separator: "?")[0].split(separator: "/").map(String.init)
-        if parts.count == 4, parts[1] == "appCustomProductPageLocalizations" {
+        if parts.count == 4, parts[1] == "appCustomProductPageLocalizations" || parts[1] == "appStoreVersionLocalizations" {
             let query = URLComponents(string: "https://x\(path)")?.queryItems ?? []
             let isPreviews = parts[3] == "appPreviewSets"
             let kindField = isPreviews ? "previewType" : "screenshotDisplayType"

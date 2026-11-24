@@ -5,8 +5,9 @@
 
 import Foundation
 
-/// A locale's App Previews for one display type. Read-only here: the Sets
-/// matrix shows them in their own column with a lock.
+/// A locale's App Previews for one display type. The Sets matrix shows
+/// them in their own column with a lock; the language page changes them by
+/// hand (`AppPreviewHandChange`).
 struct LiveAppPreviewSet: Codable, Hashable, Sendable, Identifiable {
     var id: String
     var locale: String
@@ -17,6 +18,9 @@ struct LiveAppPreviewSet: Codable, Hashable, Sendable, Identifiable {
     /// The length in seconds when known. App Store Connect doesn't report
     /// it, so live previews leave it nil.
     var durationSeconds: Int?
+    /// Each App Preview in the set's order; nil in sets read before Atlas
+    /// kept them.
+    var previews: [LiveAppPreview]?
 
     /// "0:24", or nil when the length isn't known.
     var durationTitle: String? {

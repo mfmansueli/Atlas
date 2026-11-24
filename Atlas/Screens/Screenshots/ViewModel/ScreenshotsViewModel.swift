@@ -103,6 +103,8 @@ final class ScreenshotsViewModel {
     var scopeDraft: LocaleScopeDraft?
     /// Something to say after an action.
     var notice: String?
+    /// Why chosen App Previews can't go in the set, each with its fix.
+    var appPreviewProblems: [String] = []
 
     init(app: StoreApp, services: any ScreenshotsServices, context: ScreenshotsContext, locales: [StoreLocale] = StoreLocaleCatalog.all) {
         self.app = app

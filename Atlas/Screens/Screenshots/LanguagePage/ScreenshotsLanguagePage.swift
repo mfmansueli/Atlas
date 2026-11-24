@@ -9,7 +9,8 @@ import SwiftUI
 /// device, the template, Now | Suggested and Manage, the language's
 /// screenshots large (a suggested caption drawn on its screenshot with a
 /// purple ring) to select, move, replace, delete or add to by hand, and
-/// each suggested caption to accept or dismiss. All Languages lists every
+/// each suggested caption to accept or dismiss, then on iPhone and iPad the
+/// language's App Previews to change by hand. All Languages lists every
 /// language instead.
 struct ScreenshotsLanguagePage: View {
     @Bindable var viewModel: ScreenshotsViewModel
@@ -28,6 +29,9 @@ struct ScreenshotsLanguagePage: View {
                 } else {
                     controls
                     shots
+                    if viewModel.takesAppPreviews(viewModel.displayType) {
+                        ScreenshotAppPreviewsSection(viewModel: viewModel, locale: locale)
+                    }
                     suggestions
                 }
             }
