@@ -140,15 +140,21 @@ struct InAppEventDetailsCard: View {
     private var purposePicker: some View {
         let value = viewModel.detailValue(.purpose, of: event)
         if isEditable {
-            Picker("Purpose", selection: Binding { value } set: { viewModel.setDetail(.purpose, to: $0, of: event) }) {
+            let picker = Picker("Purpose", selection: Binding { value } set: { viewModel.setDetail(.purpose, to: $0, of: event) }) {
                 if value == nil { Text("Not set").tag(String?.none) }
                 ForEach(InAppEventPurpose.allCases, id: \.self) { purpose in
                     Text(purpose.title(appName: viewModel.app.name)).tag(String?.some(purpose.rawValue))
                 }
             }
             .labelsHidden()
-            .fixedSize()
             .accessibilityIdentifier("events.details.purpose")
+            // As wide as its longest purpose when that fits; in a narrow
+            // window it truncates instead of holding the page wider than
+            // the window (“Attract new users to Lumen Journal”).
+            ViewThatFits(in: .horizontal) {
+                picker.fixedSize()
+                picker
+            }
         } else {
             Text(InAppEventDetail.purpose.display(value, appName: viewModel.app.name))
                 .accessibilityIdentifier("events.details.purpose")

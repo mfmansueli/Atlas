@@ -6,7 +6,9 @@
 import SwiftUI
 
 /// Lays children out left to right and wraps to a new line when the next one
-/// doesn't fit: pill rows, keyword tokens, chips.
+/// doesn't fit: pill rows, keyword tokens, chips. A child wider than a whole
+/// line gets the line's width (a one-line text truncates, a longer one
+/// wraps), so the row never holds its page wider than the window.
 struct FlowLayout: Layout {
     var spacing: CGFloat = Spacing.small
     var lineSpacing: CGFloat?
@@ -23,12 +25,25 @@ struct FlowLayout: Layout {
         for row in arrange(subviews, in: bounds.width) {
             var x = bounds.minX
             for index in row.indices {
-                let size = subviews[index].sizeThatFits(.unspecified)
+                let size = fittedSize(of: subviews[index], in: bounds.width)
                 subviews[index].place(at: CGPoint(x: x, y: y + (row.height - size.height) / 2), proposal: ProposedViewSize(size))
                 x += size.width + spacing
             }
             y += row.height + (lineSpacing ?? spacing)
         }
+    }
+
+    /// A child's own size, or its size at the line's width when it's wider.
+    private func fittedSize(of subview: LayoutSubview, in lineWidth: CGFloat) -> CGSize {
+        let ideal = subview.sizeThatFits(.unspecified)
+        guard let width = Self.squeezedWidth(ideal: ideal.width, line: lineWidth) else { return ideal }
+        return subview.sizeThatFits(ProposedViewSize(width: width, height: nil))
+    }
+
+    /// The width a child gets when it's wider than the line; nil when it fits.
+    static func squeezedWidth(ideal: CGFloat, line: CGFloat) -> CGFloat? {
+        guard line.isFinite, ideal > line else { return nil }
+        return max(0, line)
     }
 
     private struct Row {
@@ -41,7 +56,7 @@ struct FlowLayout: Layout {
         var rows: [Row] = []
         var current = Row()
         for index in subviews.indices {
-            let size = subviews[index].sizeThatFits(.unspecified)
+            let size = fittedSize(of: subviews[index], in: maxWidth)
             let needed = current.indices.isEmpty ? size.width : current.width + spacing + size.width
             if needed > maxWidth, !current.indices.isEmpty {
                 rows.append(current)

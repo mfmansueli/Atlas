@@ -8,7 +8,9 @@ import SwiftUI
 /// The bar under the Store Page's: Sets | Template | Captions | Captures
 /// (with the overflowing captions' count), the display type, the locale
 /// scope, the render status and S / M / L. When it doesn't fit on one line,
-/// S / M / L moves to a second one, then the status with it.
+/// S / M / L moves to a second one, then the status with it; in a narrow
+/// window the display type and the scope get a line of their own too, so
+/// the bar never holds the window's content wider than the window.
 struct ScreenshotsBar: View {
     @Bindable var viewModel: ScreenshotsViewModel
 
@@ -36,6 +38,15 @@ struct ScreenshotsBar: View {
                     status
                 }
             }
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                views
+                pickers
+                HStack(spacing: Spacing.small) {
+                    sizes
+                    Spacer(minLength: Spacing.medium)
+                    status
+                }
+            }
         }
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.small)
@@ -44,6 +55,14 @@ struct ScreenshotsBar: View {
     }
 
     private var controls: some View {
+        HStack(spacing: Spacing.small) {
+            views
+            pickers
+        }
+    }
+
+    /// Back to the language page, and the views with the overflow count.
+    private var views: some View {
         HStack(spacing: Spacing.small) {
             Button {
                 viewModel.showsLanguagePage = true
@@ -71,6 +90,12 @@ struct ScreenshotsBar: View {
                         .accessibilityIdentifier("screenshots.overflowCount")
                 }
             }
+        }
+    }
+
+    /// The display type and the locales that get their own screenshots.
+    private var pickers: some View {
+        HStack(spacing: Spacing.small) {
             DisplayTypeMenu(viewModel: viewModel)
             Button {
                 viewModel.openScope()

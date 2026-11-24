@@ -4,6 +4,7 @@
 //
 
 import CoreGraphics
+import SwiftUI
 import Testing
 @testable import Atlas
 
@@ -31,5 +32,32 @@ struct SideColumnLayoutTests {
 
     @Test func anIdealSizePutsItBeside() {
         #expect(layout.placesBeside(in: nil, mainMinimumWidth: 480))
+    }
+
+    @Test func stackedTheColumnGoesAboveByDefault() {
+        let tops = layout.stackedTops(mainHeight: 400, sideHeight: 120)
+        #expect(tops.side == 0)
+        #expect(tops.main == 140)
+    }
+
+    /// Overview's: the lists first, the App Store page under them, 16 pt
+    /// apart instead of the 24 beside.
+    @Test func stackedTheColumnCanGoBelowWithItsOwnSpacing() {
+        let below = SideColumnLayout(sideWidth: 300, minimumMainWidth: 380, spacing: 24, stacksSideBelow: true, stackedSpacing: 16)
+        let tops = below.stackedTops(mainHeight: 400, sideHeight: 120)
+        #expect(tops.main == 0)
+        #expect(tops.side == 416)
+    }
+
+    /// Overview's lists keep the preview beside them down to a 704 pt page
+    /// (380 + 24 + 300); narrower, it goes under them, whatever width the
+    /// page had before, so the page never holds the window wider.
+    @MainActor
+    @Test func overviewStacksUnder704Points() {
+        let columns = OverviewPageAndWaiting<EmptyView>.columns
+        #expect(columns.stacksSideBelow)
+        #expect(columns.placesBeside(in: 704, mainMinimumWidth: 300))
+        #expect(!columns.placesBeside(in: 703, mainMinimumWidth: 300))
+        #expect(!columns.placesBeside(in: 0, mainMinimumWidth: 300))
     }
 }

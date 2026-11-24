@@ -11,6 +11,32 @@ struct ReviewsFilterBar: View {
     @Bindable var viewModel: ReviewsViewModel
 
     var body: some View {
+        // One row when it fits; in a narrow window the storefront and the
+        // order go under the filters, so the bar never holds the page (and
+        // the window's content) wider than the window.
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.small) {
+                filters
+                Spacer(minLength: Spacing.small)
+                territoryMenu
+                sortMenu
+            }
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                filters
+                HStack(spacing: Spacing.small) {
+                    territoryMenu
+                    sortMenu
+                }
+            }
+        }
+        // The filter row's controls are row-sized (24 pt), like the prototype's.
+        .controlSize(.regular)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("reviews.filterBar")
+    }
+
+    /// Needs a Reply, 1–2 Stars, Replied and All, and the group shown.
+    private var filters: some View {
         HStack(spacing: Spacing.small) {
             // A segmented control, not blue buttons (README — Design
             // system §4): none is selected while a group is shown.
@@ -26,14 +52,7 @@ struct ReviewsFilterBar: View {
             if let theme = viewModel.selectedTheme {
                 themePill(theme)
             }
-            Spacer(minLength: Spacing.small)
-            territoryMenu
-            sortMenu
         }
-        // The filter row's controls are row-sized (24 pt), like the prototype's.
-        .controlSize(.regular)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("reviews.filterBar")
     }
 
     private var filterSelection: Binding<ReviewFilter?> {
