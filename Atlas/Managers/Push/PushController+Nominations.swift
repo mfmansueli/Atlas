@@ -19,8 +19,7 @@ extension PushController {
             }
             return request.replacing(placeholder.token, with: id)
         }
-        let path = "/v1/nominations?filter%5Bstate%5D=DRAFT&filter%5BrelatedApps%5D=\(placeholder.appID)&fields%5Bnominations%5D=name&limit=200"
-        let response = try await transport.fetch(path)
+        let response = try await transport.fetch(AppStoreConnectClient.draftNominationsPath(appID: placeholder.appID))
         noteRequest(response.rateLimit)
         let page = try JSONDecoder().decode(NominationsDocument.self, from: response.data)
         guard let match = page.data.first(where: { ($0.attributes.name ?? "") == placeholder.name }) else {

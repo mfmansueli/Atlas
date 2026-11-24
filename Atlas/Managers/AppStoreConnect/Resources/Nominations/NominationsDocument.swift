@@ -40,14 +40,18 @@ struct NominationsDocument: Decodable, Sendable {
         var id: String
         var attributes: NominationIncludedAttributes?
 
-        /// An actor's name as Atlas writes it: the person's first name, or
-        /// "API key 2X9R4HXF34".
+        /// An actor's name as Atlas writes it: the person's first name,
+        /// "API key 2X9R4HXF34", "Xcode Cloud" or "Apple".
         var actorName: String? {
             guard type == "actors", let attributes else { return nil }
             if let first = attributes.userFirstName, !first.isEmpty { return first }
             if let last = attributes.userLastName, !last.isEmpty { return last }
             if let key = attributes.apiKeyId, !key.isEmpty { return String(localized: "API key \(key)", comment: "kind:other") }
-            return attributes.actorType == "APPLE" ? "Apple" : nil
+            switch attributes.actorType {
+            case "XCODE_CLOUD": return "Xcode Cloud"
+            case "APPLE": return "Apple"
+            default: return nil
+            }
         }
     }
 

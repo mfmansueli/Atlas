@@ -16,7 +16,7 @@ struct NominationsPushTests {
     typealias Data = DebugNominationsData
 
     private static let created = Foundation.Data(#"{"data":{"type":"nominations","id":"N1"}}"#.utf8)
-    private static let lookup = "/v1/nominations?filter%5Bstate%5D=DRAFT&filter%5BrelatedApps%5D=\(Data.lumen)&fields%5Bnominations%5D=name&limit=200"
+    private static let lookup = "/v1/nominations?filter%5Bstate%5D=DRAFT&filter%5BrelatedApps%5D=\(Data.lumen)&limit=200"
 
     private func push(_ changes: [PendingChange], transport: FakePushTransport) async -> PushController {
         let queue = ChangeQueue()
