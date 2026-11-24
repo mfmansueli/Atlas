@@ -92,6 +92,7 @@ final class ReviewsStore {
             archive.reviews = page.reviews + (keepsOlder && page.next != nil ? older : [])
             if !(keepsOlder && page.next != nil) { archive.next = page.next }
             archive.currentVersion = currentVersion ?? archive.currentVersion
+            archive.writtenTotal = page.total ?? archive.writtenTotal
             archive.fetchedAt = now()
             archive.prune()
         }
@@ -103,6 +104,7 @@ final class ReviewsStore {
             let known = Set(archive.reviews.map(\.id))
             archive.reviews += page.reviews.filter { !known.contains($0.id) }
             archive.next = page.next
+            archive.writtenTotal = page.total ?? archive.writtenTotal
         }
     }
 

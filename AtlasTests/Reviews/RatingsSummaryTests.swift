@@ -32,6 +32,53 @@ struct RatingsSummaryTests {
         #expect(summary.countText == "400 ratings in 2 countries, Apple’s average. Bars: the 6 written reviews of the last 90 days.")
     }
 
+    @Test func ratingsWithoutAWrittenReviewAreTheRestOfApplesCount() {
+        var ratings = StoreRatings.unchecked
+        ratings.record(.rated(4.7), count: 10000, inCountry: "US")
+        ratings.record(.rated(4.4), count: 2840, inCountry: "DE")
+        let summary = RatingsSummary.make(
+            ratings: ratings, countries: ["US", "DE"], reviews: Data.reviews, writtenCount: 1206, version: "1.3", now: Data.now
+        )
+        #expect(summary.starsOnlyCount == 11634)
+        #expect(abs(summary.writtenShare - 1206.0 / 12840.0) < 0.0001)
+        // Numbers as this Mac writes them ("1,206", or "1.206" in pt-BR).
+        let (written, starsOnly, all) = (ReviewText.count(1206), ReviewText.count(11634), ReviewText.count(12840))
+        #expect(summary.writtenText == "Written: \(written)")
+        #expect(summary.starsOnlyText == "Stars only: \(starsOnly)")
+        #expect(summary.starsOnlySentence == "\(starsOnly) of \(all) ratings have no written review.")
+    }
+
+    @Test func starsOnlyIsLeftOutWhenItCantBeTold() {
+        var ratings = StoreRatings.unchecked
+        ratings.record(.rated(4.5), count: 40, inCountry: "US")
+        func summary(written: Int?, ratings: StoreRatings) -> RatingsSummary {
+            RatingsSummary.make(ratings: ratings, countries: ["US"], reviews: Data.reviews, writtenCount: written, version: nil, now: Data.now)
+        }
+        // Apple's count of written reviews unknown.
+        #expect(summary(written: nil, ratings: ratings).starsOnlyCount == nil)
+        // No ratings read from the App Store yet.
+        #expect(summary(written: 6, ratings: .unchecked).starsOnlyCount == nil)
+        // More written reviews than ratings: the rating summary was reset.
+        let reset = summary(written: 60, ratings: ratings)
+        #expect(reset.starsOnlyCount == nil)
+        #expect(reset.writtenText == nil)
+        #expect(reset.writtenShare == 0)
+        // Every rating written: none stars only, still shown.
+        #expect(summary(written: 40, ratings: ratings).starsOnlyCount == 0)
+    }
+
+    @Test func theStorefrontsAskedAreTheOnesWithMostReviewsAndTheUS() {
+        #expect(RatingsSummary.countries(for: Data.reviews) == ["US", "DE", "AT", "JP", "FR"])
+        #expect(RatingsSummary.countries(for: []) == ["US"])
+        let many = (0..<50).flatMap { index in
+            (0...index).map { Data.review("c\(index)-\($0)", String(format: "C%02d", index)) }
+        }
+        let countries = RatingsSummary.countries(for: many)
+        #expect(countries.count == RatingsSummary.countryLimit + 1)
+        #expect(countries.contains("C49"))
+        #expect(!countries.contains("C00"))
+    }
+
     @Test func theBarsCountOnlyTheLastNinetyDays() {
         let old = Data.review("old", rating: 5, daysAgo: 120)
         let summary = RatingsSummary.make(ratings: .unchecked, countries: [], reviews: Data.reviews + [old], version: nil, now: Data.now)

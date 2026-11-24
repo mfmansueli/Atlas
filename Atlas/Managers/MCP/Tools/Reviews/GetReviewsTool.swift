@@ -21,8 +21,9 @@ struct GetReviewsTool: MCPTool {
         Store (if any) and a reply already suggested. `show` picks needsReply (default: no reply yet and under 5 stars), \
         low (1–2 stars), replied or all; `limit` is 60 unless given (200 at most). Also returns the counts, the app's \
         current version and the groups sent before. Read-only. Follow with propose_review_replies (one reply per review, \
-        in the reviewer's language) and propose_review_themes (the subjects people write about). Ratings without text \
-        aren't here: Apple's API only has written reviews.
+        in the reviewer's language) and propose_review_themes (the subjects people write about). `ratings` has the App \
+        Store's average and count (the storefronts with the most reviews, and the US), the written reviews in all \
+        (Apple's count) and starsOnly, the ratings that came without a written review; those have no text to read.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -46,6 +47,7 @@ struct GetReviewsTool: MCPTool {
             Atlas couldn’t read \(app.name)’s reviews from App Store Connect. The person can open Reviews (⌘8) to see why.
             """))
         }
+        let ratings = await Self.ratings(of: app, archive: archive, services: context.workspace.services.reviews)
         let matching = archive.reviews.filter { show.includes($0) }.sorted { $0.date > $1.date }
         var notes: [JSONValue] = []
         if matching.count > limit { notes.append(.string("\(matching.count - limit) more match; raise limit to read them.")) }
@@ -59,6 +61,7 @@ struct GetReviewsTool: MCPTool {
                 "needReply": .int(archive.needsReplyCount),
                 "repliesSuggested": .int(archive.openSuggestionCount),
             ],
+            "ratings": ratings,
             "replyLimit": .int(ReviewText.replyLimit),
             "textRules": StoreTextGuidelinePlace.reviewReply.rulesJSON,
             "reviews": .array(matching.prefix(limit).map { ReviewsMCPJSON.review($0, in: archive) }),
@@ -67,6 +70,23 @@ struct GetReviewsTool: MCPTool {
             "notes": .array(notes),
         ]
         return .read(result, target: target)
+    }
+
+    /// The App Store's average and count, and how many ratings are stars
+    /// only, as the Ratings card shows them.
+    static func ratings(of app: StoreApp, archive: ReviewsArchive, services: any ReviewsServices) async -> JSONValue {
+        let countries = RatingsSummary.countries(for: archive.reviews)
+        let store = await services.ratings(for: app, countries: countries)
+        let summary = RatingsSummary.make(
+            ratings: store, countries: countries, reviews: archive.reviews, writtenCount: archive.writtenCount, version: archive.currentVersion, now: Date()
+        )
+        return [
+            "average": summary.average.map { .double(($0 * 100).rounded() / 100) } ?? .null,
+            "count": .int(summary.ratingCount),
+            "countries": .int(summary.storefrontCount),
+            "written": summary.writtenCount.map(JSONValue.int) ?? .null,
+            "starsOnly": summary.starsOnlyCount.map(JSONValue.int) ?? .null,
+        ]
     }
 
     /// Reply Automatically, so the assistant sends what the rule decides

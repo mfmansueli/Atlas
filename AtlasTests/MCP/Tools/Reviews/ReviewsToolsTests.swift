@@ -16,9 +16,11 @@ struct ReviewsToolsTests {
 
     private let store = ReviewsTestData.store()
 
-    private func call(_ tool: some MCPTool, _ arguments: [String: JSONValue]) async throws -> MCPToolOutcome {
+    private func call(
+        _ tool: some MCPTool, _ arguments: [String: JSONValue], services: FakeReviewsServices = FakeReviewsServices()
+    ) async throws -> MCPToolOutcome {
         var workspace = MCPTestFixtures.workspace()
-        workspace.services.reviews = FakeReviewsServices()
+        workspace.services.reviews = services
         return try await tool.call(MCPToolArguments(arguments), in: MCPToolContext(workspace: workspace, clientName: "Claude Code"))
     }
 
@@ -52,6 +54,30 @@ struct ReviewsToolsTests {
         #expect(reviews[0]["suggestedReply"]?["text"] == "Danke!")
         #expect(reviews[1]["suggestedReply"] == nil)
         #expect(outcome.logLines.first?.outcome == MCPCallOutcome.read)
+    }
+
+    @Test func theRatingsSayHowManyCameWithoutAWrittenReview() async throws {
+        let services = FakeReviewsServices()
+        services.storeRatings.record(.rated(4.6), count: 400, inCountry: "US")
+        services.storeRatings.record(.rated(4.2), count: 100, inCountry: "DE")
+        let store = ReviewsStore()
+        store.now = { Data.now }
+        store.setFirstPage(ReviewsPage(reviews: Data.reviews, next: "cursor-2", total: 120), currentVersion: "1.3", for: Data.app.id)
+        let ratings = try #require(try await call(GetReviewsTool(store: store), ["appId": "Lumen Journal"], services: services).result["ratings"])
+        #expect(ratings["average"] == .double(4.52))
+        #expect(ratings["count"] == .int(500))
+        #expect(ratings["countries"] == .int(2))
+        #expect(ratings["written"] == .int(120))
+        #expect(ratings["starsOnly"] == .int(380))
+        #expect(services.ratingCountries == ["US", "DE", "AT", "JP", "FR"])
+    }
+
+    @Test func withoutRatingsStarsOnlyIsNull() async throws {
+        let ratings = try #require(try await call(GetReviewsTool(store: store), ["appId": "Lumen Journal"]).result["ratings"])
+        #expect(ratings["average"] == .null)
+        #expect(ratings["count"] == .int(0))
+        #expect(ratings["written"] == .int(6))
+        #expect(ratings["starsOnly"] == .null)
     }
 
     @Test func showAndLimitPickWhatIsRead() async throws {

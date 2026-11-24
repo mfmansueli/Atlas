@@ -31,6 +31,9 @@ final class ReviewsUITests: XCTestCase {
         XCTAssertTrue(suggestion.hasPrefix("Danke, dass du das meldest"), suggestion)
         XCTAssertTrue(app.staticTexts["Suggested reply, in German"].exists)
         XCTAssertTrue(element("reviews.ratings").exists)
+        // "11,634 of 12,840 …", or "11.634 de …" digits as this Mac writes them.
+        let starsOnly = element("reviews.ratings.starsOnly").label
+        XCTAssertTrue(starsOnly.hasPrefix("11") && starsOnly.contains("634") && starsOnly.hasSuffix("ratings have no written review."), starsOnly)
         XCTAssertTrue(element("reviews.theme.sync").exists)
         XCTAssertEqual(element("reviews.theme.action.sync").label, "Reply to All 38…")
         attach("rv")

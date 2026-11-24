@@ -7,7 +7,8 @@ import SwiftUI
 
 /// The Ratings card beside the list: Apple's average and count, the
 /// written reviews' stars as bars (it says they're written reviews only),
-/// and the current version against before.
+/// how many ratings came with stars only as a split bar, and the current
+/// version against before.
 struct RatingsCard: View {
     let summary: RatingsSummary
 
@@ -41,6 +42,9 @@ struct RatingsCard: View {
                     }
                 }
             }
+            if let written = summary.writtenText, let starsOnly = summary.starsOnlyText {
+                starsOnlySplit(written: written, starsOnly: starsOnly)
+            }
             Text(summary.countText)
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -53,6 +57,45 @@ struct RatingsCard: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.ratings")
+    }
+
+    /// One bar of all the ratings: the written reviews in the bars' grey,
+    /// the stars-only ratings in the stars' colour, each named below.
+    private func starsOnlySplit(written: String, starsOnly: String) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.xSmall) {
+            GeometryReader { proxy in
+                let gap: CGFloat = 2
+                let width = max(proxy.size.width - gap, 0)
+                let writtenWidth = summary.writtenShare > 0 ? min(max(width * summary.writtenShare, 4), width - 4) : 0
+                HStack(spacing: writtenWidth > 0 ? gap : 0) {
+                    if writtenWidth > 0 {
+                        Capsule().fill(Palette.label2).frame(width: writtenWidth)
+                    }
+                    Capsule().fill(Palette.sectionReviews)
+                }
+            }
+            .frame(height: 6)
+            HStack(spacing: Spacing.small) {
+                legend(written, tint: Palette.label2)
+                Spacer(minLength: 0)
+                legend(starsOnly, tint: Palette.sectionReviews)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(summary.starsOnlySentence ?? starsOnly))
+        .accessibilityIdentifier("reviews.ratings.starsOnly")
+        .help(String(localized: "Apple’s count of ratings minus the written reviews in App Store Connect.", comment: "kind:help"))
+    }
+
+    private func legend(_ text: String, tint: Color) -> some View {
+        HStack(spacing: 4) {
+            Circle().fill(tint).frame(width: 7, height: 7)
+            Text(text)
+                .font(.subheadline)
+                .monospacedDigit()
+                .foregroundStyle(Palette.label2)
+                .lineLimit(1)
+        }
     }
 
     private func comparisonLines(_ comparison: VersionRatingComparison) -> some View {

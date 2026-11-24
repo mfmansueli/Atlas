@@ -17,9 +17,19 @@ struct CustomerReviewsDocument: Decodable, Sendable {
         var responseID: String? { relationships?["response"]?.data?.id }
     }
 
+    struct Paging: Decodable, Sendable {
+        var total: Int?
+    }
+
+    struct Meta: Decodable, Sendable {
+        var paging: Paging?
+    }
+
     var data: [Review]
     var included: [AppStoreConnectResource<CustomerReviewResponseAttributes>]?
     var links: AppStoreConnectPageLinks?
+    /// `meta.paging.total`: how many written reviews the app has in all.
+    var meta: Meta?
 
     /// The reply to `review`, from `included`.
     func response(to review: Review) -> AppStoreConnectResource<CustomerReviewResponseAttributes>? {

@@ -13,6 +13,8 @@ struct ReviewsArchive: Hashable, Codable, Sendable {
     var reviews: [AppReview] = []
     /// Apple's link to the reviews after these; nil at the end.
     var next: String?
+    /// Apple's count of the app's written reviews, read or not.
+    var writtenTotal: Int?
     var fetchedAt: Date?
     /// The version the newest reviews are listed under ("1.3").
     var currentVersion: String?
@@ -21,6 +23,13 @@ struct ReviewsArchive: Hashable, Codable, Sendable {
     var dismissed: Set<AppReview.ID> = []
     var themes: [ReviewTheme] = []
     var translations: [AppReview.ID: ReviewTranslation] = [:]
+
+    /// How many written reviews the app has: Apple's count, or the ones
+    /// read when they're all here; nil when neither is known.
+    var writtenCount: Int? {
+        if let writtenTotal { return max(writtenTotal, reviews.count) }
+        return fetchedAt != nil && next == nil ? reviews.count : nil
+    }
 
     func review(id: AppReview.ID) -> AppReview? {
         reviews.first { $0.id == id }

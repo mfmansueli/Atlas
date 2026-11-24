@@ -31,7 +31,7 @@ struct LiveReviewsServices: ReviewsServices {
                 }
             }
         }
-        return ReviewsPage(reviews: reviews, next: document.links?.next?.absoluteString)
+        return ReviewsPage(reviews: reviews, next: document.links?.next?.absoluteString, total: document.meta?.paging?.total)
     }
 
     func currentVersion(for app: StoreApp) async throws -> String? {

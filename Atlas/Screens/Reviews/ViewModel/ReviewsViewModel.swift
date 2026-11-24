@@ -160,7 +160,9 @@ final class ReviewsViewModel {
     }
 
     var ratingsSummary: RatingsSummary {
-        RatingsSummary.make(ratings: ratings, countries: ratingCountries, reviews: reviews, version: archive.currentVersion, now: now())
+        RatingsSummary.make(
+            ratings: ratings, countries: ratingCountries, reviews: reviews, writtenCount: archive.writtenCount, version: archive.currentVersion, now: now()
+        )
     }
 
     var themeSummaries: [ReviewThemeSummary] {
@@ -209,13 +211,8 @@ final class ReviewsViewModel {
 
     var canLoadMore: Bool { archive.next != nil }
 
-    /// Storefronts asked for their rating: the ones with reviews, most
-    /// reviews first, and the United States.
-    static let ratingCountryLimit = 40
-
     private func loadRatings() async {
-        var countries = Set(territories.prefix(Self.ratingCountryLimit).map(\.code))
-        countries.insert("US")
+        let countries = RatingsSummary.countries(for: reviews)
         ratings = await services.ratings(for: app, countries: countries)
         ratingCountries = countries
     }

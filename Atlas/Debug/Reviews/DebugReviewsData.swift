@@ -172,11 +172,16 @@ enum DebugReviewsData {
         return ratings
     }
 
+    /// Apple's count of Lumen's written reviews: 11,634 of the 12,840
+    /// ratings are stars only.
+    static let writtenTotal = 1206
+
     // MARK: - Store
 
     static var archive: ReviewsArchive {
         ReviewsArchive(
-            reviews: reviews, fetchedAt: today, currentVersion: currentVersion, suggestions: suggestions, themes: themes, translations: translations
+            reviews: reviews, writtenTotal: writtenTotal, fetchedAt: today, currentVersion: currentVersion,
+            suggestions: suggestions, themes: themes, translations: translations
         )
     }
 

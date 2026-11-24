@@ -21,7 +21,8 @@ struct DebugReviewsServices: ReviewsServices {
     func reviews(for app: StoreApp, after _: String?) async throws -> ReviewsPage {
         if neverFinishes { try await Task.sleep(for: .seconds(3600)) }
         if let error { throw error }
-        return ReviewsPage(reviews: app.id == DebugFixtures.AppID.lumen ? DebugReviewsData.reviews : [], next: nil)
+        let isLumen = app.id == DebugFixtures.AppID.lumen
+        return ReviewsPage(reviews: isLumen ? DebugReviewsData.reviews : [], next: nil, total: isLumen ? DebugReviewsData.writtenTotal : 0)
     }
 
     func currentVersion(for app: StoreApp) async throws -> String? {

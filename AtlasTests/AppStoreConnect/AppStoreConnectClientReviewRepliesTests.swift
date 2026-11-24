@@ -30,7 +30,8 @@ struct AppStoreConnectClientReviewRepliesTests {
       "responseBody":"Danke!","lastModifiedDate":"2026-11-16T08:00:00Z","state":"PENDING_PUBLISH"}}],
     "links":{
       "self":"https://api.appstoreconnect.apple.com/v1/apps/42/customerReviews",
-      "next":"https://api.appstoreconnect.apple.com/v1/apps/42/customerReviews?cursor=abc"}}
+      "next":"https://api.appstoreconnect.apple.com/v1/apps/42/customerReviews?cursor=abc"},
+    "meta":{"paging":{"total":1206,"limit":200}}}
     """#)
 
     private func client(_ transport: FakeHTTPTransport) -> AppStoreConnectClient {
@@ -58,6 +59,14 @@ struct AppStoreConnectClientReviewRepliesTests {
         #expect(document.response(to: document.data[0])?.attributes.responseBody == "Danke!")
         #expect(document.response(to: document.data[1]) == nil)
         #expect(document.links?.next?.query() == "cursor=abc")
+        #expect(document.meta?.paging?.total == 1206)
+    }
+
+    @Test func thePageCarriesApplesCountOfWrittenReviews() async throws {
+        let services = LiveReviewsServices(client: client(FakeHTTPTransport([Self.page])))
+        let page = try await services.reviews(for: ReviewsTestData.app, after: nil)
+        #expect(page.total == 1206)
+        #expect(page.reviews.count == 2)
     }
 
     @Test func theNextPageIsReadFromItsLink() async throws {

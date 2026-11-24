@@ -37,6 +37,31 @@ struct ReviewsStoreTests {
         #expect(archive.next == nil)
     }
 
+    @Test func applesCountOfWrittenReviewsIsKeptAcrossPages() {
+        let store = ReviewsStore()
+        store.now = { Data.now }
+        #expect(store.archive(for: Data.app.id).writtenCount == nil)
+        store.setFirstPage(ReviewsPage(reviews: Data.reviews, next: "cursor-2", total: 1206), currentVersion: "1.3", for: Data.app.id)
+        #expect(store.archive(for: Data.app.id).writtenCount == 1206)
+        // A page without Apple's count keeps the one read before.
+        store.append(ReviewsPage(reviews: [Data.review("old1", daysAgo: 60)], next: "cursor-3"), for: Data.app.id)
+        #expect(store.archive(for: Data.app.id).writtenTotal == 1206)
+        store.append(ReviewsPage(reviews: [], next: nil, total: 1210), for: Data.app.id)
+        #expect(store.archive(for: Data.app.id).writtenCount == 1210)
+    }
+
+    @Test func withoutApplesCountEveryReviewReadIsTheCount() {
+        #expect(Data.store().archive(for: Data.app.id).writtenCount == 6)
+        // Older pages Atlas hasn't read: unknown.
+        #expect(Data.store(next: "cursor-2").archive(for: Data.app.id).writtenCount == nil)
+        // Apple's count never says fewer than the reviews read.
+        var archive = ReviewsArchive(reviews: Data.reviews, writtenTotal: 2, fetchedAt: Data.now)
+        #expect(archive.writtenCount == 6)
+        archive.writtenTotal = nil
+        archive.next = "cursor-2"
+        #expect(archive.writtenCount == nil)
+    }
+
     @Test func aSuggestionIsKeptOnlyForAReviewThatWasRead() {
         let store = Data.store()
         let kept = store.add([Data.suggestion("de1"), Data.suggestion("nobody")], for: Data.app.id)
