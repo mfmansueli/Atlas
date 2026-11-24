@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// A muted loop in a full-size viewer, the way the App Store plays it:
-/// its poster until it plays (or right away with `autoplays`), then the
+/// its poster until it plays (right away with `autoplays`, or when moving
+/// artwork plays by itself: `AutoplayingLoop.plays`), then the
 /// movie on repeat. Click it or Play to play or pause, skip or drag
 /// through it under it; pinch to zoom. `overlay` is drawn over the movie
 /// at its size and zooms with it (the App Store's text over an event's
@@ -28,6 +29,10 @@ struct FullSizeLoopPlayer<Overlay: View>: View {
     var autoplays = false
     var cornerRadius: CGFloat = 4
     @ViewBuilder var overlay: () -> Overlay
+
+    /// Nil outside the app's windows (previews).
+    @Environment(AppPreferences.self) private var preferences: AppPreferences?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: Spacing.small) {
@@ -59,7 +64,10 @@ struct FullSizeLoopPlayer<Overlay: View>: View {
             model.loops = true
             model.isMuted = true
             model.load(url, seconds: seconds)
-            if autoplays { model.play() }
+            // Plays at once like the cards do, unless the person keeps
+            // moving artwork still.
+            let setting = preferences?.autoplaysMotion ?? true
+            if autoplays || AutoplayingLoop<EmptyView>.plays(setting: setting, reduceMotion: reduceMotion) { model.play() }
         }
     }
 

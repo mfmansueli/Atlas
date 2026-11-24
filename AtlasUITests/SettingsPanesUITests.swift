@@ -59,6 +59,19 @@ final class SettingsPanesUITests: XCTestCase {
         appearance.radioButtons["Match System"].click()
     }
 
+    func testMovingArtworkPlaysUntilTurnedOff() {
+        app.launch(debugScene: "set-general")
+        let toggle = element("settings.autoplaysMotion")
+        XCTAssertTrue(toggle.waitForExistence(timeout: 15))
+        XCTAssertTrue(scrollTo(toggle))
+        XCTAssertEqual(toggle.value as? Int, 1)
+        XCTAssertTrue(anyText(containing: "Play moving artwork").exists)
+        toggle.click()
+        XCTAssertEqual(toggle.value as? Int, 0)
+        toggle.click()
+        XCTAssertEqual(toggle.value as? Int, 1)
+    }
+
     // MARK: - Accounts
 
     func testRemovalAskedInPlaceCanBeCancelled() {

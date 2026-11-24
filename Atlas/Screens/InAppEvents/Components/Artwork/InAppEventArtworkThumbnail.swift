@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// A small picture of an event card or details page file on this Mac: the
-/// image, or a video's first frame with a play mark. A spinner while it's
-/// read, a glyph when it can't be.
+/// image, or a video playing muted on repeat (its first frame with a play
+/// mark when moving artwork doesn't play). A spinner while it's read, a
+/// glyph when it can't be.
 struct InAppEventArtworkThumbnail: View {
     let path: String
     let isVideo: Bool
@@ -17,7 +18,7 @@ struct InAppEventArtworkThumbnail: View {
 
     var body: some View {
         let aspect: CGFloat = phase.image.map { CGFloat($0.width) / CGFloat(max(1, $0.height)) } ?? 16 / 9
-        ZStack {
+        AutoplayingLoop(url: isVideo ? URL(fileURLWithPath: path) : nil, fills: false) { plays in
             if let image = phase.image {
                 Image(decorative: image, scale: 1)
                     .resizable()
@@ -26,7 +27,8 @@ struct InAppEventArtworkThumbnail: View {
             } else {
                 ImageLoadingTile(isLoading: phase.isLoading, systemImage: isVideo ? "film" : "photo", controlSize: .mini)
             }
-            if isVideo, phase.image != nil {
+            // A still loop says it moves; a playing one shows it.
+            if isVideo, !plays, phase.image != nil {
                 Image(systemName: "play.circle.fill")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.white, .black.opacity(0.45))

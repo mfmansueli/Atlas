@@ -9,9 +9,10 @@ import SwiftUI
 /// loaded, at twice its width in pixels, with its ratio and a spinner kept
 /// meanwhile. In
 /// the viewer a loop plays instead (`plays`), at the studio's
-/// `artworkLoop` clock, whose controls the viewer shows under it. With a
-/// Claude `page` it's that page, rendered by WebKit, and its loop
-/// plays live.
+/// `artworkLoop` clock, whose controls the viewer shows under it. A tile
+/// at least `autoplayWidth` wide plays its loop by itself too, on its own
+/// clock, unless the person keeps moving artwork still. With a Claude
+/// `page` it's that page, rendered by WebKit, and its loop plays live.
 struct ArtworkThumbnail: View {
     @Bindable var studio: ScreenshotStudioModel
     let kind: AutopilotArtworkKind
@@ -35,6 +36,12 @@ struct ArtworkThumbnail: View {
     @State private var renderFailed = false
     /// The page a playing loop shows live.
     @State private var live: ArtworkWebRequest?
+    /// A loop playing by itself in its tile keeps its own time, apart
+    /// from the viewer's.
+    @State private var tileClock = ArtworkLoopClock()
+    /// Nil outside the app's windows (previews).
+    @Environment(AppPreferences.self) private var preferences: AppPreferences?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// What a playing loop draws each frame.
     @State private var loop: Loop?
 
@@ -45,15 +52,31 @@ struct ArtworkThumbnail: View {
     }
 
     private static let captureWidth = 480
+    /// Narrower tiles keep the still: the loop wouldn't read, and each
+    /// playing tile draws every frame.
+    static let autoplayWidth: CGFloat = 160
+
+    /// A motion loop plays in its tile by itself (Settings → General →
+    /// "Play moving artwork", Reduce Motion off), muted on repeat.
+    private var autoplays: Bool {
+        !plays && isMotion && width >= Self.autoplayWidth
+            && AutoplayingLoop<EmptyView>.plays(setting: preferences?.autoplaysMotion ?? true, reduceMotion: reduceMotion)
+    }
+
+    /// The loop plays: in the viewer, or by itself.
+    private var playsLoop: Bool { plays || autoplays }
+
+    /// The viewer's clock, whose controls it shows; a tile's own.
+    private var clock: ArtworkLoopClock { plays ? studio.artworkLoop : tileClock }
 
     var body: some View {
         let images = captures.compactMapValues { studio.screenshots.captureImages.image(for: $0, width: Self.captureWidth) }
         let ratio = CGFloat(kind.pixelSize.height) / CGFloat(kind.pixelSize.width)
         Group {
-            if plays, isMotion, page != nil, let live {
-                ArtworkWebLoopPlayer(request: live, width: width, clock: studio.artworkLoop)
-            } else if plays, isMotion, page == nil, let loop {
-                ArtworkLoopPlayer(layout: loop.layout, captures: loop.captures, icon: loop.icon, width: width, clock: studio.artworkLoop)
+            if playsLoop, isMotion, page != nil, let live {
+                ArtworkWebLoopPlayer(request: live, width: width, clock: clock)
+            } else if playsLoop, isMotion, page == nil, let loop {
+                ArtworkLoopPlayer(layout: loop.layout, captures: loop.captures, icon: loop.icon, width: width, clock: clock)
             } else if let rendered {
                 Image(decorative: rendered, scale: 2).resizable()
             } else {
@@ -67,7 +90,8 @@ struct ArtworkThumbnail: View {
         }
         .task(id: RenderKey(
             template: template, locale: locale, headline: headline, appName: studio.appName(in: locale), loaded: Set(images.keys), width: width,
-            shows: shows, isMotion: isMotion, page: page, phrases: page == nil ? [:] : studio.artworkPhrases(in: locale)
+            shows: shows, isMotion: isMotion, page: page, phrases: page == nil ? [:] : studio.artworkPhrases(in: locale),
+            playsLoop: playsLoop
         )) {
             renderFailed = false
             defer { renderFailed = rendered == nil && !Task.isCancelled }
@@ -84,7 +108,7 @@ struct ArtworkThumbnail: View {
             )
             let icon = await ArtworkIcon.image(of: studio.app)
             rendered = ArtworkRenderer.image(layout: layout, captures: images, icon: icon, pixelWidth: Int(width * 2))
-            if plays, isMotion { loop = Loop(layout: layout, captures: images, icon: icon) }
+            loop = playsLoop && isMotion ? Loop(layout: layout, captures: images, icon: icon) : nil
         }
         .accessibilityElement(children: plays && isMotion ? .contain : .ignore)
         .accessibilityLabel(Text("\(kind.title) artwork, \(StoreLocaleCatalog.locale(code: locale)?.name ?? locale)"))
@@ -104,6 +128,8 @@ struct ArtworkThumbnail: View {
         var page: String?
         /// The page's phrases in this language, as the set has them.
         var phrases: [String: String]
+        /// The loop plays, in the viewer or by itself.
+        var playsLoop: Bool
     }
 
     /// The page in `locale` with the captures loaded so far: the cached
@@ -116,7 +142,7 @@ struct ArtworkThumbnail: View {
             html: html, locale: locale.code, headline: headline, appName: studio.appName(in: locale.code),
             captures: captures.filter { images[$0.key] != nil }, pixelWidth: pixelWidth, phrases: phrases
         )
-        let playsLive = plays && isMotion
+        let playsLive = playsLoop && isMotion
         if !playsLive, let cached = ArtworkWebThumbnails.shared.image(for: key) {
             rendered = cached
             return
@@ -131,6 +157,7 @@ struct ArtworkThumbnail: View {
             live = request
             return
         }
+        live = nil
         guard let image = try? await ArtworkWebRenderer.shared.render(request).image, !Task.isCancelled else { return }
         ArtworkWebThumbnails.shared.store(image, for: key)
         rendered = image

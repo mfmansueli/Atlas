@@ -88,6 +88,13 @@ final class AppPreferences {
         didSet { defaults?.set(animatesMenuBarIcon, forKey: Key.animatesMenuBarIcon) }
     }
 
+    /// General → "Play moving artwork": event and header loops play muted
+    /// on repeat where they show, as on the App Store. Off, or with Reduce
+    /// Motion, they show a still until Play in the viewer.
+    var autoplaysMotion: Bool {
+        didSet { defaults?.set(autoplaysMotion, forKey: Key.autoplaysMotion) }
+    }
+
     /// General → "Check App Store Connect".
     var checkInterval: CheckInterval {
         didSet { defaults?.set(checkInterval.rawValue, forKey: Key.checkInterval) }
@@ -177,6 +184,7 @@ final class AppPreferences {
         keepsRunning = showsMenuBarIcon && (defaults?.object(forKey: Key.keepsRunning) as? Bool ?? true)
         dockVisibility = defaults?.string(forKey: Key.dockVisibility).flatMap(DockVisibility.init(rawValue:)) ?? .whileWindowOpen
         animatesMenuBarIcon = defaults?.object(forKey: Key.animatesMenuBarIcon) as? Bool ?? true
+        autoplaysMotion = defaults?.object(forKey: Key.autoplaysMotion) as? Bool ?? true
         checkInterval = defaults?.string(forKey: Key.checkInterval).flatMap(CheckInterval.init(rawValue:)) ?? .everyHour
         hasSeenStillRunningNote = defaults?.bool(forKey: Key.hasSeenStillRunningNote) ?? false
         appearance = defaults?.string(forKey: Key.appearance).flatMap(AppAppearance.init(rawValue:)) ?? .system
@@ -204,6 +212,7 @@ final class AppPreferences {
         static let keepsRunning = "keepsRunningWhenClosed"
         static let dockVisibility = "dockVisibility"
         static let animatesMenuBarIcon = "animatesMenuBarIcon"
+        static let autoplaysMotion = "autoplaysMotion"
         static let checkInterval = "checkInterval"
         static let hasSeenStillRunningNote = "hasSeenStillRunningNote"
         static let appearance = "appearance"

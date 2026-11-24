@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 import Testing
 @testable import Atlas
 
@@ -26,6 +27,19 @@ struct AppPreferencesTests {
         #expect(preferences.pushConfirmation == .overFifty)
         #expect(preferences.confirmsPriceIncreases)
         #expect(preferences.confirmsDiscarding)
+        #expect(preferences.autoplaysMotion)
+    }
+
+    @Test func movingArtworkStaysStillOnceTurnedOff() {
+        let defaults = defaults()
+        let preferences = AppPreferences(defaults: defaults)
+        #expect(preferences.autoplaysMotion)
+        preferences.autoplaysMotion = false
+        #expect(!AppPreferences(defaults: defaults).autoplaysMotion)
+        // Reduce Motion keeps it still whatever the setting.
+        #expect(AutoplayingLoop<EmptyView>.plays(setting: true, reduceMotion: false))
+        #expect(!AutoplayingLoop<EmptyView>.plays(setting: false, reduceMotion: false))
+        #expect(!AutoplayingLoop<EmptyView>.plays(setting: true, reduceMotion: true))
     }
 
     @Test func everySettingSurvivesARelaunch() {

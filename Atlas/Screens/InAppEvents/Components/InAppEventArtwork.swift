@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// One of an event's images filling its frame: a file on this Mac (a
-/// concept's, or art waiting in Review & Push), the App Store's (a spinner
+/// concept's, or art waiting in Review & Push; a loop plays muted on
+/// repeat, `AutoplayingLoop`), the App Store's (a spinner
 /// on the event's gradient while it downloads), or before there's one the
 /// gradient alone with soft shapes, so events are told apart at a glance.
 struct InAppEventArtwork: View {
@@ -27,14 +28,17 @@ struct InAppEventArtwork: View {
         ZStack {
             LinearGradient(colors: Self.colors(for: event), startPoint: .topLeading, endPoint: .bottomTrailing)
             switch shown {
-            case .file:
-                if let image = phase.image {
-                    Image(decorative: image, scale: 1)
-                        .resizable()
-                        .scaledToFill()
-                        .transition(.opacity)
-                } else if phase.isLoading {
-                    ImageLoadingTile(systemImage: nil, fill: .clear)
+            case let .file(path, isVideo):
+                // A loop plays over its first frame, muted on repeat.
+                AutoplayingLoop(url: isVideo ? URL(fileURLWithPath: path) : nil) { _ in
+                    if let image = phase.image {
+                        Image(decorative: image, scale: 1)
+                            .resizable()
+                            .scaledToFill()
+                            .transition(.opacity)
+                    } else if phase.isLoading {
+                        ImageLoadingTile(systemImage: nil, fill: .clear)
+                    }
                 }
             case let .remote(url):
                 CachedRemoteImage(url: url, maxPixelSize: maxPixel) { phase in

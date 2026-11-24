@@ -5,8 +5,9 @@
 
 import SwiftUI
 
-/// An event image file on this Mac filling its frame (a video's first
-/// frame): a spinner while it's read, a glyph when it can't be.
+/// An event image file on this Mac filling its frame (a video plays muted
+/// on repeat over its first frame): a spinner while it's read, a glyph
+/// when it can't be.
 struct InAppEventArtworkThumbnailFill: View {
     let path: String
     let isVideo: Bool
@@ -15,7 +16,7 @@ struct InAppEventArtworkThumbnailFill: View {
     @State private var phase = ImageLoadPhase.loading
 
     var body: some View {
-        ZStack {
+        AutoplayingLoop(url: isVideo ? URL(fileURLWithPath: path) : nil) { _ in
             Palette.fill2
             if let image = phase.image {
                 Image(decorative: image, scale: 1)

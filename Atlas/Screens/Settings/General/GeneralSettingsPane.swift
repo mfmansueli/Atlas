@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// Settings → General (board 48): the appearance, Atlas in the menu bar
+/// Settings → General (board 48): the appearance and moving artwork, Atlas in the menu bar
 /// and the Dock (board 46), how often it checks App Store Connect, and the
 /// confirmations before pushing.
 struct GeneralSettingsPane: View {
@@ -27,6 +27,14 @@ struct GeneralSettingsPane: View {
                     .fixedSize()
                     .accessibilityIdentifier("settings.appearance")
                 }
+                Toggle(isOn: $preferences.autoplaysMotion) {
+                    SettingsRowLabel(
+                        title: "Play moving artwork",
+                        caption: String(localized: "Event and header loops play muted on repeat, as on the App Store. Follows Reduce Motion.")
+                    )
+                }
+                .toggleStyle(.switch)
+                .accessibilityIdentifier("settings.autoplaysMotion")
             }
             GeneralMenuBarSection(preferences: preferences, loginItem: loginItem)
             Section {
