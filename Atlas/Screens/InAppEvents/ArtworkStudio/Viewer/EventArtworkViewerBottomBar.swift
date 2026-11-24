@@ -126,28 +126,15 @@ struct EventArtworkViewerBottomBar: View {
         .accessibilityIdentifier("events.art.viewer.film.\(concept.id)")
     }
 
+    /// The language of the App Store's text: the one language picker
+    /// (README-DS §12), compact, dark like the viewer.
+    @ViewBuilder
     private var languages: some View {
-        HStack(spacing: 4) {
-            ForEach(locales, id: \.self) { code in
-                let isOn = code == viewer.locale
-                Button {
-                    flow.viewer?.locale = code
-                } label: {
-                    Text(StoreLocaleCatalog.locale(code: code)?.shortName ?? code)
-                        .font(.callout.weight(isOn ? .semibold : .regular))
-                        .foregroundStyle(isOn ? EventArtworkViewerStyle.selectedText : .white)
-                        .padding(.horizontal, 9)
-                        .frame(height: 22)
-                        .background(isOn ? Color.white.opacity(0.9) : Color.white.opacity(0.12), in: Capsule())
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
-                .accessibilityIdentifier("events.art.viewer.locale.\(code)")
+        if let model = LanguageBarModel.plain(codes: locales, current: viewer.locale) {
+            LanguagePickerButton(model: model, style: .compact, identifier: "events.art.viewer.language") { locale in
+                flow.viewer?.locale = locale.code
             }
+            .environment(\.colorScheme, .dark)
         }
-        .fixedSize()
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text("Language of the text"))
     }
 }

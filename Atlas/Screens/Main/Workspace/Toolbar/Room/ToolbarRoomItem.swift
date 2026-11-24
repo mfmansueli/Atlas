@@ -19,15 +19,13 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     case autopilotLabel
     /// Review & Push's label, beyond its icon and count.
     case reviewLabel
-    /// The language picker the text sections put beside the title.
-    case languagePicker
     /// Pro, while the person is on Free.
     case proButton
 
     /// An item of its own, with a gap beside it; a label grows its button.
     var isItem: Bool {
         switch self {
-        case .languagePicker, .proButton: true
+        case .proButton: true
         case .title, .sectionMenu, .autopilotLabel, .reviewLabel: false
         }
     }
@@ -36,7 +34,7 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     var isLabel: Bool {
         switch self {
         case .autopilotLabel, .reviewLabel: true
-        case .title, .sectionMenu, .languagePicker, .proButton: false
+        case .title, .sectionMenu, .proButton: false
         }
     }
 
@@ -44,7 +42,7 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     var isLead: Bool {
         switch self {
         case .title, .sectionMenu: true
-        case .autopilotLabel, .reviewLabel, .languagePicker, .proButton: false
+        case .autopilotLabel, .reviewLabel, .proButton: false
         }
     }
 }

@@ -5,25 +5,29 @@
 
 import SwiftUI
 
-/// The language bar's menu: Find a language over the list, then languages
-/// with suggestions first, each with its count, then the ones up to date;
-/// a language the App Store doesn't have yet says New page. A popover,
-/// because a menu can't show badges.
+/// The language picker's menu (README-DS §12): Find a language at the top
+/// with the total, focused when the menu opens; then languages with
+/// suggestions first, each with its count (New page where the App Store has
+/// no page yet), the ones up to date with a ✓, and, where some show the
+/// primary language's content, those last ("Uses English (U.S.)
+/// screenshots"). Typing filters at once and keeps the groups; closing the
+/// menu clears it. A popover, because a menu can't show badges.
 struct LanguageMenu: View {
     let model: LanguageBarModel
     let onSelect: (StoreLocale) -> Void
-    let onAcceptAll: () -> Void
+    /// Accept All Languages…, last; nil where the switch has none.
+    var onAcceptAll: (() -> Void)?
 
     /// What Find a language has; it starts empty each time the menu opens.
     @State private var query = ""
     @FocusState private var findsLanguage: Bool
 
     var body: some View {
-        let shown = model.matchingEntries(query)
+        let groups = model.menuGroups(matching: query)
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 find
-                if shown.isEmpty {
+                if groups.isEmpty {
                     Text("No language matches “\(query.trimmingCharacters(in: .whitespaces))”.", comment: "kind:empty-state")
                         .atlasTextStyle(.callout)
                         .foregroundStyle(Palette.label2)
@@ -31,22 +35,25 @@ struct LanguageMenu: View {
                         .padding(.vertical, Spacing.small)
                         .accessibilityIdentifier("languageBar.menu.none")
                 }
-                group(String(localized: "Suggestions to review"), shown.filter { $0.count > 0 })
-                group(String(localized: "Up to date"), shown.filter { $0.count == 0 })
-                Divider()
-                    .padding(.vertical, 5)
-                    .padding(.horizontal, Spacing.xxSmall)
-                Button(action: onAcceptAll) {
-                    Label(model.menuAcceptAllTitle, systemImage: "sparkles")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(minHeight: 28)
-                        .padding(.horizontal, Spacing.small)
-                        .contentShape(Rectangle())
+                ForEach(groups) { group in
+                    section(group)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(Palette.accentText)
-                .disabled(model.totalCount == 0)
-                .accessibilityIdentifier("languageBar.menu.acceptAll")
+                if model.countsSuggestions, let onAcceptAll {
+                    Divider()
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, Spacing.xxSmall)
+                    Button(action: onAcceptAll) {
+                        Label(model.menuAcceptAllTitle, systemImage: "sparkles")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(minHeight: 28)
+                            .padding(.horizontal, Spacing.small)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Palette.accentText)
+                    .disabled(model.totalCount == 0)
+                    .accessibilityIdentifier("languageBar.menu.acceptAll")
+                }
             }
             .padding(Spacing.xSmall)
         }
@@ -54,7 +61,9 @@ struct LanguageMenu: View {
         .frame(maxHeight: 460)
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityIdentifier("languageBar.menu")
-        .onAppear { findsLanguage = true }
+        .defaultFocus($findsLanguage, true)
+        .task { findsLanguage = true }
+        .onDisappear { query = "" }
     }
 
     /// Find a language, with how many there are (board “sp-menu-find”).
@@ -67,6 +76,7 @@ struct LanguageMenu: View {
             TextField(String(localized: "Find a language", comment: "kind:placeholder"), text: $query)
                 .textFieldStyle(.plain)
                 .focused($findsLanguage)
+                .onSubmit(selectOnlyMatch)
                 .accessibilityIdentifier("languageBar.menu.find")
             Text(model.countText)
                 .atlasTextStyle(.subheadline)
@@ -83,18 +93,27 @@ struct LanguageMenu: View {
         .padding(.bottom, Spacing.xSmall)
     }
 
+    /// Return on Find a language opens the one language it found.
+    private func selectOnlyMatch() {
+        let found = model.matchingEntries(query)
+        guard found.count == 1, let only = found.first else { return }
+        onSelect(only.locale)
+    }
+
     @ViewBuilder
-    private func group(_ title: String, _ entries: [LanguageBarEntry]) -> some View {
-        if !entries.isEmpty {
+    private func section(_ group: LanguageMenuGroup) -> some View {
+        if let title = group.title {
             Text(title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Palette.label2)
                 .padding(.horizontal, Spacing.small)
                 .padding(.top, 7)
                 .padding(.bottom, 3)
-            ForEach(entries) { entry in
-                row(entry)
-            }
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("languageBar.menu.group.\(group.kind.rawValue)")
+        }
+        ForEach(group.entries) { entry in
+            row(entry)
         }
     }
 
@@ -118,11 +137,20 @@ struct LanguageMenu: View {
                     Pill(text: String(localized: "New page"), style: .accent)
                         .fixedSize()
                 }
-                SuggestionBadge(count: entry.count)
-                if entry.count == 0 {
-                    Image(systemName: "checkmark")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Palette.label3)
+                if let note = entry.note {
+                    Text(note)
+                        .font(.footnote)
+                        .foregroundStyle(Palette.label2)
+                        .lineLimit(1)
+                        .fixedSize()
+                }
+                if model.countsSuggestions {
+                    SuggestionBadge(count: entry.count)
+                    if entry.count == 0, entry.note == nil {
+                        Image(systemName: "checkmark")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Palette.label3)
+                    }
                 }
             }
             .frame(minHeight: 28)
@@ -135,7 +163,7 @@ struct LanguageMenu: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(entry.accessibilityText))
+        .accessibilityLabel(Text(entry.accessibilityText(countsSuggestions: model.countsSuggestions)))
         .accessibilityAddTraits(entry.locale == model.current ? [.isButton, .isSelected] : .isButton)
         .accessibilityIdentifier("languageBar.menu.\(entry.locale.code)")
     }

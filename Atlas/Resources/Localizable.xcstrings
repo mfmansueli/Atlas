@@ -1375,9 +1375,6 @@
     "%@ needs both a header and a message." : {
       "comment" : "kind:error"
     },
-    "%@ not written yet" : {
-      "comment" : "kind:suggestion-title"
-    },
     "%@ now goes to everyone with automatic updates." : {
       "comment" : "kind:description"
     },
@@ -1794,9 +1791,6 @@
     },
     "%@ suggested as not collected" : {
       "comment" : "kind:banner"
-    },
-    "%@ suggested by %@" : {
-      "comment" : "kind:suggestion-title"
     },
     "%@ suggested this text. Atlas’s check stopped it." : {
       "comment" : "kind:error"
@@ -2479,12 +2473,6 @@
     "%@, not published yet" : {
       "comment" : "kind:accessibility-label"
     },
-    "%@, not pushed" : {
-      "comment" : "kind:other"
-    },
-    "%@, not written" : {
-      "comment" : "kind:other"
-    },
     "%@, on the phone’s screen: ‘%@’ — %@. It’s the app’s interface; check it suits this placement." : {
       "comment" : "kind:description"
     },
@@ -2493,9 +2481,6 @@
     },
     "%@, prices loading" : {
       "comment" : "kind:accessibility-label"
-    },
-    "%@, revision to review" : {
-      "comment" : "kind:other"
     },
     "%@, same as the default page" : {
       "comment" : "kind:description"
@@ -2508,9 +2493,6 @@
     },
     "%@, sorted" : {
       "comment" : "kind:accessibility-label"
-    },
-    "%@, suggestion to review" : {
-      "comment" : "kind:other"
     },
     "%@, the size %@ needs" : {
       "comment" : "kind:sheet-body"
@@ -3282,9 +3264,6 @@
     },
     "%lld languages" : {
       "comment" : "kind:description"
-    },
-    "%lld languages have a suggestion" : {
-      "comment" : "kind:suggestion-title"
     },
     "%lld languages have no captions yet, so they keep the default page’s screenshots." : {
       "comment" : "kind:description"
@@ -4338,9 +4317,6 @@
     },
     "1 language" : {
       "comment" : "kind:description"
-    },
-    "1 language has a suggestion" : {
-      "comment" : "kind:suggestion-title"
     },
     "1 language has no captions yet, so it keeps the default page’s screenshots." : {
       "comment" : "kind:description"
@@ -12157,14 +12133,8 @@
     "Every language reviewed" : {
       "comment" : "kind:section-title"
     },
-    "Every language uses the default page’s text and screenshots" : {
-      "comment" : "kind:suggestion-title"
-    },
     "Every language with its own screenshots (%lld)" : {
       "comment" : "kind:sheet-title"
-    },
-    "Every language written or accepted" : {
-      "comment" : "kind:suggestion-title"
     },
     "Every language’s image is drawn and checked. Every caption is in." : {
       "comment" : "kind:description"
@@ -14623,6 +14593,9 @@
     "Language: %@. %@. Choose another language." : {
       "comment" : "kind:description"
     },
+    "Language: %@. Choose another language." : {
+      "comment" : "kind:description"
+    },
     "Languages" : {
       "comment" : "kind:section-title"
     },
@@ -16621,9 +16594,6 @@
     "No suggestions to review" : {
       "comment" : "kind:other"
     },
-    "No suggestions waiting · %@" : {
-      "comment" : "kind:suggestion-title"
-    },
     "No suggestions yet. They show here as assistants send them." : {
       "comment" : "kind:sheet-body"
     },
@@ -18282,9 +18252,6 @@
     },
     "Own screenshots in %lld of %lld languages" : {
       "comment" : "kind:description"
-    },
-    "Own text in %@ · %@" : {
-      "comment" : "kind:suggestion-title"
     },
     "PNG or JPEG, %@, no transparency." : {
       "comment" : "kind:sheet-body"
@@ -26074,6 +26041,9 @@
     "Uses %@" : {
       "comment" : "kind:placeholder"
     },
+    "Uses %@ screenshots" : {
+      "comment" : "kind:section-title"
+    },
     "Uses Atlas’s data and what you attach or paste. Sees your code only if you give access." : {
       "comment" : "kind:description"
     },
@@ -26088,6 +26058,9 @@
     },
     "Uses the assistant connected in AI Assistants, on its own plan. No API key here." : {
       "comment" : "kind:description"
+    },
+    "Uses the default page" : {
+      "comment" : "kind:section-title"
     },
     "Uses the default page’s captures. No recapture." : {
       "comment" : "kind:progress-step"
@@ -29415,9 +29388,6 @@
     },
     "the only stop" : {
       "comment" : "kind:other"
-    },
-    "the others use the default page’s text and screenshots" : {
-      "comment" : "kind:suggestion-title"
     },
     "the page’s HTML, as a string" : {
       "comment" : "kind:other"

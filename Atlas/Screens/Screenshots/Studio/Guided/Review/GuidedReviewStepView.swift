@@ -19,8 +19,6 @@ struct GuidedReviewStepView: View {
     /// header loop.
     @State private var width: CGFloat = 640
 
-    private static let segmentLanguages = 4
-
     var body: some View {
         let parts = studio.guidedParts
         let part = studio.guidedShownPart
@@ -148,32 +146,16 @@ struct GuidedReviewStepView: View {
         }
     }
 
+    /// The one language picker (README-DS §12), compact; its menu lists
+    /// first the languages most likely to show a problem.
     @ViewBuilder
     private func languagePicker(_ part: GuidedReviewPart) -> some View {
         let locales = part == .appPreview ? studio.watchLocales : plan.localeCodes
         let shown = part == .appPreview ? (studio.watchedPreview?.locale ?? plan.primaryLocale) : studio.guidedReviewLocale
-        HStack(spacing: Spacing.small) {
-            if locales.count > 1 {
-                let segments = segmentLocales(locales)
-                let titles = GuidedPreviewLocales.titles(locales)
-                StudioSegmentedControl(
-                    label: String(localized: "Language"),
-                    options: segments.map { .init(value: $0, title: titles[$0] ?? $0, key: $0) },
-                    selection: Binding { shown } set: { show(locale: $0, part: part) },
-                    identifier: "autopilot.guided.review.language"
-                )
-                let more = locales.filter { !segments.contains($0) }
-                if !more.isEmpty {
-                    Menu(more.contains(shown) ? titles[shown] ?? shown : String(localized: "\(more.count) more")) {
-                        ForEach(more, id: \.self) { code in
-                            Button(StoreLocaleCatalog.locale(code: code)?.name ?? code) { show(locale: code, part: part) }
-                        }
-                    }
-                    .menuStyle(.button)
-                    .controlSize(.regular)
-                    .fixedSize()
-                    .accessibilityIdentifier("autopilot.guided.review.moreLanguages")
-                }
+        let picked = GuidedPreviewLocales.pick(from: locales, primary: plan.primaryLocale)
+        if let model = LanguageBarModel.plain(codes: picked + locales.filter { !picked.contains($0) }, current: shown) {
+            LanguagePickerButton(model: model, style: .compact, identifier: "autopilot.guided.review.language") { locale in
+                show(locale: locale.code, part: part)
             }
         }
     }
@@ -199,12 +181,6 @@ struct GuidedReviewStepView: View {
                 identifier: "autopilot.guided.review.previewDevice"
             )
         }
-    }
-
-    /// The primary language and three that test the look (long, CJK,
-    /// right to left) as segments; the rest go in the menu.
-    private func segmentLocales(_ locales: [String]) -> [String] {
-        Array(GuidedPreviewLocales.pick(from: locales, primary: plan.primaryLocale).prefix(Self.segmentLanguages))
     }
 
     private func show(locale: String, part: GuidedReviewPart) {

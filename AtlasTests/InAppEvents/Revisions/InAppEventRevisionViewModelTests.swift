@@ -42,7 +42,8 @@ struct InAppEventRevisionViewModelTests {
         let event = try #require(model.selectedEvent)
         let english = try #require(model.languages(of: event).first { $0.code == "en-US" })
         #expect(english.state == .revision)
-        #expect(english.accessibilityText.hasSuffix("revision to review"))
+        // A revision is one suggestion to review in the language menu.
+        #expect(model.languageBarModel(of: event)?.entries.first { $0.locale.code == "en-US" }?.count == 1)
         #expect(model.languages(of: event).first { $0.code == "de-DE" }?.state == .written)
         #expect(model.revision?.locale == "en-US")
         #expect(model.suggestion == nil)

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redesign — states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 3792px; height: 6928px; box-sizing: border-box; padding: 48px; background: #E3E3E8; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif; color: #1D1D1F; display: grid; grid-template-columns: repeat(3, 1200px); gap: 48px; align-content: start">
+  <sc-for list="{{tiles}}" as="t" hint-placeholder-count="23">
+    <section style="display: flex; flex-direction: column; gap: 12px" aria-label="{{t.title}}">
+      <div style="height: 20px; display: flex; align-items: baseline; gap: 10px; font-size: 15px; line-height: 20px"><b>{{t.title}}</b><span style="color: #5F5F66; font-size: 13px">{{t.note}}</span></div>
+      <div style="width: 1200px; height: 780px; border-radius: 22px; overflow: hidden; box-shadow: 0 0 0 .5px rgba(0,0,0,.2), 0 18px 50px rgba(0,0,0,.16)">
+        <dc-import name="Redesign" scene="{{t.scene}}" appearance="{{t.ap}}" controls="no" board="app" frame-h="{{t.h}}" hint-size="1200px,780px"></dc-import>
+      </div>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3792,"height":6928}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const T = (scene, title, note, ap) => ({ scene, title, note, ap: ap || 'light', h: 780 });
+    return { tiles: [
+      T("ov", "Overview · what people see, and what’s waiting", "The App Store page, each part linked to the section that edits it; 65 suggestions by section"),
+      T("sp", "Store Page · English", "The language picker says how many suggestions are here; Accept All Languages sits right beside it; the preview shows the page with the suggestions"),
+      T("sp-menu", "The language menu", "Find a language at the top, with the total; languages with suggestions first, with their count; new pages marked; up-to-date languages ticked"),
+      T("sp-menu-find", "Find a language", "Typing filters the list at once; groups stay; “No language matches” when nothing does. Approved 24 November"),
+      T("sp-all", "Accept All Languages · see it all first", "Every suggestion in every language, before and after; untick a language or a single field"),
+      T("sp-all-pick", "Untick Hebrew and one field; Don’t ask again", "23 of 32 selected in 5 languages; the next Accept All Languages won’t ask"),
+      T("sp-done", "Accepted", "Badges drop to what’s left, Review & Push shows 23, Undo in the toast; “Accepts right away” with Ask First"),
+      T("sp-auto", "Don’t ask again is on", "Accept All Languages accepts every language at once; the line under it says so and offers Ask First"),
+      T("sp-he", "A new page: Hebrew", "Not on the App Store yet; accepting creates the page when you push; right to left in the editor and the preview"),
+      T("sh", "Screenshots · German", "Suggested captions drawn on the screenshots themselves, with the same language picker and Accept All Languages"),
+      T("sh-menu", "Screenshots · language menu", "The same menu, with caption suggestions per language"),
+      T("sh-menu", "Screenshots · language menu · dark", "Same picker in dark; languages that reuse English (U.S.) screenshots are grouped last", "dark"),
+      T("sh-sheet", "Accept All Languages · captions", "Before and after for each screenshot, in every language"),
+      T("sh-all", "Screenshots · all languages", "Every language at a glance; badges and purple rings where a caption is suggested"),
+      T("in", "App Information · General", "Every page in the menu says what’s waiting; what this page changes on the App Store, and a preview"),
+      T("in-age", "App Information · Age Rating", "Questions Apple added, answered from the code; one line per suggestion"),
+      T("in-ax", "App Information · Accessibility", "iPhone and Apple Watch each show their own count"),
+      T("in-all", "Accept All Pages", "The same sheet for App Information, by page instead of by language"),
+      T("pr", "Pricing · Prices", "Each product with its U.S. price and how its 175 prices are set; suggestions inside the product; what people pay"),
+      T("pr-open", "Pricing · the countries behind a suggestion", "Now and suggested, per country; the preview shows Brazil with the suggestions"),
+      T("pr-ret", "Pricing · Retention", "The Retention tab has its own badge; the German message is too long and a shorter one is suggested"),
+      T("review", "Review & Push after accepting", "Grouped by section and language: what will be sent"),
+      T("ov", "Overview · dark", "", "dark")
+    ] };
+  }
+}
+</script>
+</body>
+</html>

@@ -5,8 +5,7 @@
 
 import SwiftUI
 
-/// Reports a whole toolbar item's width (`reportsToolbarRoom(_:)`): the
-/// language picker, Pro.
+/// Reports a whole toolbar item's width (`reportsToolbarRoom(_:)`): Pro.
 struct ToolbarRoomReporter: ViewModifier {
     let item: ToolbarRoomItem
 

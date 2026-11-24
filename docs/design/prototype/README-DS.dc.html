@@ -360,6 +360,15 @@ body{margin:0}
 <li><b>SwiftUI:</b> <span class="m">List</span> with <span class="m">.safeAreaInset(edge: .bottom)</span> for the footer; read the height with <span class="m">GeometryReader</span> or <span class="m">onGeometryChange</span> to switch the compact rules; the Help button is a <span class="m">Menu</span> with <span class="m">.menuStyle(.button)</span>. Board <b>71</b> shows 780, 700, 600 and 560 pt.</li>
 </ol>
 
+<h2>12 · Language picker (approved 24 November)</h2>
+<ol>
+<li><b>One picker, not tabs.</b> Store Page and Screenshots use one pop-up button for the language; it changes the editor and the preview together. Tabs (English | Spanish | U.K.) don’t scale past a few languages and are replaced.</li>
+<li><b>The button says what’s waiting:</b> the two-letter code, the full name (“English (U.S.)”, “Spanish (Spain)”), and under it “5 suggestions here” in purple. Beside it: <b>‹ ›</b> for the previous and next language (⌘[ and ⌘], shown in their help tags), Accept All Languages with the total, and “27 more in 5 other languages”.</li>
+<li><b>The menu is grouped:</b> <b>Suggestions to review</b> first, each language with its purple count and <b>New page</b> where the App Store has no page yet; then <b>Up to date</b> with a check. Screenshots adds <b>Uses English (U.S.) screenshots</b> for languages that reuse the primary set. Accept All Languages… closes the menu.</li>
+<li><b>Find a language</b> sits at the top of the menu with the total (“15 languages”), focused when the menu opens. Typing filters by name or code at once and keeps the groups; nothing found shows “No language matches”. Closing the menu clears it.</li>
+<li><b>SwiftUI:</b> a <span class="m">Menu</span> with a custom label, or a popover with a <span class="m">List</span> and a <span class="m">.searchable</span>-style field when there are more than 8 languages; sections for the groups; <span class="m">.keyboardShortcut("[")</span> and <span class="m">("]")</span> on the arrows. Scenes <b>sp-menu</b>, <b>sp-menu-find</b> and <b>sh-menu</b> in Redesign; tiles in “Redesign · every state”.</li>
+</ol>
+
 <h2>For Claude Code: building it</h2>
 <ul>
 <li>An asset catalogue with Color Sets named as the tokens above (Any, Dark, and High Contrast for accent and aiFill), and <span class="m">AccentColor</span> = accent.</li>
@@ -372,7 +381,7 @@ body{margin:0}
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":16300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":16900}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

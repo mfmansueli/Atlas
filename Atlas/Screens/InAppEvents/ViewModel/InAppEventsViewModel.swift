@@ -159,20 +159,6 @@ final class InAppEventsViewModel {
         selectedEvent.map { languages(of: $0).count { $0.state == .suggested || $0.state == .revision } } ?? 0
     }
 
-    /// "9 languages suggested by Claude Code".
-    var suggestionsTitle: String {
-        guard let event = selectedEvent else { return "" }
-        let count = suggestedCount
-        guard count > 0 else {
-            let missing = languages(of: event).count { $0.state == .missing }
-            return missing == 0 ? String(localized: "Every language written or accepted") : String(localized: "\(ReviewText.languages(missing)) not written yet")
-        }
-        let source = store.open(for: app.id, eventID: event.id).first?.source ?? ""
-        return source.isEmpty
-            ? String(localized: "\(ReviewText.languages(count)) suggested")
-            : String(localized: "\(ReviewText.languages(count)) suggested by \(source)")
-    }
-
     // MARK: - Texts
 
     /// The suggestion showing for the selected event and language: only

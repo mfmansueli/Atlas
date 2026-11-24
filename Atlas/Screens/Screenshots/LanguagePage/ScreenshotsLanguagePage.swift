@@ -45,7 +45,7 @@ struct ScreenshotsLanguagePage: View {
 
     private var languageBar: some View {
         let model = viewModel.languageBarModel(acceptsRightAway: preferences.acceptsAllWithoutAsking)
-        return LanguageBar(model: model, showsProChip: pro.isFree && model.withSuggestions.count > 1, picksInToolbar: true) { locale in
+        return LanguageBar(model: model, showsProChip: pro.isFree && model.withSuggestions.count > 1) { locale in
             viewModel.pageLocale = locale
             viewModel.pageShowsAll = false
         } onAcceptAll: {

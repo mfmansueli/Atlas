@@ -49,12 +49,23 @@ extension ScreenshotsViewModel {
         proposedCaptions.first { $0.locale == locale && $0.slot == slot }
     }
 
+    /// The language bar: each language with its suggested captions; the
+    /// ones without screenshots of their own on the device in view are
+    /// listed last, under "Uses English (U.S.) screenshots".
     func languageBarModel(acceptsRightAway: Bool) -> LanguageBarModel {
         let counts = Dictionary(grouping: proposedCaptions, by: \.locale).mapValues(\.count)
+        let primary = context.primaryLocale.code
         return LanguageBarModel(
-            entries: pageLocales.map { LanguageBarEntry(locale: $0, count: counts[$0.code] ?? 0) },
+            entries: pageLocales.map { locale in
+                LanguageBarEntry(
+                    locale: locale,
+                    count: counts[locale.code] ?? 0,
+                    usesPrimary: locale.code != primary && ownCount(locale: locale.code, displayType: displayType) == 0
+                )
+            },
             current: currentPageLocale,
-            acceptsRightAway: acceptsRightAway
+            acceptsRightAway: acceptsRightAway,
+            reuseGroupTitle: String(localized: "Uses \(primaryLocaleName) screenshots", comment: "kind:section-title")
         )
     }
 

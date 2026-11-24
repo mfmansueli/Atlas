@@ -15,9 +15,6 @@ enum RetentionLanguages {
         .korean, .chineseSimplified, .chineseTraditional, .russian, .turkish, .polish, .hebrew, .hindi,
     ]
 
-    /// How many the language picker shows before All languages.
-    static let pickerCount = 5
-
     /// `codes` as locales, `source` first and the rest in the standard
     /// order, then alphabetically; the standard list when there are none.
     static func languages(codes: [String], source: StoreLocale) -> [StoreLocale] {

@@ -38,8 +38,10 @@ struct InAppEventPage: View {
                             InAppEventReviewList(viewModel: viewModel, event: event, items: reviewItems, warnings: warnings, actions: actions)
                         }
                     }
-                    if event.state.isEditable, languages.count > 1 || viewModel.suggestedCount > 0 {
-                        InAppEventLanguageBar(viewModel: viewModel, languages: languages)
+                    if event.state.isEditable, languages.count > 1 || viewModel.suggestedCount > 0,
+                       let model = viewModel.languageBarModel(of: event)
+                    {
+                        InAppEventLanguageBar(viewModel: viewModel, model: model)
                     }
                     if let suggestion {
                         InAppEventSuggestionCard(

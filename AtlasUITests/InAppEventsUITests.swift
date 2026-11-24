@@ -60,10 +60,11 @@ final class InAppEventsUITests: XCTestCase {
         XCTAssertTrue(element("events.editor").waitForExistence(timeout: 15))
         XCTAssertTrue(element("events.page.name").label.contains("Winter Reflection 2026"))
         XCTAssertEqual(text(of: element("events.status")), "Draft")
-        XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
+        // One language picker, not a chip per language (README-DS §12).
+        XCTAssertEqual(element("languageBar.picker").label, "Language: German. 1 suggestion here. Choose another language.")
+        XCTAssertEqual(text(of: element("languageBar.rest")), "8 more in 8 other languages")
         XCTAssertTrue(element("events.suggestion").exists)
         XCTAssertEqual(text(of: element("events.field.name.suggested")), "Winter-Reflexion in 31 Tagen")
-        XCTAssertEqual(element("events.language.de-DE").label, "German, suggestion to review")
         // The card's texts are on its art button, for VoiceOver.
         let card = element("events.preview.card").value as? String ?? ""
         XCTAssertTrue(card.hasPrefix("Winter-Reflexion in 31 Tagen"), card)
@@ -79,11 +80,14 @@ final class InAppEventsUITests: XCTestCase {
         let accepted = NSPredicate(format: "value == %@", "Winter-Reflexion in 31 Tagen")
         let written = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: accepted, object: name)], timeout: 10)
         XCTAssertEqual(written, .completed, "\(String(describing: name.value))")
-        XCTAssertEqual(text(of: element("events.languages.title")), "8 languages suggested by Claude Code")
-        XCTAssertEqual(element("events.language.de-DE").label, "German, not pushed")
+        XCTAssertEqual(element("languageBar.picker").label, "Language: German. Nothing to review here. Choose another language.")
+        XCTAssertEqual(text(of: element("languageBar.rest")), "8 more in 8 other languages")
+        element("languageBar.picker").click()
+        XCTAssertEqual(element("languageBar.menu.de-DE").label, "German, nothing to review, Not pushed")
+        app.typeKey(.escape, modifierFlags: [])
         app.buttons["Undo"].firstMatch.click()
         XCTAssertTrue(element("events.suggestion").waitForExistence(timeout: 10))
-        XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
+        XCTAssertEqual(element("languageBar.picker").label, "Language: German. 1 suggestion here. Choose another language.")
     }
 
     /// Apple's In-App Events page: a specific price is rejected. The field
@@ -124,14 +128,15 @@ final class InAppEventsUITests: XCTestCase {
 
     func testAcceptAllLanguagesAcceptsEverySuggestion() {
         app.launch(debugScene: "ev")
-        let acceptAll = element("events.acceptAll")
+        let acceptAll = element("languageBar.acceptAll")
         XCTAssertTrue(acceptAll.waitForExistence(timeout: 15))
+        XCTAssertEqual(acceptAll.label, "Accept all languages: 9 suggestions in 9 languages, accepts right away")
         acceptAll.click()
-        let title = element("events.languages.title")
-        let done = NSPredicate(format: "value == %@ OR label == %@", "Every language written or accepted", "Every language written or accepted")
-        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: done, object: title)], timeout: 10), .completed, text(of: title))
+        let done = NSPredicate(format: "label == %@", "Every language is reviewed")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: done, object: acceptAll)], timeout: 10), .completed, acceptAll.label)
         XCTAssertTrue(app.staticTexts["Accepted 9 languages for Winter Reflection Challenge. They’re waiting in Review & Push, top right."].exists)
-        XCTAssertFalse(element("events.acceptAll").exists)
+        XCTAssertFalse(acceptAll.isEnabled)
+        XCTAssertFalse(element("languageBar.rest").exists)
         attach("ev-accepted")
     }
 
@@ -143,17 +148,17 @@ final class InAppEventsUITests: XCTestCase {
         XCTAssertTrue(dismissAll.waitForExistence(timeout: 15))
         XCTAssertEqual(dismissAll.label, "Dismiss All, 9 suggested")
         dismissAll.click()
-        let title = element("events.languages.title")
-        let dismissed = NSPredicate(format: "value ENDSWITH %@ OR label ENDSWITH %@", "not written yet", "not written yet")
-        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: dismissed, object: title)], timeout: 10), .completed, text(of: title))
+        let picker = element("languageBar.picker")
+        let dismissed = NSPredicate(format: "label == %@", "Language: German. Nothing to review here. Choose another language.")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: dismissed, object: picker)], timeout: 10), .completed, picker.label)
         XCTAssertTrue(app.staticTexts["Dismissed 9 languages for Winter Reflection Challenge."].exists)
         XCTAssertFalse(element("events.dismissAll").exists)
-        XCTAssertFalse(element("events.acceptAll").exists)
+        XCTAssertFalse(element("languageBar.acceptAll").isEnabled)
         XCTAssertFalse(element("events.suggestion").exists)
         attach("ev-dismissed")
         app.buttons["Undo"].firstMatch.click()
         XCTAssertTrue(element("events.suggestion").waitForExistence(timeout: 10))
-        XCTAssertEqual(text(of: element("events.languages.title")), "9 languages suggested by Claude Code")
+        XCTAssertEqual(text(of: element("languageBar.rest")), "8 more in 8 other languages")
         XCTAssertTrue(element("events.dismissAll").exists)
     }
 

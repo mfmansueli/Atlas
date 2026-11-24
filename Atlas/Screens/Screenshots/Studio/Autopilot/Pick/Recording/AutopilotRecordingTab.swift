@@ -77,18 +77,12 @@ struct AutopilotRecordingTab: View {
                 .fixedSize()
                 .accessibilityIdentifier("autopilot.recording.device")
             }
-            if let current {
-                let locales = studio.pickRecordingLocales(run, display: current.displayType)
-                if locales.count > 1 {
-                    FittingSegmentedPicker(
-                        label: String(localized: "Language"),
-                        options: locales.map { ($0, StoreLocaleCatalog.locale(code: $0)?.shortName ?? $0) },
-                        selection: Binding(get: { current.locale }, set: {
-                            studio.showRecording(AutopilotRecordingTarget(displayType: current.displayType, locale: $0))
-                        })
-                    )
-                    .fixedSize()
-                    .accessibilityIdentifier("autopilot.recording.language")
+            // The one language picker (README-DS §12), compact.
+            if let current,
+               let model = LanguageBarModel.plain(codes: studio.pickRecordingLocales(run, display: current.displayType), current: current.locale)
+            {
+                LanguagePickerButton(model: model, style: .compact, identifier: "autopilot.recording.language") { locale in
+                    studio.showRecording(AutopilotRecordingTarget(displayType: current.displayType, locale: locale.code))
                 }
             }
         }
