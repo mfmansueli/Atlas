@@ -22,7 +22,8 @@ enum PurchaseReviewScreenshotPushError: LocalizedError, Equatable {
         case let .fileMissing(fileName):
             String(localized: "“\(fileName)” isn’t on this Mac anymore. Choose the review screenshot again.")
         case let .refused(fileName, details):
-            String(localized: "App Store Connect couldn’t process “\(fileName)”\(details.map { ": \($0)" } ?? ".")")
+            details.map { String(localized: "App Store Connect couldn’t process “\(fileName)”: \($0)", comment: "kind:error") }
+                ?? String(localized: "App Store Connect couldn’t process “\(fileName)”.", comment: "kind:error")
         case let .timedOut(fileName):
             String(localized: "App Store Connect was still processing “\(fileName)”. Push again later to check it.")
         }

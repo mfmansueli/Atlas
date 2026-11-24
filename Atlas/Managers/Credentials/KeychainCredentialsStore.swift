@@ -15,7 +15,7 @@ struct KeychainCredentialsStore: CredentialsStore {
     private let items: KeychainItems
 
     init(service: String = "Atlas.AppStoreConnectAPIKey") {
-        items = KeychainItems(service: service, label: "Atlas — App Store Connect API key")
+        items = KeychainItems(service: service, label: String(localized: "Atlas — App Store Connect API key", comment: "kind:description"))
     }
 
     func loadAll() throws -> [AppStoreConnectCredentials] {

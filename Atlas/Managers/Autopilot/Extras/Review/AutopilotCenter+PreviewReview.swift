@@ -54,7 +54,7 @@ extension AutopilotCenter {
             guard run.stage == .watchPreview, run.previewReview?.isBusy != true, !Self.loopIsBusy(run) else { return }
             run.stage = .ready
             run.finishedAt = now()
-            let preview = run.previewReview.map { "App Preview v\($0.version)" }
+            let preview = run.previewReview.map { String(localized: "App Preview v\($0.version)", comment: "kind:section-title") }
             var loop: String?
             if run.loopReview != nil, run.loopReview?.approvedAt == nil {
                 run.loopReview?.approvedAt = now()

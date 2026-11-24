@@ -18,8 +18,8 @@ enum FallbackStep: Hashable, Sendable, Codable {
     func title(chosen: PriceIndexSource) -> String {
         switch self {
         case let .index(source): source.name
-        case .regionMedian: "Region median of " + chosen.shortName
-        case .equalized: "Apple’s equalized price"
+        case .regionMedian: String(localized: "Region median of \(chosen.shortName)", comment: "kind:section-title")
+        case .equalized: String(localized: "Apple’s equalized price", comment: "kind:section-title")
         }
     }
 }

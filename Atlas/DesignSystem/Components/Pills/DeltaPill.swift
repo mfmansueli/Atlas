@@ -20,8 +20,8 @@ struct DeltaPill: View {
 
     private var text: String {
         switch percent {
-        case ..<0: "▼ −\(-percent)%"
-        case 1...: "▲ +\(percent)%"
+        case ..<0: String(localized: "▼ −\(-percent)%", comment: "kind:pill")
+        case 1...: String(localized: "▲ +\(percent)%", comment: "kind:pill")
         default: "0%"
         }
     }

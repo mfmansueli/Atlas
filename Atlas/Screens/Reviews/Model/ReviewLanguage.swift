@@ -41,7 +41,7 @@ enum ReviewLanguage {
 
     /// "English".
     static var appLanguageName: String {
-        appLocale.localizedString(forLanguageCode: appLanguageCode) ?? "English"
+        appLocale.localizedString(forLanguageCode: appLanguageCode) ?? String(localized: "English", comment: "kind:section-title")
     }
 
     /// Whether a review in `code` reads as is, without translating.

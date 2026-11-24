@@ -18,14 +18,14 @@ enum PriceChangeStatus: String, CaseIterable, Hashable, Sendable {
 
     var title: String {
         switch self {
-        case .unchanged: "Unchanged"
-        case .increase: "Increase"
-        case .decrease: "Decrease"
-        case .recommended: "Suggested"
-        case .editedManually: "Edited manually"
-        case .custom: "Custom"
-        case .scheduled: "Scheduled"
-        case .excluded: "Excluded"
+        case .unchanged: String(localized: "Unchanged", comment: "kind:section-title")
+        case .increase: String(localized: "Increase", comment: "kind:section-title")
+        case .decrease: String(localized: "Decrease", comment: "kind:section-title")
+        case .recommended: String(localized: "Suggested", comment: "kind:section-title")
+        case .editedManually: String(localized: "Edited manually", comment: "kind:section-title")
+        case .custom: String(localized: "Custom", comment: "kind:section-title")
+        case .scheduled: String(localized: "Scheduled", comment: "kind:section-title")
+        case .excluded: String(localized: "Excluded", comment: "kind:section-title")
         }
     }
 

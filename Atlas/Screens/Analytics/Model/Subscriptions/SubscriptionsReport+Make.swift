@@ -107,7 +107,18 @@ extension SubscriptionsReport {
         }
         return known.map { name, detail in
             let count = counts[name] ?? 0
-            return Reason(name: name, detail: detail, count: count, share: total > 0 ? Double(count) / Double(total) : 0)
+            return Reason(name: reasonTitle(name), detail: detail, count: count, share: total > 0 ? Double(count) / Double(total) : 0)
+        }
+    }
+
+    /// The row title for one of Apple's cancellation reasons.
+    private static func reasonTitle(_ reason: String) -> String {
+        switch reason {
+        case "Canceled": String(localized: "Canceled", comment: "kind:section-title")
+        case "Billing Issue": String(localized: "Billing Issue", comment: "kind:section-title")
+        case "Price Increase": String(localized: "Price Increase", comment: "kind:section-title")
+        case "Removed From Sale": String(localized: "Removed From Sale", comment: "kind:section-title")
+        default: String(localized: "Other", comment: "kind:section-title")
         }
     }
 

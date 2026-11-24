@@ -201,7 +201,7 @@ enum GuidedReviewChecks {
             let language = StoreLocaleCatalog.locale(code: target.locale)?.shortName ?? target.locale
             let screen = run.plan.screens(on: target.displayType).first { $0.id == target.screenID }?.name ?? target.screenID
             let found = run.textIssues(of: capture).map(\.message).joined(separator: " ")
-            return "\(language) · \(target.displayType.shortTitle) · \(screen): \(found)"
+            return String(localized: "\(language) · \(target.displayType.shortTitle) · \(screen): \(found)", comment: "kind:description")
         }
         return limited(lines)
     }

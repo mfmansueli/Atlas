@@ -58,7 +58,8 @@ struct FunnelRateButton: View {
     }
 
     private var accessibilityText: String {
-        let comparison = step.comparison.map { ". \($0.pointsText) \($0.outcome.title)" } ?? ""
-        return "\(step.stage.rateTitle): \(step.rate.text)\(comparison)"
+        let rate = "\(step.stage.rateTitle): \(step.rate.text)"
+        guard let comparison = step.comparison else { return rate }
+        return String(localized: "\(rate). \(comparison.pointsText) \(comparison.outcome.title)", comment: "kind:button")
     }
 }

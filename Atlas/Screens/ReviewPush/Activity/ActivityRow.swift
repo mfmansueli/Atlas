@@ -87,6 +87,6 @@ struct ActivityRow: View {
         let time = record.date.formatted(date: .omitted, time: .shortened)
         guard record.screenshots == nil else { return "\(record.appName) · \(date) · \(time)" }
         let count = record.changeCount == 1 ? String(localized: "1 change") : String(localized: "\(record.changeCount) changes")
-        return "\(record.appName) · \(date) · \(time) · \(count)"
+        return String(localized: "\(record.appName) · \(date) · \(time) · \(count)", comment: "kind:history-entry")
     }
 }

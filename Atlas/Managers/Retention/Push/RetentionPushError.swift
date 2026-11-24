@@ -36,10 +36,14 @@ enum RetentionPushError: LocalizedError, Hashable {
         case .imageTimedOut:
             String(localized: "Apple is still processing the image. Push again in a few minutes.")
         case let .submissionRefused(detail):
-            String(localized: """
-            App Store Connect didn’t open a review submission\(detail.map { ": \($0)" } ?? ""). Submit or cancel the one in progress \
-            there, then push again.
-            """)
+            detail.map {
+                String(localized: """
+                App Store Connect didn’t open a review submission: \($0). Submit or cancel the one in progress there, then push \
+                again.
+                """, comment: "kind:error")
+            } ?? String(localized: """
+            App Store Connect didn’t open a review submission. Submit or cancel the one in progress there, then push again.
+            """, comment: "kind:error")
         }
     }
 

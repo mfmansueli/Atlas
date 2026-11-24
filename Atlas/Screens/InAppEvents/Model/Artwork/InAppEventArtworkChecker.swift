@@ -112,7 +112,7 @@ enum InAppEventArtworkChecker {
     private static func lookChecks(_ look: InAppEventArtworkLook) -> [InAppEventArtworkCheck] {
         var checks: [InAppEventArtworkCheck] = []
         if !look.text.isEmpty {
-            let words = look.text.prefix(4).map { "“\($0)”" }.joined(separator: ", ")
+            let words = look.text.prefix(4).map { String(localized: "“\($0)”", comment: "kind:other") }.joined(separator: ", ")
             checks.append(.warning(String(localized: """
             The art has text (\(words)). Apple asks for none: it adds the badge, name and description in each language.
             """)))

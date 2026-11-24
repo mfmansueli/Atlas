@@ -21,19 +21,48 @@ struct HelpLibrary: Sendable {
     ]
 
     /// The searches offered on the home page.
-    static let tries = ["Add a language", "Vendor number", "The key was refused", "Pair Claude Code", "Price increase"]
+    static let tries = [
+        String(localized: "Add a language", comment: "kind:section-title"),
+        String(localized: "Vendor number", comment: "kind:section-title"),
+        String(localized: "The key was refused", comment: "kind:section-title"),
+        String(localized: "Pair Claude Code", comment: "kind:section-title"),
+        String(localized: "Price increase", comment: "kind:section-title"),
+    ]
 
     init(articles: [HelpArticle]) {
         self.articles = articles.sorted { (Self.order.firstIndex(of: $0.id) ?? .max) < (Self.order.firstIndex(of: $1.id) ?? .max) }
     }
 
-    init(bundle: Bundle) {
-        let urls = bundle.urls(forResourcesWithExtension: "md", subdirectory: nil) ?? []
-        let articles = urls.filter { $0.lastPathComponent.hasPrefix("help-") }.compactMap { url in
+    /// The articles in `localization` (the app's language by default),
+    /// each one missing there in English.
+    init(bundle: Bundle, localization: String? = nil) {
+        let urls = Self.articleURLs(in: bundle, localization: localization ?? bundle.preferredLocalizations.first)
+        let articles = urls.compactMap { url in
             (try? String(contentsOf: url, encoding: .utf8)).flatMap(HelpArticleParser.article(from:))
         }
         self.init(articles: articles)
     }
+
+    /// The articles are localized resources (`Articles/en.lproj/help-*.md`):
+    /// one file per article, the one in `localization` when it has it, else
+    /// the English one, else one outside any `.lproj`.
+    static func articleURLs(in bundle: Bundle, localization: String?) -> [URL] {
+        var byName: [String: URL] = [:]
+        func add(_ urls: [URL]?) {
+            for url in urls ?? [] where url.lastPathComponent.hasPrefix("help-") {
+                byName[url.lastPathComponent] = url
+            }
+        }
+        add(bundle.urls(forResourcesWithExtension: "md", subdirectory: nil))
+        add(bundle.urls(forResourcesWithExtension: "md", subdirectory: nil, localization: developmentLocalization))
+        if let localization, localization != developmentLocalization {
+            add(bundle.urls(forResourcesWithExtension: "md", subdirectory: nil, localization: localization))
+        }
+        return byName.keys.sorted().compactMap { byName[$0] }
+    }
+
+    /// The language the articles are written in.
+    static let developmentLocalization = "en"
 
     func article(_ id: String) -> HelpArticle? {
         articles.first { $0.id == id }

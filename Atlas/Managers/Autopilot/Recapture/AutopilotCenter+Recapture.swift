@@ -98,8 +98,8 @@ extension AutopilotCenter {
             run.handedBackAt = now()
             let who = client.map { String(localized: "\($0) asked to redo \(recapture.title)") }
                 ?? String(localized: "Redoing \(recapture.title)")
-            let why = recapture.reason.map { ": \($0)" } ?? ""
-            run.appendLog(who + why, kind: .command, at: now())
+            let line = recapture.reason.map { String(localized: "\(who): \($0)", comment: "kind:other") } ?? who
+            run.appendLog(line, kind: .command, at: now())
         }
         return runs[appID] ?? run
     }

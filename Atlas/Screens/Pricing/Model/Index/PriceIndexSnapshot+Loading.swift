@@ -43,7 +43,8 @@ extension PriceIndexSnapshot {
                     levels[territoryID] = Decimal(exactly: shared.factor)
                 }
             }
-            indices[source] = PriceIndex(source: source, edition: entry.edition, levels: levels)
+            let edition = PriceIndexEditionText.localized(entry.edition, source: key)
+            indices[source] = PriceIndex(source: source, edition: edition, levels: levels)
         }
         try self.init(
             isApproximate: file.approximate,

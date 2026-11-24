@@ -53,7 +53,7 @@ final class AssistantSetupViewModel {
     private(set) var appName: String
 
     /// The prompt step 4 asks to send.
-    static let testPrompt = "List my apps in Atlas"
+    static let testPrompt = String(localized: "List my apps in Atlas", comment: "kind:section-title")
 
     init(
         assistants: MCPServerController,

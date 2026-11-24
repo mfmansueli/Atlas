@@ -20,18 +20,18 @@ enum RecommendationConfidence: Int, CaseIterable, Comparable, Hashable, Sendable
 
     var title: String {
         switch self {
-        case .low: "Low confidence"
-        case .medium: "Medium confidence"
-        case .high: "High confidence"
+        case .low: String(localized: "Low confidence", comment: "kind:section-title")
+        case .medium: String(localized: "Medium confidence", comment: "kind:section-title")
+        case .high: String(localized: "High confidence", comment: "kind:section-title")
         }
     }
 
     /// The suggestion popover's note.
     var note: String {
         switch self {
-        case .low: "Purchasing power only; too few sales here to say more."
-        case .medium: "Based on your sales, not a price test. Results show how many more starts."
-        case .high: "Backed by an earlier price change in this territory."
+        case .low: String(localized: "Purchasing power only; too few sales here to say more.", comment: "kind:hint")
+        case .medium: String(localized: "Based on your sales, not a price test. Results show how many more starts.", comment: "kind:hint")
+        case .high: String(localized: "Backed by an earlier price change in this territory.", comment: "kind:hint")
         }
     }
 

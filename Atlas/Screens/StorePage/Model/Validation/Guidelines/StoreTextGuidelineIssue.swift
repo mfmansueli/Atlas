@@ -17,7 +17,7 @@ nonisolated struct StoreTextGuidelineIssue: Hashable, Sendable {
 
     /// “free”, “$4.99” and 2 more.
     var quotedPhrases: String {
-        let shown = phrases.prefix(3).map { "“\($0)”" }
+        let shown = phrases.prefix(3).map { String(localized: "“\($0)”", comment: "kind:error") }
         let rest = phrases.count - shown.count
         return rest > 0
             ? String(localized: "\(shown.joined(separator: ", ")) and \(rest) more")

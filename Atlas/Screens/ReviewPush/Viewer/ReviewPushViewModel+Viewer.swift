@@ -77,7 +77,7 @@ extension ReviewPushViewModel {
         let kept = item.isBlocked ? String(localized: "kept out of the push") : nil
         switch item.content {
         case .artwork:
-            let headline = item.headline.flatMap { $0.isEmpty ? nil : "“\($0)”" }
+            let headline = item.headline.flatMap { $0.isEmpty ? nil : String(localized: "“\($0)”", comment: "kind:other") }
             let motion = item.isMotion
                 ? String(localized: "\(AutopilotRun.timeTitle(Double(AutopilotArtworkMotion.loopSeconds))) loop, plays muted on repeat")
                 : nil

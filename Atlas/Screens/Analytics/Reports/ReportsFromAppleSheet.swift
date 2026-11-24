@@ -72,7 +72,7 @@ struct ReportsFromAppleSheet: View {
         let through = viewModel.dataset.through
         var rows = [
             Row(
-                id: "engagement", title: "App Store Discovery and Engagement",
+                id: "engagement", title: String(localized: "App Store Discovery and Engagement", comment: "kind:sheet-title"),
                 adds: String(localized: "Impressions and page views, by source, page and territory"),
                 status: through.map { String(localized: "Ready · through \(AnalyticsText.day($0.date))") } ?? String(localized: "Asked"), isReady: through != nil
             ),

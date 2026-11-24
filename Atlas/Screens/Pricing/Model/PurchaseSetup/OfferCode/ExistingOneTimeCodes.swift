@@ -63,6 +63,7 @@ struct ExistingOneTimeCodes: Identifiable, Hashable, Sendable {
     /// A file name for its codes: "Lumen-PRESS-2026-12-31.csv".
     func fileName(offerName: String) -> String {
         let base = offerName.replacingOccurrences(of: "/", with: "-").trimmingCharacters(in: .whitespaces)
-        return "\(base.isEmpty ? "Offer codes" : base) \(expirationDate ?? id).csv"
+        let name = base.isEmpty ? String(localized: "Offer codes", comment: "kind:section-title") : base
+        return "\(name) \(expirationDate ?? id).csv"
     }
 }

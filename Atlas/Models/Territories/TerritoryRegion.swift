@@ -16,10 +16,10 @@ enum TerritoryRegion: String, CaseIterable, Codable, Hashable, Sendable {
     /// The filter chip's title, e.g. "Asia Pacific".
     var title: String {
         switch self {
-        case .americas: "Americas"
-        case .europe: "Europe"
-        case .asiaPacific: "Asia Pacific"
-        case .africaMiddleEast: "Africa & Middle East"
+        case .americas: String(localized: "Americas", comment: "kind:section-title")
+        case .europe: String(localized: "Europe", comment: "kind:section-title")
+        case .asiaPacific: String(localized: "Asia Pacific", comment: "kind:section-title")
+        case .africaMiddleEast: String(localized: "Africa & Middle East", comment: "kind:section-title")
         }
     }
 

@@ -100,9 +100,9 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     var pushFailureText: String {
         switch self {
         case let .rejected(statusCode, code, detail):
-            [code ?? "HTTP \(statusCode)", detail].compactMap(\.self).joined(separator: " — ")
+            [code ?? String(localized: "HTTP \(statusCode)", comment: "kind:error"), detail].compactMap(\.self).joined(separator: " — ")
         case let .server(statusCode, code, detail):
-            [code ?? "HTTP \(statusCode)", detail].compactMap(\.self).joined(separator: " — ")
+            [code ?? String(localized: "HTTP \(statusCode)", comment: "kind:error"), detail].compactMap(\.self).joined(separator: " — ")
         case let .forbidden(detail):
             ["FORBIDDEN_ERROR", detail].compactMap(\.self).joined(separator: " — ")
         case let .notFound(detail):
@@ -140,7 +140,7 @@ enum AppStoreConnectError: LocalizedError, Equatable {
     }
 
     /// What precedes an event's id in a reason: "In-App Event ".
-    static let eventMarker = "In-App Event "
+    static let eventMarker = String(localized: "In-App Event ", comment: "kind:error")
 
     /// The error template: Atlas's sentence, then Apple's own words on a
     /// "Details:" line, never run into the sentence.

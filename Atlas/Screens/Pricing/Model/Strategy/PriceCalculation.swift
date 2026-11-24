@@ -25,6 +25,9 @@ struct PriceCalculation: Hashable, Sendable {
     var summary: String
     /// The numbered steps of the breakdown popover.
     var steps: [String]
+    /// The target was under the floor and raised to it (a later limit may
+    /// still have moved it).
+    var raisedToFloor = false
 
     var isExcluded: Bool { provenance.kind == .excluded }
 

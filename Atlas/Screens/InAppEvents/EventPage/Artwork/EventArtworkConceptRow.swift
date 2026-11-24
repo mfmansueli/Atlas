@@ -55,7 +55,7 @@ struct EventArtworkConceptRow: View {
             .buttonStyle(.plain)
             .disabled(row.isDisabled)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(row.isPreviewed ? "\(row.name), shown in the preview" : row.name))
+            .accessibilityLabel(row.isPreviewed ? Text("\(row.name), shown in the preview", comment: "kind:accessibility-label") : Text(row.name))
             .accessibilityValue(Text([row.tagTitle, row.why].compactMap(\.self).joined(separator: ", ")))
             .accessibilityAddTraits(row.isPreviewed ? [.isButton, .isSelected] : .isButton)
             .accessibilityIdentifier("events.art.row.\(row.id)")

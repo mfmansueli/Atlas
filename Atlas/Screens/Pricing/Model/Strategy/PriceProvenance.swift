@@ -29,10 +29,10 @@ struct PriceProvenance: Hashable, Sendable {
     var badge: String {
         switch kind {
         case let .index(source): edition?.badge ?? source.name
-        case .regionMedian: "Region median"
-        case .equalized: "Equalized"
-        case .regionalTier: "Region tier"
-        case .excluded: "Excluded"
+        case .regionMedian: String(localized: "Region median", comment: "kind:pill")
+        case .equalized: String(localized: "Equalized", comment: "kind:pill")
+        case .regionalTier: String(localized: "Region tier", comment: "kind:pill")
+        case .excluded: String(localized: "Excluded", comment: "kind:pill")
         }
     }
 
@@ -41,10 +41,10 @@ struct PriceProvenance: Hashable, Sendable {
     var label: String {
         switch kind {
         case let .index(source): edition?.provenanceLabel ?? source.name
-        case .regionMedian: "region median"
-        case .equalized: "no data, equalized"
-        case .regionalTier: "regional tier"
-        case .excluded: "excluded"
+        case .regionMedian: String(localized: "region median", comment: "kind:other")
+        case .equalized: String(localized: "no data, equalized", comment: "kind:other")
+        case .regionalTier: String(localized: "regional tier", comment: "kind:other")
+        case .excluded: String(localized: "excluded", comment: "kind:other")
         }
     }
 

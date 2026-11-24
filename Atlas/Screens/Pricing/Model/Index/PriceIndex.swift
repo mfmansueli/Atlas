@@ -26,6 +26,6 @@ struct PriceIndex: Hashable, Sendable {
 
     /// "74 of 175 territories".
     func coverageLabel(of total: Int) -> String {
-        "\(coverage) of \(total) territories"
+        String(localized: "\(coverage) of \(total) territories", comment: "kind:other")
     }
 }

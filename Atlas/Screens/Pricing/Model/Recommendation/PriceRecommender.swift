@@ -17,6 +17,8 @@ import Foundation
 /// - An earlier change in the territory: confidence is High, and a cut that
 ///   didn't lift starts holds the current price.
 struct PriceRecommender: Sendable {
+    /// The basis line when the key's role can't read sales.
+    static let cantReadSalesLine = String(localized: "Sales: this key’s role can’t read Sales and Trends", comment: "kind:description")
     static let minimumPageViews = 1000
     static let minimumStarts = 15
     /// Feels this many times the base price or more: likely holds people back.
@@ -78,7 +80,9 @@ struct PriceRecommender: Sendable {
             feelsLikeSuggestedText: base.formatWhole(feelsSuggested),
             isHolding: facts.isHolding,
             isSoftStep: facts.isSoftStep,
-            summary: facts.isHolding ? "Holding at " + CurrencyFormat.format(current, currency: input.territory.currencyCode) : calculation.summary,
+            summary: facts.isHolding
+                ? String(localized: "Holding at \(CurrencyFormat.format(current, currency: input.territory.currencyCode))", comment: "kind:description")
+                : calculation.summary,
             steps: calculation.steps,
             calculation: calculation
         )
@@ -127,48 +131,57 @@ struct PriceRecommender: Sendable {
     }
 
     private func reason(_ facts: Facts, ratio: Decimal, isUnchanged: Bool, calculation: PriceCalculation) -> String {
-        let feels = "Feels like " + PricingText.ratio(ratio) + " the " + baseReference + " price"
-        if facts.isHolding { return "Last cut didn’t lift starts · holding" }
+        let feels = String(localized: "Feels like \(PricingText.ratio(ratio)) the \(baseReference) price", comment: "kind:section-title")
+        if facts.isHolding { return String(localized: "Last cut didn’t lift starts · holding", comment: "kind:description") }
         if isUnchanged {
-            return ratio < Decimal(95) / 100 ? "Already below the local price level" : "Already matches local purchasing power"
+            return ratio < Decimal(95) / 100
+                ? String(localized: "Already below the local price level", comment: "kind:description")
+                : String(localized: "Already matches local purchasing power", comment: "kind:section-title")
         }
         guard ratio >= Self.holdsBackRatio else { return feels }
-        var reason = feels
+        var parts = [feels]
         if facts.hasFewStarts {
-            reason += " · many page views, few starts"
+            parts.append(String(localized: "many page views, few starts", comment: "kind:description"))
         } else if facts.isSoftStep {
-            reason += " · converts well, smaller step"
+            parts.append(String(localized: "converts well, smaller step", comment: "kind:other"))
         }
-        if facts.prior != nil { reason += " · last cut lifted starts" }
-        if calculation.steps.contains(where: { $0.hasPrefix("Below the floor") }) { reason += " · held at the floor" }
-        return reason
+        if facts.prior != nil { parts.append(String(localized: "last cut lifted starts", comment: "kind:other")) }
+        if calculation.raisedToFloor { parts.append(String(localized: "held at the floor", comment: "kind:other")) }
+        return parts.joined(separator: " · ")
     }
 
     private func basis(_ facts: Facts, input: PriceCalculationInput, current: Decimal, resolved: ResolvedFactor) -> [String] {
         let edition = calculator.snapshot.index(.worldBank)?.edition.provenanceLabel ?? PriceIndexSource.worldBank.shortName
-        var power = "Purchasing power: " + edition + " price level " + resolved.factor.fixed(2)
+        let level = resolved.factor.fixed(2)
+        var power = String(localized: "Purchasing power: \(edition) price level \(level)", comment: "kind:other")
         switch resolved.provenance.kind {
-        case .regionMedian: power += " (region median, no World Bank data)"
-        case .equalized: power += " (no World Bank data)"
+        case .regionMedian: power = String(localized: "\(power) (region median, no World Bank data)", comment: "kind:description")
+        case .equalized: power = String(localized: "\(power) (no World Bank data)", comment: "kind:other")
         default: break
         }
         var lines = [power]
         if !facts.canReadSales {
-            lines.append("Sales: this key’s role can’t read Sales and Trends")
+            lines.append(Self.cantReadSalesLine)
         } else if let signal = facts.signal {
-            var sales = "Your sales, last 28 days: " + PricingText.grouped(signal.pageViews) + " page views · "
-                + "\(signal.starts) starts · " + PricingText.percent(facts.conversion ?? 0)
-            if let reference = facts.reference { sales += " (" + baseReference + " " + PricingText.percent(reference) + ")" }
-            lines.append(sales + (facts.hasEnoughSales ? "" : ", too few to count"))
+            let pageViews = PricingText.grouped(signal.pageViews)
+            let conversion = PricingText.percent(facts.conversion ?? 0)
+            var sales = String(localized: "Your sales, last 28 days: \(pageViews) page views · \(signal.starts) starts · \(conversion)", comment: "kind:other")
+            if let reference = facts.reference {
+                sales = String(localized: "\(sales) (\(baseReference) \(PricingText.percent(reference)))", comment: "kind:other")
+            }
+            lines.append(facts.hasEnoughSales ? sales : String(localized: "\(sales), too few to count", comment: "kind:other"))
         } else {
-            lines.append("Your sales: too few in this territory to count")
+            lines.append(String(localized: "Your sales: too few in this territory to count", comment: "kind:description"))
         }
         if let prior = facts.prior {
             let money = CurrencyFormat.forCurrency(input.territory.currencyCode)
-            lines.append(
-                "Earlier change, " + PricingText.date(prior.date) + ": " + money.format(prior.previousPrice) + " → " + money.format(current)
-                    + ", starts \(prior.before.starts) → \(prior.after.starts) in 28 days"
-            )
+            let date = PricingText.date(prior.date)
+            let before = money.format(prior.previousPrice)
+            let after = money.format(current)
+            lines.append(String(
+                localized: "Earlier change, \(date): \(before) → \(after), starts \(prior.before.starts) → \(prior.after.starts) in 28 days",
+                comment: "kind:other"
+            ))
         }
         return lines
     }
@@ -182,8 +195,8 @@ struct PriceRecommender: Sendable {
             isUnchanged: true,
             isBaseTerritory: true,
             confidence: nil,
-            reason: "Base territory",
-            basis: ["The base price every other territory is derived from."],
+            reason: String(localized: "Base territory", comment: "kind:section-title"),
+            basis: [String(localized: "The base price every other territory is derived from.", comment: "kind:description")],
             feelsLike: feels,
             feelsLikeSuggested: feels,
             ratio: 1,
@@ -193,8 +206,8 @@ struct PriceRecommender: Sendable {
             feelsLikeSuggestedText: base.formatWhole(feels),
             isHolding: false,
             isSoftStep: false,
-            summary: "Base territory",
-            steps: [base.format(current) + " — base price"],
+            summary: String(localized: "Base territory", comment: "kind:description"),
+            steps: [String(localized: "\(base.format(current)) — base price", comment: "kind:other")],
             calculation: nil
         )
     }

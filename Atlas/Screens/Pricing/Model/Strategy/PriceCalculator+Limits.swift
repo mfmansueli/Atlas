@@ -14,6 +14,7 @@ extension PriceCalculator {
         var steps: [String]
         var floor: Decimal
         var minimum: Decimal?
+        var raisedToFloor = false
     }
 
     /// The price point a limited target lands on, and the last step.
@@ -32,23 +33,25 @@ extension PriceCalculator {
         var steps: [String] = []
         if strategy.discountOnly, value > input.equalizedPrice + Self.epsilon {
             value = input.equalizedPrice
-            steps.append("Discount only → capped at the equalized price")
+            steps.append(String(localized: "Discount only → capped at the equalized price", comment: "kind:description"))
             adjustment = .cappedAtEqualized
         }
         let floor = strategy.floor * toLocal
-        let floorText = strategy.floor.percentText + "% of base = " + money.format(floor)
-        if value < floor {
+        let floorText = String(localized: "\(strategy.floor.percentText)% of base = \(money.format(floor))", comment: "kind:other")
+        let raisedToFloor = value < floor
+        if raisedToFloor {
             value = floor
-            steps.append("Below the floor (" + floorText + ") → raised to the floor")
+            steps.append(String(localized: "Below the floor (\(floorText)) → raised to the floor", comment: "kind:section-title"))
             adjustment = .raisedToFloor
         } else {
-            steps.append("Above the floor (" + floorText + ")")
+            steps.append(String(localized: "Above the floor (\(floorText))", comment: "kind:section-title"))
             adjustment = adjustment ?? .aboveFloor
         }
         let ceiling = strategy.ceiling * toLocal
         if !strategy.discountOnly, value > ceiling {
             value = ceiling
-            steps.append("Above the ceiling (" + strategy.ceiling.percentText + "% of base) → lowered to " + money.format(ceiling))
+            let ceilingText = strategy.ceiling.percentText
+            steps.append(String(localized: "Above the ceiling (\(ceilingText)% of base) → lowered to \(money.format(ceiling))", comment: "kind:section-title"))
             adjustment = .loweredToCeiling
         }
         var minimum: Decimal?
@@ -57,16 +60,18 @@ extension PriceCalculator {
             minimum = local
             if value < local {
                 value = local
-                steps.append("Raised so proceeds stay at least " + baseFormat(strategy).format(proceeds))
+                steps.append(String(localized: "Raised so proceeds stay at least \(baseFormat(strategy).format(proceeds))", comment: "kind:description"))
                 adjustment = .minimumProceeds
             }
         }
         if strategy.neverRaise, let current = input.currentPrice, value > current + Self.epsilon {
             value = current
-            steps.append("Never raise → kept at the current price")
+            steps.append(String(localized: "Never raise → kept at the current price", comment: "kind:description"))
             adjustment = .neverRaise
         }
-        return LimitedTarget(value: value, adjustment: adjustment ?? .aboveFloor, steps: steps, floor: floor, minimum: minimum)
+        return LimitedTarget(
+            value: value, adjustment: adjustment ?? .aboveFloor, steps: steps, floor: floor, minimum: minimum, raisedToFloor: raisedToFloor
+        )
     }
 
     /// Nearest point with the preferred ending. A price raised to the floor
@@ -78,15 +83,19 @@ extension PriceCalculator {
         let rounding = strategy.rounding
         let nearest = ladder.nearest(to: limited.value, rounding: rounding) ?? offLadderPoint(limited.value, territory: input.territory)
         let bound: (value: Decimal, name: String)? = switch limited.adjustment {
-        case .raisedToFloor: (limited.floor, "the floor")
-        case .minimumProceeds: limited.minimum.map { ($0, "the minimum proceeds") }
+        case .raisedToFloor: (limited.floor, String(localized: "the floor", comment: "kind:other"))
+        case .minimumProceeds: limited.minimum.map { ($0, String(localized: "the minimum proceeds", comment: "kind:other")) }
         default: nil
         }
         if let bound, nearest.customerPrice < bound.value - Self.epsilon,
            let raised = ladder.lowest(atOrAbove: bound.value, rounding: rounding)
         {
-            return SnappedPrice(point: raised, step: "Nearest price point at or above " + bound.name + " → " + money.format(raised.customerPrice))
+            let price = money.format(raised.customerPrice)
+            return SnappedPrice(
+                point: raised, step: String(localized: "Nearest price point at or above \(bound.name) → \(price)", comment: "kind:description")
+            )
         }
-        return SnappedPrice(point: nearest, step: "Nearest price point → " + money.format(nearest.customerPrice))
+        let price = money.format(nearest.customerPrice)
+        return SnappedPrice(point: nearest, step: String(localized: "Nearest price point → \(price)", comment: "kind:section-title"))
     }
 }

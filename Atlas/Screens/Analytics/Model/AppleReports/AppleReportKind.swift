@@ -24,14 +24,14 @@ enum AppleReportKind: String, Hashable, Sendable, Codable, CaseIterable, Identif
     /// Apple's name for it, without the Standard or Detailed suffix.
     var title: String {
         switch self {
-        case .retention: "Retention Messaging"
-        case .subscriptionEvents: "App Store Subscription Event"
-        case .subscriptionStates: "App Store Subscription State"
-        case .crashes: "App Crashes"
-        case .installs: "App Store Installations and Deletions"
-        case .sessions: "App Sessions"
-        case .webPreview: "App Store Web Preview"
-        case .widgets: "Home Screen Widget Installs"
+        case .retention: String(localized: "Retention Messaging", comment: "kind:section-title")
+        case .subscriptionEvents: String(localized: "App Store Subscription Event", comment: "kind:section-title")
+        case .subscriptionStates: String(localized: "App Store Subscription State", comment: "kind:section-title")
+        case .crashes: String(localized: "App Crashes", comment: "kind:section-title")
+        case .installs: String(localized: "App Store Installations and Deletions", comment: "kind:section-title")
+        case .sessions: String(localized: "App Sessions", comment: "kind:section-title")
+        case .webPreview: String(localized: "App Store Web Preview", comment: "kind:section-title")
+        case .widgets: String(localized: "Home Screen Widget Installs", comment: "kind:section-title")
         }
     }
 
