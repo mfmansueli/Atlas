@@ -50,7 +50,6 @@ struct AppSidebar: View {
                             // the name keeping its size.
                             .frame(height: fit.isCompact ? Metrics.sidebarCompactRowHeight - Spacing.small : nil)
                             .font(fit.isCompact ? .body : nil)
-                            .tag(section)
                             .accessibilityIdentifier("sidebar.section.\(section.rawValue)")
                             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
                                 var next = fit
@@ -58,6 +57,10 @@ struct AppSidebar: View {
                             }
                             // The tour's second tip: what a section and its number are.
                             .tourTip(section == .storePage ? .sections : nil, arrowEdge: .trailing)
+                            // Last: under `onGeometryChange` the list no
+                            // longer sees the tag, so no row is selectable,
+                            // clicks do nothing and nothing shows selected.
+                            .tag(section)
                         }
                     } header: {
                         if let title = group.title {
