@@ -10,7 +10,7 @@ import Foundation
 /// something really runs for the app, with a stepped bar when the run counts
 /// its steps; filled purple when it needs the person; and a green check for
 /// about 2 s once it's done. Pure, from the button's state.
-enum AutopilotButtonLook: Equatable {
+enum AutopilotButtonLook: Hashable {
     /// The purple sparkle and the section's action.
     case idle
     /// What runs, and its progress (0–1) when it's counted; nil draws no

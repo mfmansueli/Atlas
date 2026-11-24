@@ -11,6 +11,8 @@ import SwiftUI
 /// - `apps`, `apps-empty`, `apps-error`, `lib-loading`: the main window with
 ///   the sample apps (Lumen Journal selected), none, a failed load, or the
 ///   first sync still running.
+/// - `tb-text`: the toolbar's title and Autopilot texts changing after
+///   it measured them (`ToolbarTextChangeDebugScene`).
 /// - `apps-unnamed`: the sample apps under a key the person hasn't named;
 ///   App Store Connect calls its team Northpier Studio.
 /// - `overview`, `overview-keep`: Lumen Journal's overview, or Tempo
@@ -34,6 +36,8 @@ struct DebugSceneView: View {
         switch id {
         case "apps", "overview":
             DebugMainScene()
+        case ToolbarTextChangeDebugScene.id:
+            ToolbarTextChangeDebugScene()
         case "apps-badges":
             DebugMainScene(suggestions: SuggestionsDebugData.store())
         case "overview-keep":

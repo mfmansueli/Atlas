@@ -57,6 +57,8 @@ struct ReviewPushToolbarButton: View {
             if Self.bounces(from: old, to: new, isSending: sending != nil) { arrivals += 1 }
         }
         .help(help)
+        // Its label folds and unfolds, the badge grows to “12/40”.
+        .toolbarItemFit([AnyHashable(isCompact), AnyHashable(isUpToDate), AnyHashable(badge)])
         .accessibilityLabel(Text("Review & Push"))
         .accessibilityValue(Text(accessibilityValue))
         .accessibilityIdentifier("workspace.reviewPushButton")

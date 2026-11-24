@@ -53,8 +53,10 @@ struct WorkspaceToolbarTitle: View {
         .truncationMode(.tail)
         // Its whole width, up to the cap: a status that grows after the
         // toolbar sized the item (“Nothing waiting” once Pricing has read
-        // its products) isn't cut to the old width.
-        .fixedSize(horizontal: true, vertical: false)
+        // its products, the version once read) widens the item. Squeezed,
+        // it truncates in its place rather than spilling under the
+        // sidebar button.
+        .toolbarItemFit([title, status.text])
     }
 }
 

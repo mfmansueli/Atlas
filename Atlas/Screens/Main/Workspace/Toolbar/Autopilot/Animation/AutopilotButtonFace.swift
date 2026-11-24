@@ -30,6 +30,9 @@ struct AutopilotButtonFace<MenuContent: View>: View {
             .overlay(alignment: .bottomLeading) { progressLine }
             .aiNeedsYou(look.isNeedingYou)
             .animation(reduceMotion ? nil : MotionTiming.base.animation, value: look)
+            // In the toolbar, the item takes the width of what it says now,
+            // as runs start, need the person and end.
+            .toolbarItemFit([AnyHashable(look), AnyHashable(title), AnyHashable(isPro), AnyHashable(isCompact)])
     }
 
     /// The toolbar's other buttons' height: Review & Push's prominent glass

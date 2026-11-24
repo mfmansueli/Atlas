@@ -33,6 +33,7 @@ struct SectionMenuButton: View {
         .help("Sections")
         .accessibilityLabel(Text("Section: \(selection.title)"))
         .accessibilityIdentifier("workspace.sectionMenu")
+        .toolbarItemFit(selection)
         .popover(isPresented: $isPresented, arrowEdge: .bottom) { menu }
         .task {
             if startsOpen { isPresented = true }

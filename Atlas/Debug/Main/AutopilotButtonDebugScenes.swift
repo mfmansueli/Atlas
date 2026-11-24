@@ -52,6 +52,9 @@ enum AutopilotButtonDebugScenes {
             }
             .padding(32)
             .frame(minWidth: 640, minHeight: 420, alignment: .topLeading)
+            // A container, so the identifier isn't given to every button
+            // inside instead of their own.
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("apButton.gallery")
         }
     }
