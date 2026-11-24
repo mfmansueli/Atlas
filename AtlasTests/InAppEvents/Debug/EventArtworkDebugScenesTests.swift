@@ -47,6 +47,25 @@ struct EventArtworkDebugScenesTests {
         #expect(studio.presentedKey == nil)
     }
 
+    /// The 860 × 560 scenes are the full-size ones with the sidebar hidden.
+    @Test func theMinimumWindowScenesHideTheSidebar() {
+        defer { NavigationDebugLaunch.hidesSidebar = false }
+        for (small, full) in EventArtworkDebugScenes.smallWindow {
+            #expect(EventArtworkDebugScenes.ids.contains(small), "\(small)")
+            #expect(EventArtworkDebugScenes.ids.contains(full), "\(full)")
+            NavigationDebugLaunch.hidesSidebar = false
+            _ = EventArtworkDebugScenes.view(for: small)
+            #expect(NavigationDebugLaunch.hidesSidebar, "\(small)")
+        }
+        _ = EventArtworkDebugScenes.view(for: "ev-s")
+        #expect(InAppEventsDebugLaunch.pending?.opensEvent == false)
+        _ = EventArtworkDebugScenes.view(for: "ea-brief-s")
+        #expect(InAppEventsDebugLaunch.pending?.opensArtwork == true)
+        NavigationDebugLaunch.hidesSidebar = false
+        load("ev-view")
+        #expect(NavigationDebugLaunch.hidesSidebar == false)
+    }
+
     @Test func theArtworkScenesLeaveTheirRun() {
         load("ev-making")
         #expect(studio.makingRuns.count == 1)

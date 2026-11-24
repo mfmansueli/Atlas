@@ -25,6 +25,9 @@ struct InAppEventsSectionView: View {
     @Environment(ProGate.self) private var pro: ProGate?
     @Environment(PushHistory.self) private var history: PushHistory?
     @Environment(AppPreferences.self) private var preferences
+    @Environment(MCPServerController.self) private var assistants: MCPServerController?
+    @Environment(\.askCenterOverride) private var askCenterOverride
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
     /// Where the artwork viewer covers the whole window; nil in previews,
@@ -377,8 +380,15 @@ struct InAppEventsSectionView: View {
                 run.makesMotion = preferences.eventArtworkMakesMotion
             }
         }
-        flow.launch = { [launcher, app] purpose, prompt in
-            await launcher.start(purpose, appID: app.id, appName: app.name, prompt: prompt)
+        // Through the toolbar, like every asking button (board 56).
+        let client = assistants?.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
+        flow.launch = { [launcher, app, askCenter = askCenterOverride ?? .shared, reduceMotion] purpose, prompt in
+            let ask = InAppEventArtworkAsk.ask(app: app, eventName: event.referenceName, client: client)
+            return await InAppEventArtworkAsk.launch(
+                ask, purpose: purpose, prompt: prompt, askCenter: askCenter, reduceMotion: reduceMotion
+            ) { purpose, prompt in
+                await launcher.start(purpose, appID: app.id, appName: app.name, prompt: prompt)
+            }
         }
         flow.stopClaude = { [launcher] id in launcher.stop(id) }
         flow.copy = { text in EventArtworkFilePanel.copy(text) }

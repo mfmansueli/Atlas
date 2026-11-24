@@ -54,7 +54,13 @@ extension AppStoreConnectClient {
                 let previews = page.items(of: set, relationship: "appPreviews")
                 sets.append(LiveAppPreviewSet(
                     id: set.id, locale: locale, displayType: display, previewCount: set.related("appPreviews").count,
-                    posterFrameTimeCode: previews.first?.attributes?.previewFrameTimeCode, durationSeconds: nil
+                    posterFrameTimeCode: previews.first?.attributes?.previewFrameTimeCode, durationSeconds: nil,
+                    previews: set.related("appPreviews").map { related in
+                        let attributes = previews.first { $0.id == related.id }?.attributes
+                        return LiveAppPreview(
+                            id: related.id, fileName: attributes?.fileName ?? "", posterFrameTimeCode: attributes?.previewFrameTimeCode
+                        )
+                    }
                 ))
             }
             next = page.links?.next

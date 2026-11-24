@@ -24,6 +24,18 @@ struct ProductPageFilesFolder: Sendable {
         ProductPageFilesFolder(root: FileManager.default.temporaryDirectory.appending(path: "AtlasPageFiles"))
     }
 
+    /// The version's App Previews chosen by hand in Screenshots
+    /// (`AppPreviewHandChange`): `Application Support/Atlas/Screenshots/AppPreviews/`,
+    /// pruned apart from the product pages' files.
+    static var appPreviews: ProductPageFilesFolder {
+        #if DEBUG
+        if UnitTestHost.isRunning || DebugScene.requestedID != nil {
+            return ProductPageFilesFolder(root: FileManager.default.temporaryDirectory.appending(path: "AtlasAppPreviewFiles"))
+        }
+        #endif
+        return ProductPageFilesFolder(root: URL.applicationSupportDirectory.appending(path: "Atlas/Screenshots/AppPreviews"))
+    }
+
     /// Deletes the app's folders no queued change reads any more: a set
     /// pushed, discarded or replaced by another choice.
     func prune(appID: StoreApp.ID, keeping paths: Set<String>) {

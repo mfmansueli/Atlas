@@ -116,6 +116,7 @@ enum PushSchedule {
         return Set(change.pushRequests.map { request in
             InAppEventArtworkPush(request).map { "eventArtwork:\($0.localizationID)" }
                 ?? ProductPageScreenshotsPush(request)?.resourceKey
+                ?? AppPreviewSetPush(request)?.resourceKey
                 ?? request.path
         })
     }

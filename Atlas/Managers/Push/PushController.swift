@@ -573,10 +573,7 @@ extension PushController {
             if let localizationID = sent.localizationID { items[index].createdIDs[ProductPageLocaleWrite.localizationType] = localizationID }
             return true
         }
-        if let screenshots = ProductPageScreenshotsPush(request) {
-            try await send(screenshots, at: index, transport: transport)
-            return true
-        }
+        if try await sendMediaSet(request, at: index, transport: transport) { return true }
         if let artwork = InAppEventArtworkPush(request) {
             defer { items[index].progressNote = nil }
             items[index].createdID = try await artwork.send(

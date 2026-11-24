@@ -150,7 +150,7 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
         }
         // A set takes 10: make room first when the new ones wouldn't fit.
         if old.count + files.count > media.limit {
-            try await delete(old, via: transport, note: note)
+            try await media.delete(old, via: transport, note: note)
             old = []
         }
         var uploaded: [String] = []
@@ -172,43 +172,10 @@ struct ProductPageScreenshotsPush: Hashable, Sendable {
             ? String(localized: "Apple is processing the App Previews") : String(localized: "Apple is processing the screenshots"))
         processing()
         for (id, item) in zip(uploaded, files) {
-            try await waitUntilProcessed(id, fileName: item.file.fileName, via: transport, sleep: sleep, note: note, interval: pollInterval)
+            try await media.waitUntilProcessed(id, fileName: item.file.fileName, via: transport, sleep: sleep, note: note, interval: pollInterval)
         }
-        try await delete(old, via: transport, note: note)
+        try await media.delete(old, via: transport, note: note)
         try await note(transport.send(media.reorder(setID: setID, ids: uploaded)).rateLimit)
         return setID
-    }
-
-    @MainActor
-    private func delete(_ ids: [String], via transport: any PushTransport, note: (AppStoreConnectRateLimit?) -> Void) async throws {
-        for id in ids {
-            do {
-                try await note(transport.send(media.delete(id: id)).rateLimit)
-            } catch AppStoreConnectError.notFound {
-                // Already gone.
-            }
-        }
-    }
-
-    @MainActor
-    private func waitUntilProcessed(
-        _ id: String, fileName: String, via transport: any PushTransport, sleep: (Duration) async throws -> Void,
-        note: (AppStoreConnectRateLimit?) -> Void, interval: () -> Duration
-    ) async throws {
-        var waited: Duration = .zero
-        while true {
-            let response = try await transport.fetch(media.statusPath(id: id))
-            note(response.rateLimit)
-            let state = ScreenshotUploadRequests.deliveryState(in: response.data)
-            if state?.isComplete == true { return }
-            if state?.isFailed == true {
-                let details = state?.errors?.compactMap { $0.description ?? $0.code }.joined(separator: " ")
-                throw ProductPageScreenshotsPushError.refused(fileName: fileName, details: details?.isEmpty == false ? details : nil)
-            }
-            guard waited < Self.timeout else { throw ProductPageScreenshotsPushError.timedOut(fileName: fileName) }
-            let pause = interval()
-            try await sleep(pause)
-            waited += pause
-        }
     }
 }

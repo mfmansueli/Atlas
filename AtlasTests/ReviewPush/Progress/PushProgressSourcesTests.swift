@@ -130,11 +130,47 @@ struct PushProgressSourcesTests {
         #expect(viewer.list.countTitle == "2 of 2")
         #expect(viewer.current.title == "German · App Preview")
         #expect(viewer.current.content == .file(ReviewViewerFile(
-            url: URL(fileURLWithPath: "/tmp/extras/de-DE-preview.mov"), isVideo: true, pixelSize: PixelSize(width: 886, height: 1920)
+            url: URL(fileURLWithPath: "/tmp/extras/de-DE-preview.mov"), isVideo: true, pixelSize: PixelSize(width: 886, height: 1920),
+            hasSound: true
         )))
-        #expect(viewer.current.content.isMotion, "A movie plays on repeat")
-        #expect(viewer.subtitle.hasSuffix("plays muted on repeat"), "\(viewer.subtitle)")
+        // An App Preview plays with its sound and controls, not muted on repeat.
+        #expect(viewer.current.content.isAppPreview)
+        #expect(!viewer.current.content.isMotion)
+        #expect(viewer.current.content.plays)
+        #expect(viewer.subtitle.hasSuffix("click the video to play or pause"), "\(viewer.subtitle)")
         #expect(!viewer.current.comparesSides)
+    }
+
+    @Test func aPushedAppPreviewKnowsItsDevice() {
+        let iPad = ReviewViewerFile(url: URL(fileURLWithPath: "/tmp/p.mov"), isVideo: true, pixelSize: PixelSize(width: 1600, height: 1200), hasSound: true)
+        #expect(iPad.previewFile.displayType == .iPad)
+        let iPhone = ReviewViewerFile(url: URL(fileURLWithPath: "/tmp/p.mov"), isVideo: true, pixelSize: PixelSize(width: 886, height: 1920), hasSound: true)
+        #expect(iPhone.previewFile.displayType == .iPhone)
+        #expect(iPhone.previewFile.seconds == 0, "Its length is read from the movie")
+    }
+
+    @Test func aHeaderLoopStillPlaysMutedOnRepeat() {
+        var loop = ExtrasPushFixtures.header()
+        loop.kind = .motionArtwork(placementTypes: [ExtrasPushKind.productPageHeader])
+        let item = ReviewPushViewModel.viewerItem(loop, status: .waiting)
+        #expect(item.content.isMotion)
+        #expect(!item.content.isAppPreview)
+        #expect(item.subtitle.hasSuffix("plays muted on repeat"), "\(item.subtitle)")
+    }
+
+    /// Board 25: Live Now | New in the push's viewer too.
+    @Test func anUploadComparesWithWhatWasLive() {
+        let cell = ScreenshotCellKey(locale: "de-DE", displayType: .iPhone, slot: 0)
+        let old = LiveScreenshot(id: "live-1", fileName: "old.png", checksum: "abc")
+        let plan = ScreenshotPlanItem(appID: "lumen", cell: cell, slotName: "Today", content: .delete, old: old, source: .you)
+        var upload = ScreenshotUploadItem(plan: plan, groupID: "g", localeName: "German")
+        let item = ReviewPushViewModel.viewerItem(upload: upload)
+        #expect(item.comparesSides)
+        #expect(item.subtitle(.live) == "Live now on App Store Connect")
+        upload.isOldDeleted = true
+        #expect(ReviewPushViewModel.viewerItem(upload: upload).subtitle(.live) == "Live until this push")
+        upload.plan.old = nil
+        #expect(ReviewPushViewModel.viewerItem(upload: upload).subtitle(.live) == "Nothing live in this position: the push adds it")
     }
 
     @Test func eventArtOpensFromItsFile() {

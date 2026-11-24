@@ -23,6 +23,9 @@ import SwiftUI
 /// - The Brief: `ea-brief`, `ea-brief-opts` (words and motion on),
 ///   `ea-brief-nods` (no design project: templates first); `ea-files`
 ///   (the person's files, in the viewer).
+/// - The 860 × 560 minimum window, the sidebar hidden: `ev-s` (the
+///   gallery, two cards to a row), `ev-event-s`, `ev-view-s` and
+///   `ea-brief-s` (the Brief scrolls; Cancel and Make the Artwork stay).
 enum EventArtworkDebugScenes {
     typealias Concepts = DebugEventArtworkConcepts
 
@@ -32,7 +35,11 @@ enum EventArtworkDebugScenes {
         "ev-view", "ev-view-b", "ev-view-details", "ev-view-clean", "ev-view-safe", "ev-view-de", "ev-view-ar", "ev-view-ask",
         "ev-view-redo", "ev-view-making", "ev-view-motion", "ev-full", "ev-full-details",
         "ea-brief", "ea-brief-opts", "ea-brief-nods", "ea-files",
+        "ev-s", "ev-event-s", "ev-view-s", "ea-brief-s",
     ]
+
+    /// The minimum-window scenes and the full-size scene each one draws.
+    static let smallWindow = ["ev-s": "ev-list", "ev-event-s": "ev-event", "ev-view-s": "ev-view", "ea-brief-s": "ea-brief"]
 
     /// What one scene loads: its runs, how the page opens, the setup for
     /// the event's flow, and changes already in Review & Push.
@@ -48,7 +55,9 @@ enum EventArtworkDebugScenes {
     static func view(for id: String) -> AnyView? {
         guard ids.contains(id) else { return nil }
         let studio = EventArtworkStudio.shared
-        let scene = scene(id)
+        // The 860 × 560 boards hide the sidebar.
+        if smallWindow[id] != nil { NavigationDebugLaunch.hidesSidebar = true }
+        let scene = scene(smallWindow[id] ?? id)
         studio.load(scene.runs)
         EventArtworkSheetSize.debugHasDesignSystem = scene.setup.hasDesignSystem
         DebugEventArtworkSetup.pending = scene.setup

@@ -54,6 +54,15 @@ enum MCPEndpoint {
         "http://\(host):\(port)\(screenshotFilePath)\(token)/\(appID)"
     }
 
+    /// Where an App Preview video for the version is uploaded (App Previews
+    /// by hand): `POST /app-preview-file/<token>/<app ID>?name=<file name>`
+    /// with the MOV, MP4 or M4V as the body.
+    static let appPreviewFilePath = "/app-preview-file/"
+
+    static func appPreviewFileUploadURL(port: UInt16, token: String, appID: String) -> String {
+        "http://\(host):\(port)\(appPreviewFilePath)\(token)/\(appID)"
+    }
+
     /// The review screenshot upload link: a subscription's or in-app
     /// purchase's App Review screenshot for `propose_purchase_review_screenshot`.
     static let reviewScreenshotPath = "/review-screenshot/"

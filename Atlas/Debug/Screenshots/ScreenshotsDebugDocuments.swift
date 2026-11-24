@@ -91,7 +91,10 @@ enum ScreenshotsDebugDocuments {
             sets.append(LiveScreenshotSet(id: "set|en-GB|\(display.rawValue)", locale: "en-GB", displayType: display, screenshots: legacy))
         }
         let previews = ["en-US", "ja"].map { locale in
-            LiveAppPreviewSet(id: "preview|\(locale)", locale: locale, displayType: .iPhone, previewCount: 1, durationSeconds: 24)
+            LiveAppPreviewSet(
+                id: "preview|\(locale)", locale: locale, displayType: .iPhone, previewCount: 1, durationSeconds: 24,
+                previews: [LiveAppPreview(id: "preview|\(locale)|0", fileName: "Lumen-\(locale).mov", posterFrameTimeCode: "00:00:05:00")]
+            )
         }
         return LiveScreenshots(screenshotSets: sets, previewSets: previews)
     }

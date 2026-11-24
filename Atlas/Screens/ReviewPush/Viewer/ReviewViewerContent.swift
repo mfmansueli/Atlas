@@ -17,16 +17,20 @@ enum ReviewViewerContent: Hashable {
     /// A file a push sends: a still, or a movie on repeat.
     case file(ReviewViewerFile)
 
+    /// An App Preview: it plays with its sound and controls.
     var isAppPreview: Bool {
-        if case .appPreview = self { return true }
-        return false
+        switch self {
+        case .appPreview: true
+        case let .file(file): file.hasSound
+        case .screenshot, .artwork: false
+        }
     }
 
     /// A motion header or search image: it plays on repeat.
     var isMotion: Bool {
         switch self {
         case let .artwork(item): item.isMotion
-        case let .file(file): file.isVideo
+        case let .file(file): file.isVideo && !file.hasSound
         case .screenshot, .appPreview: false
         }
     }
