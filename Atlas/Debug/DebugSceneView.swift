@@ -122,6 +122,7 @@ struct DebugSceneView: View {
             LoadingDebugScenes.view(for:),
             PaywallDebugScenes.view(for:),
             MCPGapsDebugScenes.view(for:),
+            ReviewRisksDebugScenes.view(for:),
         ]
         return areas.lazy.compactMap { $0(id) }.first
     }

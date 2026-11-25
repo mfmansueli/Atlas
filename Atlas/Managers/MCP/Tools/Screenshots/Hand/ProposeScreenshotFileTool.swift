@@ -10,8 +10,10 @@ import Foundation
 /// after the last one. The file comes from the upload link in
 /// `get_screenshot_context` and is checked like one the person adds: one of
 /// the device's sizes, upright or turned, PNG or JPEG without
-/// transparency, never scaled. It waits on the Screenshots language page
-/// to be accepted or dismissed. Deleting and moving screenshots are
+/// transparency, never scaled. Its text is read with Vision: a file
+/// showing “free”, offers, other platforms, Apple's recognitions or
+/// placeholder text is refused (`ScreenshotFileTextCheck`). It waits on
+/// the Screenshots language page to be accepted or dismissed. Deleting and moving screenshots are
 /// `propose_screenshot_removal`'s and `propose_screenshot_order`'s.
 struct ProposeScreenshotFileTool: MCPTool {
     let definition = MCPToolDefinition(
@@ -27,7 +29,10 @@ struct ProposeScreenshotFileTool: MCPTool {
         being redrawn when the template or caption changes. It waits on the Screenshots language page for the person \
         to accept or dismiss, then in Review & Push. Proposing the same place again replaces the waiting one. Positions \
         are as get_screenshot_context lists the set with the same locale and displayType. To delete screenshots use \
-        propose_screenshot_removal, and to change their order propose_screenshot_order.
+        propose_screenshot_removal, and to change their order propose_screenshot_order. Its text is read too: a \
+        screenshot showing “free”, trial lengths, discounts, other platforms or their stores, Apple’s awards (Editors’ \
+        Choice, App of the Day) or placeholder text is refused with what it shows (App Review Guidelines 2.3.7, 2.3.10, \
+        5.2.5); a price comes back as a note to check.
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withLayers([
@@ -44,6 +49,8 @@ struct ProposeScreenshotFileTool: MCPTool {
     )
 
     var uploads: ScreenshotHandUploads = .shared
+    /// Reads the text in the file; tests pass canned lines.
+    var readText: ScreenshotFileTextCheck.Reader = ScreenshotFileTextCheck.visionReader
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         var draft = try await MCPScreenshotsDraft.load(app: arguments.string("appId"), in: context.workspace)
@@ -65,6 +72,12 @@ struct ProposeScreenshotFileTool: MCPTool {
         if let problem = Self.problem(upload, on: display) {
             return .refused(problem, target: target)
         }
+        let findings = await textFindings(
+            upload, appID: draft.app.id, appName: draft.app.name, language: locale.code, files: draft.services.handFiles
+        )
+        if let refusal = ScreenshotFileTextCheck.refusal(for: findings) {
+            return .refused(refusal, target: target)
+        }
         var file = upload.file
         file.proposedBy = context.clientName
         let proposal = try ScreenshotHandProposal(
@@ -78,13 +91,24 @@ struct ProposeScreenshotFileTool: MCPTool {
         draft.document.handProposals = proposals
         try await draft.save()
         uploads.remove(id: fileID)
-        let result: [String: JSONValue] = [
+        var result: [String: JSONValue] = [
             "status": "queued",
             "proposalId": .string(proposal.id),
             "showsIn": .string("Screenshots → \(locale.name) → \(display.title), to accept or dismiss, then Review & Push"),
             "next": "The person accepts or dismisses it; pushing uploads it. Never push it yourself.",
         ]
+        if let note = ScreenshotFileTextCheck.note(for: findings) { result["check"] = .string(note) }
         return MCPToolOutcome(result: .object(result), isError: false, logLines: [.init(target: target, outcome: .proposed)])
+    }
+
+    /// What App Review rejects in the text Vision reads in the file
+    /// (`ScreenshotTextRules`); none when it can't be read.
+    private func textFindings(
+        _ upload: ScreenshotHandUploads.Upload, appID: StoreApp.ID, appName: String, language: String, files: ScreenshotHandFilesFolder
+    ) async -> [ScreenshotTextFinding] {
+        guard let image = files.image(for: upload.file, appID: appID, pixelWidth: ScreenshotFileTextCheck.readingWidth),
+              let lines = await readText(image, language) else { return [] }
+        return ScreenshotTextRules.findings(in: lines, appName: appName)
     }
 
     /// Why the file can't go into the device's set; nil when it fits.

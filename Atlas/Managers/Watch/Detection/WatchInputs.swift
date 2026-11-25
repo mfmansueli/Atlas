@@ -50,6 +50,13 @@ struct WatchInputs: Hashable, Sendable {
     var themes: [ReviewTheme] = []
     /// What the version being prepared still lacks.
     var blockers: [WatchSubmissionBlocker] = []
+    /// The App Review checks' last findings (`ReviewRiskCenter`), the
+    /// person's dismissals left out.
+    var reviewRisks: [ReviewRisk] = []
+    /// Checks only the project answers that no assistant has answered yet.
+    var unansweredProjectChecks: [ReviewRiskCheckID] = []
+    /// Atlas knows the app's project folder.
+    var hasProjectFolder = false
 
     init(appID: StoreApp.ID, appName: String, now: Date) {
         self.appID = appID

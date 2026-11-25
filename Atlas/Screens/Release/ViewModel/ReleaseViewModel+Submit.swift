@@ -142,7 +142,7 @@ extension ReleaseViewModel {
             attachedBuildID: status.attachedBuildID,
             usesNonExemptEncryption: answer?.usesNonExemptEncryption == build.usesNonExemptEncryption ? nil : answer?.usesNonExemptEncryption,
             timing: options.releaseTiming, isPhased: options.isPhased,
-            eventIDs: tickedEvents.map(\.id)
+            eventIDs: tickedEvents.map(\.id), products: tickedProducts
         )
         do {
             try await services.release.submit(plan)

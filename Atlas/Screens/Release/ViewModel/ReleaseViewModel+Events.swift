@@ -100,6 +100,9 @@ extension ReleaseViewModel {
             lines.append(String(localized: "App Store Connect didn’t add the In-App Event \(name(id)) to the submission. \(named)"))
         case let .removeEvent(id):
             lines.append(String(localized: "App Store Connect didn’t take the In-App Event \(name(id)) out of the submission. \(named)"))
+        case let .addProduct(id):
+            let product = plan.products.first { $0.id == id }.map(\.title) ?? String(localized: "a subscription or in-app purchase", comment: "kind:error")
+            lines.append(String(localized: "App Store Connect didn’t submit \(product) with the version. \(named)", comment: "kind:error"))
         case .send:
             lines.append(String(localized: "App Store Connect didn’t send the submission to App Review. \(named)"))
             let withoutLink = plan.eventIDs.compactMap { id in events.first { $0.id == id } }
@@ -156,7 +159,7 @@ extension ReleaseViewModel {
         case .send:
             let named = plan.eventIDs.filter { failure.message.contains("(\(AppStoreConnectError.eventMarker)\($0))") }
             return named.isEmpty ? plan.eventIDs : named
-        case .attachBuild, .encryption, .release, .phasedRelease, .createSubmission, .addVersion, .removeEvent: return []
+        case .attachBuild, .encryption, .release, .phasedRelease, .createSubmission, .addVersion, .removeEvent, .addProduct: return []
         }
     }
 

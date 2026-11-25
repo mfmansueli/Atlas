@@ -25,6 +25,9 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
     case suggestAll = "suggest_all"
     /// What Start Autopilot copies: drive the Screenshot Autopilot run.
     case runScreenshots = "run_screenshots"
+    /// Every App Review risk Atlas finds, the project checks, and a fix
+    /// proposed for each.
+    case checkAppReview = "check_app_review"
 
     var id: Self { self }
     var name: String { rawValue }
@@ -47,6 +50,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .suggest: "Suggest field values"
         case .suggestAll: "Suggest everything"
         case .runScreenshots: "Run Screenshot Autopilot"
+        case .checkAppReview: "Check what App Review may reject"
         }
     }
 
@@ -64,6 +68,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .suggest: String(localized: "Suggest Store Page or App Information values for the person to accept")
         case .suggestAll: String(localized: "Suggest every Store Page and App Information field, prices and App Privacy the code can answer")
         case .runScreenshots: String(localized: "Capture the app in Simulator for the screenshot run the person started, step by step")
+        case .checkAppReview: String(localized: "Find what App Review may reject, check the project and suggest each fix")
         }
     }
 
@@ -73,6 +78,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .fillPrivacyFromCode: ["list_apps", "get_privacy_questionnaire", "propose_privacy_answers"]
         case .fillAgeRating: ["list_apps", "get_age_rating", "propose_age_rating"]
         case .fillCompliance: ["list_apps", "get_compliance", "propose_compliance_answers"]
+        case .checkAppReview: ["list_apps", "get_review_risks", "report_review_risk"]
         case .whatsNewFromGit: ["list_apps", "get_listing", "propose_listing_text"]
         case .translateCaptions: ["list_apps", "get_screenshot_context", "get_captions", "get_capture", "measure_caption", "propose_captions"]
         case .shortenOverflowingCaptions: ["list_apps", "get_captions", "measure_caption", "propose_captions"]
@@ -155,8 +161,29 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         """
     }
 
+    /// `check_app_review`: read the risks, answer the project checks, propose each fix.
+    private func checkAppReviewInstructions(appPhrase: String) -> String {
+        """
+        Use Atlas to check what App Review may reject in \(appPhrase). Call list_apps for its appId, then \
+        get_review_risks with refresh true. Then:
+        1. For each check in projectChecks that isn't answered (account deletion, Sign in with Apple, permission \
+        texts), read this project (Swift files, Info.plist, entitlements, Package.resolved) and call \
+        report_review_risk with verdict confirmed or cleared and file:line evidence.
+        2. For each risk whose fix names a tool, propose the fix with that tool and the arguments it gives, in the \
+        risk's language. \(StoreTextRules.summary) A rewrite keeps every Terms of Use and Privacy Policy link.
+        3. China mainland's AI content and Security Assessment: propose the answer with propose_compliance_answers \
+        only when the project shows it; never make up a filing number.
+        4. Risks only App Store Connect fixes (App Compliance documents, the license agreement): tell the person \
+        where.
+        End with the risks in order (blocks review first): what you proposed, what's left for the person, and what \
+        couldn't be checked. Never say the app is ready while notChecked isn't empty.
+        """
+    }
+
     private func instructions(appPhrase: String) -> String {
         switch self {
+        case .checkAppReview:
+            checkAppReviewInstructions(appPhrase: appPhrase)
         case .translateMissing:
             """
             Use Atlas to translate the missing store-page fields of \(appPhrase). Call list_apps to get its \

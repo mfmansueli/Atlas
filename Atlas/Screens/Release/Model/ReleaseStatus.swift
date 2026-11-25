@@ -18,6 +18,9 @@ struct ReleaseStatus: Hashable, Sendable {
     /// App Review's contact (and the demo account, when sign-in is needed)
     /// are filled in.
     var isReviewInformationComplete = true
+    /// Subscriptions and in-app purchases Ready to Submit, which can go to
+    /// App Review with the version (read before submitting).
+    var productsToSubmit: [SubmissionProduct] = []
 
     var phase: ReleasePhase {
         ReleasePhase(state: version.state, phased: phased)

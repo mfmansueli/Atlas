@@ -25,10 +25,11 @@ struct GetReleaseTool: MCPTool {
         first; only VALID ones that haven't expired can be chosen), defaultBuildId, whatsNew per language (missing, \
         suggested, notPushed), encryption (the answer known for the default build, null when none), \
         reviewInformationComplete, pendingChanges in Review & Push (they're pushed with the submission), \
-        offeredEvents that could go with it, and submitBlockers. A rejected version has rejection: App Review's \
-        message isn't in the API, so ask the person. `proposals` lists the release actions proposed for the app \
-        (pending, outdated with whyOutdated, confirmed, dismissed, withdrawn, replaced). Propose one with \
-        propose_release_action.
+        offeredEvents that could go with it, productsToSubmit (subscriptions and in-app purchases Ready to Submit, \
+        which Submit sends with the version; firstOfItsKind ones only reach App Review with a version), and \
+        submitBlockers. A rejected version has rejection: App Review's message isn't in the API, so ask the person. \
+        `proposals` lists the release actions proposed for the app (pending, outdated with whyOutdated, confirmed, \
+        dismissed, withdrawn, replaced). Propose one with propose_release_action.
         """,
         inputSchema: MCPToolDefinition.schema(
             [

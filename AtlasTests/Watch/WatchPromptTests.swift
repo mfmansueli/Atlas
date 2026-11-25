@@ -9,6 +9,7 @@ import Testing
 
 /// The prompt a run starts with names only Atlas's real tools, keeps the
 /// expensive ones away, and says nothing for local-only findings.
+@MainActor
 @Suite("Look for Improvements · prompt")
 struct WatchPromptTests {
     private typealias Data = WatchTestData

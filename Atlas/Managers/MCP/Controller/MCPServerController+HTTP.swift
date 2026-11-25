@@ -189,6 +189,7 @@ extension MCPServerController {
                 editsDrafts: editsDrafts,
                 port: port,
                 simulators: launcher?.simulators,
+                launcher: launcher,
                 origin: origin
             )
             return try await tool.call(arguments, in: context)

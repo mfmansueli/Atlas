@@ -186,6 +186,9 @@ struct SubmitForReviewSheet: View {
                 .toggleStyle(.checkbox)
                 .accessibilityIdentifier("submit.pushChanges")
             }
+            ForEach(viewModel.offeredProducts) { product in
+                SubmitProductRow(viewModel: viewModel, product: product)
+            }
             ForEach(viewModel.offeredEvents) { event in
                 SubmitEventRow(viewModel: viewModel, event: event) { need in
                     dismiss()
@@ -297,6 +300,9 @@ struct SubmitForReviewSheet: View {
                     .font(.callout)
                     .accessibilityIdentifier("submit.error")
             }
+            if let reviewRisks, !reviewRisks.isClear {
+                reviewRisksLine(reviewRisks)
+            }
             HStack(spacing: Spacing.small) {
                 if viewModel.isSubmitting {
                     ProgressView()
@@ -325,5 +331,29 @@ struct SubmitForReviewSheet: View {
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.vertical, Spacing.medium)
+    }
+
+    // MARK: - App Review risks
+
+    /// The app's last App Review check (Overview, Look for Improvements or
+    /// the assistant ran it); nil before the first.
+    private var reviewRisks: ReviewRiskReport? {
+        ReviewRiskCenter.shared.lastReport(for: viewModel.app.id)
+    }
+
+    /// "2 things App Review may reject" with Show, which opens them in
+    /// Overview. It warns; it never stops the submission.
+    private func reviewRisksLine(_ report: ReviewRiskReport) -> some View {
+        HStack(spacing: Spacing.small) {
+            InlineMessage.warning(report.summary)
+                .font(.callout)
+                .accessibilityIdentifier("submit.reviewRisks")
+            Button(String(localized: "Show", comment: "kind:button · opens the App Review risks in Overview")) {
+                dismiss()
+                navigator.open(.overview)
+            }
+            .buttonStyle(.link)
+            .accessibilityIdentifier("submit.reviewRisks.show")
+        }
     }
 }

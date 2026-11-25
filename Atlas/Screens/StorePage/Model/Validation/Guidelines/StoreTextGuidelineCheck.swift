@@ -10,12 +10,15 @@ import Foundation
 /// betas, placeholders, "coming soon" and "For Kids"
 /// (`StoreTextGuidelineKind`). Assistants' proposals that break one are
 /// refused with the reason; the Store Page and Review & Push warn the
-/// person, who can still push what they typed.
+/// person, who can still push what they typed. Inside an MCP tool,
+/// `StoreTextGuidelineAllowance.current` drops what the app may say ("For
+/// Kids" in the Kids Category, its approved name's words).
 nonisolated enum StoreTextGuidelineCheck {
     /// The rules `text` breaks in `field`, in `StoreTextGuidelineKind`'s
     /// order; none for URLs.
     static func issues(in text: String, for field: ListingField) -> [StoreTextGuidelineIssue] {
-        issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter { $0.applies(to: field) })
+        let found = issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter { $0.applies(to: field) })
+        return StoreTextGuidelineAllowance.current.allowed(found, in: field)
     }
 
     /// The rules an in-app text breaks. An in-app purchase may name a
@@ -25,23 +28,26 @@ nonisolated enum StoreTextGuidelineCheck {
     /// App Store shows itself (3.1.2(a)), so theirs are pricing.
     static func issues(in text: String, for field: InAppTextField) -> [StoreTextGuidelineIssue] {
         let allowsTrials = field == .purchaseName || field == .purchaseDescription
-        return issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter { $0.applies(to: field) }, allowingTrials: allowsTrials)
+        let found = issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter { $0.applies(to: field) }, allowingTrials: allowsTrials)
+        return StoreTextGuidelineAllowance.current.allowed(found, in: nil)
     }
 
     /// The rules a screenshot caption breaks: its headline and subhead.
     static func issues(inCaption headline: String, subhead: String? = nil) -> [StoreTextGuidelineIssue] {
         let text = [headline, subhead ?? ""].filter { !$0.isEmpty }.joined(separator: "\n")
-        return issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter(\.checksCaptions))
+        let found = issues(in: text, kinds: StoreTextGuidelineKind.allCases.filter(\.checksCaptions))
+        return StoreTextGuidelineAllowance.current.allowed(found, in: nil)
     }
 
     /// The rules an In-App Event text, retention message or review reply
     /// breaks, each worded for its place (`StoreTextGuidelinePlace`).
     static func issues(in text: String, for place: StoreTextGuidelinePlace) -> [StoreTextGuidelineIssue] {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return [] }
-        return place.kinds.compactMap { kind in
+        let found: [StoreTextGuidelineIssue] = place.kinds.compactMap { kind in
             let phrases = phrases(in: text, matching: StoreTextGuidelinePatterns.expressions(for: kind, in: place))
             return phrases.isEmpty ? nil : StoreTextGuidelineIssue(kind: kind, phrases: phrases, place: place)
         }
+        return StoreTextGuidelineAllowance.current.allowed(found, in: nil)
     }
 
     static func issues(in text: String, kinds: [StoreTextGuidelineKind], allowingTrials: Bool = false) -> [StoreTextGuidelineIssue] {

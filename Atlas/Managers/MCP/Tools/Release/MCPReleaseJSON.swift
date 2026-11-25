@@ -41,6 +41,7 @@ enum MCPReleaseJSON {
             object["builds"] = .array(status.builds.map { MCPAppVersions.json($0, attached: $0.id == status.attachedBuildID) })
             object["defaultBuildId"] = ReleaseViewModel.defaultBuildID(in: status).map(JSONValue.string) ?? .null
             object["reviewInformationComplete"] = .bool(status.isReviewInformationComplete)
+            object["productsToSubmit"] = .array(status.productsToSubmit.map(productJSON))
             if let readiness { object.merge(readinessJSON(readiness, status: status)) { _, new in new } }
         }
         return .object(object)
@@ -70,6 +71,20 @@ enum MCPReleaseJSON {
             "state": .string(submission.state),
             "submittedDate": submission.submitted.map { .string($0.formatted(.iso8601)) } ?? .null,
             "items": .array(items),
+        ]
+    }
+
+    /// A subscription or in-app purchase Ready to Submit, which Submit
+    /// sends with the version when it's ticked (all are, unless
+    /// propose_release_action's productIds says otherwise).
+    private static func productJSON(_ product: SubmissionProduct) -> JSONValue {
+        [
+            "id": .string(product.id),
+            "productId": .string(product.productID),
+            "name": .string(product.name),
+            "kind": .string(product.isSubscription ? "subscription" : "inAppPurchase"),
+            "state": .string(SubmissionProduct.readyToSubmit),
+            "firstOfItsKind": .bool(product.isFirst),
         ]
     }
 
@@ -155,6 +170,7 @@ enum MCPReleaseJSON {
             if let date = submission.releaseDate { choices["releaseDate"] = .string(date.formatted(.iso8601)) }
             if let encryption = submission.encryption { choices["encryption"] = .string(encryption) }
             if let ids = submission.eventIDs { choices["eventIds"] = .array(ids.map(JSONValue.string)) }
+            if let ids = submission.productIDs { choices["productIds"] = .array(ids.map(JSONValue.string)) }
             if let pushes = submission.pushesChanges { choices["pushesChanges"] = .bool(pushes) }
             object["submit"] = .object(choices)
         }

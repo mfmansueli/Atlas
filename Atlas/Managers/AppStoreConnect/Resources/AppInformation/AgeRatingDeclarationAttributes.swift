@@ -33,6 +33,11 @@ struct AgeRatingDeclarationAttributes: Decodable, Sendable {
     /// `ageRatingOverrideV2`: `NONE`, `NINE_PLUS` … `EIGHTEEN_PLUS`, `UNRATED`.
     var ageRatingOverride: String? { values["ageRatingOverrideV2"]?.stringValue }
 
+    /// `kidsAgeBand`: `FIVE_AND_UNDER`, `SIX_TO_EIGHT` or `NINE_TO_ELEVEN`
+    /// for an app in the Kids Category, else null. `AgeRatingValues` reads it
+    /// from the same values.
+    var kidsAgeBand: String? { values[AgeRatingValues.kidsAgeBandKey]?.stringValue }
+
     private struct AnyKey: CodingKey {
         var stringValue: String
         var intValue: Int? { nil }

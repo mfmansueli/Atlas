@@ -45,6 +45,14 @@ enum WatchPrompt {
         case .whatsNewMissing: Tools(reads: ["get_release", "get_listing"], proposes: ["suggest_fields"])
         case .eventDeadline: Tools(reads: ["get_in_app_events"], proposes: ["propose_event_texts", "propose_event_details", "report_deep_link_check"])
         case .reviewsAfterRelease: Tools(reads: ["get_reviews"], proposes: ["propose_review_themes"])
+        case .appReviewRisk:
+            Tools(
+                reads: ["get_review_risks", "get_listing", "get_age_rating", "get_compliance"],
+                proposes: [
+                    "suggest_fields", "propose_listing_text", "propose_in_app_texts", "propose_age_rating", "propose_compliance_answers",
+                    "propose_captions", "report_review_risk",
+                ]
+            )
         case .submissionBlocked, .versionRejected: Tools(reads: [], proposes: [])
         }
     }
@@ -112,6 +120,14 @@ enum WatchPrompt {
             Read get_reviews with show "all" (it also has the groups sent before). Send propose_review_themes with the subjects \
             people write about since version \(signal.subject), most mentioned first, keeping the groups sent before that still \
             hold: the call replaces them. Don't reply to reviews.
+            """
+        case .appReviewRisk:
+            """
+            Read get_review_risks for appId "\(signal.appID)". For each risk whose fix names a tool, propose that fix with it, in \
+            the risk's language, following the store text rules (a rewrite must keep every Terms of Use and Privacy Policy \
+            link). Leave risks only App Store Connect can fix (App Compliance, the license agreement) to the person. For each \
+            project check in projectChecks that isn't answered, read the project (files and read-only git) and call \
+            report_review_risk with verdict confirmed or cleared and file:line evidence. Never guess a filing number.
             """
         case .submissionBlocked, .versionRejected:
             ""

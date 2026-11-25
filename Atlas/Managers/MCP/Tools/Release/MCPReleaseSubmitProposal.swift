@@ -27,6 +27,7 @@ struct MCPReleaseSubmitProposal {
         let timing = try proposal.timing(from: arguments, version: status.version, now: now)
         let encryption = try proposal.encryption(from: arguments, build: build, readiness: readiness)
         let eventIDs = try proposal.events(from: arguments, readiness: readiness)
+        let productIDs = try proposal.products(from: arguments, status: status)
         proposal.checkWhatsNew(readiness)
         if !status.isReviewInformationComplete {
             proposal.refusals.append(String(localized: """
@@ -41,7 +42,7 @@ struct MCPReleaseSubmitProposal {
         proposal.submission = try ReleaseProposalSubmission(
             buildID: build.id, buildNumber: build.number, releaseType: timing.releaseType, releaseDate: timing.date,
             isPhased: arguments.optionalBool("phasedRelease") ?? true, encryption: encryption?.rawValue, eventIDs: eventIDs,
-            pushesChanges: arguments.optionalBool("pushesChanges")
+            pushesChanges: arguments.optionalBool("pushesChanges"), productIDs: productIDs
         )
         return proposal
     }
@@ -176,6 +177,32 @@ struct MCPReleaseSubmitProposal {
             The sheet checks each event's deep link, dates and art before Submit; get_in_app_events' missingForReview says \
             what's left.
             """))
+        }
+        return kept
+    }
+
+    // MARK: - Products
+
+    /// `productIds`: each must be Ready to Submit (get_release's
+    /// productsToSubmit). Nil leaves the sheet's ticks: all of them.
+    private mutating func products(from arguments: MCPToolArguments, status: ReleaseStatus) throws -> [SubmissionProduct.ID]? {
+        guard let ids = try arguments.optionalStrings("productIds") else { return nil }
+        let offered = status.productsToSubmit
+        var kept: [SubmissionProduct.ID] = []
+        for id in ids {
+            guard let product = offered.first(where: { $0.id == id || $0.productID == id }) else {
+                let names = offered.map { "\($0.name) (\($0.productID))" }
+                refusals.append(names.isEmpty
+                    ? String(localized: "\(id) can’t go with the version: no subscription or in-app purchase is Ready to Submit (get_subscriptions).")
+                    : String(localized: "\(id) isn’t Ready to Submit. These are: \(names.formatted(.list(type: .or)))."))
+                continue
+            }
+            if !kept.contains(product.id) { kept.append(product.id) }
+        }
+        let left = offered.filter { $0.isFirst && !kept.contains($0.id) }
+        if !left.isEmpty {
+            let names = left.map { "\($0.name) (\($0.productID))" }.formatted(.list(type: .and))
+            notes.append(String(localized: "\(names) only reach App Review with a version: left out, they wait for the next one."))
         }
         return kept
     }

@@ -22,7 +22,10 @@ struct ProposeListingTextTool: MCPTool {
         [{kind, guideline, phrases}]: pricing such as “free”, prices, discounts or trials (2.3.7), other platforms \
         (2.3.10), other apps' names or unverifiable claims in the name, subtitle or keywords (2.3.7), beta or demo \
         (2.2), placeholders (2.1), “coming soon” (2.3) or “For Kids” (2.3.8); get_listing's storeTextRules has them \
-        all. Accepted proposals are queued for the person to review in Atlas (status "queued"); nothing reaches App Store Connect until they push. Fields: \
+        all. “For Kids” is taken when the app has a Kids age band, and words already in the app's approved name \
+        are taken in the name and subtitle. A description that drops the Terms of Use (EULA) or Privacy Policy \
+        link the current one has is refused too (code "drops_link"): keep the link. \
+        Accepted proposals are queued for the person to review in Atlas (status "queued"); nothing reaches App Store Connect until they push. Fields: \
         \(ListingField.mcpNames.joined(separator: ", ")). Pass `version` with a new version queued with \
         propose_app_version to write its texts (whatsNew, description, keywords…, and name, subtitle and privacy \
         URLs, which only change with a new version) before it's in App Store Connect: they wait with it in \
@@ -100,14 +103,32 @@ struct ProposeListingTextTool: MCPTool {
             in: context.workspace
         )
         try draft.addLanguages(arguments.optionalStrings("addLanguages") ?? [])
-        let outcomes = proposals.map { draft.propose($0.text, for: $0.field, locale: $0.locale, by: context.clientName) }
+        // What the app may say ("For Kids" in the Kids Category, its approved
+        // name's words) isn't refused; a description that drops its Terms of
+        // Use or Privacy Policy link is.
+        let allowance = await StoreTextGuidelineAllowance.load(
+            for: draft.app,
+            listing: draft.listing,
+            readsAgeRating: StoreTextGuidelineAllowance.needsAgeRating(proposals.map { ($0.text, $0.field) }),
+            services: context.workspace.services
+        )
+        let linkRefusals = proposals.map { Self.droppedLinks($0, in: draft.listing) }
+        let outcomes = Self.propose(proposals, skipping: linkRefusals, into: &draft, allowance: allowance, client: context.clientName)
         let changeIDs = draft.commit(to: context.workspace.changes)
         draft.holdAddedLanguages(in: context.workspace.changes)
 
         var results: [JSONValue] = []
         var logLines: [MCPToolOutcome.LogLine] = []
         var settled: [ListingProposalOutcome] = []
-        for (proposal, proposed) in zip(proposals, outcomes) {
+        var linkRefused = 0
+        for (index, proposal) in proposals.enumerated() {
+            if let reason = linkRefusals[index] {
+                linkRefused += 1
+                results.append(Self.linkRefusal(proposal, reason: reason))
+                logLines.append(MCPToolOutcome.LogLine(target: draft.target(locale: proposal.locale, field: proposal.field), outcome: .refused, reason: reason))
+                continue
+            }
+            guard let proposed = outcomes[index] else { continue }
             let changeID = StoreLocaleCatalog.locale(code: proposal.locale).flatMap { changeIDs[ListingFieldKey($0, proposal.field)] }
             // Proposed back to App Store Connect's text: nothing stays queued.
             let outcome = proposed.isQueued && changeID == nil ? .unchanged : proposed
@@ -120,13 +141,49 @@ struct ProposeListingTextTool: MCPTool {
         var summary: [String: JSONValue] = [
             "results": .array(results),
             "queued": .int(settled.count(where: \.isQueued)),
-            "refused": .int(settled.count(where: \.isRefused)),
+            "refused": .int(settled.count(where: \.isRefused) + linkRefused),
         ]
         if !draft.addedLanguages.isEmpty {
             summary["addedLanguages"] = .array(draft.addedLanguages.map { .string($0.code) })
             summary["note"] = "Each added language's page waits in Review & Push until the person accepts it."
         }
         return MCPToolOutcome(result: .object(summary), isError: false, logLines: logLines)
+    }
+
+    /// Each proposal into the draft with `allowance` bound; nil for one
+    /// refused for its links.
+    private static func propose(
+        _ proposals: [Proposal],
+        skipping linkRefusals: [String?],
+        into draft: inout MCPListingDraft,
+        allowance: StoreTextGuidelineAllowance,
+        client: String
+    ) -> [ListingProposalOutcome?] {
+        StoreTextGuidelineAllowance.$current.withValue(allowance) {
+            zip(proposals, linkRefusals).map { proposal, refusal -> ListingProposalOutcome? in
+                refusal == nil ? draft.propose(proposal.text, for: proposal.field, locale: proposal.locale, by: client) : nil
+            }
+        }
+    }
+
+    /// The refusal of a description that drops the Terms of Use or Privacy
+    /// Policy link the current one has (`StoreTextKeptLinks`), or nil.
+    private static func droppedLinks(_ proposal: Proposal, in listing: StoreListing) -> String? {
+        guard proposal.field == .description, let locale = StoreLocaleCatalog.locale(code: proposal.locale), listing.contains(locale) else {
+            return nil
+        }
+        let current = listing.draft(.description, in: locale)
+        return StoreTextKeptLinks.refusal(StoreTextKeptLinks.dropped(from: "\(current.remote)\n\(current.local)", in: proposal.text))
+    }
+
+    private static func linkRefusal(_ proposal: Proposal, reason: String) -> JSONValue {
+        [
+            "locale": .string(proposal.locale),
+            "field": .string(proposal.field.rawValue),
+            "status": "refused",
+            "code": "drops_link",
+            "reason": .string(reason),
+        ]
     }
 
     private static func result(_ proposal: Proposal, outcome: ListingProposalOutcome, changeID: PendingChange.ID?) -> JSONValue {

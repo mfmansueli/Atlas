@@ -15,6 +15,10 @@ enum WatchSignalKind: String, CaseIterable, Codable, Hashable, Sendable, Identif
     case submissionBlocked
     /// App Review sent the version back.
     case versionRejected
+    /// Atlas's App Review checks (`ReviewRiskEngine`) found risks an
+    /// assistant can fix with a proposal, or project checks only the code
+    /// answers (account deletion, Sign in with Apple, permission texts).
+    case appReviewRisk
     /// An In-App Event whose card shows within a week still misses what App
     /// Review or its languages need.
     case eventDeadline
@@ -33,7 +37,7 @@ enum WatchSignalKind: String, CaseIterable, Codable, Hashable, Sendable, Identif
     var isLocalOnly: Bool {
         switch self {
         case .submissionBlocked, .versionRejected: true
-        case .eventDeadline, .whatsNewMissing, .crashesWorse, .reviewsAfterRelease: false
+        case .appReviewRisk, .eventDeadline, .whatsNewMissing, .crashesWorse, .reviewsAfterRelease: false
         }
     }
 

@@ -151,6 +151,8 @@ struct MCPToolbox {
             GetPushHistoryTool(),
             GetSettingsTool(),
             GetOverviewTool(),
+            GetReviewRisksTool(),
+            ReportReviewRiskTool(),
             GetAssetLibraryTool(),
             ProposeAssetLibraryCleanupTool(),
             ProposeEventSubmissionTool(),

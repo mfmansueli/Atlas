@@ -24,6 +24,16 @@ struct AgeRatingValues: Hashable, Sendable {
         return true
     }
 
+    /// `kidsAgeBand`: `FIVE_AND_UNDER`, `SIX_TO_EIGHT` or `NINE_TO_ELEVEN`
+    /// when the app is in the Kids Category; nil otherwise.
+    var kidsAgeBand: String? { apiValues[Self.kidsAgeBandKey]?.stringValue }
+
+    /// The app is in the Kids Category: "For Kids" is its to use (2.3.8).
+    var isKidsCategory: Bool { !(kidsAgeBand ?? "").isEmpty }
+
+    /// The declaration's attribute name.
+    static let kidsAgeBandKey = "kidsAgeBand"
+
     var preview: AgeRatingPreview {
         AgeRatingCalculator.preview(for: answers, override: override)
     }

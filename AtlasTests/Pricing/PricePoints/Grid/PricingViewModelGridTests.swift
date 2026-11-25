@@ -49,7 +49,8 @@ struct PricingViewModelGridTests {
         #expect(card.suggestion == nil)
         #expect(card.gridFailure != nil)
         #expect(model.openPriceSuggestionCount == 0)
-        #expect(model.countriesGrid(productID: Fixtures.annual().id)?.failure != nil)
+        let annualID = try Fixtures.annual().id
+        #expect(model.countriesGrid(productID: annualID)?.failure != nil)
     }
 
     @Test func readAheadWaitsWhileTheQuotaIsLow() async throws {

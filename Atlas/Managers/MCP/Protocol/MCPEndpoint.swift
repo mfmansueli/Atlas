@@ -104,7 +104,10 @@ enum MCPEndpoint {
     and app information. Read with the list_ and get_ tools. \(voice) Change things with the propose_ tools: each \
     proposal is validated like a manual edit and queued in Atlas, where the person reviews and pushes \
     it. You can't push, and nothing reaches App Store Connect until the person does. When a proposal is \
-    refused, the reason says how to fix it. Read only what you need: whole answers can outgrow what you take in at \
+    refused, the reason says how to fix it. To find what App Review may reject (store texts, subscription terms, \
+    links, age rating, China mainland's declarations, the project's sign-in and permissions), start with \
+    get_review_risks: each risk names its guideline and the propose_ tool that fixes it; confirm or clear the \
+    project checks with report_review_risk. Read only what you need: whole answers can outgrow what you take in at \
     once, so get_listing takes locales and fields (e.g. fields: ["whatsNew"]) and get_in_app_events takes eventId \
     and include. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
     starts one, call get_capture_plan, then next_step after each step until it says done. A simulator this Mac \

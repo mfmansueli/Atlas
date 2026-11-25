@@ -16,6 +16,7 @@ extension MainWindowBackground {
             center.noteProposal(origin: origin, tool: tool, lines: lines)
         }
         let now = center.now()
+        await refreshOldestReviewRisks(now: now)
         let reader = WatchInputsReader(
             analytics: analytics, releases: releases, reviews: reviews, events: .shared, launcher: launcher, services: services,
             keptModels: watchSources.keptModels
@@ -32,6 +33,25 @@ extension MainWindowBackground {
             )
         }
         await center.check(inputs, context: watchContext(), dedupe: dedupe, suggestions: watchSources.suggestions, launcher: launcher)
+    }
+
+    /// App Review risks older than this are checked again in the background.
+    static var reviewRiskMaximumAge: TimeInterval { 24 * 3600 }
+
+    /// Runs the App Review checks again for the one app whose report is the
+    /// oldest (or missing) and older than a day, so each hourly check asks
+    /// App Store Connect for one app at most.
+    private func refreshOldestReviewRisks(now: Date) async {
+        guard let changes = watchSources.changes else { return }
+        let risks = ReviewRiskCenter.shared
+        let due = library.apps
+            .map { app in (app, risks.lastReport(for: app.id)?.checkedAt ?? .distantPast) }
+            .filter { now.timeIntervalSince($0.1) >= Self.reviewRiskMaximumAge }
+            .min { $0.1 < $1.1 }
+        guard let (app, _) = due, !risks.checking.contains(app.id) else { return }
+        let apps = library.apps
+        let loader = ReviewRiskFactsLoader(services: services, changes: changes, apps: { apps }, launcher: launcher)
+        await risks.check(app, loader: loader, refresh: true)
     }
 
     /// The switch, Pro, Claude Code and the apps' folders, the runs going

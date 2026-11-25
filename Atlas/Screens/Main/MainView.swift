@@ -449,6 +449,7 @@ extension MainView {
                 isPro: { [pro] in pro?.isFree != true },
                 keptModels: { [sectionModels] in sectionModels.keptModels(for: $0) },
                 suggestions: suggestions,
+                changes: changes,
                 quota: { [currentAccountID] in currentAccountID.flatMap { AppStoreConnectQuota.shared.rateLimit(keyID: $0) } }
             )
         )

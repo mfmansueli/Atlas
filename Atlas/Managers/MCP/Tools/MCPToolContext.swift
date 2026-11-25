@@ -22,6 +22,9 @@ struct MCPToolContext {
     /// This Mac's simulators, through the Claude Code helper: Autopilot
     /// records iPhone Duo's inner display with them. Nil without a launcher.
     var simulators: MacSimulators?
+    /// Reads the app's project folder for the App Review checks; nil
+    /// without a launcher (tests, DEBUG scenes).
+    var launcher: ClaudeCodeLauncher?
     /// How many simulators this Mac can run at once right now; tests pin it.
     var macCapacity: @Sendable () -> MacCapacity = { .current }
     /// Why Atlas started the run that called, when it was for a reason of

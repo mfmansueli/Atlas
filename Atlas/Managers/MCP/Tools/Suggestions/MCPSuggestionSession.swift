@@ -31,6 +31,9 @@ struct MCPSuggestionSession {
     private(set) var listing: MCPListingDraft?
     private(set) var information: MCPAppInformationDraft?
     private var hasAppliedStoreText = false
+    /// What the app may say in store text: "For Kids" with a Kids age band,
+    /// its approved name's words in the name and subtitle.
+    private var allowance = StoreTextGuidelineAllowance()
 
     init(
         app: StoreApp,
@@ -60,6 +63,19 @@ struct MCPSuggestionSession {
                 includesPrivacyURLs: items.contains { $0.page.flatMap(SuggestFieldsTool.page(named:)) == .appPrivacy }
             )
             : nil
+        let storeTexts = items.compactMap { item -> (String, ListingField)? in
+            guard item.area == .storePage, let field = ListingField.matching(item.field) else { return nil }
+            return (item.value, field)
+        }
+        if !storeTexts.isEmpty {
+            allowance = await StoreTextGuidelineAllowance.load(
+                for: app,
+                listing: listing?.listing,
+                readsAgeRating: StoreTextGuidelineAllowance.needsAgeRating(storeTexts),
+                ageRating: information?.content.ageRating,
+                services: context.workspace.services
+            )
+        }
     }
 
     /// A `version` argument must be the one being prepared.
@@ -134,7 +150,9 @@ struct MCPSuggestionSession {
             result["status"] = "unchanged"
             noteSettled(.storePage(locale, field))
         } else if applies || listing?.queuedVersion != nil, var draft = listing, draft.listing.contains(locale) {
-            _ = draft.propose(item.value, for: field, locale: locale.code, by: context.clientName)
+            _ = StoreTextGuidelineAllowance.$current.withValue(allowance) {
+                draft.propose(item.value, for: field, locale: locale.code, by: context.clientName)
+            }
             listing = draft
             hasAppliedStoreText = true
             result["status"] = "applied"
@@ -161,8 +179,15 @@ struct MCPSuggestionSession {
         case .invalidURL: throw .invalidValue(String(localized: "Not a full https:// URL."))
         case .empty: throw .invalidValue(String(localized: "The value is empty."))
         case .valid:
-            let issues = StoreTextGuidelineCheck.issues(in: item.value, for: field)
+            let issues = allowance.allowed(StoreTextGuidelineCheck.issues(in: item.value, for: field), in: field)
             guard issues.isEmpty else { throw .guidelines(issues) }
+            // A rewrite keeps the description's Terms of Use and Privacy
+            // Policy links (3.1.2(c)).
+            if field == .description, let current = listing?.listing.draft(field, in: locale),
+               let reason = StoreTextKeptLinks.refusal(StoreTextKeptLinks.dropped(from: "\(current.remote)\n\(current.local)", in: item.value))
+            {
+                throw .invalidValue(reason)
+            }
             return (field, locale)
         }
     }

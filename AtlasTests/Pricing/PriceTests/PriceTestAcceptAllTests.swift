@@ -37,9 +37,9 @@ struct PriceTestAcceptAllTests {
 
     @Test func theBaseCountryIsNeverInATest() async throws {
         let matrix = try await PricingModelFixtures.matrix()
-        let base = try #require(matrix.rows.first(where: \.isBase))
+        let base = try #require(matrix.rows.first { $0.isBase })
         matrix.priceTestTerritories = [base.id]
-        #expect(matrix.rows.first(where: \.isBase)?.isHeldBackByPriceTest == false)
+        #expect(matrix.rows.first { $0.isBase }?.isHeldBackByPriceTest == false)
     }
 }
 #endif

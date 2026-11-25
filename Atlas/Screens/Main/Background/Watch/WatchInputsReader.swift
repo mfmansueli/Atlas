@@ -44,6 +44,11 @@ struct WatchInputsReader {
             let suggested = Set(events.open(for: app.id, eventID: event.id).map(\.locale))
             return WatchEventFacts(event, storeLocales: storeLocales, suggestedLocales: suggested, now: now)
         }
+        if let report = ReviewRiskCenter.shared.lastReport(for: app.id) {
+            inputs.reviewRisks = report.risks
+            inputs.unansweredProjectChecks = report.notChecked.map(\.check).filter(\.needsProject)
+        }
+        inputs.hasProjectFolder = launcher.projectFolder(for: app.id) != nil
         let archive = reviews.archive(for: app.id)
         inputs.reviews = archive.reviews
         inputs.reviewedVersion = archive.currentVersion

@@ -43,7 +43,7 @@ struct WatchDedupe: Hashable, Sendable {
                         && now.timeIntervalSince(suggestion.createdAt) < dismissalMemory
                 } ?? false
                 if turnedDown { dedupe.dismissed.insert(signal.identity) }
-            case .eventDeadline, .reviewsAfterRelease, .submissionBlocked, .versionRejected:
+            case .eventDeadline, .reviewsAfterRelease, .submissionBlocked, .versionRejected, .appReviewRisk:
                 // Their detectors already leave out what's suggested or grouped.
                 break
             }

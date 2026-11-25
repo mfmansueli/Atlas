@@ -23,7 +23,8 @@ struct GetOverviewTool: MCPTool {
         (subscriptions and in-app purchases with their base price, countries at Apple's equalized price or set by \
         hand, countries where the price likely holds people back), appInformation (age rating, App Privacy, \
         privacy URLs missing, App Review contact complete), waiting (changes in Review & Push per section), \
-        suggestionsToReview, and reviews needing a reply. A part Atlas couldn't read has an error instead. Start here \
+        suggestionsToReview, reviews needing a reply, and appReview (the App Review checks' last report: risks, the \
+        most serious three; get_review_risks has the evidence and fixes). A part Atlas couldn't read has an error instead. Start here \
         to decide what to work on, then read the section's own get_ tool. Read-only.
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -56,10 +57,31 @@ struct GetOverviewTool: MCPTool {
             "waitingTotal": .int(changes.count),
             "suggestionsToReview": .int(context.workspace.suggestions?.toReview(for: app.id).count ?? 0),
         ]
+        result["appReview"] = Self.appReview(ReviewRiskCenter.shared.lastReport(for: app.id))
         if archive.fetchedAt != nil {
             result["reviews"] = ["needReply": .int(archive.needsReplyCount), "repliesSuggested": .int(archive.openSuggestionCount)]
         }
         return .read(.object(result), target: String(localized: "\(app.name) · Overview", comment: "kind:other"))
+    }
+
+    /// The App Review checks' last report, short: how many risks, the most
+    /// serious three, and when it ran. get_review_risks has the rest.
+    static func appReview(_ report: ReviewRiskReport?) -> JSONValue {
+        guard let report else {
+            return ["checked": false, "next": "Call get_review_risks to check what App Review may reject."]
+        }
+        return [
+            "checked": true,
+            "checkedAt": .string(report.checkedAt.ISO8601Format()),
+            "summary": .string(report.summary),
+            "risks": .int(report.risks.count),
+            "blocksReview": .int(report.blockingCount),
+            "notChecked": .int(report.notChecked.count),
+            "top": .array(report.risks.prefix(3).map { risk in
+                ["title": .string(risk.title), "guideline": .string(risk.guideline), "level": .string(risk.level.rawValue)]
+            }),
+            "next": "Call get_review_risks for the evidence and the fix of each.",
+        ]
     }
 
     /// A part of the overview, or why it couldn't be read.

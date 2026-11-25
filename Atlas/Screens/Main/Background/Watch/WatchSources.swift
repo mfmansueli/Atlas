@@ -18,6 +18,8 @@ struct WatchSources {
     /// as opening the app.
     var keptModels: @MainActor (StoreApp.ID) -> AppSectionModels? = { _ in nil }
     var suggestions: FieldSuggestionStore?
+    /// Review & Push, for the App Review checks run in the background.
+    var changes: ChangeQueue?
     /// App Store Connect's hourly quota for the key, as last read.
     var quota: @MainActor () -> AppStoreConnectRateLimit? = { nil }
 }

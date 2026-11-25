@@ -17,6 +17,9 @@ struct SubmissionOptions: Hashable, Sendable {
     var pushesChanges = true
     /// The In-App Events that go with the version.
     var eventIDs: Set<InAppEvent.ID> = []
+    /// The subscriptions and in-app purchases that go with the version
+    /// (`SubmissionProduct.id`); every one Ready to Submit starts ticked.
+    var productIDs: Set<SubmissionProduct.ID> = []
 
     /// App Store Connect takes a release time on the hour.
     static func onTheHour(_ date: Date) -> Date {

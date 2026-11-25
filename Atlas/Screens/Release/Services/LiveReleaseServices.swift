@@ -33,7 +33,48 @@ struct LiveReleaseServices: ReleaseServices {
         if status.phase != .live {
             status.submission = try await submission(versionID: version.id, platform: version.platform, appID: app.id)
         }
+        if status.phase == .prepare || status.phase == .rejected {
+            status.productsToSubmit = await productsToSubmit(appID: app.id)
+        }
         return status
+    }
+
+    /// Sends each ticked product to App Review, except one an earlier try
+    /// already sent.
+    private func submitProducts(_ products: [SubmissionProduct], submissionID: String, hasVersion: Bool, eventIDs: [String]) async throws {
+        for product in products {
+            try await SubmissionFailure.at(.addProduct(product.id), submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs) {
+                if let state = try? await client.reviewState(of: product), state != SubmissionProduct.readyToSubmit { return }
+                try await client.submitForReview(product)
+            }
+        }
+    }
+
+    /// The subscriptions and in-app purchases Ready to Submit; none when
+    /// they can't be read (the sheet still submits the version).
+    private func productsToSubmit(appID: String) async -> [SubmissionProduct] {
+        let groups = try? await client.pricedSubscriptionGroups(appID: appID)
+        let purchases = await (try? client.pricedInAppPurchases(appID: appID)) ?? []
+        return Self.productsToSubmit(groups: groups ?? PricingAPIDocument(data: []), purchases: purchases)
+    }
+
+    static func productsToSubmit(
+        groups: PricingAPIDocument<SubscriptionGroupAttributes>, purchases: [PricingAPIResource<InAppPurchaseAttributes>]
+    ) -> [SubmissionProduct] {
+        let included = groups.includedByKey()
+        let subscriptions = groups.data.flatMap { group in
+            group.relatedAll("subscriptions").compactMap { identifier -> SubmissionProduct.Candidate? in
+                guard let attributes = included[identifier]?.attributes else { return nil }
+                let productID = attributes.productId ?? identifier.id
+                return SubmissionProduct.Candidate(id: identifier.id, productID: productID, name: attributes.name ?? productID, state: attributes.state)
+            }
+        }
+        let inAppPurchases = purchases.map { purchase in
+            SubmissionProduct.Candidate(
+                id: purchase.id, productID: purchase.attributes.productId, name: purchase.attributes.name, state: purchase.attributes.state
+            )
+        }
+        return SubmissionProduct.ready(subscriptions: subscriptions, inAppPurchases: inAppPurchases)
     }
 
     /// The version's builds, as the Submit sheet reads them, and the one
@@ -179,6 +220,11 @@ struct LiveReleaseServices: ReleaseServices {
             }
             eventIDs.append(eventID)
         }
+        // Subscriptions and in-app purchases go once the version is in the
+        // draft and before it's sent: a first one only reaches App Review
+        // with a version. One already submitted by an earlier try isn't
+        // sent again.
+        try await submitProducts(plan.products, submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs)
         try await Failure.at(.send, submissionID: submissionID, hasVersion: hasVersion, eventIDs: eventIDs) {
             try await client.updateReviewSubmission(id: submissionID, attribute: "submitted")
         }

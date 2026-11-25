@@ -58,6 +58,7 @@ struct OverviewSectionView: View {
                     ) {
                         assistantCard
                         if !versionCardFollowsRelease { stabilityAlert }
+                        reviewRisksCard
                     } versionNotice: {
                         if versionCardFollowsRelease { stabilityAlert }
                     }
@@ -73,6 +74,7 @@ struct OverviewSectionView: View {
         .accessibilityIdentifier("workspace.overview")
         .task(id: app.id) { await summaries.load(app) }
         .task(id: app.id) { await reviewsStore.refreshIfStale(app, services: reviews) }
+        .task(id: app.id) { await checkReviewRisksIfOld() }
         .task(id: ContentKey(appID: app.id, refresh: navigator.refreshCount)) { await loadContent() }
         .task(id: ScopeKey(appID: app.id, isConnected: assistants.assistantStatus.isConnected)) {
             scope = nil
@@ -370,6 +372,43 @@ struct OverviewSectionView: View {
     private static func copy(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+    }
+}
+
+// MARK: - App Review risks
+
+private extension OverviewSectionView {
+    /// A report older than this is read again when Overview opens.
+    static var reviewRiskMaximumAge: TimeInterval { 24 * 3600 }
+
+    var reviewRiskCenter: ReviewRiskCenter { .shared }
+
+    @ViewBuilder
+    var reviewRisksCard: some View {
+        if assistants.workspace != nil {
+            ReviewRisksCard(
+                report: reviewRiskCenter.lastReport(for: app.id),
+                isChecking: reviewRiskCenter.checking.contains(app.id),
+                onCheck: { Task { await checkReviewRisks(refresh: true) } },
+                onShow: { risk in navigator.open(risk.check.section, intent: ReviewRiskDestination.intent(for: risk.check)) },
+                onDismiss: { risk in reviewRiskCenter.dismiss(risk.id, for: app.id) }
+            )
+        }
+    }
+
+    func checkReviewRisksIfOld() async {
+        if let checked = reviewRiskCenter.lastReport(for: app.id)?.checkedAt,
+           reviewRiskCenter.now().timeIntervalSince(checked) < Self.reviewRiskMaximumAge
+        {
+            return
+        }
+        await checkReviewRisks(refresh: true)
+    }
+
+    func checkReviewRisks(refresh: Bool) async {
+        guard let workspace = assistants.workspace, !reviewRiskCenter.checking.contains(app.id) else { return }
+        let loader = ReviewRiskFactsLoader(services: workspace.services, changes: workspace.changes, apps: workspace.apps, launcher: launcher)
+        await reviewRiskCenter.check(app, loader: loader, refresh: refresh)
     }
 }
 

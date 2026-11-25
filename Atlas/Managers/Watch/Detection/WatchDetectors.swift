@@ -27,7 +27,7 @@ enum WatchDetectors {
 
     /// Every finding in `inputs`, in `WatchSignalKind`'s order.
     static func signals(in inputs: WatchInputs) -> [WatchSignal] {
-        [blocked(inputs), rejected(inputs)].compactMap(\.self) + events(inputs)
+        [blocked(inputs), rejected(inputs), reviewRisks(inputs)].compactMap(\.self) + events(inputs)
             + [whatsNew(inputs), crashes(inputs), reviews(inputs)].compactMap(\.self)
     }
 
@@ -54,6 +54,34 @@ enum WatchDetectors {
     }
 
     // MARK: - Sent to the assistant
+
+    /// Most App Review risks named in one finding; the assistant reads the
+    /// rest with get_review_risks.
+    static let reviewRisksNamed = 8
+
+    /// App Review risks an assistant can act on: those whose fix names a
+    /// tool, and the project checks nobody answered when the folder is known.
+    static func reviewRisks(_ inputs: WatchInputs) -> WatchSignal? {
+        let fixable = inputs.reviewRisks.filter { $0.fix.tool != nil }
+        let project = inputs.hasProjectFolder ? inputs.unansweredProjectChecks : []
+        guard !fixable.isEmpty || !project.isEmpty else { return nil }
+        let blocking = fixable.count { $0.level == .blocksReview }
+        var parts: [String] = []
+        if !fixable.isEmpty {
+            let named = fixable.prefix(reviewRisksNamed).map { "\($0.title) (guideline \($0.guideline), riskId \($0.id))" }
+            let more = fixable.count > reviewRisksNamed ? " and \(fixable.count - reviewRisksNamed) more" : ""
+            parts.append("\(fixable.count == 1 ? "1 risk" : "\(fixable.count) risks") with a fix to propose: \(named.joined(separator: "; "))\(more)")
+        }
+        if !project.isEmpty {
+            parts.append("project checks nobody answered: \(project.map(\.mcpName).joined(separator: ", "))")
+        }
+        let subject = inputs.version?.id ?? "app"
+        return WatchSignal(
+            kind: .appReviewRisk, appID: inputs.appID, subject: subject, value: Double(fixable.count + project.count),
+            numbers: ["risks": Double(fixable.count), "blocking": Double(blocking), "project": Double(project.count)],
+            summary: "Atlas's App Review checks found, for \(inputs.appName): \(parts.joined(separator: "; "))."
+        )
+    }
 
     /// Editable events whose card shows within `eventWindow` with
     /// something missing.

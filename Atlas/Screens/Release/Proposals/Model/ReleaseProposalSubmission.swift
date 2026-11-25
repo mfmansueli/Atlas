@@ -27,6 +27,10 @@ struct ReleaseProposalSubmission: Hashable, Codable, Sendable {
     /// (the sheet's "Push the changes first" off); nil pushes them, as the
     /// sheet starts.
     var pushesChanges: Bool?
+    /// The subscriptions and in-app purchases Ready to Submit that go with
+    /// the version (`SubmissionProduct.id`); nil leaves the sheet's
+    /// ticks (all of them).
+    var productIDs: [SubmissionProduct.ID]?
 
     var timing: ReleaseTiming {
         ReleaseTiming(releaseType: releaseType, earliestReleaseDate: releaseDate)
@@ -49,6 +53,13 @@ struct ReleaseProposalSubmission: Hashable, Codable, Sendable {
         lines.append(isPhased ? String(localized: "Phased Release over 7 days") : String(localized: "Everyone on the first day"))
         if let answer = encryptionAnswer { lines.append(answer.title) }
         if pushesChanges == false { lines.append(String(localized: "Without pushing what waits in Review & Push", comment: "kind:label")) }
+        if let productIDs {
+            switch productIDs.count {
+            case 0: lines.append(String(localized: "No subscriptions or in-app purchases", comment: "kind:label"))
+            case 1: lines.append(String(localized: "With 1 subscription or in-app purchase", comment: "kind:label"))
+            default: lines.append(String(localized: "With \(productIDs.count) subscriptions or in-app purchases", comment: "kind:label"))
+            }
+        }
         if let eventIDs {
             lines.append(eventIDs.isEmpty
                 ? String(localized: "No In-App Events")

@@ -20,6 +20,8 @@ struct SubmissionFailure: LocalizedError, Sendable {
         case addVersion
         case addEvent(String)
         case removeEvent(String)
+        /// Submitting a subscription or in-app purchase with the version.
+        case addProduct(String)
         case send
     }
 

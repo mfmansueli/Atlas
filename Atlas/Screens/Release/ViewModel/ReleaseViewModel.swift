@@ -151,6 +151,7 @@ final class ReleaseViewModel {
         }
         let pickedByPerson = options.buildID != Self.defaultBuildID(in: current)
         status = loaded
+        options.productIDs = Self.keptProductIDs(options.productIDs, before: current, now: loaded)
         let stillChoosable = loaded.builds.contains { $0.id == options.buildID && $0.isSelectable }
         guard !pickedByPerson || !stillChoosable else { return }
         options.buildID = Self.defaultBuildID(in: loaded)
@@ -191,6 +192,7 @@ final class ReleaseViewModel {
         let kept = Set(store.eventIDs(for: app.id))
         let inSubmission = Set(status.submission?.eventIDs ?? [])
         options.eventIDs = Set(offeredEvents.map(\.id)).intersection(kept.union(inSubmission))
+        options.productIDs = Set(status.productsToSubmit.map(\.id))
         self.options = options
         self.options.encryption = knownEncryption
     }
