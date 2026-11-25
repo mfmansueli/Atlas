@@ -36,11 +36,13 @@ final class ToolbarItemFitUITests: XCTestCase {
 
         resizeWindow(toWidth: 600)
         wait(seconds: 1)
-        XCTAssertLessThan(reviewPush.frame.width, reviewPushWidth - 40, "Review & Push folded to its icon at the minimum.")
+        // At the bottom it folds only under 700 pt, narrower than the
+        // window goes (board 80).
+        XCTAssertEqual(reviewPush.frame.width, reviewPushWidth, accuracy: 1, "Review & Push keeps its label at the minimum.")
 
         resizeWindow(toWidth: Self.defaultWidth)
         wait(seconds: 1)
-        XCTAssertEqual(reviewPush.frame.width, reviewPushWidth, accuracy: 1, "Review & Push has its label again.")
+        XCTAssertEqual(reviewPush.frame.width, reviewPushWidth, accuracy: 1, "Review & Push keeps its label.")
         XCTAssertEqual(autopilot.frame.width, autopilotWidth, accuracy: 1, "Autopilot has its label again.")
         assertTheTitleIsBesideTheSidebarButton()
         attach("toolbar after the minimum")

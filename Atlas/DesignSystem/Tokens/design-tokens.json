@@ -13,6 +13,12 @@
       "highContrastLight": "#0040DD",
       "highContrastDark": "#8CC4FF"
     },
+    "accentGlass": {
+      "light": "#0071E39E",
+      "dark": "#0A72E89E",
+      "highContrastLight": "#0040DDE0",
+      "highContrastDark": "#0A64D6E0"
+    },
     "accentTint": {
       "light": "#0071E31F",
       "dark": "#4DA3FF2E",
@@ -484,6 +490,43 @@
     },
     "trailLeg": {
       "duration": 0.7
+    },
+    "sentLift": {
+      "duration": 0.12,
+      "curve": [
+        0.2,
+        0.7,
+        0.2,
+        1
+      ]
+    },
+    "sentFlyX": {
+      "duration": 0.6,
+      "curve": [
+        0.25,
+        0.7,
+        0.35,
+        1
+      ]
+    },
+    "sentFlyY": {
+      "duration": 0.6,
+      "curve": [
+        0.65,
+        0,
+        0.85,
+        0.55
+      ]
+    },
+    "sentLand": {
+      "spring": {
+        "response": 0.5,
+        "dampingFraction": 0.5
+      }
+    },
+    "sentRing": {
+      "duration": 0.7,
+      "curve": "easeOut"
     }
   },
   "symbol": {

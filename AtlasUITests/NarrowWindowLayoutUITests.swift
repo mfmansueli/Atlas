@@ -10,8 +10,9 @@ import XCTest
 /// 760 pt wider than the sidebar, so narrower windows centred it and cut
 /// the sidebar on its left (“her apps”, “e Listing”), and an instant resize
 /// looped the layout until the app crashed. The toolbar's actions keep the
-/// trailing edge: the title truncates and the labels fold before Review &
-/// Push would go into the toolbar's overflow menu, leaving a gap.
+/// trailing edge: the title truncates and the labels fold before Activity
+/// would go into the toolbar's overflow menu, leaving a gap. Review & Push
+/// stays at the bottom right, inside the window (board 80).
 @MainActor
 final class NarrowWindowLayoutUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -77,16 +78,19 @@ final class NarrowWindowLayoutUITests: XCTestCase {
         }
     }
 
-    /// Review & Push in the toolbar, not in its overflow menu, at the
-    /// window's trailing edge, with Autopilot, Refresh and Activity before it.
+    /// Activity in the toolbar, not in its overflow menu, at the window's
+    /// trailing edge; Review & Push at the bottom right, inside the window.
     private func assertTheActionsAreAtTheTrailingEdge(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
         let window = app.windows.firstMatch.frame
+        let activity = element("workspace.activityButton")
+        XCTAssertTrue(activity.exists && activity.isHittable, "Activity is in the overflow menu at \(name)", file: file, line: line)
+        XCTAssertGreaterThanOrEqual(activity.frame.maxX, window.maxX - 12, "Activity at \(activity.frame) off the trailing edge at \(name)", file: file, line: line)
+        XCTAssertLessThanOrEqual(activity.frame.maxX, window.maxX, file: file, line: line)
         let reviewPush = element("workspace.reviewPushButton")
-        XCTAssertTrue(reviewPush.exists && reviewPush.isHittable, "Review & Push is in the overflow menu at \(name)", file: file, line: line)
-        XCTAssertGreaterThanOrEqual(reviewPush.frame.maxX, window.maxX - 12, "Review & Push at \(reviewPush.frame) off the trailing edge at \(name)", file: file, line: line)
-        XCTAssertLessThanOrEqual(reviewPush.frame.maxX, window.maxX, file: file, line: line)
-        let activity = element("workspace.activityButton").frame
-        XCTAssertLessThanOrEqual(reviewPush.frame.minX - activity.maxX, 12, "A gap before Review & Push at \(name)", file: file, line: line)
+        XCTAssertTrue(reviewPush.exists && reviewPush.isHittable, "Review & Push doesn't show at \(name)", file: file, line: line)
+        XCTAssertLessThanOrEqual(reviewPush.frame.maxX, window.maxX, "Review & Push at \(reviewPush.frame) cut on the right at \(name)", file: file, line: line)
+        XCTAssertLessThanOrEqual(reviewPush.frame.maxY, window.maxY, "Review & Push at \(reviewPush.frame) cut at the bottom at \(name)", file: file, line: line)
+        XCTAssertGreaterThan(reviewPush.frame.minY, window.midY, "Review & Push at \(reviewPush.frame) isn't at the bottom at \(name)", file: file, line: line)
         let overflow = app.windows.firstMatch.toolbars.popUpButtons.matching(NSPredicate(format: "label CONTAINS[c] %@", "more")).firstMatch
         XCTAssertFalse(overflow.exists, "The toolbar's overflow menu shows at \(name)", file: file, line: line)
     }

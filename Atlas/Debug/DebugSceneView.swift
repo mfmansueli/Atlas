@@ -21,7 +21,7 @@ import SwiftUI
 ///   screenshots taking 8 seconds each to download.
 ///
 /// Ids it doesn't know go to each area's own list (`ConnectDebugScenes`,
-/// `SettingsDebugScenes`, `ReviewPushDebugScenes`, `PricingDebugScenes`, `PricesByCountryDebugScenes`, `PricingConfidenceDebugScenes`, `PricingDecisionsDebugScenes`,
+/// `SettingsDebugScenes`, `ReviewPushDebugScenes`, `ReviewPushPillDebugScenes`, `PricingDebugScenes`, `PricesByCountryDebugScenes`, `PricingConfidenceDebugScenes`, `PricingDecisionsDebugScenes`,
 /// `PricingMCPDebugScenes`, `AppPriceDebugScenes`,
 /// `RetentionDebugScenes`, `StorePageDebugScenes`, `StorePreviewDebugScenes`, `AppInformationDebugScenes`,
 /// `ScreenshotsDebugScenes`, `ScreenshotsPushDebugScenes`, `ExtrasPushDebugScenes`,
@@ -70,6 +70,7 @@ struct DebugSceneView: View {
             SettingsDebugScenes.view(for:),
             HelpDebugScenes.view(for:),
             ReviewPushDebugScenes.view(for:),
+            ReviewPushPillDebugScenes.view(for:),
             PricingDebugScenes.view(for:),
             PricingProductPageDebugScenes.view(for:),
             PricingSalesDebugScenes.view(for:),

@@ -17497,7 +17497,7 @@
     "Minimize" : {
       "comment" : "kind:button"
     },
-    "Minimize to keep working. Review & Push in the toolbar shows progress." : {
+    "Minimize to keep working. Review & Push at the bottom shows progress." : {
       "comment" : "kind:progress-step"
     },
     "Minimum proceeds" : {
@@ -22099,6 +22099,9 @@
     },
     "Pushing to App Store Connect" : {
       "comment" : "kind:section-title"
+    },
+    "Pushing · %lld of %lld" : {
+      "comment" : "kind:button"
     },
     "Pushing · %lld of %lld sent. Click for progress (⇧⌘P)." : {
       "comment" : "kind:description"

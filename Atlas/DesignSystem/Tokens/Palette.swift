@@ -23,6 +23,9 @@ enum Palette {
     /// Links and plain buttons.
     static let accentText = Color(.accentText)
     static let accentTint = Color(.accentTint)
+    /// Review & Push's tint on its Liquid Glass: the accent, see-through,
+    /// so the page shows behind it (stronger with Increase Contrast).
+    static let accentGlass = Color(.accentGlass)
 
     // MARK: - Text
 

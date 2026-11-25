@@ -26,7 +26,7 @@ struct PushProgressFooter: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             if summary.isRunning {
-                Text("Minimize to keep working. Review & Push in the toolbar shows progress.")
+                Text("Minimize to keep working. Review & Push at the bottom shows progress.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                 Spacer()
