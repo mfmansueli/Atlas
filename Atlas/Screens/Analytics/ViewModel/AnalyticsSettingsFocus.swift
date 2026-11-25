@@ -12,4 +12,6 @@ enum AnalyticsSettingsFocus: Hashable, Sendable {
     case vendorNumber
     /// How to get a key that can read sales.
     case salesRole
+    /// One app's "Stop Asking Apple for Reports" confirmation, open.
+    case stopReports(StoreApp.ID)
 }

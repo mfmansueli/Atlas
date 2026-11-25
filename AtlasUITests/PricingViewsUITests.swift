@@ -5,9 +5,9 @@
 
 import XCTest
 
-/// Subscription Pricing beyond the table: the tile map and histogram, the
-/// schedule sheet, Results and Offers, driven through the DEBUG scenes in
-/// `PricingDebugScenes` (sample data; nothing leaves the Mac).
+/// A product's page beyond the table (board 73): the map and histogram,
+/// when price changes start, Results and Offers, driven through the DEBUG
+/// scenes in `PricingDebugScenes` (sample data; nothing leaves the Mac).
 @MainActor
 final class PricingViewsUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -21,15 +21,18 @@ final class PricingViewsUITests: XCTestCase {
         app.terminate()
     }
 
-    /// In-app purchase prices are shown, not changed: their card opens them
-    /// with See Prices…, a subscription's with Edit Prices…. The buttons are
-    /// link-styled, which macOS exposes as links.
-    func testAnInAppPurchasesCardSeesItsPrices() {
-        launch(scene: "pricing-products")
-        let lifetime = app.links["See every price of Lumen Lifetime"]
-        XCTAssertTrue(lifetime.waitForExistence(timeout: 20))
-        XCTAssertTrue(app.links["Edit every price of Lumen Plus Annual"].exists)
-        XCTAssertFalse(app.links["Edit every price of Lumen Lifetime"].exists)
+    /// A new product waiting in Review & Push without its review screenshot
+    /// says so, with Review Screenshot… beside it.
+    func testAQueuedProductWithoutAReviewScreenshotSaysSo() {
+        launch(scene: "pr-newsub-noshot")
+        let missing = elements(prefixed: "pricing.newSubscriptions.")
+            .matching(NSPredicate(format: "identifier ENDSWITH %@", ".reviewScreenshotMissing"))
+            .firstMatch
+        XCTAssertTrue(missing.waitForExistence(timeout: 20))
+        let button = app.buttons.matching(NSPredicate(format: "identifier ENDSWITH %@", ".reviewScreenshot")).firstMatch
+        XCTAssertTrue(button.exists)
+        button.click()
+        XCTAssertTrue(app.sheets.firstMatch.waitForExistence(timeout: 5))
     }
 
     /// Accept on a product's price suggestion is a row action (tinted, so
@@ -52,20 +55,20 @@ final class PricingViewsUITests: XCTestCase {
 
     func testSwitchingToTheMapAndTheHistogram() {
         launch(scene: "pricing-applied")
-        let picker = element("pricing.displayPicker")
-        XCTAssertTrue(picker.waitForExistence(timeout: 10))
+        let picker = element("countries.display")
+        XCTAssertTrue(picker.waitForExistence(timeout: 20))
         segment(1, of: picker).click()
-        XCTAssertTrue(element("pricing.tileMap").waitForExistence(timeout: 5))
-        XCTAssertFalse(element("pricing.matrix").exists)
-        element("pricing.tile.BRA").hover()
-        XCTAssertTrue(element("pricing.tileDetail").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("countries.map").waitForExistence(timeout: 5))
+        XCTAssertFalse(element("countries.table").exists)
+        element("countries.map.tile.BRA").click()
+        XCTAssertTrue(element("countries.popover").waitForExistence(timeout: 5))
+        app.typeKey(.escape, modifierFlags: [])
 
         segment(2, of: picker).click()
-        XCTAssertTrue(element("pricing.histogram").waitForExistence(timeout: 5))
-        XCTAssertTrue(text(of: element("pricing.histogram.summary")).hasPrefix("Median "))
+        XCTAssertTrue(element("countries.histogram").waitForExistence(timeout: 5))
 
         segment(0, of: picker).click()
-        XCTAssertTrue(element("pricing.matrix").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("countries.table").waitForExistence(timeout: 5))
     }
 
     func testTheScheduleWarnsAboutIncreases() {
@@ -82,17 +85,17 @@ final class PricingViewsUITests: XCTestCase {
 
     func testSchedulingTheChangesForADate() {
         launch(scene: "pricing-applied")
-        let schedule = app.buttons["pricing.schedule"]
-        XCTAssertTrue(schedule.waitForExistence(timeout: 10))
-        let before = schedule.label
-        schedule.click()
+        let start = element("countries.start")
+        XCTAssertTrue(start.waitForExistence(timeout: 20))
+        start.click()
+        let onDate = app.menuItems["On a Date…"]
+        XCTAssertTrue(onDate.waitForExistence(timeout: 5))
+        onDate.click()
         XCTAssertTrue(element("pricing.scheduleSheet").waitForExistence(timeout: 5))
         element("pricing.schedule.start").radioButtons["On a date"].click()
-        app.checkBoxes["pricing.schedule.keep"].click()
         app.buttons["pricing.schedule.save"].click()
         XCTAssertTrue(element("pricing.scheduleSheet").waitForNonExistence(timeout: 5))
-        XCTAssertNotEqual(schedule.label, before)
-        XCTAssertTrue(schedule.label.hasPrefix("Starts "))
+        XCTAssertFalse(text(of: element("countries.start")).contains("Right Away"))
     }
 
     func testRestoringATerritoryFromResults() {
@@ -120,16 +123,15 @@ final class PricingViewsUITests: XCTestCase {
         XCTAssertTrue(title.firstMatch.waitForExistence(timeout: 5))
     }
 
-    func testTheViewPickerOpensOffersAndResults() {
+    func testTheTabsOpenResultsAndOffers() {
         launch(scene: "pricing-applied")
-        let picker = element("pricing.viewPicker")
-        XCTAssertTrue(picker.waitForExistence(timeout: 10))
-        segment(1, of: picker).click()
-        XCTAssertTrue(element("pricing.offers").waitForExistence(timeout: 5))
-        segment(2, of: picker).click()
+        XCTAssertTrue(element("countries.table").waitForExistence(timeout: 20))
+        tab("Results").click()
         XCTAssertTrue(element("pricing.results").waitForExistence(timeout: 5))
-        segment(0, of: picker).click()
-        XCTAssertTrue(element("pricing.matrix").waitForExistence(timeout: 5))
+        tab("Offers").click()
+        XCTAssertTrue(element("pricing.offers").waitForExistence(timeout: 5))
+        tab("Prices by Country").click()
+        XCTAssertTrue(element("countries.table").waitForExistence(timeout: 5))
     }
 
     // MARK: - Helpers
@@ -139,15 +141,22 @@ final class PricingViewsUITests: XCTestCase {
     }
 
     private func element(_ identifier: String) -> XCUIElement {
-        app.descendants(matching: .any)[identifier]
+        app.descendants(matching: .any)[identifier].firstMatch
     }
 
     private func elements(prefixed prefix: String) -> XCUIElementQuery {
         app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH %@", prefix))
     }
 
-    /// One segment of an `NSSegmentedControl`, which macOS exposes as a
-    /// radio group.
+    /// A tab of the product page's segments, by its name.
+    private func tab(_ title: String) -> XCUIElement {
+        let segment = element("pricing.product.tabs").buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
+        XCTAssertTrue(segment.waitForExistence(timeout: 5), "No \(title) tab")
+        return segment
+    }
+
+    /// One segment of a segmented control, which macOS exposes as a radio
+    /// group.
     private func segment(_ index: Int, of control: XCUIElement) -> XCUIElement {
         control.radioButtons.element(boundBy: index)
     }

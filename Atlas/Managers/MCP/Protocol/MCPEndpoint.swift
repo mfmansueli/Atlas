@@ -177,6 +177,11 @@ enum MCPEndpoint {
     offer's prices, a win-back offer's eligibility, dates or priority, or to delete or deactivate one); a new \
     subscription still queued by propose_subscription takes them too, pushed after it; an in-app purchase's \
     offer codes, in get_subscriptions' inAppPurchases, with propose_in_app_purchase_offer_code. \
+    For prices in many countries at once, propose_prices takes territories (codes, a region, a currency, \
+    suggested, setByYou, automatic or all, with except) and one price, automatic: true, acceptSuggestions or \
+    withdraw; get_prices and get_price_points read any country with its price in US dollars, and \
+    propose_price_schedule sets when a subscription's queued prices start. get_queued_changes lists what waits in \
+    Review & Push, and withdraw_changes takes back your own. \
     App Compliance answers (trader status, ICP Filing Number, \
     China mainland's AI content filing and Security Assessment, medical device) are suggested with get_compliance \
     and propose_compliance_answers; the person accepts each and enters it in App Store Connect. \
@@ -190,6 +195,20 @@ enum MCPEndpoint {
     pause, resume or complete the phased release, cancel the submission or resubmit with propose_release_action, \
     with a reason; it waits on the version card until the person confirms it: the tools only ever queue changes. App \
     Review's rejection message isn't in the API: ask the person for it. list_proposals lists yours too; withdraw them \
-    with withdraw_release_action or withdraw_suggestion and the rp- id. Always tell the person what you couldn't see.
+    with withdraw_release_action or withdraw_suggestion and the rp- id. \
+    To decide what to work on, read get_overview (one app at a glance) and get_settings (what the person lets \
+    assistants suggest, Pro, the translation source language and glossary); get_push_history says what was pushed \
+    and what Apple refused, and get_analytics_changes what each pushed change did (never claim one worked while it's \
+    measuring or tooFewToTell). How Atlas suggests prices is the person's setting: read get_pricing_strategy and \
+    suggest another mode or strategy with propose_pricing_strategy; it waits as a card in Pricing. A reply already \
+    published can be replaced: propose_review_replies with replace: true and a why; the person sends it, and Reply \
+    Automatically never replaces one. get_listing and get_store_page take platform and older versions; \
+    propose_listing_text's addLanguages adds a language with its texts, waiting for the person's Accept. \
+    Files no page uses in the App Asset Library (get_asset_library) can be suggested for deletion with \
+    propose_asset_library_cleanup; a ready In-App Event can be suggested for App Review on its own with \
+    propose_event_submission, a product page's submit, cancel or new version with propose_page_review_action, and \
+    Billing Grace Period with propose_grace_period: each waits for the person, who deletes, submits or turns it on. \
+    propose_captions takes kicker and locale "all"; propose_template can go back to a version (restoreVersion) or \
+    switch starters (starter). Always tell the person what you couldn't see.
     """
 }

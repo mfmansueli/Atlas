@@ -13,8 +13,11 @@ struct DebugNominationsServices: NominationsServices {
     var nominations: [Nomination] = DebugNominationsData.remote
     var context: NominationContext = DebugNominationsData.context
     var error: (any Error)?
+    /// How long the nominations take to read, for ft-loading.
+    var delay: Duration?
 
     func nominations(for app: StoreApp) async throws -> [Nomination] {
+        if let delay { try await Task.sleep(for: delay) }
         if let error { throw error }
         return nominations.filter { $0.content.appIDs.contains(app.id) }
     }

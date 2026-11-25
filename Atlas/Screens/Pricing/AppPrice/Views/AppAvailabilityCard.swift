@@ -39,12 +39,13 @@ struct AppAvailabilityCard: View {
     private var content: some View {
         switch model.availability {
         case .idle, .loading:
-            HStack(spacing: Spacing.small) {
-                ProgressView().controlSize(.small)
-                Text("Reading where it’s sold…")
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
+            // Grey blocks where the countries go (no spinner).
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                SkeletonBlock(width: 200)
+                SkeletonBlock(width: 140)
             }
+            .accessibilityElement()
+            .accessibilityLabel(Text("Reading where it’s sold…"))
         case let .failed(message):
             InlineMessage.error(message)
             Button("Try Again") { Task { await model.loadAvailability() } }
@@ -65,8 +66,7 @@ struct AppAvailabilityCard: View {
                 problem: queued.blockedReason,
                 identifier: "pricing.availability.queued",
                 onChange: { model.isAvailabilitySheetPresented = true },
-                onDiscard: model.discardQueuedSetup,
-                onReview: model.onOpenReview
+                onDiscard: model.discardQueuedSetup
             )
         } else {
             Text("Choose where \(model.app.name) is sold. Pre-orders are possible before release.")
@@ -97,11 +97,6 @@ struct AppAvailabilityCard: View {
             Spacer(minLength: 0)
         }
         HStack {
-            if model.queuedTerritoryCount > 0 {
-                Button("Review & Push…", action: model.onOpenReview)
-                    .buttonStyle(.link)
-                    .controlSize(.regular)
-            }
             Spacer()
             Button("Edit Countries and Regions…") { model.isAvailabilitySheetPresented = true }
                 .buttonStyle(.link)

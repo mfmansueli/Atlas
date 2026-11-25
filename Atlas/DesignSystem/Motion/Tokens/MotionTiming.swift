@@ -32,8 +32,13 @@ enum MotionTiming {
     static let staggerDelay: TimeInterval = 0.07
     /// …and at most this many of them move; the rest appear still.
     static let staggerLimit = 6
-    /// The progress bar's soft sweep: one pass and its pause.
+    /// The progress bar's soft sweep: one pass and its pause. The text of
+    /// the step being worked on sweeps with it (the chat's pill).
     static let sweep: TimeInterval = 2.8
+    /// The ✦ breathing while the assistant sends or works (the chat's
+    /// pill, like `.symbolEffect(.breathe)`): one breath in and out, 1.5 s,
+    /// ease-in-out. Part of the same one loop as the sweep.
+    static let breathe = MotionToken(duration: 1.5, curve: .breathe)
 
     /// How long one leg of the Trail takes: button → Autopilot, Autopilot
     /// → the place of the work.

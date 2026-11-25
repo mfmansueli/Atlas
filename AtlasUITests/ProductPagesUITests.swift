@@ -65,9 +65,12 @@ final class ProductPagesUITests: XCTestCase {
 
     func testNoPagesOffersTheFirstOne() {
         app.launch(debugScene: "cp-empty")
-        let create = element("pages.empty.new")
-        XCTAssertTrue(create.waitForExistence(timeout: 15))
-        XCTAssertTrue(element("pages.empty.ask").exists)
+        // Board 74: the empty state explains; New Page… stays at the top.
+        XCTAssertTrue(element("pages.empty").waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["No custom product pages yet"].exists)
+        XCTAssertFalse(element("pages.empty.new").exists, "No second New Page… in the middle")
+        let create = element("pages.new")
+        XCTAssertTrue(create.isEnabled)
         attach("cp-empty")
         create.click()
         XCTAssertTrue(element("pages.newSheet").waitForExistence(timeout: 10))

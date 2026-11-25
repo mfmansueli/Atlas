@@ -49,31 +49,28 @@ struct PricingHeader: View {
 
     private var moreMenu: some View {
         Menu {
-            Button("Add In-App Purchase…") { viewModel.setup.isNewInAppPurchaseSheetPresented = true }
+            Button("Add In-App Purchase…", systemImage: "plus") { viewModel.setup.isNewInAppPurchaseSheetPresented = true }
                 .accessibilityIdentifier("pricing.addInAppPurchase")
             Section(String(localized: "Pricing Mode for \(viewModel.app.name)")) {
-                ForEach(PricingMode.allCases) { mode in
+                ForEach(PricingMode.strategyOrder) { mode in
                     Toggle(isOn: Binding(
                         get: { viewModel.mode == mode },
                         set: { _ in Task { await viewModel.setMode(mode) } }
                     )) {
-                        Text(mode.title)
-                        Text(PricingModeMenu.description(of: mode))
+                        Text(mode.strategyTitle)
+                        Text(mode.strategyDetail)
                     }
                 }
             }
             Divider()
-            if let product = viewModel.selectedProduct ?? viewModel.catalog?.defaultProduct {
-                Button("Every Price of \(product.name)…") {
-                    Task { await viewModel.openDetails(productID: product.id) }
-                }
-            }
             if viewModel.mode != .keepPrices {
-                Button("Customize Pricing Strategy…") { viewModel.isInspectorPresented = true }
+                Button(String(localized: "Customize Suggestions…", comment: "kind:menu-item"), systemImage: "slider.horizontal.3") {
+                    viewModel.isInspectorPresented = true
+                }
             }
             if viewModel.hasDismissedPriceSuggestions {
                 Divider()
-                Button("Restore Dismissed Suggestions") { viewModel.restoreDismissedPriceSuggestions() }
+                Button("Restore Dismissed Suggestions", systemImage: "arrow.uturn.backward") { viewModel.restoreDismissedPriceSuggestions() }
             }
         } label: {
             Label("More", systemImage: "ellipsis")

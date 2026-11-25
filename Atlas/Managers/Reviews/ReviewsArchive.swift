@@ -38,8 +38,22 @@ struct ReviewsArchive: Hashable, Codable, Sendable {
     /// The suggested reply a review still shows: it has no reply yet and
     /// the suggestion wasn't dismissed.
     func openSuggestion(for review: AppReview) -> ReviewReplySuggestion? {
-        guard !review.hasReply, !dismissed.contains(review.id) else { return nil }
+        guard !review.hasReply, !dismissed.contains(review.id), suggestions[review.id]?.isReplacement != true else { return nil }
         return suggestions[review.id]
+    }
+
+    /// A new text suggested for the reply a review already has: shown under
+    /// that reply until it's sent, dismissed, or the reply changes. Never
+    /// sent by Reply Automatically.
+    func openReplacement(for review: AppReview) -> ReviewReplySuggestion? {
+        guard let reply = review.reply, !dismissed.contains(review.id), let suggestion = suggestions[review.id],
+              let replaced = suggestion.replaces, replaced.text == reply.text, suggestion.text != reply.text else { return nil }
+        return suggestion
+    }
+
+    /// Replacements waiting for the person.
+    var openReplacementCount: Int {
+        reviews.count { openReplacement(for: $0) != nil }
     }
 
     /// Suggested replies waiting for the person: the section's count.

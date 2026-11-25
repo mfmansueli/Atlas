@@ -18,7 +18,7 @@ struct RetentionSaveRateLine: View {
                 Text("· \(AnalyticsText.count(measured.stayed)) of \(AnalyticsText.count(measured.opened))").foregroundStyle(Palette.label2)
                 if let outcome = measured.againstNoMessage {
                     Text("· \(outcome.verdict)")
-                        .foregroundStyle(outcome.isHigher ? Palette.ok : outcome.isLower ? Palette.err : Palette.label2)
+                        .foregroundStyle(RateLabel.verdictColor(for: outcome.standing))
                 }
             } else {
                 Text("— · No one has opened Cancel Subscription yet").foregroundStyle(Palette.label2)

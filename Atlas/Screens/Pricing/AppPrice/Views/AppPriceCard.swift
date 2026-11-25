@@ -36,12 +36,13 @@ struct AppPriceCard: View {
     private var content: some View {
         switch model.price {
         case .idle, .loading:
-            HStack(spacing: Spacing.small) {
-                ProgressView().controlSize(.small)
-                Text("Reading the price…")
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
+            // Grey blocks where the price goes (no spinner).
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                SkeletonBlock(width: 180)
+                SkeletonBlock(width: 120)
             }
+            .accessibilityElement()
+            .accessibilityLabel(Text("Reading the price…"))
         case let .failed(message):
             InlineMessage.error(message)
             Button("Try Again") { Task { await model.loadPrice() } }
@@ -60,8 +61,7 @@ struct AppPriceCard: View {
                 problem: queued.blockedReason,
                 identifier: "pricing.appPrice.queued",
                 onChange: { model.isPriceSheetPresented = true },
-                onDiscard: model.discardQueuedPrice,
-                onReview: model.onOpenReview
+                onDiscard: model.discardQueuedPrice
             )
         } else if let current = state.current {
             details(current)

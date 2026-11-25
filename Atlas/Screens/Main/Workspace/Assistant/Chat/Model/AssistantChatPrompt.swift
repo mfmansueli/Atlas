@@ -15,6 +15,7 @@ enum AssistantChatPrompt {
     ) -> String {
         var place = "The person is on the \(context.section.title) section of \(context.appName) (app ID \(context.appID)) in Atlas"
         if let version = context.version(removing: removed) { place += ", looking at version \(version)" }
+        if let country = context.country(removing: removed) { place += ", with \(country) chosen as the country its prices show" }
         place += "."
         let words = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if let question {

@@ -23,6 +23,10 @@ struct DebugAppInformationServices: AppInformationServices {
     var accessibilityError: AppStoreConnectError?
     var accessibilityDelay: Duration?
     var privacyURLsError: AppStoreConnectError?
+    /// How long the summary (Overview's cards) and the privacy URLs take,
+    /// for the loading scenes.
+    var summaryDelay: Duration?
+    var privacyURLsDelay: Duration?
     /// The app's countries can't be read, for App Compliance.
     var complianceError: AppStoreConnectError?
     /// Lumen's countries for App Compliance, in place of the usual sample.
@@ -61,6 +65,7 @@ struct DebugAppInformationServices: AppInformationServices {
     /// The sample summary, with App Privacy from this scene's worksheet and
     /// the privacy URLs' coverage.
     func summary(for app: StoreApp) async throws -> AppInformationSummary {
+        if let summaryDelay { try await Task.sleep(for: summaryDelay) }
         if let error { throw error }
         var summary = DebugSummaries.appInformation(for: app.id)
         summary.privacy = AppInformationSummary.Privacy(worksheet: privacy.worksheet(for: app.id))
@@ -71,6 +76,7 @@ struct DebugAppInformationServices: AppInformationServices {
     }
 
     func privacyURLs(for app: StoreApp) async throws -> PrivacyURLsContent {
+        if let privacyURLsDelay { try await Task.sleep(for: privacyURLsDelay) }
         if let privacyURLsError { throw privacyURLsError }
         return DebugAppInformationContent.privacyURLs(for: app)
     }

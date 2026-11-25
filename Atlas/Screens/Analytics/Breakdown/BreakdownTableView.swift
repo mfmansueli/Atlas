@@ -48,7 +48,7 @@ struct BreakdownTableView: View {
                 .foregroundStyle(Palette.label2)
                 // Not fixedSize: outside a scroll view that's measured near
                 // zero wide and grows the window's minimum height.
-                .lineLimit(3)
+                .lineLimit(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, Spacing.medium)
                 .padding(.vertical, Spacing.small)

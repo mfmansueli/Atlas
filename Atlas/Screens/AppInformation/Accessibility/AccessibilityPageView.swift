@@ -27,9 +27,7 @@ struct AccessibilityPageView: View {
             switch viewModel.accessibility {
             case .idle, .loading:
                 grid(Array(0..<4)) { _ in AccessibilitySkeletonCard() }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text("Reading accessibility labels from Apple…"))
-                    .accessibilityIdentifier("appInformation.accessibility.loading")
+                    .loadingSkeleton(LoadingCopy.accessibility, identifier: "appInformation.accessibility.loading")
             case let .failed(message):
                 AccessibilityLoadErrorView(message: message, requestLine: viewModel.accessibilityErrorLine) {
                     Task { await viewModel.loadAccessibility() }
@@ -80,7 +78,7 @@ struct AccessibilityPageView: View {
     private var otherDevices: some View {
         Menu(String(localized: "Other Devices")) {
             ForEach(viewModel.otherFamilies) { family in
-                Button(String(localized: "Declare for \(family.name)…")) { viewModel.openEditor(family) }
+                Button(String(localized: "Declare for \(family.name)…"), systemImage: "plus") { viewModel.openEditor(family) }
             }
         }
         .menuStyle(.borderlessButton)

@@ -65,8 +65,8 @@ struct ReviewShotsBanner: View {
     private func missingText(_ count: Int) -> String {
         let app = ReviewShotsAskPrompt.shortName(viewModel.app.name)
         return count == 1
-            ? String(localized: "1 product needs a review screenshot. Autopilot can open \(app) in Simulator and capture it.")
-            : String(localized: "\(count) products need a review screenshot. Autopilot can open \(app) in Simulator and capture each plan.")
+            ? String(localized: "1 product needs a review screenshot, and Screenshots has no capture of the paywall. Autopilot can open \(app) in Simulator and capture it.")
+            : String(localized: "\(count) products need a review screenshot, and Screenshots has no capture of the paywall. Autopilot can open \(app) in Simulator and capture each plan.")
     }
 
     // MARK: - Arrived
@@ -98,7 +98,7 @@ struct ReviewShotsBanner: View {
     private func acceptAll() {
         let accepted = viewModel.acceptAllReviewShots()
         viewModel.sayReviewShots(
-            String(localized: "Accepted \(accepted.count) review screenshots. Nothing is sent yet.")
+            String(localized: "Accepted \(accepted.count) review screenshots. They’re in Review & Push; nothing is sent yet.")
         ) { [viewModel] in
             viewModel.undoReviewShots(accepted)
         }
@@ -162,7 +162,7 @@ struct ReviewShotsBanner: View {
         let app = ReviewShotsAskPrompt.shortName(viewModel.app.name)
         let count = run?.products.count ?? viewModel.productsMissingReviewShot.count
         let plans = viewModel.reviewShotsAskProducts.map(\.plan)
-        return stopped(title: String(localized: "The paywall opened, but no prices showed"), caption: String(localized: "What it saw")) {
+        return stopped(title: String(localized: "The paywall opened, but no prices showed"), sawImage: run?.sawImage) {
             let emptyPaywall = String(localized: "App Review would see an empty paywall, so nothing was captured.")
             Text(saw.isEmpty ? noPricesText(app: app, count: count) : saw + " " + emptyPaywall)
                 .font(.callout)
@@ -221,23 +221,31 @@ struct ReviewShotsBanner: View {
         .accessibilityElement(children: .contain)
     }
 
-    private func stopped(title: String, caption: String? = nil, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                Image(systemName: "exclamationmark.triangle")
-                    .foregroundStyle(Palette.warn)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: Spacing.tiny) {
-                    if let caption {
-                        Text(caption)
-                            .font(.subheadline)
-                            .foregroundStyle(Palette.label2)
-                    }
+    private func stopped(title: String, sawImage: URL? = nil, @ViewBuilder content: () -> some View) -> some View {
+        HStack(alignment: .top, spacing: Spacing.medium) {
+            // What the paywall showed, beside why it stopped (board 66).
+            if let sawImage {
+                VStack(spacing: Spacing.xxSmall) {
+                    ReviewShotThumbnail(
+                        url: sawImage, width: 48, label: String(localized: "What it saw: the paywall without prices", comment: "kind:accessibility-label")
+                    )
+                    Text("What it saw")
+                        .atlasTextStyle(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .accessibilityHidden(true)
+                }
+                .accessibilityIdentifier("pricing.reviewShots.saw")
+            }
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundStyle(Palette.warn)
+                        .accessibilityHidden(true)
                     Text(title)
                         .font(.body.weight(.semibold))
                 }
+                content()
             }
-            content()
         }
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)

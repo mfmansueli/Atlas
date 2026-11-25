@@ -32,7 +32,8 @@ import SwiftUI
 ///   `cp-shots-run` (2 made), `cp-shots-result`, `cp-shots-queued` (the
 ///   set in Review & Push, in the editor); `cp-shots-plan-s` at 860 × 560;
 ///   `cp-shots-none`: Lumen without a screenshot template, so the sheet
-///   says so and opens Screenshots.
+///   says so and opens Screenshots; `cp-shots-s`: the Result at 860 × 560.
+/// - `cp-push*`: the page's push, in `ProductPagesPushDebugScenes`.
 /// - Choose Files…: `cp-files` (two iPhone screenshots queued for Private
 ///   diary), `cp-files-wrong` (one of them 1170 × 2532, so nothing is
 ///   queued and the alert says why).
@@ -48,12 +49,14 @@ enum ProductPagesDebugScenes {
         "cp-liveedit", "cp-hide", "cp-delete", "cp-discard", "cp-s", "cp-edit-s", "cp-edit-ar-s", "cp-overview", "cp-analytics",
         "cp-edit-brief", "cp-submit-brief", "cp-shots-planning", "cp-shots-plan", "cp-shots-run", "cp-shots-result",
         "cp-shots-queued", "cp-shots-plan-s", "cp-shots-looks", "cp-shots-looks-drawing", "cp-shots-none", "cp-files", "cp-files-wrong",
-    ]
+        "cp-shots-s",
+    ] + ProductPagesPushDebugScenes.ids
 
     @MainActor
     static func view(for id: String) -> AnyView? {
         guard ids.contains(id) else { return nil }
         if id.hasSuffix("-s") { NavigationDebugLaunch.hidesSidebar = true }
+        if let push = ProductPagesPushDebugScenes.view(for: id) { return push }
         if id == "cp-shots-none" {
             return scene(Launch(pageID: PageID.privateDiary), screenshots: DebugScreenshotsServices(scenario: .noTemplate))
         }
@@ -102,6 +105,7 @@ enum ProductPagesDebugScenes {
             "cp-shots-result": Launch(pageID: diary, pageShots: .result),
             "cp-shots-queued": Launch(pageID: diary, pageShots: .used),
             "cp-shots-plan-s": Launch(pageID: diary, pageShots: .plan),
+            "cp-shots-s": Launch(pageID: diary, pageShots: .result),
             "cp-shots-looks": Launch(pageID: diary, pageShots: .plan, pageShotsLooks: .chosen),
             "cp-shots-looks-drawing": Launch(pageID: diary, pageShots: .plan, pageShotsLooks: .drawing),
             "cp-files": Launch(pageID: diary, chosenSizes: [PixelSize(width: 1320, height: 2868), PixelSize(width: 1320, height: 2868)]),

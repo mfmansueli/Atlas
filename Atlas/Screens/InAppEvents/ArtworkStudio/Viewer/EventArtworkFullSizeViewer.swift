@@ -79,6 +79,7 @@ struct EventArtworkFullSizeViewer: View {
             }
             EventArtworkViewerStage(
                 flow: flow, viewer: viewer, event: event, texts: viewModel.overlayTexts(viewer.kind, of: event, locale: viewer.locale),
+                appIcon: viewModel.app.icon,
                 ownSource: viewModel.artSource(viewer.kind, of: event, locale: viewer.locale), loopPlayer: loopPlayer
             )
             if !viewer.isFull {

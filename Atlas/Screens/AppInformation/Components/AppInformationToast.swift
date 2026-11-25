@@ -34,6 +34,8 @@ struct AppInformationToast: View {
         .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.toast")
+        // The chat in the workspace's corner moves above it.
+        .preference(key: ToastShownPreferenceKey.self, value: true)
         .task(id: text) {
             AccessibilityNotification.Announcement(text).post()
             try? await Task.sleep(for: .seconds(6))

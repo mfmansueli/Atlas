@@ -78,7 +78,7 @@ struct AutopilotWatchInfoBox: View {
                 choice(current.title, isOn: true) {}
             }
             Divider()
-            Button("Your File…") { studio.chooseMusicFile() }
+            Button("Your File…", systemImage: "folder") { studio.chooseMusicFile() }
         }
         .menuStyle(.button)
         .controlSize(.regular)

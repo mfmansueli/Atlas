@@ -63,8 +63,15 @@ struct PageShotsSheet: View {
         if let problem = flow.problem, flow.run == nil || flow.source == nil {
             PageShotsProblemView(flow: flow, problem: problem)
         } else if flow.source == nil {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // The default page's screenshots, still read from Apple.
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                if let line = LoadingCopy.defaultPageScreenshots.line {
+                    LoadingLine(text: line)
+                }
+                SkeletonTiles(count: 5, width: Metrics.skeletonHandTileWidth)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .loadingSkeleton(LoadingCopy.defaultPageScreenshots, identifier: "pageShots.loading")
         } else if let source = flow.source {
             switch stage.step {
             case .plan: PageShotsPlanStep(flow: flow, source: flow.shownSource ?? source, defaultSource: source)

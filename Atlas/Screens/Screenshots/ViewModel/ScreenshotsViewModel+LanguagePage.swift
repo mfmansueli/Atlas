@@ -70,10 +70,14 @@ extension ScreenshotsViewModel {
     }
 
     /// iPhone, iPad, Mac and the devices with screens of their own, as the
-    /// set has them.
+    /// set has them. Mac shows as soon as the app has a macOS version, so
+    /// its first screenshots can be added by hand before any capture or
+    /// set (README-Manual).
     var pageDisplays: [ScreenshotDisplayType] {
         let rendered = matrix.displays.filter { matrix.slotCount(on: $0) > 0 }
-        let displays = ScreenshotDisplayType.studio.filter { rendered.contains($0) || matrix.handDisplays.contains($0) }
+        let displays = ScreenshotDisplayType.studio.filter { display in
+            rendered.contains(display) || matrix.handDisplays.contains(display) || (display == .mac && runsOnMac)
+        }
         return displays.isEmpty ? [.iPhone] : displays
     }
 
@@ -110,19 +114,37 @@ extension ScreenshotsViewModel {
         return String(localized: "Live")
     }
 
+    /// All Languages' strip under a language: its own screenshots on the
+    /// device in view, in order, without the ones a push deletes. Empty
+    /// when it uses the primary language's.
+    func allLanguagesThumbnails(of locale: StoreLocale) -> [ScreenshotHandPageItem] {
+        handPageItems(locale: locale.code, displayType: displayType).filter { !$0.isDeleted }
+    }
+
+    /// VoiceOver's row in All Languages: "German, 3 captions suggested, 6
+    /// screenshots".
+    func allLanguagesAccessibilityLabel(of locale: StoreLocale) -> String {
+        let count = allLanguagesThumbnails(of: locale).count
+        var parts = [locale.name, pageStatus(of: locale)]
+        if count == 1 { parts.append(String(localized: "1 screenshot", comment: "kind:label")) }
+        if count > 1 { parts.append(String(localized: "\(count) screenshots", comment: "kind:label")) }
+        return parts.joined(separator: ", ")
+    }
+
     // MARK: - Previews
 
-    /// The slot drawn with the suggested caption, from the template.
-    func proposedPreview(for caption: ProposedCaption, on display: ScreenshotDisplayType) -> SlotPreview? {
-        guard let document, let template = document.template, template.slots.indices.contains(caption.slot),
-              let locale = StoreLocaleCatalog.locale(code: caption.locale) else { return nil }
-        let current = document.captions.caption(locale: caption.locale, slot: caption.slot)
-        let proposed = caption.item.caption(over: current, provenance: .assistant(client: caption.client, date: caption.receivedAt))
-        let capture = document.captures.capture(locale: caption.locale, displayType: display, slot: caption.slot, primary: context.primaryLocale.code)
-        let placement = SlotPreview.Placement(template: template, locale: locale, displayType: display, slot: caption.slot)
-        return SlotPreview.make(
-            placement, caption: proposed, capture: capture, engine: layoutEngine, primaryLocaleName: context.primaryLocale.name, ratings: ratings
-        )
+    /// The slot drawn with the suggested caption, from the template; or,
+    /// when `suggested` is false, with the caption it has now.
+    func proposedPreview(for caption: ProposedCaption, suggested: Bool = true, on display: ScreenshotDisplayType) -> SlotPreview? {
+        guard let document else { return nil }
+        let previews = ProposedCaptionPreview(document: document, primaryLocale: context.primaryLocale, engine: layoutEngine, ratings: ratings)
+        return previews.preview(for: caption, suggested: suggested, on: display)
+    }
+
+    /// The device the Accept All sheet draws captions on: the one in view
+    /// when the template lays it out, else iPhone.
+    var acceptAllDisplay: ScreenshotDisplayType {
+        renderedDisplays.contains(displayType) && matrix.slotCount(on: displayType) > 0 ? displayType : .iPhone
     }
 
     /// The capture image a suggested caption's preview draws, at the
@@ -143,6 +165,7 @@ extension ScreenshotsViewModel {
     // MARK: - Accept All
 
     func acceptAllCaptionsSelection() -> AcceptAllSelection {
+        let display = acceptAllDisplay
         let groups = pageLocales.compactMap { locale -> AcceptAllGroup? in
             let items = proposedCaptions(in: locale).map { caption in
                 AcceptAllItem(
@@ -151,7 +174,11 @@ extension ScreenshotsViewModel {
                     source: caption.source,
                     current: currentHeadline(locale: caption.locale, slot: caption.slot),
                     suggested: caption.item.headline,
-                    reason: caption.reason
+                    reason: caption.reason,
+                    screenshot: AcceptAllScreenshot.make(
+                        now: proposedPreview(for: caption, suggested: false, on: display),
+                        suggested: proposedPreview(for: caption, on: display)
+                    )
                 )
             }
             guard !items.isEmpty else { return nil }

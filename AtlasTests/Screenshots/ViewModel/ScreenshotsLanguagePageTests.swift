@@ -108,6 +108,41 @@ struct ScreenshotsLanguagePageTests {
         #expect(model.proposedCaptions.count == 2)
     }
 
+    @Test func theSheetShowsEachCaptionsScreenshotBeforeAndAfter() async throws {
+        let (model, _) = await german()
+        let selection = model.acceptAllCaptionsSelection()
+        let items = try #require(selection.groups.first?.items)
+        #expect(items.count == 3)
+        #expect(items.allSatisfy { $0.screenshot != nil })
+        let week = try #require(items.first { $0.suggested == "Deine Woche auf einen Blick" }?.screenshot)
+        let drawn = { (preview: SlotPreview) in preview.layout.lines.map(\.text).joined(separator: " ") }
+        #expect(drawn(week.suggested).contains("Blick"))
+        #expect(drawn(week.now).contains("ruhigen"))
+        #expect(week.now.layout.canvas.display == .iPhone)
+    }
+
+    @Test func theSheetDrawsCaptionsOnTheDeviceInView() async {
+        let (model, _) = await german()
+        model.displayType = .iPad
+        #expect(model.acceptAllDisplay == .iPad)
+        let item = model.acceptAllCaptionsSelection().groups.first?.items.first
+        #expect(item?.screenshot?.suggested.layout.canvas.display == .iPad)
+        model.displayType = .watch
+        #expect(model.acceptAllDisplay == .iPhone, "The template doesn't lay captions out on the watch")
+    }
+
+    @Test func macCanBeChosenOnceTheAppHasAMacOSVersion() async {
+        let (model, _) = await german()
+        #expect(!model.pageDisplays.contains(.mac))
+        var context = model.context
+        context.hasMacVersion = true
+        await model.update(context: context)
+        #expect(model.pageDisplays.contains(.mac))
+        model.displayType = .mac
+        #expect(model.handPageItems(locale: "en-US", displayType: .mac).isEmpty)
+        #expect(model.ownCount(locale: "en-US", displayType: .mac) == 0)
+    }
+
     @Test func useAndEditOpensTheCaptionInCaptions() async throws {
         let (model, _) = await german()
         model.showsLanguagePage = true

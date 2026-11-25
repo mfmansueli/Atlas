@@ -146,7 +146,8 @@ struct AppReviewPageView: View {
             TextField(field.title, text: Binding(get: { review.text(field) }, set: { viewModel.setReviewText($0, for: field) }))
                 .labelsHidden()
                 .textContentType(field == .userName ? .username : nil)
-                .frame(width: 260)
+                // Narrower in the smallest window, so the row fits.
+                .frame(minWidth: 160, maxWidth: 260)
                 .focused($focusedField, equals: AppInformationSuggestionField(reviewField: field))
                 .accessibilityIdentifier("appInformation.review.\(field.rawValue)")
         }

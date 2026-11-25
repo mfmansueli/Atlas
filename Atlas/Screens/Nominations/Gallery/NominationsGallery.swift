@@ -24,6 +24,7 @@ struct NominationsGallery: View {
             }
             .padding(.bottom, Spacing.xxLarge)
         }
+        .leavesChatRoom()
         .scrollContentBackground(.hidden)
         .accessibilityIdentifier("nominations.gallery")
     }

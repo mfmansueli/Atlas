@@ -85,6 +85,10 @@ final class WorkspaceNavigator {
     /// Bumped by Refresh (⌘R). The library and every section reload when it
     /// changes (`.onChange(of: navigator.refreshCount)`).
     private(set) var refreshCount = 0
+    /// Bumped when the person chooses the section that already shows (the
+    /// sidebar, the section menu, ⌘1–⌘9): a section showing one item's
+    /// page goes back to its list (Pricing's product page, board 73).
+    private(set) var sectionChosenAgainCount = 0
 
     init(section: AppWorkspaceSection = .overview) {
         self.section = section
@@ -98,21 +102,36 @@ final class WorkspaceNavigator {
         requestedAppID = appID
     }
 
+    /// The person chose `section`: it opens, or, when it already shows, it
+    /// goes back to its list (`sectionChosenAgainCount`).
+    func choose(_ section: AppWorkspaceSection) {
+        if section == self.section {
+            sectionChosenAgainCount += 1
+        } else {
+            open(section)
+        }
+    }
+
     /// Follows an Analytics finding to the section where the fix is made.
     func follow(_ action: FindingAction, origin: AnalyticsOrigin) {
-        if action.isInsideAnalytics {
-            openAnalytics(action == .billing ? .subscriptions : .stability, pane: action == .billing ? .billing : nil, appID: origin.appID)
+        if let tab = action.analyticsTab {
+            openAnalytics(tab, pane: action == .billing ? .billing : nil, appID: origin.appID)
             return
         }
         analyticsOrigin = origin
         switch action {
         case let .storePage(locale): open(.storePage, intent: locale.map(WorkspaceIntent.showLanguage), appID: origin.appID)
-        case .screenshots: open(.screenshots, appID: origin.appID)
+        case let .screenshots(locale):
+            open(.screenshots, intent: locale.map { WorkspaceIntent.showScreenshotsLanguage($0, displayType: .iPhone) }, appID: origin.appID)
+        case let .screenshotsOnDevice(displayType, locale):
+            open(.screenshots, intent: .showScreenshotsLanguage(locale, displayType: displayType), appID: origin.appID)
         case let .pricing(territory): open(.subscriptionPricing, intent: territory.map(WorkspaceIntent.showTerritoryPrice), appID: origin.appID)
-        case .retention: open(.subscriptionPricing, intent: .showRetention, appID: origin.appID)
+        case .retention, .retentionLanguages: open(.subscriptionPricing, intent: .showRetention, appID: origin.appID)
+        case .offerMessage: open(.subscriptionPricing, intent: .newRetentionMessage, appID: origin.appID)
         case .inAppTexts: open(.storePage, appID: origin.appID)
         case let .productPage(name): open(.productPages, intent: .showProductPage(name: name), appID: origin.appID)
-        case .stability, .billing: break
+        case let .pageScreenshots(name): open(.productPages, intent: .makePageScreenshots(name: name), appID: origin.appID)
+        case .stability, .billing, .changes: break
         }
     }
 

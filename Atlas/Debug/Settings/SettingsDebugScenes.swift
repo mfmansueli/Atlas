@@ -16,7 +16,8 @@ import SwiftUI
 ///   `set-accounts` (`set-accounts-remove`: Remove… asked in place),
 ///   `set-suggestions`, `set-pricing`, `set-shots`, `set-notif`
 ///   (`set-notif-blocked`: turned off in System Settings), `set-pro`
-///   (yearly), `set-free`, `set-privacy`.
+///   (yearly), `set-free`, `set-privacy` (`set-privacy-remove`: Remove
+///   All Keys and Data… asked in place).
 /// - AI Assistants: `set-assistants` (an assistant connected),
 ///   `set-assistants-off` (the server off), `set-assistants-key` (an API
 ///   key), `set-assistants-none` (built-in only); the older `set-ai-*`
@@ -33,7 +34,7 @@ enum SettingsDebugScenes {
         "set-translation", "set-translation-rejected",
         "set-ai-off", "set-ai-pair", "set-ai-waiting", "set-ai-on", "set-ai-connected", "set-ai-disc", "set-ai-log",
         "set-suggestions", "set-pricing", "set-shots", "set-notif", "set-notif-blocked", "set-pro", "set-free", "set-privacy",
-        "cc-settings",
+        "set-privacy-remove", "cc-settings",
     ] + AssistantConnectDebugScenes.ids
 
     static let brightlineIssuerID = "5e1f0a42-8d7b-4c19-9f6e-27b3d0c8e915"
@@ -47,7 +48,7 @@ enum SettingsDebugScenes {
         case "set-shots": .screenshots
         case "set-notif", "set-notif-blocked": .notifications
         case "set-pro", "set-free": .pro
-        case "set-privacy": .privacy
+        case "set-privacy", "set-privacy-remove": .privacy
         case _ where source(for: id) != nil: .assistants
         default: nil
         }
@@ -71,6 +72,11 @@ enum SettingsDebugScenes {
     /// `set-accounts-remove` asks about Brightline Apps in place.
     static func removingKeyID(for id: String) -> String? {
         id == "set-accounts-remove" ? DebugFixtures.brightline.keyID : nil
+    }
+
+    /// `set-privacy-remove` asks about removing everything in place.
+    static func confirmsRemovingEverything(_ id: String) -> Bool {
+        id == "set-privacy-remove"
     }
 
     /// The MCP server's state for an AI Assistants scene.
@@ -170,7 +176,8 @@ enum SettingsDebugScenes {
                     if let source = SettingsDebugScenes.source(for: id) { translation.provider = source }
                     SettingsDebugScenes.assistantsState(for: id)?.apply(to: server)
                     AssistantConnectDebugScenes.configure(id, server: server, launcher: launcher)
-                    if id == "set-privacy" {
+                    PrivacySettingsPane.debugConfirmsRemoval = SettingsDebugScenes.confirmsRemovingEverything(id)
+                    if SettingsDebugScenes.pane(for: id) == .privacy {
                         // "3 confirmations are turned off."
                         preferences.acceptsAllWithoutAsking = true
                         preferences.confirmsDiscarding = false

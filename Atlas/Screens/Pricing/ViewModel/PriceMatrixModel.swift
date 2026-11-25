@@ -6,8 +6,8 @@
 import Foundation
 import Observation
 
-/// The price matrix of one product: its rows, filters, sorting, selection
-/// and open popover, and every edit, each of which becomes a pending change.
+/// The prices of one product in every country: its rows and every edit,
+/// each of which becomes a pending change.
 /// The change queue is the source of truth for proposed prices.
 @MainActor
 @Observable
@@ -20,10 +20,6 @@ final class PriceMatrixModel {
     private(set) var mode: PricingMode
     private(set) var rows: [PricingRow] = []
 
-    var filter = PriceMatrixFilter()
-    var sortOrder: [KeyPathComparator<PricingRow>] = []
-    var selection: Set<PricingRow.ID> = []
-    var popover: PricingPopover?
     /// Whether every territory follows the strategy, as after Apply Suggested Prices….
     private(set) var isFollowing: Bool
     /// When the queued changes take effect; read from the queue, so it
@@ -77,13 +73,6 @@ final class PriceMatrixModel {
         !isReadOnly && (row.queued != nil || isFollowing || mode == .applyRecommended)
     }
 
-    var visibleRows: [PricingRow] {
-        let filtered = rows.filter(filter.matches)
-        return sortOrder.isEmpty ? filtered.sorted(by: PricingRow.defaultOrder) : filtered.sorted(using: sortOrder)
-    }
-
-    var selectedRows: [PricingRow] { visibleRows.filter { selection.contains($0.id) } }
-
     var pendingCount: Int { rows.count { $0.queued != nil } }
 
     var heldBackCount: Int { rows.count(where: \.likelyHeldBack) }
@@ -98,16 +87,6 @@ final class PriceMatrixModel {
 
     func ladder(for row: PricingRow) -> PricePointLadder {
         sheet.ladder(for: row.territory, commission: calculator.commission)
-    }
-
-    /// Prices around the shown one, for the breakdown's chips.
-    func nearbyPoints(for row: PricingRow) -> [PricePoint] {
-        ladder(for: row).nearby(row.shownPrice, count: 3, rounding: strategy.rounding)
-    }
-
-    func comparison(for row: PricingRow) -> [SourceComparison] {
-        guard let input = builder.input(for: row.territory) else { return [] }
-        return calculator.compareSources(input, strategy: strategy)
     }
 
     // MARK: - Updating
@@ -145,11 +124,7 @@ final class PriceMatrixModel {
     /// every later one) takes effect on the new schedule.
     func setSchedule(_ schedule: PriceSchedule) {
         self.schedule = schedule
-        let prefix = PriceChangeFactory.changeID(productID: product.id, territoryID: "")
-        let rewritten = queue.changes(for: appID, section: .subscriptionPricing)
-            .filter { $0.id.hasPrefix(prefix) }
-            .map(schedule.applied(to:))
-        queue.upsert(contentsOf: rewritten)
+        schedule.apply(in: queue, appID: appID, productID: product.id)
         rebuild(recommendations: false)
     }
 

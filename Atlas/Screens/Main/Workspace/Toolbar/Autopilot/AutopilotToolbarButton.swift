@@ -186,15 +186,21 @@ struct AutopilotToolbarButton: View {
 
     // MARK: - Menu
 
+    /// macOS 26 menus: a symbol column for the items that have a standard
+    /// symbol (README-DS §13), as in the menu bar's menu; the run's line
+    /// and the connection keep the empty slot.
     @ViewBuilder
     private var menu: some View {
         if let autoReplyPaused {
             Section(autoReplyPaused ? String(localized: "Auto-reply paused") : String(localized: "Replying automatically")) {
-                Button(autoReplyPaused ? String(localized: "Resume Auto-Reply") : String(localized: "Pause Auto-Reply")) {
+                Button(
+                    autoReplyPaused ? String(localized: "Resume Auto-Reply") : String(localized: "Pause Auto-Reply"),
+                    systemImage: autoReplyPaused ? "play.circle" : "pause.circle"
+                ) {
                     onPauseAutoReply(!autoReplyPaused)
                 }
                 .accessibilityIdentifier("workspace.autopilot.autoReplyPause")
-                Button("Auto-Reply Settings…", action: onAutoReplySettings)
+                Button("Auto-Reply Settings…", systemImage: "gearshape", action: onAutoReplySettings)
             }
         }
         if let text = state.text, !state.isOn {
@@ -203,10 +209,10 @@ struct AutopilotToolbarButton: View {
                     Text(runProgress.line)
                 }
                 if state.isRunning ? isScreenshotRun : true {
-                    Button("Show Run…", action: onOpenRun)
+                    Button("Show Run…", systemImage: "eye", action: onOpenRun)
                 }
                 if onCancelRun != nil {
-                    Button("Cancel Run…", role: .destructive) { isConfirmingCancel = true }
+                    Button("Cancel Run…", systemImage: "xmark.circle", role: .destructive) { isConfirmingCancel = true }
                         .accessibilityIdentifier("workspace.autopilot.cancel")
                 }
             }
@@ -228,7 +234,7 @@ struct AutopilotToolbarButton: View {
         }
         if let everythingTitle {
             Section {
-                Button(isSuggestingEverything ? String(localized: "Show Suggest Everything’s Progress") : everythingTitle) {
+                Button(isSuggestingEverything ? String(localized: "Show Suggest Everything’s Progress") : everythingTitle, systemImage: "sparkles") {
                     onSuggestEverything()
                 }
                 .accessibilityIdentifier("workspace.autopilot.everything")
@@ -236,14 +242,17 @@ struct AutopilotToolbarButton: View {
         }
         Section {
             if activity.proposalCount > 0 {
-                Button(activity.proposalCount == 1 ? String(localized: "1 Suggestion to Review…") : String(localized: "\(activity.proposalCount) Suggestions to Review…")) {
+                Button(
+                    activity.proposalCount == 1 ? String(localized: "1 Suggestion to Review…") : String(localized: "\(activity.proposalCount) Suggestions to Review…"),
+                    systemImage: "sparkles"
+                ) {
                     reviewProposals()
                 }
             }
             Button(connectionTitle) { isShowingPopover = true }
                 .accessibilityIdentifier("workspace.autopilot.status")
             SettingsLink {
-                Text("Settings…")
+                Label("Settings…", systemImage: "gearshape")
             }
         }
     }
@@ -313,7 +322,7 @@ struct AutopilotToolbarButton: View {
             if isScreenshotRun { onOpenRun() } else { isShowingPopover = true }
         case .capturing:
             onOpenRun()
-        case .idle, .autoReplyOn:
+        case .idle, .finished, .autoReplyOn:
             if let primary { onAction(primary.action) }
         }
     }

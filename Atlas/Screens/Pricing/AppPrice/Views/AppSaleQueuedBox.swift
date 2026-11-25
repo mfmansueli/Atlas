@@ -6,14 +6,14 @@
 import SwiftUI
 
 /// What an App Price or Availability change waiting in Review & Push
-/// sets, with Change…, Discard and Review & Push.
+/// sets, with Change… and Discard. Pushing it is the toolbar's Review &
+/// Push (README — toolbar: no page has a push button of its own).
 struct AppSaleQueuedBox: View {
     let text: String
     var problem: String?
     let identifier: String
     let onChange: (() -> Void)?
     let onDiscard: () -> Void
-    let onReview: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -31,8 +31,6 @@ struct AppSaleQueuedBox: View {
                     .font(.subheadline)
             }
             HStack(spacing: Spacing.small) {
-                Button("Review & Push…", action: onReview)
-                    .accessibilityIdentifier("\(identifier).review")
                 Spacer(minLength: Spacing.small)
                 Button("Discard", action: onDiscard)
                     .accessibilityIdentifier("\(identifier).discard")

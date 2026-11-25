@@ -91,6 +91,19 @@ struct WorkspaceAutopilotActionTests {
         #expect(WorkspaceAutopilotAction.suggestPages.title(detail: .productPage) == "Suggest Pages…")
     }
 
+    /// Board 74 · 3: an empty In-App Events leads with Suggest an Event…,
+    /// which asks the assistant, not with Make Event Artwork….
+    @Test func noEventsLeadsWithSuggestAnEvent() {
+        let empty = WorkspaceAutopilotAction.actions(for: .inAppEvents, detail: .noEvents)
+        #expect(empty.first == .suggestEvent)
+        #expect(Set(empty) == Set(WorkspaceAutopilotAction.actions(for: .inAppEvents)))
+        #expect(WorkspaceAutopilotAction.suggestEvent.title() == "Suggest an Event…")
+        #expect(WorkspaceAutopilotAction.suggestEvent.asksAssistant)
+        #expect(WorkspaceAutopilotAction.suggestEvent.paywall == nil)
+        #expect(WorkspaceAutopilotAsk.make(.suggestEvent, app: "Lumen")?.prompt.contains("propose_in_app_event") == true)
+        #expect(WorkspaceAutopilotAction.actions(for: .nominations, detail: .noEvents) == WorkspaceAutopilotAction.actions(for: .nominations))
+    }
+
     @Test func aDetailOfAnotherSectionChangesNothing() {
         #expect(WorkspaceAutopilotAction.actions(for: .screenshots, detail: .event) == WorkspaceAutopilotAction.actions(for: .screenshots))
         #expect(WorkspaceAutopilotAction.actions(for: .productPages, detail: nil).first == .suggestPages)

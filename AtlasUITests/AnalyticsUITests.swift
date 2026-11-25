@@ -30,7 +30,7 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertFalse(element("analytics.tab.0").exists, "No views before there are numbers")
         element("analytics.askButton").click()
         XCTAssertTrue(element("analytics.setup.waiting").waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["Apple is preparing the reports"].exists)
+        XCTAssertTrue(app.staticTexts["Waiting for Apple’s first reports"].exists)
     }
 
     func testAKeyThatIsntAdminSaysWhatIsNeeded() {

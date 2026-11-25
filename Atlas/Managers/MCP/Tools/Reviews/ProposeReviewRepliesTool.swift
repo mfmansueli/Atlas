@@ -22,7 +22,10 @@ struct ProposeReviewRepliesTool: MCPTool {
         decides from them which replies go out by themselves and which wait. You can't turn it on, change it or send. \
         Be specific to what the review says, read \
         the project to say what is fixed or planned, and never promise what isn't there; no personal data, no asking for a \
-        better rating. Reviews that already have a reply are skipped. Nothing is sent to the App Store: the person sends \
+        better rating. A review that already has a reply is skipped, unless the item has replace: true and why (what's \
+        wrong with the reply on the App Store, e.g. it promises a fix that shipped): the new text then waits under that \
+        reply, labelled as a replacement with Now and New, and sending it replaces Apple's response. Reply \
+        Automatically never sends a replacement. Nothing is sent to the App Store: the person sends \
         each reply. A new suggestion for the same review replaces the earlier one. \
         \(StoreTextGuidelinePlace.reviewReply.summary)
         """,
@@ -42,6 +45,8 @@ struct ProposeReviewRepliesTool: MCPTool {
                             "waitTopics": ["type": "array", "items": ["type": "string"], "description": "bug, billing, account, featureRequest, personal."],
                             "unsure": ["type": "boolean", "description": "true when you aren't sure what the review means."],
                             "confidence": MCPToolDefinition.confidenceProperty,
+                            "replace": ["type": "boolean", "description": "true: a new text for the reply the review already has."],
+                            "why": MCPToolDefinition.shortWhy("With replace: why the published reply should change."),
                         ],
                         "required": ["reviewId", "text"],
                     ],
@@ -66,7 +71,9 @@ struct ProposeReviewRepliesTool: MCPTool {
         for value in try arguments.array("replies") {
             let reviewID = value["reviewId"]?.stringValue ?? ""
             let text = (value["text"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            if let reason = Self.refusal(reviewID: reviewID, text: text, in: archive) {
+            let replaces = value["replace"]?.boolValue == true
+            let why = (value["why"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if let reason = Self.refusal(reviewID: reviewID, text: text, replaces: replaces, why: why, in: archive) {
                 skipped.append(["reviewId": .string(reviewID), "reason": .string(reason)])
                 continue
             }
@@ -82,20 +89,24 @@ struct ProposeReviewRepliesTool: MCPTool {
             let meaning = (value["meaning"]?.stringValue ?? value["gloss"]?.stringValue ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             // The gloss is `meaning`; only how sure is kept beside it.
             let layers = try SuggestionLayers(confidence: item.layers()?.confidence).nonEmpty
+            let replaced = replaces ? archive.review(id: reviewID)?.reply : nil
             kept.append(ReviewReplySuggestion(
-                reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now(), layers: layers
+                reviewID: reviewID, text: text, meaning: meaning, source: context.clientName, date: store.now(), layers: layers,
+                replaces: replaced, why: replaced == nil ? nil : why
             ))
-            flags[reviewID] = Self.flags(value)
+            // Reply Automatically never replaces a published reply.
+            if replaced == nil { flags[reviewID] = Self.flags(value) }
         }
         guard !kept.isEmpty else {
             return .refused("No reply could be kept.", target: target, details: ["skipped": .array(skipped)])
         }
         let added = store.add(kept, for: app.id)
-        autoReply.received(added, flags: flags, reviews: store.archive(for: app.id), app: app)
+        autoReply.received(added.filter { !$0.isReplacement }, flags: flags, reviews: store.archive(for: app.id), app: app)
+        let replacements = added.count(where: \.isReplacement)
         return MCPToolOutcome(
             result: [
-                "status": "suggested", "replies": .int(kept.count), "skipped": .array(skipped),
-                "showsIn": "Reviews (⌘8), under each review. The person sends each reply.",
+                "status": "suggested", "replies": .int(kept.count), "replacements": .int(replacements), "skipped": .array(skipped),
+                "showsIn": "Reviews (⌘8), under each review (a replacement under the reply it replaces). The person sends each reply.",
             ],
             isError: false,
             logLines: [MCPToolOutcome.LogLine(target: target, outcome: .proposed)]
@@ -112,9 +123,17 @@ struct ProposeReviewRepliesTool: MCPTool {
     }
 
     /// Why a reply can't be kept, in words the assistant can act on.
-    private static func refusal(reviewID: String, text: String, in archive: ReviewsArchive) -> String? {
+    private static func refusal(reviewID: String, text: String, replaces: Bool, why: String, in archive: ReviewsArchive) -> String? {
         guard let review = archive.review(id: reviewID) else { return "No review has this id. Use the ids from get_reviews." }
-        if review.hasReply { return "This review already has a reply on the App Store." }
+        if let reply = review.reply {
+            guard replaces else {
+                return "This review already has a reply on the App Store. To suggest a new text for it, send replace: true with why."
+            }
+            if why.isEmpty { return "A replacement needs why: what's wrong with the reply on the App Store." }
+            if text == reply.text { return "That's the reply it has already." }
+        } else if replaces {
+            return "This review has no reply yet: leave out replace."
+        }
         if text.isEmpty { return "text is empty." }
         if text.count > ReviewText.replyLimit { return "text has \(text.count) characters; a reply holds \(ReviewText.replyLimit)." }
         return nil

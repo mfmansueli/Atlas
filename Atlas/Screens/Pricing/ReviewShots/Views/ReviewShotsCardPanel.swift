@@ -28,6 +28,9 @@ struct ReviewShotsCardPanel: View {
                 missing(capture: capture)
             case let .failed(remote):
                 warning(remote.title, detail: String(localized: "Apple refused the last screenshot. Choose another."))
+            case let .notCaptured(miss):
+                warning(String(localized: "Review screenshot missing"), detail: miss.text)
+                    .accessibilityIdentifier("pricing.card.reviewShots.notCaptured")
             case let .queued(text):
                 queued(text)
             case let .working(steps, step, client, plan):
@@ -51,7 +54,7 @@ struct ReviewShotsCardPanel: View {
             warning(
                 String(localized: "Review screenshot missing"),
                 detail: capture == nil
-                    ? String(localized: "App Review needs a screenshot of the purchase screen. Until then, it stays in Missing Metadata.")
+                    ? String(localized: "App Review needs a screenshot of the purchase screen. Until it has one, the product stays in Missing Metadata.")
                     : String(localized: "Screenshots already has a capture of the paywall.")
             )
             if let capture {
@@ -220,6 +223,15 @@ struct ReviewShotsCardPanel: View {
     // MARK: - Accepted and uploaded
 
     private func accepted(_ item: ReviewShotItem) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            acceptedRow(item)
+            if let offer = viewModel.reviewShotSizeOffer(for: product) {
+                ReviewShotSizeOfferBox(viewModel: viewModel, product: product, offer: offer)
+            }
+        }
+    }
+
+    private func acceptedRow(_ item: ReviewShotItem) -> some View {
         HStack(alignment: .top, spacing: Spacing.medium) {
             ReviewShotThumbnail(url: item.fileURL, width: 44, label: item.details?.heading ?? String(localized: "Review screenshot"))
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
@@ -230,7 +242,7 @@ struct ReviewShotsCardPanel: View {
                         .fixedSize()
                         .accessibilityIdentifier("pricing.card.reviewScreenshot.state")
                 }
-                Text(item.details?.acceptedLine ?? String(localized: "\(item.summary) · uploads when you push"))
+                Text(item.details?.acceptedLine ?? String(localized: "\(item.summary) · sent when you push"))
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -245,20 +257,40 @@ struct ReviewShotsCardPanel: View {
         .accessibilityIdentifier("pricing.card.reviewShots.accepted")
     }
 
+    /// In App Store Connect: since when, the product's state as Atlas read
+    /// it back (a pill), and why it's still Missing Metadata when it is.
     private func uploaded(_ remote: PurchaseReviewScreenshotState) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+        let state = remote.isUploaded ? viewModel.reviewShotProductState(for: product) : nil
+        return HStack(alignment: .top, spacing: Spacing.medium) {
+            if remote.isUploaded, let url = viewModel.reviewShotUploadedFile(for: product) {
+                ReviewShotThumbnail(url: url, width: 44, label: String(localized: "\(product.name)’s review screenshot", comment: "kind:accessibility-label"))
+            }
             VStack(alignment: .leading, spacing: Spacing.tiny) {
-                Text("Review screenshot")
-                    .font(.callout.weight(.semibold))
+                HStack(spacing: Spacing.small) {
+                    Text("Review screenshot")
+                        .font(.callout.weight(.semibold))
+                    if let state {
+                        Pill(text: state.title, style: state.pillStyle)
+                            .fixedSize()
+                            .accessibilityLabel(Text(String(localized: "In App Store Connect: \(state.title)", comment: "kind:accessibility-label")))
+                            .accessibilityIdentifier("pricing.card.reviewShots.appleState")
+                    }
+                }
                 Label(
-                    remote.isUploaded
-                        ? String(localized: "In App Store Connect. Apple lets you replace it, not remove it.")
-                        : remote.title,
+                    remote.isUploaded ? viewModel.reviewShotUploadedLine(for: product) : remote.title,
                     systemImage: remote.isUploaded ? "checkmark.circle" : "clock"
                 )
                 .font(.subheadline)
-                .foregroundStyle(Palette.label2)
+                .foregroundStyle(remote.isUploaded ? Palette.ok : Palette.label2)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("pricing.card.reviewScreenshot.state")
+                if let cause = state?.cause {
+                    Text(cause)
+                        .atlasTextStyle(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("pricing.card.reviewShots.cause")
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             reviewScreenshotButton(String(localized: "Replace…"))

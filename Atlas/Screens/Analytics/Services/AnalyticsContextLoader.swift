@@ -21,6 +21,7 @@ struct AnalyticsContextLoader {
         guard let content = try? await services.storePage.content(for: app, versionID: nil) else { return context }
         context.primaryLocale = content.primaryLocale
         context.pageLocales = content.locales
+        context.versionLocalizations = content.ids.versionLocalizations
         let tags = MachineTranslationScope.tags(in: machineTranslations, appID: app.id, ids: content.ids)
         for locale in content.locales {
             let texts = (content.texts[locale] ?? [:]).filter { !$0.value.isEmpty }
@@ -54,6 +55,25 @@ struct AnalyticsContextLoader {
         if !subscriptions.isEmpty, let retention = try? await services.retention.content(for: app, subscriptions: subscriptions) {
             context.liveRetentionMessages = retention.messages.count { $0.remote?.status == .live }
         }
+        return context
+    }
+
+    /// Adds which languages have screenshots of their own on each device,
+    /// from the version's live sets: the ones the App Store preview read
+    /// last when they're fresh, else one read shared with it.
+    func screenshots(for app: StoreApp, into context: AnalyticsContext, memo: LiveShotsMemo = .shared) async -> AnalyticsContext {
+        guard !context.versionLocalizations.isEmpty else { return context }
+        let key = LiveShotsMemo.Key(appID: app.id, localizations: context.versionLocalizations)
+        let live: LiveScreenshots? = if !memo.needsRead(key), let kept = memo.kept(key) {
+            kept
+        } else {
+            await memo.read(key) { [services] in
+                try await services.screenshots.liveScreenshots(for: app, localizations: key.localizations)
+            }
+        }
+        guard let live else { return context }
+        var context = context
+        context.setScreenshots(live)
         return context
     }
 }

@@ -21,7 +21,7 @@ enum DebugScene {
     static func requestedID(in arguments: [String]) -> String? {
         guard let index = arguments.firstIndex(of: launchArgument),
               arguments.indices.contains(index + 1) else { return nil }
-        return arguments[index + 1]
+        return DesignSceneAliases.resolve(arguments[index + 1])
     }
 }
 #endif

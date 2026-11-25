@@ -25,7 +25,9 @@ struct GetStorePageTool: MCPTool {
         field for them in that language; added ones (`new: true`, created when the person pushes) too. Their \
         pages are created only when the person adds them. `storeTextRules` lists App Review's rules to follow in \
         every text, and a locale's `states` the fields whose text already breaks one: suggest a version that doesn't. \
-        Send suggestions with suggest_fields.
+        Each locale with keywords has `keywordAnalysis` as the keyword editor shows it: bytes used, duplicates, \
+        words already in the name or subtitle (wasted bytes) and the optimized keywords. `dismissed` lists the \
+        suggestions the person dismissed for that locale: don't send them again. Send suggestions with suggest_fields.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -33,6 +35,7 @@ struct GetStorePageTool: MCPTool {
                 "version": MCPToolDefinition.string(
                     "The version string, e.g. 1.4, or a new version queued with propose_app_version. Leave it out for the editable version."
                 ),
+                "platform": MCPStorePlatform.schema,
                 "locales": [
                     "type": "array",
                     "items": ["type": "string"],
@@ -45,12 +48,15 @@ struct GetStorePageTool: MCPTool {
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let draft = try await MCPListingDraft.load(
-            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+            app: arguments.string("appId"), version: arguments.optionalString("version"), platform: arguments.optionalString("platform"),
+            in: context.workspace
         )
         try SuggestFieldsTool.check(version: arguments.optionalString("version"), against: draft.listing.version.versionString, app: draft.app.name)
         let listing = draft.listing
         let locales = try draft.locales(arguments.optionalStrings("locales"), includingNew: true)
-        let open = context.workspace.suggestions?.open(for: draft.app.id, area: .storePage) ?? []
+        let store = context.workspace.suggestions
+        let open = store?.open(for: draft.app.id, area: .storePage) ?? []
+        let dismissed = store.map { store in store.all(for: draft.app.id, area: .storePage).filter(store.isDismissed) } ?? []
         let fields = listing.fields.map { field -> (String, JSONValue) in
             (field.rawValue, ["limit": field.limitJSON, "editable": .bool(listing.canEdit(field))])
         }
@@ -66,7 +72,8 @@ struct GetStorePageTool: MCPTool {
                     for: locale,
                     in: listing,
                     isNew: draft.isNewLanguage(locale) || draft.isUnpushed(locale),
-                    suggestions: open.filter { $0.target.scope == .storePage(locale) }
+                    suggestions: open.filter { $0.target.scope == .storePage(locale) },
+                    dismissed: dismissed.filter { $0.target.scope == .storePage(locale) }
                 )
             }),
             "languagesNotOnAppStore": draft.languagesNotOnAppStoreJSON,
@@ -91,7 +98,13 @@ struct GetStorePageTool: MCPTool {
         return .object(json)
     }
 
-    private static func entry(for locale: StoreLocale, in listing: StoreListing, isNew: Bool, suggestions: [FieldSuggestion]) -> JSONValue {
+    private static func entry(
+        for locale: StoreLocale,
+        in listing: StoreListing,
+        isNew: Bool,
+        suggestions: [FieldSuggestion],
+        dismissed: [FieldSuggestion]
+    ) -> JSONValue {
         var texts: [String: JSONValue] = [:]
         var live: [String: JSONValue] = [:]
         var states: [String: JSONValue] = [:]
@@ -107,6 +120,33 @@ struct GetStorePageTool: MCPTool {
         if !live.isEmpty { entry["live"] = .object(live) }
         if !states.isEmpty { entry["states"] = .object(states) }
         if !suggestions.isEmpty { entry["suggestions"] = .array(suggestions.map(\.mcpJSON)) }
+        if !dismissed.isEmpty {
+            entry["dismissed"] = .array(dismissed.suffix(20).map { ["field": .string($0.target.field), "value": .string($0.value)] })
+        }
+        if let keywords = keywordAnalysis(for: locale, in: listing) { entry["keywordAnalysis"] = keywords }
         return .object(entry)
+    }
+
+    /// The keyword editor's reading of a locale's keywords; nil without any.
+    static func keywordAnalysis(for locale: StoreLocale, in listing: StoreListing) -> JSONValue? {
+        guard listing.fields.contains(.keywords) else { return nil }
+        let keywords = listing.draft(.keywords, in: locale).local
+        guard !keywords.isEmpty else { return nil }
+        let text = { (field: ListingField) in listing.fields.contains(field) ? listing.draft(field, in: locale).local : "" }
+        let analysis = KeywordAnalysis(keywords: keywords, name: text(.name), subtitle: text(.subtitle))
+        var json: [String: JSONValue] = [
+            "bytes": .int(analysis.byteCount),
+            "limit": .int(KeywordAnalysis.limit.maximum),
+            "summary": .string(analysis.summary),
+        ]
+        let duplicates = analysis.tokens.filter { $0.state == .duplicate }.map(\.text)
+        let wasted = analysis.tokens.filter { $0.state == .inNameOrSubtitle }.map(\.text)
+        if !duplicates.isEmpty { json["duplicates"] = .array(duplicates.map(JSONValue.string)) }
+        if !wasted.isEmpty { json["inNameOrSubtitle"] = .array(wasted.map(JSONValue.string)) }
+        if analysis.canOptimize {
+            json["optimized"] = .string(analysis.optimized)
+            json["bytesSaved"] = .int(analysis.bytesSaved)
+        }
+        return .object(json)
     }
 }

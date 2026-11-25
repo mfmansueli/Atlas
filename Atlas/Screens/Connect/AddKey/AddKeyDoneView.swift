@@ -5,38 +5,48 @@
 
 import SwiftUI
 
-/// "Fieldworks Studio is connected": the new key is saved, its apps are in
+/// "Fieldworks Studio is connected" (the canvas's Welcome `addkey-done`):
+/// under the large welcome header, the new key is saved, its apps are in
 /// the app switcher, and the person picks: keep the team in use, or switch
 /// to the new one now.
 struct AddKeyDoneView: View {
     let added: AddedKey
+    /// The sheet's size decides the header's height and the text sizes.
+    var layout = WelcomeLayout(windowSize: AddKeySheetLayout.preferred)
     let onKeep: () -> Void
     let onSwitch: () -> Void
 
     var body: some View {
-        VStack(spacing: Spacing.medium) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.largeTitle)
-                .foregroundStyle(Palette.ok)
-                .accessibilityHidden(true)
+        VStack(spacing: 0) {
+            WelcomeHeader(style: .large, markSize: layout.largeMarkSize)
+                .frame(height: layout.largeHeaderHeight)
+            content
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("addKey.done")
+    }
+
+    private var content: some View {
+        VStack(spacing: layout.isShort ? Spacing.small : Spacing.medium) {
             Text(added.title)
-                .font(.title.weight(.semibold))
+                .atlasTextStyle(layout.isShort ? .largeTitle : .display)
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("addKey.done.title")
             Text(added.message)
-                .font(.callout)
+                .atlasTextStyle(layout.isShort ? .body : .title3)
+                .fontWeight(.regular)
                 .foregroundStyle(Palette.label2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: 420)
+                .frame(maxWidth: 520)
             if let line = added.appsLine {
-                VStack(spacing: 6) {
+                VStack(spacing: Spacing.xSmall) {
                     ProgressView(value: 1)
                         .progressViewStyle(.linear)
                         .accessibilityHidden(true)
                     Text(line)
-                        .font(.footnote)
+                        .atlasTextStyle(.footnote)
                         .foregroundStyle(Palette.label2)
                         .monospacedDigit()
                         .lineLimit(1)
@@ -55,12 +65,11 @@ struct AddKeyDoneView: View {
                     .accessibilityIdentifier("addKey.done.switch")
             }
             .controlSize(.large)
-            .padding(.top, Spacing.xSmall)
         }
-        .padding(Spacing.xxxLarge)
+        .padding(.top, layout.isShort ? Spacing.medium : Spacing.xLarge)
+        .padding(.horizontal, Spacing.xxxLarge)
+        .padding(.bottom, Spacing.xLarge)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("addKey.done")
     }
 }
 
@@ -77,5 +86,5 @@ struct AddKeyDoneView: View {
         onKeep: {},
         onSwitch: {}
     )
-    .frame(width: 580, height: 680)
+    .frame(width: 920, height: 700)
 }

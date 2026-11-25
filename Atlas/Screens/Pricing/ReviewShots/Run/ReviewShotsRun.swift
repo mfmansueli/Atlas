@@ -41,11 +41,22 @@ struct ReviewShotsRun: Hashable, Sendable, Identifiable {
     var step: String?
     /// Products whose image arrived.
     var arrived: Set<String> = []
+    /// Products it skipped, or whose checks failed twice: done with, without
+    /// an image (`ReviewShotsRunCenter.misses` says why).
+    var missed: Set<String> = []
+    /// What the paywall showed when it had no prices (“What it saw”), as
+    /// the assistant sent it to the upload link.
+    var sawImage: URL?
     var startedAt: Date = .now
 
     /// The product being captured, else the first still to come.
     var currentProduct: Product? {
-        products.first { $0.productID == current } ?? products.first { !arrived.contains($0.productID) }
+        products.first { $0.productID == current } ?? products.first { !isDone($0.productID) }
+    }
+
+    /// Its image arrived, or the run moved on without one.
+    func isDone(_ productID: String) -> Bool {
+        arrived.contains(productID) || missed.contains(productID)
     }
 
     /// 1 for the first product.
@@ -69,18 +80,24 @@ struct ReviewShotsRun: Hashable, Sendable, Identifiable {
     /// The toolbar's bar: halfway through the product being captured.
     var fraction: Double {
         guard !products.isEmpty else { return 0 }
-        let done = Double(arrived.count)
+        let done = Double(arrived.union(missed).count)
         return min(1, (done + (current == nil ? 0 : 0.5)) / Double(products.count))
     }
 
     /// What the purple toolbar button says when the run needs the person.
     var needs: String? {
         switch phase {
-        case .working: nil
+        case .working, .ready: nil
         case .paywallNotFound: String(localized: "Show It the Paywall")
         case .noPrices: String(localized: "Choose How to Continue")
-        case .ready: String(localized: "Review Screenshots Ready")
         }
+    }
+
+    /// What the toolbar's green check says for about 2 s once the images
+    /// arrived (“✓ Review Screenshots Ready, then back to rest”); nil until
+    /// then. Accept waits on the cards, not on the button.
+    var readyText: String? {
+        phase == .ready ? String(localized: "Review Screenshots Ready") : nil
     }
 
     var isWorking: Bool { phase == .working }
@@ -93,7 +110,7 @@ struct ReviewShotsRun: Hashable, Sendable, Identifiable {
 
     /// The product waits for its turn in the run.
     func isQueued(_ productID: String) -> Bool {
-        isWorking && products.contains { $0.productID == productID } && !arrived.contains(productID) && !isCapturing(productID)
+        isWorking && products.contains { $0.productID == productID } && !isDone(productID) && !isCapturing(productID)
     }
 
     /// “Claude Code captures Lifetime after Annual.”

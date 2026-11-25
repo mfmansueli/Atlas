@@ -21,7 +21,9 @@ extension MCPServerController {
         guard let clientID = authorizedClientID(for: authorization) else { return refuse(request) }
         pruneIdleSessions()
         switch request.method {
-        case "POST": return await .response(post(request, from: clientID, byRun: isRunCredential(authorization)))
+        case "POST":
+            let origin = origin(forAuthorization: authorization)
+            return await .response(post(request, from: clientID, byRun: isRunCredential(authorization), origin: origin))
         case "GET": return openStream(request, from: clientID)
         case "DELETE": return .response(delete(request, from: clientID))
         default: return .response(.text(405, headers: ["Allow": "GET, POST, DELETE"]))
@@ -59,8 +61,8 @@ extension MCPServerController {
     // MARK: - POST
 
     /// `byRun`: the token is a run's that Atlas started, not the
-    /// pairing's own.
-    private func post(_ request: HTTPRequest, from clientID: MCPPairedClient.ID, byRun: Bool) async -> HTTPResponse {
+    /// pairing's own; `origin` why Atlas started it, when it says.
+    private func post(_ request: HTTPRequest, from clientID: MCPPairedClient.ID, byRun: Bool, origin: ChangeOrigin?) async -> HTTPResponse {
         guard let message = try? JSONDecoder().decode(JSONRPCMessage.self, from: request.body) else {
             let isBatch = (try? JSONDecoder().decode([JSONValue].self, from: request.body)) != nil
             let error = isBatch ? JSONRPCError.invalidRequest("Batched messages aren’t supported; send one message per request.") : .parseError
@@ -94,7 +96,7 @@ extension MCPServerController {
             received(response: message, from: session)
             return HTTPResponse(status: 202)
         case .request:
-            return await .json(respond(to: message, from: session))
+            return await .json(respond(to: message, from: session, origin: origin))
         }
     }
 
@@ -127,7 +129,7 @@ extension MCPServerController {
         return .json(JSONRPCResponse.result(result, id: message.id ?? .null), headers: ["Mcp-Session-Id": session.id])
     }
 
-    private func respond(to message: JSONRPCMessage, from session: MCPClientSession) async -> JSONRPCResponse {
+    private func respond(to message: JSONRPCMessage, from session: MCPClientSession, origin: ChangeOrigin?) async -> JSONRPCResponse {
         let id = message.id ?? .null
         let params = message.params
         switch message.method ?? "" {
@@ -136,7 +138,7 @@ extension MCPServerController {
         case "tools/list":
             return .result(toolbox.listResult, id: id)
         case "tools/call":
-            return await callTool(params, from: session, id: id)
+            return await callTool(params, from: session, id: id, origin: origin)
         case "prompts/list":
             return .result(["prompts": .array(availablePrompts.map(\.json))], id: id)
         case "prompts/get":
@@ -150,7 +152,7 @@ extension MCPServerController {
         }
     }
 
-    private func callTool(_ params: JSONValue?, from session: MCPClientSession, id: JSONValue) async -> JSONRPCResponse {
+    private func callTool(_ params: JSONValue?, from session: MCPClientSession, id: JSONValue, origin: ChangeOrigin?) async -> JSONRPCResponse {
         guard let name = params?["name"]?.stringValue else { return .error(.invalidParams("tools/call needs a tool name."), id: id) }
         guard let tool = toolbox.tool(named: name) else { return .error(.invalidParams("Unknown tool: \(name)"), id: id) }
         let rawArguments = params?["arguments"] ?? .null
@@ -159,14 +161,19 @@ extension MCPServerController {
         }
         let arguments = MCPToolArguments(rawArguments.objectValue ?? [:])
         noteWorking(client: session.displayName)
-        let outcome = await outcome(of: tool, arguments: arguments, from: session)
+        let outcome = await outcome(of: tool, arguments: arguments, from: session, origin: origin)
         for line in outcome.logLines {
             record(client: session.displayName, tool: name, target: line.target, outcome: line.outcome, reason: line.reason)
+        }
+        if let origin, outcome.logLines.contains(where: { $0.outcome == .proposed }) {
+            onOriginProposal?(origin, name, outcome.logLines)
         }
         return .result(outcome.callResult, id: id)
     }
 
-    private func outcome(of tool: any MCPTool, arguments: MCPToolArguments, from session: MCPClientSession) async -> MCPToolOutcome {
+    private func outcome(
+        of tool: any MCPTool, arguments: MCPToolArguments, from session: MCPClientSession, origin: ChangeOrigin?
+    ) async -> MCPToolOutcome {
         let target = await logTarget(for: arguments)
         if let kind = tool.definition.proposalKind, !allows(kind) { return .failed(kind.refusal, target: target) }
         guard let workspace else { return .failed(MCPToolError.notConnected.localizedDescription, target: target) }
@@ -181,7 +188,8 @@ extension MCPServerController {
                 allowedProposals: allowedProposals,
                 editsDrafts: editsDrafts,
                 port: port,
-                simulators: launcher?.simulators
+                simulators: launcher?.simulators,
+                origin: origin
             )
             return try await tool.call(arguments, in: context)
         } catch {

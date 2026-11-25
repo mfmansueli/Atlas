@@ -6,7 +6,7 @@
 #if DEBUG
 import SwiftUI
 
-/// `addkey`, `addkey-403` and `addkey-done`: the library with "Add Another
+/// `addkey`, `addkey-403`, `addkey-check` and `addkey-done`: the library with "Add Another
 /// Key…" open over it, Northpier Studio's key in use in the sheet's own
 /// session (`ConnectDebugScenes`).
 struct AddKeyDebugScene: View {
@@ -24,7 +24,7 @@ struct AddKeyDebugScene: View {
     var body: some View {
         DebugMainScene()
             .sheet(isPresented: $isPresented) {
-                AddKeySheet(added: id == "addkey-done" ? Self.added : nil, prefill: Self.fill)
+                AddKeySheet(added: id == "addkey-done" ? Self.added : nil, prefill: Self.fill, startsChecking: id == "addkey-check")
                     .environment(session)
             }
     }

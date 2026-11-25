@@ -21,6 +21,9 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
     var release: ReleaseViewModel?
     /// Analytics, Ratings & Reviews and Product Pages.
     let afterRelease: [OverviewAfterReleaseRow]
+    /// App Compliance answers an assistant suggested, for App
+    /// Information's row.
+    var complianceAnswers = 0
     /// Above the lists: the assistant's card, and the stability alert
     /// while the version card doesn't follow a submitted version.
     @ViewBuilder var lead: () -> Lead
@@ -33,6 +36,8 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
     @Environment(PricingModeStore.self) private var pricingModes
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(FieldSuggestionStore.self) private var suggestions
+    /// Shorter retention wordings an assistant suggested.
+    private var retention: RetentionDraftStore { .shared }
 
     /// The preview's column.
     static var previewWidth: CGFloat { 300 }
@@ -84,7 +89,7 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
             appID: app.id,
             suggestions: suggestions,
             screenshots: services.screenshots.documentCenter,
-            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes)
+            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes, retention: retention)
         )
     }
 
@@ -96,13 +101,18 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
         let pending = Set((newLanguages?.pending ?? []).map(\.code))
         let pages = Set(suggestions.toReview(for: app.id, area: .appInformation).compactMap(\.target.scope.page))
         let captions = services.screenshots.documentCenter?.openProposedCaptions(appID: app.id) ?? []
+        var informationPages = pages
+        if complianceAnswers > 0 { informationPages.insert(.appCompliance) }
         return OverviewWaitingSection.Facts(
             counts: badgeCounts,
             storePageLanguages: storeLanguages.count,
             newPages: storeLanguages.intersection(pending).count,
             captionLanguages: Set(captions.map(\.locale)).count,
             isPricingEstimate: summaries.pricingSuggestionCounts[app.id] == nil,
-            informationPages: AppInformationPage.allCases.filter(pages.contains).map(\.title)
+            reviewShots: SectionBadgeCounts.reviewShotCount(appID: app.id, changes: changes),
+            retentionSuggestions: retention.suggestionCount(for: app.id),
+            complianceAnswers: complianceAnswers,
+            informationPages: AppInformationPage.allCases.filter(informationPages.contains).map(\.title)
         )
     }
 
@@ -115,7 +125,9 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
             storePage: link(.storePage),
             appInformation: link(.appInformation),
             screenshots: link(.screenshots),
-            pricing: link(.subscriptionPricing)
+            pricing: link(.subscriptionPricing),
+            inAppEvent: { navigator.open(.inAppEvents, intent: .showInAppEvents(eventID: $0)) },
+            appPreview: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: $1)) }
         )
     }
 

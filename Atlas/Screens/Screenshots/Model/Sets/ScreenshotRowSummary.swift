@@ -6,7 +6,7 @@
 import Foundation
 
 /// A row header's one-line summary: "1 check failed · 4 not pushed",
-/// "UI not localized", "Live".
+/// "Interface not localized", "Live".
 struct ScreenshotRowSummary: Hashable, Sendable {
     var text: String
     /// Something failed: the summary is drawn in the error color.

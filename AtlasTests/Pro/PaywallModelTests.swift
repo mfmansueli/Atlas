@@ -72,6 +72,7 @@ struct PaywallModelTests {
         #expect(model.phase == .done)
         #expect(model.doneTitle == "Your free trial has started")
         #expect(model.doneSubtitle.hasPrefix("You won’t be charged until "))
+        #expect(model.doneSubtitle.hasSuffix("Atlas reminds you 2 days before."))
         #expect(model.continueTitle == "Accept 32 Suggestions…")
         #expect(model.closeTitle == "Later")
     }

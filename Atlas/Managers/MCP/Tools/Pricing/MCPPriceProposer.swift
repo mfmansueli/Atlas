@@ -42,9 +42,26 @@ struct MCPPriceProposer {
             return .refused(reason: MCPPriceProposal.unknownTerritoryMessage(territory.id, product: sheet.product), nearest: [])
         }
         queue.upsert(change)
+        sheet.refreshSummary()
         let stored = queue.change(id: change.id)
         let competing = stored?.source != source && stored?.alternative?.source == source
         return .queued(changeID: change.id, competing: competing)
+    }
+
+    /// Back to Apple's automatic price: for a subscription, the base price
+    /// equalized (App Store Connect keeps no automatic subscription prices),
+    /// queued like any other price point.
+    func proposeAutomatic(in territory: Territory) -> Outcome {
+        guard territory.id != sheet.sheet.baseTerritoryID else { return .refused(reason: Self.baseRefusal(territory), nearest: []) }
+        guard let equalized = sheet.sheet.prices[territory.id]?.equalized else {
+            return .refused(reason: MCPPriceProposal.unknownTerritoryMessage(territory.id, product: sheet.product), nearest: [])
+        }
+        return propose(equalized.customerPrice, in: territory)
+    }
+
+    /// The base territory's price is what the others follow.
+    static func baseRefusal(_ territory: Territory) -> String {
+        String(localized: "\(territory.name) is the base territory, so it has no automatic price. Propose one of its price points instead.")
     }
 
     // MARK: - Private
@@ -60,6 +77,7 @@ struct MCPPriceProposer {
             queue.resolveAlternative(id: existing.id, keepAlternative: false)
             withdrew = true
         }
+        if withdrew { sheet.refreshSummary() }
         let note = withdrew
             ? String(localized: "That’s today’s price, so your earlier proposal for this territory was withdrawn.")
             : String(localized: "That’s already today’s price in App Store Connect; nothing was queued.")

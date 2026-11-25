@@ -55,6 +55,25 @@ struct ProposeAppPreviewFileToolTests {
         #expect(uploads.upload(id: "apf-1", appID: MCPScreenshotsFixtures.appID) == nil, "An upload is used once")
     }
 
+    @Test func howSureAndDetailsGoOnTheChange() async throws {
+        let (workspace, _) = MCPScreenshotsFixtures.workspace()
+        let outcome = try await MCPScreenshotsFixtures.call(
+            ProposeAppPreviewFileTool(uploads: Self.uploads()),
+            Self.arguments(["confidence": 2, "details": "4 of 31 Japanese reviews this month ask how search works."]),
+            in: workspace
+        )
+        let change = try #require(workspace.changes.change(id: outcome.result["changeId"]?.stringValue ?? ""))
+        #expect(change.layers?.confidence == .fairlySure)
+        #expect(change.layers?.details == "4 of 31 Japanese reviews this month ask how search works.")
+        #expect(ProposeAppPreviewFileTool().definition.inputSchema.jsonString().contains("\"confidence\""))
+
+        await #expect(throws: MCPToolError.self) {
+            _ = try await MCPScreenshotsFixtures.call(
+                ProposeAppPreviewFileTool(uploads: Self.uploads()), Self.arguments(["confidence": 7]), in: MCPScreenshotsFixtures.workspace().0
+            )
+        }
+    }
+
     @Test func aPositionReplacesTheLiveOne() async throws {
         let (workspace, _) = MCPScreenshotsFixtures.workspace()
         let outcome = try await MCPScreenshotsFixtures.call(

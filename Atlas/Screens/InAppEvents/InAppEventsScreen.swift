@@ -40,8 +40,12 @@ struct InAppEventsScreen: View {
             // The general request (board 40's `ask-ev`) goes to the
             // toolbar like the Autopilot menu's (boards 56 and 57).
             if viewModel.state.value != nil {
-                InAppEventsAskButton(app: viewModel.app)
-                    .buttonBorderShape(.capsule)
+                // Nothing to write texts for yet: the toolbar's Suggest an
+                // Event… is the assistant's (board 74 · 3).
+                if !viewModel.showsEmptyState {
+                    InAppEventsAskButton(app: viewModel.app)
+                        .buttonBorderShape(.capsule)
+                }
                 Button {
                     viewModel.isNewEventPresented = true
                 } label: {
@@ -58,12 +62,12 @@ struct InAppEventsScreen: View {
     private var content: some View {
         switch viewModel.state {
         case .idle, .loading:
-            HStack(alignment: .top, spacing: 14) {
+            HStack(alignment: .top, spacing: Spacing.medium) {
                 ForEach(0..<3, id: \.self) { _ in
-                    SkeletonBlock(height: 230, cornerRadius: Radius.popover)
+                    SkeletonBlock(height: Metrics.skeletonEventCardHeight, cornerRadius: Radius.popover)
                 }
             }
-            .accessibilityIdentifier("events.loading")
+            .loadingSkeleton(LoadingCopy.events, identifier: "events.loading")
         case let .failed(message):
             Banner(kind: .apiError, title: String(localized: "Couldn’t read the In-App Events"), message: message, isInline: true) {
                 Button("Try Again") {
@@ -73,18 +77,8 @@ struct InAppEventsScreen: View {
             .accessibilityIdentifier("events.error.load")
             Spacer(minLength: 0)
         case .loaded:
-            if viewModel.events.isEmpty, viewModel.queuedNewEvents.isEmpty {
-                ContentUnavailableView {
-                    Label("No In-App Events", systemImage: AppWorkspaceSection.inAppEvents.systemImage)
-                } description: {
-                    Text("An event is a card on the App Store for something happening in \(viewModel.app.name): a challenge, a new season, a major update.")
-                } actions: {
-                    Button("New Event…") { viewModel.isNewEventPresented = true }
-                        .accessibilityIdentifier("events.empty.new")
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityElement(children: .contain)
-                .accessibilityIdentifier("events.empty")
+            if viewModel.showsEmptyState {
+                InAppEventsEmptyState(appName: viewModel.app.name)
             } else {
                 InAppEventGallery(viewModel: viewModel)
             }

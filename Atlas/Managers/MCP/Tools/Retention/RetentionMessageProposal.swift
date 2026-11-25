@@ -28,6 +28,7 @@ struct RetentionMessageProposal {
         var proposal = try RetentionMessageProposal(message: base(from: arguments, in: context))
         try proposal.applyName(arguments)
         try proposal.applySubscriptions(arguments, in: context)
+        try proposal.removeSubscriptions(arguments, in: context)
         if let kindText = try arguments.optionalString("kind") {
             guard let kind = RetentionMessageKind(rawValue: kindText.lowercased()) else {
                 throw MCPToolError.invalidArgument(name: "kind", expected: String(localized: "message, image or offer"))
@@ -77,6 +78,28 @@ struct RetentionMessageProposal {
         message.subscriptionIDs = result
         let messageID = message.id
         replaces = ids.filter { id in context.messages.contains { $0.id != messageID && $0.subscriptionIDs.contains(id) } }
+    }
+
+    /// `removeSubscriptions`: takes subscriptions off the message while
+    /// they don't show it in App Store Connect yet, as the editor's
+    /// checkboxes do. One that shows it there already keeps it until it's
+    /// given another message.
+    private mutating func removeSubscriptions(_ arguments: MCPToolArguments, in context: RetentionMCPContext) throws {
+        guard let identifiers = try arguments.optionalStrings("removeSubscriptions"), !identifiers.isEmpty else { return }
+        let assigned = Set(message.remote?.subscriptionIDs ?? [])
+        for identifier in identifiers {
+            let subscription = try context.requireSubscription(identifier)
+            if assigned.contains(subscription.id) {
+                refusals.append(String(localized: """
+                \(subscription.name) shows “\(message.referenceName)” in App Store Connect, which can’t take a message off a \
+                subscription. To stop it, give \(subscription.name) another message: propose that one with subscriptions.
+                """, comment: "kind:error"))
+            } else {
+                message.subscriptionIDs.removeAll { $0 == subscription.id }
+                replaces.removeAll { $0 == subscription.id }
+            }
+        }
+        if message.subscriptionIDs.isEmpty, refusals.isEmpty { refusals.append(RetentionMessageProblem.noSubscriptions.message) }
     }
 
     /// `texts` and the single `locale`/`header`/`body`; a header or body

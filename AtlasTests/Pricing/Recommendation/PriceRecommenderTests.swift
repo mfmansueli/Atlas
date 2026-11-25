@@ -124,6 +124,48 @@ struct PriceRecommenderTests {
         #expect(RecommendationConfidence.low < .high)
     }
 
+    // MARK: - Small steps
+
+    /// Ecuador (US dollars) at a World Bank level of 0.5 and a $10 base:
+    /// the target is $5.
+    private func ecuador(current: String) throws -> Recommendation {
+        let snapshot = PricingFixtures.snapshot([.worldBank: ["USA": 1, "ECU": money("0.5")]])
+        let recommender = PriceRecommender(calculator: PriceCalculator(snapshot: snapshot))
+        let input = try PriceCalculationInput(
+            territory: PricingFixtures.territory("EC"),
+            basePrice: 10,
+            equalizedPrice: 10,
+            ladder: PricingFixtures.ladder(["4.99", "5.19", "7.99", "9.99"], territoryID: "ECU"),
+            currentPrice: money(current)
+        )
+        return recommender.recommend(input, evidence: .unavailable)
+    }
+
+    @Test func aStepUnderFivePercentKeepsTodaysPrice() throws {
+        let close = try ecuador(current: "5.19")
+        #expect(close.isUnchanged)
+        #expect(close.price.customerPrice == money("5.19"))
+        #expect(close.reason == "Already matches local purchasing power")
+        #expect(close.summary.hasPrefix("Kept at "))
+        #expect(close.summary.hasSuffix(" · close to the target"))
+        #expect(!close.likelyHoldsPeopleBack)
+    }
+
+    @Test func aStepOfFivePercentOrMoreIsSuggested() throws {
+        let far = try ecuador(current: "7.99")
+        #expect(!far.isUnchanged)
+        #expect(far.price.customerPrice < money("7.99"))
+        #expect(far.reason.hasPrefix("Feels like 1.6× the US price"))
+    }
+
+    @Test func aMeaningfulChangeIsFivePercentOfTodaysPrice() {
+        #expect(!PriceRecommender.isMeaningfulChange(from: 10000, to: 9999))
+        #expect(!PriceRecommender.isMeaningfulChange(from: 79, to: 77))
+        #expect(!PriceRecommender.isMeaningfulChange(from: 1150, to: 1149))
+        #expect(PriceRecommender.isMeaningfulChange(from: 100, to: 95))
+        #expect(PriceRecommender.isMeaningfulChange(from: 0, to: 1))
+    }
+
     @Test func sampleHas146TerritoriesLikelyHoldingPeopleBack() {
         let held = sample.catalog.territories.count {
             sample.recommendation(for: $0, subscription: .annual).likelyHoldsPeopleBack

@@ -31,8 +31,8 @@ struct HelpTopBar: View {
         .padding(.vertical, Spacing.small)
     }
 
-    /// "Atlas Help", "Search", "Atlas Help › Start here › Connect App Store
-    /// Connect".
+    /// "Atlas Help", "Search", "Atlas Help › Start here › Connect to App
+    /// Store Connect".
     private var crumb: String {
         switch navigation.place {
         case .home: String(localized: "Atlas Help")

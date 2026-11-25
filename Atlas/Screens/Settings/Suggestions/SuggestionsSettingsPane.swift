@@ -11,6 +11,8 @@ import SwiftUI
 struct SuggestionsSettingsPane: View {
     @Environment(TranslationPreferences.self) private var translation
     @Environment(AppPreferences.self) private var preferences
+    /// Nil in previews and scenes without the app's gate.
+    @Environment(ProGate.self) private var pro: ProGate?
 
     var body: some View {
         @Bindable var translation = translation
@@ -47,6 +49,25 @@ struct SuggestionsSettingsPane: View {
                 }
                 .toggleStyle(.switch)
                 .accessibilityIdentifier("settings.checksRepeatedWords")
+            }
+            Section("Assistant") {
+                // Look for Improvements' runs are Pro; Atlas's own checks
+                // above run for everyone.
+                Toggle(isOn: $preferences.lookForImprovements) {
+                    HStack(alignment: .firstTextBaseline, spacing: Spacing.xSmall) {
+                        SettingsRowLabel(
+                            title: "Look for Improvements",
+                            caption: String(localized: """
+                            At most once a day per app, Claude Code looks at what Atlas found and leaves suggestions. \
+                            It never pushes.
+                            """, comment: "kind:hint")
+                        )
+                        if pro?.isFree == true { ProChip() }
+                    }
+                }
+                .toggleStyle(.switch)
+                .disabled(pro?.isFree == true)
+                .accessibilityIdentifier("settings.lookForImprovements")
             }
             Section("Accepting") {
                 Toggle(isOn: Binding(get: { !preferences.acceptsAllWithoutAsking }, set: { preferences.acceptsAllWithoutAsking = !$0 })) {

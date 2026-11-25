@@ -15,8 +15,11 @@ struct DebugInAppEventsServices: InAppEventsServices {
     var isEmpty = false
     /// Lumen's events instead of the sample ones.
     var events: [InAppEvent]?
+    /// How long the events take to read, for ev-loading.
+    var delay: Duration?
 
     func events(for app: StoreApp) async throws -> [InAppEvent] {
+        if let delay { try await Task.sleep(for: delay) }
         if let error { throw error }
         return app.id == DebugFixtures.AppID.lumen && !isEmpty ? events ?? DebugInAppEventsData.events : []
     }

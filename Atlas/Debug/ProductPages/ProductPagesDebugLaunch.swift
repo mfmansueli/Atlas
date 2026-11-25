@@ -26,6 +26,8 @@ struct ProductPagesDebugLaunch {
     /// draft and its change are gone.
     var pushedPrivateDiary: ProductPageState?
     var opensSubmit = false
+    /// Push and Submit… pressed: Review & Push on the open page's changes.
+    var opensReview = false
     /// Edit… pressed, with these changes queued.
     var editsApproved: [PendingChange] = []
     /// Offline after the first read.

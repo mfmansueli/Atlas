@@ -46,14 +46,14 @@ extension ScreenshotsViewModel {
 
     var isPrimaryPage: Bool { currentPageLocale.code == context.primaryLocale.code }
 
-    /// "iPhone 6.9″ · 1320 × 2868 · 5 of 10. Select a screenshot to …".
-    func handDeviceLine(locale: String, displayType: ScreenshotDisplayType) -> String {
-        let count = ownCount(locale: locale, displayType: displayType)
-        let size = ScreenshotHandSizes.main(on: displayType)
-        return String(localized: """
-        \(displayType.title) · \(size) · \(count) of \(ScreenshotHandSet.capacity). \
-        Select a screenshot to replace, move or delete it, or drop files to add them.
-        """)
+    /// "iPhone 6.9″ · 1320 × 2868 · 5 of 10. Select a screenshot to …";
+    /// with the row's App Previews "Mac · 2880 × 1800 · App Preview and 6
+    /// of 10 screenshots. Select …".
+    func handDeviceLine(locale: String, displayType: ScreenshotDisplayType, appPreviews: Int = 0) -> String {
+        ScreenshotHandDeviceLine.text(
+            device: displayType.title, size: ScreenshotHandSizes.main(on: displayType),
+            screenshots: ownCount(locale: locale, displayType: displayType), capacity: ScreenshotHandSet.capacity, appPreviews: appPreviews
+        )
     }
 
     /// "Polish uses the English (U.S.) screenshots." and why; nil when the

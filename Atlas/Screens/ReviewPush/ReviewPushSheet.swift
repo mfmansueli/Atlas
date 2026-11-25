@@ -81,12 +81,18 @@ struct ReviewPushSheet: View {
             ReviewHeader(viewModel: viewModel)
             Divider()
             if viewModel.visibleChanges.isEmpty, !ScreenshotReviewContent.hasContent(viewModel) {
-                ContentUnavailableView(
-                    "Nothing to push",
+                // Board 74 · 10: the smaller empty state, in a sheet; Push
+                // stays off.
+                EmptyStateView(
+                    String(localized: "Nothing to push", comment: "kind:empty-state"),
                     systemImage: "checkmark.circle",
-                    description: Text("Edits and accepted suggestions wait here until you push them.")
+                    text: String(
+                        localized: "Accepted suggestions and edited fields wait here until you push them to App Store Connect.",
+                        comment: "kind:description"
+                    ),
+                    size: .inline
                 )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxHeight: .infinity, alignment: .top)
                 .accessibilityIdentifier("review.empty")
             } else {
                 ScrollView {

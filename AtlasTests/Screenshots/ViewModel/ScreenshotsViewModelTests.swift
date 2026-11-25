@@ -33,13 +33,27 @@ struct ScreenshotsViewModelTests {
 
     @Test func aLiveVersionShowsTheNoVersionBanner() async {
         let (model, _) = await ScreenshotsTestFixtures.viewModel(version: ScreenshotsTestFixtures.liveVersion)
-        guard case let .noVersion(title, message) = model.banner else {
+        guard case let .noVersion(title, message, next) = model.banner else {
             Issue.record("Expected the no-version banner")
             return
         }
         #expect(title == "No version to push to.")
-        #expect(message.hasPrefix("Version 1.3 is live."))
-        #expect(message.contains("Create 1.4 in App Store Connect"))
+        #expect(message == "Version 1.3 is live. Create 1.4 to change screenshots. Renders wait here.")
+        // The banner's Create Version 1.4… opens the Store Page's New Version.
+        #expect(next == "1.4")
+    }
+
+    /// Text only, as on Pricing's cards: the toolbar's "N not pushed"
+    /// opens Review & Push.
+    @Test func aQueuedVersionSaysToPushItInstead() async {
+        let (model, _) = await ScreenshotsTestFixtures.viewModel(version: ScreenshotsTestFixtures.liveVersion)
+        model.queuedVersionString = "1.4"
+        guard case let .versionQueued(title, message) = model.banner else {
+            Issue.record("Expected the version-queued banner")
+            return
+        }
+        #expect(title == "Version 1.4 waits in Review & Push.")
+        #expect(message == "Push it to change screenshots for it. Renders wait here.")
     }
 
     @Test func theFailedDocumentCountsFourteenLocales() async {
@@ -53,7 +67,7 @@ struct ScreenshotsViewModelTests {
         #expect(model.groups.map(\.kind) == [.localized, .fallback])
         #expect(model.groups.first?.rows.count == 12)
         #expect(model.groups.last?.rows.isEmpty == true)
-        #expect(model.groups.last?.title == "Use English (U.S.) Screenshots")
+        #expect(model.groups.last?.title == "Use English (U.S.) screenshots")
         model.showsFallbackRows = true
         #expect(model.groups.last?.rows.count == 27)
     }

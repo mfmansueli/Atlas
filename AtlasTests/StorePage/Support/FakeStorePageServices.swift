@@ -16,6 +16,8 @@ final class FakeStorePageServices: StorePageServices {
     var defaultVersionID: String
     var error: (any Error)?
     var inAppTextsContent = InAppTextsContent.empty
+    /// Awaited before the texts are returned, to hold a read in progress.
+    var beforeInAppTexts: (() async -> Void)?
     /// What `customerReviews(for:limit:)` returns, or why it fails.
     var reviews: [CustomerReview] = []
     var reviewsError: (any Error)?
@@ -53,6 +55,7 @@ final class FakeStorePageServices: StorePageServices {
     }
 
     func inAppTexts(for _: StoreApp) async throws -> InAppTextsContent {
+        await beforeInAppTexts?()
         if let error { throw error }
         return inAppTextsContent
     }

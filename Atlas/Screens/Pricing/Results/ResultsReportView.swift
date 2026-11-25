@@ -38,6 +38,7 @@ struct ResultsReportView: View {
         }
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.medium)
+        .leavesChatRoom(.bottomEdge)
         // No minimum from the texts: a width-dependent one makes the split
         // view resize in a loop.
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)

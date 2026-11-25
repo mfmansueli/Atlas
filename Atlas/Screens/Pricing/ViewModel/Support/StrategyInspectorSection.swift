@@ -12,6 +12,7 @@ enum StrategyInspectorSection: String, CaseIterable, Identifiable, Hashable, Sen
     case fallback
     case regionalTiers
     case limits
+    case howSure
     case tiers
     case excluded
     case rounding
@@ -27,6 +28,7 @@ enum StrategyInspectorSection: String, CaseIterable, Identifiable, Hashable, Sen
         case .fallback: String(localized: "Fallback chain")
         case .regionalTiers: String(localized: "Regional tiers")
         case .limits: String(localized: "Intensity and limits")
+        case .howSure: String(localized: "How sure", comment: "kind:section-title")
         case .tiers: String(localized: "Tiers")
         case .excluded: String(localized: "Excluded from the index")
         case .rounding: String(localized: "Rounding")

@@ -46,7 +46,7 @@ enum AutopilotButtonLook: Hashable {
             self = .failed(text)
         case let .autoReplyOn(text):
             self = done.map(Self.done) ?? .autoReplyOn(text)
-        case .idle:
+        case .idle, .finished:
             self = done.map(Self.done) ?? .idle
         }
     }

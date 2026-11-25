@@ -22,7 +22,7 @@ enum ResultVerdict: String, CaseIterable, Hashable, Sendable {
         case .better: String(localized: "Better")
         case .moreStartsLessProceeds: String(localized: "More starts, less proceeds")
         case .worse: String(localized: "Worse")
-        case .tooLittleData: String(localized: "Too little data")
+        case .tooLittleData: String(localized: "Too few to tell")
         }
     }
 

@@ -74,6 +74,12 @@ enum Palette {
 
     /// Live, Accepted, Connected, a check that passes.
     static let ok = Color(.ok)
+    /// Behind a done state (README-DS §1, okSurface): the green check
+    /// circle, a dropped key file, Connected. Never green with opacity in a
+    /// view.
+    static let okTint = Color(.okTint)
+    /// The edge of a done surface, e.g. a dropped key file.
+    static let okEdge = Color(.okEdge)
     /// Needs an answer; close to a limit.
     static let warn = Color(.warn)
     static let warnMark = Color(.warnMark)
@@ -121,6 +127,15 @@ enum Palette {
     static let brandBottom = Color(.brandBottom)
     /// The brand gradient, top to bottom.
     static let brand = LinearGradient(colors: [brandTop, brandBottom], startPoint: .top, endPoint: .bottom)
+
+    // MARK: - Help
+
+    /// The ring around what to click in Help's pictures of App Store
+    /// Connect (README-Welcome: "an orange ring around what to click"), and
+    /// its soft halo. Only there: orange describes no state, and it's
+    /// neither the blue of what you do in Atlas nor the AI's purple.
+    static let helpRing = Color(.helpRing)
+    static let helpRingHalo = Color(.helpRingHalo)
 
     // MARK: - Viewers
 

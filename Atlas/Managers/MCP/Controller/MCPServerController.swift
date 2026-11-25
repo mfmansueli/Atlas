@@ -91,6 +91,12 @@ final class MCPServerController {
     /// they act as; in memory only, each dropped when its run ends
     /// (`MCPServerController+Launch`).
     var runTokens: [String: MCPPairedClient.ID] = [:]
+    /// Why Atlas started a run, by its token, when it was for a reason of
+    /// its own (a Look for Improvements run): its calls' proposals carry it.
+    var runOrigins: [String: ChangeOrigin] = [:]
+    /// Told of every call that proposed something during a run with an
+    /// origin: Look for Improvements keeps them on the run's History entry.
+    @ObservationIgnored var onOriginProposal: (@MainActor (ChangeOrigin, String, [MCPToolOutcome.LogLine]) -> Void)?
     /// Tokens of runs that ended: what still carries one is refused, but a
     /// run's late goodbye isn't an assistant that can't connect.
     var endedRunTokens: Set<String> = []

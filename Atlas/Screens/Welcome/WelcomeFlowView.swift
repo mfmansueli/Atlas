@@ -52,7 +52,7 @@ struct WelcomeFlowView: View {
                     WelcomeIntro(layout: layout) { go(to: .connect) }
                         .transition(.opacity)
                 case .connect:
-                    ConnectView(viewModel: connect, notice: notice, onBack: { go(to: .welcome) })
+                    ConnectView(viewModel: connect, notice: notice, onBack: { go(to: .welcome) }, layout: layout)
                         .transition(.opacity)
                 }
             }

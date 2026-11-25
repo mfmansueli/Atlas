@@ -35,6 +35,10 @@ struct ProposeReleaseActionTool: MCPTool {
         ],
         "releaseDate": MCPToolDefinition.string("submit with SCHEDULED: not before this ISO 8601 date and time (rounded down to the hour)."),
         "phasedRelease": ["type": "boolean", "description": "submit: release over 7 days to automatic updates (default true)."],
+        "pushesChanges": [
+            "type": "boolean",
+            "description": "submit: false submits without pushing what waits in Review & Push first (default true, as the sheet starts).",
+        ],
         "encryption": [
             "type": "string", "enum": ["exempt", "noEncryption", "other"],
             "description": "submit: the build's encryption answer, when it has none.",
@@ -55,7 +59,8 @@ struct ProposeReleaseActionTool: MCPTool {
         description: """
         Proposes what to do with a version on its way to the App Store, with a reason and evidence: submit (for App \
         Review, with buildId or buildNumber, releaseType MANUAL/AFTER_APPROVAL/SCHEDULED with releaseDate, \
-        phasedRelease, encryption when the build has no answer, and eventIds), release (an approved version waiting \
+        phasedRelease, encryption when the build has no answer, eventIds, and pushesChanges: false to submit without \
+        pushing what waits in Review & Push), release (an approved version waiting \
         for the person), pause_phased_release, resume_phased_release, complete_phased_release (everyone now), \
         cancel_submission (while it waits for review) or resubmit (a rejected submission back to App Review once \
         it's fixed). Nothing is sent: it waits on the version card in Atlas (status "queued") until the person \

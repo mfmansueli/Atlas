@@ -42,6 +42,7 @@ struct InAppEventGallery: View {
             }
             .padding(.bottom, Spacing.large)
         }
+        .leavesChatRoom()
         .scrollIndicators(.automatic)
     }
 }

@@ -96,6 +96,9 @@ struct InAppEventPage: View {
                             .font(.callout)
                             .accessibilityIdentifier("events.error")
                     }
+                    if let suggestion = viewModel.submitSuggestion {
+                        InAppEventSubmitSuggestionLine(suggestion: suggestion, onDismiss: viewModel.dismissSubmitSuggestion)
+                    }
                     TimelineView(.everyMinute) { _ in
                         Text(viewModel.footerText)
                             .font(.footnote)
@@ -108,6 +111,7 @@ struct InAppEventPage: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, Spacing.large)
             }
+            .leavesChatRoom()
             .onChange(of: viewModel.focusedDetail) {
                 guard viewModel.focusedDetail != nil else { return }
                 withAnimation { proxy.scrollTo(Self.detailsID, anchor: .center) }

@@ -67,13 +67,16 @@ enum ReviewShotsAskPrompt {
         --batteryLevel 100).
         3. \(way) If nothing leads to a purchase screen, call report_review_screenshot_run with status \
         "paywall_not_found" and what you tried in tried, and stop.
-        4. If the paywall opens but shows no prices (products not returned by StoreKit), call \
-        report_review_screenshot_run with status "no_prices" and what you saw in saw, and stop. Don't fake prices.
+        4. If the paywall opens but shows no prices (products not returned by StoreKit), capture it, send the PNG to \
+        reviewScreenshotUploadURL as below, call report_review_screenshot_run with status "no_prices", what you saw in \
+        saw and the fileId in sawFileId, and stop. Don't fake prices.
         5. For each product: select its plan (you can't tap: use a deep link, launch arguments, a debug scene or the \
         project's UI tests; if none selects it, a capture where its plan and price show is fine), wait for its price, and \
         capture with xcrun simctl io booted screenshot. \
         Check the image: the price shows and matches, the right plan is selected, no keyboard, alert, spinner, debug or \
-        TestFlight banner. One more try if a check fails. Send the PNG to reviewScreenshotUploadURL with exactly \
+        TestFlight banner. One more try if a check fails; if it fails again, call report_review_screenshot_run with \
+        status "check_failed", the productId and the check in reason, and go on with the next product. If the paywall \
+        doesn't show a product, report status "skipped" with the productId and why in reason. Send the PNG to reviewScreenshotUploadURL with exactly \
         curl -s --data-binary @<file> -H 'Content-Type: image/png' '<url>?name=<productId>.png' (single quotes) and call \
         propose_purchase_review_screenshot with appId, \
         productId, the fileId, planShown (only the selected plan's name, such as Annual, even when it's another \

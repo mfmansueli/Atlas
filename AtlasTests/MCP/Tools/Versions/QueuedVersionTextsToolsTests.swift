@@ -210,14 +210,21 @@ struct QueuedVersionTextsToolsTests {
         #expect(changes.changes.isEmpty)
     }
 
-    @Test func anOlderVersionSaysWhichOneIsBeingPrepared() async throws {
+    @Test func anOlderVersionIsReadOnlyAndSaysWhichOneIsBeingPrepared() async throws {
         let editable = [StorePageContentFixtures.editable, StorePageContentFixtures.live]
+        // Reading an older version is allowed (read-only, to see what a past release said).
+        let older = try await GetListingTool().call(MCPToolArguments(["appId": "app1", "version": "1.9"]), in: context(editable))
+        #expect(older.result["version"]?["versionString"] == "1.9")
+        // Writing to it is refused with the version being prepared.
+        let item: JSONValue = ["area": "store", "locale": "en-US", "field": "whatsNew", "value": "New"]
+        let arguments: [String: JSONValue] = ["appId": "app1", "version": "1.9", "items": [item]]
         do {
-            _ = try await GetListingTool().call(MCPToolArguments(["appId": "app1", "version": "1.9"]), in: context(editable))
+            _ = try await SuggestFieldsTool().call(MCPToolArguments(arguments), in: context(editable))
             Issue.record("Expected a refusal")
         } catch {
             #expect(message(of: error).contains("version being prepared is 2.0, not 1.9"))
         }
+        #expect(changes.changes.isEmpty)
     }
 
     // MARK: - Helpers

@@ -12,6 +12,7 @@ struct ScreenshotReviewContent: View {
     let onShowInCaptions: (ScreenshotPlanExclusion) -> Void
 
     @Bindable private var extras: ExtrasPushController
+    private let cleanup = AssetLibraryCleanupStore.shared
 
     init(viewModel: ReviewPushViewModel, onShowInCaptions: @escaping (ScreenshotPlanExclusion) -> Void) {
         self.viewModel = viewModel
@@ -34,6 +35,14 @@ struct ScreenshotReviewContent: View {
                 .padding(.horizontal, -Spacing.large)
                 .accessibilityIdentifier("review.shots.notice")
             }
+            if let appID = viewModel.selectedAppID, let suggestion = cleanup.suggestion(for: appID) {
+                AssetLibraryCleanupRow(
+                    suggestion: suggestion,
+                    appName: viewModel.selectedAppName ?? "",
+                    onReview: { extras.library = viewModel.screenshots.assetLibraryModel(appID: appID) },
+                    onDismiss: { cleanup.remove(for: appID) }
+                )
+            }
             ForEach(viewModel.screenshotPlans.filter { !$0.groups.isEmpty }, id: \.appID) { plan in
                 ScreenshotReviewSection(plan: plan, viewModel: viewModel)
             }
@@ -41,15 +50,21 @@ struct ScreenshotReviewContent: View {
                 ExtrasReviewSection(plan: plan, viewModel: viewModel)
             }
             if viewModel.screenshots.isLoading, !viewModel.showsScreenshots {
-                HStack(spacing: Spacing.small) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("Checking screenshots against App Store Connect…")
-                        .font(.subheadline)
-                        .foregroundStyle(Palette.label2)
+                // The sets' rows to come: what's being checked over a
+                // language's screenshots, static and grey.
+                VStack(alignment: .leading, spacing: Spacing.small) {
+                    if let line = LoadingCopy.pushScreenshots.line {
+                        LoadingLine(text: line)
+                    }
+                    ForEach(0..<2, id: \.self) { _ in
+                        HStack(spacing: Spacing.small) {
+                            SkeletonBlock(width: Metrics.skeletonFlagWidth, height: Metrics.skeletonFlagHeight, cornerRadius: Radius.flag)
+                            SkeletonTiles(count: 5)
+                        }
+                    }
                 }
                 .padding(.horizontal, Spacing.small)
-                .accessibilityIdentifier("review.shots.loading")
+                .loadingSkeleton(LoadingCopy.pushScreenshots, identifier: "review.shots.loading")
             }
             ScreenshotReviewNotes(viewModel: viewModel, onShowInCaptions: onShowInCaptions)
         }
@@ -66,6 +81,7 @@ struct ScreenshotReviewContent: View {
     /// Whether there's anything to show at all.
     static func hasContent(_ viewModel: ReviewPushViewModel) -> Bool {
         viewModel.showsScreenshots || viewModel.showsExtras || viewModel.screenshots.notice != nil
+            || viewModel.selectedAppID.flatMap(AssetLibraryCleanupStore.shared.suggestion(for:)) != nil
             || !viewModel.screenshots.loadErrors.isEmpty || viewModel.screenshots.isLoading
     }
 }

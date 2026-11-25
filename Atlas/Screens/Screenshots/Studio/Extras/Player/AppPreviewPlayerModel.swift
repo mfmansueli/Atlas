@@ -50,7 +50,9 @@ final class AppPreviewPlayerModel {
     }
 
     /// Loads `url` from the start, paused; the same file stays where it is.
-    /// `seconds` is its length when known; 0 reads it from the file.
+    /// `seconds` is its length when known; 0 reads it from the file. A
+    /// file must be on this Mac; a web URL (a live App Preview's movie)
+    /// streams.
     func load(_ url: URL?, seconds length: Double) {
         guard url != self.url else { return }
         self.url = url
@@ -60,7 +62,7 @@ final class AppPreviewPlayerModel {
         statusObservation = nil
         seconds = 0
         duration = length
-        guard let url, FileManager.default.fileExists(atPath: url.path) else {
+        guard let url, !url.isFileURL || FileManager.default.fileExists(atPath: url.path) else {
             canPlay = false
             player.replaceCurrentItem(with: nil)
             return

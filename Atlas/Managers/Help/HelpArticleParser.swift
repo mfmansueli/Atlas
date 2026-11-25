@@ -7,8 +7,9 @@ import Foundation
 
 /// Reads a Help article's Markdown: front matter between `---` lines, then
 /// blocks separated by blank lines. `## ` is a heading, `1. ` steps, `- `
-/// a list, `> ` a note, `| ` a table (its second row the `---` divider);
-/// anything else a paragraph. Inline `**bold**` stays for the view.
+/// a list, `> ` a note, `| ` a table (its second row the `---` divider),
+/// `![caption](name)` a picture; anything else a paragraph. Inline
+/// `**bold**` stays for the view.
 enum HelpArticleParser {
     static func article(from markdown: String) -> HelpArticle? {
         let lines = markdown.components(separatedBy: .newlines)
@@ -25,6 +26,7 @@ enum HelpArticleParser {
             id: id, group: group, title: title, summary: fields["summary"] ?? "",
             keywords: list(fields["keywords"]),
             showMe: fields["showMe"].flatMap(HelpShowMe.init),
+            link: fields["link"].flatMap(HelpArticleLink.init),
             related: list(fields["related"]),
             blocks: blocks(Array(lines[(end + 1)...]))
         )
@@ -51,13 +53,23 @@ enum HelpArticleParser {
         if first.hasPrefix("> ") { return .note(lines.map { String($0.drop { $0 == ">" || $0 == " " }) }.joined(separator: " ")) }
         if first.hasPrefix("- ") { return .bullets(lines.map { String($0.dropFirst(2)) }) }
         if first.hasPrefix("|") { return table(lines) }
-        if first.first?.isNumber == true, first.contains(". ") {
+        if let image = image(first) { return image }
+        if first.first?.isNumber == true, let dot = first.range(of: ". ") {
             return .steps(lines.map { line in
                 guard let dot = line.range(of: ". ") else { return line }
                 return String(line[dot.upperBound...])
-            })
+            }, start: Int(first[..<dot.lowerBound]) ?? 1)
         }
         return .paragraph(lines.joined(separator: " "))
+    }
+
+    /// `![caption](name)` → .image(name, caption).
+    static func image(_ line: String) -> HelpBlock? {
+        guard line.hasPrefix("!["), line.hasSuffix(")"), let close = line.range(of: "](") else { return nil }
+        let caption = String(line[line.index(line.startIndex, offsetBy: 2)..<close.lowerBound])
+        let name = String(line[close.upperBound..<line.index(before: line.endIndex)]).trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return nil }
+        return .image(name: name, caption: caption)
     }
 
     private static func table(_ lines: [String]) -> HelpBlock? {

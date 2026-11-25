@@ -23,7 +23,7 @@ struct HelpCommands: Commands {
                 .disabled(navigator == nil)
             Button("Keyboard Shortcuts", systemImage: "keyboard") { open(Self.shortcutsArticleID) }
             Divider()
-            Button("Connect App Store Connect", systemImage: "key") { open("connect") }
+            Button("Connect to App Store Connect", systemImage: "key") { open("connect") }
             Button("Fix a Problem", systemImage: "wrench.and.screwdriver") { open("fix") }
             Button("App Store Connect System Status") { HelpSupport.openSystemStatus() }
             Divider()

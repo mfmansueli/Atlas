@@ -16,13 +16,13 @@ struct StorePageFillItems: View {
                 Text("Nothing to copy")
             }
             ForEach(viewModel.siblingPairs, id: \.self) { pair in
-                Button("\(pair.source.name) → \(pair.target.name)") {
+                Button("\(pair.source.name) → \(pair.target.name)", systemImage: "doc.on.doc") {
                     viewModel.copy(pair)
                 }
             }
         }
         Divider()
-        Button("Copy URLs to Every Locale") {
+        Button("Copy URLs to Every Locale", systemImage: "link") {
             viewModel.copyURLsToEveryLocale()
         }
         .disabled(!viewModel.hasURLsToCopy)
@@ -30,7 +30,7 @@ struct StorePageFillItems: View {
             viewModel.presentWhatsNewBroadcast()
         }
         .disabled(viewModel.value(.whatsNew, in: viewModel.listing?.primaryLocale ?? .englishUS).isEmpty)
-        Button("Find and Replace…") {
+        Button("Find and Replace…", systemImage: "magnifyingglass") {
             viewModel.presentFindReplace()
         }
     }

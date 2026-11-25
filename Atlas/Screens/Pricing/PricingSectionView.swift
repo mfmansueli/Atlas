@@ -45,7 +45,13 @@ struct PricingSectionView: View {
             } else if let viewModel = shownModel {
                 PricingScreen(viewModel: viewModel, defaultMode: preferences.defaultPricingMode)
             } else {
-                PricingTableSkeleton(columns: PriceColumnPreset.automatic.columns)
+                // The product cards' shape while Pricing starts.
+                VStack(spacing: Spacing.medium) {
+                    ForEach(0..<3, id: \.self) { _ in SkeletonCard(lines: 2) }
+                }
+                .padding(.horizontal, Spacing.xLarge)
+                .padding(.top, Spacing.large)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .accessibilityElement(children: .contain)
@@ -59,6 +65,10 @@ struct PricingSectionView: View {
         }
         .onChange(of: navigator.intent) {
             Task { await handlePendingIntent() }
+        }
+        // Pricing chosen again in the sidebar: back to the product cards.
+        .onChange(of: navigator.sectionChosenAgainCount) {
+            if navigator.section == .subscriptionPricing { viewModel?.showProductList() }
         }
         .onChange(of: preferences.commissionRate) { _, rate in
             Task { await viewModel?.setCommission(Commission(preferenceRate: rate)) }
@@ -227,6 +237,13 @@ struct PricingSectionView: View {
 
     private func handlePendingIntent() async {
         guard let viewModel, let intent = navigator.intent, viewModel.catalog != nil, !viewModel.isLoadingSheet else { return }
+        // Analytics' Try an Offer Message…: Retention, with a new message.
+        if intent == .newRetentionMessage, let retention = shownRetention {
+            navigator.consume(intent)
+            viewModel.page = .retention
+            retention.startNewMessage()
+            return
+        }
         if await viewModel.handle(intent) { navigator.consume(intent) }
     }
 }

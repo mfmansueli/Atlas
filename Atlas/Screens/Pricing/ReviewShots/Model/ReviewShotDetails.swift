@@ -82,15 +82,15 @@ struct ReviewShotDetails: Codable, Hashable, Sendable {
         return line
     }
 
-    /// “From Claude Code · Monthly selected · uploads when you push”, or
-    /// “Capture 14 · Paywall from Screenshots · uploads when you push”.
+    /// “From Claude Code · Monthly selected · sent when you push”, or
+    /// “Capture 14 · Paywall from Screenshots · sent when you push”.
     var acceptedLine: String {
         switch origin {
         case let .assistant(client):
             let plan = planText.map { " · " + $0 } ?? ""
-            return String(localized: "From \(client)\(plan) · uploads when you push")
+            return String(localized: "From \(client)\(plan) · sent when you push")
         case let .capture(title):
-            return String(localized: "\(title) from Screenshots · uploads when you push")
+            return String(localized: "\(title) from Screenshots · sent when you push")
         }
     }
 

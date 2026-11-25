@@ -11,22 +11,33 @@ import SwiftUI
 /// every question after a few steps:
 /// - `chat-ready`: closed, ready to ask; `chat-open`: open and empty.
 /// - `chat-asking`, `chat-working`: a question being answered, open and
-///   closed (the pretend run never ends).
+///   closed, at its second step: “2 of 3” (the pretend run never ends).
+/// - `chat-sending`: closed, just asked: Claude Code hasn't reported a
+///   step, so “Sending to Claude Code…” with no count and no bar.
+/// - `chat-writing`: closed, the last step: Claude Code wrote words after
+///   its steps, “Writing the answer…”, 3 of 3.
 /// - `chat-answer`, `chat-unseen`: an answer with a suggestion card, open,
 ///   and closed before it was seen.
+/// - `chat-version`: an answer that queued a new version and its What's
+///   New, open: its card opens Review & Push.
 /// - `chat-needs`, `chat-needs-open`: the assistant asks with
 ///   `ask_in_chat`; a quick reply is answered by the pretend helper.
 /// - `chat-draft`: closed with a draft kept (Store Page).
 /// - `chat-push`: closed while a push runs.
 /// - `chat-error`, `chat-error-open`: Claude Code stopped.
 /// - `chat-none`, `chat-none-open`: no helper, so no assistant to ask.
+/// - `chat-motion`: ready to ask; opens and closes by itself every
+///   `motionInterval` (⌘J too), to watch the pill grow into the panel and
+///   back, with and without Reduce Motion.
 enum AssistantChatDebugScenes {
     static let ids = [
-        "chat-ready", "chat-open", "chat-asking", "chat-working", "chat-answer", "chat-unseen", "chat-needs",
-        "chat-needs-open", "chat-draft", "chat-push", "chat-error", "chat-error-open", "chat-none", "chat-none-open",
+        "chat-ready", "chat-open", "chat-asking", "chat-sending", "chat-working", "chat-writing", "chat-answer", "chat-unseen", "chat-version", "chat-needs",
+        "chat-needs-open", "chat-draft", "chat-push", "chat-error", "chat-error-open", "chat-none", "chat-none-open", "chat-motion",
     ]
 
     static let appName = "Lumen Journal"
+    /// How long `chat-motion` stays open, then closed.
+    static let motionInterval: Duration = .seconds(2)
     static let question = "Which countries lose the most sales?"
     static let answer = "Brazil, India and Mexico. Most people there leave at the price screen, and lower annual prices win back the most."
 
@@ -39,7 +50,16 @@ enum AssistantChatDebugScenes {
             Line(delay: .milliseconds(400), text: Stream.atlas("get_analytics_funnel", id: "c1")),
             Line(delay: .milliseconds(400), text: Stream.atlas("get_prices", id: "c2")),
         ]
-        if id == "chat-asking" || id == "chat-working" { return DebugUnixScriptRunner.Script(lines: steps, exitStatus: nil) }
+        switch id {
+        case "chat-sending":
+            return DebugUnixScriptRunner.Script(lines: [steps[0]], exitStatus: nil)
+        case "chat-asking", "chat-working":
+            return DebugUnixScriptRunner.Script(lines: steps, exitStatus: nil)
+        case "chat-writing":
+            return DebugUnixScriptRunner.Script(lines: steps + [Line(delay: .milliseconds(400), text: Stream.said(answer))], exitStatus: nil)
+        default:
+            break
+        }
         return DebugUnixScriptRunner.Script(lines: steps + [
             Line(delay: .milliseconds(400), text: Stream.said(answer)),
             Line(delay: .milliseconds(100), text: Stream.result(text: answer)),
@@ -79,9 +99,9 @@ enum AssistantChatDebugScenes {
         private func apply() async {
             let center = AssistantChatCenter.shared
             let appID = DebugFixtures.AppID.lumen
-            let opens = ["chat-open", "chat-asking", "chat-answer", "chat-needs-open", "chat-error-open", "chat-none-open"].contains(id)
+            let opens = ["chat-open", "chat-asking", "chat-answer", "chat-version", "chat-needs-open", "chat-error-open", "chat-none-open"].contains(id)
             switch id {
-            case "chat-asking", "chat-working":
+            case "chat-asking", "chat-sending", "chat-working", "chat-writing":
                 center.setOpen(opens)
                 let launcher = launcher
                 let context = context
@@ -90,6 +110,14 @@ enum AssistantChatDebugScenes {
                 }
             case "chat-answer", "chat-unseen":
                 center.debugSet(chat(.answered(text: AssistantChatDebugScenes.answer, suggestions: suggestions), unseen: !opens), for: appID, isOpen: opens)
+            case "chat-version":
+                var turn = AssistantChatTurn(id: UUID(), text: "Create the next version and suggest what's new", askedAt: .now.addingTimeInterval(-40))
+                turn.state = .answered(
+                    text: "Version 1.5 waits in Review & Push, with its What's New in English: it covers the 3 changes since 1.4.",
+                    suggestions: AssistantChatSuggestions(targets: ["Version 1.5", "en-US · What's New"], section: .storePage, waitsInReview: true)
+                )
+                turn.endedAt = .now.addingTimeInterval(-5)
+                center.debugSet(AssistantChat(turns: [turn]), for: appID, isOpen: true)
             case "chat-needs", "chat-needs-open":
                 let question = AssistantChatQuestion(text: "Count every product, or only subscriptions?", choices: ["Only Subscriptions", "Every Product"])
                 var waiting = chat(.needsYou(question), unseen: !opens)
@@ -99,6 +127,12 @@ enum AssistantChatDebugScenes {
                 var drafted = AssistantChat()
                 drafted.draft = "Make the Japanese subtitle shorter"
                 center.debugSet(drafted, for: appID, isOpen: false)
+            case "chat-motion":
+                center.debugSet(AssistantChat(), for: appID, isOpen: false)
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: AssistantChatDebugScenes.motionInterval)
+                    if !Task.isCancelled { center.toggle() }
+                }
             case "chat-error", "chat-error-open":
                 center.debugSet(chat(.failed(.claudeError("Overloaded")), unseen: !opens), for: appID, isOpen: opens)
             default:

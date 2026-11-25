@@ -31,6 +31,11 @@ final class PricingPurchaseSetup {
     @ObservationIgnored var codeValues: (any OneTimeCodeValuesReading)?
     /// Each product's offers and screenshot, by App Store Connect ID, once read.
     private(set) var extras: [String: PurchaseExtras] = [:]
+    /// Each product's state as read back once its review screenshot is in
+    /// App Store Connect, by App Store Connect ID.
+    private(set) var productStates: [String: ReviewShotProductState] = [:]
+    /// Reads them in place of the transport's (DEBUG scenes and tests).
+    @ObservationIgnored var stateReader: (any ReviewShotProductStateReading)?
     /// Set by the section: the push's transport, read when it's needed (the
     /// session sets it). Nil in tests and previews without one.
     @ObservationIgnored var transport: () -> (any PushTransport)? = { nil }
@@ -68,8 +73,18 @@ final class PricingPurchaseSetup {
         }
     }
 
+    /// Reads the state of each product in `products` not read yet (with its
+    /// subscription group's ID); one that fails stays unknown.
+    func loadStates(_ products: [(product: PricingProduct, groupID: String?)]) async {
+        guard let reader = stateReader ?? transport().map(ReviewShotProductStateReader.init) else { return }
+        for (product, groupID) in products where productStates[product.id] == nil {
+            if let state = try? await reader.state(of: product, groupID: groupID) { productStates[product.id] = state }
+        }
+    }
+
     /// After a push or Refresh: read again when shown.
     func forget() {
         extras = [:]
+        productStates = [:]
     }
 }

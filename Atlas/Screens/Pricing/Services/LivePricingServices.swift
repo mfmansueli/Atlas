@@ -89,11 +89,13 @@ struct LivePricingServices: PricingServices {
             throw PricingSheetError.noInAppPurchasePrice(productName: product.name)
         }
         let baseID = schedule.baseTerritoryID ?? baseTerritoryID
+        let day = dayString(today())
+        let manual = try await client.inAppPurchasePrices(scheduleID: scheduleID, automatic: false)
         let current = try await LivePricingMapper.currentInAppPurchasePrices(
-            manual: client.inAppPurchasePrices(scheduleID: scheduleID, automatic: false),
+            manual: manual,
             automatic: client.inAppPurchasePrices(scheduleID: scheduleID, automatic: true),
             commission: commission,
-            today: dayString(today())
+            today: day
         )
         guard let basePointID = current[baseID]?.appStoreConnectID else {
             throw PricingSheetError.noInAppPurchasePrice(productName: product.name)
@@ -106,6 +108,10 @@ struct LivePricingServices: PricingServices {
         ) else {
             throw AppStoreConnectError.unexpectedPayload
         }
+        // Prices by Country tells hand-set prices from Apple's automatic
+        // ones, and a new schedule keeps the hand-set ones.
+        sheet.manualTerritoryIDs = LivePricingMapper.inAppPurchaseManualTerritoryIDs(manual, commission: commission, today: day)
+        sheet.laterManualPriceCount = LivePricingMapper.laterInAppPurchasePriceCount(manual, today: day)
         sheet.merge(cache.ladders(for: cacheKey(product, commission), territoryIDs: Array(sheet.prices.keys)))
         return sheet
     }

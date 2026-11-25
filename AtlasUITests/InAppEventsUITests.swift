@@ -237,7 +237,10 @@ final class InAppEventsUITests: XCTestCase {
     func testAnAppWithoutEventsOffersANewOne() {
         app.launch(debugScene: "ev-empty")
         XCTAssertTrue(element("events.empty").waitForExistence(timeout: 15))
-        XCTAssertTrue(element("events.empty.new").exists)
+        // Board 74: New Event… stays at the top; the middle only explains.
+        XCTAssertTrue(app.staticTexts["No In-App Events yet"].exists)
+        XCTAssertFalse(element("events.empty.new").exists)
+        XCTAssertTrue(element("events.new").exists)
     }
 
     func testProposedArtIsAcceptedOrDismissedInImagesAndVideo() {

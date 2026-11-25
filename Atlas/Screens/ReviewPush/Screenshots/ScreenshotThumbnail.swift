@@ -32,11 +32,7 @@ struct ScreenshotThumbnail: View {
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, 1)
             } else {
-                Palette.fill2
-                if isLoading {
-                    ProgressView()
-                        .controlSize(.mini)
-                }
+                ImageLoadingTile(isLoading: isLoading, systemImage: nil, controlSize: .mini)
             }
         }
         .frame(width: width, height: (width * aspect).rounded())

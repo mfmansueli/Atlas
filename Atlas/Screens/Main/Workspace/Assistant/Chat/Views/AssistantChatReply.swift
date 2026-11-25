@@ -10,15 +10,15 @@ import SwiftUI
 /// question with quick replies, a failure, or “Stopped”.
 struct AssistantChatReply: View {
     let turn: AssistantChatTurn
-    /// The working turn's steps so far.
-    let steps: [AssistantChatStep]
+    /// How far the working turn's answer has come.
+    let progress: AssistantChatProgress
     let client: String
     /// The last turn: only its question takes quick replies.
     let isLast: Bool
     let onReply: (String) -> Void
     let onRetry: () -> Void
     let onShowOutput: (() -> Void)?
-    let onShow: (AppWorkspaceSection) -> Void
+    let onShow: (AssistantChatSuggestions) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -40,7 +40,7 @@ struct AssistantChatReply: View {
     private var content: some View {
         switch turn.state {
         case .working:
-            AssistantChatStepsList(steps: steps, client: client)
+            AssistantChatStepsList(progress: progress, client: client)
         case let .answered(text, suggestions):
             VStack(alignment: .leading, spacing: Spacing.small) {
                 if !text.isEmpty {
@@ -59,6 +59,7 @@ struct AssistantChatReply: View {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Text(question.text)
                     .atlasTextStyle(.body)
+                    .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("chat.question")
                 if isLast {

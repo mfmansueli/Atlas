@@ -127,6 +127,18 @@
       "highContrastLight": "#0000002E",
       "highContrastDark": "#FFFFFF38"
     },
+    "helpRing": {
+      "light": "#FF9500",
+      "dark": "#FF9F0A",
+      "highContrastLight": "#C93400",
+      "highContrastDark": "#FFB340"
+    },
+    "helpRingHalo": {
+      "light": "#FF950038",
+      "dark": "#FF9F0A47",
+      "highContrastLight": "#C934003D",
+      "highContrastDark": "#FFB34052"
+    },
     "heroBlue": {
       "light": "#0B63D6",
       "dark": "#0B63D6",
@@ -168,6 +180,18 @@
       "dark": "#5FD38A",
       "highContrastLight": "#0F5A26",
       "highContrastDark": "#8FE6AE"
+    },
+    "okTint": {
+      "light": "#34C75924",
+      "dark": "#5FD38A29",
+      "highContrastLight": "#0E5A2629",
+      "highContrastDark": "#9BE8B433"
+    },
+    "okEdge": {
+      "light": "#1D7A3A52",
+      "dark": "#5FD38A5C",
+      "highContrastLight": "#0E5A2699",
+      "highContrastDark": "#9BE8B499"
     },
     "separator2": {
       "light": "#00000029",
@@ -222,6 +246,66 @@
       "dark": "#FFCD3C26",
       "highContrastLight": "#FFBE004C",
       "highContrastDark": "#FFCD3C38"
+    },
+    "priceLevel0": {
+      "light": "#2457B8",
+      "dark": "#9DBDF5",
+      "highContrastLight": "#2457B8",
+      "highContrastDark": "#9DBDF5"
+    },
+    "priceLevelLabel0": {
+      "light": "#FFFFFF",
+      "dark": "#0B1A33",
+      "highContrastLight": "#FFFFFF",
+      "highContrastDark": "#0B1A33"
+    },
+    "priceLevel1": {
+      "light": "#A9C3F0",
+      "dark": "#3A5E9E",
+      "highContrastLight": "#A9C3F0",
+      "highContrastDark": "#3A5E9E"
+    },
+    "priceLevelLabel1": {
+      "light": "#10223F",
+      "dark": "#FFFFFF",
+      "highContrastLight": "#10223F",
+      "highContrastDark": "#FFFFFF"
+    },
+    "priceLevel2": {
+      "light": "#E5E5EA",
+      "dark": "#3A3A3F",
+      "highContrastLight": "#E5E5EA",
+      "highContrastDark": "#3A3A3F"
+    },
+    "priceLevelLabel2": {
+      "light": "#1D1D1F",
+      "dark": "#F2F2F5",
+      "highContrastLight": "#1D1D1F",
+      "highContrastDark": "#F2F2F5"
+    },
+    "priceLevel3": {
+      "light": "#F5C48E",
+      "dark": "#8A4A18",
+      "highContrastLight": "#F5C48E",
+      "highContrastDark": "#8A4A18"
+    },
+    "priceLevelLabel3": {
+      "light": "#3B1E05",
+      "dark": "#FFFFFF",
+      "highContrastLight": "#3B1E05",
+      "highContrastDark": "#FFFFFF"
+    },
+    "priceLevel4": {
+      "light": "#B44E14",
+      "dark": "#F4B07A",
+      "highContrastLight": "#B44E14",
+      "highContrastDark": "#F4B07A"
+    },
+    "priceLevelLabel4": {
+      "light": "#FFFFFF",
+      "dark": "#2A1203",
+      "highContrastLight": "#FFFFFF",
+      "highContrastDark": "#2A1203"
     }
   },
   "type": {
@@ -298,6 +382,46 @@
     "popover": 16,
     "sheet": 20
   },
+  "skeleton": {
+    "$description": "Static grey placeholders while non-AI data loads (README-DS: loading data is a grey skeleton; colour.skeleton). No shimmer, no pulse.",
+    "line": 9,
+    "captionLine": 7,
+    "bodyLine": 10,
+    "titleLine": 12,
+    "listRowHeight": 48,
+    "icon": 30,
+    "cardHeight": 150,
+    "cellWidth": 70,
+    "nameWidth": 120,
+    "flagWidth": 20,
+    "flagHeight": 13,
+    "tileWidth": 34,
+    "tileAspect": 2.16,
+    "overviewTitle": 28,
+    "overviewTitleWidth": 260,
+    "overviewCardHeight": 120,
+    "storePageRowHeight": 32,
+    "storePageCellWidth": 52,
+    "handTileWidth": 72,
+    "eventCardHeight": 230,
+    "rowCardHeight": 96,
+    "reviewsSideHeight": 180,
+    "urlCellWidth": 200,
+    "funnelStageHeight": 84,
+    "analyticsCardWidth": 420,
+    "buildRowHeight": 30,
+    "assetRowHeight": 56,
+    "assetThumbnailWidth": 72,
+    "assetThumbnailHeight": 44,
+    "planRowHeight": 54
+  },
+  "emptyState": {
+    "$description": "README-DS §14 (board 74): an empty state is a ContentUnavailableView with the section's symbol in tertiary label, 44 pt on a page and 32 pt inside a list, a table or a sheet; title Title 2 (Title 3 inside), the sentences in Body, the small line in Subheadline. A page's sits a little above the middle.",
+    "symbol": 44,
+    "inlineSymbol": 32,
+    "textWidth": 440,
+    "lift": 48
+  },
   "motion": {
     "fast": {
       "duration": 0.15,
@@ -348,6 +472,15 @@
     },
     "sweep": {
       "duration": 2.8
+    },
+    "breathe": {
+      "duration": 1.5,
+      "curve": [
+        0.42,
+        0,
+        0.58,
+        1
+      ]
     },
     "trailLeg": {
       "duration": 0.7
@@ -474,6 +607,37 @@
         "↯",
         "↗"
       ]
+    }
+  },
+  "pricing": {
+    "$description": "Pricing's map, histogram and change pill (README-Redesign, board 73; handoff 2026-11-25: color.priceLevel, color.priceChart, pill.change). The map's colours are the priceLevel0…4 and priceLevelLabel0…4 Color Sets above (color holds Color Sets only); PriceLevel and PriceChange+Pill in DesignSystem/Tokens/Pricing read them.",
+    "priceLevel": {
+      "use": "Pricing map only: how a price feels for local incomes compared with the US base price (feels-like ratio). Diverging: blue cheaper, neutral gray about the same, orange pricier. Each tile also carries its code and ratio as text, so colour is never the only signal. Validated per arm with the dataviz ordinal check (light and dark).",
+      "steps": [
+        "< 0.7×",
+        "0.7–0.9×",
+        "0.9–1.15×",
+        "1.15–1.6×",
+        "≥ 1.6×"
+      ],
+      "bounds": [
+        0.7,
+        0.9,
+        1.15,
+        1.6
+      ],
+      "suggestionRing": "aiFill, 2 pt inside the tile, where a suggestion waits"
+    },
+    "priceChart": {
+      "use": "Pricing histogram: countries per $5 of price in US$.",
+      "now": "systemGray",
+      "suggested": "aiFill",
+      "baseLine": "label3, 1 pt dashed, at the US base price"
+    },
+    "pillChange": {
+      "use": "Change of a price in the Pricing table and popover.",
+      "decrease": "neutral gray pill with arrowtriangle.down.fill",
+      "increase": "warn pill (amber) with arrowtriangle.up.fill — increases can cost subscribers"
     }
   }
 }

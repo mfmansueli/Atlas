@@ -146,6 +146,7 @@ struct LocaleEditorView: View {
                 .padding(2)
                 .padding(.bottom, 18)
             }
+            .leavesChatRoom()
             .frame(maxWidth: .infinity)
             .task(id: ListingFieldKey(locale, viewModel.editorFocus ?? .name)) {
                 guard let field = viewModel.editorFocus else { return }

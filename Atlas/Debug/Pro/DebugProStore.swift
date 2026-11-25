@@ -13,10 +13,13 @@ import Synchronization
 /// charged, and nothing is kept after the app quits.
 final class DebugProStore: ProStore, @unchecked Sendable {
     private let owned: Mutex<ProStatus>
+    /// How long the App Store takes to list the plans, for paywall-loading.
+    private let offersDelay: Duration?
 
     /// `set-pro` owns the yearly plan already.
-    init(owned: ProStatus = .free) {
+    init(owned: ProStatus = .free, offersDelay: Duration? = nil) {
         self.owned = Mutex(owned)
+        self.offersDelay = offersDelay
     }
 
     static let offers = [
@@ -25,7 +28,10 @@ final class DebugProStore: ProStore, @unchecked Sendable {
         ProOffer(plan: .lifetime, displayPrice: "$149.99", price: 149.99),
     ]
 
-    func offers() async -> [ProOffer] { Self.offers }
+    func offers() async -> [ProOffer] {
+        if let offersDelay { try? await Task.sleep(for: offersDelay) }
+        return Self.offers
+    }
 
     func status() async -> ProStatus { owned.withLock { $0 } }
 

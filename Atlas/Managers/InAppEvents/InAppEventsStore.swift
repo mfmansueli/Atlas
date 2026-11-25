@@ -47,6 +47,13 @@ final class InAppEventsStore {
         return archive
     }
 
+    /// The app's events as Atlas last read them this launch (In-App
+    /// Events, the read ahead, the Submit sheet, `get_in_app_events`); nil
+    /// before any read. The App Store preview shows the live one.
+    func lastRead(for appID: StoreApp.ID) -> [InAppEvent]? {
+        readEvents[appID]
+    }
+
     /// The suggestions waiting for one event, or for every event.
     func open(for appID: StoreApp.ID, eventID: InAppEvent.ID? = nil) -> [InAppEventTextSuggestion] {
         archive(for: appID).open.filter { eventID == nil || $0.eventID == eventID }

@@ -30,6 +30,12 @@ struct MotionToken: Equatable, Sendable {
         return Spring(response: response, dampingRatio: dampingFraction)
     }
 
+    /// The same curve over `seconds`, for a part of the token: half a
+    /// breath. A spring keeps its own response.
+    func animation(lasting seconds: TimeInterval) -> Animation {
+        MotionToken(duration: seconds, curve: curve).animation
+    }
+
     /// `animation`, delayed.
     func delay(_ seconds: TimeInterval) -> Animation {
         animation.delay(seconds)

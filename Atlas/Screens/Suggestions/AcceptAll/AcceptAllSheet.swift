@@ -3,6 +3,7 @@
 //  Atlas
 //
 
+import CoreGraphics
 import SwiftUI
 
 /// Accept All Languages (or Pages) before it accepts anything: languages on
@@ -13,6 +14,21 @@ struct AcceptAllSheet: View {
     let onCancel: () -> Void
     /// The ticked suggestions' ids, and whether to stop asking.
     let onAccept: (Set<String>, Bool) -> Void
+    /// The capture a caption's screenshot before → after draws; nil for
+    /// sheets without screenshots.
+    let captureImage: (@MainActor (SlotPreview) -> CGImage?)?
+
+    init(
+        selection: AcceptAllSelection,
+        onCancel: @escaping () -> Void,
+        onAccept: @escaping (Set<String>, Bool) -> Void,
+        captureImage: (@MainActor (SlotPreview) -> CGImage?)? = nil
+    ) {
+        _selection = State(initialValue: selection)
+        self.onCancel = onCancel
+        self.onAccept = onAccept
+        self.captureImage = captureImage
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -148,7 +164,9 @@ struct AcceptAllSheet: View {
                 ScrollView {
                     VStack(spacing: Spacing.xSmall) {
                         ForEach(group.items) { item in
-                            AcceptAllItemRow(item: item, isSelected: selection.isSelected(item), isRightToLeft: group.isRightToLeft) {
+                            AcceptAllItemRow(
+                                item: item, isSelected: selection.isSelected(item), isRightToLeft: group.isRightToLeft, captureImage: captureImage
+                            ) {
                                 selection.toggle(item)
                             }
                         }

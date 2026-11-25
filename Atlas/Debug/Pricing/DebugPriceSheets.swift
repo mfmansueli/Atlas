@@ -50,7 +50,7 @@ enum DebugPriceSheets {
             )
             ladders[territory.id] = ladder
         }
-        return ProductPriceSheet(
+        var sheet = ProductPriceSheet(
             productID: product.id,
             baseTerritoryID: "USA",
             basePrice: basePrice,
@@ -59,6 +59,13 @@ enum DebugPriceSheets {
             exactLadderIDs: Set(ladders.keys),
             sales: sales(for: subscription, sample: sample, canReadSales: canReadSales)
         )
+        // An in-app purchase's schedule: the base price, the ones set apart
+        // from Apple's automatic price, and Japan's, set by hand at the
+        // automatic price, are manual.
+        if product.isInAppPurchase {
+            sheet.manualTerritoryIDs = Set(prices.values.filter(\.isCustom).map(\.territoryID)).union(["USA", "JPN"])
+        }
+        return sheet
     }
 
     private static func identified(_ ladder: PricePointLadder, productID: String) -> PricePointLadder {

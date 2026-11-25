@@ -14,6 +14,8 @@ struct EventArtworkViewerStage: View {
     let viewer: EventArtworkViewer
     let event: InAppEvent
     let texts: InAppEventArtworkOverlayTexts
+    /// The app's icon in the card's App Store row.
+    var appIcon: AppIcon?
     /// The event's own image of the kind shown, for an event without concepts.
     let ownSource: InAppEventArtSource
     let loopPlayer: AppPreviewPlayerModel
@@ -59,10 +61,13 @@ struct EventArtworkViewerStage: View {
                 missing
             }
             if viewer.showsText, source.exists || video != nil {
-                InAppEventArtworkTextLayer(kind: viewer.kind, texts: texts, scale: size.width / InAppEventArtworkOverlay.pointSize(for: viewer.kind).width)
-                    .allowsHitTesting(false)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityIdentifier("events.art.viewer.storeText")
+                InAppEventArtworkTextLayer(
+                    kind: viewer.kind, texts: texts, scale: size.width / InAppEventArtworkOverlay.pointSize(for: viewer.kind).width,
+                    when: InAppEventWhenText.text(for: event), appIcon: appIcon
+                )
+                .allowsHitTesting(false)
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("events.art.viewer.storeText")
             }
             if viewer.showsTextArea {
                 InAppEventTextAreaHatch(labelSize: max(11, size.height * 0.022))

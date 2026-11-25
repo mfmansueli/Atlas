@@ -37,6 +37,18 @@ extension ScreenshotsViewModel {
         )
     }
 
+    /// The App Previews the language page's row starts with, on every
+    /// device that has them: the set waiting in Review & Push (iPhone and
+    /// iPad, changed by hand), else what's live.
+    func pageAppPreviews(locale: String, displayType: ScreenshotDisplayType, queue: ChangeQueue) -> [LanguagePageAppPreview] {
+        let queued = takesAppPreviews(displayType)
+            ? AppPreviewHandChange.queued(in: queue, appID: app.id, locale: locale, displayType: displayType).flatMap(AppPreviewHandChange.content)
+            : nil
+        return LanguagePageAppPreviewRow.items(
+            queued: queued, live: liveAppPreviews(locale: locale, displayType: displayType), locale: locale, displayType: displayType
+        )
+    }
+
     /// "iPhone 6.9″ · 886 × 1920 · 15 to 30 s · 2 of 3".
     func appPreviewLine(_ content: AppPreviewSetPush.Content) -> String {
         let size = AppPreviewSpec.spec(for: content.displayType, landscape: false).map { "\($0.pixelSize.width) × \($0.pixelSize.height)" } ?? ""

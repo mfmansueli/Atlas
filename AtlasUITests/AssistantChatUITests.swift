@@ -3,6 +3,7 @@
 //  AtlasUITests
 //
 
+import AppKit
 import XCTest
 
 /// The assistant chat in the window's corner (board 69), through the
@@ -27,7 +28,7 @@ final class AssistantChatUITests: XCTestCase {
         app.launch(debugScene: "chat-ready")
         let pill = app.buttons["chat.pill"]
         XCTAssertTrue(pill.waitForExistence(timeout: 10))
-        XCTAssertEqual(pill.label, "Claude Code, Ask about Lumen Journal…")
+        XCTAssertEqual(pill.label, "Claude Code: Ask about Lumen Journal…")
 
         pill.click()
         XCTAssertTrue(element("chat.panel").waitForExistence(timeout: 5))
@@ -66,6 +67,42 @@ final class AssistantChatUITests: XCTestCase {
         XCTAssertTrue(element("chat.stopped").waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["chat.send"].exists)
         XCTAssertFalse(element("chat.working").exists)
+    }
+
+    /// Right after asking, before Claude Code reports a step, the pill says
+    /// it's sending, with nothing counted and so no bar; the open panel
+    /// lists the same line.
+    func testSendingHasNoCountAndNoBar() {
+        app.launch(debugScene: "chat-sending")
+        let pill = app.buttons["chat.pill"]
+        XCTAssertTrue(pill.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitFor { pill.label == "Claude Code: Sending to Claude Code…" }, pill.label)
+        // The count is the pill's value, shown only with its bar.
+        XCTAssertEqual(pill.value as? String ?? "", "")
+        XCTAssertFalse(pill.label.contains(" of "), pill.label)
+
+        pill.click()
+        let steps = element("chat.steps")
+        XCTAssertTrue(steps.waitForExistence(timeout: 5))
+        XCTAssertEqual(steps.label, "Claude Code: Sending to Claude Code…")
+    }
+
+    /// The last step writes the answer: every step done, 3 of 3.
+    func testTheLastStepWritesTheAnswer() {
+        app.launch(debugScene: "chat-writing")
+        let pill = app.buttons["chat.pill"]
+        XCTAssertTrue(pill.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitFor(timeout: 10) { pill.label == "Claude Code: Writing the answer…" }, pill.label)
+        XCTAssertTrue(waitFor { pill.value as? String == "3 of 3" }, pill.value as? String ?? "no value")
+    }
+
+    /// While a step runs, the pill counts it with the answer still to write.
+    func testWorkingCountsTheSteps() {
+        app.launch(debugScene: "chat-working")
+        let pill = app.buttons["chat.pill"]
+        XCTAssertTrue(pill.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitFor(timeout: 10) { pill.value as? String == "2 of 3" }, pill.value as? String ?? "no value")
+        XCTAssertTrue(pill.label.hasPrefix("Claude Code: Read"), pill.label)
     }
 
     /// ⌘J opens and closes the chat from anywhere in the window.
@@ -113,6 +150,35 @@ final class AssistantChatUITests: XCTestCase {
         XCTAssertTrue(connect.exists)
         connect.click()
         XCTAssertTrue(app.sheets.firstMatch.waitForExistence(timeout: 5))
+    }
+
+    /// An answer that queued a new version and its What's New points to
+    /// Review & Push, where they wait until the push creates the version.
+    func testANewVersionAnswerOpensReviewAndPush() {
+        app.launch(debugScene: "chat-version")
+        let review = app.buttons["chat.suggestions.review"]
+        XCTAssertTrue(review.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["chat.suggestions.show"].exists)
+        XCTAssertEqual(text(of: element("chat.suggestions.title")), "2 suggestions in Review & Push")
+        XCTAssertTrue(text(of: element("chat.note")).hasPrefix("They wait in Review & Push."), text(of: element("chat.note")))
+        review.click()
+        XCTAssertTrue(app.sheets.firstMatch.waitForExistence(timeout: 5))
+    }
+
+    /// What the person wrote and what came back can be selected with the
+    /// mouse and copied.
+    func testMessagesCanBeSelectedAndCopied() {
+        app.launch(debugScene: "chat-version")
+        let person = element("chat.person")
+        let answer = element("chat.answer")
+        XCTAssertTrue(answer.waitForExistence(timeout: 10))
+        // A double-click on each message's first word, then ⌘C.
+        for (message, word, inset) in [(person, "Create", CGVector(dx: 22, dy: 12)), (answer, "Version", CGVector(dx: 12, dy: 8))] {
+            NSPasteboard.general.clearContents()
+            message.coordinate(withNormalizedOffset: .zero).withOffset(inset).doubleClick()
+            app.typeKey("c", modifierFlags: .command)
+            XCTAssertTrue(waitFor { NSPasteboard.general.string(forType: .string) == word }, NSPasteboard.general.string(forType: .string) ?? "nothing copied")
+        }
     }
 
     // MARK: - Helpers

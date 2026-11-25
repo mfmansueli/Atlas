@@ -22,21 +22,13 @@ final class PricingViewModel {
     private(set) var sheetError: String?
 
     var isModeSheetPresented = false
-    var isBrowserPresented = false
+    /// Customize Suggestions…: the strategy inspector.
     var isInspectorPresented = false
-    var inspectorTab: StrategyInspectorTab = .strategy
-    var columnPreset: PriceColumnPreset = .automatic
     /// Asks before Keep my prices drops the queued price changes.
     var isKeepConfirmationPresented = false
-    var isGroupConfirmationPresented = false
 
-    var tab = PricingTab.prices
     /// Prices, or Retention.
     var page = PricingPage.prices
-    var display = PricingDisplay.table
-    var mapMetric = TileMapMetric.percentVsBase
-    /// The tile whose details the map shows.
-    var hoveredTerritoryID: PricingRow.ID?
     var isScheduleSheetPresented = false
     /// Create Subscription, from the empty state or the product browser.
     var isNewSubscriptionSheetPresented = false
@@ -53,6 +45,10 @@ final class PricingViewModel {
     /// Create In-App Purchase, Add Introductory Offer… and Review
     /// Screenshot…, with what each product has beside its prices.
     let setup = PricingPurchaseSetup()
+    /// A product's Prices by Country tab: find, Filters, columns, sort,
+    /// selection, the view and the open price popover
+    /// (`PricingViewModel+PricesByCountry`).
+    let pricesByCountry = PricesByCountryState()
     /// Existing subscribers per territory for the schedule's warning; nil
     /// until loaded, or when Atlas can't read them.
     private(set) var subscribers: [String: Int]?
@@ -63,9 +59,6 @@ final class PricingViewModel {
 
     // MARK: - Product cards
 
-    /// The selected product's prices, offers and results (with the section
-    /// bar), instead of a card per product.
-    var showsProductDetails = false
     /// Every product's matrix, for the cards; filled in one product at a
     /// time after the catalog loads.
     var productMatrices: [String: PriceMatrixModel] = [:]
@@ -76,12 +69,15 @@ final class PricingViewModel {
     var unreadProductIDs: Set<String> = []
     /// Every product's prices have been read (or failed).
     var areProductsLoaded = false
-    /// The card whose countries are shown.
-    var expandedProductID: String?
-    /// "What people pay": Now or with the suggestions.
-    var showsSuggestedPrices = true
-    /// "What people pay"'s country (alpha-3).
-    var payTerritoryID = "USA"
+    /// The product page open in place of the cards (board 73), or nil
+    /// (`PricingViewModel+ProductPage`).
+    var productRoute: PricingProductRoute?
+    /// Each product's availability and Family Sharing, for its Details tab.
+    let productFacts = PricingProductFactsStore()
+    /// "Preview in"'s country (alpha-3).
+    var previewTerritoryID = "USA"
+    /// "Preview in"'s country menu is open.
+    var isPreviewMenuPresented = false
     /// After Accept: "Prices for Annual accepted. They’re waiting in Review & Push, top right."
     var toast: ToastMessage?
     @ObservationIgnored var toastUndo: (() -> Void)?
@@ -107,14 +103,14 @@ final class PricingViewModel {
     /// Counts `load()`s, so one that answers after a newer one started
     /// (Apple took 12 s to fail it) doesn't replace what the newer read.
     @ObservationIgnored private var loadGeneration = 0
-    @ObservationIgnored var siblingSheets: [String: ProductPriceSheet] = [:]
 
     init(app: StoreApp, services: any PricingServices, queue: ChangeQueue, modes: PricingModeStore, commission: Commission) {
         self.app = app
         self.services = services
         self.queue = queue
         self.modes = modes
-        strategy = PricingStrategyModel(snapshot: services.indexSnapshot(), commission: commission)
+        // The app's own strategy (Customize…), else Settings → Pricing's.
+        strategy = PricingStrategyModel(snapshot: services.indexSnapshot(), commission: commission, strategy: modes.strategy(for: app.id))
     }
 
     // MARK: - Reading
@@ -125,17 +121,6 @@ final class PricingViewModel {
 
     var selectedProduct: PricingProduct? {
         selectedProductID.flatMap { catalog?.product(id: $0) }
-    }
-
-    var resolvedPreset: PriceColumnPreset {
-        let readOnly = mode == .keepPrices || selectedProduct?.isInAppPurchase == true
-        return PriceColumnPreset.resolved(columnPreset, isKeepingPrices: readOnly, isInspectorOpen: isInspectorPresented)
-    }
-
-    /// Sibling subscriptions in the group, for “Copy from Monthly”.
-    var siblings: [PricingProduct] {
-        guard let product = selectedProduct else { return [] }
-        return catalog?.siblings(of: product) ?? []
     }
 
     /// Price changes waiting in Review & Push; new products, their offers
@@ -177,8 +162,8 @@ final class PricingViewModel {
 
     /// ⌘R and after a push: everything again from App Store Connect.
     func reload() async {
-        siblingSheets = [:]
         setup.forget()
+        productFacts.forget()
         await load()
     }
 
@@ -191,7 +176,6 @@ final class PricingViewModel {
     func select(productID: String, force: Bool = false) async {
         guard force || productID != selectedProductID, let product = catalog?.product(id: productID) else { return }
         selectedProductID = productID
-        isBrowserPresented = false
         resetProductViews(for: product)
         isLoadingSheet = true
         sheetError = nil
@@ -202,13 +186,7 @@ final class PricingViewModel {
         do {
             let sheet = try await services.priceSheet(for: product, commission: strategy.commission)
             guard selectedProductID == productID else { return }
-            let matrix = makeMatrix(product: product, sheet: sheet)
-            if let previous = self.matrix, previous.product.id == productID {
-                matrix.filter = previous.filter
-                matrix.sortOrder = previous.sortOrder
-                matrix.selection = previous.selection
-            }
-            self.matrix = matrix
+            matrix = makeMatrix(product: product, sheet: sheet)
         } catch {
             guard selectedProductID == productID else { return }
             // Apple's server failing on this product is said on it, not in
@@ -232,13 +210,7 @@ final class PricingViewModel {
     /// after it) worked: its prices show that read.
     func recoverSelectedPrices(of product: PricingProduct, sheet: ProductPriceSheet) {
         guard selectedProductID == product.id, sheetError != nil, !needsStartingPrice, !hasNoPrice, !isLoadingSheet else { return }
-        let recovered = makeMatrix(product: product, sheet: sheet)
-        if let previous = matrix, previous.product.id == product.id {
-            recovered.filter = previous.filter
-            recovered.sortOrder = previous.sortOrder
-            recovered.selection = previous.selection
-        }
-        matrix = recovered
+        matrix = makeMatrix(product: product, sheet: sheet)
         sheetError = nil
     }
 
@@ -267,7 +239,6 @@ final class PricingViewModel {
         results = nil
         subscribers = nil
         subscribersProductID = nil
-        hoveredTerritoryID = nil
     }
 
     func setCommission(_ commission: Commission) async {
@@ -361,6 +332,12 @@ final class PricingViewModel {
     }
 
     func strategyDidChange() {
+        // Kept per app, so Pricing opens on it again and the price tools
+        // over MCP suggest from it; Settings' defaults stay the app's until
+        // it differs from them.
+        if modes.hasOwnStrategy(app.id) || strategy.strategy != modes.defaultStrategy {
+            modes.setStrategy(strategy.strategy, for: app.id)
+        }
         matrix?.update(strategy: strategy.strategy, calculator: strategy.calculator)
         for matrix in productMatrices.values { matrix.update(strategy: strategy.strategy, calculator: strategy.calculator) }
     }

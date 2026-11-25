@@ -39,12 +39,28 @@ struct MCPListingDraft {
 
     /// The version being prepared, or with `version` a new one waiting in
     /// Review & Push (`MCPVersionTarget`).
-    static func load(app identifier: String, version: String? = nil, in workspace: MCPWorkspace) async throws -> MCPListingDraft {
+    ///
+    /// `platform` picks another platform's version (`MCPStorePlatform`);
+    /// with `readsOlder`, `version` may also name an older version App
+    /// Store Connect has, read-only.
+    static func load(
+        app identifier: String,
+        version: String? = nil,
+        platform: String? = nil,
+        readsOlder: Bool = false,
+        in workspace: MCPWorkspace
+    ) async throws -> MCPListingDraft {
         let app = try await workspace.app(matching: identifier)
         let services = workspace.services.storePage
         var content: StorePageContent
         do {
             content = try await services.content(for: app, versionID: nil)
+            let older = readsOlder ? version : nil
+            if let picked = try MCPStorePlatform.version(platform: platform, version: older, in: content, app: app), picked.id != content.version.id {
+                content = try await services.content(for: app, versionID: picked.id)
+            }
+        } catch let error as MCPToolError {
+            throw error
         } catch {
             throw MCPToolError.unavailable(String(localized: "Couldn’t read \(app.name)’s store listing: \(error.localizedDescription)"))
         }
@@ -94,11 +110,15 @@ struct MCPListingDraft {
     var versionJSON: JSONValue {
         let version = listing.version
         guard queuedVersion == nil else { return Self.queuedVersionJSON(version.versionString) }
-        return [
+        var json: [String: JSONValue] = [
             "versionString": .string(version.versionString),
             "state": .string(version.state.title),
             "editable": .bool(version.isEditable),
         ]
+        if let platform = content.version.platform, let name = MCPStorePlatform.codes.first(where: { $0.value == platform })?.key {
+            json["platform"] = .string(name)
+        }
+        return .object(json)
     }
 
     /// A new version that waits in Review & Push.
@@ -190,6 +210,47 @@ struct MCPListingDraft {
     /// "Lumen Journal · de-DE · Subtitle".
     func target(locale code: String, field: ListingField?) -> String {
         [app.name, code, field?.title].compactMap(\.self).joined(separator: " · ")
+    }
+
+    // MARK: - New pages
+
+    /// The languages `propose_listing_text`'s `addLanguages` added: their
+    /// pages are created when the person accepts and pushes them.
+    private(set) var addedLanguages: [StoreLocale] = []
+
+    /// Adds empty pages for `codes`, as the Store Page's Add Locale does, so
+    /// texts can be proposed for them. Languages already there are skipped;
+    /// one the person said Not Now to, or a read-only version, is refused.
+    mutating func addLanguages(_ codes: [String]) throws {
+        guard !codes.isEmpty else { return }
+        guard listing.version.isEditable else {
+            throw MCPToolError.unavailable(String(localized: """
+            \(app.name)’s version \(listing.version.versionString) can’t change, so no language can be added. Propose a new version with propose_app_version first.
+            """, comment: "kind:error"))
+        }
+        for code in codes {
+            guard let locale = StoreLocaleCatalog.locale(code: code) else {
+                throw MCPToolError.invalidArgument(name: "addLanguages", expected: String(localized: "App Store Connect locale codes, e.g. de-DE"))
+            }
+            if declinedLanguages.contains(locale) { throw MCPToolError.notFound(unknownLocaleMessage(code)) }
+            guard !listing.contains(locale) else { continue }
+            listing.addLocale(locale)
+            addedLanguages.append(locale)
+        }
+    }
+
+    /// The added languages' page creations wait for the person's Accept in
+    /// Review & Push: adding a language is theirs to decide.
+    func holdAddedLanguages(in queue: ChangeQueue) {
+        for locale in addedLanguages {
+            for level in [ListingFieldLevel.app, .version] {
+                guard var change = queue.change(id: builder.newLocaleChangeID(for: locale, at: level)), change.awaitingAcceptance == nil else { continue }
+                change.awaitingAcceptance = String(
+                    localized: "Adds a \(locale.name) page to \(app.name) on the App Store. Accept it to push it.", comment: "kind:other"
+                )
+                queue.upsert(change)
+            }
+        }
     }
 
     // MARK: - Proposing

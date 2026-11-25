@@ -6,11 +6,12 @@
 import SwiftUI
 
 /// The app's App Store page in miniature, in the storefront's own language
-/// and direction: icon, name and Get, ratings, age and category, screenshots,
-/// the texts, What's New and the purchases. On the Overview each part opens
-/// the section editing it when clicked, lit while the pointer is over it
-/// (README — redesign, November 22: no tags on the preview), and the page
-/// stops after the screenshots (`isCompact`).
+/// and direction: icon, name and Get, ratings, age and category, the App
+/// Preview and screenshots, the In-App Event whose card shows now, the texts, What's New
+/// and the purchases. On the Overview each part opens the section editing
+/// it when clicked, lit while the pointer is over it (README — redesign,
+/// November 22: no tags on the preview), and the page stops after the
+/// screenshots and the event (`isCompact`).
 struct AppStorePagePreview<Shots: View>: View {
     let model: AppStorePreviewModel
     let appName: String
@@ -30,7 +31,11 @@ struct AppStorePagePreview<Shots: View>: View {
             divider
             row(link: links?.appInformation, vertical: 8) { stats }
             divider
-            row(link: links?.screenshots) { shots() }
+            shotsRow
+            if let event = model.liveEvent {
+                divider
+                eventRow(event)
+            }
             if !isCompact {
                 divider
                 row(link: nil) { texts }
@@ -79,19 +84,80 @@ struct AppStorePagePreview<Shots: View>: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .onHover { inside in
-                if inside {
-                    hovered = link.title
-                } else if hovered == link.title {
-                    hovered = nil
-                }
-            }
-            .animation(.easeOut(duration: 0.15), value: hovered)
+            .onHover { inside in hover(link.title, inside) }
+            .animation(MotionTiming.fast.animation, value: hovered)
             .help(String(localized: "Edit in \(link.title)"))
             .accessibilityLabel(Text(link.count > 0 ? String(localized: "Edit in \(link.title), \(link.count) suggestions") : String(localized: "Edit in \(link.title)")))
             .accessibilityIdentifier("storePreview.part.\(link.title)")
         } else {
             part
+        }
+    }
+
+    /// The App Preview and screenshots: a click anywhere but on the play
+    /// button opens Screenshots. Not a button around them, so the row
+    /// scrolls and the play button takes its own clicks.
+    @ViewBuilder
+    private var shotsRow: some View {
+        let part = shots()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+        if let link = links?.screenshots {
+            part
+                .background(
+                    Palette.fill1.opacity(hovered == link.title ? 1 : 0),
+                    in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
+                )
+                .contentShape(Rectangle())
+                .onTapGesture(perform: link.open)
+                .onHover { inside in hover(link.title, inside) }
+                .animation(MotionTiming.fast.animation, value: hovered)
+                .help(String(localized: "Edit in \(link.title)"))
+                .accessibilityElement(children: .contain)
+                .accessibilityAction(named: Text(String(localized: "Edit in \(link.title)")), link.open)
+                .accessibilityIdentifier("storePreview.part.\(link.title)")
+        } else {
+            part
+        }
+    }
+
+    /// The live event's card, "Happening now" or "Upcoming"; a click opens
+    /// it in In-App Events.
+    @ViewBuilder
+    private func eventRow(_ event: AppStoreLiveEvent) -> some View {
+        let card = AppStorePreviewEventCard(event: event, label: event.isHappening ? model.words.happeningNow : model.words.upcoming)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+        if let open = links?.inAppEvent {
+            let title = AppWorkspaceSection.inAppEvents.title
+            Button {
+                open(event.id)
+            } label: {
+                card
+                    .background(
+                        Palette.fill1.opacity(hovered == title ? 1 : 0),
+                        in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous)
+                    )
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .onHover { inside in hover(title, inside) }
+            .animation(MotionTiming.fast.animation, value: hovered)
+            .help(String(localized: "Open in \(title)", comment: "kind:help"))
+            .accessibilityHint(Text(String(localized: "Opens \(title)", comment: "kind:help")))
+            .accessibilityIdentifier("storePreview.part.event")
+        } else {
+            card
+        }
+    }
+
+    private func hover(_ title: String, _ inside: Bool) {
+        if inside {
+            hovered = title
+        } else if hovered == title {
+            hovered = nil
         }
     }
 

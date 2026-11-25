@@ -12,12 +12,14 @@ extension FindingRules {
     /// Lost to billing a month that makes Billing Grace Period worth saying.
     static let lostToBillingPerMonth = 10
 
-    static func reportFindings(_ dataset: AnalyticsDataset, now: Date) -> [AnalyticsFinding] {
+    /// `context` names the languages No Message's territories see, for
+    /// Write Messages for N Languages….
+    static func reportFindings(_ dataset: AnalyticsDataset, context: AnalyticsContext = .empty, now: Date) -> [AnalyticsFinding] {
         let reports = dataset.reports
         guard !reports.isEmpty else { return [] }
         var findings: [AnalyticsFinding] = []
         if let retention = RetentionReport.make(reports, days: 28) {
-            findings += retentionFindings(retention, now: now)
+            findings += retentionFindings(retention, context: context, now: now)
         }
         let last = AppleReportKind.allCases.compactMap { reports.lastDay($0) }.max()
         if let last {
@@ -26,7 +28,7 @@ extension FindingRules {
                 if let billing = billingFinding(lifecycle, gracePeriod: dataset.gracePeriod, now: now) { findings.append(billing) }
                 findings += offerFindings(lifecycle, now: now)
             }
-            findings += pageFindings(reports, period: period, now: now)
+            findings += pageFindings(reports, period: period, appName: dataset.appName, now: now)
         }
         if let stability = StabilityReport.make(reports, now: AnalyticsDay(now)) {
             if let crash = crashFinding(stability, now: now) {
@@ -40,7 +42,7 @@ extension FindingRules {
 
     // MARK: - Retention
 
-    private static func retentionFindings(_ report: RetentionReport, now: Date) -> [AnalyticsFinding] {
+    private static func retentionFindings(_ report: RetentionReport, context: AnalyticsContext, now: Date) -> [AnalyticsFinding] {
         var findings: [AnalyticsFinding] = []
         let offers = report.messages.filter { !$0.isNoMessage && $0.type.lowercased().contains("offer") }
         let texts = report.messages.filter { !$0.isNoMessage && !$0.type.lowercased().contains("offer") }
@@ -51,7 +53,7 @@ extension FindingRules {
             let textRate = AnalyticsStatistics.rate(count: textCounts.stayed, total: textCounts.opened)
             findings.append(AnalyticsFinding(
                 id: "retention.offerMessage", source: .builtIn,
-                title: String(localized: "Offer messages keep \(offerRate.text); text alone \(textRate.text)"),
+                title: String(localized: "Offer messages keep \(offerRate.text); text alone, \(textRate.text)"),
                 why: String(localized: """
                 Offers give a reason to stay. Add one to text-only messages, starting with the most-canceled \
                 subscription.
@@ -62,24 +64,36 @@ extension FindingRules {
                 ],
                 sureness: confidence == .sure ? String(localized: "Sure") : String(localized: "Fairly sure"),
                 surenessDetail: String(localized: "\(AnalyticsText.count(offerCounts.stayed)) of \(AnalyticsText.count(offerCounts.opened)) against \(AnalyticsText.count(textCounts.stayed)) of \(AnalyticsText.count(textCounts.opened)), last 28 complete days"),
-                action: .retention, date: now, signal: offerRate.fraction
+                action: .retention, secondAction: .offerMessage, date: now, signal: offerRate.fraction
             ))
         }
         if report.noMessageOpened > 0, case let .higher(confidence) = report.withAgainstWithout {
+            let languages = languagesWithoutAMessage(report, context: context)
             findings.append(AnalyticsFinding(
                 id: "retention.noMessage", source: .builtIn,
-                title: String(localized: "No message keeps \(report.noMessage.text); a message keeps \(report.withMessage.text)"),
-                why: String(localized: "\(AnalyticsText.count(report.noMessageOpened)) people hit a cancel screen your messages don’t cover. A message there could keep some."),
+                title: noMessageTitle(report),
+                why: String(localized: """
+                \(report.noMessage.text) stay without a message, \(report.withMessage.text) with one. \(AnalyticsText.count(report.noMessageOpened)) people hit a cancel \
+                screen your messages don’t cover.
+                """),
                 numbers: [
                     FindingNumber(label: String(localized: "No Message"), value: report.noMessage.text),
                     FindingNumber(label: String(localized: "With a message"), value: report.withMessage.text),
                 ],
                 sureness: confidence == .sure ? String(localized: "Sure") : String(localized: "Fairly sure"),
                 surenessDetail: String(localized: "\(AnalyticsText.count(report.noMessageStayed)) of \(AnalyticsText.count(report.noMessageOpened)) against \(AnalyticsText.count(report.withMessageStayed)) of \(AnalyticsText.count(report.withMessageOpened))"),
-                action: .retention, date: now, signal: report.noMessage.fraction
+                action: languages > 0 ? .retentionLanguages(count: languages) : .retention, date: now, signal: report.noMessage.fraction
             ))
         }
         return findings
+    }
+
+    /// The App Store languages No Message's territories see: where a
+    /// message would reach people who get Apple's plain screen now. 0 when
+    /// the page's languages aren't known.
+    static func languagesWithoutAMessage(_ report: RetentionReport, context: AnalyticsContext) -> Int {
+        guard !context.pageLocales.isEmpty, let none = report.messages.first(where: \.isNoMessage) else { return 0 }
+        return Set(none.territories.compactMap { context.locale(for: $0)?.code }).count
     }
 
     // MARK: - Billing
@@ -129,7 +143,7 @@ extension FindingRules {
 
     /// A custom page whose downloads are deleted within 30 days clearly
     /// more often than the default page's.
-    private static func pageFindings(_ reports: ReportsArchive, period: AnalyticsPeriod, now: Date) -> [AnalyticsFinding] {
+    private static func pageFindings(_ reports: ReportsArchive, period: AnalyticsPeriod, appName: String, now: Date) -> [AnalyticsFinding] {
         let defaultName = ProductPageNumbers.defaultPageName
         let byPage = Dictionary(grouping: reports.records(.installs).within(period)) { ReportsArchive.pageName($0, defaultName: defaultName) ?? "" }
         guard byPage[defaultName] != nil else { return [] }
@@ -146,9 +160,10 @@ extension FindingRules {
             let base = reference.deletedWithin30
             return AnalyticsFinding(
                 id: "page.deletes.\(page)", source: .builtIn,
-                title: String(localized: "People from “\(page)” delete more within 30 days: \(rate.text) against \(base.text)"),
+                title: pageDeletesTitle(page: page, appName: appName, rate: rate, base: base),
                 why: String(localized: """
-                The page may promise what the app’s first minutes don’t show. Compare the two.
+                \(rate.text) delete it within 30 days, \(base.text) from the default page. The page may promise what the app \
+                doesn’t show.
                 """),
                 numbers: [
                     FindingNumber(label: String(localized: "Deleted in 30 days"), value: rate.text),
@@ -156,7 +171,7 @@ extension FindingRules {
                 ],
                 sureness: confidence == .sure ? String(localized: "Sure") : String(localized: "Fairly sure"),
                 surenessDetail: String(localized: "\(AnalyticsText.count(numbers.recentDeletions)) of \(AnalyticsText.count(numbers.installs)) installs, a sample of people who share analytics"),
-                action: .productPage(name: page), date: now, signal: rate.fraction
+                action: .productPage(name: page), secondAction: .pageScreenshots(name: page), date: now, signal: rate.fraction
             )
         }
     }
@@ -198,9 +213,10 @@ extension FindingRules {
         let oldRate = Double(old.deletions) * 1000 / Double(old.deviceDays)
         return AnalyticsFinding(
             id: "stability.deletions.\(stability.latest.version)", source: .builtIn,
-            title: String(localized: "\(stability.latest.version) deleted more than \(previous.version), not from crashes"),
+            title: String(localized: "Deletions rose with \(stability.latest.version); crashes didn’t"),
             why: String(localized: """
-            Something new may put people off, like a new screen or earlier paywall. Check its reviews and What’s New.
+            \(AnalyticsText.perThousand(newRate)) per 1,000 devices on \(stability.latest.version), \(AnalyticsText.perThousand(oldRate)) on \
+            \(previous.version). Something new may put people off; check its reviews.
             """),
             numbers: [
                 FindingNumber(label: String(localized: "Deletions per 1,000 active devices · \(stability.latest.version)"), value: AnalyticsText.perThousand(newRate)),
@@ -208,7 +224,39 @@ extension FindingRules {
             ],
             sureness: confidence == .sure ? String(localized: "Sure") : String(localized: "Fairly sure"),
             surenessDetail: String(localized: "Same days, a sample of people who share analytics"),
-            action: .stability, date: now, signal: newRate
+            action: .changes, date: now, signal: newRate
         )
+    }
+
+    // MARK: - Titles
+
+    /// “No message keeps half as many people” (README-An2, November 25):
+    /// the result first; the rates are in the sentence under it.
+    private static func noMessageTitle(_ report: RetentionReport) -> String {
+        switch times(report.withMessage.fraction, over: report.noMessage.fraction) {
+        case 2: String(localized: "No message keeps half as many people", comment: "kind:suggestion-title")
+        case 3: String(localized: "No message keeps a third as many people", comment: "kind:suggestion-title")
+        case 4: String(localized: "No message keeps a quarter as many people", comment: "kind:suggestion-title")
+        default: String(localized: "No message keeps fewer people", comment: "kind:suggestion-title")
+        }
+    }
+
+    /// “People from “Mood tracking” delete Lumen twice as often”.
+    private static func pageDeletesTitle(page: String, appName: String, rate: AnalyticsRate, base: AnalyticsRate) -> String {
+        switch times(rate.fraction, over: base.fraction) {
+        case 2: String(localized: "People from “\(page)” delete \(appName) twice as often", comment: "kind:suggestion-title")
+        case 3: String(localized: "People from “\(page)” delete \(appName) 3× as often", comment: "kind:suggestion-title")
+        case 4: String(localized: "People from “\(page)” delete \(appName) 4× as often", comment: "kind:suggestion-title")
+        default: String(localized: "People from “\(page)” delete \(appName) more often", comment: "kind:suggestion-title")
+        }
+    }
+
+    /// 2, 3 or 4 when `value` is about that many times `reference`, for a
+    /// title in words; nil otherwise.
+    static func times(_ value: Double?, over reference: Double?) -> Int? {
+        guard let value, let reference, reference > 0 else { return nil }
+        let ratio = value / reference
+        let whole = Int(ratio.rounded())
+        return (2...4).contains(whole) && abs(ratio - Double(whole)) < 0.35 ? whole : nil
     }
 }

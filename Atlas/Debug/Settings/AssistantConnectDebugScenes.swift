@@ -20,6 +20,7 @@ import Foundation
 ///   folder Atlas found), `set-wiz-drag` (a folder dragged over),
 ///   `set-wiz-wrong` (Downloads, which has no project), `set-wiz-picked`
 ///   (Lumen's folder accepted), `set-wiz-busy` (step 2, starting it),
+///   `set-wiz-typing` (step 3, Claude Code still writing its hello),
 ///   `set-wiz-hello` (step 3, its hello), `set-wiz-fail` (no answer).
 ///
 /// The pretend helper answers Connect for real: Claude Code's registration
@@ -29,7 +30,7 @@ import Foundation
 enum AssistantConnectDebugScenes {
     static let ids = [
         "set-assistants-new", "set-assistants-done", "set-assistants-adv",
-        "set-wiz-folder", "set-wiz-drag", "set-wiz-wrong", "set-wiz-picked", "set-wiz-busy", "set-wiz-hello", "set-wiz-fail",
+        "set-wiz-folder", "set-wiz-drag", "set-wiz-wrong", "set-wiz-picked", "set-wiz-busy", "set-wiz-typing", "set-wiz-hello", "set-wiz-fail",
     ]
 
     static let lumenFolder = ProjectFolderPath.expanded("~/Developer/Lumen")
@@ -130,6 +131,9 @@ enum AssistantConnectDebugScenes {
             model.verdict = picked
             model.step = .connecting
             model.progress = .starting
+        case "set-wiz-typing":
+            model.verdict = picked
+            model.step = .hello
         case "set-wiz-hello":
             model.verdict = picked
             model.step = .hello

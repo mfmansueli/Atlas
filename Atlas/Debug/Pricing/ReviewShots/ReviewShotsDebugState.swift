@@ -27,6 +27,16 @@ enum ReviewShotsDebugState: String, CaseIterable, Sendable {
     /// `rs-accepted`: Monthly accepted, Annual from Capture 14, Lifetime
     /// in App Store Connect.
     case accepted
+    /// `rs-skipped`: Monthly arrived; the run skipped Annual (the paywall
+    /// doesn't show it) and Lifetime failed a check twice.
+    case skipped
+    /// `rs-size`: Monthly accepted, and Apple refused its dimensions in
+    /// the last push: Use a 640 × 920 Copy.
+    case size
+    /// `rs-live`: the three uploaded by a push today, read back from App
+    /// Store Connect (Annual still Missing Metadata: its group has no
+    /// localization), with the toast after the push.
+    case live
 
     var sceneID: String { "rs-" + rawValue }
 

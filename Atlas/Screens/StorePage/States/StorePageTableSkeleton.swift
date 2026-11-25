@@ -5,27 +5,22 @@
 
 import SwiftUI
 
-/// Placeholder rows while a table's data loads.
+/// Placeholder rows while a table's data loads: a flag, a language and
+/// its fields' cells. They fill the height offered and cut off the rest,
+/// so the page's minimum height stays the window's.
 struct StorePageTableSkeleton: View {
     var rows = 10
 
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(0..<rows, id: \.self) { index in
-                HStack(spacing: Spacing.large) {
-                    SkeletonBlock(width: 20, height: 14, cornerRadius: Radius.flag)
-                    SkeletonBlock(width: index.isMultiple(of: 3) ? 120 : 90)
-                    Spacer(minLength: Spacing.large)
-                    ForEach(0..<6, id: \.self) { _ in
-                        SkeletonBlock(width: 52)
-                    }
-                }
-                .padding(.horizontal, Spacing.large)
-                .frame(height: 32)
-                Divider()
-            }
-            Spacer(minLength: 0)
-        }
-        .accessibilityHidden(true)
+        SkeletonTableRows(
+            count: rows, rowHeight: Metrics.skeletonStorePageRowHeight, cells: 6, cellWidth: Metrics.skeletonStorePageCellWidth,
+            showsDividers: true
+        )
+        .padding(.horizontal, Spacing.small)
     }
+}
+
+#Preview {
+    StorePageTableSkeleton()
+        .frame(width: 800, height: 400)
 }

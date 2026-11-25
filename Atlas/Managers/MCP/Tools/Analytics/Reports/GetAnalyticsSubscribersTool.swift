@@ -17,20 +17,27 @@ struct GetAnalyticsSubscribersTool: MCPTool {
         subscriber downloaded the app from); each offer by name with how many paid the regular price afterwards against \
         the average of every offer (`firstRenewal` when too young to tell); subscribers Apple couldn't charge, recovered \
         and lost to billing; Billing Grace Period on or off; plan changes and cancellation reasons; and, from the newest \
-        state day, how many are in a grace period or billing retry. Complements get_analytics_subscriptions (Sales and \
-        Trends). Read-only: Billing Grace Period is turned on only by the person, in Atlas.
+        state day, how many are in a grace period or billing retry. With `by`, `rows` replaces the page, campaign and \
+        source lists with one split: by product page, campaign, source, territory, device or offer. Complements \
+        get_analytics_subscriptions (Sales and Trends). Read-only: Billing Grace Period is turned on only by the \
+        person, in Atlas.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "days": ["type": "integer", "description": "7, 28 or 90. Leave it out for 28."],
+                "by": AnalyticsMCPBreakdown.schema(Self.breakdowns, leftOut: "Leave it out for product page, campaign and source."),
             ],
             required: ["appId"]
         )
     )
 
+    /// What `by` splits subscribers by.
+    static let breakdowns = ["productPage", "campaign", "source", "territory", "device", "offer"]
+
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let analytics = try await AnalyticsMCPContext.load(app: arguments.string("appId"), in: context.workspace, store: store)
+        let breakdown = try AnalyticsMCPBreakdown.dimension(arguments, allowed: Self.breakdowns)
         let days = try AnalyticsMCPContext.days(arguments)
         guard let period = analytics.reportsPeriod(days: days), let report = LifecycleReport.make(analytics.reports, period: period) else {
             throw MCPToolError.unavailable(analytics.noRows(.subscriptionEvents))
@@ -40,26 +47,18 @@ struct GetAnalyticsSubscribersTool: MCPTool {
         let average = all.trialToPaidFraction
         func split(_ dimension: ReportDimension) -> JSONValue {
             let events = reports.records(.subscriptionEvents).within(period)
-            let names = Set(events.map { event in
-                dimension == .page ? ReportsArchive.pageName(event, defaultName: ProductPageNumbers.defaultPageName) ?? "" : event[dimension]
-            })
-            return .array(names.filter { !$0.isEmpty }.sorted().map { name in
-                let counts = reports.subscribers(in: period) { record in
-                    (dimension == .page ? ReportsArchive.pageName(record, defaultName: ProductPageNumbers.defaultPageName) ?? "" : record[dimension]) == name
-                }
+            return .array(AnalyticsMCPBreakdown.names(events, dimension).map { name in
+                let counts = reports.subscribers(in: period) { AnalyticsMCPBreakdown.key($0, dimension) == name }
                 return ["name": .string(name), "subscribers": AnalyticsMCPContext.subscribers(counts, average: average)]
             })
         }
         let grace = analytics.dataset.gracePeriod
-        let result: JSONValue = [
+        var result: [String: JSONValue] = [
             "appId": .string(analytics.app.id),
             "app": .string(analytics.app.name),
             "reports": .array([analytics.reportStatus(.subscriptionEvents), analytics.reportStatus(.subscriptionStates)]),
             "period": AnalyticsMCPJSON.period(period),
             "all": AnalyticsMCPContext.subscribers(all),
-            "byProductPage": split(.page),
-            "byCampaign": split(.campaign),
-            "bySource": split(.source),
             "offers": .array(report.offers.map { offer in
                 [
                     "name": .string(offer.name), "type": .string(offer.type), "started": .int(offer.started),
@@ -77,6 +76,14 @@ struct GetAnalyticsSubscribersTool: MCPTool {
             "planChanges": .array(report.planChanges.map { ["change": .string($0.name), "count": .int($0.count)] }),
             "cancellationReasons": .array(report.cancelReasons.filter { $0.count > 0 }.map { ["reason": .string($0.name), "count": .int($0.count)] }),
         ]
-        return .read(result, target: "\(analytics.app.name) · Subscribers")
+        if let breakdown {
+            result["by"] = .string(breakdown.name)
+            result["rows"] = split(breakdown.dimension)
+        } else {
+            result["byProductPage"] = split(.page)
+            result["byCampaign"] = split(.campaign)
+            result["bySource"] = split(.source)
+        }
+        return .read(.object(result), target: "\(analytics.app.name) · Subscribers")
     }
 }

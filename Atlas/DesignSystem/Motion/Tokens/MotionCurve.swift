@@ -18,6 +18,8 @@ enum MotionCurve: Equatable, Sendable {
     static let standard = MotionCurve.bezier(x1: 0.2, y1: 0.7, x2: 0.2, y2: 1)
     /// motion.step's ease-in-out: (.65, 0, .35, 1).
     static let step = MotionCurve.bezier(x1: 0.65, y1: 0, x2: 0.35, y2: 1)
+    /// motion.breathe's ease-in-out: (.42, 0, .58, 1).
+    static let breathe = MotionCurve.bezier(x1: 0.42, y1: 0, x2: 0.58, y2: 1)
 
     /// The curve as a unit curve, for motion drawn frame by frame; a
     /// spring reads as the standard curve.

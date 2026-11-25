@@ -25,7 +25,15 @@ struct ProposeRetentionMessageTool: MCPTool {
             "items": ["type": "string"],
             "description": "The subscriptions that show it (ids, product IDs or names). An existing message only adds them.",
         ],
-        "kind": ["type": "string", "enum": ["message", "image", "offer"], "description": "What the message shows besides its words."],
+        "removeSubscriptions": [
+            "type": "array",
+            "items": ["type": "string"],
+            "description": "Subscriptions to take off the message while it isn't on them in App Store Connect yet.",
+        ],
+        "kind": [
+            "type": "string", "enum": ["message", "image", "offer"],
+            "description": "What the message shows besides its words. offer shows the subscriptions' retention offers; the others hide them.",
+        ],
         "locale": MCPToolDefinition.string("The locale of header and body, e.g. en-US."),
         "header": MCPToolDefinition.string("The header, at most 66 characters."),
         "body": MCPToolDefinition.string("The message, at most 144 characters."),
@@ -65,7 +73,10 @@ struct ProposeRetentionMessageTool: MCPTool {
         and subscriptions (an app has at most 10 messages; a subscription shows one, so naming one that shows \
         another message moves it). kind is message, image (add imageBase64 or imagePath: a PNG 3840 wide, 160 to \
         2160 tall, no transparency, readable in light and dark) or offer (the subscription's retention offers show \
-        with it; propose them with propose_retention_offer). Write the source language first (get_retention's \
+        with it; propose them with propose_retention_offer). A push shows a subscription's existing offers when the \
+        kind is offer and hides them otherwise, so change kind to show or hide them. removeSubscriptions takes \
+        subscriptions off a message they don't show in App Store Connect yet; to stop one that does, give it \
+        another message. Write the source language first (get_retention's \
         sourceLocale); Atlas translates the rest, or pass more languages in texts. Anything too long or that \
         App Store Connect would refuse is refused with the reasons (status "refused"). An accepted proposal waits in \
         Review & Push (status "queued"), and proposing the same message again updates it. With suggestion true and \

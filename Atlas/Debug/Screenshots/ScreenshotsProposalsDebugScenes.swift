@@ -25,13 +25,15 @@ import SwiftUI
 /// - `shots-page`, `shots-page-all`: the language page on German, with
 ///   Claude Code's three shorter captions drawn on its screenshots; or All
 ///   Languages.
+/// - `shots-page-acceptall`: `shots-page` with Accept All Languages'
+///   sheet open, each caption's screenshot now → with the new caption.
 ///
 /// Scenes share `ScreenshotsDocumentCenter.shared`, which the toolbar
 /// reads, without its disk store.
 enum ScreenshotsProposalsDebugScenes {
     static let ids = [
         "capt-empty", "capt-hover", "capt-match", "capt", "capt-view", "prop-list", "prop-tpl", "prop-cap", "prop-stale", "prop-disc",
-        "shots-page", "shots-page-all",
+        "shots-page", "shots-page-all", "shots-page-acceptall",
     ]
 
     @MainActor
@@ -75,6 +77,11 @@ enum ScreenshotsProposalsDebugScenes {
         case "prop-disc": scene(assistants: .disconnected) { open($0, proposal: "p2") }
         case "shots-page": scene(assistants: .paired, languagePage: true) { $0.pageLocale = StoreLocaleCatalog.locale(code: "de-DE") }
         case "shots-page-all": scene(assistants: .paired, languagePage: true) { $0.pageShowsAll = true }
+        case "shots-page-acceptall":
+            scene(assistants: .paired, languagePage: true) { model in
+                model.pageLocale = StoreLocaleCatalog.locale(code: "de-DE")
+                model.isAcceptAllCaptionsPresented = true
+            }
         case "prop-stale":
             scene(assistants: .paired) { model in
                 guard var document = model.document else { return }

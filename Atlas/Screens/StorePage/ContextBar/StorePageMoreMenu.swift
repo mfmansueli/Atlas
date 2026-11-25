@@ -20,7 +20,7 @@ struct StorePageMoreMenu: View {
             .accessibilityIdentifier("storePage.more.coverage")
             if viewModel.isVersionEditable {
                 Divider()
-                Button("Translate Missing…") {
+                Button("Translate Missing…", systemImage: "translate") {
                     viewModel.presentTranslate()
                 }
                 .accessibilityIdentifier("storePage.more.translate")
@@ -30,7 +30,7 @@ struct StorePageMoreMenu: View {
                 Menu("Import & Export") {
                     StorePageTransferItems(viewModel: viewModel)
                 }
-                Menu("Add Locale") {
+                Menu("Add Locale", systemImage: "plus") {
                     StorePageAddLocaleItems(viewModel: viewModel)
                 }
                 .disabled(viewModel.addableLocales.isEmpty)

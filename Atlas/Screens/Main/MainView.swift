@@ -57,6 +57,8 @@ struct MainView: View {
     @Environment(InAppEventsStore.self) private var events
     @Environment(ProductPagesStore.self) private var productPages
     @Environment(ReleaseStore.self) private var releases
+    /// Review & Push's finished pushes, for get_push_history; nil in previews.
+    @Environment(PushHistory.self) private var pushHistory: PushHistory?
     /// The menu bar's view of what runs and what waits; nil in previews.
     @Environment(BackgroundWork.self) private var background: BackgroundWork?
 
@@ -281,7 +283,7 @@ struct MainView: View {
             appID: app.id,
             suggestions: suggestions,
             screenshots: services.screenshots.documentCenter,
-            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes),
+            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes, retention: .shared),
             extras: SectionBadgeCounts.Extras(
                 newFindings: navigator.section == .analytics ? 0 : analytics.newFindingCount(for: app.id),
                 // Suggested replies are Pro: in Free there are none to accept.
@@ -401,7 +403,10 @@ struct MainView: View {
             glossary: { [translation] in translation.glossary },
             commission: { [preferences] in Commission(preferenceRate: preferences.commissionRate) },
             suggestions: suggestions,
-            push: { [push] in MCPPushSnapshot(push) }, selectedApp: { [viewModel] in viewModel.selectedApp }
+            push: { [push] in MCPPushSnapshot(push) }, selectedApp: { [viewModel] in viewModel.selectedApp },
+            pushHistory: { [pushHistory] in pushHistory?.records ?? [] },
+            translationSource: { [translation] in translation.sourceLocaleCode },
+            isPro: { [pro] in pro.map { !$0.isFree } }
         )
     }
 
@@ -438,7 +443,14 @@ extension MainView {
         let handlers = MainWindowBackground(
             library: viewModel, navigator: navigator, services: services, releases: releases, analytics: analytics, reviews: reviews,
             artwork: artwork, productPages: productPages, launcher: launcher, keyAssistant: keyAssistant, isSyncing: { isSyncing },
-            selectedRelease: { selectedRelease }
+            selectedRelease: { selectedRelease },
+            watchSources: WatchSources(
+                isOn: { [preferences] in preferences.lookForImprovements },
+                isPro: { [pro] in pro?.isFree != true },
+                keptModels: { [sectionModels] in sectionModels.keptModels(for: $0) },
+                suggestions: suggestions,
+                quota: { [currentAccountID] in currentAccountID.flatMap { AppStoreConnectQuota.shared.rateLimit(keyID: $0) } }
+            )
         )
         AutoReplyCenter.shared.isPro = { [pro] in !pro.isFree }
         AutoReplyCenter.shared.sendFromNotification = { await handlers.sendReplyFromNotification(appID: $0, reviewID: $1) }

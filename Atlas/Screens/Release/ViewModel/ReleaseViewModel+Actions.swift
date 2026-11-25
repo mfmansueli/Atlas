@@ -37,6 +37,12 @@ extension ReleaseViewModel {
         do {
             let message = try await send(action, status: status)
             proposals.settle(ReleaseProposal.Action(action), appID: app.id, versionID: status.version.id)
+            if action == .pause || action == .resume {
+                // A write the person confirmed outside Review & Push: History keeps it (README-An2).
+                push.history.add(DirectWriteRecord.phasedRelease(
+                    appID: app.id, appName: app.name, version: status.version.versionString, paused: action == .pause, date: now()
+                ))
+            }
             if let message { onMessage(message) }
             await load()
             onChanged()

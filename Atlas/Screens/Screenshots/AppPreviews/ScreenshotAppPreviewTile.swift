@@ -75,13 +75,13 @@ struct ScreenshotAppPreviewTile: View {
 
     private var menu: some View {
         Menu {
-            Button(String(localized: "Replace…", comment: "kind:menu"), action: onReplace)
-            Button(String(localized: "Move Left", comment: "kind:menu")) { onMove(-1) }
+            Button(String(localized: "Replace…", comment: "kind:menu"), systemImage: "arrow.triangle.2.circlepath", action: onReplace)
+            Button(String(localized: "Move Left", comment: "kind:menu"), systemImage: "arrow.left") { onMove(-1) }
                 .disabled(position == 0)
-            Button(String(localized: "Move Right", comment: "kind:menu")) { onMove(1) }
+            Button(String(localized: "Move Right", comment: "kind:menu"), systemImage: "arrow.right") { onMove(1) }
                 .disabled(position >= count - 1)
             Divider()
-            Button(String(localized: "Delete", comment: "kind:menu"), role: .destructive, action: onDelete)
+            Button(String(localized: "Delete", comment: "kind:menu"), systemImage: "trash", role: .destructive, action: onDelete)
         } label: {
             Image(systemName: "ellipsis.circle")
                 .accessibilityLabel(Text("App Preview \(position + 1) options", comment: "kind:a11y"))

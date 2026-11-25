@@ -116,7 +116,7 @@ struct ClaudeCodeLauncherSection: View {
         .accessibilityElement(children: .contain)
         .contextMenu {
             if folder != nil {
-                Button("Forget Folder") { launcher.setProjectFolder(nil, for: id) }
+                Button("Forget Folder", systemImage: "folder.badge.minus") { launcher.setProjectFolder(nil, for: id) }
             }
         }
     }

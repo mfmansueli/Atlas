@@ -7,7 +7,8 @@ import SwiftUI
 
 /// The Overview's right column: the App Store page as people see it, in one
 /// of the app's languages, smaller; a click on a part opens the section
-/// editing it.
+/// editing it. The In-App Event live now shows under the screenshots, from
+/// the events Atlas last read.
 struct OverviewStorePreview: View {
     let app: StoreApp
     let content: StorePageContent
@@ -16,6 +17,8 @@ struct OverviewStorePreview: View {
 
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(FieldSuggestionStore.self) private var suggestions
+    /// The events Atlas last read; nil in previews without the window's.
+    @Environment(InAppEventsStore.self) private var events: InAppEventsStore?
     @State private var selected: StoreLocale?
     @State private var ratings = StoreRatings.unchecked
 
@@ -45,7 +48,8 @@ struct OverviewStorePreview: View {
                     localizations: content.ids.versionLocalizations,
                     locale: locale,
                     primary: content.primaryLocale,
-                    width: 84
+                    width: 84,
+                    onPlay: links.appPreview
                 )
             }
             Text("Click a part to edit it.")
@@ -100,6 +104,7 @@ struct OverviewStorePreview: View {
         var model = AppStorePreviewModel(content: content, locale: locale)
         model.ratings = ratings
         model.addFacts(appInformation: summaries.appInformation[app.id]?.value, pricing: summaries.pricing[app.id]?.value)
+        model.liveEvent = AppStoreLiveEvent.happening(in: events?.lastRead(for: app.id) ?? [], locale: locale, now: .now, appID: app.id)
         return model
     }
 }

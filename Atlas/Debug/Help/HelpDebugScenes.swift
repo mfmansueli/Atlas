@@ -13,11 +13,12 @@ import SwiftUI
 /// Me), `help-fix-heading` (Fix a problem at “The key can’t do that”, as
 /// Fix a Problem after a 403 opens it). `help-fix-links` is apart: an
 /// error message and banners with their Fix a Problem links, which open
-/// the real Help window.
+/// the real Help window. `help-suggest`, `help-events`, `help-menubar`,
+/// `help-pro` and `help-fix` open those articles at their top.
 enum HelpDebugScenes {
     static let ids = [
         "help-home", "help-search", "help-none", "help-connect", "help-assistant", "help-keys", "help-shown", "help-fix-heading",
-        "help-fix-links",
+        "help-fix-links", "help-suggest", "help-events", "help-menubar", "help-pro", "help-fix",
     ]
 
     /// One navigation per scene, made once. Setting it up reads `place`
@@ -43,6 +44,8 @@ enum HelpDebugScenes {
         case "help-connect": navigation.open("connect")
         case "help-assistant": navigation.open("assistant")
         case "help-keys": navigation.open("keys")
+        case "help-suggest", "help-events", "help-menubar", "help-pro", "help-fix":
+            navigation.open(String(id.dropFirst("help-".count)))
         case "help-fix-heading": navigation.open(.notAllowed)
         case "help-shown":
             navigation.open("connect")

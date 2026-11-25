@@ -17,12 +17,26 @@ struct AnalyticsContext: Hashable, Sendable {
     var machineTranslated: Set<String> = []
     /// Languages with screenshots of their own; nil when not read.
     var screenshotLocales: Set<String>?
+    /// Each device's languages with screenshots, from the live sets; nil
+    /// when not read.
+    var screenshotCoverage: ScreenshotCoverage?
+    /// Each language's `appStoreVersionLocalizations` ID, which the live
+    /// screenshot sets are read with.
+    var versionLocalizations: [StoreLocale: String] = [:]
     /// By territory alpha-2.
     var prices: [String: TerritoryPriceContext] = [:]
     /// Retention messages live on the App Store; nil when not read.
     var liveRetentionMessages: Int?
 
     static let empty = AnalyticsContext()
+
+    /// Takes what the version's live sets show: the languages with
+    /// screenshots of their own, and each device's.
+    mutating func setScreenshots(_ live: LiveScreenshots) {
+        let coverage = ScreenshotCoverage(live: live, pageLocales: pageLocales)
+        screenshotCoverage = coverage
+        screenshotLocales = coverage.locales
+    }
 
     /// The page a territory's App Store shows: its own language's when the
     /// app has one, else a page in the same language, else the primary one.

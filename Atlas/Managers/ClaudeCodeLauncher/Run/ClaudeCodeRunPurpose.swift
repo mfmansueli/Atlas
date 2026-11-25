@@ -49,6 +49,10 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
     /// The assistant chat in the window's corner (board 69): one question,
     /// or a follow-up that resumes the chat's session.
     case chat
+    /// Look for Improvements: an app's findings from Atlas's own checks,
+    /// read and answered with suggestions, with nobody watching
+    /// (`WatchCenter`).
+    case watch
 
     /// Make Screenshots for This Page's sessions: the plan's, the looks'
     /// and the captures'.
@@ -81,6 +85,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .autoReply: String(localized: "Replies to new reviews")
         case .hello: String(localized: "Connection hello")
         case .chat: String(localized: "Chat")
+        case .watch: String(localized: "Look for Improvements", comment: "kind:label")
         }
     }
 
@@ -94,7 +99,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .encryptionKey: String(localized: "Export compliance key")
         case .pageScreenshots, .pageLooks, .pageCaptures: String(localized: "Custom Product Page screenshots")
         case .test, .suggestEverything, .autopilot, .translation, .captions, .privacyScan, .eventArtworkConcepts, .autoReply, .hello,
-             .reviewScreenshots, .chat: title
+             .reviewScreenshots, .chat, .watch: title
         }
     }
 
@@ -110,7 +115,7 @@ enum ClaudeCodeRunPurpose: Hashable, Sendable {
         case .encryptionKey: .encryptionKey
         case .pageCaptures: .pageCaptures
         case let .reviewScreenshots(addsStoreKit): addsStoreKit ? .reviewShotsStoreKit : .reviewShots
-        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks, .autoReply: .readProject
+        case .ask, .suggestEverything, .translation, .captions, .privacyScan, .pageScreenshots, .pageLooks, .autoReply, .watch: .readProject
         }
     }
 }

@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// Workspace intents and the actions that reach beyond the selected
-/// product: copying from a sibling and applying the strategy to the group.
+/// Workspace intents meant for Pricing: each opens the product cards or a
+/// product's page (board 73) on the right tab.
 extension PricingViewModel {
     /// Handles an intent meant for Pricing. Returns whether it did, so the
     /// caller consumes it.
@@ -15,33 +15,26 @@ extension PricingViewModel {
         case .reviewSuggestions:
             // The cards, where each product's suggestion is.
             if mode == .keepPrices { apply(mode: .showSuggestions) }
-            // Edit Prices… from a card then opens the matrix's table.
             page = .prices
-            tab = .prices
-            display = .table
-            showsProductDetails = false
-            matrix?.filter = PriceMatrixFilter()
-            columnPreset = .automatic
+            closeProduct()
             return true
         case .applyRecommendedPrices:
             if mode == .keepPrices { apply(mode: .showSuggestions) }
-            showMatrix()
+            openIntentProduct(tab: .pricesByCountry)
             await applyRecommendedPrices()
             return true
         case .showResults:
-            showsProductDetails = true
-            tab = .results
+            openIntentProduct(tab: .results)
             return true
         case let .showPrices(shown):
-            showsProductDetails = true
-            tab = .prices
-            display = shown
+            openIntentProduct(tab: .pricesByCountry)
+            pricesByCountry.display = shown
             return true
         case let .editPriceSchedule(productID):
             // Review passes the price group's ID, which is the subscription's.
-            if let productID, catalog?.product(id: productID) != nil { await select(productID: productID) }
-            showsProductDetails = true
-            tab = .prices
+            let id = productID.flatMap { catalog?.product(id: $0)?.id }
+            openIntentProduct(id, tab: .pricesByCountry)
+            if let id { await select(productID: id) }
             // Review & Push's sheet is still closing; macOS shows one sheet at a time.
             try? await Task.sleep(for: .milliseconds(400))
             if (matrix?.pendingCount ?? 0) > 0 { openSchedule() }
@@ -51,13 +44,12 @@ extension PricingViewModel {
         }
     }
 
-    /// Where an Analytics finding sends the person: one territory's price
-    /// in the matrix, or the Retention page.
+    /// Where an Analytics finding sends the person: the product cards with
+    /// "Preview in" on one territory (`price-br`), or the Retention page.
     private func handleFromAnalytics(_ intent: WorkspaceIntent) -> Bool {
         switch intent {
         case let .showTerritoryPrice(alpha2):
-            showMatrix()
-            if let territory = TerritoryCatalog.standard.territory(alpha2: alpha2) { matrix?.selection = [territory.id] }
+            showTerritoryPreview(alpha2: alpha2)
             return true
         case .showRetention:
             page = .retention
@@ -65,7 +57,7 @@ extension PricingViewModel {
         case .autopilot(.makeReviewScreenshots):
             // The cards, where each product's screenshot shows.
             page = .prices
-            showsProductDetails = false
+            closeProduct()
             makeReviewScreenshots()
             return true
         default:
@@ -73,80 +65,24 @@ extension PricingViewModel {
         }
     }
 
-    /// The Prices tab with the matrix, where suggestions are applied.
-    private func showMatrix() {
-        showsProductDetails = true
-        tab = .prices
-        display = .table
+    /// The product cards with "Preview in" on `alpha2`'s country: what
+    /// each product costs there, and ‹ › to the other countries with a
+    /// change (board 73).
+    func showTerritoryPreview(alpha2: String) {
+        page = .prices
+        closeProduct()
+        if let territory = TerritoryCatalog.standard.territory(alpha2: alpha2) { previewTerritoryID = territory.id }
     }
 
-    /// The More menu's “Copy from Monthly × 8.0”: the sibling's shown
-    /// prices (queued or current) times the ratio of the base prices.
-    func copy(from sibling: PricingProduct, to ids: [PricingRow.ID]) async {
-        guard let matrix, let ratio = ratio(of: matrix.product, to: sibling), let sheet = await siblingSheet(sibling) else { return }
-        let prices = Self.shownPrices(sheet: sheet, product: sibling, queue: queue)
-        await matrix.copy(ids, from: prices, ratio: ratio)
-    }
-
-    /// “Copy from Monthly × 8.0”: the multiplier in the title.
-    func ratioText(from sibling: PricingProduct) -> String? {
-        guard let product = selectedProduct, let ratio = ratio(of: product, to: sibling) else { return nil }
-        return ratio.fixed(1)
-    }
-
-    /// “Apply Strategy to Whole Group…” after confirming: every subscription in
-    /// the group gets the strategy's proposals, as pending changes.
-    func applyStrategyToGroup() async {
-        guard let matrix else { return }
-        await matrix.follow()
-        followedProductIDs.insert(matrix.product.id)
-        for sibling in siblings {
-            guard let sheet = await siblingSheet(sibling) else { continue }
-            let other = PriceMatrixModel(
-                appID: app.id,
-                product: sibling,
-                sheet: sheet,
-                services: services,
-                queue: queue,
-                strategy: strategy.strategy,
-                calculator: strategy.calculator,
-                mode: mode
-            )
-            other.onError = { [weak self] error in self?.reportLoadError(error) }
-            await other.follow()
-            followedProductIDs.insert(sibling.id)
+    /// The page of `productID`, else the open product's, else the selected
+    /// or the catalog's first, on `tab`.
+    private func openIntentProduct(_ productID: PricingProduct.ID? = nil, tab: PricingProductTab) {
+        page = .prices
+        guard let id = productID ?? productRoute?.productID ?? selectedProductID ?? catalog?.defaultProduct?.id else { return }
+        if productRoute?.productID == id {
+            productRoute?.tab = tab
+        } else {
+            openProduct(id, tab: tab)
         }
-        onOpenReview()
-    }
-
-    // MARK: - Private
-
-    private func ratio(of product: PricingProduct, to sibling: PricingProduct) -> Decimal? {
-        guard let base = product.basePrice, let other = sibling.basePrice, other > 0 else { return nil }
-        return (base / other).rounded(scale: 1)
-    }
-
-    private func siblingSheet(_ product: PricingProduct) async -> ProductPriceSheet? {
-        if let sheet = siblingSheets[product.id] { return sheet }
-        do {
-            let sheet = try await services.priceSheet(for: product, commission: strategy.commission)
-            siblingSheets[product.id] = sheet
-            return sheet
-        } catch {
-            reportLoadError(error)
-            return nil
-        }
-    }
-
-    private static func shownPrices(sheet: ProductPriceSheet, product: PricingProduct, queue: ChangeQueue) -> [String: Decimal] {
-        var prices = sheet.prices.mapValues(\.current.customerPrice)
-        for (territoryID, _) in sheet.prices {
-            let id = PriceChangeFactory.changeID(productID: product.id, territoryID: territoryID)
-            guard let change = queue.change(id: id), let territory = TerritoryCatalog.standard.territory(alpha3: territoryID),
-                  let queued = QueuedPrice(change: change, territory: territory)
-            else { continue }
-            prices[territoryID] = queued.price
-        }
-        return prices
     }
 }

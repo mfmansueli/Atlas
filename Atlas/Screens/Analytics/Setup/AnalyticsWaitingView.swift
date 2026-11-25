@@ -5,9 +5,11 @@
 
 import SwiftUI
 
-/// Asked, waiting: when Apple was asked and when to expect the reports.
-/// No spinner; this takes a day or two, not minutes.
+/// Asked, waiting for Apple's first reports (board 74 · 7): the empty
+/// state, with Check Now as its one action and when Atlas last looked
+/// under it. No spinner; this takes a day or two, not minutes.
 struct AnalyticsWaitingView: View {
+    let appName: String
     let asked: Date
     /// When Atlas last looked for the reports; nil before the first look.
     var lastChecked: Date?
@@ -16,50 +18,26 @@ struct AnalyticsWaitingView: View {
     var errorMessage: String?
     let onCheck: () -> Void
 
-    private var expected: Date { asked.addingTimeInterval(2 * 86400) }
-
     var body: some View {
-        VStack(spacing: Spacing.large) {
-            Image(systemName: "clock")
-                .font(.largeTitle.bold())
-                .foregroundStyle(Palette.label2)
-                .accessibilityHidden(true)
-            Text("Apple is preparing the reports")
-                .font(.title2.weight(.semibold))
-            Text("Asked \(AnalyticsText.day(asked)); expected around \(AnalyticsText.day(expected)). Atlas checks every morning and tells you.")
-                .font(.callout)
-                .foregroundStyle(Palette.label2)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 500)
-                .fixedSize(horizontal: false, vertical: true)
-            AnalyticsSetupSteps(steps: [
-                .init(
-                    title: String(localized: "Asked Apple"),
-                    detail: String(localized: "\(AnalyticsText.day(asked)) · ongoing reports, plus earlier data to compare right away"),
-                    state: .done
-                ),
-                .init(title: String(localized: "Apple prepares the first reports"), detail: String(localized: "1 to 2 days"), state: .current),
-                .init(
-                    title: String(localized: "Atlas downloads them"),
-                    detail: String(localized: "Every morning after. Numbers are 1 to 2 days behind.")
-                ),
-            ])
-            if let errorMessage { InlineMessage.error(errorMessage) }
-            Text(checkedText)
-                .font(.callout)
-                .monospacedDigit()
-                .foregroundStyle(Palette.label2)
-                .accessibilityIdentifier("analytics.setup.waiting.checked")
-            HStack(spacing: Spacing.medium) {
-                Text("The rest of Atlas works as usual.")
-                    .font(.callout)
-                    .foregroundStyle(Palette.label2)
-                Button("Check Now", action: onCheck)
-                    .controlSize(.regular)
+        EmptyStateView(
+            String(localized: "Waiting for Apple’s first reports", comment: "kind:empty-state"),
+            systemImage: AppWorkspaceSection.analytics.systemImage,
+            text: AnalyticsWaitingText.text(appName: appName, asked: asked, now: now),
+            note: String(localized: "Apple counts only people who agree to share analytics with developers.", comment: "kind:description")
+        ) {
+            VStack(spacing: Spacing.small) {
+                if let errorMessage { InlineMessage.error(errorMessage) }
+                Button(String(localized: "Check Now", comment: "kind:button"), action: onCheck)
+                    .secondaryButton()
                     .disabled(isChecking)
+                    .accessibilityIdentifier("analytics.setup.checkNow")
+                Text(checkedText)
+                    .atlasTextStyle(.subheadline)
+                    .monospacedDigit()
+                    .foregroundStyle(Palette.label3)
+                    .accessibilityIdentifier("analytics.setup.waiting.checked")
             }
         }
-        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("analytics.setup.waiting")
     }
 
@@ -72,7 +50,6 @@ struct AnalyticsWaitingView: View {
 }
 
 #Preview {
-    AnalyticsWaitingView(asked: .now, isChecking: false, onCheck: {})
-        .padding()
+    AnalyticsWaitingView(appName: "Lumen", asked: .now, isChecking: false, onCheck: {})
         .frame(width: 900, height: 560)
 }

@@ -8,7 +8,7 @@ import SwiftUI
 /// Show Larger (README — Pricing: review screenshots · Preview): the
 /// assistant's review screenshots side by side, one per product, each with
 /// the plan it shows, its checks and Dismiss / Accept; Accept All n at the
-/// bottom. Only App Review sees them; nothing uploads before the push.
+/// bottom. Only App Review sees them; nothing is sent before the push.
 struct ReviewShotsPreviewSheet: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -26,7 +26,7 @@ struct ReviewShotsPreviewSheet: View {
             VStack(alignment: .leading, spacing: Spacing.tiny) {
                 Text("Review Screenshots from \(client)")
                     .font(.title3.weight(.semibold))
-                Text("Only App Review sees these, next to each product. Nothing uploads until you push.")
+                Text("Only App Review sees these, next to each product. Nothing is sent until you push.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)
             }
@@ -51,7 +51,7 @@ struct ReviewShotsPreviewSheet: View {
                     Button {
                         let accepted = viewModel.acceptAllReviewShots()
                         viewModel.sayReviewShots(
-                            String(localized: "Accepted \(accepted.count) review screenshots. Nothing is sent yet.")
+                            String(localized: "Accepted \(accepted.count) review screenshots. They’re in Review & Push; nothing is sent yet.")
                         ) { [viewModel] in
                             viewModel.undoReviewShots(accepted)
                         }

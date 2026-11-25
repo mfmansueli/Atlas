@@ -14,9 +14,10 @@ import SwiftUI
 enum DebugPaywallImage {
     static let plans: [(name: String, price: String)] = [("Monthly", "$4.99"), ("Annual", "$29.99"), ("Lifetime", "$59.99")]
 
-    /// The PNG with `selected` highlighted.
-    static func png(selected: String) -> Data? {
-        let renderer = ImageRenderer(content: page(selected: selected))
+    /// The PNG with `selected` highlighted; without its prices when
+    /// `showsPrices` is false (StoreKit returned nothing).
+    static func png(selected: String, showsPrices: Bool = true) -> Data? {
+        let renderer = ImageRenderer(content: page(selected: selected, showsPrices: showsPrices))
         renderer.scale = 3
         guard let image = renderer.cgImage else { return nil }
         return NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
@@ -24,15 +25,15 @@ enum DebugPaywallImage {
 
     /// Writes it to `url`, once.
     @discardableResult
-    static func write(selected: String, to url: URL) -> URL {
-        if !FileManager.default.fileExists(atPath: url.path(percentEncoded: false)), let data = png(selected: selected) {
+    static func write(selected: String, showsPrices: Bool = true, to url: URL) -> URL {
+        if !FileManager.default.fileExists(atPath: url.path(percentEncoded: false)), let data = png(selected: selected, showsPrices: showsPrices) {
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
             try? data.write(to: url, options: .atomic)
         }
         return url
     }
 
-    private static func page(selected: String) -> some View {
+    private static func page(selected: String, showsPrices: Bool) -> some View {
         VStack(spacing: 18) {
             HStack {
                 Text("9:41").font(.system(size: 16, weight: .semibold))
@@ -59,7 +60,7 @@ enum DebugPaywallImage {
                             .foregroundStyle(plan.name == selected ? .indigo : .secondary)
                         Text(plan.name).font(.system(size: 18, weight: .semibold))
                         Spacer()
-                        Text(plan.price).font(.system(size: 18))
+                        Text(showsPrices ? plan.price : "—").font(.system(size: 18))
                     }
                     .padding(18)
                     .background(

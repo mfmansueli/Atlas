@@ -47,6 +47,9 @@ final class RetentionModel {
 
     /// Opens Review & Push.
     @ObservationIgnored var onOpenReview: () -> Void = {}
+    /// Set by an Analytics finding's Try an Offer Message… before the
+    /// messages were read: the next load starts a new message.
+    @ObservationIgnored var startsNewMessageAfterLoad = false
 
     init(app: StoreApp, services: any RetentionServices, queue: ChangeQueue, store: RetentionDraftStore = .shared) {
         self.app = app
@@ -71,6 +74,10 @@ final class RetentionModel {
             loadState = .loaded(loaded)
             if !loaded.languages.contains(where: { $0.code == selectedLocale }) { selectedLocale = loaded.sourceLocale.code }
             refresh()
+            if startsNewMessageAfterLoad {
+                startsNewMessageAfterLoad = false
+                newMessage()
+            }
         } catch {
             loadState = .failed(AppleErrorCopy(String(localized: "Messages and offers didn’t load.", comment: "kind:error"), error: error).text)
         }

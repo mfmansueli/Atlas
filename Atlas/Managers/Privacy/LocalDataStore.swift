@@ -67,9 +67,10 @@ final class LocalDataStore {
         clearedCaches += 1
         guard isLive else { return }
         try? FileManager.default.removeItem(at: cachesDirectory)
-        // Its downloaded images are in the caches folder; the ones in
-        // memory go too.
+        // Its downloaded images and movies are in the caches folder; what
+        // memory knows of them goes too.
         RemoteImageCache.shared.forgetMemory()
+        RemoteVideoCache.shared.forgetMemory()
     }
 
     /// Every key in the Keychain (App Store Connect, AI providers, the

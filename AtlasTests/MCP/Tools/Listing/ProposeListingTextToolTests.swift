@@ -29,7 +29,7 @@ struct ProposeListingTextToolTests {
         #expect(change.source == .assistant(client: "Claude Code"))
         #expect(change.newValue == "Wöchentliche Rückblicke sind da.")
         #expect(change.oldValue == "")
-        #expect(outcome.logLines == [.init(target: "Lumen Journal · de-DE · Promotional Text", outcome: .proposed)])
+        #expect(outcome.logLines == [.init(target: "Lumen Journal · de-DE · Promotional text", outcome: .proposed)])
     }
 
     @Test func textOverTheLimitIsRefusedWithTheCount() async throws {

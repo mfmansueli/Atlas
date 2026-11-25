@@ -21,7 +21,7 @@ struct ScreenshotsSettingsPane: View {
                         title: "Let Claude Code open capture-only runs",
                         caption: String(localized: """
                         On: Claude Code’s capture reruns open at once. Off: each waits in Screenshots for Accept. Nothing is \
-                        pushed either way.
+                        sent either way.
                         """)
                     )
                 }

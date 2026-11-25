@@ -18,7 +18,15 @@ extension PricingViewModel {
         setup.capturesRoot = root
         var states: [String: PurchaseReviewScreenshotState] = [:]
         if state == .accepted { states[DebugPricingCatalog.lumenLifetimeID] = .uploaded(fileName: "lifetime.png", checksum: nil) }
+        if state == .live {
+            for id in [DebugPricingCatalog.lumenMonthlyID, DebugPricingCatalog.lumenAnnualID, DebugPricingCatalog.lumenLifetimeID] {
+                states[id] = .uploaded(fileName: "\(id).png", checksum: nil)
+            }
+        }
         setup.reader = DebugPurchaseExtrasReader(states: states)
+        setup.stateReader = DebugReviewShotProductStateReader(states: [
+            DebugPricingCatalog.lumenAnnualID: ReviewShotProductState(code: ReviewShotProductState.missingMetadata, gaps: [.groupLocalization]),
+        ])
         let capture = ReviewShotsCapture(
             captureID: "debug-paywall", number: 14, screenName: "Paywall",
             takenAt: Calendar.current.date(from: DateComponents(year: 2026, month: 11, day: 20)) ?? .now,
@@ -33,6 +41,7 @@ extension PricingViewModel {
     /// Once the extras are read: the run, the suggestions and what's
     /// accepted.
     func applyReviewShotsDebugLaunch(_ state: ReviewShotsDebugState) async {
+        if state == .live { debugPushed(reviewShotProducts) }
         await loadPurchaseExtras()
         let products = reviewShotProducts
         guard products.count == 3 else { return }
@@ -62,7 +71,20 @@ extension PricingViewModel {
             )
         case .failPrice:
             startReviewShotsRun(client: Self.debugClient)
-            setup.runs.fail(appID: app.id, .noPrices(saw: ""))
+            let saw = FileManager.default.temporaryDirectory.appending(path: "AtlasDebugReviewShots/no-prices.png")
+            setup.runs.fail(appID: app.id, .noPrices(saw: ""), sawImage: DebugPaywallImage.write(selected: "Annual", showsPrices: false, to: saw))
+        case .skipped:
+            startReviewShotsRun(client: Self.debugClient)
+            debugSuggest(monthly)
+            setup.runs.miss(appID: app.id, productID: annual.productID, kind: .skipped, reason: "The paywall shows only Monthly and Lifetime")
+            setup.runs.miss(appID: app.id, productID: lifetime.productID, kind: .checkFailed, reason: "the price didn’t show")
+            setup.runs.runEnded(appID: app.id)
+        case .size:
+            debugSuggest(monthly)
+            acceptReviewShot(for: monthly)
+            debugRefuseSize(monthly)
+        case .live:
+            break
         case .accepted:
             debugSuggest(monthly)
             acceptReviewShot(for: monthly)

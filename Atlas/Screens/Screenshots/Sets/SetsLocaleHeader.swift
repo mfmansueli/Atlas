@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// A row's locale column: flag, name, Primary, and the row's summary
-/// ("1 check failed · 4 not pushed", "UI not localized", "Live").
+/// ("1 check failed · 4 not pushed", "Interface not localized", "Live").
 struct SetsLocaleHeader: View {
     let row: SetsRow
 

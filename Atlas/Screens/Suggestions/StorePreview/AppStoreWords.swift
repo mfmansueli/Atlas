@@ -19,6 +19,10 @@ struct AppStoreWords: Equatable, Sendable {
     var ratings: String
     var noRatings: String
     var yearsOld: String
+    /// Over a live In-App Event's card: "Happening now".
+    var happeningNow: String
+    /// Over an In-App Event's card shown before it starts: "Upcoming".
+    var upcoming: String
 
     func versionText(_ number: String) -> String {
         version.replacingOccurrences(of: "%@", with: number)
@@ -76,9 +80,33 @@ struct AppStoreWords: Equatable, Sendable {
             inAppPurchases: entry.inAppPurchases,
             ratings: entry.ratings,
             noRatings: entry.noRatings,
-            yearsOld: entry.yearsOld
+            yearsOld: entry.yearsOld,
+            happeningNow: happeningNow[key(for: localeCode)] ?? "Happening now",
+            upcoming: upcoming[key(for: localeCode)] ?? "Upcoming"
         )
     }
+
+    /// The label over a live event's card, by language; the App Store
+    /// shows it in capitals.
+    private static let happeningNow: [String: String] = [
+        "ar": "يحدث الآن", "ca": "Ara en marxa", "cs": "Právě probíhá", "da": "Foregår nu", "de": "Läuft gerade", "el": "Τώρα σε εξέλιξη",
+        "es": "En curso", "fi": "Käynnissä nyt", "fr": "En cours", "he": "מתרחש עכשיו", "hi": "अभी जारी", "hr": "Upravo traje",
+        "hu": "Most zajlik", "id": "Sedang Berlangsung", "it": "In corso", "ja": "開催中", "ko": "진행 중", "ms": "Sedang Berlangsung",
+        "nl": "Nu bezig", "no": "Pågår nå", "pl": "Trwa teraz", "pt": "Acontecendo agora", "ro": "În desfășurare", "ru": "Идет сейчас",
+        "sk": "Práve prebieha", "sv": "Pågår nu", "th": "กำลังดำเนินอยู่", "tr": "Şu anda", "uk": "Триває зараз", "vi": "Đang diễn ra",
+        "zh-Hans": "正在进行", "zh-Hant": "正在進行",
+    ]
+
+    /// The label over an event's card before it starts, by language; the
+    /// App Store shows it in capitals.
+    private static let upcoming: [String: String] = [
+        "ar": "قريبًا", "ca": "Properament", "cs": "Připravujeme", "da": "Kommende", "de": "Demnächst", "el": "Προσεχώς",
+        "es": "Próximamente", "fi": "Tulossa", "fr": "À venir", "he": "בקרוב", "hi": "जल्द आ रहा है", "hr": "Uskoro",
+        "hu": "Hamarosan", "id": "Akan Datang", "it": "In arrivo", "ja": "近日開催", "ko": "예정", "ms": "Akan Datang",
+        "nl": "Binnenkort", "no": "Kommer snart", "pl": "Wkrótce", "pt": "Em breve", "ro": "În curând", "ru": "Скоро",
+        "sk": "Pripravujeme", "sv": "Kommande", "th": "เร็วๆ นี้", "tr": "Yakında", "uk": "Незабаром", "vi": "Sắp diễn ra",
+        "zh-Hans": "即将推出", "zh-Hant": "即將推出",
+    ]
 
     private static func key(for localeCode: String) -> String {
         let parts = localeCode.split(separator: "-").map(String.init)

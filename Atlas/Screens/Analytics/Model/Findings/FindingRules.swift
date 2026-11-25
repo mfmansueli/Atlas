@@ -17,7 +17,7 @@ enum FindingRules {
     static let territoryLimit = 3
 
     static func findings(_ dataset: AnalyticsDataset, context: AnalyticsContext, now: Date = .now) -> [AnalyticsFinding] {
-        let fromReports = reportFindings(dataset, now: now)
+        let fromReports = reportFindings(dataset, context: context, now: now)
         guard let period = dataset.period(length: 28), dataset.dayCount >= 28 else { return fromReports }
         let totals = dataset.totals(in: period)
         var findings: [AnalyticsFinding] = []

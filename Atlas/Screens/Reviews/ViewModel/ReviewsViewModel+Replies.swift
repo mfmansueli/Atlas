@@ -26,6 +26,14 @@ extension ReviewsViewModel {
         editingID = review.id
     }
 
+    /// Edit… on a suggested replacement: the editor starts with the new
+    /// text, not the reply that's there.
+    func startEditingReplacement(_ review: AppReview) {
+        guard let replacement = archive.openReplacement(for: review) else { return }
+        startEditing(review)
+        drafts[review.id] = replacement.text
+    }
+
     func cancelEditing() {
         if let editingID { drafts[editingID] = nil }
         editingID = nil
@@ -45,7 +53,7 @@ extension ReviewsViewModel {
 
     /// Send Reply on a suggestion, as suggested.
     func sendSuggestion(for review: AppReview) async {
-        guard let suggestion = archive.openSuggestion(for: review) else { return }
+        guard let suggestion = archive.openSuggestion(for: review) ?? archive.openReplacement(for: review) else { return }
         await send(suggestion.text, to: review)
     }
 
@@ -61,10 +69,12 @@ extension ReviewsViewModel {
         sending.insert(review.id)
         defer { sending.remove(review.id) }
         do {
+            // Apple's create replaces the response a review has.
             let reply = try await services.sendReply(text, to: review.id)
             didSend(reply, to: review)
             undo = ReviewReplyUndo(reviewID: review.id, sent: reply, previous: review.reply)
-            toast = ToastMessage(text: Self.sentText(territory: review.territoryName), canUndo: true)
+            let message = review.hasReply ? Self.replacedText(territory: review.territoryName) : Self.sentText(territory: review.territoryName)
+            toast = ToastMessage(text: message, canUndo: true)
         } catch {
             replyErrors[review.id] = AppleErrorCopy(String(localized: "The reply wasn’t sent.", comment: "kind:error"), error: error).text
         }
@@ -88,6 +98,14 @@ extension ReviewsViewModel {
         territory.isEmpty
             ? String(localized: "Reply sent. It shows on the App Store, usually within a day.")
             : String(localized: "Reply sent to \(territory). It shows on the App Store, usually within a day.")
+    }
+
+    /// "Reply replaced in Germany. The new one shows on the App Store,
+    /// usually within a day."
+    static func replacedText(territory: String) -> String {
+        territory.isEmpty
+            ? String(localized: "Reply replaced. The new one shows on the App Store, usually within a day.", comment: "kind:toast")
+            : String(localized: "Reply replaced in \(territory). The new one shows on the App Store, usually within a day.", comment: "kind:toast")
     }
 
     /// Undo on the toast: the reply comes off the App Store, or the one it

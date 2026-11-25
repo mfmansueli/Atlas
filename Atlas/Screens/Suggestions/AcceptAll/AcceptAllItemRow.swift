@@ -3,14 +3,18 @@
 //  Atlas
 //
 
+import CoreGraphics
 import SwiftUI
 
 /// One suggestion on the sheet's right side: its checkbox, the field, who
-/// suggested it, Now and New, and why. Dimmed once unticked.
+/// suggested it, Now and New, and why; a caption's screenshot before →
+/// after at the end. Dimmed once unticked.
 struct AcceptAllItemRow: View {
     let item: AcceptAllItem
     let isSelected: Bool
     let isRightToLeft: Bool
+    /// The capture a caption's screenshot draws; nil draws none.
+    let captureImage: (@MainActor (SlotPreview) -> CGImage?)?
     let onToggle: () -> Void
 
     var body: some View {
@@ -30,6 +34,10 @@ struct AcceptAllItemRow: View {
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+            if let screenshot = item.screenshot, let captureImage {
+                AcceptAllShotPair(screenshot: screenshot, captureImage: captureImage)
+                    .opacity(isSelected ? 1 : 0.5)
             }
         }
         .padding(.horizontal, Spacing.medium)
@@ -84,7 +92,8 @@ struct AcceptAllItemRow: View {
             reason: "“Private” is the word people praise most in your last 220 reviews."
         ),
         isSelected: true,
-        isRightToLeft: false
+        isRightToLeft: false,
+        captureImage: nil
     ) {}
         .padding()
         .frame(width: 520)

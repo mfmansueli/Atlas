@@ -44,8 +44,10 @@ struct ReportsFromAppleSheet: View {
             }
             HStack {
                 if viewModel.activity.isLoading {
-                    ProgressView().controlSize(.small)
-                    Text("Checking…").font(.subheadline).foregroundStyle(Palette.label2)
+                    Text(LoadingCopy.analyticsCheck.line ?? LoadingCopy.analyticsCheck.spoken)
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .accessibilityIdentifier("analytics.reports.checking")
                 }
                 Spacer()
                 Button("Check Now") { Task { await viewModel.refresh(force: true) } }

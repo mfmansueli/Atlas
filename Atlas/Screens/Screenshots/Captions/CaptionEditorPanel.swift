@@ -41,6 +41,7 @@ struct CaptionEditorPanel: View {
             .padding(.horizontal, Spacing.large)
             .padding(.vertical, Spacing.medium)
         }
+        .leavesChatRoom()
         .background(Palette.content)
         .task(id: model.selection) { model.loadPreviewCapture() }
         .accessibilityElement(children: .contain)

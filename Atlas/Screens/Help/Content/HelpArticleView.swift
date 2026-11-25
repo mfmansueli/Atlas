@@ -6,12 +6,14 @@
 import SwiftUI
 
 /// One Help article: its title and summary, its blocks, Show Me (which
-/// opens that place in Atlas) and the related articles.
+/// opens that place in Atlas), the web page its steps happen on, and the
+/// related articles.
 struct HelpArticleView: View {
     let article: HelpArticle
     let related: [HelpArticle]
     @Environment(HelpNavigation.self) private var navigation
     @Environment(\.openSettings) private var openSettings
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
@@ -27,14 +29,27 @@ struct HelpArticleView: View {
             ForEach(Array(article.blocks.enumerated()), id: \.offset) { _, block in
                 HelpBlockView(block: block)
             }
-            if let showMe = article.showMe {
-                Button {
-                    show(showMe)
-                } label: {
-                    Label("Show Me: \(showMe.title)", systemImage: "arrow.up.right.square")
+            if article.showMe != nil || article.link != nil {
+                HStack(spacing: Spacing.small) {
+                    if let showMe = article.showMe {
+                        Button {
+                            show(showMe)
+                        } label: {
+                            Label("Show Me: \(showMe.title)", systemImage: "arrow.up.right.square")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("help.showMe")
+                    }
+                    if let link = article.link {
+                        Button {
+                            openURL(link.url)
+                        } label: {
+                            Label(link.title, systemImage: "arrow.up.right.square")
+                        }
+                        .secondaryButton()
+                        .accessibilityIdentifier("help.link")
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("help.showMe")
             }
             if !related.isEmpty {
                 Divider()

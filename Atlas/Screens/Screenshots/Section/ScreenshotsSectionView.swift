@@ -36,8 +36,7 @@ struct ScreenshotsSectionView: View {
                 }
                 .accessibilityIdentifier("screenshots.sectionError")
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ScreenshotsSkeleton()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -107,6 +106,15 @@ struct ScreenshotsSectionView: View {
         switch intent {
         case .showScreenshots:
             navigator.consume(intent)
+        case let .showScreenshotsLanguage(code, displayType):
+            // The App Store preview's App Preview: its language's page on
+            // its device, once the page has loaded.
+            guard let screenshots = model?.screenshots else { return }
+            navigator.consume(intent)
+            screenshots.pageShowsAll = false
+            screenshots.pageLocale = StoreLocaleCatalog.locale(code: code)
+            screenshots.displayType = displayType
+            screenshots.showsLanguagePage = true
         case let .autopilot(action) where [.makeScreenshots, .makeAppPreview, .makeArtwork].contains(action):
             guard let screenshots = model?.screenshots else { return }
             navigator.consume(intent)

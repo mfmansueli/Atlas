@@ -6,7 +6,8 @@
 import Foundation
 
 /// One product's prices as the price tools read and propose them: each
-/// territory's price, proceeds, suggestion (with the recommended strategy)
+/// territory's price, proceeds, suggestion (with the app's own strategy,
+/// the one Pricing shows: Customize… or Settings → Pricing's defaults)
 /// and queued price, Apple's price points, and the pending changes a
 /// proposal becomes, built like the Pricing screen builds them.
 @MainActor
@@ -20,6 +21,9 @@ struct MCPPriceSheet {
 
     var territories: TerritoryCatalog { .standard }
 
+    /// The strategy Pricing suggests this app's prices with.
+    var strategy: PricingStrategy { workspace.pricingModes.strategy(for: app.id) }
+
     /// In-app purchases and Keep my prices show prices without suggestions.
     var showsSuggestions: Bool { mode.showsSuggestions && !product.isInAppPurchase }
 
@@ -29,7 +33,7 @@ struct MCPPriceSheet {
             catalog: territories,
             calculator: calculator,
             sheet: sheet,
-            strategy: .recommended,
+            strategy: strategy,
             showsSuggestions: showsSuggestions
         )
         .rows(queued: queuedPrices())
@@ -92,12 +96,29 @@ struct MCPPriceSheet {
     }
 
     /// A pending change setting `territory` to `point`, on the schedule the
-    /// product's other queued changes follow.
+    /// product's other queued changes follow, waiting under the product's
+    /// one Review & Push row as Prices by Country's do.
     func change(for territory: Territory, to point: PricePoint, source: ChangeSource) -> PendingChange? {
-        guard let current = sheet.prices[territory.id]?.current else { return nil }
+        guard let price = sheet.prices[territory.id] else { return nil }
         let schedule = PriceSchedule.current(in: workspace.changes, appID: app.id, productID: product.id)
-        return PriceChangeFactory(appID: app.id, product: product, schedule: schedule)
-            .change(for: territory, from: current, to: point, source: source)
+        let change = PriceChangeFactory(appID: app.id, product: product, schedule: schedule)
+            .change(for: territory, from: price.current, to: point, source: source)
+        let isBase = territory.id == sheet.baseTerritoryID
+        return PricesByCountryChanges.decorated(
+            change,
+            product: product,
+            territory: territory,
+            old: price.current.customerPrice,
+            new: point.customerPrice,
+            isAutomatic: !isBase && !PricingRow.differs(point.customerPrice, price.equalized.customerPrice)
+        )
+    }
+
+    /// Rewrites the line under the product's Review & Push row after its
+    /// subscription changes moved.
+    func refreshSummary() {
+        guard !product.isInAppPurchase else { return }
+        PricesByCountryChanges.refreshSummary(in: workspace.changes, appID: app.id, product: product)
     }
 
     private func queuedPrices() -> [String: QueuedPrice] {

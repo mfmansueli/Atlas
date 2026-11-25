@@ -28,6 +28,9 @@ enum WorkspaceIntent: Hashable, Sendable {
     case findAndReplace
     /// Store Page: Import Translations.
     case importTranslations
+    /// Store Page: New Version…, from a section with no version to change,
+    /// e.g. Screenshots' banner.
+    case newVersion
     /// Screenshots, for Review & Push's Show in Captions (the Screenshots
     /// section then opens Captions on the render).
     case showScreenshots
@@ -40,6 +43,9 @@ enum WorkspaceIntent: Hashable, Sendable {
     /// Store Page or App Information: "Ask Claude Code…", from the Assistant
     /// button's Ask for Suggestions….
     case askForSuggestions(SuggestionArea)
+    /// Screenshots: one language's page on one device, from the App Store
+    /// preview's App Preview (a locale code such as `de-DE`).
+    case showScreenshotsLanguage(String, displayType: ScreenshotDisplayType)
     /// Store Page: one language's page in the editor, from an Analytics
     /// finding (a locale code such as `de-DE`).
     case showLanguage(String)
@@ -48,6 +54,9 @@ enum WorkspaceIntent: Hashable, Sendable {
     case showTerritoryPrice(String)
     /// Pricing: the Retention page, from an Analytics finding.
     case showRetention
+    /// Pricing: the Retention page with a new message started, from an
+    /// Analytics finding's Try an Offer Message….
+    case newRetentionMessage
     /// Reviews: Reply to All for the most mentioned group, from the
     /// Overview's Ratings & Reviews card.
     case replyToAllReviews
@@ -61,6 +70,10 @@ enum WorkspaceIntent: Hashable, Sendable {
     /// reports give it, from Analytics' Product Page breakdown; the list
     /// when nil, from the Overview's card.
     case showProductPage(name: String?)
+    /// Custom Product Pages: one page, by the name Apple's reports give
+    /// it, and its screenshots, from an Analytics finding's Make
+    /// Screenshots for This Page….
+    case makePageScreenshots(name: String)
     /// Any section: focus its search field.
     case search
     /// Screenshots, Custom Product Pages or In-App Events: run one of the

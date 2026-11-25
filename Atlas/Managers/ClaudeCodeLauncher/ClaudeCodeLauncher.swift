@@ -311,7 +311,8 @@ final class ClaudeCodeLauncher {
             end(run.id, as: .failed(.serverUnavailable(String(localized: "Couldn’t pair Claude Code."))))
             return run.id
         }
-        let token = assistants.issueRunToken(for: clientID)
+        // A Look for Improvements run's proposals carry its id.
+        let token = assistants.issueRunToken(for: clientID, origin: purpose == .watch ? .watch(runID: run.id) : nil)
         let invocation = ClaudeCodeInvocation(
             workingDirectory: folder,
             prompt: prompt,

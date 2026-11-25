@@ -25,7 +25,7 @@ struct GetScreenshotContextTool: MCPTool {
         what made it (template, a file, or live on the App Store), for propose_screenshot_file, \
         propose_screenshot_removal and propose_screenshot_order. appPreviewUploadURL is for propose_app_preview_file \
         (an App Preview video for iphone or ipad); with locale and displayType, `appPreviews` lists that set's App \
-        Previews by position.
+        Previews by position, on every device that has them (mac and vision_pro too, read-only there).
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -87,7 +87,9 @@ struct GetScreenshotContextTool: MCPTool {
             let display = try MCPScreenshotHandSet.displayType(arguments.optionalString("displayType") ?? ScreenshotDisplayType.iPhone.mcpValue)
             let set = try await MCPScreenshotHandSet.load(draft, locale: draft.locale(code), displayType: display, in: context.workspace)
             result["set"] = set.json
-            if AppPreviewSpec.displayTypes.contains(display) {
+            // Every device with App Previews: Mac's and Apple Vision Pro's
+            // are listed too, though only iPhone and iPad take new ones.
+            if display.previewType != nil {
                 result["appPreviews"] = try? await ProposeAppPreviewFileTool.json(
                     app: draft.app, locale: draft.locale(code), displayType: display, in: context.workspace
                 )

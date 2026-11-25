@@ -7,11 +7,13 @@ import SwiftUI
 
 /// What an answer suggested, as a suggestion card in the chat: how many
 /// and where, the first of them, and the way to them. Each one waits in
-/// its section (and Review & Push once accepted): nothing is sent yet.
+/// its section (and Review & Push once accepted), or straight in Review &
+/// Push for a new version and its texts: nothing is sent yet.
 struct AssistantChatSuggestionCard: View {
     let suggestions: AssistantChatSuggestions
     let client: String
-    let onShow: (AppWorkspaceSection) -> Void
+    /// Opens where they wait: their section, or Review & Push.
+    let onShow: (AssistantChatSuggestions) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -30,9 +32,15 @@ struct AssistantChatSuggestionCard: View {
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
             }
-            if let section = suggestions.section {
+            if suggestions.waitsInReview {
+                Button(String(localized: "Open Review & Push", comment: "kind:button · opens where a chat answer's new version waits")) {
+                    onShow(suggestions)
+                }
+                .rowActionButton()
+                .accessibilityIdentifier("chat.suggestions.review")
+            } else if let section = suggestions.section {
                 Button(String(localized: "Show in \(section.title)", comment: "kind:button · opens the section a chat suggestion waits in")) {
-                    onShow(section)
+                    onShow(suggestions)
                 }
                 .rowActionButton()
                 .accessibilityIdentifier("chat.suggestions.show")

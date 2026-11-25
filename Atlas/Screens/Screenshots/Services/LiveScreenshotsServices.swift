@@ -3,6 +3,7 @@
 //  Atlas
 //
 
+import AVFoundation
 import CoreGraphics
 import Foundation
 import ImageIO
@@ -126,6 +127,21 @@ struct LiveScreenshotsServices: ScreenshotsServices {
 
     func keptLiveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) -> CGImage? {
         screenshot.imageURL(width: pixelWidth).flatMap { RemoteImageCache.shared.cachedImage(for: $0) }
+    }
+
+    /// The `previewImage` App Store Connect made, through
+    /// `RemoteImageCache` like the screenshots.
+    func livePreviewPoster(_ preview: LiveAppPreview, pixelWidth: Int) async -> CGImage? {
+        guard let url = preview.posterURL(width: pixelWidth) else { return nil }
+        return await RemoteImageCache.shared.image(for: url)
+    }
+
+    /// The movie's own length, read from `videoUrl` (only its header
+    /// downloads); nil when there's no movie yet or it can't be read.
+    func livePreviewSeconds(_ preview: LiveAppPreview) async -> Int? {
+        guard let url = preview.videoURL, let duration = try? await AVURLAsset(url: url).load(.duration) else { return nil }
+        let seconds = duration.seconds
+        return seconds.isFinite && seconds > 0 ? Int(seconds.rounded()) : nil
     }
 
     func uploadFont(from url: URL) async throws -> String {

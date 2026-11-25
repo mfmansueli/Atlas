@@ -25,6 +25,10 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
     /// data saved before they existed.
     var layers: SuggestionLayers?
     var createdAt: Date
+    /// Why the assistant sent it, when Atlas started the run for a reason of
+    /// its own (a Look for Improvements run's id); nil for every other
+    /// suggestion and in data saved before it existed.
+    var origin: ChangeOrigin?
 
     init(
         id: String,
@@ -35,7 +39,8 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
         source: SuggestionSource,
         evidence: [SuggestionEvidence] = [],
         layers: SuggestionLayers? = nil,
-        createdAt: Date = .now
+        createdAt: Date = .now,
+        origin: ChangeOrigin? = nil
     ) {
         self.id = id
         self.appID = appID
@@ -46,6 +51,7 @@ struct FieldSuggestion: Identifiable, Hashable, Codable, Sendable {
         self.evidence = evidence
         self.layers = layers
         self.createdAt = createdAt
+        self.origin = origin
     }
 
     /// When an assistant or the AI provider's suggestion came, for its

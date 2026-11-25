@@ -26,8 +26,6 @@ struct StorePageSkeleton: View {
             }
             StorePageTableSkeleton()
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Store page, loading"))
-        .accessibilityIdentifier("storePage.skeleton")
+        .loadingSkeleton(LoadingCopy.storePage, identifier: "storePage.skeleton")
     }
 }

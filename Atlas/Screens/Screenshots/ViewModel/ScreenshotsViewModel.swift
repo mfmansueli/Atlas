@@ -319,12 +319,26 @@ final class ScreenshotsViewModel {
 
     // MARK: - Banner
 
+    /// A new version waiting in Review & Push ("1.4"), from the change
+    /// queue: screenshots go to it once the push creates it.
+    var queuedVersionString: String?
+
     var banner: ScreenshotsBannerContent? {
+        if !context.version.isEditable, let queued = queuedVersionString {
+            return .versionQueued(
+                title: String(localized: "Version \(queued) waits in Review & Push.", comment: "kind:banner · title"),
+                message: String(localized: "Push it to change screenshots for it. Renders wait here.", comment: "kind:banner · message")
+            )
+        }
         if !context.version.isEditable {
             let next = Self.nextVersionString(after: context.version.versionString)
             return .noVersion(
                 title: String(localized: "No version to push to."),
-                message: String(localized: "Version \(context.version.versionString) is live. Create \(next) in App Store Connect to change screenshots. Renders wait here.")
+                message: String(
+                    localized: "Version \(context.version.versionString) is live. Create \(next) to change screenshots. Renders wait here.",
+                    comment: "kind:banner · message"
+                ),
+                next: next
             )
         }
         guard tab == .sets, hasTemplate, let first = matrix.failedCells.first else { return nil }

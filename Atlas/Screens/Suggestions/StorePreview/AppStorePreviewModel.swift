@@ -27,6 +27,9 @@ struct AppStorePreviewModel: Equatable, Sendable {
     var ageRating: String?
     var category: String?
     var purchases: [Purchase] = []
+    /// The In-App Event live on the App Store now, shown under the
+    /// screenshots; nil when none is.
+    var liveEvent: AppStoreLiveEvent?
 
     var words: AppStoreWords { AppStoreWords.words(for: locale.code) }
 

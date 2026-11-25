@@ -108,7 +108,7 @@ struct TemplateGalleryCard: View {
                     .resizable()
                     .interpolation(.high)
             } else {
-                Palette.fill2.overlay { ProgressView().controlSize(.mini) }
+                ImageLoadingTile(systemImage: nil, controlSize: .mini)
             }
         }
         .frame(width: width, height: StarterPreview.thumbnailHeight)

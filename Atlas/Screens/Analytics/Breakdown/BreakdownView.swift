@@ -46,7 +46,7 @@ struct BreakdownView: View {
                 }
                 if let row = viewModel.selectedRow {
                     BreakdownInspector(
-                        row: row, table: table, context: viewModel.context, width: inspectorWidth
+                        row: row, table: table, context: viewModel.context, width: inspectorWidth, dataset: viewModel.dataset
                     ) {
                         viewModel.selectedRowID = nil
                     } onAct: { action, origin in
@@ -55,6 +55,7 @@ struct BreakdownView: View {
                 }
             }
             .padding(.bottom, Spacing.medium)
+            .leavesChatRoom(.bottomEdge)
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 }
         // A container of its own: otherwise its identifier replaces the table's and the inspector's.

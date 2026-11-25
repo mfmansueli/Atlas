@@ -42,7 +42,7 @@ extension AppStoreConnectClient {
         var next: URL? = url("/v1/appStoreVersionLocalizations/\(localizationID)/appPreviewSets", query: [
             URLQueryItem(name: "include", value: "appPreviews"),
             URLQueryItem(name: "fields[appPreviewSets]", value: "previewType,appPreviews"),
-            URLQueryItem(name: "fields[appPreviews]", value: "fileName,previewFrameTimeCode,mimeType"),
+            URLQueryItem(name: "fields[appPreviews]", value: "fileName,previewFrameTimeCode,mimeType,videoUrl,previewImage"),
             URLQueryItem(name: "limit", value: "50"),
         ])
         var sets: [LiveAppPreviewSet] = []
@@ -57,15 +57,24 @@ extension AppStoreConnectClient {
                     posterFrameTimeCode: previews.first?.attributes?.previewFrameTimeCode, durationSeconds: nil,
                     previews: set.related("appPreviews").map { related in
                         let attributes = previews.first { $0.id == related.id }?.attributes
-                        return LiveAppPreview(
-                            id: related.id, fileName: attributes?.fileName ?? "", posterFrameTimeCode: attributes?.previewFrameTimeCode
-                        )
+                        return Self.liveAppPreview(id: related.id, attributes: attributes)
                     }
                 ))
             }
             next = page.links?.next
         }
         return sets
+    }
+
+    /// One App Preview, with its poster frame's image and its movie when
+    /// Apple has processed it.
+    private static func liveAppPreview(id: String, attributes: AppPreviewAttributes?) -> LiveAppPreview {
+        let poster = attributes?.previewImage
+        let size = poster.flatMap { asset in asset.width.flatMap { width in asset.height.map { PixelSize(width: width, height: $0) } } }
+        return LiveAppPreview(
+            id: id, fileName: attributes?.fileName ?? "", posterFrameTimeCode: attributes?.previewFrameTimeCode,
+            posterURLTemplate: poster?.templateUrl, posterPixelSize: size, videoURL: attributes?.videoUrl.flatMap(URL.init(string:))
+        )
     }
 
     private static func liveScreenshot(_ resource: ScreenshotAPIResource<AppScreenshotAttributes>) -> LiveScreenshot {

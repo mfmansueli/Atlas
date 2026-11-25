@@ -70,7 +70,7 @@ extension ReleaseViewModel {
         if let date = submission.timing.date { options.releaseDate = date }
         options.isPhased = submission.isPhased
         if let answer = submission.encryptionAnswer ?? knownEncryption { options.encryption = answer }
-        options.pushesChanges = true
+        options.pushesChanges = submission.pushesChanges ?? true
         if let ids = submission.eventIDs {
             let offered = offeredEvents.map(\.id)
             options.eventIDs = Set(ids).intersection(offered)

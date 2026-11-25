@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// One block of a Help article, with its **bold** words.
+/// One block of a Help article, with its **bold** words. A picture is
+/// one of Atlas's drawings or a bundled image (`HelpPictureView`).
 struct HelpBlockView: View {
     let block: HelpBlock
 
@@ -19,11 +20,11 @@ struct HelpBlockView: View {
                 .padding(.top, Spacing.xSmall)
                 .accessibilityAddTraits(.isHeader)
                 .id(HelpBlock.anchor(for: text))
-        case let .steps(items):
+        case let .steps(items, start):
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-                        Text("\(index + 1)")
+                        Text("\(start + index)")
                             .font(.callout.weight(.semibold).monospacedDigit())
                             .frame(width: 22, height: 22)
                             .background(Palette.fill2, in: Circle())
@@ -49,6 +50,8 @@ struct HelpBlockView: View {
                 .accessibilityIdentifier("help.note")
         case let .table(header, rows):
             HelpTableView(header: header, rows: rows)
+        case let .image(name, caption):
+            HelpPictureView(name: name, caption: caption)
         }
     }
 

@@ -33,6 +33,14 @@ protocol ScreenshotsServices {
     /// this launch, for a view's first frame. Nil by default.
     func keptLiveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) -> CGImage?
 
+    /// A live App Preview's poster frame, about `pixelWidth` pixels wide,
+    /// for the App Store preview. Nil by default.
+    func livePreviewPoster(_ preview: LiveAppPreview, pixelWidth: Int) async -> CGImage?
+
+    /// A live App Preview's length in whole seconds, read from its movie:
+    /// App Store Connect doesn't say. Nil by default.
+    func livePreviewSeconds(_ preview: LiveAppPreview) async -> Int?
+
     /// Why each display type templates don't render is left out, for the
     /// display-type menu's "Not in this app" section.
     func otherDisplayTypeNotes(for app: StoreApp) -> [ScreenshotDisplayType: String]

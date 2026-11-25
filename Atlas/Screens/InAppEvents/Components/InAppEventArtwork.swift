@@ -7,9 +7,11 @@ import SwiftUI
 
 /// One of an event's images filling its frame: a file on this Mac (a
 /// concept's, or art waiting in Review & Push; a loop plays muted on
-/// repeat, `AutoplayingLoop`), the App Store's (a spinner
-/// on the event's gradient while it downloads), or before there's one the
-/// gradient alone with soft shapes, so events are told apart at a glance.
+/// repeat, `AutoplayingLoop`), the App Store's (a spinner on the event's
+/// gradient while it downloads; a video plays muted on repeat over its
+/// poster frame once `RemoteVideoCache` has it, `RemoteAutoplayingLoop`),
+/// or before there's one the gradient alone with soft shapes, so events
+/// are told apart at a glance.
 struct InAppEventArtwork: View {
     let event: InAppEvent
     /// Nil: the event's card on the App Store.
@@ -21,7 +23,7 @@ struct InAppEventArtwork: View {
     @State private var phase = ImageLoadPhase.loading
 
     private var shown: InAppEventArtSource {
-        source ?? event.media(.card)?.imageURL.map(InAppEventArtSource.remote) ?? .none
+        source ?? event.media(.card).flatMap(InAppEventArtSource.init(remote:)) ?? .none
     }
 
     var body: some View {
@@ -41,12 +43,12 @@ struct InAppEventArtwork: View {
                     }
                 }
             case let .remote(url):
-                CachedRemoteImage(url: url, maxPixelSize: maxPixel) { phase in
-                    if let image = phase.image {
-                        Image(decorative: image, scale: 1).resizable().scaledToFill()
-                    } else if phase.isLoading {
-                        ImageLoadingTile(systemImage: nil, fill: .clear)
-                    }
+                remoteImage(url)
+            case let .remoteVideo(poster, video):
+                // The App Store's clip over its poster frame, both
+                // downloaded once for every place that shows them.
+                RemoteAutoplayingLoop(url: video) { _ in
+                    remoteImage(poster)
                 }
             case .none, .withoutLink:
                 // Soft shapes, so the card reads as artwork still to come.
@@ -75,6 +77,18 @@ struct InAppEventArtwork: View {
             let still = await InAppEventArtworkInspector.thumbnail(URL(fileURLWithPath: path), isVideo: isVideo, maxPixel: maxPixel)
             guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: 0.2)) { phase = ImageLoadPhase(finished: still) }
+        }
+    }
+
+    /// The App Store's image through `RemoteImageCache`; the gradient
+    /// shows when there's none.
+    private func remoteImage(_ url: URL?) -> some View {
+        CachedRemoteImage(url: url, maxPixelSize: maxPixel) { phase in
+            if let image = phase.image {
+                Image(decorative: image, scale: 1).resizable().scaledToFill()
+            } else if phase.isLoading {
+                ImageLoadingTile(systemImage: nil, fill: .clear)
+            }
         }
     }
 

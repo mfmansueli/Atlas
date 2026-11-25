@@ -96,22 +96,29 @@ struct GeneralPageView: View {
             label: secondary ? String(localized: "Secondary Games subcategories") : String(localized: "Games subcategories"),
             detail: String(localized: "· up to two")
         ) {
-            HStack(spacing: Spacing.small) {
-                ForEach(0..<2, id: \.self) { index in
-                    CategoryPicker(
-                        title: secondary
-                            ? String(localized: "Secondary Games subcategory \(index + 1)")
-                            : String(localized: "Games subcategory \(index + 1)"),
-                        selection: selected.indices.contains(index) ? selected[index] : nil,
-                        categories: AppCategory.gamesSubcategories,
-                        allowsNone: true
-                    ) { viewModel.setGamesSubcategory($0, at: index, secondary: secondary) }
-                        .disabled(index > selected.count)
-                        .accessibilityIdentifier("\(identifier)\(index + 1)")
-                }
+            // Side by side, or one under the other where two don't fit.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: Spacing.small) { subcategoryPickers(selected, secondary: secondary, identifier: identifier) }
+                VStack(alignment: .trailing, spacing: Spacing.small) { subcategoryPickers(selected, secondary: secondary, identifier: identifier) }
             }
         }
         AppInformationFieldSuggestions(viewModel: viewModel, field: secondary ? .secondaryGamesSubcategories : .gamesSubcategories)
+    }
+
+    /// The two Games subcategory pop-ups.
+    private func subcategoryPickers(_ selected: [String], secondary: Bool, identifier: String) -> some View {
+        ForEach(0..<2, id: \.self) { index in
+            CategoryPicker(
+                title: secondary
+                    ? String(localized: "Secondary Games subcategory \(index + 1)")
+                    : String(localized: "Games subcategory \(index + 1)"),
+                selection: selected.indices.contains(index) ? selected[index] : nil,
+                categories: AppCategory.gamesSubcategories,
+                allowsNone: true
+            ) { viewModel.setGamesSubcategory($0, at: index, secondary: secondary) }
+                .disabled(index > selected.count)
+                .accessibilityIdentifier("\(identifier)\(index + 1)")
+        }
     }
 
     private func contentRightsSection(_ general: GeneralValues) -> some View {
@@ -148,7 +155,8 @@ struct GeneralPageView: View {
                         prompt: Text("© 2026 Your Company")
                     )
                     .labelsHidden()
-                    .frame(width: 260)
+                    // Narrower in the smallest window, so the row fits.
+                    .frame(minWidth: 160, maxWidth: 260)
                     .focused($isCopyrightFocused)
                     .disabled(!content.isVersionEditable)
                     .accessibilityIdentifier("appInformation.general.copyright")
@@ -173,15 +181,27 @@ struct GeneralPageView: View {
     @ViewBuilder
     private func releaseRows(_ general: GeneralValues, content: AppInformationContent) -> some View {
         AppInformationFormRow(label: String(localized: "Release")) {
+            let selection = Binding(get: { general.release }, set: { $0.map(viewModel.setRelease) })
             // Segments as wide as their titles: SwiftUI's segmented style
             // makes all three as wide as "Automatically after approval",
-            // which left the row's label no room.
-            FittingSegmentedPicker(
-                label: String(localized: "Release"),
-                options: ReleaseOption.allCases.map { (value: ReleaseOption?.some($0), title: $0.title) },
-                selection: Binding(get: { general.release }, set: { $0.map(viewModel.setRelease) })
-            )
-            .fixedSize()
+            // which left the row's label no room. Where even those don't
+            // fit (the 860 pt window), a pop-up: the segments' rigid width
+            // made the page wider than the window, cut on both sides.
+            ViewThatFits(in: .horizontal) {
+                FittingSegmentedPicker(
+                    label: String(localized: "Release"),
+                    options: ReleaseOption.allCases.map { (value: ReleaseOption?.some($0), title: $0.title) },
+                    selection: selection
+                )
+                .fixedSize()
+                Picker(String(localized: "Release"), selection: selection) {
+                    ForEach(ReleaseOption.allCases, id: \.self) { option in
+                        Text(option.title).tag(ReleaseOption?.some(option))
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
+            }
             .disabled(!content.isVersionEditable)
             .accessibilityIdentifier("appInformation.general.release")
         }

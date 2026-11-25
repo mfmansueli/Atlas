@@ -53,7 +53,7 @@ struct RetentionMessagesTable: View {
             Text("The reference").foregroundStyle(Palette.label2)
         } else if let outcome = message.againstNoMessage {
             Text(outcome.verdict)
-                .foregroundStyle(outcome.isHigher ? Palette.ok : outcome.isLower ? Palette.err : Palette.label2)
+                .foregroundStyle(RateLabel.verdictColor(for: outcome.standing))
         } else {
             Text("—").foregroundStyle(Palette.label2)
         }

@@ -31,6 +31,14 @@ struct MCPWorkspace {
     /// The app open in the main window, for Settings' Connect (nil without
     /// one).
     var selectedApp: @MainActor () -> StoreApp? = { nil }
+    /// Review & Push's finished pushes, newest first (none in tests and
+    /// DEBUG scenes without a history). Read-only.
+    var pushHistory: @MainActor () -> [PushRecord] = { [] }
+    /// Settings → Translation's source language; nil follows each app's
+    /// primary locale.
+    var translationSource: @MainActor () -> String? = { nil }
+    /// Whether the account has Pro; nil when Atlas can't tell (previews).
+    var isPro: @MainActor () -> Bool? = { nil }
 
     /// The app an assistant means: its Apple ID, bundle ID, SKU or name (case
     /// and accents ignored). A name may also be the start of one, when only

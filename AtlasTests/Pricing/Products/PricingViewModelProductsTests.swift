@@ -33,7 +33,7 @@ struct PricingViewModelProductsTests {
         #expect(model.openPriceSuggestionCount == cards.count { $0.suggestion != nil })
         #expect(model.openPriceSuggestionCount > 0)
         #expect(model.territoryCount == cards.first?.territoryCount)
-        #expect(model.payTerritories.first?.alpha2 == "US")
+        #expect(model.previewTerritory(in: model.previewCountries)?.alpha2 == "US")
     }
 
     @Test func acceptingOneQueuesItsPricesAndUndoTakesThemBack() async throws {
@@ -69,13 +69,10 @@ struct PricingViewModelProductsTests {
     @Test func aDismissedSuggestionStaysAwayUntilRestored() async throws {
         let model = await loaded()
         let open = try #require(model.productCards.first { $0.suggestion != nil })
-        model.toggleCountries(productID: open.id)
-        #expect(model.expandedProductID == open.id)
 
         model.dismissPriceSuggestion(productID: open.id)
         #expect(model.card(for: open.product)?.suggestion == nil)
         #expect(model.hasDismissedPriceSuggestions)
-        #expect(model.expandedProductID == nil)
 
         model.restoreDismissedPriceSuggestions()
         #expect(model.card(for: open.product)?.suggestion != nil)
@@ -86,16 +83,6 @@ struct PricingViewModelProductsTests {
         let model = await loaded(mode: .keepPrices)
         #expect(model.openPriceSuggestionCount == 0)
         #expect(model.productCards.allSatisfy { $0.suggestion == nil })
-    }
-
-    @Test func editPricesOpensTheMatrixAndBackReturnsToTheCards() async throws {
-        let model = await loaded()
-        let product = try #require(model.catalog?.products.first)
-        await model.openDetails(productID: product.id)
-        #expect(model.showsProductDetails)
-        #expect(model.selectedProductID == product.id)
-        model.showProducts()
-        #expect(!model.showsProductDetails)
     }
 
     @Test func theBannerSaysHowManyProducts() async {

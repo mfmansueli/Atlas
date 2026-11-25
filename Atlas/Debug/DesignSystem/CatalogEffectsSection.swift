@@ -27,7 +27,7 @@ struct CatalogEffectsSection: View {
                     .accessibilityIdentifier("designSystem.catalog.playAgain")
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 320), spacing: Spacing.large, alignment: .top)], alignment: .leading, spacing: Spacing.large) {
                     tile("1 · Trail", "The spark travels button → Autopilot → the place of the work, 0.7 s per leg.") { TrailDemo() }
-                    tile("2 · Working", "The spark sits still; a bar only with units, in steps, with a soft sweep.") { WorkingDemo() }
+                    tile("2 · Working", "The spark sits still; a bar only with units, in steps, with a soft sweep. The chat's ✦ breathes.") { WorkingDemo() }
                     tile("3 · Arrived", "Tint fades in; text word by word with a caret; images develop; lists 70 ms apart.") { ArrivedDemo() }
                     tile("4 · Accepted · Dismissed · Undone", "Accept goes neutral with a check; dismiss closes; undo slides down 6 pt.") { DecidedDemo() }
                     tile("5 · Needs you", "One nudge, then still. A failure is amber and slides in 4 pt.") { NeedsYouDemo() }
@@ -107,6 +107,15 @@ struct CatalogEffectsSection: View {
                 bar(few)
                 bar(many)
                 AIWorkingStep(text: "Reading the project…")
+                // The chat button: the ✦ breathes and the step's text sweeps.
+                HStack(spacing: Spacing.small) {
+                    Image(systemName: "sparkles")
+                        .foregroundStyle(Palette.ai)
+                        .aiBreathing(isWorking)
+                    Text("Reading 220 reviews…")
+                        .atlasTextStyle(.body)
+                        .aiSweep(isWorking)
+                }
                 Text("Lumen Plus Annual")
                     .atlasTextStyle(.headline)
                     .frame(maxWidth: .infinity, minHeight: 36, alignment: .leading)

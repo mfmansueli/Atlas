@@ -46,6 +46,9 @@ struct QueuedNewSubscriptionsList: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).offer.\(offer.id)")
                 }
+                if PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) == nil {
+                    missingReviewScreenshot(change)
+                }
                 if let blocked = change.blockedReason {
                     Text(blocked)
                         .font(.subheadline)
@@ -86,21 +89,25 @@ struct QueuedNewSubscriptionsList: View {
     private func setupMenu(_ change: PendingChange) -> some View {
         Menu {
             if NewSubscriptionChangeBuilder.owns(change) {
-                Button(IntroductoryOfferChangeBuilder.offer(in: change) == nil ? "Add Introductory Offer…" : "Change Introductory Offer…") {
-                    viewModel.openIntroductoryOffer(forQueued: change)
+                if IntroductoryOfferChangeBuilder.offer(in: change) == nil {
+                    Button("Add Introductory Offer…", systemImage: "plus") { viewModel.openIntroductoryOffer(forQueued: change) }
+                } else {
+                    Button("Change Introductory Offer…", systemImage: "pencil") { viewModel.openIntroductoryOffer(forQueued: change) }
                 }
             }
             if let subscription = viewModel.offerSubscription(forQueued: change) {
-                Button("Add Promotional Offer…") { viewModel.open(.newPromotional(subscription)) }
+                Button("Add Promotional Offer…", systemImage: "plus") { viewModel.open(.newPromotional(subscription)) }
                     .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newPromotional")
-                Button("Add Win-Back Offer…") { viewModel.open(.newWinBack(subscription)) }
+                Button("Add Win-Back Offer…", systemImage: "plus") { viewModel.open(.newWinBack(subscription)) }
                     .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newWinBack")
-                Button("Add Offer Code…") { viewModel.open(.newOfferCode(subscription)) }
+                Button("Add Offer Code…", systemImage: "plus") { viewModel.open(.newOfferCode(subscription)) }
                     .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).newOfferCode")
                 Divider()
             }
-            Button(PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) == nil ? "Add Review Screenshot…" : "Replace Review Screenshot…") {
-                viewModel.openReviewScreenshot(forQueued: change)
+            if PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) == nil {
+                Button("Add Review Screenshot…", systemImage: "plus") { viewModel.openReviewScreenshot(forQueued: change) }
+            } else {
+                Button("Replace Review Screenshot…", systemImage: "arrow.triangle.2.circlepath") { viewModel.openReviewScreenshot(forQueued: change) }
             }
         } label: {
             Image(systemName: "ellipsis.circle")
@@ -112,6 +119,46 @@ struct QueuedNewSubscriptionsList: View {
         .help(Text("Set it up"))
         .accessibilityLabel(Text("Set up \(change.title)"))
         .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).setup")
+    }
+
+    /// App Review needs the purchase screen: until a screenshot waits with
+    /// it, the product stays in Missing Metadata after the push.
+    private func missingReviewScreenshot(_ change: PendingChange) -> some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.small) {
+                missingReviewScreenshotText
+                missingReviewScreenshotButton(change)
+            }
+            VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+                missingReviewScreenshotText
+                missingReviewScreenshotButton(change)
+            }
+        }
+        .padding(.top, Spacing.xxSmall)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).reviewScreenshotMissing")
+    }
+
+    private var missingReviewScreenshotText: some View {
+        Label {
+            Text(String(localized: "Review screenshot missing. App Review needs one of the purchase screen.", comment: "kind:label"))
+                .fixedSize(horizontal: false, vertical: true)
+        } icon: {
+            Image(systemName: StatusSymbol.needsYou.symbol)
+                .foregroundStyle(Palette.warn)
+        }
+        .atlasTextStyle(.subheadline)
+        .foregroundStyle(Palette.label2)
+    }
+
+    private func missingReviewScreenshotButton(_ change: PendingChange) -> some View {
+        Button(String(localized: "Review Screenshot…", comment: "kind:button")) {
+            viewModel.openReviewScreenshot(forQueued: change)
+        }
+        .secondaryButton()
+        .controlSize(.small)
+        .fixedSize()
+        .accessibilityIdentifier("pricing.newSubscriptions.\(change.id).reviewScreenshot")
     }
 
     private func productID(of change: PendingChange) -> String {

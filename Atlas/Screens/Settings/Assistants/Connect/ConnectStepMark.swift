@@ -39,7 +39,7 @@ struct ConnectStepMark: View {
         switch state {
         case .later: Palette.fill3
         case .now: Palette.accent
-        case .done: Palette.ok.opacity(0.16)
+        case .done: Palette.okTint
         }
     }
 

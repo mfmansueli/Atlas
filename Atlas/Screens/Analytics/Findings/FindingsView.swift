@@ -30,6 +30,7 @@ struct FindingsView: View {
             .padding(.bottom, Spacing.xLarge)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("analytics.findings")
     }
 
@@ -45,11 +46,21 @@ struct FindingsView: View {
             Spacer(minLength: Spacing.medium)
             AnalyticsSegments(
                 label: String(localized: "Show"),
-                plain: FindingsFilter.allCases.map { ($0, $0.title) },
+                plain: FindingsFilter.allCases.map { ($0, title(of: $0)) },
                 selection: $viewModel.findingsFilter,
                 identifier: "analytics.findings.filter"
             )
         }
+    }
+
+    /// "Open · 3": each view with how many it holds.
+    private func title(of filter: FindingsFilter) -> String {
+        let count = switch filter {
+        case .open: viewModel.openFindings.count
+        case .actedOn: viewModel.actedFindings.count
+        case .dismissed: viewModel.findings.dismissed.count
+        }
+        return String(localized: "\(filter.title) · \(count)", comment: "kind:segment")
     }
 
     private var notYet: some View {

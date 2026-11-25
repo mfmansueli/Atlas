@@ -143,7 +143,7 @@ struct NominationPageHeader: View {
 
     private func moreMenu(_ nomination: Nomination) -> some View {
         Menu {
-            Button("Delete Draft", role: .destructive) { viewModel.deleteDraft(nomination.id) }
+            Button("Delete Draft", systemImage: "trash", role: .destructive) { viewModel.deleteDraft(nomination.id) }
                 .disabled(nomination.isInAppStoreConnect && viewModel.keyCannotWrite)
                 .accessibilityIdentifier("nominations.page.delete")
         } label: {

@@ -54,7 +54,7 @@ extension AppInformationChangeBuilder {
     }
 
     /// Delete Draft: only a draft can be deleted.
-    func deleteDraftChange(for card: AccessibilityCard) -> PendingChange? {
+    func deleteDraftChange(for card: AccessibilityCard, source: ChangeSource = .you) -> PendingChange? {
         guard let draftID = card.draftID else { return nil }
         return PendingChange(
             id: accessibilityChangeID(card.family),
@@ -64,6 +64,7 @@ extension AppInformationChangeBuilder {
             title: card.family.name,
             oldValue: Self.oldValue(of: card),
             newValue: String(localized: "Delete draft"),
+            source: source,
             requests: [PushRequest(method: .delete, path: "/v1/\(Self.declarationType)/\(draftID)")],
             conflictCheck: draftCheck(draftID)
         )

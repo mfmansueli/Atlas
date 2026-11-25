@@ -155,10 +155,10 @@ struct ProposePricesToolTests {
         #expect(changes.changes.isEmpty)
     }
 
-    @Test func inAppPurchasesAreRefused() async throws {
-        let outcome = try await propose(["territory": "BRA", "price": .double(109.9)], product: Fixtures.lifetime)
+    @Test func anInAppPurchasesPriceBetweenPointsIsRefused() async throws {
+        let outcome = try await propose(["territory": "BRA", "price": .double(109.93)], product: Fixtures.lifetime)
         #expect(outcome.result["status"] == "refused")
-        #expect(outcome.result["reason"]?.stringValue?.contains("in-app purchase") == true)
+        #expect(outcome.result["reason"]?.stringValue?.contains("isn’t a price point in Brazil") == true)
         #expect(changes.changes.isEmpty)
     }
 
@@ -213,7 +213,10 @@ struct ProposePricesToolTests {
     }
 
     @Test func theListMustHoldObjects() async throws {
-        let expected = MCPToolError.invalidArgument(name: "prices", expected: "a non-empty list of {territory, price} objects")
+        let expected = MCPToolError.invalidArgument(
+            name: "prices",
+            expected: "a non-empty list of {territory, price}, {territory, pricePointId} or {territory, automatic: true} objects"
+        )
         await #expect(throws: expected) { try await propose(["prices": .array([])]) }
         await #expect(throws: expected) { try await propose(["prices": .array([.string("BRA 109.9")])]) }
         await #expect(throws: MCPToolError.self) { try await propose(["prices": "BRA"]) }

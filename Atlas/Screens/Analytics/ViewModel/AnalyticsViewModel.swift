@@ -47,6 +47,9 @@ final class AnalyticsViewModel {
     var settingsFocus: AnalyticsSettingsFocus?
     /// The key Atlas is using, to name it where its role matters.
     var keyID: String?
+    /// Logs a write the person confirmed here (Billing Grace Period) in
+    /// History; the section connects it to the push history.
+    @ObservationIgnored var onWrite: (PushRecord) -> Void = { _ in }
 
     private(set) var sellsSubscriptions = true
     private(set) var context = AnalyticsContext.empty
@@ -207,6 +210,7 @@ final class AnalyticsViewModel {
     /// Turns on Billing Grace Period, once the person confirmed it.
     func turnOnGracePeriod(_ duration: GracePeriodSetting.Duration) async throws {
         try await store.turnOnGracePeriod(for: app.id, duration: duration, services: services)
+        onWrite(DirectWriteRecord.gracePeriod(appID: app.id, appName: app.name, duration: duration, date: store.now()))
         recompute()
     }
 

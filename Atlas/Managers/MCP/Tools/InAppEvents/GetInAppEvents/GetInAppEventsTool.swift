@@ -25,7 +25,7 @@ struct GetInAppEventsTool: MCPTool {
         title: "Get In-App Events",
         description: """
         Reads an app's In-App Events from App Store Connect, all of them or one (`eventId`), with the parts you ask \
-        for (`include`: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, or all). Without \
+        for (`include`: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, results, or all). Without \
         include, every part but the two heaviest, mediaDetails and design: `leftOut` names them, ask for them when you \
         need them (with eventId to keep the answer small). Each event comes with its id, reference name, badge, state, dates, \
         primaryLocale, deepLink, purpose and priority (null when App Store Connect has none), purchase requirement, and its \
@@ -88,8 +88,8 @@ struct GetInAppEventsTool: MCPTool {
                     "type": "array",
                     "items": ["type": "string", "enum": .array(GetInAppEventsPart.names.map(JSONValue.string))],
                     "description": """
-                    The parts to read: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, or all. Left out, \
-                    every part but mediaDetails and design.
+                    The parts to read: texts, media, mediaDetails, review, deepLinkCheck, design, push, queued, results (how \
+                    ended events did), or all. Left out, every part but mediaDetails and design.
                     """,
                 ],
             ],
@@ -120,6 +120,7 @@ struct GetInAppEventsTool: MCPTool {
         let push = context.workspace.push()
         let pushItems = push?.items(appID: app.id, section: .inAppEvents) ?? []
         let claims = linkClaims.state(for: app.id)
+        let results = parts.contains(.results) ? await Self.results(of: events, app: app, services: services.inAppEvents) : [:]
         var result: [String: JSONValue] = [
             "appId": .string(app.id),
             "app": .string(app.name),
@@ -140,6 +141,7 @@ struct GetInAppEventsTool: MCPTool {
                     event, appName: app.name, builder: builder, changes: changes, claims: claims,
                     report: store.deepLinkReport(for: app.id, eventID: event.id, deepLink: deepLink), now: now()
                 )) { $1 }
+                if let outcome = results[event.id] { object["results"] = Self.resultsJSON(outcome) }
                 return .object(GetInAppEventsPart.keeping(parts, of: object, keys: \.eventKeys))
             }),
             "pushInProgress": .bool(push?.isRunning ?? false),
@@ -158,6 +160,23 @@ struct GetInAppEventsTool: MCPTool {
         if let leftOut = GetInAppEventsPart.leftOutJSON(parts) { result.merge(leftOut) { $1 } }
         let target = only != nil && events.count == 1 ? "\(app.name) · \(events[0].referenceName)" : "\(app.name) · In-App Events"
         return .read(.object(result), target: target)
+    }
+
+    /// Ended events at most this many, newest first, get their results.
+    static let resultsLimit = 6
+
+    /// How the newest ended events did, as the event page reads it.
+    static func results(of events: [InAppEvent], app: StoreApp, services: any InAppEventsServices) async -> [InAppEvent.ID: InAppEventResults] {
+        var found: [InAppEvent.ID: InAppEventResults] = [:]
+        for event in events.filter(\.state.isOver).prefix(resultsLimit) {
+            if let outcome = await services.results(for: event, of: app) { found[event.id] = outcome }
+        }
+        return found
+    }
+
+    /// An ended event's page views, opens from its card and downloads.
+    static func resultsJSON(_ results: InAppEventResults) -> JSONValue {
+        ["pageViews": .int(results.pageViews), "opens": .int(results.opens), "downloads": .int(results.downloads), "note": .string(results.note)]
     }
 
     /// The app's events, or only the one `eventID` names; an unknown id

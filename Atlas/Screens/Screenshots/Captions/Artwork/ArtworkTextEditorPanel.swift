@@ -27,6 +27,7 @@ struct ArtworkTextEditorPanel: View {
             .padding(.horizontal, Spacing.large)
             .padding(.vertical, Spacing.medium)
         }
+        .leavesChatRoom()
         .background(Palette.content)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Artwork text editor"))

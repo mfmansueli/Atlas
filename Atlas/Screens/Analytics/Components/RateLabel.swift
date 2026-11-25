@@ -39,6 +39,16 @@ struct RateLabel: View {
         .accessibilityLabel(Text(detail ?? rate.detail()))
     }
 
+    /// A verdict in words ("Better · sure", "About the same"): only worse
+    /// gets a colour (README-An2's tables).
+    static func verdictColor(for standing: RateStanding?) -> Color {
+        switch standing {
+        case .better: Palette.label
+        case .worse: Palette.warn
+        case .same, nil: Palette.label2
+        }
+    }
+
     static func color(for standing: RateStanding) -> Color {
         switch standing {
         case .better: Palette.label

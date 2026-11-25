@@ -60,6 +60,48 @@ struct HelpArticleParserTests {
         ])
     }
 
+    /// Steps split by pictures keep counting, and a picture is a block of
+    /// its own (README-Welcome's "Connect to App Store Connect").
+    @Test func picturesBetweenSteps() {
+        let blocks = HelpArticleParser.blocks([
+            "1. **Open Users and Access.** Sign in.",
+            "",
+            "![Users and Access, then Integrations](help-connect-1)",
+            "",
+            "2. **Create a Team Key.** Pick Admin.",
+            "3. **Download the key file.**",
+        ])
+        #expect(blocks == [
+            .steps(["**Open Users and Access.** Sign in."]),
+            .image(name: "help-connect-1", caption: "Users and Access, then Integrations"),
+            .steps(["**Create a Team Key.** Pick Admin.", "**Download the key file.**"], start: 2),
+        ])
+        #expect(blocks[1].text == "Users and Access, then Integrations")
+    }
+
+    @Test func aPictureNeedsAName() {
+        #expect(HelpArticleParser.image("![A caption]()") == nil)
+        #expect(HelpArticleParser.image("![](help-connect-2)") == .image(name: "help-connect-2", caption: ""))
+        #expect(HelpArticleParser.image("Not a picture") == nil)
+    }
+
+    @Test func theWebPageToOpen() throws {
+        let article = try #require(HelpArticleParser.article(from: """
+        ---
+        id: connect
+        group: start
+        title: Get your App Store Connect key
+        link: Open App Store Connect | https://appstoreconnect.apple.com/access/integrations/api
+        ---
+        Text
+        """))
+        #expect(article.link?.title == "Open App Store Connect")
+        #expect(article.link?.url.absoluteString == "https://appstoreconnect.apple.com/access/integrations/api")
+        #expect(HelpArticleLink("Open App Store Connect") == nil)
+        #expect(HelpArticleLink("Open | http://example.com") == nil, "Only https")
+        #expect(HelpArticleLink(" | https://example.com") == nil)
+    }
+
     @Test func aTableMayStartWithAnEmptyCell() {
         #expect(HelpArticleParser.cells("| | Free | Pro |") == ["", "Free", "Pro"])
     }

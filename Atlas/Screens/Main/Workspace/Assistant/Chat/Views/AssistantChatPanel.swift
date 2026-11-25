@@ -13,8 +13,8 @@ struct AssistantChatPanel: View {
     let context: AssistantChatContext
     let client: String
     let canAsk: Bool
-    /// The working turn's steps so far.
-    let steps: [AssistantChatStep]
+    /// How far the working turn's answer has come.
+    let progress: AssistantChatProgress
     let height: CGFloat
     @Binding var draft: String
     let onSend: (String) -> Void
@@ -23,7 +23,7 @@ struct AssistantChatPanel: View {
     let onShowOutput: (ClaudeCodeRun.ID) -> Void
     let onClose: () -> Void
     let onConnect: () -> Void
-    let onShow: (AppWorkspaceSection) -> Void
+    let onShow: (AssistantChatSuggestions) -> Void
     let onRemoveChip: (String) -> Void
 
     @FocusState private var isFieldFocused: Bool
@@ -85,7 +85,7 @@ struct AssistantChatPanel: View {
                     ForEach(chat.turns) { turn in
                         AssistantChatPersonBubble(text: turn.text)
                         AssistantChatReply(
-                            turn: turn, steps: turn.isWorking ? steps : [], client: client, isLast: turn.id == chat.last?.id,
+                            turn: turn, progress: turn.isWorking ? progress : AssistantChatProgress(), client: client, isLast: turn.id == chat.last?.id,
                             onReply: onSend, onRetry: onRetry,
                             onShowOutput: turn.runID.map { id in { onShowOutput(id) } },
                             onShow: onShow
@@ -110,7 +110,13 @@ struct AssistantChatPanel: View {
 
     /// The safety line, once: under an answer that suggested something.
     private var note: String? {
-        guard let section = chat.last?.suggestions?.section else { return nil }
+        guard let suggestions = chat.last?.suggestions else { return nil }
+        if suggestions.waitsInReview {
+            return String(
+                localized: "They wait in Review & Push. Nothing is sent until you push.", comment: "kind:footnote · under a chat answer's suggestions"
+            )
+        }
+        guard let section = suggestions.section else { return nil }
         return String(localized: "Accept them in \(section.title). Nothing is sent until you push.", comment: "kind:footnote · under a chat answer's suggestions")
     }
 }

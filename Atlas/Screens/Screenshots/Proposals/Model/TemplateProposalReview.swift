@@ -66,7 +66,8 @@ struct TemplateProposalReview {
             let new = operation.value.isNull ? nil : operation.value
             return Row(
                 change: TemplateChange(path: operation.path, old: old, new: new),
-                isConflict: isStale && !Self.equivalent(old, now),
+                // A whole template replaces every path, so nothing conflicts.
+                isConflict: proposal.whole == nil && isStale && !Self.equivalent(old, now),
                 currentValue: now
             )
         }
@@ -83,7 +84,9 @@ struct TemplateProposalReview {
 
     /// The proposal on the current version, conflicts settled by `choices`.
     func rebased(choices: [String: Choice] = [:]) -> TemplateProposal {
-        TemplateProposal(basedOn: currentNumber, operations: operations(choices: choices), rebasedFrom: proposal.rebasedFrom ?? proposal.basedOn)
+        TemplateProposal(
+            basedOn: currentNumber, operations: operations(choices: choices), rebasedFrom: proposal.rebasedFrom ?? proposal.basedOn, whole: proposal.whole
+        )
     }
 
     /// The template accepting would save: the current version with the
@@ -92,6 +95,7 @@ struct TemplateProposalReview {
         guard let current = history.currentTemplate else {
             return .failure(TemplateRefusals(items: [TemplateRefusal(path: "", kind: .stale, reason: String(localized: "There’s no template yet."))]))
         }
+        if let whole = proposal.whole { return .success(whole) }
         return applier.applying(operations(choices: choices), to: current)
     }
 

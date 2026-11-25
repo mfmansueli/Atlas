@@ -52,6 +52,9 @@ struct AppEventMediaAttributes: Decodable, Sendable {
     var fileSize: Int?
     /// A video clip's poster frame, "00:00:02:00".
     var previewFrameTimeCode: String?
+    /// Where a video clip streams from once Apple processed it: an HLS
+    /// playlist.
+    var videoUrl: String?
     /// A screenshot's processing.
     var assetDeliveryState: DeliveryState?
     /// A video clip's processing.

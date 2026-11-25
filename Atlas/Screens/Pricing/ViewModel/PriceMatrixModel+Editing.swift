@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Edits to one row or the selection. Each loads Apple's price points
+/// Edits to one row or a few. Each loads Apple's price points
 /// first if needed, snaps to them, and queues the result: hand edits as
 /// `.you`, applied suggestions as `.suggestion`.
 extension PriceMatrixModel {
@@ -33,69 +33,5 @@ extension PriceMatrixModel {
             points[id] = row.target
         }
         write(points, source: .suggestion)
-    }
-
-    /// Drops hand edits back to what the strategy gives, as the breakdown's
-    /// “Back to Suggestion” does.
-    func backToSuggestion(_ id: PricingRow.ID) async {
-        guard let row = row(id: id) else { return }
-        if row.hasSuggestion, isFollowing || mode == .applyRecommended {
-            await applySuggestion(to: [id])
-        } else if let queued = row.queued {
-            queue.discard(id: queued.changeID)
-            queueDidChange()
-        }
-    }
-
-    func multiply(_ ids: [PricingRow.ID], by factor: Decimal) async {
-        await bulkEdit(ids) { rows, rounding in PriceBulkEditor.multiply(rows, by: factor, rounding: rounding) }
-    }
-
-    /// Sets each territory to feel like the base price locally.
-    func feelLikeBase(_ ids: [PricingRow.ID]) async {
-        let basePrice = sheet.basePrice
-        await bulkEdit(ids) { rows, rounding in PriceBulkEditor.feelLikeBase(rows, basePrice: basePrice, rounding: rounding) }
-    }
-
-    func resetToEqualized(_ ids: [PricingRow.ID]) async {
-        await bulkEdit(ids) { rows, _ in PriceBulkEditor.resetToEqualized(rows) }
-    }
-
-    /// Copies another subscription's prices times a ratio, such as the
-    /// monthly prices × 8 for an annual plan.
-    func copy(_ ids: [PricingRow.ID], from prices: [String: Decimal], ratio: Decimal) async {
-        await bulkEdit(ids) { rows, rounding in PriceBulkEditor.copy(rows, from: prices, ratio: ratio, rounding: rounding) }
-    }
-
-    /// The price each territory shows, queued or current, for copying to a sibling.
-    var shownPrices: [String: Decimal] {
-        Dictionary(uniqueKeysWithValues: rows.map { ($0.id, $0.shownPrice) })
-    }
-
-    func selectAllVisible() {
-        selection = Set(visibleRows.map(\.id))
-    }
-
-    func clearSelection() {
-        selection = []
-    }
-
-    private func bulkEdit(
-        _ ids: [PricingRow.ID],
-        edit: ([PriceBulkRow], PriceRounding) -> [String: PricePoint]
-    ) async {
-        guard !isReadOnly, !ids.isEmpty, await ensureLadders(for: ids) else { return }
-        let rows = ids.compactMap { row(id: $0) }.map { row in
-            PriceBulkRow(
-                territory: row.territory,
-                ladder: ladder(for: row),
-                currentPrice: row.current.customerPrice,
-                proposedPrice: row.queued?.price,
-                equalizedPrice: row.equalized,
-                equalizationMultiplier: row.equalizationMultiplier,
-                feelsLikeFactor: row.recommendation?.factor ?? 1
-            )
-        }
-        write(edit(rows, strategy.rounding), source: .you)
     }
 }

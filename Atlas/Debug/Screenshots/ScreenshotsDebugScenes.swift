@@ -27,14 +27,18 @@ import SwiftUI
 /// - `tpl-pano`: switched to the Panorama starter (v5), Arabic slot 2.
 /// - `tpl-history`, `starter`: the History popover and the Templates
 ///   sheet over `tpl`.
-/// - `gallery`, `gallery-elegant`: the Templates sheet showing all twelve
-///   templates, and only the three elegant ones.
+/// - `gallery`, `gallery-elegant`: the Templates sheet showing all
+///   fourteen templates, and only the three elegant ones.
 /// - `gallery-free`: the Templates sheet on the Free plan: past Free's
 ///   three templates each button carries the PRO chip.
 /// - `tpl-cinema`, `tpl-highlight-ar`, `tpl-market-de`, `tpl-poster-ja`,
 ///   `tpl-swoosh-deco`: switched to a gallery template (v5), on English
 ///   slot 2, Arabic slot 1, German slot 3, Japanese slot 1 and English
 ///   slot 3 (Swoosh's badge).
+/// - `tpl-proof`, `tpl-proof-reviews`: Social Proof on English slot 1
+///   (the laurels) and German slot 2 (the Reviews slot); `tpl-arcade`,
+///   `tpl-arcade-pair`, `tpl-arcade-ar`: Arcade on English slot 1, German
+///   slot 3 and Arabic slot 4.
 /// - `cap`, `cap-edit`: the captions table; German slot 3 in the editor.
 /// - `cap-translate`, `cap-translating`: Finnish, Polish, Swedish and
 ///   Turkish added with no captions; the Translate sheet, and its batch
@@ -52,6 +56,7 @@ enum ScreenshotsDebugScenes {
         "sets-empty", "sets-notpl", "sets-noversion",
         "tpl", "tpl-ipad", "tpl-glyph", "tpl-pano", "tpl-history", "starter",
         "gallery", "gallery-elegant", "gallery-free", "tpl-cinema", "tpl-highlight-ar", "tpl-market-de", "tpl-poster-ja", "tpl-swoosh-deco",
+        "tpl-proof", "tpl-proof-reviews", "tpl-arcade", "tpl-arcade-pair", "tpl-arcade-ar",
         "cap", "cap-edit", "cap-translate", "cap-translating", "cap-artwork", "cap-artwork-phrases",
     ]
 
@@ -139,6 +144,11 @@ enum ScreenshotsDebugScenes {
             "tpl-market-de": (.boldStack, LocaleSlot(locale: "de-DE", slot: 2)),
             "tpl-poster-ja": (.poster, LocaleSlot(locale: "ja", slot: 0)),
             "tpl-swoosh-deco": (.swoosh, LocaleSlot(locale: "en-US", slot: 2)),
+            "tpl-proof": (.socialProof, LocaleSlot(locale: "en-US", slot: 0)),
+            "tpl-proof-reviews": (.socialProof, LocaleSlot(locale: "de-DE", slot: 1)),
+            "tpl-arcade": (.arcade, LocaleSlot(locale: "en-US", slot: 0)),
+            "tpl-arcade-pair": (.arcade, LocaleSlot(locale: "de-DE", slot: 2)),
+            "tpl-arcade-ar": (.arcade, LocaleSlot(locale: "ar-SA", slot: 3)),
         ]
         if let (starter, target) = switched[id] {
             return scene { model in

@@ -15,6 +15,8 @@ struct DebugPricingServices: PricingServices {
     var sheetError: PricingSheetError?
     /// How long a price sheet takes to arrive; long enough keeps the skeleton up.
     var sheetDelay: Duration?
+    /// How long the summary (Overview's cards) takes, for overview-loading.
+    var summaryDelay: Duration?
     /// Answers the first sheet at once and delays only the ones after it (a refresh).
     var delaysRefreshOnly = false
     /// False plays a key whose role can't read Sales and Trends.
@@ -24,6 +26,7 @@ struct DebugPricingServices: PricingServices {
     let calls = DebugPricingCallLog()
 
     func summary(for app: StoreApp) async throws -> PricingSummary {
+        if let summaryDelay { try await Task.sleep(for: summaryDelay) }
         if let error { throw error }
         return DebugSummaries.pricing(for: app.id)
     }

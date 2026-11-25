@@ -195,6 +195,10 @@ enum DebugAnalyticsData {
             pageLocales: locales,
             machineTranslated: ["de-DE", "it", "es-ES", "ko", "nl-NL"],
             screenshotLocales: Set(codes).subtracting(["de-DE", "nl-NL"]),
+            screenshotCoverage: ScreenshotCoverage(
+                localesByDevice: [.iPhone: Set(codes).subtracting(["de-DE", "nl-NL"]), .iPad: ["en-US", "ja", "fr-FR", "ko"], .mac: ["en-US"]],
+                pageLocaleCount: codes.count
+            ),
             prices: [
                 "BR": TerritoryPriceContext(priceText: "R$ 249,90", suggestedText: "R$ 104,90", ratio: 2.4, productName: "Annual"),
                 "IN": TerritoryPriceContext(priceText: "₹ 2,999", suggestedText: "₹ 1,149", ratio: 2.6, productName: "Annual"),

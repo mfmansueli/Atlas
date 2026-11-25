@@ -54,8 +54,9 @@ struct OverviewAfterReleaseRow: Identifiable, Hashable, Sendable {
         return OverviewAfterReleaseRow(section: .analytics, detail: detail, count: newFindings, countsSuggestions: false)
     }
 
-    /// "24 reviews need a reply, in 9 languages", with the suggested
-    /// replies as the count.
+    /// "24 reviews need a reply, in 9 languages" (README-Toolbar, settled
+    /// November 25), with the suggested replies as the count. The average
+    /// is the toolbar's, in Ratings & Reviews.
     static func reviews(archive: ReviewsArchive, isPro: Bool) -> OverviewAfterReleaseRow {
         guard archive.fetchedAt != nil else {
             return OverviewAfterReleaseRow(section: .reviews, detail: String(localized: "Not read yet"))

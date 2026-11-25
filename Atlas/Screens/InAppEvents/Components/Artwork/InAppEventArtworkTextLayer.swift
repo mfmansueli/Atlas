@@ -7,8 +7,8 @@ import SwiftUI
 
 /// What the App Store lays over an event card or details page, without
 /// the art: Apple's dark fade over the lower part, the badge, the event's
-/// name and its description in white, and on the card the app's name with
-/// Get. Drawn at `InAppEventArtworkOverlay.pointSize(for:)` times
+/// name (on the details page, its dates under it) and its description in
+/// white, and on the card the app's icon and name with Get. Drawn at `InAppEventArtworkOverlay.pointSize(for:)` times
 /// `scale`, laid out again at that size rather than stretched, so the
 /// text stays sharp over a still or a playing loop in the full-size
 /// viewer.
@@ -16,6 +16,11 @@ struct InAppEventArtworkTextLayer: View {
     let kind: InAppEventMedia.Kind
     let texts: InAppEventArtworkOverlayTexts
     var scale: CGFloat = 1
+    /// The details page's "Starts Dec 1"; nil leaves the line out.
+    var when: String?
+    /// The app's icon on the card; nil draws its first letter (offscreen
+    /// renders, where a downloaded icon may not be there yet).
+    var appIcon: AppIcon?
 
     var body: some View {
         let base = InAppEventArtworkOverlay.pointSize(for: kind)
@@ -36,6 +41,11 @@ struct InAppEventArtworkTextLayer: View {
                     .font(.system(size: (kind == .card ? 30 : 32) * scale, weight: .bold))
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
+                if kind == .details, let when, !when.isEmpty {
+                    Text(when)
+                        .font(.system(size: 13 * scale, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.85))
+                }
                 Text(texts.description)
                     .font(.system(size: (kind == .card ? 16 : 15) * scale))
                     .foregroundStyle(.white.opacity(0.88))
@@ -57,14 +67,18 @@ struct InAppEventArtworkTextLayer: View {
 
     private var appRow: some View {
         HStack(spacing: 10 * scale) {
-            RoundedRectangle(cornerRadius: 7 * scale, style: .continuous)
-                .fill(.white.opacity(0.9))
-                .frame(width: 32 * scale, height: 32 * scale)
-                .overlay(
-                    Text(String(texts.appName.prefix(1)))
-                        .font(.system(size: 15 * scale, weight: .bold))
-                        .foregroundStyle(.black.opacity(0.7))
-                )
+            if let appIcon {
+                AppIconTile(name: texts.appName, icon: appIcon, size: 32 * scale)
+            } else {
+                RoundedRectangle(cornerRadius: 7 * scale, style: .continuous)
+                    .fill(.white.opacity(0.9))
+                    .frame(width: 32 * scale, height: 32 * scale)
+                    .overlay(
+                        Text(String(texts.appName.prefix(1)))
+                            .font(.system(size: 15 * scale, weight: .bold))
+                            .foregroundStyle(.black.opacity(0.7))
+                    )
+            }
             Text(texts.appName)
                 .font(.system(size: 14 * scale, weight: .semibold))
                 .lineLimit(1)

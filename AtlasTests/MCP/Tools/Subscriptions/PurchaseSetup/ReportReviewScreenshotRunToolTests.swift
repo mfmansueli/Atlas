@@ -14,11 +14,13 @@ import Testing
 @Suite("report_review_screenshot_run")
 struct ReportReviewScreenshotRunToolTests {
     private let runs = ReviewShotsRunCenter()
+    private let uploads = PurchaseReviewScreenshotUploads(token: "t")
+    private let folder = PurchaseReviewScreenshotFolder(root: URL.temporaryDirectory.appending(path: "ReportRunToolTests-\(UUID().uuidString)"))
     private let appID = DebugFixtures.AppID.lumen
 
     private func report(_ arguments: [String: JSONValue]) async throws -> MCPToolOutcome {
         let workspace = MCPTestFixtures.workspace(apps: MCPTestFixtures.apps, changes: ChangeQueue())
-        return try await ReportReviewScreenshotRunTool(runs: runs).call(
+        return try await ReportReviewScreenshotRunTool(runs: runs, uploads: uploads, folder: folder).call(
             MCPToolArguments(["appId": "Lumen Journal"].merging(arguments) { $1 }),
             in: MCPToolContext(workspace: workspace, clientName: "Claude Code")
         )
@@ -38,6 +40,27 @@ struct ReportReviewScreenshotRunToolTests {
         #expect(runs.run(for: appID)?.phase == .paywallNotFound(tried: "Settings and the + button"))
         _ = try await report(["status": "no_prices", "saw": "Empty plan list"])
         #expect(runs.run(for: appID)?.phase == .noPrices(saw: "Empty plan list"))
+    }
+
+    @Test func whatItSawIsTheUploadedCapture() async throws {
+        runs.start(appID: appID, client: "Claude Code", products: [])
+        let file = try folder.save(EventArtworkTestFiles.png(width: 640, height: 1136), fileName: "saw.png", appID: appID)
+        uploads.add(file, appID: appID)
+        _ = try await report(["status": "no_prices", "saw": "No prices", "sawFileId": .string(file.id)])
+        #expect(runs.run(for: appID)?.sawImage == folder.url(for: file, appID: appID))
+        _ = try await report(["status": "no_prices", "sawFileId": "unknown"])
+        #expect(runs.run(for: appID)?.sawImage == nil, "An id this launch didn't receive shows nothing")
+        try? FileManager.default.removeItem(at: folder.root)
+    }
+
+    @Test func skippedAndFailedProductsSayWhy() async throws {
+        runs.start(appID: appID, client: "Claude Code", products: [.init(productID: "a", plan: "Annual"), .init(productID: "m", plan: "Monthly")])
+        _ = try await report(["status": "skipped", "productId": "a", "reason": "The paywall shows only Monthly"])
+        _ = try await report(["status": "check_failed", "productId": "m", "reason": "The price didn’t show"])
+        #expect(runs.miss(appID: appID, productID: "a")?.kind == .skipped)
+        #expect(runs.miss(appID: appID, productID: "m")?.reason == "The price didn’t show")
+        #expect(runs.run(for: appID)?.missed == ["a", "m"])
+        await #expect(throws: (any Error).self) { _ = try await report(["status": "skipped"]) }
     }
 
     @Test func aRunAskedOutsideAtlasShowsToo() async throws {

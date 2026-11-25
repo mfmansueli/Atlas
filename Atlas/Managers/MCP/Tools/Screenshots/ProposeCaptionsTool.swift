@@ -14,9 +14,10 @@ struct ProposeCaptionsTool: MCPTool {
         name: "propose_captions",
         title: "Propose captions",
         description: """
-        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?, gloss?}, with a reason (one \
+        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?, kicker?, gloss?}, with a reason (one \
         sentence, at most \(AssistantTextLimits.why) characters), optional details and confidence 1–3; a gloss says \
-        what a caption not in English means. Each item is measured \
+        what a caption not in English means, and kicker is the short line over the headline for a template that shows \
+        one (get_template's caption.kicker). locale "all" sends the same item to every language the set has. Each item is measured \
         against the current template on iPhone and iPad and refused when it doesn't fit (the reason says by how \
         much, e.g. "needs 3 lines at 72 u; the template allows 2"), when the font can't draw it, when the \
         locale is unknown, or when App Review would reject it: pricing such as “free”, prices, discounts or trials \
@@ -40,6 +41,7 @@ struct ProposeCaptionsTool: MCPTool {
                         "type": "object",
                         "properties": [
                             "locale": ["type": "string"], "slot": ["type": "integer"], "headline": ["type": "string"], "subhead": ["type": "string"],
+                            "kicker": ["type": "string", "description": "The short line over the headline, when the template shows one."],
                             "gloss": MCPToolDefinition.glossProperty,
                             "placement": [
                                 "type": "string", "enum": ["search", "header", "text"],
@@ -71,7 +73,7 @@ struct ProposeCaptionsTool: MCPTool {
         }
         var draft = try await MCPScreenshotsDraft.load(app: arguments.string("appId"), in: context.workspace)
         let reason = try arguments.string("reason")
-        let items = try arguments.array("items")
+        let items = try Self.expandingAll(arguments.array("items"), locales: draft.document.captions.locales)
         guard let template = draft.document.template else {
             return .refused(String(localized: "\(draft.app.name) has no screenshot template yet, so captions can’t be measured."), target: draft.target)
         }
@@ -124,17 +126,19 @@ struct ProposeCaptionsTool: MCPTool {
         guard let code = item["locale"]?.stringValue, let locale = StoreLocaleCatalog.resolve(code).locale else {
             return .failure(Refusal(message: String(localized: "“\(item["locale"]?.stringValue ?? "")” isn’t an App Store locale.")))
         }
-        guard let number = item["slot"]?.intValue, (1...template.slots.count).contains(number) else {
+        guard let number = item["slot"]?.intValue, number >= 1, number <= template.slots.count else {
             return .failure(Refusal(message: String(localized: "The template has slots 1 to \(template.slots.count).")))
         }
         let headline = item["headline"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !headline.isEmpty else { return .failure(Refusal(message: String(localized: "The headline is empty."))) }
         let subhead = item["subhead"]?.stringValue.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        let issues = StoreTextGuidelineCheck.issues(inCaption: headline, subhead: subhead)
+        let kicker = item["kicker"]?.stringValue.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let checked = [kicker ?? "", headline].filter { !$0.isEmpty }.joined(separator: "\n")
+        let issues = StoreTextGuidelineCheck.issues(inCaption: checked, subhead: subhead)
         guard issues.isEmpty else { return .failure(Refusal(message: Self.guidelineRefusal(issues))) }
         let slot = number - 1
         let current = draft.document.captions.caption(locale: locale.code, slot: slot)
-        let caption = ScreenshotCaption(headline: headline, subhead: subhead ?? current?.subhead)
+        let caption = ScreenshotCaption(headline: headline, subhead: subhead ?? current?.subhead, kicker: kicker ?? current?.kicker)
         for display in draft.document.renderedDisplays {
             let layout = draft.layout(template, locale: locale, slot: slot, displayType: display, caption: caption)
             if let problem = layout.headlineFont.problem { return .failure(Refusal(message: problem)) }
@@ -145,7 +149,21 @@ struct ProposeCaptionsTool: MCPTool {
         }
         let gloss = item["gloss"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)
         return .success(CaptionProposalItem(
-            locale: locale.code, slot: slot, headline: headline, subhead: subhead, gloss: gloss?.isEmpty == false ? gloss : nil
+            locale: locale.code, slot: slot, headline: headline, subhead: subhead, gloss: gloss?.isEmpty == false ? gloss : nil,
+            kicker: kicker?.isEmpty == false ? kicker : nil
         ))
+    }
+
+    /// Items with locale "all" become one per language the captions have
+    /// (each checked on its own); the others stay as they are.
+    static func expandingAll(_ items: [JSONValue], locales: [String]) -> [JSONValue] {
+        items.flatMap { item -> [JSONValue] in
+            guard item["locale"]?.stringValue?.lowercased() == "all", case let .object(object) = item else { return [item] }
+            return locales.map { code in
+                var copy = object
+                copy["locale"] = .string(code)
+                return .object(copy)
+            }
+        }
     }
 }

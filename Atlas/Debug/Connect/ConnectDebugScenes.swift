@@ -11,14 +11,20 @@ import SwiftUI
 ///
 /// - `welcome`: Welcome, the header moving; Get Started opens Connect.
 /// - `welcome-still`: Welcome as Reduce Motion shows it.
+/// - `welcome-short`: Welcome under 680 points high: no quiet line, the
+///   points keep only their titles.
 /// - `connect`: the empty form under the compact header; any well-formed
 ///   key connects, then the first sync runs and the library opens. Back
 ///   returns to Welcome.
+/// - `connect-filled`: Issuer ID and the key filled in, Connect ready.
 /// - `connect-key`: the same with a `.p8` already imported (a UI test can't
 ///   drive the file panel).
 /// - `connect-hover`: a file hovering over the drop zone.
 /// - `connect-hints`: malformed IDs and a file that isn't a key.
-/// - `connect-help`: key imported, "Where do I find these?" open.
+/// - `connect-how`: the empty form, and Show Me How's Help window open at
+///   "Connect to App Store Connect" beside it.
+/// - `connect-short`: the filled form in a window under 680 points high and
+///   900 wide: only the steps and fields, no hints beside the names.
 /// - `connect-checking`: the check never answers.
 /// - `connect-401` (also `connect-rejected`), `connect-403`, `connect-offline`:
 ///   the check fails that way after Connect.
@@ -30,14 +36,16 @@ import SwiftUI
 ///   is connected, the form filled in; Connect adds Fieldworks Studio.
 /// - `addkey-403`: the same with a key whose role is too low: the error
 ///   sits under the fields and the key file is cleared.
+/// - `addkey-check`: the same, Connect clicked: "Checking the new key…"
+///   with Cancel, the check never answering.
 /// - `addkey-done`: Fieldworks Studio added, Keep Northpier Studio or
 ///   Switch to Fieldworks Studio.
 enum ConnectDebugScenes {
     static let ids = [
-        "welcome", "welcome-still",
-        "connect", "connect-key", "connect-hover", "connect-hints", "connect-help", "connect-checking",
+        "welcome", "welcome-still", "welcome-short",
+        "connect", "connect-filled", "connect-key", "connect-hover", "connect-hints", "connect-how", "connect-short", "connect-checking",
         "connect-401", "connect-rejected", "connect-403", "connect-offline", "sync", "sync-still", "sync-done",
-        "addkey", "addkey-403", "addkey-done",
+        "addkey", "addkey-403", "addkey-check", "addkey-done",
     ]
 
     /// The team every added key in a DEBUG scene belongs to.
@@ -49,7 +57,7 @@ enum ConnectDebugScenes {
         case "connect-401", "connect-rejected": DebugKeyChecker(error: AppStoreConnectError.unauthorized)
         case "connect-403", "addkey-403": DebugKeyChecker(error: AppStoreConnectError.forbidden(detail: nil))
         case "connect-offline": DebugKeyChecker(error: URLError(.notConnectedToInternet))
-        case "connect-checking": DebugKeyChecker(delay: .seconds(3600))
+        case "connect-checking", "addkey-check": DebugKeyChecker(delay: .seconds(3600))
         default: DebugKeyChecker()
         }
     }
@@ -72,6 +80,7 @@ enum ConnectDebugScenes {
         let id: String
         @State private var connection: Connection
         @State private var model: ConnectViewModel
+        @Environment(\.openWindow) private var openWindow
 
         init(id: String) {
             self.id = id
@@ -86,6 +95,10 @@ enum ConnectDebugScenes {
             } else {
                 content
                     .task {
+                        if id == "connect-how" {
+                            HelpNavigation.shared.open(ConnectBeforeYouStart.helpArticleID)
+                            openWindow(id: HelpCommands.windowID)
+                        }
                         if Self.connectsOnLaunch.contains(id) { await model.connect() }
                     }
             }
@@ -93,19 +106,33 @@ enum ConnectDebugScenes {
 
         @ViewBuilder
         private var content: some View {
-            // Help open or a file hovering are the form alone, as the old
-            // board drew them.
-            if id == "connect-help" || id == "connect-hover" {
-                ConnectView(viewModel: model, showsHelp: id == "connect-help", showsDropHover: id == "connect-hover")
+            // A file hovering is the form alone, as the old board drew it.
+            if id == "connect-hover" {
+                ConnectView(viewModel: model, showsDropHover: true)
                     .navigationTitle("Atlas")
+            } else if Self.isShort(id) {
+                flow
+                    .frame(width: Self.shortSize.width, height: Self.shortSize.height)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                WelcomeFlowView(
-                    checker: ConnectDebugScenes.keyChecker(for: id),
-                    stage: id.hasPrefix("welcome") ? .welcome : .connect,
-                    viewModel: model,
-                    forcesStill: id == "welcome-still"
-                ) { _, _ in connection.isConnected = true }
+                flow
             }
+        }
+
+        private var flow: some View {
+            WelcomeFlowView(
+                checker: ConnectDebugScenes.keyChecker(for: id),
+                stage: id.hasPrefix("welcome") ? .welcome : .connect,
+                viewModel: model,
+                forcesStill: id == "welcome-still"
+            ) { _, _ in connection.isConnected = true }
+        }
+
+        /// Under 680 points high and 900 wide (README-Welcome).
+        static let shortSize = CGSize(width: 860, height: 620)
+
+        static func isShort(_ id: String) -> Bool {
+            id == "connect-short" || id == "welcome-short"
         }
 
         private static let connectsOnLaunch: Set = ["connect-checking", "connect-401", "connect-403", "connect-offline"]
@@ -156,7 +183,7 @@ enum ConnectDebugScenes {
     ) -> ConnectViewModel {
         let model = ConnectViewModel(checker: keyChecker(for: id), onConnect: onConnect)
         switch id {
-        case "connect", "welcome", "welcome-still":
+        case "connect", "connect-how", "welcome", "welcome-still", "welcome-short":
             break
         case "connect-key":
             model.importKey(DebugFixtures.privateKey)

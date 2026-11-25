@@ -90,18 +90,33 @@ struct SectionBadgeCountsTests {
         let summaries = AppSummaryStore(services: .debug)
         summaries.setPricingSuggestionCount(3, for: "1")
         let modes = PricingModeStore(defaults: nil, modes: ["1": .keepPrices])
-        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue()) == 0)
+        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: RetentionDraftStore()) == 0)
     }
 
     @Test func pricingUsesItsExactCountOnceItReadEveryProduct() {
         let summaries = AppSummaryStore(services: .debug)
         let modes = PricingModeStore(defaults: nil)
         // Nothing read yet: no summary, no estimate.
-        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue()) == 0)
+        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: RetentionDraftStore()) == 0)
         summaries.setPricingSuggestionCount(3, for: "1")
-        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue()) == 3)
+        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: RetentionDraftStore()) == 3)
         summaries.invalidate("1")
         #expect(summaries.pricingSuggestionCounts["1"] == nil)
+    }
+
+    /// A shorter retention wording an assistant suggested counts toward
+    /// Pricing, as the Overview's Pricing row counts it, for that app only
+    /// and even when the app keeps its prices.
+    @Test func pricingCountsSuggestedRetentionMessages() {
+        let summaries = AppSummaryStore(services: .debug)
+        let modes = PricingModeStore(defaults: nil, modes: ["1": .keepPrices])
+        let retention = RetentionDraftStore()
+        let suggestion = RetentionSuggestion(messageID: "draft-1", locale: "de-DE", body: "Kurz.", client: "Claude Code")
+        retention.suggest(suggestion, appID: "1")
+        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: retention) == 1)
+        #expect(SectionBadgeCounts.pricingCount(appID: "2", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: retention) == 0)
+        retention.removeSuggestion(appID: "1", messageID: "draft-1", locale: "de-DE")
+        #expect(SectionBadgeCounts.pricingCount(appID: "1", summaries: summaries, modes: modes, changes: ChangeQueue(), retention: retention) == 0)
     }
     #endif
 

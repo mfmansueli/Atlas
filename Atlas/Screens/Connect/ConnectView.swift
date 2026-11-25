@@ -9,11 +9,13 @@ import UniformTypeIdentifiers
 /// First launch (and after the last key is removed): asks for a team API
 /// key (Issuer ID, Key ID and the `.p8` private key), checks it with App
 /// Store Connect and hands it to `AppSession`, which saves it in the
-/// Keychain. "Add Another Key…" shows the same form in a sheet, with Cancel.
+/// Keychain. "Add Another Key…" shows the same form in a sheet, under the
+/// same compact header, with Cancel (the canvas's Welcome `addkey`).
+/// Rewritten 22 November (README-Welcome): "Before you start" makes the key
+/// in three steps, "Then paste it here" takes the three things from it.
 struct ConnectView: View {
     @State private var viewModel: ConnectViewModel
     @State private var isImportingKey = false
-    @State private var isShowingHelp: Bool
     @FocusState private var focusedField: ConnectViewModel.Field?
     /// Shown above the form, e.g. why the saved keys couldn't be loaded.
     private let notice: String?
@@ -26,6 +28,12 @@ struct ConnectView: View {
     /// "Add Another Key…" while a team is connected: the team that stays,
     /// which the header names.
     private let keptTeam: String?
+    /// DEBUG scenes start the check as the view appears.
+    private let startsConnecting: Bool
+    /// Under the welcome header the window's size, in the sheet the
+    /// sheet's, decides what hides and whether the cards sit side by side
+    /// (README-Welcome). Nil shows everything.
+    private let layout: WelcomeLayout?
 
     init(
         checker: any KeyChecker,
@@ -33,7 +41,9 @@ struct ConnectView: View {
         onCancel: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
         keptTeam: String? = nil,
+        layout: WelcomeLayout? = nil,
         prefill: (@MainActor (ConnectViewModel) -> Void)? = nil,
+        startsConnecting: Bool = false,
         onConnect: @escaping (AppStoreConnectCredentials, KeyAccessCheck) throws -> Void
     ) {
         let viewModel = ConnectViewModel(checker: checker, onConnect: onConnect)
@@ -43,62 +53,53 @@ struct ConnectView: View {
             notice: notice,
             onCancel: onCancel,
             onBack: onBack,
-            keptTeam: keptTeam
+            keptTeam: keptTeam,
+            layout: layout,
+            startsConnecting: startsConnecting
         )
     }
 
-    /// With an existing model, for DEBUG scenes and previews, optionally
-    /// with help open or a file hovering over the drop zone.
+    /// With an existing model: under the welcome header, and for DEBUG
+    /// scenes and previews, optionally with a file hovering over the drop
+    /// zone.
     init(
         viewModel: ConnectViewModel,
         notice: String? = nil,
         onCancel: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
         keptTeam: String? = nil,
-        showsHelp: Bool = false,
-        showsDropHover: Bool = false
+        layout: WelcomeLayout? = nil,
+        showsDropHover: Bool = false,
+        startsConnecting: Bool = false
     ) {
         _viewModel = State(initialValue: viewModel)
-        _isShowingHelp = State(initialValue: showsHelp)
+        self.layout = layout
         self.notice = notice
         self.onCancel = onCancel
         self.onBack = onBack
         self.keptTeam = keptTeam
         startsWithDropHover = showsDropHover
+        self.startsConnecting = startsConnecting
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: Spacing.medium) {
-                if onBack != nil {
-                    welcomeTitle
-                } else {
-                    ConnectHeader(
-                        title: isSheet ? "Add Another Key" : "Connect to App Store Connect",
-                        eyebrow: keptTeam.map { _ in AddKeyCopy.eyebrow },
-                        subtitle: keptTeam.map(AddKeyCopy.subtitle(keeping:))
-                    )
-                    .padding(.bottom, Spacing.tiny)
+        Group {
+            // "Add Another Key…": the check gets its own step, with Cancel
+            // back to the filled form (the canvas's `addkey-check`).
+            if let keptTeam, viewModel.isVerifying {
+                AddKeyCheckingView(keptTeam: keptTeam, layout: sheetLayout) { viewModel.cancelConnect() }
+            } else if isSheet {
+                // The sheet draws the welcome's compact header itself; in
+                // the window, `WelcomeFlowView` does.
+                VStack(spacing: 0) {
+                    WelcomeHeader(style: .compact, markSize: sheetLayout.compactMarkSize)
+                        .frame(height: sheetLayout.compactHeaderHeight)
+                    page
                 }
-                if let notice {
-                    InlineMessage.warning(notice)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                form
-                // Under the fields, where the person fixes it (board 45).
-                if let failure = viewModel.failure {
-                    ConnectFailureBanner(failure: failure) { Task { await viewModel.connect() } }
-                }
-                help
-                footer
+            } else {
+                page
             }
-            .frame(maxWidth: 500)
-            .padding(.horizontal, Spacing.xxxLarge)
-            .padding(.vertical, isSheet ? Spacing.xxLarge : (onBack == nil ? Spacing.xxxLarge : Spacing.xLarge))
-            .frame(maxWidth: .infinity)
         }
-        .defaultScrollAnchor(.center, for: .alignment)
-        .scrollBounceBehavior(.basedOnSize)
         .onChange(of: focusedField) { oldValue, _ in
             if let oldValue { viewModel.leave(oldValue) }
         }
@@ -111,95 +112,133 @@ struct ConnectView: View {
             case let .failure(error): viewModel.importFailed(error)
             }
         }
+        .task {
+            if startsConnecting { viewModel.startConnect() }
+        }
+    }
+
+    private var page: some View {
+        ScrollView {
+            VStack(spacing: showsExplanations ? Spacing.large : Spacing.medium) {
+                title
+                if let notice {
+                    InlineMessage.warning(notice)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                cards
+                // Under the fields, where the person fixes it (board 45).
+                if let failure = viewModel.failure {
+                    ConnectFailureBanner(failure: failure) { viewModel.startConnect() }
+                }
+                footer
+            }
+            .frame(maxWidth: 820)
+            .padding(.horizontal, Spacing.xxxLarge)
+            .padding(.vertical, verticalPadding)
+            .frame(maxWidth: .infinity)
+        }
+        .defaultScrollAnchor(.center, for: .alignment)
+        .scrollBounceBehavior(.basedOnSize)
     }
 
     private var isSheet: Bool { onCancel != nil }
 
-    /// Under the welcome header: the title and what the key is for, no
-    /// tile (the header is the icon).
-    private var welcomeTitle: some View {
-        VStack(spacing: Spacing.xSmall) {
-            Text("Connect App Store Connect")
-                .font(.title.weight(.bold))
-                .tracking(-0.4)
+    /// The sheet's layout, or the preferred sheet's when none was given.
+    private var sheetLayout: WelcomeLayout {
+        layout ?? WelcomeLayout(windowSize: AddKeySheetLayout.preferred)
+    }
+
+    /// Below 680 points of height only the steps and the fields stay.
+    private var showsExplanations: Bool { layout?.showsConnectExplanations ?? true }
+
+    /// Below 900 points of width the hints beside the field names hide.
+    private var showsFieldHints: Bool { layout?.showsFieldHints ?? true }
+
+    private var verticalPadding: CGFloat {
+        if onBack == nil, !isSheet { return Spacing.xxxLarge }
+        return showsExplanations ? Spacing.xLarge : Spacing.medium
+    }
+
+    /// Under the header: the step (in the sheet, "Another App Store Connect
+    /// team"), the title and what the key is for, no tile (the header is
+    /// the icon).
+    private var title: some View {
+        VStack(spacing: Spacing.xxSmall) {
+            if let eyebrow {
+                Text(eyebrow)
+                    .atlasTextStyle(.subheadline)
+                    .fontWeight(.semibold)
+                    .textCase(.uppercase)
+                    .foregroundStyle(Palette.accentText)
+                    .accessibilityIdentifier(isSheet ? "connect.eyebrow" : "connect.step")
+            }
+            Text(titleKey)
+                .atlasTextStyle(showsExplanations ? .largeTitle : .title1)
+                .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("connect.title")
-            Text("Atlas uses an App Store Connect API key to read your apps and to push what you approve.")
-                .font(.body)
-                .foregroundStyle(Palette.label2)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 440)
-        }
-        .padding(.bottom, Spacing.tiny)
-    }
-
-    private var form: some View {
-        Card {
-            VStack(alignment: .leading, spacing: Spacing.medium) {
-                ConnectFormField(
-                    title: "Issuer ID",
-                    text: $viewModel.issuerID,
-                    prompt: "69a6de70-0000-0000-0000-000000000000",
-                    issue: viewModel.issuerIDIssue,
-                    identifier: "connect.issuerIDField"
-                )
-                .focused($focusedField, equals: .issuerID)
-                ConnectFormField(
-                    title: "Key ID",
-                    text: $viewModel.keyID,
-                    prompt: "2X9R4HXF34",
-                    width: 160,
-                    issue: viewModel.keyIDIssue,
-                    identifier: "connect.keyIDField"
-                )
-                .focused($focusedField, equals: .keyID)
-                VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                    Text("Private key")
-                        .font(.subheadline.weight(.semibold))
-                    PrivateKeyDropZone(
-                        key: viewModel.privateKey,
-                        rejectedFileName: viewModel.rejectedFileName,
-                        isTargeted: startsWithDropHover,
-                        onChoose: { isImportingKey = true },
-                        onRemove: { viewModel.removeKey() },
-                        onDrop: importKey(at:)
-                    )
-                    if let message = viewModel.importErrorMessage {
-                        InlineMessage.error(message)
-                            .accessibilityIdentifier("connect.importError")
-                    }
-                }
+            if showsExplanations {
+                subtitle
+                    .atlasTextStyle(.title3)
+                    .fontWeight(.regular)
+                    .foregroundStyle(Palette.label2)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 520)
+                    .accessibilityIdentifier("connect.subtitle")
             }
         }
     }
 
-    /// "Where do I find these?": the whole row toggles the steps, not only
-    /// the chevron.
-    private var help: some View {
-        Card(padding: Spacing.medium) {
-            Button {
-                withAnimation(.snappy(duration: 0.2)) { isShowingHelp.toggle() }
-            } label: {
-                HStack(spacing: Spacing.small) {
-                    Image(systemName: "chevron.right")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Palette.label2)
-                        .rotationEffect(.degrees(isShowingHelp ? 90 : 0))
-                        .accessibilityHidden(true)
-                    Text("Where do I find these?")
-                        .font(.callout.weight(.semibold))
-                    Spacer(minLength: 0)
-                }
-                .contentShape(Rectangle())
+    private var titleKey: LocalizedStringKey {
+        isSheet ? "Add Another Key" : "Connect to App Store Connect"
+    }
+
+    /// "Step 1 of 2" on first launch; in the sheet, while another team
+    /// stays connected, "Another App Store Connect team".
+    private var eyebrow: String? {
+        guard isSheet else { return String(localized: "Step 1 of 2", comment: "kind:label") }
+        return keptTeam.map { _ in AddKeyCopy.eyebrow }
+    }
+
+    /// In the sheet, the team that stays connected and where to switch.
+    private var subtitle: Text {
+        if isSheet, let keptTeam { return Text(AddKeyCopy.subtitle(keeping: keptTeam)) }
+        return Text("Atlas uses an App Store Connect key to read your apps and push what you approve. You do this once.")
+    }
+
+    /// Before you start, then the fields: side by side, as in the window
+    /// and the "Add Another Key…" sheet's design, one over the other only
+    /// in a sheet too narrow for both.
+    @ViewBuilder
+    private var cards: some View {
+        if layout?.placesCardsSideBySide ?? true {
+            EqualHeightRow(spacing: Spacing.large) {
+                beforeYouStart
+                fields
             }
-            .buttonStyle(.plain)
-            .accessibilityValue(Text(isShowingHelp ? "Expanded" : "Collapsed"))
-            .accessibilityIdentifier("connect.helpDisclosure")
-            if isShowingHelp {
-                ConnectHelpSteps()
-                    .padding(.leading, Spacing.xLarge)
+        } else {
+            VStack(spacing: Spacing.medium) {
+                beforeYouStart
+                fields
             }
         }
+    }
+
+    private var beforeYouStart: some View {
+        ConnectBeforeYouStart(showsExplanation: showsExplanations)
+    }
+
+    private var fields: some View {
+        ConnectKeyFields(
+            viewModel: viewModel,
+            focusedField: $focusedField,
+            showsExplanation: showsExplanations,
+            showsHints: showsFieldHints,
+            startsWithDropHover: startsWithDropHover,
+            onChooseFile: { isImportingKey = true },
+            onDrop: importKey(at:)
+        )
     }
 
     private var footer: some View {
@@ -219,7 +258,7 @@ struct ConnectView: View {
                     .accessibilityIdentifier("connect.backButton")
             }
             Button {
-                Task { await viewModel.connect() }
+                viewModel.startConnect()
             } label: {
                 HStack(spacing: Spacing.xSmall) {
                     if viewModel.isVerifying {
@@ -253,5 +292,5 @@ struct ConnectView: View {
 
 #Preview {
     ConnectView(checker: LiveKeyChecker()) { _, _ in }
-        .frame(width: 900, height: 760)
+        .frame(width: 1000, height: 760)
 }

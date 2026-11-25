@@ -27,9 +27,7 @@ struct PricingOffersView: View {
         Group {
             switch viewModel.offers {
             case .idle, .loading:
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                PricingOffersSkeleton()
             case let .loaded(offers) where offers.isEmpty && viewModel.queuedSubscriptionOffers.isEmpty:
                 ContentUnavailableView {
                     Label("No offers yet", systemImage: "tag")

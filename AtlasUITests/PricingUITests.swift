@@ -5,9 +5,10 @@
 
 import XCTest
 
-/// The Prices tab of Subscription Pricing, driven through the DEBUG scenes in
-/// `PricingDebugScenes` (sample prices and price points, simulated App Store
-/// Connect; nothing leaves the Mac).
+/// Subscription Pricing's mode, strategy and a product's Prices by Country
+/// (board 73), driven through the DEBUG scenes in `PricingDebugScenes` and
+/// `PricesByCountryPageDebugScenes` (sample prices and price points,
+/// simulated App Store Connect; nothing leaves the Mac).
 @MainActor
 final class PricingUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -27,74 +28,71 @@ final class PricingUITests: XCTestCase {
         element("pricing.modeSheet.option.showSuggestions").click()
         app.buttons["pricing.modeSheet.continue"].click()
         XCTAssertTrue(element("pricing.modeSheet").waitForNonExistence(timeout: 5))
-        XCTAssertTrue(elements(prefixed: "pricing.suggested.").firstMatch.waitForExistence(timeout: 10))
-        XCTAssertTrue(text(of: element("pricing.bottomBar.summary")).contains("likely held back by price"))
-        XCTAssertTrue(app.buttons["pricing.applyRecommended"].exists)
+        XCTAssertTrue(app.buttons.matching(identifier: "pricing.card.accept").firstMatch.waitForExistence(timeout: 20))
     }
 
-    func testApplyRecommendedPricesAddsThemToReviewAndPush() {
-        launch(scene: "pricing-bulk")
-        let apply = app.buttons["pricing.applyRecommended"]
-        XCTAssertTrue(apply.waitForExistence(timeout: 10))
-        waitUntilEnabled(apply)
+    /// Accept All N… asks once (risk level 3), then the prices wait in
+    /// Review & Push.
+    func testAcceptAllAddsThePricesToReviewAndPush() {
+        launch(scene: "pr-prod-acc")
+        let sheet = element("countries.acceptAll")
+        XCTAssertTrue(sheet.waitForExistence(timeout: 20))
+        XCTAssertTrue(app.checkBoxes["countries.acceptAll.keep"].exists)
         let before = reviewCount()
-        apply.click()
-        XCTAssertTrue(element("review.sheet").waitForExistence(timeout: 10))
-        XCTAssertGreaterThan(reviewCount(), before)
-        XCTAssertTrue(element("review.row.price.6450100002.BRA").exists)
+        app.buttons["countries.acceptAll.add"].click()
+        XCTAssertTrue(sheet.waitForNonExistence(timeout: 5))
+        let queued = NSPredicate { _, _ in self.reviewCount() > before }
+        wait(for: [XCTNSPredicateExpectation(predicate: queued, object: app)], timeout: 10)
     }
 
-    func testMultiplyingTheSelectedTerritories() {
-        launch(scene: "pricing-bulk")
-        let count = element("pricing.selectionCount")
-        XCTAssertTrue(count.waitForExistence(timeout: 10))
-        XCTAssertEqual(text(of: count), "4 selected")
-        let before = pendingCount()
-        element("pricing.more").click()
-        let multiply = app.menuItems["Multiply by 0.9"]
-        XCTAssertTrue(multiply.waitForExistence(timeout: 5))
-        multiply.click()
-        let summary = element("pricing.bottomBar.summary")
-        let updated = NSPredicate { _, _ in self.pendingCount() == before + 4 }
-        wait(for: [XCTNSPredicateExpectation(predicate: updated, object: summary)], timeout: 10)
-        XCTAssertTrue(app.buttons["pricing.stepper.up.IND"].exists)
+    /// Turning off Keep their current price shows the amber note.
+    func testRaisingPricesForEveryoneWarns() {
+        launch(scene: "pr-prod-acc")
+        XCTAssertTrue(element("countries.acceptAll").waitForExistence(timeout: 20))
+        XCTAssertFalse(element("countries.acceptAll.consent").exists)
+        app.checkBoxes["countries.acceptAll.keep"].click()
+        XCTAssertTrue(element("countries.acceptAll.consent").waitForExistence(timeout: 5))
     }
 
-    func testKeepMyPricesStaysReadOnly() {
-        launch(scene: "pricing-keep")
-        XCTAssertTrue(element("pricing.matrix").waitForExistence(timeout: 10))
-        XCTAssertTrue(elements(prefixed: "pricing.row.").firstMatch.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.links["pricing.showSuggestions"].exists)
-        XCTAssertEqual(elements(prefixed: "pricing.stepper.").count, 0)
-        XCTAssertEqual(elements(prefixed: "pricing.apply.").count, 0)
-        XCTAssertFalse(app.buttons["pricing.applyRecommended"].exists)
-        elements(prefixed: "pricing.row.").firstMatch.click()
-        XCTAssertFalse(element("pricing.more").exists)
-        XCTAssertFalse(element("pricing.selectionCount").exists)
+    func testKeepPricesHasNoBannerAndKeepsTheStrategy() {
+        launch(scene: "pr-prod-keep")
+        XCTAssertTrue(element("countries.table").waitForExistence(timeout: 20))
+        XCTAssertFalse(element("countries.banner").exists)
+        XCTAssertTrue(element("countries.strategy").exists)
+        XCTAssertEqual(elements(prefixed: "countries.accept.").count, 0)
     }
 
-    func testTheProposedPriceOpensItsBreakdown() {
-        launch(scene: "pricing-applied")
-        let search = element("pricing.search")
-        XCTAssertTrue(search.waitForExistence(timeout: 10))
-        search.click()
-        search.typeText("Brazil")
-        let proposed = app.buttons["pricing.proposed.BRA"]
-        XCTAssertTrue(proposed.waitForExistence(timeout: 10))
-        proposed.click()
-        let popover = element("pricing.breakdownPopover")
-        XCTAssertTrue(popover.waitForExistence(timeout: 5))
-        app.buttons["pricing.breakdown.done"].click()
+    /// The popover on a suggestion says why, and Accept takes its price.
+    func testASuggestionOpensWhy() {
+        launch(scene: "pr-prod-why")
+        let popover = element("countries.popover")
+        XCTAssertTrue(popover.waitForExistence(timeout: 20))
+        XCTAssertTrue(element("countries.popover.why").exists)
+        XCTAssertTrue(app.buttons["countries.popover.set"].label.hasPrefix("Accept "))
+        let before = reviewCount()
+        app.buttons["countries.popover.set"].click()
         XCTAssertTrue(popover.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(element("toast.undo").waitForExistence(timeout: 5))
+        XCTAssertGreaterThan(reviewCount(), before)
     }
 
-    /// ⌘R, and the refresh after a push, show the skeleton under the filter
-    /// bar until the prices are back; that once crashed AppKit's layout.
+    func testFiltersSayWhatTheyKeep() {
+        launch(scene: "pr-prod-filters")
+        let line = element("countries.filterLine.text")
+        XCTAssertTrue(line.waitForExistence(timeout: 20))
+        XCTAssertTrue(text(of: line).hasPrefix("Europe · Increases only · "), text(of: line))
+        app.typeKey(.escape, modifierFlags: [])
+        element("countries.filterLine.clear").click()
+        XCTAssertTrue(element("countries.filterLine").waitForNonExistence(timeout: 5))
+    }
+
+    /// ⌘R, and the refresh after a push, show the skeleton until the
+    /// prices are back; that once crashed AppKit's layout.
     func testRefreshShowsTheSkeletonThenThePrices() {
         launch(scene: "pricing-refresh")
-        XCTAssertTrue(element("pricing.skeleton").waitForExistence(timeout: 10))
-        XCTAssertTrue(element("pricing.matrix").waitForExistence(timeout: 10))
-        XCTAssertFalse(element("pricing.skeleton").exists)
+        XCTAssertTrue(element("countries.skeleton").waitForExistence(timeout: 10))
+        XCTAssertTrue(element("countries.table").waitForExistence(timeout: 10))
+        XCTAssertFalse(element("countries.skeleton").exists)
         XCTAssertEqual(app.state, .runningForeground)
     }
 
@@ -122,18 +120,5 @@ final class PricingUITests: XCTestCase {
     private func reviewCount() -> Int {
         let value = app.buttons["workspace.reviewPushButton"].value as? String ?? ""
         return Int(value.prefix { $0.isNumber }) ?? 0
-    }
-
-    /// The product's pending count, from the bottom bar's "… · N pending".
-    private func pendingCount() -> Int {
-        let summary = text(of: element("pricing.bottomBar.summary"))
-        guard let range = summary.range(of: " pending", options: .backwards) else { return -1 }
-        let digits = summary[..<range.lowerBound].reversed().prefix { $0.isNumber }
-        return Int(String(digits.reversed())) ?? -1
-    }
-
-    private func waitUntilEnabled(_ element: XCUIElement) {
-        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isEnabled == true"), object: element)
-        wait(for: [enabled], timeout: 10)
     }
 }

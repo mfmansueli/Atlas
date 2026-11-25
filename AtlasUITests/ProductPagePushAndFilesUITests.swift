@@ -40,6 +40,25 @@ final class ProductPagePushAndFilesUITests: XCTestCase {
         XCTAssertTrue(waitUntil { thisApp.isSelected || (thisApp.value as? Int) == 1 })
     }
 
+    /// The board's page push sheet (cp-push…) is Review & Push on the page:
+    /// ready with the switch to the app's changes, and pushing the page.
+    func testThePushScenesOpenReviewAndPushOnThePage() {
+        app.launch(debugScene: "cp-push")
+        XCTAssertTrue(element("review.sheet").waitForExistence(timeout: 15))
+        let scope = element("review.scope")
+        XCTAssertTrue(scope.waitForExistence(timeout: 5))
+        let page = scope.radioButtons.matching(NSPredicate(format: "label BEGINSWITH %@", "Private diary")).firstMatch
+        XCTAssertTrue(page.exists, scope.debugDescription)
+        attach("cp-push")
+        app.terminate()
+
+        app.launch(debugScene: "cp-push-partial")
+        XCTAssertTrue(element("review.sheet").waitForExistence(timeout: 15))
+        let failed = app.staticTexts.matching(NSPredicate(format: "value CONTAINS %@ OR label CONTAINS %@", "didn’t go in", "didn’t go in")).firstMatch
+        XCTAssertTrue(failed.waitForExistence(timeout: 15))
+        attach("cp-push-partial")
+    }
+
     func testChosenScreenshotsWaitInReviewAndPush() {
         app.launch(debugScene: "cp-files")
         let queued = element("pages.screenshots.queued")

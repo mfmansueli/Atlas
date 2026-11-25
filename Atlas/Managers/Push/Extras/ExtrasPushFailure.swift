@@ -31,17 +31,17 @@ enum ExtrasPushFailure: Error, Hashable, Sendable {
     var text: String {
         switch self {
         case let .file(detail):
-            return String(localized: "Couldn’t read the file (\(detail)). Nothing was pushed.")
+            return String(localized: "Couldn’t read the file (\(detail)). Nothing was sent.")
         case let .noLibrary(detail):
-            return String(localized: "App Store Connect has no asset library for this app (\(detail)). Nothing was pushed.")
+            return String(localized: "App Store Connect has no asset library for this app (\(detail)). Nothing was sent.")
         case let .noMatchingGroup(placementType, pixelSize, isVideo, accepted):
             let place = ExtrasPushKind.name(ofPlacementType: placementType)
             let file = isVideo ? String(localized: "a \(pixelSize.title) video") : String(localized: "a \(pixelSize.title) image")
-            guard !accepted.isEmpty else { return String(localized: "App Store Connect doesn’t take \(file) for \(place). Nothing was pushed.") }
+            guard !accepted.isEmpty else { return String(localized: "App Store Connect doesn’t take \(file) for \(place). Nothing was sent.") }
             let sizes = accepted.map(\.title).formatted(.list(type: .or))
             // "the product page header" starts this sentence.
             let opening = place.prefix(1).uppercased() + place.dropFirst()
-            return String(localized: "\(opening) takes \(sizes), not \(file). Nothing was pushed.")
+            return String(localized: "\(opening) takes \(sizes), not \(file). Nothing was sent.")
         case let .part(part, count, timedOut, detail):
             if timedOut { return String(localized: "Part \(part) of \(count) timed out. Nothing was placed. Try again.") }
             return String(localized: "Part \(part) of \(count) failed (\(detail)). Nothing was placed. Try again.")
@@ -52,7 +52,7 @@ enum ExtrasPushFailure: Error, Hashable, Sendable {
             return String(localized: "The file is with Apple but still processing. Retry Failed places it once ready.")
         case let .previewsFull(group, limit):
             return String(
-                localized: "\(group) is full at \(limit) App Previews. Nothing was pushed."
+                localized: "\(group) is full at \(limit) App Previews. Nothing was sent."
             )
         case let .placing(detail, restored):
             if restored { return String(localized: "Couldn’t place it (\(detail)). The old one was restored.") }

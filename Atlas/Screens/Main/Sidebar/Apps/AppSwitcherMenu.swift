@@ -60,7 +60,12 @@ struct AppSwitcherMenu: View {
     @ViewBuilder
     private var apps: some View {
         let visible = viewModel.sortedVisibleApps(indicators: indicators)
-        if visible.isEmpty {
+        if viewModel.isLoading, viewModel.apps.isEmpty {
+            // The rows to come, not "No apps", while the first read runs.
+            SkeletonRows(count: 3)
+                .padding(.horizontal, Spacing.xSmall)
+                .loadingSkeleton(LoadingCopy.apps, identifier: "sidebar.appMenu.loading")
+        } else if visible.isEmpty {
             Text(viewModel.searchText.isEmpty ? String(localized: "No apps") : String(localized: "No app matches “\(viewModel.searchText)”"))
                 .font(.callout)
                 .foregroundStyle(Palette.label2)
@@ -156,7 +161,7 @@ struct AppSwitcherMenu: View {
 
     private func footerText(now: Date) -> String {
         if viewModel.isLoading, viewModel.apps.isEmpty {
-            return String(localized: "Reading apps from App Store Connect…")
+            return LoadingCopy.apps.line ?? LoadingCopy.apps.spoken
         }
         let count = String(localized: "\(viewModel.apps.count) apps")
         guard let synced = viewModel.lastSyncedAt else { return count }

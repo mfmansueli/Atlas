@@ -45,6 +45,15 @@ struct StorePageVersion: Identifiable, Hashable, Sendable {
 
     static let iOSPlatform = "IOS"
 
+    /// A new version waiting in Review & Push (`QueuedAppVersion`): App
+    /// Store Connect creates it when the person pushes.
+    var isQueued: Bool { Self.isQueued(id: id) }
+
+    /// Whether `id` is a queued version's placeholder.
+    static func isQueued(id: String) -> Bool {
+        id.hasPrefix(QueuedVersionPlaceholder.opening)
+    }
+
     /// "macOS"; nil for a platform without a name here.
     var platformTitle: String? { Self.title(ofPlatform: platform) }
 
@@ -68,12 +77,19 @@ struct StorePageVersion: Identifiable, Hashable, Sendable {
     /// The picker's row, with the platform when `versions` have several:
     /// "1.0 · Prepare for Submission · macOS".
     func pickerTitle(among versions: [StorePageVersion]) -> String {
-        withPlatform(listingVersion.pickerTitle, among: versions)
+        guard !isQueued else { return withPlatform(String(localized: "\(versionString) · In Review & Push", comment: "kind:label · the version picker's row of a new version not pushed yet"), among: versions) }
+        return withPlatform(listingVersion.pickerTitle, among: versions)
+    }
+
+    /// The picker's second line: "Created when you push" for a queued one.
+    var pickerSubtitle: String {
+        isQueued ? String(localized: "Created when you push", comment: "kind:label · the version picker's second line") : listingVersion.pickerSubtitle
     }
 
     /// "Version 1.0 · Prepare for Submission · macOS", likewise.
     func title(among versions: [StorePageVersion]) -> String {
-        withPlatform(listingVersion.title, among: versions)
+        guard !isQueued else { return withPlatform(String(localized: "Version \(versionString) · In Review & Push", comment: "kind:label · the version picker of a new version not pushed yet"), among: versions) }
+        return withPlatform(listingVersion.title, among: versions)
     }
 
     private func withPlatform(_ text: String, among versions: [StorePageVersion]) -> String {

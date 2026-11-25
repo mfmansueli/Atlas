@@ -92,6 +92,16 @@ struct ReviewChangeRow: View {
                 artworkThumbnail(artwork)
                     .padding(.leading, 26)
             }
+            // A product's App Review screenshot: the image the push uploads
+            // (README — Pricing: review screenshots, Review & Push).
+            if let screenshot = PurchaseReviewScreenshotChangeBuilder.screenshot(in: change) {
+                ReviewShotThumbnail(
+                    url: URL(filePath: screenshot.path), width: 36,
+                    label: String(localized: "Review screenshot for \(change.title)", comment: "kind:accessibility-label")
+                )
+                .padding(.leading, 26)
+                .accessibilityIdentifier("review.reviewScreenshot.\(change.id)")
+            }
             if let option = change.option {
                 ReviewChangeOptionView(changeID: change.id, option: option, onSet: onSetOption)
                     .padding(.leading, 26)

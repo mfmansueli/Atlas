@@ -23,6 +23,10 @@ struct ReleaseProposalSubmission: Hashable, Codable, Sendable {
     var encryption: String?
     /// The events that go with the version; nil leaves the sheet's ticks.
     var eventIDs: [InAppEvent.ID]?
+    /// false submits without pushing what waits in Review & Push first
+    /// (the sheet's "Push the changes first" off); nil pushes them, as the
+    /// sheet starts.
+    var pushesChanges: Bool?
 
     var timing: ReleaseTiming {
         ReleaseTiming(releaseType: releaseType, earliestReleaseDate: releaseDate)
@@ -44,6 +48,7 @@ struct ReleaseProposalSubmission: Hashable, Codable, Sendable {
         }
         lines.append(isPhased ? String(localized: "Phased Release over 7 days") : String(localized: "Everyone on the first day"))
         if let answer = encryptionAnswer { lines.append(answer.title) }
+        if pushesChanges == false { lines.append(String(localized: "Without pushing what waits in Review & Push", comment: "kind:label")) }
         if let eventIDs {
             lines.append(eventIDs.isEmpty
                 ? String(localized: "No In-App Events")

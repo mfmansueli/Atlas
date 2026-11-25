@@ -32,6 +32,15 @@ struct ReviewShotsAskPromptTests {
         #expect(!prompt.contains("\"<url>"))
     }
 
+    /// A product it can't capture is reported, not left out: skipped, or
+    /// a check that failed twice; without prices, the image it saw.
+    @Test func itReportsWhatItCouldntCapture() {
+        let prompt = ReviewShotsAskPrompt.text(app: "Lumen", appID: "app1", products: products, route: nil)
+        #expect(prompt.contains("status \"check_failed\""))
+        #expect(prompt.contains("status \"skipped\""))
+        #expect(prompt.contains("sawFileId"))
+    }
+
     @Test func theAppGoesByItsShortName() {
         #expect(ReviewShotsAskPrompt.shortName("Bruma – Gay Dating Nearby") == "Bruma")
         #expect(ReviewShotsAskPrompt.shortName("Alba: Daily Motivation") == "Alba")

@@ -40,6 +40,7 @@ struct TranslationSuggestionsView: View {
                     }
                 }
             }
+            .leavesChatRoom()
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("storePage.suggestions")

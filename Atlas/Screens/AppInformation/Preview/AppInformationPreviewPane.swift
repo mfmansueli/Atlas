@@ -35,9 +35,11 @@ struct AppInformationPreviewPane: View {
                 Text("Information")
                     .font(.subheadline.weight(.semibold))
                 Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 5) {
+                    if let seller = viewModel.sellerName, !seller.isEmpty {
+                        row(String(localized: "Seller", comment: "kind:field-label"), AppStorePreviewText(value: seller))
+                    }
                     row(String(localized: "Category"), category)
-                    let rating = viewModel.ratingPreview?.effective.title ?? String(localized: "Not rated yet")
-                    row(String(localized: "Age Rating"), AppStorePreviewText(value: rating))
+                    row(String(localized: "Age Rating"), ageRating)
                     row(String(localized: "Copyright"), copyright)
                     if let languages {
                         row(String(localized: "Languages"), AppStorePreviewText(value: languages))
@@ -89,6 +91,12 @@ struct AppInformationPreviewPane: View {
         if let primary = suggested(.primaryCategory) { return primary }
         let current = viewModel.general?.primaryCategory.map { AppCategory.name(for: $0) } ?? ""
         return AppStorePreviewText(value: current)
+    }
+
+    /// Now | Suggested: with Suggested, the answers suggested for the
+    /// questions on top.
+    private var ageRating: AppStorePreviewText {
+        viewModel.agePreviewText(showsSuggested: showsSuggested) ?? AppStorePreviewText(value: String(localized: "Not rated yet"))
     }
 
     private var copyright: AppStorePreviewText {

@@ -136,18 +136,17 @@ final class ReviewsViewModel {
         themeFilter.flatMap { id in archive.themes.first { $0.id == id } }
     }
 
-    var emptyText: String {
-        if themeFilter == nil, territoryFilter == nil, filter == .needsReply, !reviews.isEmpty {
-            return String(localized: "Every review that needs a reply has one.")
-        }
-        return String(localized: "No reviews here.")
-    }
-
     /// The suggested reply a review shows: Pro, no reply yet, not
     /// dismissed, not being edited.
     func suggestion(for review: AppReview) -> ReviewReplySuggestion? {
         guard isPro, editingID != review.id else { return nil }
         return archive.openSuggestion(for: review)
+    }
+
+    /// A new text suggested for the reply the review already has.
+    func replacement(for review: AppReview) -> ReviewReplySuggestion? {
+        guard isPro, editingID != review.id else { return nil }
+        return archive.openReplacement(for: review)
     }
 
     func isDismissed(_ review: AppReview) -> Bool {

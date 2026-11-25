@@ -29,11 +29,11 @@ struct SuggestionsMenuItems: View {
                 Toggle("Only Fields with Suggestions or Changes", isOn: $showsOnlyFields)
                     .accessibilityIdentifier("suggestions.onlyFields")
             }
-            Button("Dismiss All Here", action: onDismissAll)
+            Button("Dismiss All Here", systemImage: "xmark.circle", action: onDismissAll)
                 .disabled(model.visibleCount == 0)
                 .accessibilityIdentifier("suggestions.dismissAll")
             if model.dismissedCount > 0 {
-                Button(String(localized: "Restore \(model.dismissedCount) Dismissed"), action: onRestore)
+                Button(String(localized: "Restore \(model.dismissedCount) Dismissed"), systemImage: "arrow.uturn.backward", action: onRestore)
                     .accessibilityIdentifier("suggestions.restore")
             }
         }

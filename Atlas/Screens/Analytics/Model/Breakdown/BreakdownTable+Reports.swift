@@ -27,6 +27,9 @@ extension BreakdownTable {
         let allAfter = AfterDownloadNumbers.make(reports, period: period)
         subscribers = hasSubscribers ? all : nil
         afterDownload = hasAfter ? allAfter : nil
+        // The new columns link subscribers to the rows: the footer says so
+        // instead of "Subscriptions aren't linked".
+        footer = Self.footer(dimension, hasSales: true, linksSubscribers: hasSubscribers, hasSample: hasAfter)
         let dimension = dimension
         rows = rows.map { row in
             var row = row

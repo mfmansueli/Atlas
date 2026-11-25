@@ -37,6 +37,7 @@ struct InAppPurchaseOfferCodeDetail: View {
             .padding(.vertical, Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .leavesChatRoom()
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.iapOfferDetail")
     }

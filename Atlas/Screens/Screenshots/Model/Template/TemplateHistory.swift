@@ -67,6 +67,22 @@ struct TemplateHistory: Codable, Hashable, Sendable {
         }
     }
 
+    /// A whole template an assistant proposed (a starter, or going back to
+    /// an older version) saved as the next version, as long as the
+    /// template is still the version it was based on.
+    mutating func acceptWhole(
+        _ template: ScreenshotTemplate, basedOn: Int, from client: String, reason: String, date: Date
+    ) -> Result<TemplateVersion, TemplateRefusals> {
+        guard let current else {
+            return .failure(TemplateRefusals(items: [TemplateRefusal(path: "", kind: .stale, reason: String(localized: "There’s no template yet."))]))
+        }
+        guard basedOn == current.number else {
+            let reason = String(localized: "The suggestion is based on v\(basedOn); the template is now v\(current.number).")
+            return .failure(TemplateRefusals(items: [TemplateRefusal(path: "", kind: .stale, reason: reason)]))
+        }
+        return .success(append(template, date: date, author: .assistant(client: client), note: reason, restoredFrom: nil))
+    }
+
     /// Makes a new version from an old one; the old one stays in history.
     @discardableResult
     mutating func restore(_ number: Int, date: Date, author: ChangeSource = .you) -> TemplateVersion? {

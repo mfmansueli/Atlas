@@ -26,7 +26,10 @@ struct ProposeListingTextTool: MCPTool {
         \(ListingField.mcpNames.joined(separator: ", ")). Pass `version` with a new version queued with \
         propose_app_version to write its texts (whatsNew, description, keywords…, and name, subtitle and privacy \
         URLs, which only change with a new version) before it's in App Store Connect: they wait with it in \
-        Review & Push, go into it right after Atlas creates it, and are discarded with it.
+        Review & Push, go into it right after Atlas creates it, and are discarded with it. \
+        To add a language the App Store page doesn't have, name it in addLanguages and send its texts (name and \
+        description at least) in the same call: its page waits in Review & Push until the person accepts it, and is \
+        created when they push. platform (ios, macos, visionos, tvos) writes another platform's version.
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withConfidence([
@@ -34,6 +37,11 @@ struct ProposeListingTextTool: MCPTool {
                 "version": MCPToolDefinition.string(
                     "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
                 ),
+                "platform": MCPStorePlatform.schema,
+                "addLanguages": [
+                    "type": "array", "items": ["type": "string"],
+                    "description": "Locale codes of languages to add to the App Store page, with their texts in proposals.",
+                ],
                 "locale": MCPToolDefinition.string("An App Store Connect locale code, e.g. de-DE."),
                 "field": MCPToolDefinition.string("The field, e.g. subtitle or whatsNew."),
                 "text": MCPToolDefinition.string("The proposed text, within the field's limit."),
@@ -88,10 +96,13 @@ struct ProposeListingTextTool: MCPTool {
         } ?? [Proposal(arguments)]
 
         var draft = try await MCPListingDraft.load(
-            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+            app: arguments.string("appId"), version: arguments.optionalString("version"), platform: arguments.optionalString("platform"),
+            in: context.workspace
         )
+        try draft.addLanguages(arguments.optionalStrings("addLanguages") ?? [])
         let outcomes = proposals.map { draft.propose($0.text, for: $0.field, locale: $0.locale, by: context.clientName) }
         let changeIDs = draft.commit(to: context.workspace.changes)
+        draft.holdAddedLanguages(in: context.workspace.changes)
 
         var results: [JSONValue] = []
         var logLines: [MCPToolOutcome.LogLine] = []
@@ -105,13 +116,17 @@ struct ProposeListingTextTool: MCPTool {
             results.append(Self.result(proposal, outcome: outcome, changeID: changeID))
             logLines.append(Self.logLine(proposal, outcome: outcome, target: draft.target(locale: proposal.locale, field: proposal.field)))
         }
-        guard batch != nil else { return MCPToolOutcome(result: results[0], isError: false, logLines: logLines) }
-        let summary: JSONValue = [
+        guard batch != nil || !draft.addedLanguages.isEmpty else { return MCPToolOutcome(result: results[0], isError: false, logLines: logLines) }
+        var summary: [String: JSONValue] = [
             "results": .array(results),
             "queued": .int(settled.count(where: \.isQueued)),
             "refused": .int(settled.count(where: \.isRefused)),
         ]
-        return MCPToolOutcome(result: summary, isError: false, logLines: logLines)
+        if !draft.addedLanguages.isEmpty {
+            summary["addedLanguages"] = .array(draft.addedLanguages.map { .string($0.code) })
+            summary["note"] = "Each added language's page waits in Review & Push until the person accepts it."
+        }
+        return MCPToolOutcome(result: .object(summary), isError: false, logLines: logLines)
     }
 
     private static func result(_ proposal: Proposal, outcome: ListingProposalOutcome, changeID: PendingChange.ID?) -> JSONValue {

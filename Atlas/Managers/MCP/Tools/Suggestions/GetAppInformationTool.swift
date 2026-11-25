@@ -142,6 +142,8 @@ struct GetAppInformationTool: MCPTool {
                 "device": .string(family.mcpName),
                 "name": .string(family.name),
                 "declared": .bool(draft.slots.card(for: family)?.shown != nil),
+                "hasDraft": .bool(draft.slots.card(for: family)?.draftID != nil),
+                "draftDeletionWaits": .bool(draft.slots.card(for: family)?.isDeletionQueued == true),
                 "features": .object(Dictionary(uniqueKeysWithValues: features)),
             ]
         }

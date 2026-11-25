@@ -5,46 +5,51 @@
 
 import SwiftUI
 
-/// The first download: a skeleton of the funnel over what's being read.
+/// The first download (an-loading): a static skeleton of the funnel over
+/// what's being read, each of Apple's reports ticked as it arrives. No
+/// spinner: the steps are the progress, counted.
 struct AnalyticsLoadingView: View {
     let appName: String
     /// Steps already finished.
     let finished: Int
 
     var body: some View {
+        let message = LoadingCopy.analytics(appName: appName)
         VStack(spacing: Spacing.large) {
             HStack(spacing: Spacing.small) {
                 ForEach(0..<5, id: \.self) { _ in
-                    SkeletonBlock(height: 74)
+                    SkeletonBlock(height: Metrics.skeletonFunnelStageHeight, cornerRadius: Radius.card)
                 }
             }
+            .frame(minWidth: 0)
             .accessibilityHidden(true)
             Card {
-                Text("Downloading Apple’s reports for \(appName)…")
-                    .font(.body.weight(.semibold))
+                Text(message.line ?? message.spoken)
+                    .atlasTextStyle(.headline)
+                    .fixedSize(horizontal: false, vertical: true)
                 ForEach(Array(AnalyticsActivity.steps.enumerated()), id: \.offset) { index, step in
                     HStack(spacing: Spacing.small) {
-                        if index < finished {
-                            Image(systemName: "checkmark").foregroundStyle(Palette.label2)
-                        } else if index == finished {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Image(systemName: "circle").foregroundStyle(Palette.label3)
-                        }
+                        Image(systemName: index < finished ? "checkmark" : "circle")
+                            .foregroundStyle(index < finished ? Palette.label2 : Palette.label3)
+                            .frame(width: Metrics.symbolColumn)
+                            .accessibilityHidden(true)
                         Text(step).foregroundStyle(index <= finished ? Palette.label : Palette.label3)
                     }
-                    .font(.callout)
-                    .accessibilityElement(children: .combine)
+                    .atlasTextStyle(.callout)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(index < finished ? String(localized: "\(step), done", comment: "kind:label") : step))
                 }
                 Text("The first download includes earlier data, so it takes a minute.")
-                    .font(.subheadline)
+                    .atlasTextStyle(.subheadline)
                     .foregroundStyle(Palette.label2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(width: 420)
-            Spacer()
+            .frame(maxWidth: Metrics.skeletonAnalyticsCardWidth)
+            Spacer(minLength: 0)
         }
         .padding(.top, Spacing.xSmall)
         .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text(message.spoken))
         .accessibilityIdentifier("analytics.loading")
     }
 }

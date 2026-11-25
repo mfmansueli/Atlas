@@ -34,7 +34,10 @@ struct GetListingTool: MCPTool {
         with suggest_fields; only the person adds their pages. Pass `version` with a new version queued with \
         propose_app_version (get_app_versions' `queued`) to read it before it's in App Store Connect: its fields \
         start from the version before it and are editable, `version.queued` is true, and texts proposed for it with \
-        propose_listing_text or suggest_fields (with the same `version`) wait with it in Review & Push.
+        propose_listing_text or suggest_fields (with the same `version`) wait with it in Review & Push. \
+        `version` may also name an older version App Store Connect has (read-only, e.g. to see what a past \
+        release said); `versions` lists them all. `platform` (ios, macos, visionos, tvos) reads another platform's \
+        version: an app's iOS and macOS pages have their own texts.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -42,6 +45,7 @@ struct GetListingTool: MCPTool {
                 "version": MCPToolDefinition.string(
                     "A version, e.g. 1.2: the one being prepared (when left out), or a new one queued with propose_app_version."
                 ),
+                "platform": MCPStorePlatform.schema,
                 "locales": [
                     "type": "array",
                     "items": ["type": "string"],
@@ -62,7 +66,8 @@ struct GetListingTool: MCPTool {
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let draft = try await MCPListingDraft.load(
-            app: arguments.string("appId"), version: arguments.optionalString("version"), in: context.workspace
+            app: arguments.string("appId"), version: arguments.optionalString("version"), platform: arguments.optionalString("platform"),
+            readsOlder: true, in: context.workspace
         )
         let listing = draft.listing
         let locales = try draft.locales(arguments.optionalStrings("locales"))
@@ -92,6 +97,7 @@ struct GetListingTool: MCPTool {
                 Self.entry(for: $0, in: listing, fields: shown, isNew: draft.isNewLanguage($0) || draft.isUnpushed($0))
             }),
             "languagesNotOnAppStore": draft.languagesNotOnAppStoreJSON,
+            "versions": MCPStorePlatform.versionsJSON(draft.content),
         ]
         let unavailable = ListingField.allCases.filter { requested?.contains($0) == true && !shown.contains($0) }
         if !unavailable.isEmpty {

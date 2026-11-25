@@ -69,6 +69,10 @@ final class FieldSuggestionStore {
         review.dismissedIDs.contains(suggestion.id)
     }
 
+    func isAccepted(_ suggestion: FieldSuggestion) -> Bool {
+        review.acceptedIDs.contains(suggestion.id)
+    }
+
     /// An app's suggestions in `scope` (every scope when nil), or in `area`.
     func all(for appID: StoreApp.ID, scope: SuggestionScope? = nil, area: SuggestionArea? = nil) -> [FieldSuggestion] {
         suggestions.filter { suggestion in
@@ -137,7 +141,8 @@ final class FieldSuggestionStore {
     /// changes nothing, unless it comes with another reason, evidence or
     /// layers (details, how sure, gloss), which the open one takes (its id
     /// stays). `runID` is the Suggest
-    /// Everything run it was sent with.
+    /// Everything run it was sent with; `origin` the reason Atlas started the
+    /// run it came from (a Look for Improvements run), kept on a new one.
     @discardableResult
     func add(
         appID: StoreApp.ID,
@@ -147,7 +152,8 @@ final class FieldSuggestionStore {
         source: SuggestionSource,
         evidence: [SuggestionEvidence] = [],
         layers: SuggestionLayers? = nil,
-        runID: SuggestionRun.ID? = nil
+        runID: SuggestionRun.ID? = nil,
+        origin: ChangeOrigin? = nil
     ) -> (suggestion: FieldSuggestion, outcome: SuggestionAddOutcome) {
         let sameField = suggestions.filter { $0.appID == appID && $0.target == target && $0.source == source && isOpen($0) }
         if var existing = sameField.first(where: { $0.value == value }) {
@@ -177,7 +183,8 @@ final class FieldSuggestionStore {
             source: source,
             evidence: evidence,
             layers: layers,
-            createdAt: now()
+            createdAt: now(),
+            origin: origin
         )
         nextNumber += 1
         let replacedIDs = Set(sameField.map(\.id))

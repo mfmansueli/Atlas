@@ -6,8 +6,9 @@
 import Foundation
 
 // New Version…: a version to create in App Store Connect, queued as one
-// change in Review & Push ("Create version 1.5"). Once it's pushed, the
-// Store Page reloads and opens on it, the newest editable version.
+// change in Review & Push ("Create version 1.5"). The Store Page opens on
+// it right away: its texts wait with it and go in once the push creates
+// it. After the push, the Store Page reloads on App Store Connect's own.
 extension StorePageViewModel {
     private var newVersionBuilder: NewAppVersionChangeBuilder { NewAppVersionChangeBuilder(appID: app.id) }
 
@@ -65,7 +66,7 @@ extension StorePageViewModel {
         guard newVersionProblem(version) == nil else { return false }
         queue.upsert(newVersionBuilder.change(for: version, showsPlatform: newVersionPlatforms.count > 1))
         sheet = nil
-        toast = ToastMessage(text: String(localized: "Version \(version.versionString) waits in Review & Push. Once it’s pushed, edit its texts here."))
+        toast = ToastMessage(text: String(localized: "Version \(version.versionString) waits in Review & Push. Its texts here go in with it.", comment: "kind:toast"))
         return true
     }
 }

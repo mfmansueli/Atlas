@@ -5,8 +5,9 @@
 
 import Foundation
 
-/// How the Prices tab shows territories: the matrix, the tile map or the
-/// histogram of distances from Apple's equalized price.
+/// How Prices by Country shows a product's countries (board 73): the
+/// table, a tile map coloured by how prices feel for local incomes, or a
+/// histogram of prices in US dollars. Filters apply to all three.
 enum PricingDisplay: String, CaseIterable, Hashable, Sendable {
     case table
     case map
@@ -14,9 +15,9 @@ enum PricingDisplay: String, CaseIterable, Hashable, Sendable {
 
     var title: String {
         switch self {
-        case .table: String(localized: "Table")
-        case .map: String(localized: "Tile map")
-        case .histogram: String(localized: "Histogram")
+        case .table: String(localized: "Table", comment: "kind:segment")
+        case .map: String(localized: "Map", comment: "kind:button")
+        case .histogram: String(localized: "Histogram", comment: "kind:segment")
         }
     }
 
@@ -24,7 +25,7 @@ enum PricingDisplay: String, CaseIterable, Hashable, Sendable {
         switch self {
         case .table: "tablecells"
         case .map: "map"
-        case .histogram: "chart.bar"
+        case .histogram: "chart.bar.xaxis"
         }
     }
 }

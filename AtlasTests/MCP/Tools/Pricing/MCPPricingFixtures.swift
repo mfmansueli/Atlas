@@ -24,11 +24,12 @@ enum MCPPricingFixtures {
         changes: ChangeQueue = ChangeQueue(),
         modes: [StoreApp.ID: PricingMode] = [tempo: .keepPrices],
         commission: Commission = .smallBusiness,
-        pricing: (any PricingServices)? = nil
+        pricing: (any PricingServices)? = nil,
+        pricingModes: PricingModeStore? = nil
     ) async throws -> MCPToolOutcome {
         let workspace = MCPTestFixtures.workspace(
             changes: changes,
-            pricingModes: PricingModeStore(defaults: nil, modes: modes),
+            pricingModes: pricingModes ?? PricingModeStore(defaults: nil, modes: modes),
             pricing: pricing,
             commission: commission
         )
@@ -43,6 +44,18 @@ enum MCPPricingFixtures {
         let current = try #require(sheet.prices[territoryID]?.current)
         let point = try #require(sheet.ladders[territoryID]?.point(at: PricingFixtures.money(price)))
         return PriceChangeFactory(appID: lumen, product: product).change(for: territory, from: current, to: point, source: source)
+    }
+
+    /// Lumen's DEBUG price sheet for one product.
+    static func sheet(_ productID: String) throws -> ProductPriceSheet {
+        let product = try #require(DebugPricingCatalog.catalog(for: lumen).product(id: productID))
+        return DebugPriceSheets.sheet(for: product, commission: .smallBusiness, canReadSales: true)
+    }
+
+    /// The results of a batch call, by territory.
+    static func results(_ outcome: MCPToolOutcome) throws -> [String: JSONValue] {
+        let list = try #require(outcome.result["results"]?.arrayValue)
+        return Dictionary(list.map { ($0["territory"]?.stringValue ?? "", $0) }) { first, _ in first }
     }
 
     static func changeID(_ territoryID: String) -> String {

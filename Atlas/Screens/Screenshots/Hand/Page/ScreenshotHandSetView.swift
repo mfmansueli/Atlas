@@ -7,25 +7,30 @@ import SwiftUI
 
 /// One language's set on one device, to change by hand: the size it needs
 /// and how many there are (or the selected screenshot's bar), the banner of
-/// a language that uses the primary one's, the screenshots in order and the
+/// a language that uses the primary one's, the App Previews first (as on
+/// the App Store; clicking one plays it), the screenshots in order and the
 /// Add Screenshots tile. Files dropped anywhere on the set are added.
 struct ScreenshotHandSetView: View {
     @Bindable var viewModel: ScreenshotsViewModel
     let locale: StoreLocale
     let width: CGFloat
 
+    @Environment(ChangeQueue.self) private var queue
     @State private var isTargeted = false
+    /// The App Preview playing in its sheet.
+    @State private var playing: LanguagePageAppPreview?
 
     private var display: ScreenshotDisplayType { viewModel.displayType }
 
     var body: some View {
         let items = viewModel.handPageItems(locale: locale.code, displayType: display)
         let kept = items.count { !$0.isDeleted }
+        let previews = viewModel.pageAppPreviews(locale: locale.code, displayType: display, queue: queue)
         VStack(alignment: .leading, spacing: Spacing.small) {
             if let selected = items.first(where: \.isSelected) {
                 ScreenshotHandSelectionBar(viewModel: viewModel, item: selected, count: items.count)
             } else {
-                Text(viewModel.handDeviceLine(locale: locale.code, displayType: display))
+                Text(viewModel.handDeviceLine(locale: locale.code, displayType: display, appPreviews: previews.count))
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .frame(minHeight: 20)
@@ -44,16 +49,15 @@ struct ScreenshotHandSetView: View {
             if items.isEmpty, viewModel.isLoading {
                 // Not "no screenshots yet" while the live ones are still read:
                 // Alba's six live screenshots showed as none for seconds.
-                HStack(spacing: Spacing.small) {
-                    ProgressView().controlSize(.small)
-                    Text("Reading App Store screenshots…")
-                        .font(.callout)
-                        .foregroundStyle(Palette.label2)
+                VStack(alignment: .leading, spacing: Spacing.small) {
+                    if let line = LoadingCopy.appStoreScreenshots.line {
+                        LoadingLine(text: line)
+                    }
+                    SkeletonTiles(count: 5, width: Metrics.skeletonHandTileWidth)
                 }
                 .padding(Spacing.medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("screenshots.page.loading")
+                .loadingSkeleton(LoadingCopy.appStoreScreenshots, identifier: "screenshots.page.loading")
             } else {
                 if items.isEmpty, locale.code == viewModel.context.primaryLocale.code {
                     VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -66,7 +70,7 @@ struct ScreenshotHandSetView: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("screenshots.page.empty")
                 }
-                shots(items, kept: kept)
+                shots(items, kept: kept, previews: previews)
             }
         }
         .padding(isTargeted ? Spacing.xSmall : 0)
@@ -86,11 +90,17 @@ struct ScreenshotHandSetView: View {
         .onChange(of: viewModel.displayType) { viewModel.handSelection = nil }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.hand.set")
+        .sheet(item: $playing) { preview in
+            LanguagePageAppPreviewPlayerSheet(item: preview, localeName: locale.name)
+        }
     }
 
-    private func shots(_ items: [ScreenshotHandPageItem], kept: Int) -> some View {
+    private func shots(_ items: [ScreenshotHandPageItem], kept: Int, previews: [LanguagePageAppPreview]) -> some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: Spacing.medium) {
+                ForEach(previews) { preview in
+                    LanguagePageAppPreviewTile(item: preview, services: viewModel.services, height: height) { playing = preview }
+                }
                 ForEach(items) { item in
                     LanguagePageThumbnail(viewModel: viewModel, item: item, localeName: locale.name, width: width)
                 }

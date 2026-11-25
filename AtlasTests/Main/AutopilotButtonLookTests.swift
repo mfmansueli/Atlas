@@ -76,6 +76,15 @@ struct AutopilotButtonLookTests {
         #expect(working.doneText(becoming: .autoReplyOn("Auto-reply on")) == "Done · Store Page · German")
     }
 
+    /// Review screenshots ready: the green check with what's ready for
+    /// about 2 s, then the button at rest, never purple.
+    @Test func reviewScreenshotsReadyIsAGreenCheckThenRest() {
+        let ready = WorkspaceAutopilotState.finished("Review Screenshots Ready")
+        #expect(AutopilotButtonLook(state: ready, done: "Review Screenshots Ready", runProgress: nil) == .done("Review Screenshots Ready"))
+        #expect(AutopilotButtonLook(state: ready, done: nil, runProgress: nil) == .idle)
+        #expect(!AutopilotButtonLook(state: ready, done: nil, runProgress: nil).isNeedingYou)
+    }
+
     @Test func aRunThatStopsOrNeedsYouIsntDone() {
         let working = WorkspaceAutopilotState.running("Working · Store Page")
         #expect(working.doneText(becoming: .failed("Claude Code ended early")) == nil)

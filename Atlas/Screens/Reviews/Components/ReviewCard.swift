@@ -121,6 +121,15 @@ struct ReviewCard: View {
             ) {
                 viewModel.startEditing(review)
             }
+            if let replacement = viewModel.replacement(for: review) {
+                // Never sent by Reply Automatically: only the person replaces a reply.
+                ReviewSuggestionBox(
+                    review: review, suggestion: replacement, isSending: viewModel.sending.contains(review.id), replacing: reply,
+                    onDismiss: { viewModel.dismissSuggestion(for: review) },
+                    onEdit: { viewModel.startEditingReplacement(review) },
+                    onSend: { Task { await viewModel.sendSuggestion(for: review) } }
+                )
+            }
             failure
         } else if let suggestion = viewModel.suggestion(for: review) {
             ReviewSuggestionBox(

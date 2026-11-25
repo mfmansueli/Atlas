@@ -43,6 +43,20 @@ struct PricingProductCardTests {
         #expect(suggestion.countries.allSatisfy { $0.change.hasPrefix("−") })
         let listed = try #require(suggestion.countries.first)
         #expect(card.prices[listed.id]?.next == listed.suggested)
+        #expect(card.prices[listed.id]?.isQueued == false)
+        #expect(card.prices[listed.id]?.dollars != nil)
+    }
+
+    @Test func theWhyNamesTheCountryWhosePriceMovesMost() async throws {
+        let matrix = try await PricingModelFixtures.matrix()
+        let candidates = matrix.rows.filter { !$0.isBase && $0.recommendation != nil }
+        let small = try Self.suggesting(#require(candidates.first), share: Decimal(99) / 100, reason: "Small step")
+        let large = try Self.suggesting(#require(candidates.dropFirst().first), share: Decimal(60) / 100, reason: "Big step")
+        let card = PricingProductCard.make(product: matrix.product, rows: [small, large], showsSuggestions: true, isDismissed: false)
+        let suggestion = try #require(card.suggestion)
+        #expect(suggestion.count == 2)
+        #expect(suggestion.reason == "\(large.territory.name): Big step")
+        #expect(PricingProductCard.mostTelling([small, large])?.id == large.id)
     }
 
     @Test func aDismissedSuggestionOrKeepMyPricesShowsNone() async throws {
@@ -64,6 +78,23 @@ struct PricingProductCardTests {
         #expect(card.legend.contains("\(card.queuedCount) not pushed"))
         let brazil = try #require(card.prices["BRA"])
         #expect(brazil.next != nil)
+        #expect(brazil.isQueued)
+    }
+
+    /// The row with a suggestion at `share` of today's price that doesn't
+    /// feel 25%+ above the base, so the why names one country.
+    private static func suggesting(_ row: PricingRow, share: Decimal, reason: String) -> PricingRow {
+        var row = row
+        row.usesCustomStrategy = false
+        row.queued = nil
+        guard var recommendation = row.recommendation else { return row }
+        let price = row.current.customerPrice * share
+        recommendation.price = PricePoint(customerPrice: price, proceeds: price)
+        recommendation.isUnchanged = false
+        recommendation.ratio = 1
+        recommendation.reason = reason
+        row.recommendation = recommendation
+        return row
     }
 }
 #endif

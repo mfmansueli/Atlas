@@ -32,6 +32,9 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
     case makeEventArtwork
     case writeEventTexts
     case checkEventsForReview
+    /// An empty In-App Events' lead (board 74 · 3): the assistant drafts
+    /// a first event.
+    case suggestEvent
     // Nominations
     case suggestNomination
     case writeNominationDescription
@@ -60,7 +63,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .storePage: [.suggestTexts, .suggestSourceLanguageOnly, .translateNewLanguage, .askSomethingElse]
         case .screenshots: [.makeScreenshots, .makeAppPreview, .makeArtwork, .recaptureSome]
         case .productPages: [.suggestPages, .makePageScreenshots]
-        case .inAppEvents: [.makeEventArtwork, .writeEventTexts, .checkEventsForReview]
+        case .inAppEvents: [.makeEventArtwork, .writeEventTexts, .checkEventsForReview, .suggestEvent]
         case .nominations: [.suggestNomination, .writeNominationDescription]
         case .appInformation: [.suggestAnswers, .checkPrivacy]
         case .subscriptionPricing: [.suggestPrices, .makeReviewScreenshots, .writeRetentionOffer]
@@ -78,6 +81,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         let lead: Self = switch detail {
         case .event: .makeEventArtwork
         case .productPage: .makePageScreenshots
+        case .noEvents: .suggestEvent
         }
         return [lead] + actions.filter { $0 != lead }
     }
@@ -115,6 +119,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
             .makeEventArtwork: String(localized: "Make Event Artwork…"),
             .writeEventTexts: String(localized: "Write Event Texts…"),
             .checkEventsForReview: String(localized: "Check It Will Pass App Review…"),
+            .suggestEvent: String(localized: "Suggest an Event…", comment: "kind:menu-item"),
             .suggestNomination: String(localized: "Suggest a Nomination…"),
             .writeNominationDescription: String(localized: "Write the Description…"),
             .suggestAnswers: String(localized: "Suggest Answers…"),
@@ -147,8 +152,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .summarizeRequests: "doc.text"
         case .findWhatToTry: "lightbulb"
         case .explainChange: "questionmark.circle"
-        case .suggestEverything, .suggestTexts, .suggestSourceLanguageOnly, .suggestPages, .suggestNomination, .suggestAnswers,
-             .suggestPrices, .makeReviewScreenshots:
+        case .suggestEverything, .suggestTexts, .suggestSourceLanguageOnly, .suggestPages, .suggestEvent, .suggestNomination,
+             .suggestAnswers, .suggestPrices, .makeReviewScreenshots:
             "sparkles"
         }
     }
@@ -177,7 +182,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .makeReviewScreenshots: .subscriptionPricing
         // Free sees the settings with Upgrade…; Turn On waits for Pro.
         case .replyAutomatically: .reviews
-        case .writeEventTexts, .checkEventsForReview, .suggestNomination, .writeNominationDescription, .writeWhatsNew,
+        case .writeEventTexts, .checkEventsForReview, .suggestEvent, .suggestNomination, .writeNominationDescription, .writeWhatsNew,
              .suggestSourceLanguageOnly, .askSomethingElse, .recaptureSome,
              .suggestPrices, .writeRetentionOffer, .draftReplies, .summarizeRequests, .findWhatToTry, .explainChange:
             nil

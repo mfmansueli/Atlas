@@ -19,4 +19,14 @@ struct ReviewReplySuggestion: Hashable, Codable, Sendable {
     /// How sure the assistant is of it; nil when it didn't say and in
     /// replies saved before. Its gloss is `meaning`.
     var layers: SuggestionLayers?
+    /// The published reply it would replace (`replace: true`), as it read
+    /// when suggested; nil for a review without a reply. Sending it
+    /// replaces Apple's response; once that reply changes, it no longer
+    /// shows.
+    var replaces: ReviewReply?
+    /// Why the published reply should change, for a replacement.
+    var why: String?
+
+    /// A new text for a reply already on the App Store.
+    var isReplacement: Bool { replaces != nil }
 }

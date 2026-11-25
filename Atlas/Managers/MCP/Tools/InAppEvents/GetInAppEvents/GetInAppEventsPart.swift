@@ -34,6 +34,9 @@ enum GetInAppEventsPart: String, CaseIterable, Hashable, Sendable {
     case push
     /// The new events waiting in Review & Push.
     case queued
+    /// How ended events did, from App Analytics: page views, opens and
+    /// downloads, as the event page's Results card shows them.
+    case results
 
     /// Every part but the two heaviest.
     static let standard: Set<Self> = Set(allCases).subtracting([.mediaDetails, .design])
@@ -74,6 +77,7 @@ enum GetInAppEventsPart: String, CaseIterable, Hashable, Sendable {
                 "deepLinkClaim",
             ]
         case .deepLinkCheck: ["deepLinkCheck"]
+        case .results: ["results"]
         case .design, .push, .queued: []
         }
     }
@@ -86,7 +90,7 @@ enum GetInAppEventsPart: String, CaseIterable, Hashable, Sendable {
         case .design: ["design"]
         case .push: ["pushInProgress", "pushChanges"]
         case .queued: ["queued"]
-        case .mediaDetails, .review, .deepLinkCheck: []
+        case .mediaDetails, .review, .deepLinkCheck, .results: []
         }
     }
 

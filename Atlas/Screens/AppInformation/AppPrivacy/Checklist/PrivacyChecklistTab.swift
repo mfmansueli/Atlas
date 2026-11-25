@@ -31,6 +31,7 @@ struct PrivacyChecklistTab: View {
             .padding(Spacing.large)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
+        .leavesChatRoom()
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.appPrivacy.checklist")
     }

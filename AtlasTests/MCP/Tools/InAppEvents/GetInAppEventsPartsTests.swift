@@ -69,7 +69,7 @@ struct GetInAppEventsPartsTests {
         #expect(result["queued"] == nil)
         #expect(result["pushInProgress"] == nil)
         #expect(Set(result["leftOut"]?.arrayValue?.compactMap(\.stringValue) ?? []) == [
-            "media", "mediaDetails", "review", "deepLinkCheck", "design", "push", "queued",
+            "media", "mediaDetails", "review", "deepLinkCheck", "design", "push", "queued", "results",
         ])
     }
 

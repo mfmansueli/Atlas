@@ -31,7 +31,10 @@ struct ProposeTemplateTool: MCPTool {
         cap|l1end, avoid down|squeeze|hide, span (the slot a figure continues on) and off); a null value \
         removes one. slots.<i>.layout is standard, hero or \
         pair. A slot override may also replace the whole bg. Laurels and badges show a rating: use the \
-        app's real App Store rating, which Atlas checks before every push.
+        app's real App Store rating, which Atlas checks before every push. Instead of ops, restoreVersion: N \
+        proposes going back to version N of get_template's history, and starter (one of get_template's starters) \
+        proposes switching to that starter template; captions and captures stay, and either is accepted as the next \
+        version like any proposal.
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withLayers([
@@ -48,8 +51,13 @@ struct ProposeTemplateTool: MCPTool {
                 ],
                 "reason": MCPToolDefinition.why("Why, for the person before accepting."),
                 "title": MCPToolDefinition.string("A short title, e.g. Smaller headline, hyphenation on."),
+                "restoreVersion": ["type": "integer", "description": "Instead of ops: go back to this version from get_template's history."],
+                "starter": [
+                    "type": "string", "enum": .array(TemplateStarter.allCases.map { .string($0.rawValue) }),
+                    "description": "Instead of ops: switch to this starter template, keeping captions and captures.",
+                ],
             ]),
-            required: ["appId", "basedOnVersion", "ops", "reason"]
+            required: ["appId", "reason"]
         ),
         proposalKind: .screenshots
     )
@@ -58,6 +66,9 @@ struct ProposeTemplateTool: MCPTool {
         var draft = try await MCPScreenshotsDraft.load(app: arguments.string("appId"), in: context.workspace)
         let target = draft.target
         let reason = try arguments.string("reason")
+        if let whole = try Self.wholeTemplate(arguments, in: draft) {
+            return try await proposeWhole(whole, reason: reason, arguments: arguments, draft: &draft, context: context)
+        }
         let operations = try TemplateOperation.mcpOperations(from: .array(arguments.array("ops")), argument: "ops")
         guard let basedOn = arguments.values["basedOnVersion"]?.intValue else {
             throw MCPToolError.invalidArgument(name: "basedOnVersion", expected: String(localized: "a version number"))

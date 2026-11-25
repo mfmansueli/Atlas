@@ -30,6 +30,7 @@ struct ChangesView: View {
                             .padding(.bottom, Spacing.xLarge)
                     }
                 }
+                .leavesChatRoom()
             }
             .accessibilityIdentifier("analytics.changes")
         }

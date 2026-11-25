@@ -206,7 +206,7 @@ struct DesignTokensTests {
         let motion = try section("motion")
         let tokens: [String: MotionToken] = [
             "fast": MotionTiming.fast, "base": MotionTiming.base, "slow": MotionTiming.slow, "step": MotionTiming.step,
-            "layout": MotionTiming.layout, "tick": MotionTiming.tick,
+            "layout": MotionTiming.layout, "tick": MotionTiming.tick, "breathe": MotionTiming.breathe,
         ]
         for (name, token) in tokens {
             let entry = try #require(motion[name] as? [String: Any], "motion.\(name)")
@@ -234,6 +234,7 @@ struct DesignTokensTests {
         #expect(MotionTiming.staggerDelay == 0.07)
         #expect(MotionTiming.staggerLimit == 6)
         #expect(MotionTiming.sweep == 2.8)
+        #expect(MotionTiming.breathe == MotionToken(duration: 1.5, curve: .bezier(x1: 0.42, y1: 0, x2: 0.58, y2: 1)))
     }
 
     // MARK: - Helpers

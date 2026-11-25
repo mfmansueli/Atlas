@@ -46,8 +46,7 @@ struct ThumbnailCell: View {
                     .interpolation(.high)
                     .scaledToFill()
             } else {
-                Palette.fill2
-                if isRendering { ProgressView().controlSize(.small) }
+                ImageLoadingTile(isLoading: isRendering, systemImage: nil)
             }
         }
         .frame(width: width, height: height)
@@ -66,7 +65,7 @@ struct ThumbnailCell: View {
         .contentShape(Rectangle())
     }
 
-    /// "German, slot 3, Overflow, UI not localized, suggestion waiting".
+    /// "German, slot 3, Overflow, Interface not localized, suggestion waiting".
     private var accessibilityText: String {
         var parts = [localeName, String(localized: "slot \(cell.key.slot + 1)"), isRendering ? String(localized: "Rendering") : cell.state.title]
         if cell.showsPrimaryInterface { parts.append(String(localized: "Interface not localized")) }

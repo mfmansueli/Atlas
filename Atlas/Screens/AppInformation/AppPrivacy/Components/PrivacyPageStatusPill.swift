@@ -21,7 +21,7 @@ struct PrivacyPageStatusPill: View {
                     .foregroundStyle(Palette.ok)
                     .padding(.horizontal, 7)
                     .frame(minHeight: 20)
-                    .background(Palette.ok.opacity(0.14), in: Capsule())
+                    .background(Palette.okTint, in: Capsule())
             } else {
                 Pill(text: status.text, style: style)
             }

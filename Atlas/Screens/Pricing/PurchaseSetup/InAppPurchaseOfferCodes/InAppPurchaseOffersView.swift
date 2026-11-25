@@ -19,9 +19,7 @@ struct InAppPurchaseOffersView: View {
         Group {
             switch viewModel.offers {
             case .idle, .loading:
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                PricingOffersSkeleton()
             case let .loaded(offers) where offers.isEmpty && viewModel.queuedInAppPurchaseOfferCodes.isEmpty:
                 ContentUnavailableView {
                     Label("No offer codes yet", systemImage: "tag")

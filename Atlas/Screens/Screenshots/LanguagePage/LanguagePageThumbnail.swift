@@ -52,22 +52,22 @@ struct LanguagePageThumbnail: View {
 
     @ViewBuilder
     private var menu: some View {
-        Button("Show Larger") { openViewer() }
+        Button("Show Larger", systemImage: "arrow.up.left.and.arrow.down.right") { openViewer() }
             .disabled(cell.image == CellImageSource.none)
         if !item.isDeleted {
             Divider()
-            Button("Replace…") {
+            Button("Replace…", systemImage: "arrow.triangle.2.circlepath") {
                 select()
                 viewModel.handSheet = .replace(slotID: item.id, file: nil)
             }
-            Button("Delete…", role: .destructive) {
+            Button("Delete…", systemImage: "trash", role: .destructive) {
                 select()
                 viewModel.handSheet = .delete(slotID: item.id)
             }
             .disabled(!viewModel.canDeleteHand(item))
         }
         if cell.hand?.isChanged == true {
-            Button("Undo Change") {
+            Button("Undo Change", systemImage: "arrow.uturn.backward") {
                 select()
                 Task { await viewModel.undoSelectedHand() }
             }
@@ -117,11 +117,8 @@ struct LanguagePageThumbnail: View {
                     .scaledToFill()
                     .frame(width: width, height: height)
             } else {
-                ZStack {
-                    Palette.fill2
-                    if viewModel.isRendering(cell) || cell.image.handFile != nil { ProgressView().controlSize(.small) }
-                }
-                .frame(width: width, height: height)
+                ImageLoadingTile(isLoading: viewModel.isRendering(cell) || cell.image.handFile != nil, systemImage: nil)
+                    .frame(width: width, height: height)
             }
         }
         .frame(width: width, height: height)

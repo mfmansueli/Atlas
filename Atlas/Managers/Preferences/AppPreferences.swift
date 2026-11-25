@@ -138,6 +138,14 @@ final class AppPreferences {
         didSet { defaults?.set(checksRepeatedWords, forKey: Key.checksRepeatedWords) }
     }
 
+    /// Settings → Suggestions → "Look for Improvements" (Pro): Claude Code
+    /// looks at what Atlas's own checks found, now and then, and leaves
+    /// suggestions (`WatchCenter`). The checks themselves always run; the
+    /// assistant only once the person turns this on.
+    var lookForImprovements: Bool {
+        didSet { defaults?.set(lookForImprovements, forKey: Key.lookForImprovements) }
+    }
+
     /// The confirmations turned off with "Don't ask again" or in Settings:
     /// Accept All without asking, discarding and price increases without
     /// asking, pushing without the last alert.
@@ -192,6 +200,7 @@ final class AppPreferences {
         eventArtworkMakesMotion = defaults?.bool(forKey: Key.eventArtworkMakesMotion) ?? false
         checksRepeatedWords = defaults?.object(forKey: Key.checksRepeatedWords) as? Bool ?? true
         opensCaptureRuns = defaults?.bool(forKey: Self.opensCaptureRunsKey) ?? false
+        lookForImprovements = defaults?.bool(forKey: Key.lookForImprovements) ?? false
         // The Guided/Classic choice is gone: the guided Autopilot is the
         // only one.
         defaults?.removeObject(forKey: Key.retiredAutopilotFront)
@@ -200,7 +209,7 @@ final class AppPreferences {
     private enum Key {
         static let defaultPricingMode = "defaultPricingMode"
         static let usesSalesData = "usesSalesData"
-        static let pricingDefaults = "pricingDefaults"
+        static let pricingDefaults = PricingModeStore.pricingDefaultsKey
         static let commissionRate = "commissionRate"
         static let pushConfirmation = "pushConfirmation"
         static let confirmsPriceIncreases = "confirmsPriceIncreases"
@@ -219,5 +228,6 @@ final class AppPreferences {
         static let eventArtworkHasWords = "eventArtworkHasWords"
         static let eventArtworkMakesMotion = "eventArtworkMakesMotion"
         static let checksRepeatedWords = "checksRepeatedWords"
+        static let lookForImprovements = "lookForImprovements"
     }
 }

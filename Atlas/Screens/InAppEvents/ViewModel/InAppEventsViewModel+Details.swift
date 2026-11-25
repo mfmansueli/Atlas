@@ -156,6 +156,7 @@ extension InAppEventsViewModel {
         defer { isSubmitting = false }
         do {
             try await release.submitEvents([event.id], for: app, platform: platform)
+            InAppEventSubmitSuggestionStore.shared.remove(for: app.id, eventID: event.id)
             toast = ToastMessage(text: String(localized: "“\(ReleaseViewModel.displayName(of: event))” submitted. App Review usually takes a day."))
             undo = nil
             await load(force: true)

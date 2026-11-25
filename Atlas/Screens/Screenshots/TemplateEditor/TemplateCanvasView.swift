@@ -30,10 +30,9 @@ struct TemplateCanvasView: View {
                     .frame(maxWidth: width)
                     .accessibilityIdentifier("screenshots.template.fit")
             } else {
-                Palette.fill2
+                ImageLoadingTile(systemImage: nil)
                     .frame(width: width, height: width * 2)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
-                    .overlay { ProgressView().controlSize(.small) }
             }
         }
     }

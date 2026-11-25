@@ -34,7 +34,7 @@ extension InAppEventsViewModel {
         if let item = queued.first(where: { $0.locale == (locale ?? event.primaryLocale) }) ?? queued.first {
             return .file(path: item.push.path, isVideo: item.push.isVideo)
         }
-        if let media = event.media(kind) { return media.imageURL.map(InAppEventArtSource.remote) ?? .withoutLink }
+        if let media = event.media(kind) { return InAppEventArtSource(remote: media) ?? .withoutLink }
         return .none
     }
 

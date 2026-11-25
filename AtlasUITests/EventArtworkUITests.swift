@@ -50,7 +50,10 @@ final class EventArtworkUITests: XCTestCase {
         app.launch(debugScene: "ea-brief-opts")
         XCTAssertTrue(element("events.art.result").waitForExistence(timeout: 15))
         XCTAssertTrue(text(of: element("events.art.result")).contains("plus a moving version of each"))
-        XCTAssertTrue(text(of: element("events.art.summary")).contains("about 17 min"))
+        // The board's options: words, motion and Start from a Template.
+        XCTAssertTrue(app.buttons["events.art.look.template"].isSelected)
+        XCTAssertTrue(text(of: element("events.art.summary")).hasPrefix("3 concepts from Atlas’s event layouts"))
+        XCTAssertTrue(text(of: element("events.art.summary")).contains("about 14 min"))
         attach("ea-brief-opts")
     }
 
@@ -171,6 +174,15 @@ final class EventArtworkUITests: XCTestCase {
     }
 
     // MARK: - The viewer
+
+    /// The details image says when the event runs under its name, as the
+    /// App Store does and as the page's preview shows it.
+    func testTheViewersDetailsImageSaysWhenTheEventRuns() {
+        app.launch(debugScene: "ev-view-details")
+        XCTAssertTrue(element("events.art.viewer.storeText").waitForExistence(timeout: 15))
+        XCTAssertTrue(text(of: element("events.art.viewer.storeText")).contains("Starts "), text(of: element("events.art.viewer.storeText")))
+        attach("ev-view-details")
+    }
 
     func testViewFullSizeCoversTheWindowAndGoesRoundTheConcepts() {
         app.launch(debugScene: "ev-event")

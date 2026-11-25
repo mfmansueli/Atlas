@@ -28,17 +28,27 @@ extension MCPServerController {
         return client.id
     }
 
-    /// A new token for one run, acting as `clientID`.
-    func issueRunToken(for clientID: MCPPairedClient.ID) -> String {
+    /// A new token for one run, acting as `clientID`; `origin` is why
+    /// Atlas started it, when for a reason of its own.
+    func issueRunToken(for clientID: MCPPairedClient.ID, origin: ChangeOrigin? = nil) -> String {
         let token = MCPAccessToken.generate()
         runTokens[token] = clientID
+        runOrigins[token] = origin
         return token
+    }
+
+    /// The origin of the live run whose token `header` carries; nil for
+    /// any other credential.
+    func origin(forAuthorization header: String?) -> ChangeOrigin? {
+        guard let credential = MCPAccessToken.bearer(in: header) else { return nil }
+        return runOrigins.first { MCPAccessToken.matches(credential, token: $0.key) }?.value
     }
 
     /// The run ended: its token stops working. Every request is checked
     /// against it, so whatever still carries it is refused from now on.
     func revokeRunToken(_ token: String) {
         runTokens[token] = nil
+        runOrigins[token] = nil
         endedRunTokens.insert(token)
     }
 

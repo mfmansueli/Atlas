@@ -109,10 +109,24 @@ extension BreakdownTable {
         }
     }
 
-    private static func footer(_ dimension: BreakdownDimension, hasSales _: Bool) -> String {
-        let privacy = String(
+    /// The table's footer. `linksSubscribers`: Apple's subscription reports
+    /// name each subscriber's page, campaign and source, so the new columns
+    /// link them; `hasSample`: deletions and sessions show, which count
+    /// only people who share analytics.
+    static func footer(_ dimension: BreakdownDimension, hasSales _: Bool, linksSubscribers: Bool = false, hasSample: Bool = false) -> String {
+        var privacy = String(
             localized: "Apple hides rows under five people and adds noise, so rows may total less."
         )
+        if hasSample {
+            privacy = String(localized: "Deletions and sessions are a sample: only people who share analytics.", comment: "kind:description")
+                + " " + privacy
+        }
+        if linksSubscribers {
+            privacy = String(
+                localized: "Trials and paid come from Apple’s subscription reports, which name each subscriber’s page, campaign and source.",
+                comment: "kind:description"
+            ) + " " + privacy
+        }
         switch dimension {
         case .territory, .device:
             return privacy
@@ -120,6 +134,8 @@ extension BreakdownTable {
             return String(localized: "A language sums the territories whose App Store shows that page.") + " " + privacy
         case .source:
             return String(localized: "Apple doesn’t split starts and proceeds by source.") + " " + privacy
+        case .productPage where linksSubscribers:
+            return String(localized: "Product page test results are in App Store Connect.", comment: "kind:description") + " " + privacy
         case .productPage:
             return String(
                 localized: """

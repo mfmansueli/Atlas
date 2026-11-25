@@ -53,6 +53,7 @@ struct CaptureCoverageView: View {
                 }
                 .frame(minWidth: minimumWidth, alignment: .leading)
             }
+            .leavesChatRoom()
         }
         // Presented while a capture is viewed, not per capture: stepping
         // to another one keeps the same sheet.

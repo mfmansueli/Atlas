@@ -41,7 +41,7 @@ struct ScreenshotMatrixTests {
         let row = matrix.row(locale: "nl-NL", displayType: .iPhone)
         let showsEnglish = row.allSatisfy(\.showsPrimaryInterface)
         #expect(showsEnglish)
-        #expect(ScreenshotRowSummary(cells: row, restoredOn: nil).text == "5 not pushed · UI not localized")
+        #expect(ScreenshotRowSummary(cells: row, restoredOn: nil).text == "5 not pushed · Interface not localized")
     }
 
     @Test func fallbackLocalesShowThePrimarySet() throws {

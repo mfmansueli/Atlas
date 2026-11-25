@@ -24,6 +24,9 @@ struct AssetLibrarySheet: View {
             Text("Files on a page can’t be deleted until you remove them there. Replaced files are on no page.")
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
+            if let suggestion = model.cleanupSuggestion, let title = model.cleanupTitle {
+                AssetLibraryCleanupLine(title: title, suggestion: suggestion, onSelect: model.selectSuggested, onDismiss: model.dismissCleanup)
+            }
             controls
             content
             status
@@ -75,9 +78,22 @@ struct AssetLibrarySheet: View {
     private var content: some View {
         switch model.phase {
         case .loading:
-            ProgressView("Reading the library…")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityIdentifier("assetLibrary.loading")
+            // The files' rows to come: a thumbnail, a name and its details.
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                if let line = LoadingCopy.assetLibrary.line {
+                    LoadingLine(text: line)
+                }
+                SkeletonRows(
+                    count: 8, tile: CGSize(width: Metrics.skeletonAssetThumbnailWidth, height: Metrics.skeletonAssetThumbnailHeight),
+                    tileRadius: Radius.flag, rowHeight: Metrics.skeletonAssetRowHeight, trailingCells: 1, showsDividers: true
+                )
+                .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.field, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: Radius.field, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .loadingSkeleton(LoadingCopy.assetLibrary, identifier: "assetLibrary.loading")
         case let .failed(reason):
             VStack(spacing: Spacing.small) {
                 Text("Couldn’t read the library").font(.body.weight(.semibold))

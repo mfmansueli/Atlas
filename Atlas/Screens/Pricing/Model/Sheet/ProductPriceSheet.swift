@@ -19,6 +19,14 @@ struct ProductPriceSheet: Sendable {
     /// Territories whose ladder is Apple's own, so their points can be pushed.
     var exactLadderIDs: Set<String>
     var sales: PricingSalesData
+    /// An in-app purchase's territories with a price set by hand today (its
+    /// base territory and any other); the rest follow Apple's automatic
+    /// price. Nil when unknown: subscriptions, which have no automatic
+    /// prices, and sheets made without it.
+    var manualTerritoryIDs: Set<String>?
+    /// An in-app purchase's hand-set prices that start later. A new price
+    /// schedule replaces them, so Prices by Country says so.
+    var laterManualPriceCount = 0
 
     init(
         productID: String,

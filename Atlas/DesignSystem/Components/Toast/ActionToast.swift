@@ -54,6 +54,8 @@ struct ActionToast: View {
         .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("toast")
+        // The chat in the workspace's corner moves above it.
+        .preference(key: ToastShownPreferenceKey.self, value: true)
         .task(id: message.id) {
             AccessibilityNotification.Announcement(message.text).post()
             try? await Task.sleep(for: duration ?? (message.canUndo || message.actionTitle != nil ? .seconds(10) : .seconds(6)))
@@ -65,7 +67,7 @@ struct ActionToast: View {
 
 #Preview {
     VStack(spacing: Spacing.medium) {
-        ActionToast(message: ToastMessage(text: "Accepted 5 suggestions in German. Nothing is pushed yet.", canUndo: true)) {}
+        ActionToast(message: ToastMessage(text: "Accepted 5 suggestions in German. Nothing is sent yet.", canUndo: true)) {}
         ActionToast(message: ToastMessage(text: "Claude Code sent 4 suggestions. Nothing changes until you accept them.")) {}
     }
     .padding()

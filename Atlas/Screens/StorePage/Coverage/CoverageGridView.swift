@@ -29,6 +29,7 @@ struct CoverageGridView: View {
                         table(grid, cellWidth: cellWidth)
                             .frame(width: width)
                     }
+                    .leavesChatRoom()
                 }
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(Text("Store page coverage by locale and field"))

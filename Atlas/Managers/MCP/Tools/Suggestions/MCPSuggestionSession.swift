@@ -398,7 +398,8 @@ struct MCPSuggestionSession {
             source: .assistant(client: context.clientName),
             evidence: item.evidence,
             layers: item.layers,
-            runID: runID
+            runID: runID,
+            origin: context.origin
         )
         return ["status": .string(added.outcome.rawValue), "id": .string(added.suggestion.id)]
     }

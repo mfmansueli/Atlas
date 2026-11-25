@@ -49,6 +49,58 @@ struct AssistantChatPartsTests {
         #expect(AssistantChatSuggestions(targets: ["x"], section: nil).title == "1 suggestion")
     }
 
+    @Test func aNewVersionAndItsTextsPointToReviewAndPush() throws {
+        let start = Date(timeIntervalSince1970: 1000)
+        let end = start.addingTimeInterval(30)
+        let log = [
+            MCPLogEntry(
+                date: start.addingTimeInterval(5), client: "Claude Code", tool: "propose_app_version",
+                target: "Lumen · Version 1.5 · iOS", outcome: .proposed
+            ),
+            MCPLogEntry(
+                date: start.addingTimeInterval(8), client: "Claude Code", tool: "suggest_fields", target: "Lumen · en-US · What's New", outcome: .proposed
+            ),
+        ]
+        let claude = ChangeSource.assistant(client: "Claude Code")
+        let version = NewAppVersionChangeBuilder(appID: "1").change(
+            for: NewAppVersion(versionString: "1.5", platform: "IOS"), showsPlatform: false, source: claude, at: start.addingTimeInterval(5)
+        )
+        let suggestions = try #require(AssistantChatSuggestions.make(from: log, appName: "Lumen", start: start, end: end, queued: [version]))
+        #expect(suggestions.waitsInReview)
+        #expect(suggestions.title == "2 suggestions in Review & Push")
+        #expect(suggestions.why == "Version 1.5 · iOS, en-US · What's New")
+
+        // The person's own version, or one queued before this answer, isn't the answer's.
+        var yours = version
+        yours.source = .you
+        var earlier = version
+        earlier.createdAt = start.addingTimeInterval(-60)
+        for change in [yours, earlier] {
+            let other = try #require(AssistantChatSuggestions.make(from: log, appName: "Lumen", start: start, end: end, queued: [change]))
+            #expect(!other.waitsInReview)
+            #expect(other.title == "2 suggestions in Store Page")
+        }
+
+        // A text tied to a version queued before still waits with it.
+        var tied = version
+        tied.id = "listing.{queuedVersion:IOS:1.5}.en-US.whatsNew"
+        tied.dependsOn = version.id
+        let text = try #require(AssistantChatSuggestions.make(from: Array(log.suffix(1)), appName: "Lumen", start: start, end: end, queued: [earlier, tied]))
+        #expect(text.waitsInReview)
+        #expect(text.title == "1 suggestion in Review & Push")
+    }
+
+    @Test func showingASectionOpensItsSuggestions() {
+        #expect(AssistantChatSuggestions.intent(showing: .subscriptionPricing) == .reviewSuggestions)
+        #expect(AssistantChatSuggestions.intent(showing: .storePage) == .reviewFieldSuggestions(.storePage))
+        #expect(AssistantChatSuggestions.intent(showing: .appInformation) == .reviewFieldSuggestions(.appInformation))
+        #expect(AssistantChatSuggestions.intent(showing: .analytics) == nil)
+    }
+
+    @Test func theChatAnswersInThePersonsLanguage() {
+        #expect(ClaudeCodePermissions.chat.systemPrompt.contains("Write it in the language the person writes in"))
+    }
+
     @Test func toolsMapToTheirSections() {
         #expect(AssistantChatSuggestions.section(forTool: "propose_review_replies") == .reviews)
         #expect(AssistantChatSuggestions.section(forTool: "propose_event_texts") == .inAppEvents)
@@ -56,6 +108,7 @@ struct AssistantChatPartsTests {
         #expect(AssistantChatSuggestions.section(forTool: "propose_captions") == .screenshots)
         #expect(AssistantChatSuggestions.section(forTool: "propose_age_rating") == .appInformation)
         #expect(AssistantChatSuggestions.section(forTool: "add_finding") == .analytics)
+        #expect(AssistantChatSuggestions.section(forTool: "propose_app_version") == .storePage)
         #expect(AssistantChatSuggestions.section(forTool: "propose_win_back_offer") == .subscriptionPricing)
         #expect(AssistantChatSuggestions.section(forTool: "get_listing") == nil)
     }
@@ -75,6 +128,19 @@ struct AssistantChatPartsTests {
         #expect(prompt.contains("Reviews section of Lumen (app ID 1)"))
         #expect(!prompt.contains("1.4"))
         #expect(prompt.contains("They ask in Atlas's chat: Why?"))
+    }
+
+    @Test func pricingsCountryIsAChipThatReachesThePrompt() {
+        let context = AssistantChatContext(appID: "1", appName: "Lumen", section: .subscriptionPricing, version: "1.4", country: "Brazil")
+        let chips = context.chips(removing: [])
+        #expect(chips.map(\.label) == ["Lumen", "Pricing", "Version 1.4", "Brazil"])
+        #expect(chips.last?.isRemovable == true)
+        #expect(chips.last?.id == AssistantChatContext.countryChip)
+        let prompt = AssistantChatPrompt.prompt("Too expensive?", context: context, removed: [], isFollowUp: false, answers: nil)
+        #expect(prompt.contains("with Brazil chosen as the country its prices show"))
+        let removed: Set<String> = [AssistantChatContext.countryChip]
+        #expect(context.chips(removing: removed).map(\.id) == ["app", "section", AssistantChatContext.versionChip])
+        #expect(!AssistantChatPrompt.prompt("Too expensive?", context: context, removed: removed, isFollowUp: false, answers: nil).contains("Brazil"))
     }
 
     @Test func aFollowUpResumesClaudeCodesSession() {

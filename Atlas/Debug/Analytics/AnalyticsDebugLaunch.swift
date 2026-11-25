@@ -28,6 +28,10 @@ struct AnalyticsDebugLaunch {
     var columnGroup = BreakdownColumnGroup.funnel
     var opensReports = false
     var settingsFocus: AnalyticsSettingsFocus?
+    /// A finding's button pressed once the section is up: the section it
+    /// opens, with the "From Analytics" bar saying `followText`.
+    var follow: FindingAction?
+    var followText = ""
 
     @MainActor
     func apply(to model: AnalyticsViewModel) {

@@ -6,7 +6,8 @@
 import Foundation
 
 /// One suggestion in the Accept All sheet: which field, who suggested it and
-/// why, and what it replaces.
+/// why, and what it replaces; a caption also shows its screenshot before
+/// and after.
 struct AcceptAllItem: Identifiable, Hashable, Sendable {
     /// The suggestion's id.
     let id: String
@@ -17,4 +18,6 @@ struct AcceptAllItem: Identifiable, Hashable, Sendable {
     var current: String
     var suggested: String
     var reason: String
+    /// A screenshot caption's slot, drawn now and with the suggestion.
+    var screenshot: AcceptAllScreenshot?
 }

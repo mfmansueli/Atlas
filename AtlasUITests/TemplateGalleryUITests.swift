@@ -58,6 +58,15 @@ final class TemplateGalleryUITests: XCTestCase {
         XCTAssertTrue(element("screenshots.gallery.card.above").waitForNonExistence(timeout: 5))
     }
 
+    func testSocialProofAndArcadeOpenInTheEditor() {
+        for scene in ["tpl-proof", "tpl-arcade-ar"] {
+            app.launch(debugScene: scene)
+            XCTAssertTrue(element("screenshots.template.canvas").waitForExistence(timeout: 15), scene)
+            XCTAssertTrue(waitForText(element("screenshots.template.version"), "v5"), "\(scene): switched, a new version")
+            app.terminate()
+        }
+    }
+
     func testSwitchingToCinemaMakesTheNextVersion() {
         app.launch(debugScene: "tpl")
         XCTAssertTrue(element("screenshots.template.canvas").waitForExistence(timeout: 15))

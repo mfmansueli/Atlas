@@ -8,7 +8,8 @@ import SwiftUI
 /// The private key part of the connect form: a dashed drop target with
 /// "or Choose File…" while empty, "Release to import" while a file hovers,
 /// the file's name and Remove once a key is imported, or why a dropped
-/// file isn't a `.p8` key with Choose Again….
+/// file isn't a `.p8` key with Choose Again…. An imported key turns the
+/// zone green: `okTint` with `okEdge` (README-Welcome, README-DS §1).
 struct PrivateKeyDropZone: View {
     let key: ImportedPrivateKey?
     /// A picked or dropped file that isn't a private key.
@@ -67,7 +68,7 @@ struct PrivateKeyDropZone: View {
             Image(systemName: "key.horizontal")
                 .foregroundStyle(Palette.label2)
                 .accessibilityHidden(true)
-            Text("Drop \(Text(verbatim: "AuthKey_XXXXXXXXXX.p8").monospaced()) here")
+            Text("Drop \(Text(verbatim: "AuthKey_….p8").monospaced()) here")
                 .font(.callout)
             Button("or Choose File…", action: onChoose)
                 .buttonStyle(.link)
@@ -143,13 +144,14 @@ struct PrivateKeyDropZone: View {
     private var background: Color {
         if isTargeted { return Palette.accentTint }
         if key == nil, rejectedFileName != nil { return Palette.errTint }
+        if key != nil { return Palette.okTint }
         return Palette.fill1
     }
 
     private var borderColor: Color {
         if isTargeted { return Palette.accent }
         if key == nil, rejectedFileName != nil { return Palette.errMark.opacity(0.7) }
-        return key == nil ? Palette.dropOutline : Palette.separator
+        return key == nil ? Palette.dropOutline : Palette.okEdge
     }
 
     private var border: StrokeStyle {

@@ -17,10 +17,10 @@ struct PrivacyURLsTab: View {
         Group {
             switch viewModel.urls {
             case .idle, .loading:
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .accessibilityLabel(Text("Loading the privacy URLs"))
+                // A language and its two URLs per row, as the table shows them.
+                SkeletonTableRows(count: 12, cells: 2, cellWidth: Metrics.skeletonURLCellWidth, showsDividers: true)
+                    .padding(Spacing.large)
+                    .loadingSkeleton(LoadingCopy.privacyURLs, identifier: "appInformation.appPrivacy.urls.loading")
             case let .failed(message):
                 AccessibilityLoadErrorView(message: message, requestLine: nil) {
                     Task { await viewModel.loadURLs() }
@@ -79,6 +79,7 @@ struct PrivacyURLsTab: View {
                         }
                     }
                 }
+                .leavesChatRoom()
                 // The suggestion bar's arrows went to a language: its row.
                 .onChange(of: viewModel.focusedChoicesLocale, initial: true) { _, locale in
                     guard let locale else { return }

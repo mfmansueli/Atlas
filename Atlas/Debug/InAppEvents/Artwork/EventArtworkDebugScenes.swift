@@ -135,13 +135,19 @@ enum EventArtworkDebugScenes {
         return run
     }
 
-    /// The Brief: as written, with words and motion on, or without a design
-    /// project (templates first).
+    /// The Brief: as written, with words and motion on and "Start from a
+    /// template" chosen, or without a design project (templates first).
     private static func brief(_ id: String) -> Scene {
         var scene = Scene()
         scene.launch.opensArtwork = true
         if id == "ea-brief-opts" {
-            scene.setup.configure = { flow in flow.edit { $0.wordsInArt = true; $0.makesMotion = true } }
+            scene.setup.configure = { flow in
+                flow.edit {
+                    $0.wordsInArt = true
+                    $0.makesMotion = true
+                    $0.style = .template
+                }
+            }
         }
         if id == "ea-brief-nods" { scene.setup.hasDesignSystem = false }
         return scene

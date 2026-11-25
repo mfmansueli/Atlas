@@ -7,8 +7,8 @@ import SwiftUI
 
 /// Pricing's Prices page: the header, the app's own price and
 /// availability, the price suggestions with Accept All n, a card per
-/// product, and "What people pay" beside them (under them when the window
-/// is narrow).
+/// product, and "Preview in" beside them (under them when the window is
+/// narrow).
 struct PricingProductsView: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -31,7 +31,7 @@ struct PricingProductsView: View {
                     banner
                 }
                 ReviewShotsBanner(viewModel: viewModel)
-                let isWide = width >= 560 + 256 + Spacing.large
+                let isWide = width >= 560 + PricingPreviewIn.width + Spacing.large
                 let layout = isWide
                     ? AnyLayout(HStackLayout(alignment: .top, spacing: Spacing.large))
                     : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.large))
@@ -42,7 +42,10 @@ struct PricingProductsView: View {
                             QueuedNewSubscriptionsList(viewModel: viewModel)
                         }
                     }
-                    PricingWhatPeoplePay(viewModel: viewModel)
+                    // Clicking a product opens its page on that country.
+                    PricingPreviewIn(viewModel: viewModel) { id, territoryID in
+                        viewModel.openProduct(id, territory: territoryID)
+                    }
                 }
             }
             .task(id: viewModel.catalog?.products.map(\.id)) { await viewModel.loadPurchaseExtras() }
@@ -50,6 +53,7 @@ struct PricingProductsView: View {
             .padding(.vertical, Spacing.large)
             .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 - 2 * Spacing.xLarge }
         }
+        .leavesChatRoom()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityIdentifier("pricing.products")
         .sheet(isPresented: isPreviewing) {
@@ -136,8 +140,8 @@ struct PricingProductsView: View {
                 if let card = viewModel.card(for: product) {
                     PricingProductCardView(
                         card: card,
-                        isExpanded: viewModel.expandedProductID == product.id,
-                        onToggleCountries: { viewModel.toggleCountries(productID: product.id) },
+                        onOpenPage: { viewModel.openProduct(product.id) },
+                        onShowCountries: { viewModel.showSuggestedCountries(productID: product.id) },
                         onDismiss: { viewModel.dismissPriceSuggestion(productID: product.id) },
                         onAccept: {
                             // Prices for many countries at once are Pro's;
@@ -150,7 +154,6 @@ struct PricingProductsView: View {
                             }
                         },
                         settlesOnAccept: !(card.suggestedCount > 1 && pro.isFree),
-                        onOpen: { Task { await viewModel.openDetails(productID: product.id) } },
                         setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product))
                     )
                     // Effect 2: the spark sits still on the card being
@@ -166,16 +169,25 @@ struct PricingProductsView: View {
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
     }
 
+    /// A card whose prices haven't arrived: its name and product ID, with
+    /// grey blocks where the price and the country bar go (no spinner).
     private func placeholder(_ product: PricingProduct) -> some View {
-        HStack(spacing: Spacing.small) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(product.name).font(.body.weight(.semibold))
-                Text(product.productID).font(.subheadline).foregroundStyle(Palette.label2)
+        VStack(alignment: .leading, spacing: Spacing.medium) {
+            HStack(alignment: .top, spacing: Spacing.small) {
+                VStack(alignment: .leading, spacing: Spacing.tiny) {
+                    Text(product.name).atlasTextStyle(.title3)
+                    Text(product.productID).atlasTextStyle(.subheadline).foregroundStyle(Palette.label2)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: Spacing.tiny) {
+                    SkeletonBlock(width: 72, height: 16)
+                    SkeletonBlock(width: 96, height: 8)
+                }
             }
-            Spacer()
-            ProgressView().controlSize(.small)
+            SkeletonBlock(height: 6)
+            SkeletonBlock(width: 220, height: 8)
         }
-        .padding(14)
+        .padding(Spacing.medium)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
         .accessibilityElement(children: .combine)
@@ -196,9 +208,11 @@ struct PricingProductsView: View {
                     .accessibilityLabel(Text("Read \(product.name)’s prices again"))
                     .accessibilityIdentifier("pricing.card.tryAgain")
             } else {
-                Button(product.isInAppPurchase ? "See Prices…" : "Edit Prices…") { Task { await viewModel.openDetails(productID: product.id) } }
-                    .buttonStyle(.link)
+                Button(String(localized: "Open Product", comment: "kind:button")) { viewModel.openProduct(product.id) }
+                    .plainButton()
                     .controlSize(.regular)
+                    .accessibilityLabel(Text("Open \(product.name)’s page", comment: "kind:accessibility-label"))
+                    .accessibilityIdentifier("pricing.card.openUnavailable")
             }
         }
         .padding(14)

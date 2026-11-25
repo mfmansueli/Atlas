@@ -15,11 +15,11 @@ struct ScreenshotHandManageMenu: View {
         let display = viewModel.displayType
         let count = viewModel.ownCount(locale: locale.code, displayType: display)
         Menu {
-            Button("Add Screenshots…") { viewModel.handSheet = .add([]) }
+            Button("Add Screenshots…", systemImage: "plus") { viewModel.handSheet = .add([]) }
                 .disabled(count >= ScreenshotHandSet.capacity)
-            Button("Import a Folder…") { viewModel.handSheet = .importFolder }
+            Button("Import a Folder…", systemImage: "folder") { viewModel.handSheet = .importFolder }
             Divider()
-            Button("Delete All \(display.title) Screenshots in \(locale.name)…", role: .destructive) {
+            Button("Delete All \(display.title) Screenshots in \(locale.name)…", systemImage: "trash", role: .destructive) {
                 viewModel.handSheet = .deleteAll
             }
             .disabled(count == 0 || locale.code == viewModel.context.primaryLocale.code)

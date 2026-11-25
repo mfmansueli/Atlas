@@ -54,6 +54,7 @@ struct AnalyticsSettingsSheet: View {
         .onAppear {
             vendorNumber = store.settings.vendorNumber
             isVendorFocused = focus == .vendorNumber
+            if case let .stopReports(appID) = focus { stoppingAppID = appID }
         }
         // A container of its own: otherwise its identifier replaces Done's.
         .accessibilityElement(children: .contain)
@@ -66,6 +67,12 @@ struct AnalyticsSettingsSheet: View {
                 .focused($isVendorFocused)
                 .onSubmit(commitVendorNumber)
                 .accessibilityIdentifier("analytics.settings.vendorNumber")
+            if store.settings.vendorNumber.isEmpty, focus != .salesRole {
+                Text(String(localized: "Not set. Store-page numbers work without it.", comment: "kind:label"))
+                    .font(.subheadline)
+                    .foregroundStyle(Palette.label2)
+                    .accessibilityIdentifier("analytics.settings.vendorStatus")
+            }
             if store.settings.keyCannotReadSales || focus == .salesRole {
                 Label {
                     Text("""

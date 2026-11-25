@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// The words under the welcome header: what Atlas is, three points, Get
+/// The words under the welcome header: what Atlas is in two lines (the
+/// quiet one hides below 680 points of height), three points, Get
 /// Started, and the one thing people worry about (the API key stays in
 /// this Mac's Keychain).
 struct WelcomeIntro: View {
@@ -20,16 +21,7 @@ struct WelcomeIntro: View {
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("welcome.title")
-            Text("""
-            Your App Store words, screenshots and prices, right in every country. Atlas suggests, you review, and one push \
-            sends it to App Store Connect.
-            """)
-            .font(layout.isShort ? .body : .title3)
-            .lineSpacing(layout.isShort ? 2 : 4)
-            .foregroundStyle(Palette.label2)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: 640)
-            .fixedSize(horizontal: false, vertical: true)
+            lines
             points
             VStack(spacing: Spacing.small) {
                 Button(action: onGetStarted) {
@@ -51,6 +43,27 @@ struct WelcomeIntro: View {
         .padding(.horizontal, 40)
         .padding(.bottom, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    /// Two lines (README-Welcome, 22 November): what Atlas does in the main
+    /// text colour, then a quieter one that hides below 680 points.
+    private var lines: some View {
+        VStack(spacing: Spacing.xxSmall) {
+            Text("Your App Store words, screenshots and prices, right in every country.")
+                .atlasTextStyle(layout.isShort ? .title3 : .title2)
+                .fontWeight(.regular)
+                .foregroundStyle(Palette.label)
+                .accessibilityIdentifier("welcome.tagline")
+            if layout.showsQuietLine {
+                Text("Atlas suggests, you review, and one push sends it to App Store Connect.")
+                    .atlasTextStyle(.body)
+                    .foregroundStyle(Palette.label2)
+                    .accessibilityIdentifier("welcome.quietLine")
+            }
+        }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 640)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var points: some View {

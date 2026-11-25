@@ -40,7 +40,8 @@ struct MCPReleaseSubmitProposal {
         guard proposal.refusals.isEmpty, let build else { return proposal }
         proposal.submission = try ReleaseProposalSubmission(
             buildID: build.id, buildNumber: build.number, releaseType: timing.releaseType, releaseDate: timing.date,
-            isPhased: arguments.optionalBool("phasedRelease") ?? true, encryption: encryption?.rawValue, eventIDs: eventIDs
+            isPhased: arguments.optionalBool("phasedRelease") ?? true, encryption: encryption?.rawValue, eventIDs: eventIDs,
+            pushesChanges: arguments.optionalBool("pushesChanges")
         )
         return proposal
     }

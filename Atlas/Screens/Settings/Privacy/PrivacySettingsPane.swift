@@ -7,7 +7,8 @@ import SwiftUI
 
 /// Settings → Privacy & Data (board 48): what leaves this Mac and where it
 /// goes, and what Atlas keeps on it: the activity, what can be made again,
-/// the "Don't ask again" choices, and removing every key and file.
+/// the "Don't ask again" choices, and removing every key and file, asked
+/// in place (`PrivacyRemovalPanel`).
 struct PrivacySettingsPane: View {
     @Environment(AppPreferences.self) private var preferences
     @Environment(AppSession.self) private var session
@@ -17,7 +18,26 @@ struct PrivacySettingsPane: View {
     @State private var cacheSize: Int64?
     @State private var isShowingActivity = false
     @State private var isConfirmingClear = false
-    @State private var isConfirmingRemoval = false
+    /// "Remove All Keys and Data…" asks in place, in the button's row.
+    @State private var isConfirmingRemoval: Bool
+
+    init(data: LocalDataStore = .shared, confirmsRemoval: Bool? = nil) {
+        self.data = data
+        _isConfirmingRemoval = State(initialValue: confirmsRemoval ?? Self.startsConfirmingRemoval)
+    }
+
+    private static var startsConfirmingRemoval: Bool {
+        #if DEBUG
+        return debugConfirmsRemoval
+        #else
+        return false
+        #endif
+    }
+
+    #if DEBUG
+    /// `set-privacy-remove` opens with the question asked in place.
+    static var debugConfirmsRemoval = false
+    #endif
 
     var body: some View {
         Form {
@@ -56,11 +76,15 @@ struct PrivacySettingsPane: View {
                 }
             }
             Section {
-                HStack {
-                    Spacer()
-                    Button("Remove All Keys and Data…", role: .destructive) { isConfirmingRemoval = true }
-                        .accessibilityIdentifier("settings.privacy.removeAll")
-                    Spacer()
+                if isConfirmingRemoval {
+                    PrivacyRemovalPanel(onCancel: { isConfirmingRemoval = false }, onRemove: removeEverything)
+                } else {
+                    HStack {
+                        Spacer()
+                        Button("Remove All Keys and Data…", role: .destructive) { isConfirmingRemoval = true }
+                            .accessibilityIdentifier("settings.privacy.removeAll")
+                        Spacer()
+                    }
                 }
             }
         }
@@ -76,16 +100,6 @@ struct PrivacySettingsPane: View {
             }
         } message: {
             Text("Atlas makes them again when it needs them. Your drafts, captures and suggestions stay.")
-        }
-        .alert("Remove all keys and data from this Mac?", isPresented: $isConfirmingRemoval) {
-            Button("Cancel", role: .cancel) {}
-            Button("Remove and Quit", role: .destructive, action: removeEverything)
-                .accessibilityIdentifier("settings.privacy.removeAll.confirm")
-        } message: {
-            Text("""
-            Deletes every App Store Connect key, API key and paired assistant, and every unpushed draft, suggestion and \
-            change. Atlas quits. Nothing changes in App Store Connect.
-            """)
         }
     }
 

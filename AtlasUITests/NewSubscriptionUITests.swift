@@ -60,21 +60,23 @@ final class NewSubscriptionUITests: XCTestCase {
         XCTAssertTrue(element("review.creation.subscriptionSetup.6450000006.dev.northpier.quiet.premium.monthly").waitForExistence(timeout: 5))
     }
 
-    /// The empty state's buttons keep their whole titles side by side: cut
-    /// to the actions' width they were about 110–118 pt wide each
-    /// ("Create Subscri…", "Open App Stor…"); whole, each is 150 pt or more.
+    /// Nothing for sale yet (board 74): Add Subscription… at the top, no
+    /// Prices | Retention, and the empty state's two buttons side by side
+    /// with their whole titles (cut to the actions' width they were about
+    /// 110–118 pt wide each).
     func testEmptyStateButtonsShowTheirWholeTitles() {
         app.launch(debugScene: "pricing-nosubs")
         let create = app.buttons["pricing.createSubscription"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))
-        let buttons = [create, app.buttons["pricing.newSubscription.ask"], app.buttons["pricing.openAppStoreConnect"]]
+        XCTAssertFalse(element("pricing.page").exists)
+        let buttons = [app.buttons["pricing.newSubscription.ask"], app.buttons["pricing.createInAppPurchase"]]
         let frames = buttons.map(\.frame)
         for (button, frame) in zip(buttons, frames) {
             XCTAssertGreaterThanOrEqual(frame.width, 140, "\(button.identifier) looks cut off")
         }
         XCTAssertLessThanOrEqual(frames[0].maxX, frames[1].minX)
-        XCTAssertLessThanOrEqual(frames[1].maxX, frames[2].minX)
-        XCTAssertEqual(frames[0].midY, frames[2].midY, accuracy: 1)
+        XCTAssertEqual(frames[0].midY, frames[1].midY, accuracy: 1)
+        XCTAssertLessThan(create.frame.maxY, frames[0].minY)
     }
 
     /// Whether `element` gets the keyboard focus within a few seconds.

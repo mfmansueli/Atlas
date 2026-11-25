@@ -27,6 +27,8 @@ enum ReviewShotsCardState: Equatable {
     case uploaded(PurchaseReviewScreenshotState)
     /// Apple refused the upload; another one replaces it.
     case failed(PurchaseReviewScreenshotState)
+    /// Still missing: the last run skipped it, or its checks failed twice.
+    case notCaptured(ReviewShotsMiss)
 
     /// The state of one product's card.
     static func make(
@@ -35,7 +37,8 @@ enum ReviewShotsCardState: Equatable {
         run: ReviewShotsRun?,
         productID: String,
         remote: PurchaseReviewScreenshotState?,
-        capture: ReviewShotsCapture?
+        capture: ReviewShotsCapture?,
+        miss: ReviewShotsMiss? = nil
     ) -> Self {
         if let change, let item = ReviewShotItem(change: change, details: details) {
             return change.awaitingAcceptance == nil ? .accepted(item) : .suggested(item)
@@ -48,7 +51,7 @@ enum ReviewShotsCardState: Equatable {
         }
         switch remote {
         case nil: return .unknown
-        case .missing?: return .missing(capture: capture)
+        case .missing?: return miss.map(Self.notCaptured) ?? .missing(capture: capture)
         case let state? where state.code == "FAILED": return .failed(state)
         case let state?: return .uploaded(state)
         }
@@ -57,7 +60,7 @@ enum ReviewShotsCardState: Equatable {
     /// Still needs a screenshot: counted as “missing” for the run.
     var needsScreenshot: Bool {
         switch self {
-        case .missing, .failed: true
+        case .missing, .failed, .notCaptured: true
         case .unknown, .queued, .working, .suggested, .accepted, .uploaded: false
         }
     }

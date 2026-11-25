@@ -20,4 +20,23 @@ enum AddKeyCopy {
             comment: "kind:description"
         )
     }
+
+    /// The step while App Store Connect checks the new key.
+    static var checkingTitle: String {
+        String(localized: "Checking the new key…", comment: "kind:loading")
+    }
+
+    /// "Atlas is asking App Store Connect which team and apps this key
+    /// opens. Northpier Studio stays as it is."
+    static func checkingMessage(keeping team: String) -> String {
+        String(
+            localized: "Atlas is asking App Store Connect which team and apps this key opens. \(team) stays as it is.",
+            comment: "kind:loading"
+        )
+    }
+
+    /// VoiceOver's name for the bar.
+    static var checkingProgress: String {
+        String(localized: "Checking the key", comment: "kind:label")
+    }
 }

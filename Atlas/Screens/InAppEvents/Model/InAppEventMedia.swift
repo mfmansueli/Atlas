@@ -63,9 +63,13 @@ struct InAppEventMedia: Hashable, Sendable {
     var isVideo = false
     var width: Int?
     var height: Int?
-    /// The image at a size Atlas can show; nil for a video or
+    /// The image at a size Atlas can show (a video's poster frame); nil
     /// while Apple processes it.
     var imageURL: URL?
+    /// Where App Store Connect streams a video from (`videoUrl`, an HLS
+    /// playlist); `RemoteVideoCache` keeps it as a movie on this Mac. Nil
+    /// for an image, or while Apple processes the video.
+    var videoURL: URL?
     /// The file's name and size as it was uploaded, when Apple says
     /// (Atlas sends the name its file has on this Mac).
     var fileName: String?

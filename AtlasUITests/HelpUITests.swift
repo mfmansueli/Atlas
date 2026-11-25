@@ -30,7 +30,7 @@ final class HelpUITests: XCTestCase {
         XCTAssertFalse(app.buttons["help.back"].isEnabled)
         attach("help-home")
         element("help.card.connect").click()
-        XCTAssertTrue(waitForText("Connect App Store Connect", in: element("help.article.title")))
+        XCTAssertTrue(waitForText("Connect to App Store Connect", in: element("help.article.title")))
         XCTAssertTrue(app.buttons["help.back"].isEnabled)
     }
 

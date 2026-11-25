@@ -28,11 +28,17 @@ struct AppWorkspaceView: View {
     @Environment(ClaudeCodeLauncher.self) private var launcher
     @Environment(FieldSuggestionStore.self) private var suggestions
     @Environment(ProGate.self) private var pro: ProGate?
+    @Environment(ReviewsStore.self) private var reviewsStore: ReviewsStore?
+    @Environment(AnalyticsStore.self) private var analytics: AnalyticsStore?
+    @Environment(InAppEventsStore.self) private var eventsStore: InAppEventsStore?
+    @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
     @Environment(\.askCenterOverride) private var askCenterOverride
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var toolbarLayout = WorkspaceToolbarLayout()
     @State private var isAskingQuestion = false
+    /// The App Store's average, for Ratings & Reviews' line.
+    @State private var ratingAverage: Double?
     /// The guided runs, which the menu bar icon reads too.
     private var autopilot: AutopilotCenter { .shared }
     /// Reply Automatically (board 58).
@@ -67,14 +73,23 @@ struct AppWorkspaceView: View {
             content
                 // The line under the section's description: what waits.
                 .environment(\.sectionSummary, sectionSummary)
+                // A bar on a page's bottom edge ends above the chat's pill.
+                .environment(\.chatCornerRoom, AssistantChatRoom.pageRoom)
                 .pageControlSize()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollEdgeEffectStyle(.hard, for: .top)
                 // The assistant chat in the corner (board 69), over the
-                // section, above the toast while one shows.
-                .overlay(alignment: .bottomTrailing) { chatCorner }
+                // section, above the toast while one shows (the workspace's or
+                // the section's own: Pricing's, Store Page's…).
+                .overlayPreferenceValue(ToastShownPreferenceKey.self, alignment: .bottomTrailing) { chatCorner(isSectionToastShown: $0) }
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
+        // “4.7 ★” in Ratings & Reviews' line, from the answers the
+        // Ratings card keeps a day.
+        .task(id: navigator.section == .reviews) {
+            guard navigator.section == .reviews, let reviewsStore else { return }
+            ratingAverage = await RatingsSummary.average(of: app, archive: reviewsStore.archive(for: app.id), services: services.reviews)
+        }
         // The toast, or else what arrived out of sight: “3 new below”.
         .overlay(alignment: .bottom) {
             if let toast = navigator.toast {
@@ -191,33 +206,6 @@ struct AppWorkspaceView: View {
         }
     }
 
-    /// A DEBUG scene that opens with the section menu showing.
-    private static var opensSectionMenu: Bool {
-        #if DEBUG
-        NavigationDebugLaunch.opensSectionMenu
-        #else
-        false
-        #endif
-    }
-
-    // MARK: - Title
-
-    /// “32 suggestions · 3 not pushed” under the section's title; on
-    /// Overview, the app and its version first.
-    private var sectionStatus: WorkspaceSectionStatus {
-        let section = navigator.section
-        var notPushed = changes.changes(for: app.id, section: section).count
-        if section == .screenshots {
-            notPushed += push.screenshots.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
-            notPushed += push.screenshots.extras.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
-        }
-        let lead = section == .overview ? [app.name, version?.line].compactMap(\.self).joined(separator: " · ") : nil
-        let rule = autoReply.rule(for: app.id)
-        let note = section == .reviews && rule.isOn && !pro.isFree
-            ? (rule.isPaused ? String(localized: "auto-reply paused") : String(localized: "auto-reply on")) : nil
-        return WorkspaceSectionStatus(section: section, waiting: counts.count(for: section), notPushed: notPushed, lead: lead, note: note)
-    }
-
     // MARK: - Autopilot
 
     /// The toolbar's Autopilot button.
@@ -301,6 +289,7 @@ struct AppWorkspaceView: View {
                 inputs.reviewShotsProgress = shots.fraction
             } else {
                 inputs.reviewShotsNeeds = shots.needs
+                inputs.reviewShotsReady = shots.readyText
             }
         }
         let rule = autoReply.rule(for: app.id)
@@ -413,7 +402,12 @@ struct AppWorkspaceView: View {
     private var content: some View {
         switch navigator.section {
         case .overview:
-            OverviewSectionView(app: app, services: services.storePage, reviews: services.reviews)
+            OverviewSectionView(
+                app: app, services: services.storePage, reviews: services.reviews,
+                complianceAnswers: SectionBadgeCounts.complianceCount(
+                    appID: app.id, model: sectionModels?.keptModels(for: app.id)?.appInformation, notes: services.appInformation.notes
+                )
+            )
         case .subscriptionPricing:
             PricingSectionView(
                 app: app, services: services.pricing, retention: services.retention, appPriceAvailability: services.appPriceAvailability
@@ -508,22 +502,45 @@ extension AppWorkspaceView {
     }
 }
 
+// MARK: - Debug
+
+extension AppWorkspaceView {
+    /// A DEBUG scene that opens with the section menu showing.
+    private static var opensSectionMenu: Bool {
+        #if DEBUG
+        NavigationDebugLaunch.opensSectionMenu
+        #else
+        false
+        #endif
+    }
+}
+
 // MARK: - Chat
 
 extension AppWorkspaceView {
-    private var chatCorner: some View {
+    private func chatCorner(isSectionToastShown: Bool) -> some View {
         AssistantChatCorner(
             context: chatContext, client: MCPClientKind.claudeCode.title, canAsk: canChat,
             onConnect: { navigator.isAssistantSetupPresented = true },
-            onShow: { navigator.open($0, appID: app.id) }
+            onShow: { navigator.open($0, intent: AssistantChatSuggestions.intent(showing: $0), appID: app.id) },
+            onReview: { section in
+                if let section { navigator.review(section: section) } else { navigator.isReviewPresented = true }
+            }
         )
-        .padding(.trailing, Spacing.large)
-        .padding(.bottom, navigator.toast == nil ? Spacing.medium : Spacing.large + Metrics.chatPillHeight + Spacing.small)
+        .padding(.trailing, AssistantChatRoom.trailingInset)
+        .padding(.bottom, AssistantChatRoom.bottomPadding(isToastShown: navigator.toast != nil || isSectionToastShown))
+        .animation(MotionTiming.fast.animation, value: isSectionToastShown)
     }
 
     /// Where the chat's questions are asked from.
     private var chatContext: AssistantChatContext {
-        AssistantChatContext(appID: app.id, appName: app.name, section: navigator.section, version: version?.versionString)
+        AssistantChatContext(appID: app.id, appName: app.name, section: navigator.section, version: version?.versionString, country: chatCountry)
+    }
+
+    /// Pricing's chosen country (“Preview in”), for the chat's chip.
+    private var chatCountry: String? {
+        guard navigator.section == .subscriptionPricing, let pricing = sectionModels?.keptModels(for: app.id)?.pricing else { return nil }
+        return TerritoryCatalog.standard.territory(alpha3: pricing.previewTerritoryID)?.name
     }
 
     /// The chat can start Claude Code: the helper is saved and found it,
@@ -533,5 +550,60 @@ extension AppWorkspaceView {
         case .notInstalled, .claudeMissing, .outdated, .failed: false
         case .unknown, .checking, .ready, .atlasReplaced: true
         }
+    }
+}
+
+// MARK: - Title
+
+extension AppWorkspaceView {
+    /// “32 suggestions in 6 languages · 3 not pushed” under the section's
+    /// title; on Overview, the app and its version.
+    private var sectionStatus: WorkspaceSectionStatus {
+        let section = navigator.section
+        var notPushed = changes.changes(for: app.id, section: section).count
+        if section == .screenshots {
+            notPushed += push.screenshots.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
+            notPushed += push.screenshots.extras.plans(for: [app.id]).reduce(0) { $0 + $1.items.count }
+        }
+        let lead = section == .overview ? [app.name, version?.line].compactMap(\.self).joined(separator: " · ") : nil
+        let rule = autoReply.rule(for: app.id)
+        let note = section == .reviews && rule.isOn && !pro.isFree
+            ? (rule.isPaused ? String(localized: "auto-reply paused") : String(localized: "auto-reply on")) : nil
+        let waiting = section == .analytics ? analytics?.newFindingCount(for: app.id) ?? 0 : counts.count(for: section)
+        return WorkspaceSectionStatus(
+            section: section, waiting: waiting, notPushed: notPushed, lead: lead, note: note, facts: sectionFacts(for: section)
+        )
+    }
+
+    /// What the section's line says besides its count, from what the
+    /// section (or its read ahead) already read.
+    private func sectionFacts(for section: AppWorkspaceSection) -> WorkspaceSectionStatus.Facts {
+        var facts = WorkspaceSectionStatus.Facts()
+        let kept = sectionModels?.keptModels(for: app.id)
+        switch section {
+        case .storePage:
+            facts.languages = Set(suggestions.toReview(for: app.id, area: .storePage).compactMap { suggestion -> String? in
+                guard case let .storePage(code) = suggestion.target.scope else { return nil }
+                return code
+            }).count
+        case .productPages:
+            if let model = kept?.productPages, model.state.value != nil { facts.pages = model.pages.count }
+        case .inAppEvents:
+            if let model = kept?.events, model.state.value != nil {
+                facts.events = model.events.count
+                facts.eventsNeedingArtwork = model.events.count { WorkspaceSectionStatus.Facts.waitsForArtwork($0) && !model.missingArt(of: $0).isEmpty }
+            } else if let read = eventsStore?.lastRead(for: app.id) {
+                facts.events = read.count
+                facts.eventsNeedingArtwork = WorkspaceSectionStatus.Facts.eventsNeedingArtwork(read)
+            }
+        case .reviews:
+            facts.rating = ratingAverage
+            if let archive = reviewsStore?.archive(for: app.id), archive.fetchedAt != nil { facts.withoutReply = archive.needsReplyCount }
+        case .analytics:
+            facts.days = kept?.analytics?.days
+        default:
+            break
+        }
+        return facts
     }
 }

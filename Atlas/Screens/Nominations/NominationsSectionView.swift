@@ -6,8 +6,8 @@
 import SwiftUI
 
 /// The Nominations section of an app's workspace (⇧⌘F, board 70): builds
-/// the view model, reads the nominations, and handles Ask Claude Code…,
-/// the confirmation sheets and the toast. The toolbar's Autopilot asks
+/// the view model, reads the nominations, and handles the confirmation
+/// sheets and the toast. The toolbar's Autopilot asks
 /// (`NominationsAskPrompt`) start from the toolbar itself.
 struct NominationsSectionView: View {
     let app: StoreApp
@@ -18,10 +18,6 @@ struct NominationsSectionView: View {
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(NominationsStore.self) private var injectedStore: NominationsStore?
     @Environment(PushHistory.self) private var history: PushHistory?
-    @Environment(ClaudeCodeLauncher.self) private var launcher: ClaudeCodeLauncher?
-    @Environment(MCPServerController.self) private var assistants: MCPServerController?
-    @Environment(\.askCenterOverride) private var askCenterOverride
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openSettings) private var openSettings
 
     var body: some View {
@@ -47,7 +43,6 @@ struct NominationsSectionView: View {
         NominationsScreen(
             viewModel: viewModel,
             actions: NominationsScreen.Actions(
-                ask: { ask(NominationsAskPrompt.suggest(app: app.name)) },
                 changeKey: changeKey,
                 openReviewPush: { navigator.isReviewPresented = true },
                 openEvents: { navigator.open(.inAppEvents, appID: app.id) }
@@ -90,21 +85,6 @@ struct NominationsSectionView: View {
         #if DEBUG
         launch?.apply(to: model)
         #endif
-    }
-
-    /// Ask Claude Code…: the run starts (or its prompt is copied); what it
-    /// suggests arrives over MCP.
-    private func ask(_ ask: WorkspaceAutopilotAsk) {
-        guard let launcher else { return }
-        let client = assistants?.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
-        let outcome = AssistantAskStarter.start(
-            ask, app: app, client: client, launcher: launcher, askCenter: askCenterOverride ?? .shared, reduceMotion: reduceMotion
-        )
-        switch outcome {
-        case .sent: break
-        case .copied: navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAskStarter.copiedText(client: client)))
-        case .busy: navigator.toast = WorkspaceToast(message: ToastMessage(text: AssistantAsk.busyTitle(client: client)))
-        }
     }
 
     /// Change Key…: Settings → Accounts.

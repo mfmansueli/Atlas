@@ -32,6 +32,14 @@ enum DebugReportsData {
 
     static let lumenGracePeriod = GracePeriodSetting(id: "grace-lumen", isOn: false, duration: nil)
 
+    /// Lumen's crashes with no App Sessions rows: Stability shows the
+    /// counts, with no rate (`an-stab-counts`).
+    static var lumenCrashesOnly: ReportsArchive {
+        var builder = Builder()
+        stability(into: &builder, sessions: false)
+        return builder.archive(firstChecked: Data.date(month: 11, day: 1))
+    }
+
     /// Retention Messaging: 412 opened in the 28 days through Nov 5, 94 stayed.
     private static func retention(into builder: inout Builder) {
         let window = AnalyticsPeriod(ending: last.adding(-4), length: 28)
@@ -137,7 +145,7 @@ enum DebugReportsData {
     }
 
     /// 1.3 against 1.4, released Nov 1 in phases: 1.4 crashes about 3.2× as often.
-    private static func stability(into builder: inout Builder) {
+    private static func stability(into builder: inout Builder, sessions hasSessions: Bool = true) {
         let release = Data.date(month: 11, day: 1)
         for back in 0..<40 {
             let day = last.adding(-back)
@@ -147,10 +155,14 @@ enum DebugReportsData {
                 let sessions = 3400.0 * deviceShare
                 let old = Int(sessions * (1 - newShare))
                 let new = Int(sessions * newShare)
-                builder.add(.sessions, day: day, values: ["1.3", device, "App Store Search", "", "", "", "", "US"], counts: [old, old * 240, old / 3])
+                if hasSessions {
+                    builder.add(.sessions, day: day, values: ["1.3", device, "App Store Search", "", "", "", "", "US"], counts: [old, old * 240, old / 3])
+                }
                 builder.add(.crashes, day: day, values: ["1.3", device], counts: [Int((Double(old) * oldRate / 1000).rounded()), 0])
                 if new > 0 {
-                    builder.add(.sessions, day: day, values: ["1.4", device, "App Store Search", "", "", "", "", "US"], counts: [new, new * 230, new / 3])
+                    if hasSessions {
+                        builder.add(.sessions, day: day, values: ["1.4", device, "App Store Search", "", "", "", "", "US"], counts: [new, new * 230, new / 3])
+                    }
                     builder.add(.crashes, day: day, values: ["1.4", device], counts: [Int((Double(new) * newRate / 1000).rounded()), 0])
                 }
             }

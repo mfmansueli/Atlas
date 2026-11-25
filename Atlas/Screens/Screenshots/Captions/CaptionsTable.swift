@@ -36,6 +36,7 @@ struct CaptionsTable: View {
                 }
                 .frame(width: Self.localeColumnWidth + CGFloat(columnCount) * (cellWidth + 4) + 24, alignment: .leading)
             }
+            .leavesChatRoom()
         }
         .background(Palette.content)
         .accessibilityElement(children: .contain)

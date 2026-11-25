@@ -115,7 +115,7 @@ struct ReviewsToolsTests {
         #expect(outcome.result["replies"] == .int(1))
         let skipped = try #require(outcome.result["skipped"]?.arrayValue)
         #expect(skipped.compactMap { $0["reviewId"]?.stringValue } == ["fr1", "nobody", "jp1"])
-        #expect(skipped[0]["reason"] == "This review already has a reply on the App Store.")
+        #expect(skipped[0]["reason"] == "This review already has a reply on the App Store. To suggest a new text for it, send replace: true with why.")
         let suggestion = try #require(store.archive(for: Data.app.id).suggestions["de1"])
         #expect(suggestion.text == "Danke, 1.4 repariert das.")
         #expect(suggestion.meaning == "Thanks, 1.4 fixes it.")

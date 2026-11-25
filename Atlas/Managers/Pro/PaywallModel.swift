@@ -111,10 +111,15 @@ final class PaywallModel: Identifiable {
         }
     }
 
-    /// "You won’t be charged until November 17."
+    /// "You won’t be charged until November 17. Atlas reminds you 2 days
+    /// before." (`TrialReminder` keeps that promise.)
     var doneSubtitle: String {
         if case let .subscribed(_, until?, true) = entitlements.status {
-            return String(localized: "You won’t be charged until \(until.formatted(.dateTime.month(.wide).day())).")
+            let date = until.formatted(.dateTime.month(.wide).day())
+            return String(
+                localized: "You won’t be charged until \(date). Atlas reminds you \(TrialReminder.leadDays) days before.",
+                comment: "kind:done-state"
+            )
         }
         return String(localized: "Thanks for supporting Atlas.")
     }

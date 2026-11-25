@@ -28,14 +28,18 @@ struct MainWindowBackground {
     /// The first sync is still going: no check then.
     let isSyncing: () -> Bool
     let selectedRelease: () -> ReleaseViewModel?
+    /// Look for Improvements: its record and runs, and what it reads from
+    /// the window beyond the stores above.
+    var watch: WatchCenter = .shared
+    var watchSources = WatchSources()
 
     /// One pass over App Store Connect, every `CheckInterval` and on Check
     /// Now: the app list, the versions with App Review, approved or
     /// rolling out (saying so when one moved), the custom product pages
     /// with App Review (the same), Apple's new analytics
     /// reports (unless they're only read on opening Analytics) and the
-    /// reviews when what's kept is old. Returns why App Store Connect
-    /// couldn't be read, else nil.
+    /// reviews when what's kept is old; then Look for Improvements. Returns
+    /// why App Store Connect couldn't be read, else nil.
     func check() async -> String? {
         guard !isSyncing() else { return nil }
         await library.load()
@@ -52,6 +56,7 @@ struct MainWindowBackground {
         await replyAutomatically()
         let findings = library.apps.reduce(0) { $0 + analytics.newFindingCount(for: $1.id) }
         AtlasNotifications.analyticsFindings(findings, now: .now)
+        await lookForImprovements()
         return nil
     }
 

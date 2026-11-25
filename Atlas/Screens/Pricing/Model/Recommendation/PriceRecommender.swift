@@ -16,6 +16,8 @@ import Foundation
 ///   reason says "many page views, few starts".
 /// - An earlier change in the territory: confidence is High, and a cut that
 ///   didn't lift starts holds the current price.
+/// - A step under 5% of today's price (`minimumChange`) keeps today's
+///   price: it's a price-grid rounding, not a purchasing-power gap.
 struct PriceRecommender: Sendable {
     /// The basis line when the key's role can't read sales.
     static let cantReadSalesLine = String(localized: "Sales: this key’s role can’t read Sales and Trends", comment: "kind:description")
@@ -28,6 +30,10 @@ struct PriceRecommender: Sendable {
     /// Converts under this share of the base territory: few starts.
     static let weakConversionShare = 0.6
     static let softStepIntensity = Decimal(1) / 2
+    /// A suggestion closer than this to today's price keeps today's: the
+    /// index and the price grid can't tell such a step from noise (COP
+    /// 10.000 → 9.999, ₸1,150 → ₸1,149). The floor still applies.
+    static let minimumChange = Decimal(5) / 100
 
     let calculator: PriceCalculator
     var baseTerritoryID = "USA"
@@ -35,6 +41,13 @@ struct PriceRecommender: Sendable {
     init(calculator: PriceCalculator, baseTerritoryID: String = "USA") {
         self.calculator = calculator
         self.baseTerritoryID = baseTerritoryID
+    }
+
+    /// Whether moving from today's price to `suggested` is at least
+    /// `minimumChange` of today's price.
+    static func isMeaningfulChange(from current: Decimal, to suggested: Decimal) -> Bool {
+        guard current > 0 else { return suggested != current }
+        return (suggested - current).magnitude / current >= minimumChange
     }
 
     /// local price ÷ equalization multiplier ÷ factor.
@@ -57,7 +70,9 @@ struct PriceRecommender: Sendable {
         var currentInput = input
         currentInput.currentPrice = current
         let calculation = calculator.calculate(currentInput, strategy: strategy)
-        let price = facts.isHolding
+        let keepsCurrent = facts.isHolding
+            || (!calculation.raisedToFloor && !Self.isMeaningfulChange(from: current, to: calculation.price.customerPrice))
+        let price = keepsCurrent
             ? input.ladder.point(at: current) ?? calculator.offLadderPoint(current, territory: input.territory)
             : calculation.price
         let isUnchanged = (price.customerPrice - current).magnitude < Decimal(1) / 1000
@@ -80,9 +95,7 @@ struct PriceRecommender: Sendable {
             feelsLikeSuggestedText: base.formatWhole(feelsSuggested),
             isHolding: facts.isHolding,
             isSoftStep: facts.isSoftStep,
-            summary: facts.isHolding
-                ? String(localized: "Holding at \(CurrencyFormat.format(current, currency: input.territory.currencyCode))", comment: "kind:description")
-                : calculation.summary,
+            summary: summary(facts, keepsCurrent: keepsCurrent, current: current, input: input, calculation: calculation),
             steps: calculation.steps,
             calculation: calculation
         )
@@ -124,6 +137,19 @@ struct PriceRecommender: Sendable {
             guard hasEnoughSales, let conversion, let reference else { return false }
             return conversion < PriceRecommender.weakConversionShare * reference
         }
+    }
+
+    private func summary(
+        _ facts: Facts,
+        keepsCurrent: Bool,
+        current: Decimal,
+        input: PriceCalculationInput,
+        calculation: PriceCalculation
+    ) -> String {
+        let price = CurrencyFormat.format(current, currency: input.territory.currencyCode)
+        if facts.isHolding { return String(localized: "Holding at \(price)", comment: "kind:description") }
+        if keepsCurrent { return String(localized: "Kept at \(price) · close to the target", comment: "kind:description") }
+        return calculation.summary
     }
 
     private var baseReference: String {

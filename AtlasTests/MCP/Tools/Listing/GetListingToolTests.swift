@@ -22,7 +22,7 @@ struct GetListingToolTests {
         let outcome = try await call(["appId": "Lumen Journal"])
         let result = outcome.result
         #expect(result["appId"] == "app1")
-        #expect(result["version"] == ["versionString": "2.0", "state": "Prepare for Submission", "editable": true])
+        #expect(result["version"] == ["versionString": "2.0", "state": "Prepare for Submission", "editable": true, "platform": "ios"])
         #expect(result["primaryLocale"] == "en-US")
         let locales = try #require(result["locales"]?.arrayValue)
         #expect(locales.map { $0["code"] } == ["en-US", "de-DE"])

@@ -45,6 +45,7 @@ struct OffersView: View {
             }
             .padding(.bottom, Spacing.xLarge)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("analytics.offers")
     }
 
@@ -90,7 +91,7 @@ struct OffersView: View {
             Text("Still measuring").foregroundStyle(Palette.label2)
         } else if let standing = offer.standing {
             Label(standing.title, systemImage: standing.systemImage)
-                .foregroundStyle(standing == .better ? Palette.ok : standing == .worse ? Palette.err : Palette.label2)
+                .foregroundStyle(RateLabel.verdictColor(for: standing))
         } else {
             Text(offer.rate.isTooFew ? String(localized: "Too few to tell") : "—").foregroundStyle(Palette.label2)
         }

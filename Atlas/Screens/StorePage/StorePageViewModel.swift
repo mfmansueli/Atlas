@@ -97,6 +97,11 @@ final class StorePageViewModel {
     var addedLanguagesUndo: [StoreLocale]?
 
     private var selectedVersionID: String?
+    /// A new version that waits in Review & Push, shown as the version
+    /// being prepared: the version before it's texts under its placeholder
+    /// IDs, so what's edited here waits with it and goes in once the push
+    /// creates it. Nil while App Store Connect's own version shows.
+    private(set) var queuedVersion: QueuedAppVersion?
     private var pendingIntent: WorkspaceIntent?
     /// The overview numbers last worked out here, to notice when they change.
     private var lastSummary: StorePageSummary?
@@ -129,14 +134,33 @@ final class StorePageViewModel {
 
     // MARK: - Loading
 
-    /// Fetches the chosen version (the editable one by default). A failure
-    /// keeps whatever was shown, says why, and goes to the workspace banner
-    /// when it's the connection or the rate limit.
+    /// Fetches the chosen version (the editable one by default, else a new
+    /// one waiting in Review & Push). A failure keeps whatever was shown,
+    /// says why, and goes to the workspace banner when it's the connection
+    /// or the rate limit.
     func load() async {
         isLoading = true
         defer { isLoading = false }
         do {
-            let loaded = try await services.content(for: app, versionID: selectedVersionID)
+            let queued = QueuedAppVersion.all(for: app.id, in: queue)
+            if let id = selectedVersionID, StorePageVersion.isQueued(id: id), !queued.contains(where: { $0.versionToken == id }) {
+                // The new version it showed was discarded or pushed.
+                selectedVersionID = nil
+                showsReadOnlyVersion = false
+            }
+            let picked = queued.first { $0.versionToken == selectedVersionID }
+            var loaded = try await services.content(for: app, versionID: picked == nil ? selectedVersionID : nil)
+            let shown = picked ?? (selectedVersionID == nil ? Self.queuedVersion(among: queued, for: loaded) : nil)
+            if let shown {
+                if let base = shown.baseVersionID(among: loaded.versions), base != loaded.version.id {
+                    loaded = try await services.content(for: app, versionID: base)
+                }
+                loaded = shown.storePageContent(from: loaded)
+            }
+            // The others stay in the version picker.
+            let listed = Set(loaded.versions.map(\.id))
+            loaded.versions = queued.filter { !listed.contains($0.versionToken) }.map(\.storePageVersion) + loaded.versions
+            queuedVersion = shown
             content = loaded
             errorMessage = nil
             rebuild()
@@ -147,6 +171,14 @@ final class StorePageViewModel {
         } catch {
             errorMessage = StorePageErrorReporter.report(error, to: push)
         }
+    }
+
+    /// The new version the Store Page opens on: none while App Store
+    /// Connect has a version being prepared; else the one queued for the
+    /// shown version's platform, or the first.
+    static func queuedVersion(among queued: [QueuedAppVersion], for content: StorePageContent) -> QueuedAppVersion? {
+        guard content.editableVersion == nil else { return nil }
+        return queued.first { $0.platform == content.version.platform } ?? queued.first
     }
 
     /// Picks another version in the context bar.
@@ -185,8 +217,23 @@ final class StorePageViewModel {
     /// The queue changed: rebuild what's shown from App Store Connect's
     /// values plus what's still queued.
     func queueDidChange() {
-        rebuild()
+        if needsReloadForQueuedVersions {
+            Task { await load() }
+        } else {
+            rebuild()
+        }
         inAppTexts.queueDidChange()
+    }
+
+    /// A new version was queued, renumbered, discarded or pushed since the
+    /// page loaded: the version shown and the picker change with it.
+    private var needsReloadForQueuedVersions: Bool {
+        guard let content, !isLoading else { return false }
+        let queued = QueuedAppVersion.all(for: app.id, in: queue)
+        let listed = Set(content.versions.map(\.id).filter(StorePageVersion.isQueued(id:)))
+        if listed != Set(queued.map(\.versionToken)) { return true }
+        if let queuedVersion { return !queued.contains(queuedVersion) }
+        return false
     }
 
     /// Rebuilds `listing` from `content`, the queue and the stored tags.
@@ -217,7 +264,8 @@ final class StorePageViewModel {
     func commit(_ edited: StoreListing) {
         guard let builder = changeBuilder else { return }
         listing = edited
-        let desired = builder.changes(for: edited)
+        // A new version's texts wait with it in Review & Push.
+        let desired = builder.changes(for: edited).map { queuedVersion?.tie($0) ?? $0 }
         let existing = queue.changes(for: app.id, section: .storePage).filter(builder.owns)
         let desiredIDs = Set(desired.map(\.id))
         queue.discard(ids: existing.map(\.id).filter { !desiredIDs.contains($0) })
@@ -254,7 +302,10 @@ final class StorePageViewModel {
     /// reload brought different texts, or tags changed what App Store
     /// Connect's texts count as. Only for the version the summary is about.
     private func refreshSummaryIfNeeded() {
-        guard let content, content.editableVersion == nil || content.version.isEditable else { return }
+        // A new version waiting in Review & Push isn't App Store Connect's yet.
+        guard queuedVersion == nil, let content else { return }
+        let hasEditable = content.versions.contains { $0.isEditable && !$0.isQueued }
+        guard !hasEditable || content.version.isEditable else { return }
         let tags = MachineTranslationScope.tags(in: services.machineTranslations, appID: app.id, ids: content.ids)
         let summary = content.summary(machineTranslated: tags)
         defer { lastSummary = summary }
@@ -268,11 +319,11 @@ final class StorePageViewModel {
     /// The intents this section takes; the rest belong to other sections.
     static func handles(_ intent: WorkspaceIntent) -> Bool {
         switch intent {
-        case .translateMissing, .findAndReplace, .importTranslations, .search, .showLanguage: true
+        case .translateMissing, .findAndReplace, .importTranslations, .newVersion, .search, .showLanguage: true
         case let .reviewFieldSuggestions(area), let .askForSuggestions(area): area == .storePage
         case .reviewSuggestions, .applyRecommendedPrices, .showResults, .editPriceSchedule, .showPrices, .openAppInformationPage,
-             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents,
-             .showInAppEventDates, .showProductPage, .autopilot: false
+             .reviewPageSuggestions, .showScreenshots, .showScreenshotsLanguage, .showTerritoryPrice, .showRetention, .newRetentionMessage, .replyToAllReviews,
+             .showInAppEvents, .showInAppEventDates, .showProductPage, .makePageScreenshots, .autopilot: false
         }
     }
 
@@ -289,6 +340,8 @@ final class StorePageViewModel {
         case .translateMissing: presentTranslate()
         case .findAndReplace, .search: presentFindReplace()
         case .importTranslations: isImporterPresented = true
+        case .newVersion where canCreateVersion: openNewVersion()
+        case .newVersion: break
         case .reviewFieldSuggestions: openSuggestions()
         case .askForSuggestions:
             openSuggestions()
@@ -296,8 +349,8 @@ final class StorePageViewModel {
         case let .showLanguage(code):
             if let locale = listing?.locales.first(where: { $0.code == code }) { openEditor(locale) }
         case .reviewSuggestions, .applyRecommendedPrices, .showResults, .editPriceSchedule, .showPrices, .openAppInformationPage,
-             .reviewPageSuggestions, .showScreenshots, .showTerritoryPrice, .showRetention, .replyToAllReviews, .showInAppEvents,
-             .showInAppEventDates, .showProductPage, .autopilot: break
+             .reviewPageSuggestions, .showScreenshots, .showScreenshotsLanguage, .showTerritoryPrice, .showRetention, .newRetentionMessage, .replyToAllReviews,
+             .showInAppEvents, .showInAppEventDates, .showProductPage, .makePageScreenshots, .autopilot: break
         }
     }
 

@@ -32,11 +32,12 @@ struct PricingResultsView: View {
         case .loading:
             loading
         case .noChanges:
-            ContentUnavailableView {
-                Label("No price changes to compare yet", systemImage: "chart.bar.xaxis")
-            } description: {
-                Text("Push new prices to compare 28 days before and after: starts, conversion and proceeds.")
-            }
+            // Board 74: nothing pushed yet to compare.
+            EmptyStateView(
+                String(localized: "No price changes to compare yet", comment: "kind:empty"),
+                systemImage: "chart.bar",
+                text: String(localized: "Push new prices to compare 28 days before and after: starts, conversion and proceeds.", comment: "kind:empty")
+            )
             .accessibilityIdentifier("pricing.results.none")
         case let .tooEarly(changedOn, day, arrivesOn):
             ResultsWaitingView(changedOn: changedOn, day: day, arrivesOn: arrivesOn)

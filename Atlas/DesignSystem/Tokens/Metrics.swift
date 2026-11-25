@@ -60,4 +60,6 @@ enum Metrics {
     static let chatMeterWidth: CGFloat = 44
     /// Overview cards wrap into as many columns as fit at this width.
     static let overviewCardMinimumWidth: CGFloat = 270
+    /// A caption's screenshot before → after in the Accept All sheet.
+    static let captionShotWidth: CGFloat = 46
 }

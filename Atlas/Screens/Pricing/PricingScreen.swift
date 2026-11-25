@@ -6,10 +6,9 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Subscription Pricing laid out: a card per product (the Prices page), or
-/// one product's section bar, then Prices (filters, the matrix, map or
-/// histogram, and the bottom bar), Offers or Results, with the strategy
-/// inspector, the mode and schedule sheets, the custom index import and the
+/// Subscription Pricing laid out: a card per product, or one product's page
+/// (board 73), with the strategy inspector (floating over the page at
+/// 860 × 560), the mode and schedule sheets, the custom index import and the
 /// Accept toast around them.
 struct PricingScreen: View {
     @Bindable var viewModel: PricingViewModel
@@ -17,7 +16,6 @@ struct PricingScreen: View {
     let defaultMode: PricingMode
 
     @State private var isImporterPresented = false
-    @Environment(\.openSettings) private var openSettings
     /// Recommended prices for many countries are Pro's; nil in previews.
     @Environment(ProGate.self) private var pro: ProGate?
 
@@ -25,24 +23,30 @@ struct PricingScreen: View {
         @Bindable var strategy = viewModel.strategy
         VStack(spacing: 0) {
             if let catalog = viewModel.catalog, catalog.isEmpty {
-                // A new app has no price or availability either: they come
-                // first, as on App Store Connect's Pricing and Availability.
-                if let appPriceAvailability = viewModel.appPriceAvailability {
-                    AppPriceAvailabilityCards(model: appPriceAvailability)
-                        .padding(.horizontal, Spacing.xLarge)
-                        .padding(.top, Spacing.large)
-                }
                 NoSubscriptionsView(viewModel: viewModel)
             } else if let message = viewModel.catalogState.errorMessage {
                 failure(message)
-            } else if !viewModel.showsProductDetails, viewModel.catalog != nil {
-                PricingProductsView(viewModel: viewModel)
+            } else if let product = viewModel.pageProduct {
+                // A product's page (board 73) in place of the cards.
+                PricingProductPage(viewModel: viewModel, product: product)
             } else {
-                PricingSectionBar(viewModel: viewModel)
-                content
+                PricingProductsView(viewModel: viewModel)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            // A strategy an assistant suggested waits above the prices.
+            if let suggestion = viewModel.strategySuggestion, viewModel.catalog?.isEmpty == false {
+                PricingStrategySuggestionCard(
+                    suggestion: suggestion,
+                    comparison: viewModel.strategyComparison(for: suggestion),
+                    onDismiss: viewModel.dismissStrategySuggestion,
+                    onAccept: { Task { await viewModel.acceptStrategySuggestion() } }
+                )
+                .padding(.horizontal, Spacing.xLarge)
+                .padding(.vertical, Spacing.small)
+            }
+        }
         .overlay(alignment: .bottom) {
             if let toast = viewModel.toast {
                 ActionToast(message: toast) {
@@ -58,7 +62,20 @@ struct PricingScreen: View {
             }
         }
         .animation(.default, value: viewModel.toast)
-        .inspector(isPresented: $viewModel.isInspectorPresented) {
+        .overlay(alignment: .topTrailing) {
+            // At 860 × 560 the inspector floats over the table.
+            if viewModel.isInspectorPresented, isInspectorFloating {
+                StrategyInspector(viewModel: viewModel, isFloating: true) { isImporterPresented = true }
+                    .frame(width: Metrics.inspectorWidth)
+                    .frame(maxHeight: .infinity)
+                    .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.popover, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: Radius.popover, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
+                    .padding(Spacing.medium)
+                    .accessibilityIdentifier("pricing.inspector.floating")
+            }
+        }
+        .inspector(isPresented: dockedInspector) {
             StrategyInspector(viewModel: viewModel) { isImporterPresented = true }
         }
         .sheet(isPresented: $viewModel.isModeSheetPresented) {
@@ -137,91 +154,17 @@ struct PricingScreen: View {
         } message: {
             Text("“Keep my prices” discards the price changes for \(viewModel.app.name) waiting in Review & Push.")
         }
-        .confirmationDialog(
-            String(localized: "Apply the strategy to the whole group?"),
-            isPresented: $viewModel.isGroupConfirmationPresented
-        ) {
-            Button(String(localized: "Apply to \(viewModel.siblings.count + 1) Subscriptions")) {
-                Task { await viewModel.applyStrategyToGroup() }
-            }
-        } message: {
-            Text("Each subscription in the group gets the strategy’s prices, keeping their ratios. Hand edits stay; nothing is pushed yet.")
-        }
     }
 
-    @ViewBuilder
-    private var content: some View {
-        if let matrix = viewModel.matrix {
-            switch viewModel.tab {
-            case .prices:
-                prices(matrix)
-            case .offers:
-                Divider()
-                PricingOffersView(viewModel: viewModel, matrix: matrix)
-            case .results:
-                Divider()
-                PricingResultsView(viewModel: viewModel)
-            }
-        } else if viewModel.needsStartingPrice {
-            StartingPriceView(viewModel: viewModel)
-        } else if viewModel.hasNoPrice, let message = viewModel.sheetError {
-            ContentUnavailableView("No price yet", systemImage: "tag", description: Text(message))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityIdentifier("pricing.noPrice")
-        } else if let message = viewModel.sheetError {
-            failure(message)
-        } else {
-            PricingTableSkeleton(columns: viewModel.resolvedPreset.columns)
-        }
+    /// A product's page at its smallest: the inspector floats.
+    private var isInspectorFloating: Bool {
+        viewModel.pageProduct != nil && viewModel.pricesByCountry.isCompact
     }
 
-    @ViewBuilder
-    private func prices(_ matrix: PriceMatrixModel) -> some View {
-        PricingFilterBar(viewModel: viewModel, matrix: matrix)
-        if viewModel.isLoadingSheet {
-            Divider()
-            PricingTableSkeleton(columns: viewModel.resolvedPreset.columns)
-        } else {
-            salesBanner(matrix)
-            switch viewModel.display {
-            case .table:
-                PriceMatrixTable(viewModel: viewModel, matrix: matrix)
-            case .map:
-                Divider()
-                PriceTileMapView(viewModel: viewModel, matrix: matrix)
-            case .histogram:
-                Divider()
-                PriceHistogramView(histogram: matrix.histogram)
-            }
-        }
-        PricingBottomBar(viewModel: viewModel, matrix: matrix)
-    }
-
-    @ViewBuilder
-    private func salesBanner(_ matrix: PriceMatrixModel) -> some View {
-        if matrix.showsSuggestions {
-            switch matrix.sheet.sales.availability {
-            case .available:
-                EmptyView()
-            case .roleCannotRead:
-                Banner(
-                    kind: .info,
-                    title: String(localized: "Suggestions use purchasing power alone."),
-                    message: String(localized: "This key can’t read Sales and Trends or App Analytics, so suggestions are Not very sure.")
-                ) {
-                    Button("Use Another Key…") { openSettings() }
-                        .accessibilityIdentifier("pricing.useAnotherKey")
-                }
-                .accessibilityIdentifier("pricing.noSalesBanner")
-            case .notRead:
-                Banner(
-                    kind: .info,
-                    title: String(localized: "Suggestions use purchasing power alone."),
-                    message: String(localized: "Atlas doesn’t read Sales and Trends yet, so suggestions are Not very sure.")
-                )
-                .accessibilityIdentifier("pricing.noSalesBanner")
-            }
-        }
+    private var dockedInspector: Binding<Bool> {
+        Binding {
+            viewModel.isInspectorPresented && !isInspectorFloating
+        } set: { viewModel.isInspectorPresented = $0 }
     }
 
     /// Create Subscription's defaults: the recommended prices with Pro,

@@ -16,13 +16,17 @@ struct ScreenshotsView: View {
     @Bindable var viewModel: ScreenshotsViewModel
     /// Nil in previews and scenes without the main window.
     @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+    /// Nil in previews without the main window.
+    @Environment(ChangeQueue.self) private var queue: ChangeQueue?
     @Environment(AppPreferences.self) private var preferences
     @State private var sidebarToken = UUID()
 
     var body: some View {
         VStack(spacing: 0) {
             banners
-            if viewModel.showsLanguagePage, viewModel.isLoaded {
+            if viewModel.showsEmptyState {
+                ScreenshotsEmptyView(viewModel: viewModel)
+            } else if viewModel.showsLanguagePage, viewModel.isLoaded {
                 ScreenshotsLanguagePage(viewModel: viewModel)
             } else {
                 if viewModel.tab != .preview {
@@ -41,7 +45,7 @@ struct ScreenshotsView: View {
                     Task { await viewModel.undoCaptionToast() }
                 } onAction: {
                     viewModel.captionToast = nil
-                    navigator?.isReviewPresented = true
+                    navigator?.review(section: .screenshots)
                 } onDismiss: {
                     if viewModel.captionToast == toast { viewModel.captionToast = nil }
                 }
@@ -50,13 +54,19 @@ struct ScreenshotsView: View {
             }
         }
         .animation(.default, value: viewModel.captionToast)
+        .onChange(of: queue?.changes, initial: true) {
+            viewModel.queuedVersionString = queue.flatMap { QueuedAppVersion.all(for: viewModel.app.id, in: $0).first?.versionString }
+        }
         .sheet(isPresented: $viewModel.isAcceptAllCaptionsPresented) {
-            AcceptAllSheet(selection: viewModel.acceptAllCaptionsSelection()) {
-                viewModel.isAcceptAllCaptionsPresented = false
-            } onAccept: { ids, dontAsk in
-                if dontAsk { preferences.acceptsAllWithoutAsking = true }
-                Task { await viewModel.acceptCaptions(ids: ids, turnedOffAsking: dontAsk) }
-            }
+            AcceptAllSheet(
+                selection: viewModel.acceptAllCaptionsSelection(),
+                onCancel: { viewModel.isAcceptAllCaptionsPresented = false },
+                onAccept: { ids, dontAsk in
+                    if dontAsk { preferences.acceptsAllWithoutAsking = true }
+                    Task { await viewModel.acceptCaptions(ids: ids, turnedOffAsking: dontAsk) }
+                },
+                captureImage: { viewModel.captureImage(for: $0) }
+            )
         }
         .sheet(item: $viewModel.viewer) { target in
             ScreenshotViewerSheet(viewModel: viewModel, target: target)
@@ -97,8 +107,7 @@ struct ScreenshotsView: View {
                 }
                 .accessibilityIdentifier("screenshots.loadError")
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ScreenshotsSkeleton()
             }
         } else {
             switch viewModel.tab {
@@ -131,14 +140,24 @@ struct ScreenshotsView: View {
     @ViewBuilder
     private var banners: some View {
         switch viewModel.banner {
-        case let .noVersion(title, message):
+        case let .noVersion(title, message, next):
             Banner(kind: .warning, title: title, message: message, isInline: true) {
+                if let navigator {
+                    // README-Manual: the section offers to make the version.
+                    Button("Create Version \(next)…") { navigator.open(.storePage, intent: .newVersion) }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("screenshots.banner.createVersion")
+                }
                 Link(destination: NoVersionView.appStoreConnectURL(appID: viewModel.app.id)) {
                     Text("Open App Store Connect")
                 }
                 .buttonStyle(.bordered)
             }
             .accessibilityIdentifier("screenshots.banner.noVersion")
+        case let .versionQueued(title, message):
+            // No button: the toolbar's "N not pushed" opens Review & Push.
+            Banner(kind: .info, title: title, message: message, isInline: true)
+                .accessibilityIdentifier("screenshots.banner.versionQueued")
         case let .failedChecks(title, message, first):
             Banner(kind: .partialFailure, title: title, message: message, isInline: true) {
                 Button("Show") { viewModel.openViewer(first) }

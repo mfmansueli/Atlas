@@ -28,7 +28,9 @@ struct ProposePageScreenshotsTool: MCPTool {
         `refused` with why, and a primary caption that fails refuses the whole plan. Each screen keeps the captions \
         Atlas has for it unless you send them again, wherever it moves (one that no longer fits its new place is left \
         out and listed), so send the other languages a few at a time with the same screens; a screen you leave out \
-        goes with its captions. You can't push: the person makes the set, looks at it and puts it in Review & Push.
+        goes with its captions. devices picks which of the run's devices (get_page_screenshots' displays) the set goes \
+        to, as the result's device switches do. You can't push: the person makes the set, looks at it and puts it in \
+        Review & Push.
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withLayers([
@@ -38,6 +40,13 @@ struct ProposePageScreenshotsTool: MCPTool {
                 "reason": MCPToolDefinition.why("Why this order and these words, for this page's audience."),
                 "screens": Self.screensSchema,
                 "languages": ["type": "array", "items": ["type": "string"], "description": "The languages that should get the page's own images."],
+                "devices": [
+                    "type": "array", "items": ["type": "string"],
+                    "description": """
+                    The devices whose set Use These Screenshots puts in Review & Push (iphone, ipad…), among the run's; left out, every \
+                    device made.
+                    """,
+                ],
             ]),
             required: ["appId", "page", "screens"]
         ),
@@ -84,6 +93,9 @@ struct ProposePageScreenshotsTool: MCPTool {
         case let .planned(plan, refused):
             let remakes = found.run.stage == .revising || found.run.stage == .result || found.run.stage == .used
             studio.receive(plan, for: found.run.key, source: found.source)
+            if let devices = try Self.devices(arguments.optionalStrings("devices"), of: found.run) {
+                studio.update(found.run.key) { run in run.usedDisplays = run.displays.filter(devices.contains) }
+            }
             let run = studio.run(found.run.key) ?? found.run
             let missing = run.languages.filter { !plan.completeLocales(among: run.languages).contains($0) }
             var result: [String: JSONValue] = [
@@ -96,6 +108,19 @@ struct ProposePageScreenshotsTool: MCPTool {
             result["next"] = .string(next(missing: missing, refused: refused, remakes: remakes))
             let line = MCPToolOutcome.LogLine(target: found.target, outcome: .proposed)
             return MCPToolOutcome(result: .object(result), isError: false, logLines: [line])
+        }
+    }
+
+    /// The run's devices `values` names; nil when left out. A device the
+    /// run doesn't make throws, naming the ones it does.
+    static func devices(_ values: [String]?, of run: PageShotsRun) throws -> [ScreenshotDisplayType]? {
+        guard let values, !values.isEmpty else { return nil }
+        let known = run.displays.map(\.mcpValue).joined(separator: ", ")
+        return try values.map { value in
+            guard let display = ScreenshotDisplayType(mcpValue: value), run.displays.contains(display) else {
+                throw MCPToolError.invalidArgument(name: "devices", expected: String(localized: "some of the run's devices: \(known)"))
+            }
+            return display
         }
     }
 

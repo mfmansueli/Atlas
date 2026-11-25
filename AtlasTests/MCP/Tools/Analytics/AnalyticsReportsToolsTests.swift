@@ -83,6 +83,62 @@ struct AnalyticsReportsToolsTests {
         #expect(mood["numbers"]?["deletions"] == .int(100))
     }
 
+    // MARK: - by
+
+    @Test func retentionBreaksDownBySubscriptionWithTheVerdictComputed() async throws {
+        let result = try await call(GetAnalyticsRetentionTool(store: store), ["appId": "Lumen Journal", "by": "subscription"]).result
+        #expect(result["by"] == "subscription")
+        let rows = try #require(result["rows"]?.arrayValue)
+        #expect(!rows.isEmpty)
+        // The rows add up to the whole app.
+        #expect(rows.compactMap { $0["opened"]?.intValue }.reduce(0, +) == 412)
+        #expect(rows.allSatisfy { $0["saveRate"]?["status"] != nil })
+        #expect(rows.allSatisfy { $0["messageAgainstNoMessage"] != nil })
+        // The whole app's numbers stay.
+        #expect(result["openedCancelScreen"] == .int(412))
+    }
+
+    @Test func retentionByMessageTypeHasNoMessageAgainstItself() async throws {
+        let result = try await call(GetAnalyticsRetentionTool(store: store), ["appId": "Lumen Journal", "by": "messageType"]).result
+        let rows = try #require(result["rows"]?.arrayValue)
+        #expect(rows.allSatisfy { $0["messageAgainstNoMessage"] == nil })
+    }
+
+    @Test func subscribersByOneSplitReplaceTheDefaultLists() async throws {
+        let result = try await call(GetAnalyticsSubscribersTool(store: store), ["appId": "Lumen Journal", "by": "campaign"]).result
+        #expect(result["by"] == "campaign")
+        #expect(result["byProductPage"] == nil)
+        let names = try #require(result["rows"]?.arrayValue).compactMap { $0["name"]?.stringValue }
+        let defaults = try await call(GetAnalyticsSubscribersTool(store: store), ["appId": "Lumen Journal"]).result
+        #expect(names == defaults["byCampaign"]?.arrayValue?.compactMap { $0["name"]?.stringValue })
+    }
+
+    @Test func afterTheDownloadSplitsByTerritory() async throws {
+        let result = try await call(GetAnalyticsAfterDownloadTool(store: store), ["appId": "Lumen Journal", "by": "territory"]).result
+        #expect(result["by"] == "territory")
+        #expect(result["byAppVersion"] == nil)
+        let rows = try #require(result["rows"]?.arrayValue)
+        #expect(rows.contains { $0["name"] == "US" })
+    }
+
+    @Test func aBreakdownTheToolDoesntHaveIsRefused() async {
+        await #expect(throws: MCPToolError.self) {
+            _ = try await call(GetAnalyticsRetentionTool(store: store), ["appId": "Lumen Journal", "by": "campaign"])
+        }
+        await #expect(throws: MCPToolError.self) {
+            _ = try await call(GetAnalyticsAfterDownloadTool(store: store), ["appId": "Lumen Journal", "by": "subscription"])
+        }
+    }
+
+    @Test func eachToolSaysWhatItBreaksDownBy() {
+        for tool in [GetAnalyticsRetentionTool().definition, GetAnalyticsSubscribersTool().definition, GetAnalyticsAfterDownloadTool().definition] {
+            #expect(tool.inputSchema["properties"]?["by"] != nil)
+            #expect(tool.description.contains("`by`"))
+        }
+        #expect(AnalyticsMCPBreakdown.list(["territory", "device", "offer"]) == "territory, device or offer")
+        #expect(AnalyticsMCPBreakdown.list(["device"]) == "device")
+    }
+
     @Test func theWebPreviewCountsViewsAndTaps() async throws {
         let result = try await call(GetAnalyticsWebPreviewTool(store: store), ["appId": "Lumen Journal"]).result
         #expect(result["pageViews"] == .int(1840))

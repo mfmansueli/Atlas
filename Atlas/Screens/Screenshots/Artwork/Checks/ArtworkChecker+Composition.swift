@@ -67,7 +67,12 @@ extension ArtworkChecker {
         }
         guard let pixels else { return checks }
         let edges = pixels.edgeColors
-        for (page, mode) in [(ArtworkContrast.lightPage, String(localized: "Light mode")), (ArtworkContrast.darkPage, String(localized: "Dark mode"))] {
+        // Apple's names for the appearances, title case inside the sentence.
+        let modes = [
+            (ArtworkContrast.lightPage, String(localized: "Light Mode", comment: "kind:label · Apple’s appearance name, inside a check’s sentence")),
+            (ArtworkContrast.darkPage, String(localized: "Dark Mode", comment: "kind:label · Apple’s appearance name, inside a check’s sentence")),
+        ]
+        for (page, mode) in modes {
             let ratios = edges.map { ArtworkContrast.ratio(ArtworkContrast.over($0, page), page) }.sorted()
             guard !ratios.isEmpty else { continue }
             let median = ratios[ratios.count / 2]

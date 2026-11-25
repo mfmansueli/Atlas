@@ -12,6 +12,9 @@ struct BillingView: View {
     let gracePeriod: GracePeriodSetting?
     let appName: String
     let onTurnOn: (GracePeriodSetting.Duration) async throws -> Void
+    /// An assistant's suggestion to turn it on, while it's off.
+    var suggestion: GracePeriodSuggestion?
+    var onDismissSuggestion: () -> Void = {}
 
     @State private var isConfirming = false
     @State private var duration = GracePeriodSetting.Duration.sixteenDays
@@ -34,13 +37,19 @@ struct BillingView: View {
             }
             .padding(.bottom, Spacing.xLarge)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("analytics.billing")
         .sheet(isPresented: $isConfirming) { confirmation }
     }
 
     @ViewBuilder
     private func content(_ report: LifecycleReport) -> some View {
-        if gracePeriod?.isOn == false, report.lost > 0 {
+        if let suggestion, gracePeriod?.isOn != true {
+            GracePeriodSuggestionLine(suggestion: suggestion, onDismiss: onDismissSuggestion) {
+                duration = suggestion.duration
+                isConfirming = true
+            }
+        } else if gracePeriod?.isOn == false, report.lost > 0 {
             AnalyticsNotice(
                 tone: .warning,
                 text: String(localized: "\(AnalyticsText.count(report.lost)) subscribers left in \(report.period.length) days over failed charges. Billing Grace Period, now off, keeps them while Apple retries."),

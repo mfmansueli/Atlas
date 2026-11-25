@@ -19,6 +19,9 @@ struct OverviewSectionView: View {
     let services: any StorePageServices
     /// For the Ratings & Reviews card.
     let reviews: any ReviewsServices
+    /// App Compliance answers an assistant suggested, for App
+    /// Information's row (the workspace's count).
+    var complianceAnswers = 0
 
     @Environment(AppSummaryStore.self) private var summaries
     @Environment(ChangeQueue.self) private var changes
@@ -51,7 +54,7 @@ struct OverviewSectionView: View {
                     }
                     OverviewPageAndWaiting(
                         app: app, services: services, content: shownContent, storePage: storePage, newLanguages: newLanguages,
-                        release: release, afterRelease: afterRelease
+                        release: release, afterRelease: afterRelease, complianceAnswers: complianceAnswers
                     ) {
                         assistantCard
                         if !versionCardFollowsRelease { stabilityAlert }
@@ -66,6 +69,7 @@ struct OverviewSectionView: View {
             .frame(maxWidth: 1080 + 2 * Spacing.xLarge)
             .frame(maxWidth: .infinity)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("workspace.overview")
         .task(id: app.id) { await summaries.load(app) }
         .task(id: app.id) { await reviewsStore.refreshIfStale(app, services: reviews) }

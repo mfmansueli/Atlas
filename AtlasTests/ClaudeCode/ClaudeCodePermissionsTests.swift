@@ -191,11 +191,20 @@ struct ClaudeCodePermissionsTests {
         #expect(!ClaudeCodePermissions.readProject.allowRules(port: port).contains("Bash(xcodebuild:*)"))
     }
 
+    /// Every run but the chat has nobody watching, so it never asks; the
+    /// chat's reader is there and asks only through ask_in_chat. None of
+    /// them pushes.
     @Test func theSystemPromptSaysNobodyIsWatching() {
         for permissions in ClaudeCodePermissions.allCases {
             let prompt = permissions.systemPrompt
-            #expect(prompt.contains("don't ask questions"))
-            #expect(prompt.contains("Never push"))
+            #expect(prompt.contains("Never push"), "\(permissions)")
+            if permissions == .chat {
+                #expect(prompt.contains(ClaudeCodePermissions.chatWatching))
+                #expect(!prompt.contains("don't ask questions"))
+            } else {
+                #expect(prompt.contains("don't ask questions"), "\(permissions)")
+                #expect(!prompt.contains("ask_in_chat"), "\(permissions)")
+            }
         }
         #expect(!ClaudeCodePermissions.readProject.systemPrompt.contains("xcodebuild"))
     }

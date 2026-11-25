@@ -28,7 +28,8 @@ final class ImageLoadingUITests: XCTestCase {
         let shots = element("storePreview.shots")
         XCTAssertTrue(shots.waitForExistence(timeout: 5))
         XCTAssertTrue(label(of: shots, becomes: "Loading screenshots", timeout: 3))
-        XCTAssertTrue(label(of: shots, becomes: "3 screenshots", timeout: 25))
+        // The App Preview first, then all five.
+        XCTAssertTrue(label(of: shots, becomes: "App Preview and 5 screenshots", timeout: 60))
     }
 
     // MARK: - Helpers

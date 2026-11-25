@@ -63,25 +63,29 @@ struct VersionCard<Notice: View>: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: Spacing.small) {
-            // Neutral, like the prototype's: section colours are for the
-            // sidebar's tiles (README — Design system §1).
-            Image(systemName: "paperplane.fill")
-                .font(.callout.weight(.medium))
-                .foregroundStyle(Palette.raised)
-                .frame(width: 26, height: 26)
-                .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(viewModel.cardTitle)
-                    .font(.body.weight(.semibold))
-                    .accessibilityAddTraits(.isHeader)
-                    .accessibilityIdentifier("overview.version.title")
-                Text(viewModel.cardSubtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
-                    .lineLimit(4)
+            // The icon sits in the middle of the title and subtitle, however
+            // many lines they take; the pill stays at the top.
+            HStack(alignment: .center, spacing: Spacing.small) {
+                // Neutral, like the prototype's: section colours are for the
+                // sidebar's tiles (README — Design system §1).
+                Image(systemName: "paperplane.fill")
+                    .font(.callout.weight(.medium))
+                    .foregroundStyle(Palette.raised)
+                    .frame(width: 26, height: 26)
+                    .background(Palette.label, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(viewModel.cardTitle)
+                        .font(.body.weight(.semibold))
+                        .accessibilityAddTraits(.isHeader)
+                        .accessibilityIdentifier("overview.version.title")
+                    Text(viewModel.cardSubtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .lineLimit(4)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             if let phase = viewModel.phase {
                 Pill(text: phase.pillTitle, style: viewModel.pillStyle)
                     .fixedSize()

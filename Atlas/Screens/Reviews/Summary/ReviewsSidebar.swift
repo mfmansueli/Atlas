@@ -30,6 +30,7 @@ struct ReviewsSidebar: View {
             }
             .padding(.bottom, Spacing.large)
         }
+        .leavesChatRoom()
         .scrollIndicators(.never)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.sidebar")

@@ -27,6 +27,20 @@ extension PriceSchedule {
             .first ?? .immediate
     }
 
+    /// Writes this schedule into every queued price change of one
+    /// subscription, as the schedule sheet's Save does; returns how many
+    /// changes it rewrote.
+    @MainActor
+    @discardableResult
+    func apply(in queue: ChangeQueue, appID: StoreApp.ID, productID: String) -> Int {
+        let prefix = PriceChangeFactory.changeID(productID: productID, territoryID: "")
+        let rewritten = queue.changes(for: appID, section: .subscriptionPricing)
+            .filter { $0.id.hasPrefix(prefix) }
+            .map(applied(to:))
+        queue.upsert(contentsOf: rewritten)
+        return rewritten.count
+    }
+
     /// The change with this schedule: its price writes (and an assistant's
     /// alternative's) carry the start day and the subscriber choice, and the
     /// review group's note says so. Restore writes stay immediate.

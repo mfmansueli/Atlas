@@ -39,6 +39,18 @@ struct WorkspaceAutopilotStateTests {
         #expect(state.announcementKey == "running:Capturing Annual")
         #expect(state.doneText(becoming: .idle) == "Done")
 
+        // Its images arrived: at rest, and the capture's end says so.
+        var ready = WorkspaceAutopilotState.Inputs()
+        ready.reviewShotsReady = "Review Screenshots Ready"
+        let finished = WorkspaceAutopilotState(ready)
+        #expect(finished == .finished("Review Screenshots Ready"))
+        #expect(!finished.isRunning)
+        #expect(finished.text == nil, "At rest: the section's action")
+        #expect(finished.announcementKey == nil)
+        #expect(state.doneText(becoming: finished) == "Review Screenshots Ready")
+        #expect(WorkspaceAutopilotState.running("Working · Pricing · review screenshots").doneText(becoming: finished) == "Review Screenshots Ready")
+        #expect(finished.doneText(becoming: .idle) == nil)
+
         var stopped = WorkspaceAutopilotState.Inputs()
         stopped.reviewShotsNeeds = "Show It the Paywall"
         #expect(WorkspaceAutopilotState(stopped) == .needsYou("Show It the Paywall"))

@@ -15,8 +15,13 @@ struct DebugReleaseServices: ReleaseServices {
     var error: AppStoreConnectError?
     /// Apple refuses every write, e.g. for a key that may not submit.
     var refusesWrites = false
+    /// How long every status read takes after the first, so the Submit
+    /// sheet's own read of the builds stays in progress (submit-loading).
+    var laterStatusDelay: Duration?
+    private let statusReads = DebugReleaseStatusReads()
 
     func status(for app: StoreApp, platform _: String?) async throws -> ReleaseStatus? {
+        if let laterStatusDelay, statusReads.next() > 1 { try await Task.sleep(for: laterStatusDelay) }
         if let error { throw error }
         guard app.id == DebugFixtures.AppID.lumen else { return DebugReleaseData.released(app) }
         return DebugReleaseData.status(state.phase)

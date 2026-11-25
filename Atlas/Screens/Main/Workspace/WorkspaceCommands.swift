@@ -8,14 +8,16 @@ import SwiftUI
 /// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R)
 /// in View, a Product menu with Run Autopilot (⌥⌘A, the toolbar Autopilot
 /// button's action), Review & Push (⇧⌘P) and Activity, plus the
-/// section-specific commands that work through `WorkspaceIntent`.
+/// section-specific commands that work through `WorkspaceIntent`. macOS 26
+/// draws the symbol of every command with one, so each item with a
+/// standard symbol has it (README-DS §13); lists of choices don't.
 struct WorkspaceCommands: Commands {
     @FocusedValue(\.workspaceNavigator) private var navigator
 
     var body: some Commands {
         CommandGroup(before: .toolbar) {
             ForEach(AppWorkspaceSection.allCases) { section in
-                Button(section.fullTitle, systemImage: section.systemImage) { navigator?.open(section) }
+                Button(section.fullTitle, systemImage: section.systemImage) { navigator?.choose(section) }
                     .keyboardShortcut(KeyEquivalent(Character(String(section.shortcutDigit).lowercased())), modifiers: section.shortcutModifiers)
             }
             .disabled(navigator == nil)
@@ -29,7 +31,7 @@ struct WorkspaceCommands: Commands {
             Button("Find", systemImage: "magnifyingglass") { navigator?.send(.search) }
                 .keyboardShortcut("f")
                 .disabled(navigator == nil)
-            Button("Find and Replace Across Locales…") { navigator?.open(.storePage, intent: .findAndReplace) }
+            Button("Find and Replace Across Locales…", systemImage: "text.magnifyingglass") { navigator?.open(.storePage, intent: .findAndReplace) }
                 .keyboardShortcut("f", modifiers: [.command, .option])
                 .disabled(navigator == nil)
         }
@@ -41,7 +43,8 @@ struct WorkspaceCommands: Commands {
                     navigator?.open(.subscriptionPricing, intent: .editPriceSchedule(productID: nil))
                 }
                 Divider()
-                Menu("Show Prices As") {
+                // Its list of displays is a choice: names only.
+                Menu("Show Prices As", systemImage: "eye") {
                     ForEach(PricingDisplay.allCases, id: \.self) { display in
                         Button(display.title) { navigator?.open(.subscriptionPricing, intent: .showPrices(display)) }
                     }

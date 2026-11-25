@@ -39,6 +39,7 @@ struct SetsMatrixView: View {
             }
             .frame(width: max(viewportWidth, columns.total), alignment: .leading)
         }
+        .leavesChatRoom()
         .onScrollGeometryChange(for: CGFloat.self) { geometry in
             geometry.contentOffset.x
         } action: { _, offset in

@@ -25,6 +25,8 @@ final class Entitlements {
 
     @ObservationIgnored private let store: any ProStore
     @ObservationIgnored private var updates: Task<Void, Never>?
+    /// The note two days before a free trial ends (the paywall promises it).
+    @ObservationIgnored private let trialReminder: TrialReminderScheduler
     /// DEBUG builds and tests: Pro without a purchase, or Free whatever
     /// was bought. Nil follows the App Store.
     var override: Bool?
@@ -34,9 +36,10 @@ final class Entitlements {
     /// Free's screenshot templates, of the gallery's 14 (`FreePlanLimits`).
     nonisolated static let freeTemplateLimit = 3
 
-    init(store: any ProStore, override: Bool? = nil) {
+    init(store: any ProStore, override: Bool? = nil, trialReminder: TrialReminderScheduler = .shared) {
         self.store = store
         self.override = override
+        self.trialReminder = trialReminder
     }
 
     var isPro: Bool { override ?? status.isPro }
@@ -49,9 +52,9 @@ final class Entitlements {
         guard updates == nil else { return }
         updates = Task { [weak self, store] in
             let owned = await store.status()
-            self?.status = owned
+            self?.apply(owned)
             for await status in store.statusUpdates() {
-                self?.status = status
+                self?.apply(status)
             }
         }
     }
@@ -76,18 +79,25 @@ final class Entitlements {
 
     func purchase(_ plan: ProPlan) async -> ProPurchaseOutcome {
         let outcome = await store.purchase(plan)
-        if case let .purchased(status) = outcome { self.status = status }
+        if case let .purchased(status) = outcome { apply(status) }
         return outcome
     }
 
     /// A code was redeemed: what the person owns now.
     func refreshStatus() async {
-        status = await store.status()
+        await apply(store.status())
     }
 
     /// Restore Purchases: true when Pro came back.
     func restore() async -> Bool {
-        status = await store.restore()
+        await apply(store.restore())
         return status.isPro
+    }
+
+    /// Every change to what the person owns goes through here, so the
+    /// trial's reminder follows it.
+    private func apply(_ status: ProStatus) {
+        self.status = status
+        trialReminder.update(for: status)
     }
 }

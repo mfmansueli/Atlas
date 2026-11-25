@@ -20,6 +20,16 @@ extension RetentionModel {
         notice = nil
     }
 
+    /// An Analytics finding's Try an Offer Message…: a new message now, or
+    /// once the messages are read, so it's numbered after them.
+    func startNewMessage() {
+        if loadState.value == nil {
+            startsNewMessageAfterLoad = true
+        } else {
+            newMessage()
+        }
+    }
+
     func select(_ message: RetentionMessage) {
         selectedMessageID = message.id
         notice = nil

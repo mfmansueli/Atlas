@@ -207,10 +207,7 @@ struct InAppEventStorePreview: View {
 
     /// "Starts Dec 1", "Now available", "Ended".
     private var whenText: String {
-        guard let start = event.schedule?.eventStart, let end = event.schedule?.eventEnd else { return String(localized: "No dates yet") }
-        if event.state.isOver || end < now { return String(localized: "Ended") }
-        if start <= now { return String(localized: "Now available") }
-        return String(localized: "Starts \(start.formatted(.dateTime.month(.abbreviated).day()))")
+        InAppEventWhenText.text(for: event, now: now)
     }
 }
 

@@ -27,7 +27,11 @@ final class PricingModeStore {
             .compactMapValues(PricingMode.init(rawValue:))
         self.modes = saved.merging(modes) { _, new in new }
         dismissedPriceSuggestions = (defaults?.dictionary(forKey: Self.dismissalsKey) as? [String: [String]] ?? [:]).mapValues(Set.init)
+        dismissedCountrySuggestions = (defaults?.dictionary(forKey: Self.countryDismissalsKey) as? [String: [String: [String]]] ?? [:])
+            .mapValues { $0.mapValues(Set.init) }
         reviewLaterProductIDs = (defaults?.dictionary(forKey: Self.reviewLaterKey) as? [String: [String]] ?? [:]).mapValues(Set.init)
+        strategies = Self.decoded([StoreApp.ID: PricingStrategy].self, defaults?.data(forKey: Self.strategiesKey)) ?? [:]
+        strategySuggestions = Self.decoded([StoreApp.ID: PricingStrategySuggestion].self, defaults?.data(forKey: Self.strategySuggestionsKey)) ?? [:]
     }
 
     /// The mode the person picked for this app, or nil before the first visit.
@@ -62,6 +66,28 @@ final class PricingModeStore {
 
     func restorePriceSuggestions(appID: StoreApp.ID) {
         dismissedPriceSuggestions[appID] = nil
+        dismissedCountrySuggestions[appID] = nil
+        saveDismissals()
+    }
+
+    // MARK: - Dismissed country suggestions
+
+    /// Per app and product, the countries (alpha-3) whose suggested price
+    /// the person dismissed in Prices by Country; Restore Dismissed brings
+    /// them back with the products'.
+    private(set) var dismissedCountrySuggestions: [StoreApp.ID: [String: Set<String>]]
+
+    func dismissedCountries(productID: String, appID: StoreApp.ID) -> Set<String> {
+        dismissedCountrySuggestions[appID]?[productID] ?? []
+    }
+
+    func dismissCountrySuggestion(territoryID: String, productID: String, appID: StoreApp.ID) {
+        dismissedCountrySuggestions[appID, default: [:]][productID, default: []].insert(territoryID)
+        saveDismissals()
+    }
+
+    func restoreCountrySuggestion(territoryID: String, productID: String, appID: StoreApp.ID) {
+        dismissedCountrySuggestions[appID]?[productID]?.remove(territoryID)
         saveDismissals()
     }
 
@@ -86,11 +112,77 @@ final class PricingModeStore {
         defaults?.set(reviewLaterProductIDs.mapValues { $0.sorted() }, forKey: Self.reviewLaterKey)
     }
 
+    // MARK: - Strategy
+
+    /// Per app, the strategy the person set in Customize…; apps without one
+    /// follow Settings → Pricing's defaults (`defaultStrategy`).
+    private(set) var strategies: [StoreApp.ID: PricingStrategy]
+
+    /// Settings → Pricing's strategy, as `AppPreferences.pricingDefaults`
+    /// saves it; recommended without saved defaults (tests, DEBUG scenes).
+    var defaultStrategy: PricingStrategy {
+        Self.decoded(PricingStrategy.self, defaults?.data(forKey: Self.pricingDefaultsKey)) ?? .recommended
+    }
+
+    /// The strategy Pricing shows and suggests from for this app, and the
+    /// one the price tools use over MCP.
+    func strategy(for appID: StoreApp.ID) -> PricingStrategy {
+        strategies[appID] ?? defaultStrategy
+    }
+
+    /// Whether the app's strategy is its own (Customize…) or Settings'.
+    func hasOwnStrategy(_ appID: StoreApp.ID) -> Bool {
+        strategies[appID] != nil
+    }
+
+    func setStrategy(_ strategy: PricingStrategy, for appID: StoreApp.ID) {
+        guard strategies[appID] != strategy else { return }
+        strategies[appID] = strategy
+        defaults?.set(try? JSONEncoder().encode(strategies), forKey: Self.strategiesKey)
+    }
+
+    // MARK: - Strategy suggestions
+
+    /// Per app, the strategy or mode an assistant suggested
+    /// (`propose_pricing_strategy`), waiting on Pricing for Accept.
+    private(set) var strategySuggestions: [StoreApp.ID: PricingStrategySuggestion]
+
+    func strategySuggestion(for appID: StoreApp.ID) -> PricingStrategySuggestion? {
+        strategySuggestions[appID]
+    }
+
+    /// Waits for the person; a newer one replaces it.
+    func suggestStrategy(_ suggestion: PricingStrategySuggestion, for appID: StoreApp.ID) {
+        strategySuggestions[appID] = suggestion
+        saveStrategySuggestions()
+    }
+
+    /// Dismiss, Accept, or the assistant taking it back.
+    func removeStrategySuggestion(for appID: StoreApp.ID) {
+        guard strategySuggestions[appID] != nil else { return }
+        strategySuggestions[appID] = nil
+        saveStrategySuggestions()
+    }
+
+    private func saveStrategySuggestions() {
+        defaults?.set(try? JSONEncoder().encode(strategySuggestions), forKey: Self.strategySuggestionsKey)
+    }
+
+    private static func decoded<Value: Decodable>(_ type: Value.Type, _ data: Data?) -> Value? {
+        data.flatMap { try? JSONDecoder().decode(type, from: $0) }
+    }
+
     private func saveDismissals() {
         defaults?.set(dismissedPriceSuggestions.mapValues { $0.sorted() }, forKey: Self.dismissalsKey)
+        defaults?.set(dismissedCountrySuggestions.mapValues { $0.mapValues { $0.sorted() } }, forKey: Self.countryDismissalsKey)
     }
 
     private static let key = "pricingModes"
     private static let dismissalsKey = "dismissedPriceSuggestions"
+    private static let countryDismissalsKey = "dismissedCountryPriceSuggestions"
     private static let reviewLaterKey = "reviewLaterPriceSuggestions"
+    private static let strategiesKey = "pricingStrategies"
+    private static let strategySuggestionsKey = "pricingStrategySuggestions"
+    /// `AppPreferences.pricingDefaults`' key: Settings → Pricing writes it.
+    nonisolated static let pricingDefaultsKey = "pricingDefaults"
 }

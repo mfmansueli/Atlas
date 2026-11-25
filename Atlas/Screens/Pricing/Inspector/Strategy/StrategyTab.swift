@@ -19,6 +19,7 @@ struct StrategyTab: View {
                 RegionalTiersSection(viewModel: viewModel)
             }
             LimitsSection(viewModel: viewModel)
+            HowSureSection(viewModel: viewModel)
             TiersSection(viewModel: viewModel)
             ExcludedSection(viewModel: viewModel)
             RoundingSection(viewModel: viewModel)

@@ -42,15 +42,20 @@ struct ProductPagesListView: View {
             .padding(.horizontal, Spacing.xLarge)
             .accessibilityIdentifier("pages.error.load")
             Spacer(minLength: 0)
+        case .loaded where viewModel.pages.isEmpty && viewModel.pageSuggestions.isEmpty:
+            // Board 74: the banners, then the empty state in the middle of
+            // what's left; New Page… stays at the top.
+            ProductPagesListBanners(viewModel: viewModel)
+                .padding(.horizontal, Spacing.xLarge)
+            ProductPagesEmptyView(appName: viewModel.app.name)
+                .padding(.horizontal, Spacing.xLarge)
         case .loaded:
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.medium) {
                     ProductPagesListBanners(viewModel: viewModel)
                     if viewModel.pages.isEmpty {
-                        if !viewModel.pageSuggestions.isEmpty {
-                            ProductPageSuggestionsGroup(viewModel: viewModel, isCompact: isCompact)
-                        }
-                        ProductPagesEmptyView(viewModel: viewModel)
+                        ProductPageSuggestionsGroup(viewModel: viewModel, isCompact: isCompact)
+                        ProductPagesEmptyView(appName: viewModel.app.name, size: .inline)
                     } else {
                         if !viewModel.pageSuggestions.isEmpty {
                             ProductPageSuggestionsGroup(viewModel: viewModel, isCompact: isCompact)
@@ -61,6 +66,7 @@ struct ProductPagesListView: View {
                 .padding(.horizontal, Spacing.xLarge)
                 .padding(.bottom, Spacing.xLarge)
             }
+            .leavesChatRoom()
             .accessibilityIdentifier("pages.scroll")
         }
     }

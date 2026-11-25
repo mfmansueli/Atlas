@@ -39,6 +39,23 @@ struct ReleaseSubmitProposalToolTests {
         #expect(listed["submit"]?["releaseType"] == "AFTER_APPROVAL")
     }
 
+    @Test func aSubmissionCanLeaveTheWaitingChangesUnpushed() async throws {
+        let fixtures = MCPReleaseFixtures(.prepare)
+        let result = try await fixtures.propose("submit", ["encryption": "exempt", "pushesChanges": false])
+        #expect(result["status"] == "queued")
+        let id = try #require(result["proposalId"]?.stringValue)
+        let submission = try #require(fixtures.proposals.proposal(id: id)?.submission)
+        #expect(submission.pushesChanges == false)
+        #expect(submission.lines(version: "1.4") { $0 }.contains("Without pushing what waits in Review & Push"))
+        let read = try await fixtures.get()
+        let listed = try #require(read["proposals"]?.arrayValue?.first)
+        #expect(listed["submit"]?["pushesChanges"] == false)
+
+        let pushing = try await fixtures.propose("submit", ["encryption": "exempt"])
+        let pushingID = try #require(pushing["proposalId"]?.stringValue)
+        #expect(fixtures.proposals.proposal(id: pushingID)?.submission?.pushesChanges == nil, "The sheet's default: push them")
+    }
+
     @Test func withoutAnEncryptionAnswerItIsRefused() async throws {
         let fixtures = MCPReleaseFixtures(.prepare)
         let refused = try await fixtures.propose("submit")

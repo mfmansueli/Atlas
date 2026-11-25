@@ -10,10 +10,12 @@ import Foundation
 /// language's while an event is coming or live (to say which still lacks
 /// its own card or details page; Apple shows the primary language's
 /// there), only the primary language's once it's over, none once it's
-/// archived.
+/// archived. A language whose media read fails keeps what the last read
+/// that worked found (`InAppEventMediaMemory`).
 @MainActor
 struct LiveInAppEventsServices: InAppEventsServices {
     let client: AppStoreConnectClient
+    var mediaMemory = InAppEventMediaMemory()
 
     func events(for app: StoreApp) async throws -> [InAppEvent] {
         var events: [InAppEvent] = []
@@ -24,7 +26,7 @@ struct LiveInAppEventsServices: InAppEventsServices {
         let ids = events.filter { $0.state != .archived }.flatMap { event in
             event.state.isOver ? [event.primaryLocalization?.id].compactMap(\.self) : event.localizations.map(\.id)
         }
-        let media = await Self.media(localizationIDs: ids, client: client)
+        let media = await mediaMemory.settle(Self.media(localizationIDs: ids, client: client))
         for index in events.indices {
             for position in events[index].localizations.indices {
                 events[index].localizations[position].media = media[events[index].localizations[position].id] ?? []
@@ -33,11 +35,11 @@ struct LiveInAppEventsServices: InAppEventsServices {
         return events.sorted(by: Self.isShownBefore)
     }
 
-    /// Each language's media, four languages at a time. A failed read
-    /// leaves that language without media rather than failing the list.
-    private static func media(localizationIDs: [String], client: AppStoreConnectClient) async -> [String: [InAppEventMedia]] {
-        await withTaskGroup(of: (String, [InAppEventMedia]).self) { group in
-            var found: [String: [InAppEventMedia]] = [:]
+    /// Each language's media, four languages at a time; nil for a language
+    /// whose read failed, rather than failing the list.
+    private static func media(localizationIDs: [String], client: AppStoreConnectClient) async -> [String: [InAppEventMedia]?] {
+        await withTaskGroup(of: (String, [InAppEventMedia]?).self) { group in
+            var found: [String: [InAppEventMedia]?] = [:]
             var pending = localizationIDs[...]
             func start(_ id: String) {
                 group.addTask { await (id, media(localizationID: id, client: client)) }
@@ -54,10 +56,14 @@ struct LiveInAppEventsServices: InAppEventsServices {
         }
     }
 
-    private nonisolated static func media(localizationID: String, client: AppStoreConnectClient) async -> [InAppEventMedia] {
-        let screenshots = await (try? client.appEventScreenshots(localizationID: localizationID)) ?? []
-        let clips = await (try? client.appEventVideoClips(localizationID: localizationID)) ?? []
-        return screenshots.compactMap { media($0.attributes, isVideo: false) } + clips.compactMap { media($0.attributes, isVideo: true) }
+    private nonisolated static func media(localizationID: String, client: AppStoreConnectClient) async -> [InAppEventMedia]? {
+        do {
+            let screenshots = try await client.appEventScreenshots(localizationID: localizationID)
+            let clips = try await client.appEventVideoClips(localizationID: localizationID)
+            return screenshots.compactMap { media($0.attributes, isVideo: false) } + clips.compactMap { media($0.attributes, isVideo: true) }
+        } catch {
+            return nil
+        }
     }
 
     // MARK: - Mapping
@@ -105,7 +111,8 @@ struct LiveInAppEventsServices: InAppEventsServices {
         let asset = attributes.shownImage
         let delivery = attributes.deliveryState(isVideo: isVideo)
         return InAppEventMedia(
-            kind: kind, isVideo: isVideo, width: asset?.width, height: asset?.height, imageURL: asset?.url(width: 640), fileName: attributes.fileName,
+            kind: kind, isVideo: isVideo, width: asset?.width, height: asset?.height, imageURL: asset?.url(width: 640),
+            videoURL: isVideo ? attributes.videoUrl.flatMap(URL.init(string:)) : nil, fileName: attributes.fileName,
             fileSize: attributes.fileSize, previewFrameTimeCode: isVideo ? attributes.previewFrameTimeCode : nil, state: delivery?.state,
             stateErrors: (delivery?.errors ?? []).compactMap { $0.description ?? $0.code }
         )

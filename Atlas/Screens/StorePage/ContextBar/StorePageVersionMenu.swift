@@ -22,13 +22,13 @@ struct StorePageVersionMenu: View {
                                 Image(systemName: "checkmark")
                             }
                             Text(version.pickerTitle(among: content.versions))
-                            Text(version.listingVersion.pickerSubtitle)
+                            Text(version.pickerSubtitle)
                         }
                         .accessibilityIdentifier("storePage.version.\(version.versionString)")
                     }
                 }
                 Section {
-                    Button("New Version…") { viewModel.openNewVersion() }
+                    Button("New Version…", systemImage: "plus") { viewModel.openNewVersion() }
                         .disabled(!viewModel.canCreateVersion)
                         .accessibilityIdentifier("storePage.newVersionItem")
                 }
@@ -36,7 +36,7 @@ struct StorePageVersionMenu: View {
                 Text(content.version.title(among: content.versions))
             }
             .fixedSize()
-            .accessibilityLabel(Text("Version, \(content.version.listingVersion.title)"))
+            .accessibilityLabel(Text("Version, \(content.version.title(among: content.versions))"))
             .accessibilityIdentifier("storePage.versionPicker")
         }
     }

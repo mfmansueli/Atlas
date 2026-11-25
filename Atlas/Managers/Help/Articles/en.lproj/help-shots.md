@@ -32,7 +32,7 @@ When some screens changed (new phrases in one language, a redesigned screen), yo
 - Claude Code can ask for it too. Its request shows in Screenshots with Accept and Decline.
 - No saved Autopilot run? It’s rebuilt from the set’s captures: screens, devices, iPhone Duo poses and sizes. Only App Preview moments need the original run.
 - Captures Claude Code marked as Out of date keep that label until a new one takes their place.
-- To let Claude Code open these runs without asking, turn on Settings → Screenshots → Let Claude Code open capture-only runs. Nothing is pushed either way.
+- To let Claude Code open these runs without asking, turn on Settings → Screenshots → Let Claude Code open capture-only runs. Nothing is sent either way.
 
 > A product page’s screens can be captured again the same way, up to three a page.
 

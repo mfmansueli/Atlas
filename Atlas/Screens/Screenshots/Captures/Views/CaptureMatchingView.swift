@@ -41,6 +41,7 @@ struct CaptureMatchingView: View {
             }
             Divider()
             footer
+                .leavesChatRoom(.bottomEdge)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("captures.matching")

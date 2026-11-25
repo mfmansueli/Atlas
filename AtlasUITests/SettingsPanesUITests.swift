@@ -208,12 +208,15 @@ final class SettingsPanesUITests: XCTestCase {
         attach("set-privacy-activity")
         app.buttons["settings.privacy.activity.done"].click()
 
+        // Asked in place (README-DS §9, risk level 4), not in an alert.
         app.buttons["settings.privacy.removeAll"].click()
-        let cancel = app.windows.descendants(matching: .button)["Cancel"].firstMatch
+        let cancel = app.buttons["settings.privacy.removeAll.cancel"]
         XCTAssertTrue(cancel.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["settings.privacy.removeAll.confirm"].exists)
+        XCTAssertEqual(app.sheets.count, 0)
         attach("set-privacy-remove")
         cancel.click()
-        XCTAssertTrue(app.buttons["settings.privacy.removeAll"].exists)
+        XCTAssertTrue(app.buttons["settings.privacy.removeAll"].waitForExistence(timeout: 5))
     }
 
     // MARK: - Helpers

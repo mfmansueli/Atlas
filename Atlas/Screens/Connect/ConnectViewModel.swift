@@ -29,6 +29,8 @@ final class ConnectViewModel {
     private(set) var leftFields: Set<Field> = []
 
     private let checker: any KeyChecker
+    /// The check Connect started, so Cancel can stop it.
+    @ObservationIgnored private var connecting: Task<Void, Never>?
     private let onConnect: (AppStoreConnectCredentials, KeyAccessCheck) throws -> Void
 
     init(
@@ -57,6 +59,20 @@ final class ConnectViewModel {
         guard leftFields.contains(.keyID), !keyID.isEmpty else { return nil }
         return CredentialsValidator.keyIDIssue(keyID)
     }
+
+    // The green check beside each field's name (README-Welcome): shown as
+    // soon as the value has the right form, while typing too. Whether Apple
+    // takes the key is what Connect asks.
+    var issuerIDLooksRight: Bool {
+        !issuerID.isEmpty && CredentialsValidator.issuerIDIssue(issuerID) == nil
+    }
+
+    var keyIDLooksRight: Bool {
+        !keyID.isEmpty && CredentialsValidator.keyIDIssue(keyID) == nil
+    }
+
+    /// Only a file that reads as a P-256 private key is kept (`importKey`).
+    var keyFileLooksRight: Bool { privateKey != nil }
 
     var credentials: AppStoreConnectCredentials? {
         CredentialsValidator.credentials(issuerID: issuerID, keyID: keyID, privateKeyPEM: privateKey?.pem)
@@ -104,6 +120,19 @@ final class ConnectViewModel {
         importErrorMessage = nil
     }
 
+    /// Connect (and Try Again): checks the key in a task Cancel can stop.
+    func startConnect() {
+        guard canConnect else { return }
+        connecting = Task { await connect() }
+    }
+
+    /// Cancel while the key is checked: back to the filled form, with no
+    /// error, and nothing saved.
+    func cancelConnect() {
+        connecting?.cancel()
+        connecting = nil
+    }
+
     func connect() async {
         guard let credentials, !isVerifying else { return }
         isVerifying = true
@@ -111,8 +140,11 @@ final class ConnectViewModel {
         defer { isVerifying = false }
         do {
             let check = try await checker.check(credentials)
+            try Task.checkCancellation()
             try onConnect(credentials, check)
         } catch {
+            // Cancelled by the person: not a failure to explain.
+            if Task.isCancelled || error is CancellationError { return }
             let failure = KeyCheckFailure(error)
             self.failure = failure
             // The file itself is the problem: Connect waits for another one.

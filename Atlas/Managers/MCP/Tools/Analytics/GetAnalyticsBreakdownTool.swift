@@ -18,7 +18,8 @@ struct GetAnalyticsBreakdownTool: MCPTool {
         page view, startRate = subscription starts per download) with `againstAverage` better/worse/same, said only when the \
         rate's whole 90% range is above or below the app's average. Territory rows also say which language's page they see, \
         whether that page is machine-translated or missing, and the price against purchasing power when known. Apple doesn't \
-        link subscriptions to a source or a product page: those are null there. Rows are sorted by impressions; `limit` \
+        link Sales and Trends' starts to a source or a product page: those are null there (get_analytics_subscribers splits \
+        trials and paid by page, campaign and source). Rows are sorted by impressions; `limit` \
         (default 40) keeps the largest. Read-only.
         """,
         inputSchema: MCPToolDefinition.schema(

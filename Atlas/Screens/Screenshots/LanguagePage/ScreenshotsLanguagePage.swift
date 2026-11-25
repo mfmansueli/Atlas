@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// Screenshots, one language at a time: the header, the language bar, the
-/// device, the template, Now | Suggested and Manage, the language's
+/// device, the template, Now | Suggested and Manage, the language's App
+/// Previews first (on every device that has them, to play) and its
 /// screenshots large (a suggested caption drawn on its screenshot with a
 /// purple ring) to select, move, replace, delete or add to by hand, and
 /// each suggested caption to accept or dismiss, then on iPhone and iPad the
@@ -39,6 +40,7 @@ struct ScreenshotsLanguagePage: View {
             .padding(.vertical, Spacing.large)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("screenshots.page")
         .sheet(item: $viewModel.handSheet) { sheet in
             ScreenshotHandSheetView(viewModel: viewModel, sheet: sheet, locale: locale)

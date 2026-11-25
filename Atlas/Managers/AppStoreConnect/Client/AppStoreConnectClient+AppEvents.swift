@@ -37,13 +37,13 @@ extension AppStoreConnectClient {
         ])
     }
 
-    /// The video clips of one language of an event
-    /// (`GET /v1/appEventLocalizations/{id}/appEventVideoClips`).
+    /// The video clips of one language of an event, with where each
+    /// streams from (`GET /v1/appEventLocalizations/{id}/appEventVideoClips`).
     func appEventVideoClips(localizationID: String) async throws -> [AppStoreConnectResource<AppEventMediaAttributes>] {
         try await allPages(of: "/v1/appEventLocalizations/\(localizationID)/appEventVideoClips", query: [
             URLQueryItem(
                 name: "fields[appEventVideoClips]",
-                value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState"
+                value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState,videoUrl"
             ),
             URLQueryItem(name: "limit", value: "20"),
         ])

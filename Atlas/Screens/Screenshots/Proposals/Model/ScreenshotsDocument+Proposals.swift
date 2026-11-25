@@ -35,7 +35,9 @@ extension ScreenshotsDocument {
             ]))
         }
         let proposal = proposals[index]
-        let result = history.accept(
+        let result = template.whole.map { whole in
+            history.acceptWhole(whole, basedOn: template.basedOn, from: proposal.client, reason: proposal.title, date: date)
+        } ?? history.accept(
             template.operations, basedOn: template.basedOn, from: proposal.client, reason: proposal.title, date: date, applier: applier
         )
         if case .success = result {

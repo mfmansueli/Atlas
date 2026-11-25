@@ -123,7 +123,7 @@ struct ConnectDesignProjectSheet: View {
     private var howItConnects: String {
         switch kind {
         case .claudeDesign, .figma:
-            String(localized: "Claude gets the brief over MCP (captures, captions, sizes, safe areas) and returns templates designed with your \(kind == .figma ? String(localized: "Figma file") : String(localized: "design system")). Nothing is pushed to App Store Connect.")
+            String(localized: "Claude gets the brief over MCP (captures, captions, sizes, safe areas) and returns templates designed with your \(kind == .figma ? String(localized: "Figma file") : String(localized: "design system")). Nothing is sent to App Store Connect.")
         case .folder:
             String(localized: "Atlas sends the folder’s colors, fonts and logo to the assistant. Directions come back as Atlas templates.")
         case .none:

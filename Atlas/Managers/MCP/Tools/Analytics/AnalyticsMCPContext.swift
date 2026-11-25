@@ -40,9 +40,19 @@ struct AnalyticsMCPContext {
         let context: AnalyticsContext = if let fixed = workspace.services.analytics.fixedContext {
             fixed
         } else {
-            await AnalyticsContextLoader(services: workspace.services).storePage(for: app)
+            // As the section reads it: the same likely causes Atlas names.
+            await Self.context(for: app, loader: AnalyticsContextLoader(services: workspace.services))
         }
         return AnalyticsMCPContext(app: app, dataset: dataset, context: context, store: store)
+    }
+
+    /// The store page's part, prices against purchasing power, the live
+    /// retention messages and each device's screenshot languages, as the
+    /// section reads them.
+    static func context(for app: StoreApp, loader: AnalyticsContextLoader) async -> AnalyticsContext {
+        let page = await loader.storePage(for: app)
+        let priced = await loader.pricing(for: app, into: page)
+        return await loader.screenshots(for: app, into: priced)
     }
 
     /// 7, 28 or 90; 28 when not given.

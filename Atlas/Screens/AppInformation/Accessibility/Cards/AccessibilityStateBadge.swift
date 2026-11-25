@@ -33,7 +33,7 @@ struct AccessibilityStateBadge: View {
     private var background: Color {
         switch state {
         case .notDeclared: .clear
-        case .published: Palette.ok.opacity(0.14)
+        case .published: Palette.okTint
         case .draft, .draftCantPublish, .publishedChangesWaiting: Palette.fill2
         }
     }

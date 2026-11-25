@@ -43,6 +43,7 @@ struct InAppTextsView: View {
         switch model.state {
         case .idle, .loading:
             StorePageTableSkeleton()
+                .loadingSkeleton(LoadingCopy.inAppTexts, identifier: "storePage.inAppTexts.loading")
         case let .failed(message):
             StorePageErrorView(message: message) {
                 Task { await model.load(listing: viewModel.listing, force: true) }
@@ -79,6 +80,7 @@ struct InAppTextsView: View {
                 }
                 .frame(width: width)
             }
+            .leavesChatRoom()
         }
     }
 

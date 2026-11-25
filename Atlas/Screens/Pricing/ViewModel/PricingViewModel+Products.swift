@@ -6,8 +6,8 @@
 import Foundation
 
 // Pricing's Prices page: a card per product with its open price suggestion
-// (Accept, Dismiss, Show Countries), Accept All above them, and "What
-// people pay" beside them. Every product's prices are read once the catalog
+// (Accept, Dismiss, Show Countries), Accept All above them, and "Preview
+// in" beside them (PricingViewModel+PreviewIn). Every product's prices are read once the catalog
 // is here, one product at a time; accepting follows the strategy for that
 // product, as Apply Suggested Prices… does, and nothing is pushed.
 extension PricingViewModel {
@@ -131,17 +131,6 @@ extension PricingViewModel {
             : String(localized: "Price suggestions for \(count) products. Review below or accept all here.")
     }
 
-    /// The countries "What people pay" offers: the base territory, then
-    /// Germany, Brazil, India and Japan.
-    var payTerritories: [Territory] {
-        let rows = productMatrices.values.first?.rows ?? matrix?.rows ?? []
-        let base = rows.first(where: \.isBase)?.territory
-        let others = ["DEU", "BRA", "IND", "JPN"].compactMap { id in rows.first { $0.id == id }?.territory }
-        return ([base].compactMap(\.self) + others).reduce(into: []) { result, territory in
-            if !result.contains(territory) { result.append(territory) }
-        }
-    }
-
     /// Countries and regions the app has prices in, for the header.
     var territoryCount: Int? {
         let count = productMatrices.values.first?.rows.count ?? matrix?.rows.count ?? 0
@@ -176,27 +165,10 @@ extension PricingViewModel {
     /// A card's Dismiss: the suggestion goes until Restore Dismissed.
     func dismissPriceSuggestion(productID: String) {
         modes.dismissPriceSuggestion(productID: productID, appID: app.id)
-        if expandedProductID == productID { expandedProductID = nil }
     }
 
     func restoreDismissedPriceSuggestions() {
         modes.restorePriceSuggestions(appID: app.id)
-    }
-
-    func toggleCountries(productID: String) {
-        expandedProductID = expandedProductID == productID ? nil : productID
-    }
-
-    /// A card's Edit Prices…: that product's matrix, offers and results.
-    func openDetails(productID: String) async {
-        showsProductDetails = true
-        tab = .prices
-        await select(productID: productID)
-    }
-
-    /// Back to the cards from the matrix.
-    func showProducts() {
-        showsProductDetails = false
     }
 
     func undoToast() {

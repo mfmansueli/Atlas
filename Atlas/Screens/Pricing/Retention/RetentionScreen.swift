@@ -31,6 +31,7 @@ struct RetentionScreen: View {
             .padding(.horizontal, Spacing.xLarge)
             .padding(.vertical, Spacing.large)
         }
+        .leavesChatRoom()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: pricing.catalog?.groups.count) { await load(force: false) }
         .sheet(isPresented: $model.isOfferSheetPresented) {

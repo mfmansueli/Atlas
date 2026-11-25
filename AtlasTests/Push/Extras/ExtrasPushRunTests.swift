@@ -87,7 +87,7 @@ struct ExtrasPushRunTests {
         let run = await Fixtures.push([item], environment: Fixtures.environment(library))
 
         #expect(run.status(of: item) == .failed(
-            "The product page header takes 3840 × 1646 or 5244 × 2950, not a 3000 × 1286 image. Nothing was pushed."
+            "The product page header takes 3840 × 1646 or 5244 × 2950, not a 3000 × 1286 image. Nothing was sent."
         ))
         #expect(library.log == ["ref-data"])
     }
@@ -97,7 +97,7 @@ struct ExtrasPushRunTests {
         let item = Fixtures.preview()
         let run = await Fixtures.push([item], environment: Fixtures.environment(library))
 
-        #expect(run.status(of: item).failureReason == "\(Fixtures.iPhoneGroup) is full at 3 App Previews. Nothing was pushed.")
+        #expect(run.status(of: item).failureReason == "\(Fixtures.iPhoneGroup) is full at 3 App Previews. Nothing was sent.")
         #expect(library.log == ["ref-data", "list loc-de \(preview) \(Fixtures.iPhoneGroup)"])
         #expect(library.placements(on: Fixtures.localizationID).map(\.id) == ["p-a", "p-b", "p-c"])
     }

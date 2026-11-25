@@ -22,11 +22,8 @@ struct ViewerStage: View {
                     .frame(width: width, height: height)
                     .accessibilityLabel(Text(accessibilityText))
             } else {
-                Palette.fill2
+                ImageLoadingTile(isLoading: cell?.image != CellImageSource.none, systemImage: nil)
                     .frame(width: width, height: height)
-                    .overlay {
-                        if cell?.image != CellImageSource.none { ProgressView().controlSize(.small) }
-                    }
                     .accessibilityHidden(true)
             }
         }

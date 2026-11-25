@@ -51,6 +51,7 @@ struct ScreenshotStudioView: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("studio.root")
         }
+        .leavesChatRoom()
         .overlay {
             // Over the sheet instead, while it's open.
             if let viewer = studio.viewer, !studio.isAutopilotPresented {

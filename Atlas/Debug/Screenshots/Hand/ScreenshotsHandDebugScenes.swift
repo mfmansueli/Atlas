@@ -26,10 +26,13 @@ import SwiftUI
 /// - `hand-proposal`: Claude Code's file for screenshot 3, to accept.
 /// - `hand-removal`, `hand-order`: Claude Code suggests deleting
 ///   screenshots 2 and 4, or the order 3, 1, 2, 4, 5, to accept.
+/// - `hand-mac-first`: the app has a macOS version but no Mac captures or
+///   set yet: Mac is chosen in the device picker, with Add Screenshots.
 enum ScreenshotsHandDebugScenes {
     static let ids = [
         "hand-page", "hand-select", "hand-changed", "hand-fallback", "hand-replace", "hand-replace-wrong", "hand-delete",
         "hand-delete-all", "hand-add", "hand-import", "hand-proposal", "hand-removal", "hand-order",
+        "hand-mac-first",
     ]
 
     @MainActor
@@ -60,6 +63,11 @@ enum ScreenshotsHandDebugScenes {
             }
         case "hand-proposal":
             await propose(model)
+        case "hand-mac-first":
+            var context = model.context
+            context.hasMacVersion = true
+            await model.update(context: context)
+            model.displayType = .mac
         case "hand-removal":
             await arrange(model, .removal, positions: [1, 3])
         case "hand-order":

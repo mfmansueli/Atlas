@@ -15,7 +15,9 @@ struct GetAgeRatingTool: MCPTool {
         description: """
         Returns the age rating questionnaire of an app: each question's id, text, group and the answers it takes \
         (none, infrequent or frequent; or no and yes), the current answer (App Store Connect's, with changes \
-        waiting in Atlas on top), and the rating they add up to. Propose answers with propose_age_rating.
+        waiting in Atlas on top), and the rating they add up to: calculated from the answers, override when the \
+        app is rated higher than calculated ("Rate higher than calculated", with overrides listing the ratings \
+        allowed). Propose answers, or an override with its reason, with propose_age_rating.
         """,
         inputSchema: MCPToolDefinition.schema(
             ["appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps.")],
@@ -33,6 +35,9 @@ struct GetAgeRatingTool: MCPTool {
             "app": ["appId": .string(app.id), "name": .string(app.name)],
             "version": content.version.map { .string($0.versionString) } ?? .null,
             "rating": .string(values.preview.effective.title),
+            "calculated": .string(values.preview.calculated.title),
+            "override": values.override.map { .string($0.title) } ?? .null,
+            "overrides": .array(AgeRating.overrides(above: values.preview.calculated).map { .string($0.title) }),
             "questions": .array(AgeRatingQuestion.allCases.map { $0.mcpJSON(current: values) }),
         ]
         return .read(result, target: String(localized: "\(app.name) · Age Rating"))

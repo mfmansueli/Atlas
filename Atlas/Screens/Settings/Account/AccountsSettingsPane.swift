@@ -86,14 +86,14 @@ struct AccountsSettingsPane: View {
             onRemove: { removing = keyID }
         )
         .contextMenu {
-            Button("Use This Key") { viewModel.use(keyID: keyID) }
+            Button("Use This Key", systemImage: "checkmark.circle") { viewModel.use(keyID: keyID) }
                 .disabled(viewModel.isInUse(keyID))
-            Button("Rename…") {
+            Button("Rename…", systemImage: "pencil") {
                 draftName = credentials.teamName ?? ""
                 renaming = credentials
             }
             Divider()
-            Button("Remove…", role: .destructive) { removing = keyID }
+            Button("Remove…", systemImage: "trash", role: .destructive) { removing = keyID }
         }
     }
 

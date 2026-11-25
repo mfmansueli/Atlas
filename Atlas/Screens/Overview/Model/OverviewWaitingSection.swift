@@ -75,8 +75,25 @@ struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
         var captionLanguages = 0
         /// Pricing's count is a guess until Pricing has read every product.
         var isPricingEstimate = false
+        /// Review screenshots in Pricing's count, waiting for Accept.
+        var reviewShots = 0
+        /// Shorter retention wordings an assistant suggested, already in
+        /// Pricing's count (`SectionBadgeCounts.pricingCount`): the row
+        /// names them (“and a retention message”).
+        var retentionSuggestions = 0
+        /// App Compliance answers an assistant suggested: App
+        /// Information's row adds them.
+        var complianceAnswers = 0
         /// "Age Rating, Accessibility", in the page column's order.
         var informationPages: [String] = []
+
+        /// The row's count: the section's, with what it adds.
+        func count(for section: AppWorkspaceSection) -> Int {
+            switch section {
+            case .appInformation: counts.count(for: section) + complianceAnswers
+            default: counts.count(for: section)
+            }
+        }
     }
 
     /// Store Page, Screenshots, Pricing and App Information, in the design's
@@ -88,12 +105,12 @@ struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
                 ? String(localized: "Captions in 1 language")
                 : String(localized: "Captions in \(facts.captionLanguages) languages"), done: String(localized: "Every caption reviewed")),
             row(.subscriptionPricing, facts, detail: pricingDetail(facts), done: String(localized: "Every price reviewed")),
-            row(.appInformation, facts, detail: facts.informationPages.joined(separator: ", "), done: String(localized: "Every page reviewed")),
+            row(.appInformation, facts, detail: informationDetail(facts), done: String(localized: "Every page reviewed")),
         ]
     }
 
     private static func row(_ section: AppWorkspaceSection, _ facts: Facts, detail: String, done: String = "") -> OverviewWaitingSection {
-        let count = facts.counts.count(for: section)
+        let count = facts.count(for: section)
         let fallback = done.isEmpty ? String(localized: "Every language reviewed") : done
         return OverviewWaitingSection(section: section, count: count, detail: count > 0 ? detail : fallback)
     }
@@ -109,9 +126,32 @@ struct OverviewWaitingSection: Identifiable, Hashable, Sendable {
         }
     }
 
+    /// “Prices for 2 products and a retention message”: the products with
+    /// a price suggested, the review screenshots and the retention
+    /// wordings.
     private static func pricingDetail(_ facts: Facts) -> String {
-        guard !facts.isPricingEstimate else { return String(localized: "Prices that likely hold people back") }
-        let count = facts.counts.count(for: .subscriptionPricing)
-        return count == 1 ? String(localized: "Prices for 1 product") : String(localized: "Prices for \(count) products")
+        var parts: [String] = []
+        let products = facts.counts.count(for: .subscriptionPricing) - facts.reviewShots - facts.retentionSuggestions
+        if products > 0 {
+            parts.append(facts.isPricingEstimate ? String(localized: "Prices that likely hold people back")
+                : products == 1 ? String(localized: "Prices for 1 product") : String(localized: "Prices for \(products) products"))
+        }
+        if facts.reviewShots > 0 {
+            parts.append(facts.reviewShots == 1 ? String(localized: "1 review screenshot", comment: "kind:description")
+                : String(localized: "\(facts.reviewShots) review screenshots", comment: "kind:description"))
+        }
+        if facts.retentionSuggestions > 0 {
+            parts.append(parts.isEmpty ? String(localized: "A retention message", comment: "kind:description")
+                : String(localized: "a retention message", comment: "kind:description"))
+        }
+        return parts.formatted(.list(type: .and))
+    }
+
+    /// The pages with suggestions, “Age Rating, App Compliance”, or how
+    /// many answers wait when no page is named.
+    private static func informationDetail(_ facts: Facts) -> String {
+        guard facts.informationPages.isEmpty else { return facts.informationPages.joined(separator: ", ") }
+        let count = facts.count(for: .appInformation)
+        return count == 1 ? String(localized: "1 answer suggested", comment: "kind:done-state") : String(localized: "\(count) answers suggested", comment: "kind:done-state")
     }
 }

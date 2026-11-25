@@ -36,6 +36,7 @@ struct TemplateInspector: View {
                 }
             }
         }
+        .leavesChatRoom()
         .background(Palette.content)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Template inspector"))

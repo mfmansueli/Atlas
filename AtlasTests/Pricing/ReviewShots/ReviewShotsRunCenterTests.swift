@@ -66,7 +66,8 @@ struct ReviewShotsRunCenterTests {
         center.arrived(appID: appID, productID: "monthly")
         center.runEnded(appID: appID)
         #expect(center.run(for: appID)?.phase == .ready)
-        #expect(center.run(for: appID)?.needs == "Review Screenshots Ready")
+        #expect(center.run(for: appID)?.needs == nil, "Ready isn't purple: the toolbar's green check says it, then rests")
+        #expect(center.run(for: appID)?.readyText == "Review Screenshots Ready")
         center.settle(appID: appID, suggestionsLeft: 1)
         #expect(center.run(for: appID) != nil)
         center.settle(appID: appID, suggestionsLeft: 0)
@@ -100,6 +101,53 @@ struct ReviewShotsRunCenterTests {
         center.start(appID: appID, client: "Claude Code", products: products)
         center.fail(appID: appID, .paywallNotFound(tried: ""))
         #expect(center.runEnded(appID: appID) == "Claude Code stopped before the review screenshots. Pricing says why.")
+    }
+
+    /// A product the paywall doesn't show is skipped, one whose checks
+    /// failed twice too: the run moves on, and the card says why until the
+    /// next run.
+    @Test func skippedProductsMoveTheRunOnAndStayOnTheirCards() throws {
+        let center = ReviewShotsRunCenter()
+        center.start(appID: appID, client: "Claude Code", products: products)
+        center.report(appID: appID, productID: "monthly", step: "Selecting Monthly")
+        center.miss(appID: appID, productID: "monthly", kind: .skipped, reason: "The paywall shows only Annual")
+        let run = try #require(center.run(for: appID))
+        #expect(run.currentProduct?.productID == "annual")
+        #expect(run.current == nil)
+        #expect(run.fraction == 1.0 / 3.0)
+        #expect(!run.isQueued("monthly"))
+        let skipped = ReviewShotsMiss(kind: .skipped, reason: "The paywall shows only Annual", client: "Claude Code")
+        #expect(center.miss(appID: appID, productID: "monthly") == skipped)
+
+        center.miss(appID: appID, productID: "annual", kind: .checkFailed, reason: "the price didn’t show")
+        center.arrived(appID: appID, productID: "lifetime")
+        center.runEnded(appID: appID)
+        #expect(center.miss(appID: appID, productID: "annual")?.kind == .checkFailed, "Kept after the run")
+        center.forgetMiss(appID: appID, productID: "annual")
+        #expect(center.miss(appID: appID, productID: "annual") == nil)
+
+        center.start(appID: appID, client: "Claude Code", products: products)
+        #expect(center.miss(appID: appID, productID: "monthly") == nil, "A new run starts clean")
+    }
+
+    @Test func noPricesKeepsWhatItSaw() {
+        let center = ReviewShotsRunCenter()
+        center.start(appID: appID, client: "Claude Code", products: products)
+        let image = URL(filePath: "/tmp/no-prices.png")
+        center.fail(appID: appID, .noPrices(saw: "Empty plans"), sawImage: image)
+        #expect(center.run(for: appID)?.sawImage == image)
+        #expect(center.run(for: appID)?.phase == .noPrices(saw: "Empty plans"))
+    }
+
+    @Test func aPushIsAnnouncedOnceAndOnlyFromThisLaunch() {
+        let launch = Date(timeIntervalSince1970: 1000)
+        let center = ReviewShotsRunCenter(since: launch)
+        let before = PushRecord(date: launch.addingTimeInterval(-60), appID: appID, appName: "Lumen", title: "", pushed: [])
+        let after = PushRecord(date: launch.addingTimeInterval(60), appID: appID, appName: "Lumen", title: "", pushed: [])
+        #expect(!center.needsAnnouncing(before), "An earlier launch's push")
+        #expect(center.needsAnnouncing(after))
+        center.markAnnounced([after.id])
+        #expect(!center.needsAnnouncing(after))
     }
 
     @Test func theMenuSaysHowManyAreMissing() {

@@ -90,6 +90,7 @@ extension ProductPagesViewModel {
     /// version 2 beside the approved one.
     func startNewVersion(of page: ProductPage) {
         editingApprovedPageIDs.insert(page.id)
+        ProductPageReviewSuggestionStore.shared.done(.newVersion, appID: app.id, pageID: page.id)
     }
 
     // MARK: - Languages

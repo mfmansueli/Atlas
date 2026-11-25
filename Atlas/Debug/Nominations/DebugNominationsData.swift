@@ -85,7 +85,7 @@ enum DebugNominationsData {
             createdBy: "Mateus",
             submittedBy: "Mateus",
             appNames: [lumen: "Lumen Journal"],
-            eventNames: [DebugInAppEventsData.winterID: "Winter Journaling Week"]
+            eventNames: [DebugInAppEventsData.winterID: DebugInAppEventsData.winter.referenceName]
         )
     }
 

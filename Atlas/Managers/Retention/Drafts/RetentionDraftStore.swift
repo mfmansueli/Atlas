@@ -99,6 +99,12 @@ final class RetentionDraftStore {
         suggestions[Self.key(appID, "\(messageID)|\(locale)")]
     }
 
+    /// The app's suggested wordings still waiting, for Overview's Pricing
+    /// row (“and a retention message”).
+    func suggestionCount(for appID: StoreApp.ID) -> Int {
+        suggestions.keys.count { $0.hasPrefix("\(appID)|") }
+    }
+
     func suggest(_ suggestion: RetentionSuggestion, appID: StoreApp.ID) {
         suggestions[Self.key(appID, "\(suggestion.messageID)|\(suggestion.locale)")] = suggestion
         scheduleSave()

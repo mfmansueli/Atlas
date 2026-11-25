@@ -32,6 +32,7 @@ struct RetentionView: View {
             }
             .padding(.bottom, Spacing.xLarge)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("analytics.retention")
     }
 

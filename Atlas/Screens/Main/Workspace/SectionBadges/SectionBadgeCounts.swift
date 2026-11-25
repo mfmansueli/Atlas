@@ -98,18 +98,28 @@ struct SectionBadgeCounts: Equatable {
         return notes.notes(for: appID).complianceSuggestions.count
     }
 
-    /// Products with an open price suggestion or a review screenshot to
-    /// accept: Pricing's count of prices once it has read every product
-    /// this launch; before that, 1 when the product the
+    /// Products with an open price suggestion, review screenshots and
+    /// retention wordings to accept: Pricing's count of prices once it has
+    /// read every product this launch; before that, 1 when the product the
     /// summary describes has prices likely holding people back and nothing
-    /// for it is queued or dismissed. Apps set to Keep my prices have none.
+    /// for it is queued or dismissed. Apps set to Keep my prices have no
+    /// price suggestions. The sidebar, the toolbar's section menu and the
+    /// Overview's Pricing row all read this one number.
     @MainActor
-    static func pricingCount(appID: StoreApp.ID, summaries: AppSummaryStore, modes: PricingModeStore, changes: ChangeQueue) -> Int {
-        // Review screenshots an assistant made, waiting for Accept.
-        let shots = changes.changes(for: appID, section: .subscriptionPricing).count {
+    static func pricingCount(
+        appID: StoreApp.ID, summaries: AppSummaryStore, modes: PricingModeStore, changes: ChangeQueue, retention: RetentionDraftStore
+    ) -> Int {
+        reviewShotCount(appID: appID, changes: changes)
+            + retention.suggestionCount(for: appID)
+            + pricePricingCount(appID: appID, summaries: summaries, modes: modes, changes: changes)
+    }
+
+    /// Review screenshots an assistant made, waiting for Accept.
+    @MainActor
+    static func reviewShotCount(appID: StoreApp.ID, changes: ChangeQueue) -> Int {
+        changes.changes(for: appID, section: .subscriptionPricing).count {
             $0.awaitingAcceptance != nil && $0.id.hasPrefix(PurchaseReviewScreenshotChangeBuilder.idPrefix)
         }
-        return shots + pricePricingCount(appID: appID, summaries: summaries, modes: modes, changes: changes)
     }
 
     /// The price suggestions alone.

@@ -29,8 +29,12 @@ struct AnalyticsReadyBar: View {
                         .foregroundStyle(Palette.label2)
                         .lineLimit(1)
                     if viewModel.activity.isLoading {
-                        ProgressView().controlSize(.small)
-                        Text("Checking…").font(.subheadline).foregroundStyle(Palette.label2)
+                        // What's being checked, never a bare "Checking…" or a spinner.
+                        Text(LoadingCopy.analyticsCheck.line ?? LoadingCopy.analyticsCheck.spoken)
+                            .font(.subheadline)
+                            .foregroundStyle(Palette.label2)
+                            .lineLimit(1)
+                            .accessibilityIdentifier("analytics.checking")
                     } else if let checked = viewModel.lastChecked {
                         Text("Checked \(AnalyticsText.moment(checked, now: viewModel.store.now()))")
                             .font(.subheadline)

@@ -15,6 +15,8 @@ struct SectionMenuButton: View {
     var startsOpen = false
 
     @State private var isPresented = false
+    /// Nil in previews without the main window.
+    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
 
     var body: some View {
         Button {
@@ -54,7 +56,12 @@ struct SectionMenuButton: View {
                 }
                 ForEach(group.sections) { section in
                     Button {
-                        selection = section
+                        // The section showing, chosen again, goes back to its list.
+                        if section == selection, let navigator {
+                            navigator.choose(section)
+                        } else {
+                            selection = section
+                        }
                         isPresented = false
                     } label: {
                         SidebarSectionRow(section: section, counts: counts, isSelected: section == selection)

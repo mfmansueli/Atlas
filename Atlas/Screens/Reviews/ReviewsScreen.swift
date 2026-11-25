@@ -25,7 +25,9 @@ struct ReviewsScreen: View {
         VStack(alignment: .leading, spacing: 10) {
             header
             banners
-            if viewModel.hasLoaded {
+            if viewModel.showsEmptyState {
+                ReviewsEmptyState(appName: viewModel.app.name)
+            } else if viewModel.hasLoaded {
                 ReviewsFilterBar(viewModel: viewModel)
                 HStack(alignment: .top, spacing: Spacing.large) {
                     list
@@ -59,14 +61,21 @@ struct ReviewsScreen: View {
             subtitle: String(localized: "What people write about \(viewModel.app.name), in every country, and your replies.")
         ) {
             // Draft Replies… is the toolbar's Autopilot (board 57).
-            Toggle(isOn: Binding { viewModel.translates } set: { viewModel.setTranslates($0) }) {
-                Text("Translate to \(ReviewLanguage.appLanguageName)")
-                    .font(.callout)
+            // Nothing to translate yet (board 74 · 6).
+            if !viewModel.showsEmptyState {
+                translateToggle
             }
-            .toggleStyle(.switch)
-            .controlSize(.small)
-            .accessibilityIdentifier("reviews.translate")
         }
+    }
+
+    private var translateToggle: some View {
+        Toggle(isOn: Binding { viewModel.translates } set: { viewModel.setTranslates($0) }) {
+            Text("Translate to \(ReviewLanguage.appLanguageName)")
+                .font(.callout)
+        }
+        .toggleStyle(.switch)
+        .controlSize(.small)
+        .accessibilityIdentifier("reviews.translate")
     }
 
     @ViewBuilder
@@ -128,15 +137,13 @@ struct ReviewsScreen: View {
                     ReviewCard(review: review, viewModel: viewModel)
                 }
                 if reviews.isEmpty {
-                    Card {
-                        Label {
-                            Text(viewModel.emptyText)
-                                .font(.body.weight(.semibold))
-                        } icon: {
-                            Image(systemName: "star.bubble")
-                                .foregroundStyle(Palette.label2)
+                    let empty = viewModel.emptyListText
+                    EmptyStateView(empty.title, systemImage: AppWorkspaceSection.reviews.systemImage, text: empty.text, size: .inline) {
+                        if empty.showsAllReviews {
+                            Button(String(localized: "Show All Reviews", comment: "kind:button")) { viewModel.showAllReviews() }
+                                .secondaryButton()
+                                .accessibilityIdentifier("reviews.empty.showAll")
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .accessibilityIdentifier("reviews.empty")
                 }
@@ -144,6 +151,7 @@ struct ReviewsScreen: View {
             }
             .padding(.bottom, Spacing.large)
         }
+        .leavesChatRoom()
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.list")
@@ -175,13 +183,15 @@ struct ReviewsScreen: View {
         HStack(alignment: .top, spacing: Spacing.large) {
             VStack(spacing: Spacing.small) {
                 ForEach(0..<4, id: \.self) { _ in
-                    SkeletonBlock(height: 96, cornerRadius: Radius.card)
+                    SkeletonCard(height: Metrics.skeletonRowCardHeight, lines: 2)
                 }
             }
             .frame(maxWidth: .infinity)
-            SkeletonBlock(height: 180, cornerRadius: Radius.card)
+            SkeletonCard(height: Metrics.skeletonReviewsSideHeight, lines: 4)
                 .frame(width: sidebarWidth)
         }
-        .accessibilityIdentifier("reviews.loading")
+        .frame(minHeight: 0, alignment: .top)
+        .clipped()
+        .loadingSkeleton(LoadingCopy.reviews, identifier: "reviews.loading")
     }
 }

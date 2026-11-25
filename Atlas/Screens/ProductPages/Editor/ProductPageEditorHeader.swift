@@ -90,10 +90,10 @@ struct ProductPageEditorHeader: View {
     private var moreMenu: some View {
         Menu {
             if canDiscard {
-                Button("Discard Changes…") { viewModel.confirmation = .discard(pageID: page.id) }
+                Button("Discard Changes…", systemImage: "arrow.uturn.backward") { viewModel.confirmation = .discard(pageID: page.id) }
             }
             if canDelete {
-                Button("Delete…", role: .destructive) { viewModel.confirmation = .delete(pageID: page.id) }
+                Button("Delete…", systemImage: "trash", role: .destructive) { viewModel.confirmation = .delete(pageID: page.id) }
             }
         } label: {
             Image(systemName: "ellipsis")

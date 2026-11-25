@@ -18,6 +18,10 @@ struct DebugStorePageServices: StorePageServices {
     var error: AppStoreConnectError?
     /// How long loading the store page takes.
     var delay: Duration?
+    /// How long the summary (Overview's cards) and the In-App Purchase
+    /// texts take, for the loading scenes.
+    var summaryDelay: Duration?
+    var inAppTextsDelay: Duration?
     /// False for the "No version to edit" scene: only 1.3 is live.
     var hasEditableVersion = true
     var translator: any ListingTranslator = DebugListingTranslator()
@@ -39,6 +43,7 @@ struct DebugStorePageServices: StorePageServices {
     func hasWatchApp(for _: StoreApp, versionID _: String) async throws -> Bool { buildHasWatchApp }
 
     func summary(for app: StoreApp) async throws -> StorePageSummary {
+        if let summaryDelay { try await Task.sleep(for: summaryDelay) }
         if let error { throw error }
         return DebugSummaries.storePage(for: app.id)
     }
@@ -59,6 +64,7 @@ struct DebugStorePageServices: StorePageServices {
     }
 
     func inAppTexts(for app: StoreApp) async throws -> InAppTextsContent {
+        if let inAppTextsDelay { try await Task.sleep(for: inAppTextsDelay) }
         if let error { throw error }
         return app.id == DebugFixtures.AppID.lumen ? DebugStorePageContent.inAppTexts : .empty
     }

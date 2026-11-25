@@ -134,7 +134,8 @@ struct AppSidebar: View {
         Binding {
             navigator.section
         } set: { section in
-            if let section, section != navigator.section { navigator.section = section }
+            // The section showing, chosen again, goes back to its list.
+            if let section { navigator.choose(section) }
         }
     }
 
@@ -147,7 +148,7 @@ struct AppSidebar: View {
             appID: app.id,
             suggestions: suggestions,
             screenshots: ScreenshotsDocumentCenter.shared,
-            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes),
+            pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes, retention: .shared),
             extras: SectionBadgeCounts.Extras(releaseProposals: ReleaseProposalStore.shared.pending(for: app.id).count)
         )
         return AppIndicators(
@@ -161,20 +162,23 @@ struct AppSidebar: View {
     @ViewBuilder
     private var state: some View {
         if viewModel.isLoading, viewModel.apps.isEmpty {
+            // The sections' rows while the apps load (lib-loading): a
+            // symbol and a name each, static and grey.
             VStack(alignment: .leading, spacing: Spacing.small) {
-                ForEach(0..<6, id: \.self) { _ in
-                    SkeletonBlock(height: 22, cornerRadius: Radius.menuRow)
-                }
+                SkeletonRows(
+                    count: 8, tile: CGSize(width: Metrics.symbolColumn, height: Metrics.symbolColumn), lines: 1,
+                    rowHeight: Metrics.sidebarRowHeight
+                )
                 // The app menu's footer says it too, but nothing opens it yet.
-                Text("Reading apps from App Store Connect…")
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
-                    .padding(.top, Spacing.xSmall)
+                if let line = LoadingCopy.apps.line {
+                    LoadingLine(text: line)
+                        .padding(.horizontal, Spacing.small)
+                }
             }
-            .padding(.horizontal, Spacing.medium)
+            .padding(.horizontal, Spacing.small)
             .frame(maxHeight: .infinity, alignment: .top)
             .padding(.top, 70)
-            .accessibilityIdentifier("sidebar.loading")
+            .loadingSkeleton(LoadingCopy.apps, identifier: "sidebar.loading")
         } else if let message = viewModel.errorMessage, viewModel.apps.isEmpty {
             ContentUnavailableView {
                 Label("Couldn’t load apps", systemImage: "exclamationmark.triangle")

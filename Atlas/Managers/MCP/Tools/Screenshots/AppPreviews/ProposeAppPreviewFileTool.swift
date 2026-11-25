@@ -27,14 +27,14 @@ struct ProposeAppPreviewFileTool: MCPTool {
         pushes. Proposing the same language and device again changes the waiting set.
         """,
         inputSchema: MCPToolDefinition.schema(
-            [
+            MCPToolDefinition.withLayers([
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "locale": MCPToolDefinition.string("The language, e.g. de-DE."),
                 "displayType": MCPToolDefinition.string("iphone or ipad."),
                 "position": ["type": "integer", "description": "The App Preview it replaces, from 1. Leave it out to add it after the last one."],
                 "fileId": MCPToolDefinition.string("The fileId the upload link returned."),
                 "reason": MCPToolDefinition.why("Why, for the person to read in Review & Push."),
-            ],
+            ]),
             required: ["appId", "locale", "displayType", "fileId", "reason"]
         ),
         proposalKind: .screenshots
@@ -54,6 +54,7 @@ struct ProposeAppPreviewFileTool: MCPTool {
             throw MCPToolError.invalidArgument(name: "displayType", expected: "iphone or ipad")
         }
         let position = try arguments.optionalInt("position")
+        let layers = try arguments.layers()
         let target = "\(app.name) · \(locale.code) · \(display.shortTitle) · App Preview" + (position.map { " \($0)" } ?? "")
         let fileID = try arguments.string("fileId").trimmingCharacters(in: .whitespacesAndNewlines)
         guard let upload = uploads.upload(id: fileID, appID: app.id) else {
@@ -90,6 +91,7 @@ struct ProposeAppPreviewFileTool: MCPTool {
             content, localeName: locale.name, liveCount: liveCount, source: context.source, reason: arguments.string("reason")
         )
         workspace.changes.upsert(change)
+        workspace.changes.attach(layers, to: change.id)
         uploads.remove(id: fileID)
         let result: [String: JSONValue] = [
             "status": "queued",

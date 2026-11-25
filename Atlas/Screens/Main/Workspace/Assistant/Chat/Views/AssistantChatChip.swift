@@ -6,7 +6,8 @@
 import SwiftUI
 
 /// One piece of the question's context under the panel's title: the app,
-/// the section, and the version, which can be taken out.
+/// the section, and the version and Pricing's country, which can be taken
+/// out.
 struct AssistantChatChip: View {
     let chip: AssistantChatContext.Chip
     let onRemove: () -> Void

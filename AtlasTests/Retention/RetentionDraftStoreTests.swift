@@ -33,6 +33,17 @@ struct RetentionDraftStoreTests {
         #expect(relaunched.suggestion(appID: appID, messageID: "draft-1", locale: "de-DE")?.body == "Kurz.")
     }
 
+    @Test func suggestionsAreCountedPerApp() {
+        let store = RetentionDraftStore()
+        store.suggest(RetentionSuggestion(messageID: "draft-1", locale: "de-DE", body: "Kurz.", client: "Claude Code"), appID: appID)
+        store.suggest(RetentionSuggestion(messageID: "draft-1", locale: "fr-FR", body: "Court.", client: "Claude Code"), appID: appID)
+        store.suggest(RetentionSuggestion(messageID: "draft-1", locale: "de-DE", body: "Kurz.", client: "Claude Code"), appID: "app-10")
+        #expect(store.suggestionCount(for: appID) == 2)
+        #expect(store.suggestionCount(for: "app-10") == 1)
+        store.removeSuggestion(appID: appID, messageID: "draft-1", locale: "fr-FR")
+        #expect(store.suggestionCount(for: appID) == 1)
+    }
+
     @Test func removingForgetsTheSourceEdit() {
         let store = RetentionDraftStore(url: url)
         store.keep(Self.draft, appID: appID, queued: false)

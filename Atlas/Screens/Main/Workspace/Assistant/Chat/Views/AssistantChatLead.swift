@@ -5,28 +5,35 @@
 
 import SwiftUI
 
-/// The mark at the start of the closed chat's line: purple sparkles to
-/// ask, the spark while the assistant works (effect 2, which blooms when
-/// it ends), a still purple dot for what arrived, amber for a failure
-/// (effect 5's slide), blue for a push, or the grey Draft tag.
+/// The mark at the start of the closed chat's line: the purple ✦ to ask
+/// or while the assistant waits for you, the ✦ breathing while the answer
+/// is sent and worked on (effect 2), the ✦ blooming once when it arrives
+/// (effect 3), the amber warning for a failure, the push symbol in blue
+/// for a push (not AI), or the grey Draft tag.
 struct AssistantChatLead: View {
     let lead: AssistantChatPillLine.Lead
+    var arrival: AssistantChatPillLine.Arrival?
 
     var body: some View {
         switch lead {
         case .sparkles:
-            mark { Image(systemName: "sparkles").foregroundStyle(Palette.ai) }
-        case .dot(.working):
-            mark { Color.clear }.aiWorking(true, alignment: .center)
-        case .dot(.arrived):
-            mark { AssistantWorkingDot() }
-        case .dot(.failure):
-            mark { dot(Palette.warnMark) }.aiFailureArrival(key: "chat.failure")
-        case .dot(.push):
-            mark { dot(Palette.accent) }
+            mark { sparkles }
+        case .breathing:
+            mark { sparkles.aiBreathing(true) }
+        case .arrived:
+            mark { sparkles.aiSparkBloom(key: arrival.map { "\($0.key).bloom" }, arrivedAt: arrival?.arrivedAt) }
+                .id(arrival?.key)
+        case .failure:
+            mark { Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.warnMark) }
+        case .push:
+            mark { Image(systemName: "arrow.up.circle").foregroundStyle(Palette.accent) }
         case .draft:
             Pill(text: String(localized: "Draft", comment: "kind:pill · the chat kept what you were writing"))
         }
+    }
+
+    private var sparkles: some View {
+        Image(systemName: "sparkles").foregroundStyle(Palette.ai)
     }
 
     private func mark(@ViewBuilder _ content: () -> some View) -> some View {
@@ -34,19 +41,15 @@ struct AssistantChatLead: View {
             .frame(width: Metrics.chatLeadSize, height: Metrics.chatLeadSize)
             .accessibilityHidden(true)
     }
-
-    private func dot(_ color: Color) -> some View {
-        Circle().fill(color).frame(width: Spacing.small, height: Spacing.small)
-    }
 }
 
 #Preview {
     VStack(alignment: .leading, spacing: Spacing.medium) {
         AssistantChatLead(lead: .sparkles)
-        AssistantChatLead(lead: .dot(.working))
-        AssistantChatLead(lead: .dot(.arrived))
-        AssistantChatLead(lead: .dot(.failure))
-        AssistantChatLead(lead: .dot(.push))
+        AssistantChatLead(lead: .breathing)
+        AssistantChatLead(lead: .arrived, arrival: .init(key: "preview", arrivedAt: .now))
+        AssistantChatLead(lead: .failure)
+        AssistantChatLead(lead: .push)
         AssistantChatLead(lead: .draft)
     }
     .padding()

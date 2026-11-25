@@ -32,7 +32,7 @@ struct CaptureDropZoneView: View {
                         identifier: "captures.source.live"
                     ) { captures.useLiveScreenshots() }
                 }
-                Text("App Review guideline 2.3: screenshots must show the app in use, so captures are real screenshots. A locale without its own uses \(captures.screenshots.context.primaryLocale.name), flagged “UI not localized”.")
+                Text("App Review guideline 2.3: screenshots must show the app in use, so captures are real screenshots. A locale without its own uses \(captures.screenshots.context.primaryLocale.name), flagged “Interface not localized”.")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .multilineTextAlignment(.center)
@@ -43,6 +43,7 @@ struct CaptureDropZoneView: View {
             .padding(.vertical, Spacing.xxLarge)
             .frame(maxWidth: .infinity)
         }
+        .leavesChatRoom()
         .dropDestination(for: URL.self) { urls, _ in
             captures.dropHover = nil
             Task { await captures.scan(urls) }

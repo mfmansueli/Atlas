@@ -6,9 +6,12 @@
 import SwiftUI
 
 /// The steps of the answer being worked on, counted as they happen: the
-/// last few done ones with a check, and the current one.
+/// last few done ones with a check, and the current one with the
+/// breathing ✦ in purple and its text sweeping (Motion v2's one loop):
+/// “Sending to Claude Code…” before the first step, “Writing the answer…”
+/// after the last.
 struct AssistantChatStepsList: View {
-    let steps: [AssistantChatStep]
+    let progress: AssistantChatProgress
     let client: String
 
     /// The most done steps shown; earlier ones are counted.
@@ -16,30 +19,24 @@ struct AssistantChatStepsList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-            if steps.isEmpty {
-                row(String(localized: "Starting \(client)…", comment: "kind:progress-step"), isCurrent: true)
-            } else {
-                let done = steps.dropLast()
-                let hidden = done.count - min(done.count, Self.shownLimit)
-                if hidden > 0 {
-                    Text("\(hidden) earlier steps", comment: "kind:progress-step · steps no longer listed")
-                        .atlasTextStyle(.callout)
-                        .foregroundStyle(Palette.label2)
-                        .padding(.leading, Metrics.chatLeadSize)
-                }
-                ForEach(done.suffix(Self.shownLimit)) { step in
-                    row(step.text, isCurrent: false)
-                }
-                if let current = steps.last {
-                    row(String(localized: "\(current.text)…", comment: "kind:progress-step · the step being worked on"), isCurrent: true)
-                }
+            let done = progress.isWriting ? progress.steps[...] : progress.steps.dropLast()
+            let hidden = done.count - min(done.count, Self.shownLimit)
+            if hidden > 0 {
+                Text("\(hidden) earlier steps", comment: "kind:progress-step · steps no longer listed")
+                    .atlasTextStyle(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .padding(.leading, Metrics.chatLeadSize)
             }
+            ForEach(done.suffix(Self.shownLimit)) { step in
+                row(step.text, isCurrent: false)
+            }
+            row(progress.text(client: client), isCurrent: true)
         }
         // One element read by its label alone: combining the rows under a
         // label of its own made SwiftUI's label lookup recurse until it
         // crashed under XCUITest (and so VoiceOver).
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("\(client) is working, step \(max(steps.count, 1))", comment: "kind:accessibility"))
+        .accessibilityLabel(Text(progress.accessibilityLabel(client: client)))
         .accessibilityIdentifier("chat.steps")
     }
 
@@ -47,7 +44,10 @@ struct AssistantChatStepsList: View {
         HStack(spacing: Spacing.xSmall) {
             Group {
                 if isCurrent {
-                    AssistantWorkingDot()
+                    Image(systemName: "sparkles")
+                        .imageScale(.small)
+                        .foregroundStyle(Palette.ai)
+                        .aiBreathing(true)
                 } else {
                     Image(systemName: "checkmark").imageScale(.small).foregroundStyle(Palette.ok)
                 }
@@ -59,14 +59,22 @@ struct AssistantChatStepsList: View {
                 .foregroundStyle(isCurrent ? Palette.label : Palette.label2)
                 .lineLimit(1)
                 .truncationMode(.middle)
+                .aiSweep(isCurrent)
         }
     }
 }
 
 #Preview {
-    AssistantChatStepsList(
-        steps: [.init(id: 1, text: "Read apps"), .init(id: 2, text: "Read store page"), .init(id: 3, text: "Read CHANGELOG.md")],
-        client: "Claude Code"
-    )
+    VStack(alignment: .leading, spacing: Spacing.large) {
+        AssistantChatStepsList(progress: AssistantChatProgress(), client: "Claude Code")
+        AssistantChatStepsList(
+            progress: AssistantChatProgress(steps: [.init(id: 1, text: "Read apps"), .init(id: 2, text: "Read store page")]),
+            client: "Claude Code"
+        )
+        AssistantChatStepsList(
+            progress: AssistantChatProgress(steps: [.init(id: 1, text: "Read apps"), .init(id: 2, text: "Read store page")], isWriting: true),
+            client: "Claude Code"
+        )
+    }
     .padding()
 }

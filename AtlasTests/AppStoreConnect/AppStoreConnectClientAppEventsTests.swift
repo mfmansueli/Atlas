@@ -162,7 +162,7 @@ struct AppStoreConnectClientAppEventsTests {
             .flatMap { $0.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems } } ?? []
         #expect(clipFields.contains(URLQueryItem(
             name: "fields[appEventVideoClips]",
-            value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState"
+            value: "appEventAssetType,previewFrameImage,previewImage,fileName,fileSize,previewFrameTimeCode,videoDeliveryState,videoUrl"
         )))
         let imageFields = transport.requests.first { $0.url?.path().hasSuffix("l-en/appEventScreenshots") == true }
             .flatMap { $0.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems } } ?? []
@@ -183,6 +183,22 @@ struct AppStoreConnectClientAppEventsTests {
         #expect(media.fileSize == nil)
         #expect(media.state == nil)
         #expect(media.sizeText == "1920 × 1080")
+    }
+
+    /// A clip keeps where it streams from, so it plays where its card
+    /// shows; an image never has one.
+    @Test func aClipKeepsWhereItStreamsFrom() throws {
+        let attributes = try JSONDecoder().decode(AppEventMediaAttributes.self, from: Data(#"""
+        {"appEventAssetType":"EVENT_CARD","fileName":"card.mov","videoDeliveryState":{"state":"COMPLETE"},
+         "videoUrl":"https://apptrailers.itunes.apple.com/itunes-assets/PurpleVideo221/v4/ab/P1_default.m3u8",
+         "previewFrameImage":{"image":{"templateUrl":"https://example.com/{w}x{h}.{f}","width":1920,"height":1080}}}
+        """#.utf8))
+        let clip = try #require(LiveInAppEventsServices.media(attributes, isVideo: true))
+        #expect(clip.videoURL?.absoluteString == "https://apptrailers.itunes.apple.com/itunes-assets/PurpleVideo221/v4/ab/P1_default.m3u8")
+        #expect(clip.imageURL?.absoluteString == "https://example.com/640x360.jpg")
+        let video = try #require(clip.videoURL)
+        #expect(InAppEventArtSource(remote: clip) == .remoteVideo(poster: clip.imageURL, video: video))
+        #expect(LiveInAppEventsServices.media(attributes, isVideo: false)?.videoURL == nil)
     }
 
     @Test func aFailedReadOfTheEventsIsAnError() async {

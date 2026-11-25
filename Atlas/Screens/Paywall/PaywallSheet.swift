@@ -128,11 +128,17 @@ struct PaywallSheet: View {
                 }
                 .accessibilityIdentifier("paywall.offersProblem")
             } else {
-                HStack(spacing: Spacing.small) {
-                    ProgressView().controlSize(.small)
-                    Text("Getting plans from the App Store…").font(.callout).foregroundStyle(Palette.label2)
+                // The three plans' rows to come, with what's being read.
+                VStack(alignment: .leading, spacing: Spacing.small) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        SkeletonBlock(height: Metrics.skeletonPlanRowHeight, cornerRadius: Radius.card)
+                    }
+                    if let line = LoadingCopy.plans.line {
+                        LoadingLine(text: line)
+                    }
                 }
-                .frame(maxWidth: .infinity, minHeight: 120, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .loadingSkeleton(LoadingCopy.plans, identifier: "paywall.loading")
             }
         } else {
             VStack(spacing: Spacing.small) {

@@ -13,6 +13,9 @@ struct AnalyticsScreen: View {
     var waitingCount: (AnalyticsFinding) -> Int = { _ in 0 }
     /// Follows an action to its section, with what the bar there says.
     var onAct: (FindingAction, String) -> Void = { _, _ in }
+    /// Stability's banner buttons: the version's card and its phased
+    /// release.
+    var stabilityRelease: StabilityReleaseActions = .none
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -75,13 +78,12 @@ struct AnalyticsScreen: View {
             if case let .loading(finished) = viewModel.activity {
                 AnalyticsLoadingView(appName: viewModel.app.name, finished: finished)
             } else {
-                centered {
-                    AnalyticsWaitingView(
-                        asked: asked, lastChecked: viewModel.lastChecked, now: viewModel.store.now(),
-                        isChecking: viewModel.activity.isLoading, errorMessage: failure
-                    ) {
-                        Task { await viewModel.refresh(force: true) }
-                    }
+                // Board 74 · 7: the empty state, centred in the page.
+                AnalyticsWaitingView(
+                    appName: viewModel.app.name, asked: asked, lastChecked: viewModel.lastChecked, now: viewModel.store.now(),
+                    isChecking: viewModel.activity.isLoading, errorMessage: failure
+                ) {
+                    Task { await viewModel.refresh(force: true) }
                 }
             }
         case .keyCannotAsk:
@@ -120,6 +122,7 @@ struct AnalyticsScreen: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Spacing.xLarge)
         }
+        .leavesChatRoom()
     }
 
     @ViewBuilder
@@ -170,7 +173,7 @@ struct AnalyticsScreen: View {
             }
         case .stability:
             if let report = viewModel.stability {
-                StabilityView(report: report, onAct: onAct)
+                StabilityView(report: report, release: stabilityRelease)
             }
         }
     }

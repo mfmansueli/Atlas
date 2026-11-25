@@ -24,6 +24,9 @@ struct MCPToolContext {
     var simulators: MacSimulators?
     /// How many simulators this Mac can run at once right now; tests pin it.
     var macCapacity: @Sendable () -> MacCapacity = { .current }
+    /// Why Atlas started the run that called, when it was for a reason of
+    /// its own (a Look for Improvements run): its suggestions carry it.
+    var origin: ChangeOrigin?
 
     func allows(_ kind: MCPProposalKind) -> Bool {
         allowedProposals.contains(kind)

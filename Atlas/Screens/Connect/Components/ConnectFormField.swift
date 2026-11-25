@@ -5,20 +5,23 @@
 
 import SwiftUI
 
-/// One labeled text field of the connect form, monospaced, with a red
-/// outline and its hint underneath while the value is malformed.
+/// One labeled text field of the connect form, monospaced: its name, where
+/// to find the value, a green check once it looks right, and a red outline
+/// with its hint underneath while the value is malformed.
 struct ConnectFormField: View {
     let title: LocalizedStringKey
+    var hint: LocalizedStringKey = ""
+    var showsHint = true
     @Binding var text: String
     let prompt: String
     var width: CGFloat?
+    var looksRight = false
     let issue: CredentialsIssue?
     let identifier: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
+            ConnectFieldLabel(title: title, hint: hint, showsHint: showsHint, looksRight: looksRight, identifier: identifier)
             TextField(title, text: $text, prompt: Text(prompt))
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
@@ -50,8 +53,14 @@ struct ConnectFormField: View {
 
 #Preview {
     VStack(alignment: .leading) {
-        ConnectFormField(title: "Issuer ID", text: .constant("69a6de7f-3c2e-47e3"), prompt: "", issue: .invalidIssuerID, identifier: "a")
-        ConnectFormField(title: "Key ID", text: .constant(""), prompt: "2X9R4HXF34", width: 160, issue: nil, identifier: "b")
+        ConnectFormField(
+            title: "Issuer ID", hint: "top of the page", text: .constant("69a6de7f-3c2e-47e3"), prompt: "",
+            issue: .invalidIssuerID, identifier: "a"
+        )
+        ConnectFormField(
+            title: "Key ID", hint: "next to your key", text: .constant("2X9R4HXF34"), prompt: "2X9R4HXF34",
+            looksRight: true, issue: nil, identifier: "b"
+        )
     }
     .padding()
     .frame(width: 480)

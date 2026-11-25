@@ -115,12 +115,12 @@ struct InAppEventsSectionView: View {
             }
             .animation(.default, value: viewModel.toast)
             // The toolbar's Autopilot button leads with the open event's
-            // Make the Artwork….
-            .onChange(of: viewModel.showsEvent, initial: true) { _, isOpen in
-                navigator.autopilotDetail = isOpen ? .event : nil
+            // Make the Artwork…, or Suggest an Event… while there's none.
+            .onChange(of: viewModel.autopilotDetail, initial: true) { _, detail in
+                navigator.autopilotDetail = detail
             }
             .onDisappear {
-                if navigator.autopilotDetail == .event { navigator.autopilotDetail = nil }
+                if navigator.autopilotDetail?.section == .inAppEvents { navigator.autopilotDetail = nil }
             }
             .overlay {
                 // Without the main window (previews), the viewer covers the section.

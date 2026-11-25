@@ -62,7 +62,7 @@ struct NominationEventsField: View {
                         .disabled(event.isOver && !linked.contains(event.id))
                     }
                     Divider()
-                    Button("Open In-App Events", action: onOpenEvents)
+                    Button("Open In-App Events", systemImage: SectionStyle.inAppEvents.symbol, action: onOpenEvents)
                 }
                 .menuStyle(.button)
                 .fixedSize()

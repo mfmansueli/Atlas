@@ -18,10 +18,8 @@ struct NominationsScreen: View {
     /// column, type options stacked, secondary buttons tucked away.
     static let compactWidth: CGFloat = 900
 
-    /// What leaves the section: asking Claude Code, Settings, Review &
-    /// Push, In-App Events.
+    /// What leaves the section: Settings, Review & Push, In-App Events.
     struct Actions {
-        var ask: () -> Void = {}
         var changeKey: () -> Void = {}
         var openReviewPush: () -> Void = {}
         var openEvents: () -> Void = {}
@@ -64,6 +62,7 @@ struct NominationsScreen: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, Spacing.xxLarge)
         }
+        .leavesChatRoom()
         .scrollContentBackground(.hidden)
     }
 
@@ -92,10 +91,10 @@ struct NominationsScreen: View {
         case .idle, .loading:
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 ForEach(0..<3, id: \.self) { _ in
-                    SkeletonBlock(height: 96, cornerRadius: Radius.card)
+                    SkeletonCard(height: Metrics.skeletonRowCardHeight, lines: 2)
                 }
             }
-            .accessibilityIdentifier("nominations.loading")
+            .loadingSkeleton(LoadingCopy.nominations, identifier: "nominations.loading")
         case let .failed(message):
             Banner(kind: .apiError, title: String(localized: "Couldn’t read the nominations", comment: "kind:banner"), message: message, isInline: true) {
                 Button("Try Again") {
@@ -106,7 +105,7 @@ struct NominationsScreen: View {
             Spacer(minLength: 0)
         case .loaded:
             if viewModel.isEmpty {
-                NominationsEmptyState(canCreate: !viewModel.keyCannotWrite, onNew: viewModel.newNomination, onAsk: actions.ask)
+                NominationsEmptyState()
             } else {
                 NominationsGallery(viewModel: viewModel)
             }

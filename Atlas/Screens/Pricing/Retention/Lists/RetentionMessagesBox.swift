@@ -59,7 +59,7 @@ struct RetentionMessagesBox: View {
         .help(status.help)
         .contextMenu {
             if message.isNew {
-                Button("Delete Draft") { model.discardDraft(message) }
+                Button("Delete Draft", systemImage: "trash", role: .destructive) { model.discardDraft(message) }
             }
         }
         .accessibilityElement(children: .combine)

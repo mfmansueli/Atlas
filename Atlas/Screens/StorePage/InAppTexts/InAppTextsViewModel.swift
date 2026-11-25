@@ -18,6 +18,8 @@ final class InAppTextsViewModel {
     private let queue: ChangeQueue
 
     private(set) var state: LoadState<InAppTextsContent> = .idle
+    /// A forced read (⌘R) under texts already shown.
+    private(set) var isRefreshing = false
     /// App Store Connect's values with queued changes on top.
     private(set) var matrix: InAppTextMatrix?
     private var listingLocales: [StoreLocale] = []
@@ -36,8 +38,11 @@ final class InAppTextsViewModel {
             listingLocales = listing.displayLocales
             primaryLocale = listing.primaryLocale
         }
-        guard force || state.value == nil, !state.isLoading else { return }
-        state = .loading
+        guard force || state.value == nil, !state.isLoading, !isRefreshing else { return }
+        // A refresh (⌘R) keeps the texts on screen until the new ones arrive;
+        // only the first read shows the skeleton.
+        if state.value == nil { state = .loading } else { isRefreshing = true }
+        defer { isRefreshing = false }
         do {
             state = try await .loaded(services.inAppTexts(for: app))
             rebuild()

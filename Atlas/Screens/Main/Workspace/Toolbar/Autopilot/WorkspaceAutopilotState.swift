@@ -22,6 +22,11 @@ enum WorkspaceAutopilotState: Equatable {
     /// Purple, with what the guided run or Reply Automatically needs; a
     /// click opens that step, or Reviews.
     case needsYou(String)
+    /// At rest after a run that ended with something to look at where it
+    /// works (“Review Screenshots Ready”): the green check says it for
+    /// about 2 s as the run ends, then the button is idle again (README —
+    /// Pricing: review screenshots).
+    case finished(String)
     /// Reviews with Reply Automatically on: a green dot, “Auto-reply on ·
     /// 2 sent today” (board 58 · 3); a click runs the section's action.
     case autoReplyOn(String)
@@ -49,9 +54,11 @@ enum WorkspaceAutopilotState: Equatable {
         /// 2 of 3” and its bar.
         var reviewShotsWorking: String?
         var reviewShotsProgress: Double = 0
-        /// What a review screenshot run waits for: “Show It the Paywall”,
-        /// “Review Screenshots Ready”.
+        /// What a review screenshot run waits for: “Show It the Paywall”.
         var reviewShotsNeeds: String?
+        /// A review screenshot run's images arrived: “Review Screenshots
+        /// Ready”.
+        var reviewShotsReady: String?
         /// Reviews Reply Automatically left for the person.
         var autoReplyNeeds = 0
         /// “Auto-reply on · 2 sent today”, in Reviews while it's on.
@@ -71,6 +78,8 @@ enum WorkspaceAutopilotState: Equatable {
             self = .needsYou(Self.reviewsNeedYou(inputs.autoReplyNeeds))
         } else if let working = Self.working(inputs) {
             self = working
+        } else if let ready = inputs.reviewShotsReady {
+            self = .finished(ready)
         } else if let failure = inputs.failure {
             self = .failed(failure)
         } else if let line = inputs.autoReplyOn {
@@ -99,14 +108,14 @@ enum WorkspaceAutopilotState: Equatable {
     var isRunning: Bool {
         switch self {
         case .running, .capturing: true
-        case .idle, .needsYou, .autoReplyOn, .failed: false
+        case .idle, .needsYou, .finished, .autoReplyOn, .failed: false
         }
     }
 
     /// What the button says instead of its action, if anything.
     var text: String? {
         switch self {
-        case .idle: nil
+        case .idle, .finished: nil
         case let .running(text, _), let .capturing(text, _), let .needsYou(text), let .autoReplyOn(text), let .failed(text): text
         }
     }
@@ -119,9 +128,10 @@ enum WorkspaceAutopilotState: Equatable {
         let text: String
         switch self {
         case let .running(running, _), let .capturing(running, _): text = running
-        case .idle, .needsYou, .autoReplyOn, .failed: return nil
+        case .idle, .needsYou, .finished, .autoReplyOn, .failed: return nil
         }
         switch next {
+        case let .finished(finished): return finished
         case .idle, .autoReplyOn: break
         case .running, .capturing, .needsYou, .failed: return nil
         }
@@ -146,7 +156,7 @@ enum WorkspaceAutopilotState: Equatable {
     /// idle.
     var announcementKey: String? {
         switch self {
-        case .idle, .autoReplyOn: nil
+        case .idle, .finished, .autoReplyOn: nil
         case let .running(text, _): "running:" + (text.components(separatedBy: " · ").first ?? text)
         case let .capturing(text, _): "running:" + (text.components(separatedBy: " · ").first ?? text)
         case let .needsYou(text): "needs:" + text

@@ -11,7 +11,7 @@ import Testing
 /// Lumen's review screenshots on Pricing's cards (README — Pricing: review
 /// screenshots): each card's state, Use This Capture and Use for All,
 /// Accept, Accept All, Dismiss and Undo, and Make Review Screenshots….
-/// Nothing uploads before the push; everything can be undone.
+/// Nothing is sent before the push; everything can be undone.
 @MainActor
 @Suite("PricingViewModel review screenshots")
 final class PricingViewModelReviewShotsTests {
@@ -83,7 +83,7 @@ final class PricingViewModelReviewShotsTests {
                 Issue.record("\(product.name) isn't waiting in Review & Push")
                 continue
             }
-            #expect(item.details?.acceptedLine == "Capture 14 · Paywall from Screenshots · uploads when you push")
+            #expect(item.details?.acceptedLine == "Capture 14 · Paywall from Screenshots · sent when you push")
             #expect(FileManager.default.fileExists(atPath: item.fileURL.path(percentEncoded: false)))
             #expect(queue.change(id: item.changeID)?.awaitingAcceptance == nil, "The person chose it: nothing to accept")
         }
@@ -162,7 +162,7 @@ final class PricingViewModelReviewShotsTests {
         #expect(prompt.contains("select Annual"))
         #expect(!prompt.contains("select Lifetime"), "Lifetime has one already")
         #expect(model.setup.runs.run(for: model.app.id)?.products.map(\.plan) == ["Monthly", "Annual"])
-        #expect(!model.showsProductDetails, "On the cards")
+        #expect(model.productRoute == nil, "On the cards")
     }
 
     @Test func tryAgainKeepsWhereThePaywallIs() async throws {
@@ -205,9 +205,9 @@ final class PricingViewModelReviewShotsTests {
         let model = try await model(hasCapture: false)
         let modes = PricingModeStore(defaults: nil, modes: [model.app.id: .keepPrices])
         let summaries = AppSummaryStore(services: .debug)
-        #expect(SectionBadgeCounts.pricingCount(appID: model.app.id, summaries: summaries, modes: modes, changes: queue) == 0)
+        #expect(SectionBadgeCounts.pricingCount(appID: model.app.id, summaries: summaries, modes: modes, changes: queue, retention: RetentionDraftStore()) == 0)
         for product in model.reviewShotProducts.prefix(2) { try suggest(product, in: model) }
-        #expect(SectionBadgeCounts.pricingCount(appID: model.app.id, summaries: summaries, modes: modes, changes: queue) == 2)
+        #expect(SectionBadgeCounts.pricingCount(appID: model.app.id, summaries: summaries, modes: modes, changes: queue, retention: RetentionDraftStore()) == 2)
     }
 }
 #endif

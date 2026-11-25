@@ -20,6 +20,9 @@ struct CaptionProposalItem: Codable, Hashable, Sendable, Identifiable {
     /// What the headline means in English, for a language the person may
     /// not read ("Means: …").
     var gloss: String?
+    /// The short line over the headline, for a template that shows one;
+    /// nil keeps the caption's.
+    var kicker: String?
 
     enum Decision: String, Codable, Hashable, Sendable {
         case accepted
@@ -29,10 +32,10 @@ struct CaptionProposalItem: Codable, Hashable, Sendable, Identifiable {
     var key: LocaleSlot { LocaleSlot(locale: locale, slot: slot) }
     var id: LocaleSlot { key }
 
-    /// The caption it would write over `current`, keeping the subhead when
-    /// it proposes none.
+    /// The caption it would write over `current`, keeping the subhead and
+    /// kicker when it proposes none.
     func caption(over current: ScreenshotCaption?, provenance: CaptionProvenance) -> ScreenshotCaption {
         let subhead = subhead ?? current?.subhead
-        return ScreenshotCaption(headline: headline, subhead: subhead, provenance: provenance)
+        return ScreenshotCaption(headline: headline, subhead: subhead, kicker: kicker ?? current?.kicker, provenance: provenance)
     }
 }

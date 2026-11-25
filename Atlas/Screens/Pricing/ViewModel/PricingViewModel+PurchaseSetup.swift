@@ -125,5 +125,6 @@ extension PricingViewModel {
         refreshReviewShots()
         await setup.load(catalog?.products ?? [])
         refreshReviewShots()
+        await readReviewShotsBack()
     }
 }

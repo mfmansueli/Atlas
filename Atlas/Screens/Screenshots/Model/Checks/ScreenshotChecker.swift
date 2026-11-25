@@ -8,7 +8,7 @@ import Foundation
 
 /// Runs the checks of README §5 on a laid-out render, in the order the
 /// viewer lists them: size and format, glyphs, fit, rating, capture size,
-/// UI not localized, then what's missing.
+/// interface not localized, then what's missing.
 enum ScreenshotChecker {
     /// How far a capture may be cropped or scaled before it fails.
     static let tolerance = 0.10
@@ -41,7 +41,7 @@ enum ScreenshotChecker {
             if !capture.isInterfaceLocalized {
                 checks.append(RenderCheck(
                     kind: .interfaceLocalized, status: .warning,
-                    text: String(localized: "UI not localized: this capture shows the \(primaryLocaleName) interface"),
+                    text: String(localized: "Interface not localized: this capture shows the \(primaryLocaleName) interface"),
                     shortReason: String(localized: "Interface not localized")
                 ))
             }

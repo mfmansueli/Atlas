@@ -15,6 +15,9 @@ struct ProductPagesDebugScenesTests {
 
     @Test(arguments: ProductPagesDebugScenes.ids)
     func everySceneResolves(_ id: String) {
+        // Another area's "-s" scene, opened by a suite running alongside,
+        // may have left the sidebar hidden.
+        NavigationDebugLaunch.hidesSidebar = false
         #expect(ProductPagesDebugScenes.view(for: id) != nil)
         #expect(NavigationDebugLaunch.hidesSidebar == id.hasSuffix("-s"))
         ProductPagesDebugLaunch.pending = nil

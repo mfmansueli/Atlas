@@ -113,7 +113,10 @@ struct CaptureViewerSheet: View {
                     .padding(Spacing.xLarge)
                     .accessibilityIdentifier("captures.viewer.image")
             } else if capture != nil {
-                ProgressView()
+                // The capture's image, still being read.
+                ImageLoadingTile(systemImage: nil)
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+                    .padding(Spacing.xLarge)
                     .accessibilityIdentifier("captures.viewer.loading")
             } else {
                 Text("This capture isn’t here any more.")

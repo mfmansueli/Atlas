@@ -5,10 +5,14 @@
 
 import SwiftUI
 
-/// All Languages: every language with its own screenshots, with its state
-/// and the captions suggested in it. Clicking one shows it.
+/// All Languages: every language with its own screenshots, with its state,
+/// the captions suggested in it and a strip of its screenshots on the
+/// device in view. Clicking one shows it.
 struct ScreenshotsLanguageList: View {
     @Bindable var viewModel: ScreenshotsViewModel
+
+    /// The region tile; the strip lines up with the name beside it.
+    private static let tileWidth: CGFloat = 30
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,16 +28,30 @@ struct ScreenshotsLanguageList: View {
     }
 
     private func row(_ locale: StoreLocale) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            header(locale)
+            LanguageListThumbnails(viewModel: viewModel, locale: locale) { open(locale) }
+                .padding(.leading, Spacing.medium + Self.tileWidth + Spacing.medium)
+                .padding(.trailing, Spacing.medium)
+                .padding(.bottom, Spacing.small)
+        }
+    }
+
+    private func open(_ locale: StoreLocale) {
+        viewModel.pageLocale = locale
+        viewModel.pageShowsAll = false
+    }
+
+    private func header(_ locale: StoreLocale) -> some View {
         let count = viewModel.proposedCaptions(in: locale).count
         return Button {
-            viewModel.pageLocale = locale
-            viewModel.pageShowsAll = false
+            open(locale)
         } label: {
             HStack(spacing: Spacing.medium) {
                 Text(locale.regionCode.uppercased())
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.label2)
-                    .frame(width: 30, height: 22)
+                    .frame(width: Self.tileWidth, height: 22)
                     .background(Palette.fill2, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(locale.name)
@@ -61,7 +79,7 @@ struct ScreenshotsLanguageList: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("\(locale.name), \(viewModel.pageStatus(of: locale))"))
+        .accessibilityLabel(Text(viewModel.allLanguagesAccessibilityLabel(of: locale)))
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("screenshots.page.language.\(locale.code)")
     }

@@ -196,6 +196,9 @@ struct ProductPagesSectionView: View {
         if kept?.needsLoad(.productPages, refreshCount: navigator.refreshCount) ?? true { await load(model) }
         #if DEBUG
         launch?.apply(to: model)
+        if launch?.opensReview == true, let page = model.selectedPage {
+            navigator.review(page: ReviewPageFocus(appID: app.id, pageID: page.id, name: page.name))
+        }
         #endif
         handleIntent()
     }
@@ -236,6 +239,9 @@ struct ProductPagesSectionView: View {
         case .autopilot(.makePageScreenshots):
             navigator.consume(intent)
             makePageScreenshots(viewModel)
+        case let .makePageScreenshots(name):
+            navigator.consume(intent)
+            makeScreenshots(forPageNamed: name, viewModel)
         default:
             break
         }
@@ -271,6 +277,18 @@ struct ProductPagesSectionView: View {
             return
         }
         viewModel.open(page.id)
+        Task { await viewModel.openPageShots(page) }
+    }
+
+    /// Analytics' Make Screenshots for This Page…: the page Apple's
+    /// reports name, and its screenshots.
+    private func makeScreenshots(forPageNamed name: String, _ viewModel: ProductPagesViewModel) {
+        guard viewModel.openPage(named: name), let page = viewModel.selectedPage else {
+            viewModel.back()
+            let text = String(localized: "Couldn’t find “\(name)” in Custom Product Pages.", comment: "kind:toast")
+            navigator.toast = WorkspaceToast(message: ToastMessage(text: text))
+            return
+        }
         Task { await viewModel.openPageShots(page) }
     }
 

@@ -21,6 +21,12 @@ struct ProjectFolderReader: Sendable {
     ]
 
     func read(_ folder: URL, version: String?) async -> ProjectFolderExcerpt {
+        excerpt(of: folder, version: version)
+    }
+
+    /// The same, read right away: for `ClaudeCodeLauncher.readProjectFolder`,
+    /// which reads off the main actor.
+    func excerpt(of folder: URL, version: String?) -> ProjectFolderExcerpt {
         var excerpt = ProjectFolderExcerpt()
         guard FileManager.default.fileExists(atPath: folder.path) else {
             excerpt.problem = String(localized: "The project folder can’t be found. Choose it again in Settings → AI Assistants.")

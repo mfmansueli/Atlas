@@ -8,15 +8,15 @@ import Foundation
 import Testing
 @testable import Atlas
 
-/// The Pricing tabs and views around the matrix: offers, results, the
-/// schedule sheet and the intents that reach them.
+/// A product's offers, results and schedule sheet, and the intents that
+/// open its page on them (board 73).
 @MainActor
 @Suite("PricingViewModel views")
 struct PricingViewModelViewsTests {
     @Test func startsOnTheTableOfPrices() async {
         let model = await PricingModelFixtures.viewModel()
-        #expect(model.tab == .prices)
-        #expect(model.display == .table)
+        #expect(model.productRoute == nil)
+        #expect(model.pricesByCountry.display == .table)
         #expect(model.selectedProductID == DebugPricingCatalog.lumenAnnualID)
     }
 
@@ -53,10 +53,8 @@ struct PricingViewModelViewsTests {
 
     @Test func anInAppPurchaseKeepsTheOffersTabForItsOfferCodes() async throws {
         let model = await PricingModelFixtures.viewModel()
-        model.tab = .offers
         await model.loadOffers()
         await model.select(productID: DebugPricingCatalog.lumenLifetimeID)
-        #expect(model.tab == .offers)
         #expect(model.offers.value == nil)
         #expect(model.selectedOfferID == nil)
         model.setup.reader = DebugSubscriptionOffersReader()
@@ -72,7 +70,6 @@ struct PricingViewModelViewsTests {
         let model = await PricingModelFixtures.viewModel(queue: queue)
         model.setup.reader = DebugSubscriptionOffersReader()
         await model.select(productID: DebugPricingCatalog.lumenLifetimeID)
-        model.tab = .offers
         await model.loadOffers()
         let purchase = try #require(model.selectedProduct)
         let code = InAppPurchaseOfferCodesSampleData.offerCode
@@ -118,32 +115,32 @@ struct PricingViewModelViewsTests {
         #expect(model.results == nil)
     }
 
-    @Test func intentsOpenTheirTab() async {
+    @Test func resultsOpenTheSelectedProductsPage() async {
         let model = await PricingModelFixtures.viewModel()
-        model.display = .map
         #expect(await model.handle(.showResults))
-        #expect(model.tab == .results)
+        #expect(model.productRoute?.productID == DebugPricingCatalog.lumenAnnualID)
+        #expect(model.productRoute?.tab == .results)
+        // Suggestions are on the cards.
         #expect(await model.handle(.reviewSuggestions))
-        #expect(model.tab == .prices)
-        #expect(model.display == .table)
+        #expect(model.productRoute == nil)
     }
 
     @Test func thePricingMenuShowsTheMapOrTheHistogram() async {
         let model = await PricingModelFixtures.viewModel()
-        model.tab = .results
+        model.openProduct(DebugPricingCatalog.lumenAnnualID, tab: .results)
         #expect(await model.handle(.showPrices(.map)))
-        #expect(model.tab == .prices)
-        #expect(model.display == .map)
+        #expect(model.productRoute?.tab == .pricesByCountry)
+        #expect(model.pricesByCountry.display == .map)
         #expect(await model.handle(.showPrices(.histogram)))
-        #expect(model.display == .histogram)
+        #expect(model.pricesByCountry.display == .histogram)
     }
 
     @Test func editingTheScheduleFromReviewOpensTheSheet() async {
         let model = await PricingModelFixtures.viewModel()
-        model.tab = .results
+        model.openProduct(DebugPricingCatalog.lumenAnnualID, tab: .results)
         #expect(await model.handle(.editPriceSchedule(productID: DebugPricingCatalog.lumenAnnualID)))
         // Nothing queued yet: there's nothing to schedule.
-        #expect(model.tab == .prices)
+        #expect(model.productRoute?.tab == .pricesByCountry)
         #expect(!model.isScheduleSheetPresented)
 
         await model.applyRecommendedPrices()

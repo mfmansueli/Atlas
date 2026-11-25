@@ -87,6 +87,7 @@ extension ProductPagesViewModel {
             store.setVisibleWhenApproved(makeVisible && !page.isVisible, pageID: page.id, for: app.id)
             store.followReview(versionID: version.id, state: .waitingForReview, for: app.id)
             setState(.waitingForReview, ofVersion: version.id, pageID: page.id)
+            ProductPageReviewSuggestionStore.shared.done(.submit, appID: app.id, pageID: page.id)
             isSubmitPresented = false
             show(String(localized: "“\(page.name)” was submitted to App Review."), undo: nil)
         } catch {
@@ -111,6 +112,7 @@ extension ProductPagesViewModel {
             store.setVisibleWhenApproved(false, pageID: page.id, for: app.id)
             store.followReview(versionID: version.id, state: .prepareForSubmission, for: app.id)
             setState(.prepareForSubmission, ofVersion: version.id, pageID: page.id)
+            ProductPageReviewSuggestionStore.shared.done(.cancelSubmission, appID: app.id, pageID: page.id)
             show(String(localized: "Submission cancelled. The page is back to Prepare for Submission."), undo: nil)
         } catch {
             let text = (error as? ProductPageSubmissionError)?.errorDescription

@@ -50,6 +50,22 @@ extension LivePricingMapper {
         return PricePoint(customerPrice: price, proceeds: decimal(proceeds) ?? 0, appStoreConnectID: id)
     }
 
+    /// The territories with a manual price in effect today: the base
+    /// territory and any set by hand. The others follow Apple's automatic
+    /// price.
+    static func inAppPurchaseManualTerritoryIDs(
+        _ manual: PricingAPIDocument<InAppPurchasePriceAttributes>,
+        commission: Commission,
+        today: String
+    ) -> Set<String> {
+        Set(inEffect(manual, commission: commission, today: today).keys)
+    }
+
+    /// Manual prices that start after today: a new schedule replaces them.
+    static func laterInAppPurchasePriceCount(_ manual: PricingAPIDocument<InAppPurchasePriceAttributes>, today: String) -> Int {
+        manual.data.count { ($0.attributes.startDate ?? "") > today }
+    }
+
     // MARK: - Private
 
     private static func inEffect(

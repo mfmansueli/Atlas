@@ -33,6 +33,7 @@ struct StarterPickerView: View {
             }
             .padding(Spacing.xxLarge)
         }
+        .leavesChatRoom()
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.starters")
     }

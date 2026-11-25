@@ -25,16 +25,50 @@ import SwiftUI
 ///   card with the gray count on the section picker: `an-overview`.
 /// - Apple's newer reports (boards 59–62): `an-sub-ret`, `an-sub-ret-few`
 ///   (Quiet Timer, 3 of 14), `an-sub-ret-none` (Parcel Pal, sent empty),
-///   `an-sub-offers`, `an-sub-billing`, `an-stab`, `an-bd-page-sub`,
+///   `an-sub-offers`, `an-sub-billing`, `an-stab`, `an-stab-counts`
+///   (crashes without sessions: counts, no rate), `an-bd-page-sub`,
 ///   `an-bd-camp`, `an-reports`, `an-preparing` (Tempo), and elsewhere
 ///   `an-reviews-crash`, `an-pages-sub`.
+/// - The redesign's ids: `an-crash` (Stability, its banner with Open
+///   Version), `an-sub2` (Subscriptions), `an-set-stop` (settings with
+///   Lumen's stop confirmation open), `an-bd-dev-ipad` (iPad selected: its
+///   set covers 4 of 10 languages), `an-bd-src-browse`, `an-jump-br`
+///   (Pricing's Annual page on Brazil under "From Analytics"), `an-jump`
+///   (Store Page in German under it), and with the sidebar hidden
+///   `an-funnel-s` and `an-bd-s`.
 enum AnalyticsDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugAnalyticsData
 
     @MainActor
     static func view(for id: String) -> AnyView? {
-        setupScene(id) ?? funnelScene(id) ?? breakdownScene(id) ?? findingsScene(id) ?? otherScene(id)
+        setupScene(id) ?? funnelScene(id) ?? breakdownScene(id) ?? findingsScene(id) ?? otherScene(id) ?? redesignScene(id)
+    }
+
+    /// The redesign's Analytics scenes not named above.
+    @MainActor
+    private static func redesignScene(_ id: String) -> AnyView? {
+        switch id {
+        case "an-crash": return scene(launch: AnalyticsDebugLaunch(tab: .stability))
+        case "an-sub2": return scene(launch: AnalyticsDebugLaunch(tab: .subscriptions))
+        case "an-set-stop": return scene(launch: AnalyticsDebugLaunch(opensSettings: true, settingsFocus: .stopReports(AppIDs.lumen)))
+        case "an-bd-dev-ipad": return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .device, selectedRow: "iPad"))
+        case "an-bd-src-browse":
+            return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .source, selectedRow: BreakdownInspectorFacts.browse))
+        case "an-jump-br":
+            let text = "Brazil’s trials convert at a third of Lumen’s average. Annual costs 2.4× the purchasing-power price there."
+            return scene(launch: AnalyticsDebugLaunch(tab: .findings, follow: .pricing(territory: "BR"), followText: text))
+        case "an-jump":
+            let text = "Germany downloads half as much as the U.S. on a machine-translated page."
+            return scene(launch: AnalyticsDebugLaunch(tab: .findings, follow: .storePage(locale: "de-DE"), followText: text))
+        case "an-funnel-s":
+            NavigationDebugLaunch.hidesSidebar = true
+            return scene()
+        case "an-bd-s":
+            NavigationDebugLaunch.hidesSidebar = true
+            return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, selectedRow: "DE"))
+        default: return nil
+        }
     }
 
     @MainActor
@@ -150,6 +184,7 @@ enum AnalyticsDebugScenes {
         case "an-sub-offers": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .offers))
         case "an-sub-billing": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .billing))
         case "an-stab": scene(launch: AnalyticsDebugLaunch(tab: .stability))
+        case "an-stab-counts": scene(store: crashesOnlyStore(), launch: AnalyticsDebugLaunch(tab: .stability))
         case "an-bd-page-sub": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .productPage, columnGroup: .afterDownload))
         case "an-bd-camp": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .campaign, columnGroup: .afterDownload))
         case "an-reports": scene(launch: AnalyticsDebugLaunch(opensReports: true))
@@ -162,6 +197,17 @@ enum AnalyticsDebugScenes {
             scene(store: Data.store(vendorNumber: "", hasSales: false), launch: AnalyticsDebugLaunch(opensSettings: true, settingsFocus: .vendorNumber))
         default: nil
         }
+    }
+
+    /// The sample store with Lumen's crashes and no sessions.
+    @MainActor
+    private static func crashesOnlyStore() -> AnalyticsStore {
+        let store = Data.store()
+        store.load(
+            appID: AppIDs.lumen, record: AnalyticsAppRecord(askedOn: Data.date(month: 5, day: 10), lastChecked: Data.today, announcedArrival: true),
+            archive: Data.lumenArchive, reports: DebugReportsData.lumenCrashesOnly, gracePeriod: DebugReportsData.lumenGracePeriod
+        )
+        return store
     }
 
     @MainActor

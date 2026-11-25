@@ -21,14 +21,15 @@ import SwiftUI
 ///   screenshots taking 8 seconds each to download.
 ///
 /// Ids it doesn't know go to each area's own list (`ConnectDebugScenes`,
-/// `SettingsDebugScenes`, `ReviewPushDebugScenes`, `PricingDebugScenes`, `AppPriceDebugScenes`, `RetentionDebugScenes`,
-/// `StorePageDebugScenes`, `AppInformationDebugScenes`,
+/// `SettingsDebugScenes`, `ReviewPushDebugScenes`, `PricingDebugScenes`, `PricesByCountryDebugScenes`, `AppPriceDebugScenes`,
+/// `RetentionDebugScenes`, `StorePageDebugScenes`, `StorePreviewDebugScenes`, `AppInformationDebugScenes`,
 /// `ScreenshotsDebugScenes`, `ScreenshotsPushDebugScenes`, `ExtrasPushDebugScenes`,
 /// `ScreenshotsProposalsDebugScenes`, `ScreenshotsHandDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
 /// `ProductPagesDebugScenes`, `TourDebugScenes`, `AutopilotButtonDebugScenes`, `MenuBarDebugScenes`,
-/// `DesignSystemDebugScenes`).
+/// `DesignSystemDebugScenes`, `LoadingDebugScenes`, `PaywallDebugScenes`). Canvas names for states drawn
+/// under another id resolve through `DesignSceneAliases`.
 struct DebugSceneView: View {
     let id: String
 
@@ -69,10 +70,13 @@ struct DebugSceneView: View {
             HelpDebugScenes.view(for:),
             ReviewPushDebugScenes.view(for:),
             PricingDebugScenes.view(for:),
+            PricingProductPageDebugScenes.view(for:),
+            PricesByCountryDebugScenes.view(for:),
             NewSubscriptionPricesDebugScenes.view(for:),
             AppPriceDebugScenes.view(for:),
             RetentionDebugScenes.view(for:),
             StorePageDebugScenes.view(for:),
+            StorePreviewDebugScenes.view(for:),
             AppInformationDebugScenes.view(for:),
             ScreenshotsDebugScenes.view(for:),
             ScreenshotsPushDebugScenes.view(for:),
@@ -88,9 +92,12 @@ struct DebugSceneView: View {
             StudioDebugScenes.view(for:),
             ClaudeCodeDebugScenes.view(for:),
             AssistantChatDebugScenes.view(for:),
+            ChatRoomDebugScenes.view(for:),
             AnalyticsDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
+            EmptyStatesDebugScenes.view(for:),
             AutoReplyDebugScenes.view(for:),
+            WatchDebugScenes.view(for:),
             ReleaseDebugScenes.view(for:),
             ReleaseEventsDebugScenes.view(for:),
             InAppEventsDebugScenes.view(for:),
@@ -105,6 +112,9 @@ struct DebugSceneView: View {
             AutopilotButtonDebugScenes.view(for:),
             MenuBarDebugScenes.view(for:),
             DesignSystemDebugScenes.view(for:),
+            LoadingDebugScenes.view(for:),
+            PaywallDebugScenes.view(for:),
+            MCPGapsDebugScenes.view(for:),
         ]
         return areas.lazy.compactMap { $0(id) }.first
     }

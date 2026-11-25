@@ -162,8 +162,8 @@ struct EventArtworkPanel: View {
                 }
                 if state.showsReplace {
                     Menu("Replace") {
-                        Button("Make the Artwork…", action: actions.make)
-                        Button("Choose Files…", action: actions.chooseFiles)
+                        Button("Make the Artwork…", systemImage: "sparkles", action: actions.make)
+                        Button("Choose Files…", systemImage: "folder", action: actions.chooseFiles)
                     }
                     .menuStyle(.button)
                     .fixedSize()

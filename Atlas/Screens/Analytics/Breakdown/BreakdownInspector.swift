@@ -13,8 +13,12 @@ struct BreakdownInspector: View {
     let context: AnalyticsContext
     /// nil fills the width, when it stands in for the table.
     var width: CGFloat? = Metrics.inspectorWidth
+    /// The numbers behind the row's 90-day line; nil draws none.
+    var dataset: AnalyticsDataset?
     let onClose: () -> Void
     let onAct: (FindingAction, String) -> Void
+
+    @State private var trend: BreakdownRowTrend?
 
     var body: some View {
         ScrollView {
@@ -41,6 +45,9 @@ struct BreakdownInspector: View {
                         number(String(localized: "Subscription starts"), row.totals.starts.map(AnalyticsText.count), note: row.startRate.text)
                         number(String(localized: "Proceeds"), row.totals.proceeds.map(AnalyticsText.dollars))
                     }
+                }
+                if let trend {
+                    group { BreakdownTrendChart(trend: trend) }
                 }
                 if !facts.isEmpty {
                     group {
@@ -76,6 +83,20 @@ struct BreakdownInspector: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(row.name))
         .accessibilityIdentifier("analytics.breakdown.inspector")
+        .task(id: TrendKey(row: row.id, dimension: table.dimension, through: dataset?.through)) {
+            trend = dataset.flatMap { dataset in
+                BreakdownRowTrend.filter(for: row, dimension: table.dimension, context: context).flatMap {
+                    BreakdownRowTrend.make(dataset, filter: $0)
+                }
+            }
+        }
+    }
+
+    /// What the line is drawn for: made again only when one changes.
+    private struct TrendKey: Hashable {
+        var row: String
+        var dimension: BreakdownDimension
+        var through: AnalyticsDay?
     }
 
     private struct Fact {
@@ -118,6 +139,9 @@ struct BreakdownInspector: View {
         } else if let localeCode, context.machineTranslated.contains(localeCode) {
             facts.append(Fact(label: String(localized: "Page text"), value: PageTextState.machineTranslated.title, isWarning: true))
         }
+        facts += BreakdownInspectorFacts.extra(for: row, dimension: table.dimension, context: context).map {
+            Fact(label: $0.label, value: $0.value, isWarning: $0.isWarning)
+        }
         return facts
     }
 
@@ -128,7 +152,18 @@ struct BreakdownInspector: View {
             if table.totals.starts != nil { actions.append(.pricing(territory: row.id)) }
             return actions
         case .language: return [.storePage(locale: localeCode), .screenshots(locale: localeCode)]
-        case .source, .device, .productPage, .referrer, .campaign: return [.screenshots(locale: nil), .storePage(locale: nil)]
+        case .source:
+            // Browse shows the icon, name and subtitle more than the
+            // screenshots; search leads with the first three screenshots.
+            return row.id == BreakdownInspectorFacts.search
+                ? [.screenshots(locale: nil), .storePage(locale: nil)]
+                : [.storePage(locale: nil), .screenshots(locale: nil)]
+        case .device:
+            guard let type = ScreenshotCoverage.displayType(forReportDevice: row.id), let primary = context.primaryLocale?.code else {
+                return [.screenshots(locale: nil), .storePage(locale: nil)]
+            }
+            return [.screenshotsOnDevice(type, locale: primary), .storePage(locale: nil)]
+        case .productPage, .referrer, .campaign: return [.screenshots(locale: nil), .storePage(locale: nil)]
         }
     }
 

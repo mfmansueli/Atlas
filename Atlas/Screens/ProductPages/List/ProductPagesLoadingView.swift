@@ -5,40 +5,45 @@
 
 import SwiftUI
 
-/// The first read: what's being read, over rows still loading.
+/// The first read (cp-loading): what's being read, over the list's rows
+/// still loading, static and grey.
 struct ProductPagesLoadingView: View {
     let appName: String
 
+    /// The rows' cells, as shares of the row (the prototype's 22 · 12 · 26 · 10 %).
+    private static let cells: [CGFloat] = [0.22, 0.12, 0.26, 0.10]
+    private static let rows = 6
+
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
-            HStack(spacing: Spacing.small) {
-                ProgressView()
-                    .controlSize(.small)
-                Text("Reading \(appName)’s product pages…")
-                    .font(.callout)
-                    .foregroundStyle(Palette.label2)
+        let message = LoadingCopy.productPages(appName: appName)
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            if let line = message.line {
+                LoadingLine(text: line)
             }
             VStack(spacing: 0) {
-                ForEach(0..<5, id: \.self) { index in
-                    HStack(spacing: Spacing.large) {
-                        VStack(alignment: .leading, spacing: Spacing.xSmall) {
-                            SkeletonBlock(width: index == 0 ? 180 : 140, height: 12)
-                            SkeletonBlock(width: 220, height: 9)
+                ForEach(0..<Self.rows, id: \.self) { index in
+                    // Four equal columns, each line its share of the row.
+                    HStack(spacing: Spacing.xxLarge) {
+                        ForEach(Array(Self.cells.enumerated()), id: \.offset) { _, share in
+                            SkeletonLine(fraction: share * CGFloat(Self.cells.count))
                         }
-                        Spacer(minLength: Spacing.small)
-                        SkeletonBlock(width: 110, height: 16, cornerRadius: Radius.field)
-                        SkeletonBlock(width: 150, height: 10)
                     }
                     .padding(.horizontal, Spacing.medium)
-                    .frame(height: 52)
-                    if index < 4 { Divider() }
+                    .padding(.vertical, Spacing.large)
+                    if index < Self.rows - 1 { Divider() }
                 }
             }
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5))
-            .accessibilityHidden(true)
+            .frame(minHeight: 0, alignment: .top)
+            .clipped()
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("pages.loading")
+        .loadingSkeleton(message, identifier: "pages.loading")
     }
+}
+
+#Preview {
+    ProductPagesLoadingView(appName: "Lumen")
+        .padding()
+        .frame(width: 700)
 }

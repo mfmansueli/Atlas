@@ -79,15 +79,11 @@ struct SubmitForReviewSheet: View {
     private var buildSection: some View {
         SubmitSection(title: String(localized: "Build")) {
             if viewModel.isRefreshingBuilds {
-                HStack(spacing: Spacing.xSmall) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("Checking for new builds…")
-                        .font(.subheadline)
-                        .foregroundStyle(Palette.label2)
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("submit.checkingBuilds")
+                // The builds already listed stay; the line says a check runs.
+                Text(LoadingCopy.builds.line ?? LoadingCopy.builds.spoken)
+                    .font(.subheadline)
+                    .foregroundStyle(Palette.label2)
+                    .accessibilityIdentifier("submit.checkingBuilds")
             } else {
                 Button("Check Again", systemImage: "arrow.clockwise") {
                     Task { await viewModel.refreshStatus() }
@@ -99,7 +95,11 @@ struct SubmitForReviewSheet: View {
             }
         } content: {
             let builds = viewModel.status?.builds ?? []
-            if builds.isEmpty {
+            if builds.isEmpty, viewModel.isRefreshingBuilds, viewModel.status == nil {
+                // The first read: the builds' rows to come, not "No build yet".
+                SkeletonRows(count: 2, tile: nil, rowHeight: Metrics.skeletonBuildRowHeight)
+                    .loadingSkeleton(LoadingCopy.builds, identifier: "submit.builds.loading")
+            } else if builds.isEmpty {
                 Text("No build of \(viewModel.versionString) yet. Upload one from Xcode; it shows here once Apple has processed it.")
                     .font(.callout)
                     .foregroundStyle(Palette.label2)

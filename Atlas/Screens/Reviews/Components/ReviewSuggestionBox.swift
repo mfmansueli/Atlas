@@ -12,13 +12,18 @@ import SwiftUI
 /// Don't Send, or why it waits for the person. Landing while the person
 /// looks it arrives (effect 2); Send Reply settles it (effect 5): the tint
 /// goes and a check draws while it sends, and the card closes as the reply
-/// takes its place. A send that fails gives the tint back.
+/// takes its place. A send that fails gives the tint back. Suggested for
+/// a review that already has a reply (`replacing`), it's labelled as a
+/// replacement, shows the reply Now and the New one, and Replace Reply
+/// sends it in place of Apple's response.
 struct ReviewSuggestionBox: View {
     let review: AppReview
     let suggestion: ReviewReplySuggestion
     let isSending: Bool
     /// Reply Automatically's record of it, if it wrote it.
     var autoReply: AutoReplyDraft?
+    /// The published reply it replaces, for a replacement.
+    var replacing: ReviewReply?
     let onDismiss: () -> Void
     let onEdit: () -> Void
     let onSend: () -> Void
@@ -27,6 +32,13 @@ struct ReviewSuggestionBox: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isSettling = false
+    @State private var shown = Version.new
+
+    /// Now | New on a replacement.
+    private enum Version: Hashable {
+        case now
+        case new
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -38,13 +50,36 @@ struct ReviewSuggestionBox: View {
                 if let confidence = suggestion.layers?.confidence { HowSureMeter(confidence: confidence) }
                 SuggestionSourceTag(source: .assistant(client: suggestion.source))
             }
-            SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.date)
-                .font(.callout)
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .environment(\.layoutDirection, ReviewLanguage.isRightToLeft(review.languageCode) ? .rightToLeft : .leftToRight)
-                .accessibilityIdentifier("reviews.suggestion.text.\(review.id)")
-            if !suggestion.meaning.isEmpty {
+            if let replacing {
+                FittingSegmentedPicker(
+                    label: String(localized: "Reply shown", comment: "kind:segment"),
+                    options: [
+                        (Version.now, String(localized: "Now", comment: "kind:segment")),
+                        (Version.new, String(localized: "New", comment: "kind:segment")),
+                    ],
+                    selection: $shown
+                )
+                .accessibilityIdentifier("reviews.replacement.version.\(review.id)")
+                if let why = suggestion.why {
+                    Text(why)
+                        .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("reviews.replacement.why.\(review.id)")
+                }
+                if shown == .now {
+                    Text(replacing.text)
+                        .font(.callout)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .environment(\.layoutDirection, ReviewLanguage.isRightToLeft(review.languageCode) ? .rightToLeft : .leftToRight)
+                        .accessibilityIdentifier("reviews.replacement.now.\(review.id)")
+                }
+            }
+            if replacing == nil || shown == .new {
+                newText
+            }
+            if !suggestion.meaning.isEmpty, replacing == nil || shown == .new {
                 Text("In \(ReviewLanguage.appLanguageName): \(suggestion.meaning)")
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
@@ -62,7 +97,7 @@ struct ReviewSuggestionBox: View {
                 }
             }
             HStack(spacing: Spacing.small) {
-                Text("Public on the App Store. You can edit or delete it later.")
+                Text(footnote)
                     .font(.subheadline)
                     .foregroundStyle(Palette.label2)
                     .lineLimit(2)
@@ -77,7 +112,7 @@ struct ReviewSuggestionBox: View {
                 Button("Edit…", action: onEdit)
                     .accessibilityIdentifier("reviews.suggestion.edit.\(review.id)")
                 // Repeated on every review card: a tinted row action.
-                Button(isScheduled ? String(localized: "Send Now") : String(localized: "Send Reply"), action: send)
+                Button(sendTitle, action: send)
                     .buttonStyle(.bordered)
                     .tint(.accentColor)
                     .disabled(isSending)
@@ -100,6 +135,26 @@ struct ReviewSuggestionBox: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reviews.suggestion.\(review.id)")
+    }
+
+    private var newText: some View {
+        SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.date)
+            .font(.callout)
+            .textSelection(.enabled)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .environment(\.layoutDirection, ReviewLanguage.isRightToLeft(review.languageCode) ? .rightToLeft : .leftToRight)
+            .accessibilityIdentifier("reviews.suggestion.text.\(review.id)")
+    }
+
+    private var footnote: String {
+        replacing == nil
+            ? String(localized: "Public on the App Store. You can edit or delete it later.")
+            : String(localized: "Replaces your reply on the App Store. You can edit or delete it later.", comment: "kind:label")
+    }
+
+    private var sendTitle: String {
+        if replacing != nil { return String(localized: "Replace Reply", comment: "kind:button") }
+        return isScheduled ? String(localized: "Send Now") : String(localized: "Send Reply")
     }
 
     /// The suggestion it shows: a new draft in its place arrives again.
@@ -148,6 +203,10 @@ struct ReviewSuggestionBox: View {
 
     /// "Suggested reply, in German", or "A reply is optional" for 5 stars.
     private var label: String {
+        if replacing != nil {
+            let language = review.languageCode.isEmpty ? ReviewLanguage.appLanguageName : ReviewLanguage.name(of: review.languageCode)
+            return String(localized: "New reply suggested, in \(language). It replaces yours.", comment: "kind:label")
+        }
         if autoReply != nil { return String(localized: "Reply drafted by Claude") }
         if review.replyIsOptional { return String(localized: "A reply is optional") }
         let language = review.languageCode.isEmpty ? ReviewLanguage.appLanguageName : ReviewLanguage.name(of: review.languageCode)

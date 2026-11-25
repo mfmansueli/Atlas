@@ -155,6 +155,7 @@ enum MCPReleaseJSON {
             if let date = submission.releaseDate { choices["releaseDate"] = .string(date.formatted(.iso8601)) }
             if let encryption = submission.encryption { choices["encryption"] = .string(encryption) }
             if let ids = submission.eventIDs { choices["eventIds"] = .array(ids.map(JSONValue.string)) }
+            if let pushes = submission.pushesChanges { choices["pushesChanges"] = .bool(pushes) }
             object["submit"] = .object(choices)
         }
         return .object(object)

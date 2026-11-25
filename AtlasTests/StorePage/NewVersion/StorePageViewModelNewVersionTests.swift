@@ -43,7 +43,7 @@ struct StorePageViewModelNewVersionTests {
 
         #expect(model.queueNewVersion(NewAppVersion(versionString: " 2.0 ", platform: "IOS")))
         #expect(model.sheet == nil)
-        #expect(model.toast?.text == "Version 2.0 waits in Review & Push. Once it’s pushed, edit its texts here.")
+        #expect(model.toast?.text == "Version 2.0 waits in Review & Push. Its texts here go in with it.")
         let change = try #require(queue.change(id: "appStoreVersion.app1.IOS"))
         #expect(change.source == .you)
         #expect(change.title == "Version 2.0")
@@ -59,6 +59,60 @@ struct StorePageViewModelNewVersionTests {
         #expect(!model.queueNewVersion(NewAppVersion(versionString: "2.0 beta", platform: "IOS")))
         #expect(model.sheet == .newVersion)
         #expect(queue.changes.isEmpty)
+    }
+
+    @Test func aQueuedVersionOpensWithItsTextsWaitingWithIt() async throws {
+        let model = await makeModel()
+        #expect(model.showsNoVersionPage)
+        model.queueNewVersion(NewAppVersion(versionString: "2.0", platform: "IOS"))
+        await model.load()
+
+        let content = try #require(model.content)
+        #expect(model.queuedVersion?.versionString == "2.0")
+        #expect(content.version.isQueued)
+        #expect(content.version.title(among: content.versions) == "Version 2.0 · In Review & Push")
+        #expect(content.version.pickerSubtitle == "Created when you push")
+        #expect(content.versions.map(\.versionString) == ["2.0", "1.9"])
+        #expect(!model.showsNoVersionPage)
+        #expect(model.isVersionEditable)
+        // The version before's texts, to start from.
+        #expect(model.value(.description, in: .englishUS) == StorePageContentFixtures.live.texts[.englishUS]?[.description])
+
+        var edited = try #require(model.listing)
+        edited.edit(.whatsNew, in: .englishUS, to: "A calmer timeline.")
+        model.commit(edited)
+        let text = try #require(queue.changes.first { $0.id != "appStoreVersion.app1.IOS" })
+        #expect(text.dependsOn == "appStoreVersion.app1.IOS")
+        #expect(text.newValue == "A calmer timeline.")
+        #expect(text.requests.allSatisfy { QueuedVersionPlaceholder.all(in: $0).allSatisfy { $0.versionString == "2.0" } })
+
+        // Discarding the version takes its texts with it, and the page goes back.
+        queue.discard(id: "appStoreVersion.app1.IOS")
+        #expect(queue.changes.isEmpty)
+        await model.load()
+        #expect(model.queuedVersion == nil)
+        #expect(model.showsNoVersionPage)
+        #expect(model.content?.versions.map(\.versionString) == ["1.9"])
+    }
+
+    @Test func anAppWithAVersionInProgressOpensOnIt() async {
+        let model = await makeModel([StorePageContentFixtures.editable, StorePageContentFixtures.live])
+        #expect(model.queuedVersion == nil)
+        #expect(model.content?.version.id == "v2")
+    }
+
+    @Test func theLiveVersionCanStillBeRead() async throws {
+        let model = await makeModel()
+        model.queueNewVersion(NewAppVersion(versionString: "2.0", platform: "IOS"))
+        await model.load()
+        await model.selectVersion("v19")
+        #expect(model.queuedVersion == nil)
+        #expect(model.content?.version.id == "v19")
+        // The new version stays in the picker, to go back to.
+        let queued = try #require(model.content?.versions.first)
+        #expect(queued.isQueued)
+        await model.selectVersion(queued.id)
+        #expect(model.queuedVersion?.versionString == "2.0")
     }
 
     @Test func anotherNumberReplacesTheQueuedOne() async {

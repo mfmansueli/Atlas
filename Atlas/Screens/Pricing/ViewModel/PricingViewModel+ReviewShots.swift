@@ -16,7 +16,8 @@ extension PricingViewModel {
         let id = reviewShotChangeID(for: product)
         return ReviewShotsCardState.make(
             change: queue.change(id: id), details: setup.details.details(for: id), run: setup.runs.run(for: app.id),
-            productID: product.productID, remote: setup.extras[product.id]?.reviewScreenshot, capture: setup.paywallCapture
+            productID: product.productID, remote: setup.extras[product.id]?.reviewScreenshot, capture: setup.paywallCapture,
+            miss: setup.runs.miss(appID: app.id, productID: product.productID)
         )
     }
 

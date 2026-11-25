@@ -323,7 +323,8 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// is shown in a small panel.
     static let chatPrompt = """
     Your last message is the answer shown in Atlas's chat panel: at most three short sentences, result first, with the \
-    number that matters, in plain words and second person, no headings, tables or lists. Never describe yourself or how \
+    number that matters, in plain words and second person, no headings, tables or lists. Write it in the language the \
+    person writes in (store texts stay in their own languages). Never describe yourself or how \
     you worked. When the answer is a change, send it with Atlas's propose_ and suggest_ tools: it waits in its section \
     as a suggestion and nothing reaches App Store Connect until the person pushes. Don't say you changed or pushed \
     anything. When you need the person to choose before you can answer, call ask_in_chat with the question and two to \

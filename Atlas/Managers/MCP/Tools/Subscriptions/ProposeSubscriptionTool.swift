@@ -171,7 +171,9 @@ struct ProposeSubscriptionTool: MCPTool {
         let services = catalog.workspace.services.pricing
         let calculator = reference?.calculator
             ?? PriceCalculator(catalog: .standard, snapshot: services.indexSnapshot(), commission: catalog.workspace.commission())
-        return NewSubscriptionRecommendation.make(basePrice: price, reference: reference?.sheet, calculator: calculator, strategy: .recommended)
+        return NewSubscriptionRecommendation.make(basePrice: price, reference: reference?.sheet, calculator: calculator,
+                                                  // The app's strategy, as Pricing's Create Subscription uses it.
+                                                  strategy: catalog.workspace.pricingModes.strategy(for: catalog.app.id))
     }
 
     /// The arguments as a new subscription; throws for one that isn't

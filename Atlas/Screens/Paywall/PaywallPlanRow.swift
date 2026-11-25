@@ -29,7 +29,7 @@ struct PaywallPlanRow: View {
                                 .foregroundStyle(Palette.ok)
                                 .padding(.horizontal, 6)
                                 .frame(height: 17)
-                                .background(Palette.ok.opacity(0.16), in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
+                                .background(Palette.okTint, in: RoundedRectangle(cornerRadius: Radius.flag, style: .continuous))
                         }
                     }
                     Text(offer.subtitle)

@@ -44,7 +44,7 @@ final class AssistantChatCenter {
     @ObservationIgnored private var questions: [StoreApp.ID: AssistantChatQuestion] = [:]
     /// Runs that ended before their turn knew them: one that couldn't
     /// start ends inside the launcher's `start`.
-    @ObservationIgnored private var earlyEnds: [ClaudeCodeRun.ID: (run: ClaudeCodeRun, log: [MCPLogEntry])] = [:]
+    @ObservationIgnored private var earlyEnds: [ClaudeCodeRun.ID: (run: ClaudeCodeRun, log: [MCPLogEntry], queued: [PendingChange])] = [:]
 
     func chat(for appID: StoreApp.ID) -> AssistantChat {
         chats[appID] ?? AssistantChat()
@@ -105,7 +105,7 @@ final class AssistantChatCenter {
         update(appID) { chat in
             if let index = chat.turns.firstIndex(where: { $0.id == turn.id }) { chat.turns[index].runID = runID }
         }
-        if let ended = earlyEnds.removeValue(forKey: runID) { runEnded(ended.run, log: ended.log) }
+        if let ended = earlyEnds.removeValue(forKey: runID) { runEnded(ended.run, log: ended.log, queued: ended.queued) }
         return .sent
     }
 
@@ -133,12 +133,13 @@ final class AssistantChatCenter {
     }
 
     /// A Claude Code run ended: the turn it answered says how. `log` is
-    /// the server's, for what it suggested meanwhile.
-    func runEnded(_ run: ClaudeCodeRun, log: [MCPLogEntry]) {
+    /// the server's, for what it suggested meanwhile; `queued` is the
+    /// app's Review & Push queue, for a new version it queued.
+    func runEnded(_ run: ClaudeCodeRun, log: [MCPLogEntry], queued: [PendingChange] = []) {
         guard run.purpose == .chat else { return }
         let appID = run.appID
         guard let index = chats[appID]?.turns.firstIndex(where: { $0.runID == run.id }) else {
-            if chats[appID]?.last?.isWorking == true { earlyEnds[run.id] = (run, log) }
+            if chats[appID]?.last?.isWorking == true { earlyEnds[run.id] = (run, log, queued) }
             return
         }
         let state: AssistantChatTurn.State
@@ -149,7 +150,7 @@ final class AssistantChatCenter {
             } else {
                 let text = run.result?.text.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                 let suggestions = AssistantChatSuggestions.make(
-                    from: log, appName: run.appName, start: run.startedAt, end: run.endedAt ?? now()
+                    from: log, appName: run.appName, start: run.startedAt, end: run.endedAt ?? now(), queued: queued
                 )
                 state = .answered(text: text, suggestions: suggestions)
             }

@@ -27,7 +27,7 @@ struct ReviewShotDetailsTests {
         #expect(details.heading == "Review screenshot · Monthly selected")
         #expect(details.capturedLine(now: now.addingTimeInterval(5))
             == "Captured in Simulator on iPhone 17 Pro, English (U.S.), a moment ago. Monthly is selected and shows $4.99.")
-        #expect(details.acceptedLine == "From Claude Code · Monthly selected · uploads when you push")
+        #expect(details.acceptedLine == "From Claude Code · Monthly selected · sent when you push")
         #expect(details.reviewLine(product: "Monthly") == "Monthly · Monthly selected · from Claude Code")
         #expect(details.isFromAssistant)
         #expect(details.client == "Claude Code")
@@ -37,7 +37,7 @@ struct ReviewShotDetailsTests {
         let details = ReviewShotDetails(origin: .capture(title: "Capture 14 · Paywall"))
         #expect(!details.isFromAssistant)
         #expect(details.heading == "Review screenshot")
-        #expect(details.acceptedLine == "Capture 14 · Paywall from Screenshots · uploads when you push")
+        #expect(details.acceptedLine == "Capture 14 · Paywall from Screenshots · sent when you push")
         #expect(details.reviewLine(product: "Annual") == "Annual · Capture 14 · Paywall from Screenshots")
     }
 

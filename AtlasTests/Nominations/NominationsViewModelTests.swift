@@ -163,7 +163,8 @@ struct NominationsViewModelTests {
         let draft = try #require(model.nomination(Data.draftID))
         let type = model.builtInSuggestion(.type, for: draft)
         #expect(type?.type == .newContent)
-        #expect(type?.why == "Winter Journaling Week is new content for people who already have the app.")
+        // The linked In-App Event’s name, as Lumen’s events list it.
+        #expect(type?.why == "Winter Reflection 2026 is new content for people who already have the app.")
         let description = model.builtInSuggestion(.description, for: draft)
         #expect(description?.text.hasPrefix("Weekly reflections: each Sunday") == true)
         #expect(description?.why.hasPrefix("Written from 1.4’s What’s New") == true)

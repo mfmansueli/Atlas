@@ -15,7 +15,7 @@ struct GetTemplateTool: MCPTool {
         (the canvas's short side ÷ 1320), the caption's text styles and fit rules, fonts and per-script fallbacks, \
         right-to-left rules, the device frame, and per-slot overrides under slots.<n>.over (n from 0 here). \
         Paths in propose_template are the dotted paths of this JSON, e.g. caption.headline.size. Also returns \
-        the history of versions. Pass version for an older one.
+        the history of versions, and the starter templates (for propose_template's starter). Pass version for an older one.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -48,6 +48,9 @@ struct GetTemplateTool: MCPTool {
             "currentVersion": .int(history.currentNumber),
             "template": version.template.json,
             "history": .array(versions),
+            "starters": .array(TemplateStarter.allCases.map { starter in
+                ["id": .string(starter.rawValue), "title": .string(starter.title), "summary": .string(starter.summary)]
+            }),
         ]
         return .read(result, target: draft.target)
     }

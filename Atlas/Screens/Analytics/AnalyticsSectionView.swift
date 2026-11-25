@@ -35,7 +35,8 @@ struct AnalyticsSectionView: View {
                     waitingCount: waitingCount,
                     onAct: { action, text in
                         navigator.follow(action, origin: AnalyticsOrigin(appID: app.id, text: text, tab: viewModel.tab))
-                    }
+                    },
+                    stabilityRelease: stabilityRelease
                 )
                 .sheet(isPresented: Binding(get: { viewModel.isSettingsPresented }, set: { viewModel.isSettingsPresented = $0 })) {
                     AnalyticsSettingsSheet(
@@ -80,13 +81,18 @@ struct AnalyticsSectionView: View {
         let model = kept?.analytics ?? AnalyticsViewModel(app: app, store: store, services: services.analytics)
         kept?.analytics = model
         model.keyID = session?.currentKeyID
+        model.onWrite = { [history] record in history.add(record) }
         model.recompute()
         viewModel = model
         configure()
         takeRequestedTab()
         #if DEBUG
-        AnalyticsDebugLaunch.pending?.apply(to: model)
+        let launch = AnalyticsDebugLaunch.pending
+        launch?.apply(to: model)
         AnalyticsDebugLaunch.pending = nil
+        if let action = launch?.follow {
+            navigator.follow(action, origin: AnalyticsOrigin(appID: app.id, text: launch?.followText ?? "", tab: model.tab))
+        }
         #endif
         await summaries.load(app)
         configure()
@@ -112,7 +118,9 @@ struct AnalyticsSectionView: View {
         let page = await loader.storePage(for: model.app)
         model.setContext(page)
         if model.setup == .ready {
-            await model.setContext(loader.pricing(for: model.app, into: page))
+            let priced = await loader.pricing(for: model.app, into: page)
+            model.setContext(priced)
+            await model.setContext(loader.screenshots(for: model.app, into: priced))
         }
         guard !Task.isCancelled, page != .empty else { return }
         kept?.didLoad(.analytics, refreshCount: refreshCount)
@@ -133,6 +141,18 @@ struct AnalyticsSectionView: View {
             viewModel.subscriptionsPane = pane
         }
         if viewModel.tabs.contains(tab) { viewModel.tab = tab }
+    }
+
+    /// The version's card, and Pause Phased Release… while a phased
+    /// release of it rolls out (read by the Overview and Release).
+    private var stabilityRelease: StabilityReleaseActions {
+        let release = sectionModels?.models(for: app.id).release
+        return StabilityReleaseActions(
+            phase: release?.phase,
+            isPausing: release?.busyAction == .pause,
+            openVersion: { navigator.openVersion(submitting: false) },
+            pause: { Task { await release?.perform(.pause) } }
+        )
     }
 
     private func waitingCount(_ finding: AnalyticsFinding) -> Int {

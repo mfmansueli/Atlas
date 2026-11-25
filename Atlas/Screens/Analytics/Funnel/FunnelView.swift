@@ -56,6 +56,7 @@ struct FunnelView: View {
             }
             .padding(.bottom, Spacing.xLarge)
         }
+        .leavesChatRoom()
         .accessibilityIdentifier("analytics.funnel")
     }
 

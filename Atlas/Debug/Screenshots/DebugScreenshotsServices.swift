@@ -41,9 +41,13 @@ final class DebugScreenshotsServices: ScreenshotsServices {
     /// How long each live screenshot takes to "download", so a scene shows
     /// the App Store preview's tiles loading.
     var liveImageDelay: Duration?
+    /// How long the screenshot document takes to read, for the loading scenes.
+    var documentDelay: Duration?
     /// Draws the sets Atlas pushed on Oct 12 too, as the App Store
     /// preview shows them; otherwise only English (U.K.)'s.
     var drawsPushedLiveSets = false
+    /// The live sets without App Previews, as for an app that has none.
+    var hidesAppPreviews = false
     private let store = InMemoryScreenshotsDocumentStore()
     private let captures = MockLumenCaptureRenderer()
 
@@ -60,6 +64,11 @@ final class DebugScreenshotsServices: ScreenshotsServices {
     }
 
     func document(for app: StoreApp, primaryLocale: StoreLocale) async throws -> ScreenshotsDocument {
+        if let documentDelay {
+            // Held even when the read that asked is cancelled and asked
+            // again, so the scene stays on its loading state.
+            await Task { try? await Task.sleep(for: documentDelay) }.value
+        }
         if let saved = try store.load(appID: app.id) { return saved }
         guard app.id == DebugFixtures.AppID.lumen else { return .empty(primary: primaryLocale.code) }
         var document = ScreenshotsDebugDocuments.document(for: scenario)
@@ -73,7 +82,9 @@ final class DebugScreenshotsServices: ScreenshotsServices {
 
     func liveScreenshots(for app: StoreApp, localizations _: [StoreLocale: String]) async throws -> LiveScreenshots {
         guard app.id == DebugFixtures.AppID.lumen, scenario != .noCaptures else { return LiveScreenshots() }
-        return scenario == .everyDevice ? DebugEveryDevice.live : ScreenshotsDebugDocuments.live
+        var live = scenario == .everyDevice ? DebugEveryDevice.live : ScreenshotsDebugDocuments.live
+        if hidesAppPreviews { live.previewSets = [] }
+        return live
     }
 
     func captureImage(_ capture: ScreenshotCapture, for _: StoreApp, pixelWidth: Int) async -> CGImage? {
@@ -105,6 +116,14 @@ final class DebugScreenshotsServices: ScreenshotsServices {
         let capture = ScreenshotsSampleData.capture(locale: "en-US", display: source.displayType, slot: source.slot)
         let image = captures.image(for: capture, pixelWidth: pixelWidth)
         return ScreenshotImageRenderer.image(layout: layout, capture: image, pixelWidth: pixelWidth)
+    }
+
+    /// An App Preview's poster frame: its language's Week screen (slot 1)
+    /// as pushed on Oct 12, when the scene draws those sets.
+    func livePreviewPoster(_ preview: LiveAppPreview, pixelWidth: Int) async -> CGImage? {
+        guard drawsPushedLiveSets, let set = ScreenshotsDebugDocuments.live.previewSets.first(where: { $0.previews?.contains(preview) == true }),
+              let week = ScreenshotsDebugDocuments.pushedSource(for: "live|\(set.locale)|\(set.displayType.rawValue)|1") else { return nil }
+        return pushedImage(week, pixelWidth: pixelWidth)
     }
 
     /// One of the sets pushed on Oct 12, in its language's captions.

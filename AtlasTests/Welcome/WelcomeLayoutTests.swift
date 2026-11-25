@@ -28,6 +28,24 @@ struct WelcomeLayoutTests {
         #expect(abs(layout.compactMarkSize - 102) < 1e-9)
     }
 
+    /// README-Welcome, 22 November: the quiet line and Connect's
+    /// explanations hide below 680 points of height.
+    @Test func shortWindowsHideTheQuietLines() {
+        let tall = WelcomeLayout(windowSize: CGSize(width: 1200, height: 780))
+        #expect(tall.showsQuietLine)
+        #expect(tall.showsConnectExplanations)
+        let short = WelcomeLayout(windowSize: CGSize(width: 1200, height: 640))
+        #expect(!short.showsQuietLine)
+        #expect(!short.showsConnectExplanations)
+    }
+
+    /// The hints beside Connect's field names hide below 900 points of width.
+    @Test func narrowWindowsHideTheFieldHints() {
+        #expect(WelcomeLayout(windowSize: CGSize(width: 900, height: 780)).showsFieldHints)
+        #expect(!WelcomeLayout(windowSize: CGSize(width: 899, height: 780)).showsFieldHints)
+        #expect(!WelcomeLayout(windowSize: CGSize(width: 860, height: 560)).showsFieldHints)
+    }
+
     @Test func theHeaderNeverGoesBelow210() {
         let layout = WelcomeLayout(windowSize: CGSize(width: 900, height: 400))
         #expect(layout.largeHeaderHeight == 210)

@@ -24,10 +24,18 @@ final class ReviewShotsRunCenter {
     private(set) var routes: [StoreApp.ID: String] = [:]
     /// Products missing a review screenshot, by app, as Pricing last read.
     private(set) var missing: [StoreApp.ID: Int] = [:]
+    /// Products the last run skipped or couldn't capture, by app and
+    /// product ID, until the next run or Not Now on their card.
+    private(set) var misses: [StoreApp.ID: [String: ReviewShotsMiss]] = [:]
+    /// Pushes whose review screenshots Pricing already said were uploaded.
+    @ObservationIgnored private(set) var announcedPushes: Set<PushRecord.ID> = []
+    /// Pushes before this (an earlier launch's) are never announced.
+    @ObservationIgnored let since: Date
     @ObservationIgnored private let defaults: UserDefaults?
 
-    init(defaults: UserDefaults? = nil) {
+    init(defaults: UserDefaults? = nil, since: Date = .now) {
         self.defaults = defaults
+        self.since = since
         routes = defaults?.dictionary(forKey: Self.routesKey) as? [String: String] ?? [:]
     }
 
@@ -47,6 +55,7 @@ final class ReviewShotsRunCenter {
     func start(appID: StoreApp.ID, client: String, products: [ReviewShotsRun.Product]) -> ReviewShotsRun {
         let run = ReviewShotsRun(client: client, products: products)
         runs[appID] = run
+        misses[appID] = nil
         return run
     }
 
@@ -76,12 +85,37 @@ final class ReviewShotsRunCenter {
         runs[appID] = run
     }
 
-    /// It stopped: the paywall wasn't found, or showed no prices.
-    func fail(appID: StoreApp.ID, _ phase: ReviewShotsRun.Phase) {
+    /// It moved on from `productID` without an image: the paywall doesn't
+    /// show it, or its checks failed twice. Its card says why.
+    func miss(appID: StoreApp.ID, productID: String, kind: ReviewShotsMiss.Kind, reason: String) {
+        guard var run = runs[appID] else { return }
+        run.missed.insert(productID)
+        if run.current == productID {
+            run.current = nil
+            run.step = nil
+        }
+        runs[appID] = run
+        misses[appID, default: [:]][productID] = ReviewShotsMiss(kind: kind, reason: reason, client: run.client)
+    }
+
+    /// Why the last run didn't capture `productID`, if it didn't.
+    func miss(appID: StoreApp.ID, productID: String) -> ReviewShotsMiss? {
+        misses[appID]?[productID]
+    }
+
+    /// Not Now on a card that says why it wasn't captured.
+    func forgetMiss(appID: StoreApp.ID, productID: String) {
+        misses[appID]?[productID] = nil
+    }
+
+    /// It stopped: the paywall wasn't found, or showed no prices;
+    /// `sawImage` is what the paywall showed, when the assistant sent it.
+    func fail(appID: StoreApp.ID, _ phase: ReviewShotsRun.Phase, sawImage: URL? = nil) {
         guard var run = runs[appID] else { return }
         run.phase = phase
         run.current = nil
         run.step = nil
+        run.sawImage = sawImage
         runs[appID] = run
     }
 
@@ -149,5 +183,17 @@ final class ReviewShotsRunCenter {
     func setMissing(_ count: Int, for appID: StoreApp.ID) {
         guard missing[appID] != count else { return }
         missing[appID] = count
+    }
+
+    // MARK: - After a push
+
+    /// Whether Pricing still has to say `record`'s review screenshots
+    /// were uploaded: made in this launch and not said yet.
+    func needsAnnouncing(_ record: PushRecord) -> Bool {
+        record.date >= since && !announcedPushes.contains(record.id)
+    }
+
+    func markAnnounced(_ ids: some Sequence<PushRecord.ID>) {
+        announcedPushes.formUnion(ids)
     }
 }

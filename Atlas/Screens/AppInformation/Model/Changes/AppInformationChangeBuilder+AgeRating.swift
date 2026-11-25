@@ -42,7 +42,7 @@ extension AppInformationChangeBuilder {
     }
 
     /// "Rate higher than calculated", with the reason in the new value.
-    func overrideChange(from values: AgeRatingValues, to override: AgeRating?, reason: String) -> PendingChange? {
+    func overrideChange(from values: AgeRatingValues, to override: AgeRating?, reason: String, source: ChangeSource = .you) -> PendingChange? {
         guard values.override != override, let declarationID = ids.ageRatingDeclarationID else { return nil }
         let off = String(localized: "Off")
         let newValue = override.map { reason.isEmpty ? $0.title : "\($0.title) · \(reason)" } ?? off
@@ -54,6 +54,7 @@ extension AppInformationChangeBuilder {
             title: String(localized: "Rate higher than calculated"),
             oldValue: values.override?.title ?? off,
             newValue: newValue,
+            source: source,
             blockedReason: override != nil && reason.trimmingCharacters(in: .whitespaces).isEmpty
                 ? String(localized: "Say why the app should be rated higher.") : nil,
             requests: [Self.patch("ageRatingDeclarations", id: declarationID, attributes: [Self.overrideAttribute: .string(override?.apiValue ?? "NONE")])],

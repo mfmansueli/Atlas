@@ -107,11 +107,23 @@ final class ConnectUITests: XCTestCase {
 
     func testHelpExplainsWhereTheKeyComesFrom() {
         launch(scene: "connect")
-        let help = app.buttons["connect.helpDisclosure"]
-        XCTAssertTrue(help.waitForExistence(timeout: 10))
-        XCTAssertFalse(element("connect.openAppStoreConnectLink").exists)
-        help.click()
-        XCTAssertTrue(element("connect.openAppStoreConnectLink").waitForExistence(timeout: 5))
+        // "Before you start": the three steps, Open App Store Connect and
+        // Show Me How, which opens Atlas Help at the key's article.
+        XCTAssertTrue(element("connect.steps").waitForExistence(timeout: 10))
+        XCTAssertTrue(element("connect.openAppStoreConnect").exists)
+        XCTAssertTrue(element("connect.step").exists)
+        // A plain button is a link to XCUITest.
+        element("connect.showMeHow").click()
+        let title = element("help.article.title")
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        XCTAssertEqual(title.value as? String ?? title.label, "Connect to App Store Connect")
+    }
+
+    func testAFieldThatLooksRightGetsACheck() {
+        launch(scene: "connect-key")
+        XCTAssertTrue(element("connect.keyFile.looksRight").waitForExistence(timeout: 10))
+        XCTAssertTrue(element("connect.keyIDField.looksRight").exists, "The Key ID comes from the file's name")
+        XCTAssertFalse(element("connect.issuerIDField.looksRight").exists)
     }
 
     func testAddAnotherKeyFromTheAccountSwitcher() {

@@ -40,9 +40,16 @@ struct SubscriptionsPaneView<Unavailable: View>: View {
             case .offers:
                 OffersView(report: viewModel.lifecycle, onAct: onAct)
             case .billing:
-                BillingView(report: viewModel.lifecycle, gracePeriod: viewModel.gracePeriod, appName: viewModel.app.name) { duration in
-                    try await viewModel.turnOnGracePeriod(duration)
-                }
+                let suggestions = GracePeriodSuggestionStore.shared
+                BillingView(
+                    report: viewModel.lifecycle, gracePeriod: viewModel.gracePeriod, appName: viewModel.app.name,
+                    onTurnOn: { duration in
+                        try await viewModel.turnOnGracePeriod(duration)
+                        suggestions.remove(for: viewModel.app.id)
+                    },
+                    suggestion: suggestions.suggestion(for: viewModel.app.id),
+                    onDismissSuggestion: { suggestions.remove(for: viewModel.app.id) }
+                )
             }
         }
     }

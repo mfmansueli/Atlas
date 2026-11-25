@@ -29,6 +29,7 @@ struct TemplateStage: View {
             .padding(.vertical, 18)
             .frame(maxWidth: .infinity)
         }
+        .leavesChatRoom()
         .background(Palette.stage)
     }
 

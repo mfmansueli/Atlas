@@ -26,6 +26,7 @@ final class AssetLibraryModel: Identifiable {
     let appID: StoreApp.ID
     let appName: String
     private let manager: any AssetLibraryManaging
+    private let cleanup: AssetLibraryCleanupStore
 
     private(set) var phase: Phase = .loading
     private(set) var files: [AssetLibraryFile] = []
@@ -46,10 +47,40 @@ final class AssetLibraryModel: Identifiable {
     private(set) var deleteErrors: [AssetLibraryFile.ID: AppleErrorCopy] = [:]
     private(set) var notice: String?
 
-    init(appID: StoreApp.ID, appName: String, manager: any AssetLibraryManaging) {
+    init(appID: StoreApp.ID, appName: String, manager: any AssetLibraryManaging, cleanup: AssetLibraryCleanupStore = .shared) {
         self.appID = appID
         self.appName = appName
         self.manager = manager
+        self.cleanup = cleanup
+    }
+
+    // MARK: - An assistant's cleanup
+
+    /// What an assistant suggested deleting, while some of it is here.
+    var cleanupSuggestion: AssetLibraryCleanupSuggestion? {
+        guard let suggestion = cleanup.suggestion(for: appID), phase == .loaded else { return nil }
+        let ids = Set(files.map(\.id))
+        return suggestion.fileIDs.contains(where: ids.contains) ? suggestion : nil
+    }
+
+    /// "Claude Code suggests deleting 12 files no page uses."
+    var cleanupTitle: String? {
+        guard let suggestion = cleanupSuggestion else { return nil }
+        let count = suggestion.fileIDs.count { id in files.contains { $0.id == id } }
+        return count == 1
+            ? String(localized: "\(suggestion.client) suggests deleting 1 file no page uses.", comment: "kind:label")
+            : String(localized: "\(suggestion.client) suggests deleting \(count) files no page uses.", comment: "kind:label")
+    }
+
+    /// Picks the suggested files a page doesn't show (Apple refuses the
+    /// rest).
+    func selectSuggested() {
+        guard let suggestion = cleanupSuggestion else { return }
+        selection = Set(suggestion.fileIDs.filter { id in files.first { $0.id == id }.map(canSelect) ?? false })
+    }
+
+    func dismissCleanup() {
+        cleanup.remove(for: appID)
     }
 
     // MARK: - Loading
@@ -68,6 +99,7 @@ final class AssetLibraryModel: Identifiable {
         let ids = Set(files.map(\.id))
         selection.formIntersection(ids)
         await checkPlacements()
+        if selection.isEmpty { selectSuggested() }
     }
 
     private func checkPlacements() async {
@@ -184,6 +216,7 @@ final class AssetLibraryModel: Identifiable {
             isDeleting = false
             deletingID = nil
         }
+        var deleted = Set<AssetLibraryFile.ID>()
         for file in targets {
             deletingID = file.id
             do {
@@ -192,10 +225,12 @@ final class AssetLibraryModel: Identifiable {
                 selection.remove(file.id)
                 placementCounts[file.id] = nil
                 deletedCount += 1
+                deleted.insert(file.id)
             } catch {
                 deleteErrors[file.id] = Self.describe(error)
             }
         }
+        cleanup.noteDeleted(deleted, appID: appID)
         notice = deleteErrors.isEmpty
             ? (deletedCount == 1 ? String(localized: "Deleted 1 file.") : String(localized: "Deleted \(deletedCount) files."))
             : String(localized: "Deleted \(deletedCount) of \(deleteTotal). \(deleteErrors.count) failed; each shows why.")

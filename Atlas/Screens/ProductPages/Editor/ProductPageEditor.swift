@@ -23,6 +23,11 @@ struct ProductPageEditor: View {
                 .padding(.top, Spacing.small)
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.medium) {
+                    if let suggestion = ProductPageReviewSuggestionStore.shared.suggestion(for: viewModel.app.id, pageID: page.id) {
+                        ProductPageReviewSuggestionLine(suggestion: suggestion) {
+                            ProductPageReviewSuggestionStore.shared.remove(for: viewModel.app.id, pageID: page.id)
+                        }
+                    }
                     ProductPageStatusBanner(viewModel: viewModel, page: page)
                     if viewModel.isPreparingNewVersion(page) {
                         ProductPageVersionCompare(viewModel: viewModel, page: page, locale: viewModel.localeCode)
@@ -38,6 +43,7 @@ struct ProductPageEditor: View {
                 .padding(.horizontal, Spacing.xLarge)
                 .padding(.bottom, Spacing.xLarge)
             }
+            .leavesChatRoom()
             .accessibilityIdentifier("pages.editor.scroll")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

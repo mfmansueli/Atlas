@@ -5,10 +5,15 @@
 
 import SwiftUI
 
-/// Customize…: the strategy inspector beside the matrix. Changing anything
-/// turns the strategy Custom; the matrix updates live.
+/// Customize Suggestions… (board 73, `pr-prod-insp`): the strategy
+/// inspector beside the product's prices, or floating over them at
+/// 860 × 560. Method, base country and price, price index, fallback chain,
+/// limits and how sure; changing anything makes the strategy Custom, and
+/// Use Built-in resets it. The prices update live.
 struct StrategyInspector: View {
     @Bindable var viewModel: PricingViewModel
+    /// Over the page instead of in an inspector column.
+    var isFloating = false
     let onImport: () -> Void
 
     var body: some View {
@@ -16,48 +21,43 @@ struct StrategyInspector: View {
         VStack(spacing: 0) {
             VStack(spacing: Spacing.small) {
                 HStack(spacing: Spacing.small) {
-                    Text("Strategy").font(.body.weight(.semibold))
+                    Text("Customize Suggestions", comment: "kind:sheet-title")
+                        .atlasTextStyle(.headline)
                     Spacer()
-                    Pill(text: isCustom ? String(localized: "Custom") : String(localized: "Suggested"))
-                        .accessibilityLabel(isCustom ? String(localized: "Custom strategy") : String(localized: "Suggested strategy"))
+                    Pill(text: isCustom
+                        ? String(localized: "Custom", comment: "kind:pill")
+                        : String(localized: "Built-in", comment: "kind:pill"))
+                        .accessibilityLabel(isCustom
+                            ? String(localized: "Custom strategy", comment: "kind:accessibility-label")
+                            : String(localized: "Built-in strategy", comment: "kind:accessibility-label"))
                     Button {
                         viewModel.isInspectorPresented = false
                     } label: {
                         Image(systemName: "xmark")
                     }
                     .buttonStyle(.borderless)
-                    .accessibilityLabel(String(localized: "Close inspector"))
+                    .keyboardShortcut(isFloating ? .cancelAction : nil)
+                    .accessibilityLabel(String(localized: "Close inspector", comment: "kind:accessibility-label"))
+                    .accessibilityIdentifier("pricing.inspector.close")
                 }
                 if isCustom {
                     Button {
                         viewModel.resetStrategy()
                     } label: {
-                        Label("Back to Suggested", systemImage: "arrow.uturn.backward")
+                        Label(String(localized: "Use Built-in", comment: "kind:button"), systemImage: "arrow.uturn.backward")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonBorderShape(.capsule)
+                    .secondaryButton()
                     .controlSize(.regular)
-                    .accessibilityIdentifier("pricing.inspector.backToRecommended")
+                    .accessibilityIdentifier("pricing.inspector.useBuiltIn")
                 }
-                Picker(String(localized: "Inspector tab"), selection: $viewModel.inspectorTab) {
-                    ForEach(StrategyInspectorTab.allCases) { tab in
-                        Text(tab.title).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .accessibilityIdentifier("pricing.inspector.tabs")
             }
             .padding(Spacing.large)
             Divider()
             ScrollView {
-                switch viewModel.inspectorTab {
-                case .strategy:
-                    StrategyTab(viewModel: viewModel, onImport: onImport)
-                case .territory:
-                    TerritoryTab(viewModel: viewModel, matrix: viewModel.matrix)
-                }
+                StrategyTab(viewModel: viewModel, onImport: onImport)
             }
+            .leavesChatRoom()
         }
         .inspectorColumnWidth(Metrics.inspectorWidth)
         .accessibilityElement(children: .contain)

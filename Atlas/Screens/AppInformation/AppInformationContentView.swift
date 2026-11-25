@@ -40,6 +40,7 @@ struct AppInformationContentView: View {
                         .padding(.leading, Self.sideMargin)
                         .padding(.trailing, showsPreview ? Spacing.large : Self.sideMargin)
                     }
+                    .leavesChatRoom()
                     .accessibilityElement(children: .contain)
                     .accessibilityIdentifier("appInformation.page")
                     if showsPreview {
@@ -48,6 +49,7 @@ struct AppInformationContentView: View {
                                 .padding(.vertical, Spacing.large + 2)
                                 .padding(.trailing, Self.sideMargin)
                         }
+                        .leavesChatRoom()
                         .scrollIndicators(.never)
                         .frame(width: 236 + Self.sideMargin)
                     }

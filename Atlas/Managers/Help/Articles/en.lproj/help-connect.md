@@ -1,23 +1,27 @@
 ---
 id: connect
 group: start
-title: Connect App Store Connect
-summary: Atlas uses an App Store Connect API key to read your apps and to push what you approve.
-keywords: key, api key, p8, issuer, issuer id, key id, team key, admin, app manager, account, connect, sign in, login
+title: Connect to App Store Connect
+summary: Keep this window next to your browser. It takes about two minutes.
+keywords: key, api key, p8, issuer, issuer id, key id, team key, admin, app manager, account, connect, sign in, login, integrations
 showMe: settings:accounts
+link: Open App Store Connect | https://appstoreconnect.apple.com/access/integrations/api
 related: privacy, fix
 ---
-## Make the key
+1. **Open Users and Access, then Integrations.** Sign in to App Store Connect. Both are at the top of the page.
 
-1. In App Store Connect, open **Users and Access**, then **Integrations**.
-2. Choose **App Store Connect API**, then **Team Keys**, and add a key.
-3. Give it the Admin role, or App Manager if you don’t need sales figures.
-4. Download the .p8 file. Apple lets you download it once.
+![Users and Access, then Integrations](help-connect-1)
 
-## Give it to Atlas
+2. **Create a Team Key with Admin access.** Choose Team Keys and click +. Name it “Atlas”, pick Admin, then Generate.
 
-1. Copy the Issuer ID from the top of that page and the Key ID from the key’s row.
-2. In Atlas, paste both and drop the .p8 file on the window.
-3. Click **Connect**. Atlas reads your apps and changes nothing.
+![Team Keys, + and Admin](help-connect-2)
 
-> The key stays in Keychain. Requests are signed here and go straight to Apple.
+3. **Download the key file.** Click Download in your key’s row. Keep the file safe: Apple allows one download.
+
+![Download in your key’s row](help-connect-3)
+
+4. **Copy the two IDs into Atlas.** Issuer ID: top of the page. Key ID: your key’s row. Then drop the file on Atlas.
+
+![Where the Issuer ID and Key ID are](help-connect-4)
+
+> **Don’t see Integrations?** Only the Account Holder or an Admin can make keys. Ask them for one.

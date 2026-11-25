@@ -8,7 +8,7 @@ import Foundation
 /// One product on Pricing's Prices page: its price in the base territory,
 /// how its prices are set (equalized, custom, suggested, not pushed), the
 /// open price suggestion with the countries it changes, and each country's
-/// price for "What people pay".
+/// price for "Preview in".
 struct PricingProductCard: Identifiable, Equatable, Sendable {
     /// The open suggestion: every territory whose strategy price differs
     /// from today's and that nothing is queued for yet.
@@ -38,6 +38,12 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
     struct TerritoryPrice: Equatable, Sendable {
         var now: String
         var next: String?
+        /// `next` waits in Review & Push (Not pushed) rather than being the
+        /// open suggestion.
+        var isQueued = false
+        /// About what the next price (else today's) is in US dollars, from
+        /// bundled exchange rates; nil without a rate.
+        var dollars: Decimal?
     }
 
     var product: PricingProduct
@@ -106,7 +112,12 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
                 equalized += 1
             }
             let next: Decimal? = row.isChanged ? row.shownPrice : isOpen(row) ? row.target.customerPrice : nil
-            prices[row.id] = TerritoryPrice(now: row.currency.format(row.current.customerPrice), next: next.map(row.currency.format))
+            prices[row.id] = TerritoryPrice(
+                now: row.currency.format(row.current.customerPrice),
+                next: next.map(row.currency.format),
+                isQueued: row.isChanged,
+                dollars: ExchangeRates.approximate.dollars(next ?? row.current.customerPrice, currency: row.territory.currencyCode)
+            )
         }
         let open = rows.filter(isOpen)
         return PricingProductCard(
@@ -160,10 +171,24 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
                 ? String(localized: "In 1 of them it feels 25%+ above \(baseName), likely holding people back.")
                 : String(localized: "In \(heldBack) of them it feels 25%+ above \(baseName), likely holding people back.")
         }
-        if let first = rows.first(where: { $0.recommendation?.reason.isEmpty == false }), let reason = first.recommendation?.reason {
-            return "\(first.territory.name): \(reason)"
+        if let telling = mostTelling(rows), let reason = telling.recommendation?.reason {
+            return "\(telling.territory.name): \(reason)"
         }
         return String(localized: "They follow the pricing strategy in Customize….")
+    }
+
+    /// The row whose suggestion moves its price the most: its reason says
+    /// the most about why. The first such row on a tie.
+    static func mostTelling(_ rows: [PricingRow]) -> PricingRow? {
+        rows.filter { $0.recommendation?.reason.isEmpty == false }
+            .max { relativeMove($0) < relativeMove($1) }
+    }
+
+    /// |suggested − now| ÷ now.
+    private static func relativeMove(_ row: PricingRow) -> Decimal {
+        let now = row.current.customerPrice
+        guard now > 0 else { return 0 }
+        return (row.target.customerPrice - now).magnitude / now
     }
 
     private static func country(_ row: PricingRow) -> Country {

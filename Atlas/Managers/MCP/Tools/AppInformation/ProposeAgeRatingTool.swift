@@ -17,9 +17,11 @@ struct ProposeAgeRatingTool: MCPTool {
         description: """
         Proposes answers to an app's age rating questionnaire: answers: [{question, answer, why, evidence}], with \
         question ids and answers from get_age_rating, evidence as "file:line — finding" strings, and could_not_see \
-        for what you couldn't check. Each answer is queued in Atlas (status "queued") and waits until the \
-        person confirms it; "unchanged" means App Store Connect already has it; "refused" says why. Nothing \
-        reaches App Store Connect until the person pushes.
+        for what you couldn't check; override {rating, reason} rates the app higher than its answers add up to \
+        (one of get_age_rating's overrides, or "off"; the reason is required and shown to the person). Each answer is \
+        queued in Atlas (status "queued") and waits until the person confirms it, the override until they accept \
+        it; "unchanged" means App Store Connect already has it; "refused" says why. Nothing reaches App Store \
+        Connect until the person pushes.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
@@ -37,15 +39,26 @@ struct ProposeAgeRatingTool: MCPTool {
                     ),
                 ],
                 "could_not_see": MCPToolDefinition.string("What the code can't show, e.g. content on your servers."),
+                "override": MCPToolDefinition.schema(
+                    [
+                        "rating": MCPToolDefinition.string("9+, 13+, 16+ or 18+ (one of get_age_rating's overrides), or off."),
+                        "reason": MCPToolDefinition.why("Why the app should be rated higher, for the person and App Review."),
+                    ],
+                    required: ["rating"]
+                ),
             ],
-            required: ["appId", "answers"]
+            required: ["appId"]
         ),
         proposalKind: .appInformation
     )
 
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let app = try await context.workspace.app(matching: arguments.string("appId"))
-        let items = try arguments.array("answers")
+        let items = try arguments.optionalArray("answers") ?? []
+        let override = try arguments.optionalObject("override")
+        guard !items.isEmpty || override != nil else {
+            throw MCPToolError.invalidArgument(name: "answers", expected: String(localized: "a list of answers, or override"))
+        }
         let couldNotSee = try arguments.optionalString("could_not_see")
         let services = context.workspace.services.appInformation
         let content = try await services.content(for: app, versionID: nil)
@@ -90,6 +103,11 @@ struct ProposeAgeRatingTool: MCPTool {
             )
             results.append(["question": .string(question.rawValue), "status": "queued", "changeId": .string(change.id)])
             logLines.append(MCPToolOutcome.LogLine(target: target, outcome: .proposed))
+        }
+        if let override {
+            let outcome = proposeOverride(override, app: app, content: content, builder: builder, notes: &notes, context: context)
+            results.append(outcome.result)
+            logLines.append(outcome.logLine)
         }
         services.notes.setNotes(notes, for: app.id)
         let summary: JSONValue = [

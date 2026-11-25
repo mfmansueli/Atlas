@@ -31,6 +31,7 @@ struct PrivacyWorksheetTab: View {
                     .padding(Spacing.large)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
+                .leavesChatRoom()
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("appInformation.appPrivacy.worksheet")
                 .task { await revealEvidence(with: proxy) }
