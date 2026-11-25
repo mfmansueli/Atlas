@@ -17,6 +17,9 @@ enum AssistantTextLimits {
     static let why = 110
     static let details = 400
     static let gloss = 110
+    /// `means` and `naturalMeans`: what a text in another language says,
+    /// in the interface language (board 77's MEANS line).
+    static let means = 220
     static let confidence = 1...3
 
     /// `field` names it as the assistant sent it, e.g. `why` or
@@ -40,6 +43,12 @@ enum AssistantTextLimits {
         let count = text.trimmingCharacters(in: .whitespacesAndNewlines).count
         guard count > gloss else { return nil }
         return String(localized: "\(field) is \(count) characters; at most \(gloss). Say what it means, not word for word.", comment: "kind:error")
+    }
+
+    static func meansRefusal(_ text: String, field: String) -> String? {
+        let count = text.trimmingCharacters(in: .whitespacesAndNewlines).count
+        guard count > means else { return nil }
+        return String(localized: "\(field) is \(count) characters; at most \(means). Say what it means, not word for word.", comment: "kind:error")
     }
 
     /// A title: what changes, result first.

@@ -86,6 +86,9 @@ final class StorePageViewModel {
     var toast: ToastMessage?
     /// What the toast's Undo puts back.
     var suggestionUndo: StorePageSuggestionUndo?
+    /// The suggestion Use Natural Version changed and the toast that says
+    /// so, whose Undo puts the assistant's text back (board 77).
+    var naturalVersionUndo: (toastID: ToastMessage.ID, suggestionID: FieldSuggestion.ID)?
     /// The window's, so Accept All is one step of Edit → Undo.
     weak var undoManager: UndoManager?
 

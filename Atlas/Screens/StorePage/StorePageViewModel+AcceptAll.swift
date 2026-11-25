@@ -38,6 +38,7 @@ extension StorePageViewModel {
                     suggested: suggestion.value,
                     reason: suggestion.reason
                 )
+                .reading(suggestion.layers, lines: suggestion.translationLines())
             }
             guard !items.isEmpty else { return nil }
             return AcceptAllGroup(
@@ -81,8 +82,12 @@ extension StorePageViewModel {
             sheet = .acceptAll
             return
         }
-        let batch = editorLocales.flatMap { visibleSuggestions(in: $0) }
-        accept(batch, toast: AcceptAllKind.storePage.acceptedText(batch.count, groups: languageCount(of: batch), withoutAsking: true))
+        // What sounds off to a native speaker waits for the person (board 77).
+        let all = editorLocales.flatMap { visibleSuggestions(in: $0) }
+        let batch = all.filter { !$0.soundsOff() }
+        var text = AcceptAllKind.storePage.acceptedText(batch.count, groups: languageCount(of: batch), withoutAsking: true)
+        if batch.count < all.count { text += " " + AcceptAllKind.storePage.soundsOffLeftText(all.count - batch.count) }
+        accept(batch, toast: text)
     }
 
     /// The sheet's Accept: only what was left ticked.

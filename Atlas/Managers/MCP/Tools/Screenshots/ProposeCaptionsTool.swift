@@ -14,7 +14,7 @@ struct ProposeCaptionsTool: MCPTool {
         name: "propose_captions",
         title: "Propose captions",
         description: """
-        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?, kicker?, gloss?}, with a reason (one \
+        Proposes screenshot captions, each {locale, slot (from 1), headline, subhead?, kicker?, means?, sounds?, notes?, natural?}, with a reason (one \
         sentence, at most \(AssistantTextLimits.why) characters), optional details and confidence 1–3; a gloss says \
         what a caption not in English means, and kicker is the short line over the headline for a template that shows \
         one (get_template's caption.kicker). locale "all" sends the same item to every language the set has. Each item is measured \
@@ -24,6 +24,7 @@ struct ProposeCaptionsTool: MCPTool {
         (Guideline 2.3.7), other platforms (2.3.10), beta or demo (2.2), placeholders (2.1), “coming soon” (2.3) \
         or “For Kids” (2.3.8). The others are queued together in Atlas's Proposals sheet; nothing changes \
         until the person accepts them, and accepted captions read "Suggested by" you until someone edits them. \
+        \(MCPToolDefinition.translationText) \
         Keep brand names and the glossary's terms untranslated. During a Screenshot Autopilot run, when \
         next_step asks for write_captions, pass the run's ID as run: the captions are saved right away instead \
         of queued, and the run checks them again. When it asks for write_artwork_texts, send items {locale, \
@@ -43,6 +44,12 @@ struct ProposeCaptionsTool: MCPTool {
                             "locale": ["type": "string"], "slot": ["type": "integer"], "headline": ["type": "string"], "subhead": ["type": "string"],
                             "kicker": ["type": "string", "description": "The short line over the headline, when the template shows one."],
                             "gloss": MCPToolDefinition.glossProperty,
+                            "means": MCPToolDefinition.meansProperty,
+                            "sounds": MCPToolDefinition.soundsProperty,
+                            "notes": MCPToolDefinition.notesProperty,
+                            "natural": MCPToolDefinition.naturalProperty,
+                            "naturalMeans": MCPToolDefinition.naturalMeansProperty,
+                            "drift": MCPToolDefinition.driftProperty,
                             "placement": [
                                 "type": "string", "enum": ["search", "header", "text"],
                                 "description": """
@@ -147,10 +154,26 @@ struct ProposeCaptionsTool: MCPTool {
                 return .failure(Refusal(message: layout.headline.refusalText + suffix))
             }
         }
-        let gloss = item["gloss"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let gloss = (item["means"]?.stringValue ?? item["gloss"]?.stringValue)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let translation: TranslationReading?
+        do {
+            translation = try MCPToolArguments(item.objectValue ?? [:]).translation()
+        } catch {
+            return .failure(Refusal(message: error.localizedDescription))
+        }
+        // The natural version (board 77) is checked like the headline it
+        // can replace: App Review's rules and the fit on every device.
+        if let natural = translation?.natural, case var .object(copy) = item {
+            copy["headline"] = .string(natural)
+            copy["natural"] = nil
+            copy["naturalMeans"] = nil
+            if case let .failure(refusal) = check(.object(copy), template: template, draft: draft) {
+                return .failure(Refusal(message: String(localized: "natural: \(refusal.message)", comment: "kind:error")))
+            }
+        }
         return .success(CaptionProposalItem(
             locale: locale.code, slot: slot, headline: headline, subhead: subhead, gloss: gloss?.isEmpty == false ? gloss : nil,
-            kicker: kicker?.isEmpty == false ? kicker : nil
+            kicker: kicker?.isEmpty == false ? kicker : nil, translation: translation
         ))
     }
 

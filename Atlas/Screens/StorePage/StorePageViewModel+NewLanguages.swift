@@ -296,6 +296,10 @@ extension StorePageViewModel {
     /// The toast's Undo: languages just added, or the last batch of
     /// suggestions.
     func undoToast() {
+        if let natural = naturalVersionUndo, natural.toastID == toast?.id {
+            undoNaturalVersion(id: natural.suggestionID)
+            return
+        }
         if addedLanguagesUndo != nil { undoAddingLanguages() } else { undoLastSuggestionBatch() }
     }
 

@@ -197,6 +197,33 @@ final class FieldSuggestionStore {
         return (suggestion, replacedIDs.isEmpty ? .queued : .replaced)
     }
 
+    // MARK: - Natural version (board 77)
+
+    /// Use Natural Version: the open suggestion's text becomes the
+    /// assistant's natural version, MEANS what that means. Returns it as
+    /// changed, or nil when it has none to use.
+    @discardableResult
+    func useNaturalVersion(_ id: FieldSuggestion.ID) -> FieldSuggestion? {
+        replaceText(of: id) { suggestion in suggestion.layers?.usingNaturalVersion(over: suggestion.value) }
+    }
+
+    /// Its Undo: the text the assistant sent first.
+    @discardableResult
+    func undoNaturalVersion(_ id: FieldSuggestion.ID) -> FieldSuggestion? {
+        replaceText(of: id) { suggestion in suggestion.layers?.undoingNaturalVersion() }
+    }
+
+    private func replaceText(
+        of id: FieldSuggestion.ID, with change: (FieldSuggestion) -> (value: String, layers: SuggestionLayers)?
+    ) -> FieldSuggestion? {
+        guard let index = suggestions.firstIndex(where: { $0.id == id }), isOpen(suggestions[index]),
+              let changed = change(suggestions[index]) else { return nil }
+        suggestions[index].value = changed.value
+        suggestions[index].layers = changed.layers
+        save()
+        return suggestions[index]
+    }
+
     // MARK: - Withdrawing
 
     /// An assistant takes back its own open suggestions: they're gone, as

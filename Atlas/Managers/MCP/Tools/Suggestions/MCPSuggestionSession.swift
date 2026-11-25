@@ -163,6 +163,7 @@ struct MCPSuggestionSession {
         case .valid:
             let issues = StoreTextGuidelineCheck.issues(in: item.value, for: field)
             guard issues.isEmpty else { throw .guidelines(issues) }
+            if let refusal = MCPNaturalCheck.refusal(item.layers, for: field) { throw .invalidValue(refusal) }
             return (field, locale)
         }
     }

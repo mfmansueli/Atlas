@@ -23,6 +23,9 @@ struct CaptionProposalItem: Codable, Hashable, Sendable, Identifiable {
     /// The short line over the headline, for a template that shows one;
     /// nil keeps the caption's.
     var kicker: String?
+    /// How natural the headline sounds, its phrases that read like a
+    /// translation and a natural version (board 77); nil when none came.
+    var translation: TranslationReading?
 
     enum Decision: String, Codable, Hashable, Sendable {
         case accepted

@@ -145,6 +145,8 @@ struct ScreenshotsLanguagePage: View {
                         caption: caption,
                         current: viewModel.currentHeadline(locale: caption.locale, slot: caption.slot),
                         isRightToLeft: locale.isRTL,
+                        onUseNaturalVersion: { Task { await viewModel.useNaturalCaption(caption) } },
+                        onUndoNaturalVersion: { Task { await viewModel.undoNaturalCaption(caption) } },
                         onDismiss: { Task { await viewModel.dismissCaption(caption) } },
                         onUseAndEdit: { Task { await viewModel.useAndEditCaption(caption) } },
                         // Immediate, so the caption leaves in the accept's spring.

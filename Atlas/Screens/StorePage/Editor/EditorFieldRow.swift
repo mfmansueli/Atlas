@@ -59,6 +59,9 @@ struct EditorFieldRow: View {
                     current: viewModel.value(field, in: locale),
                     suggested: suggestion.value,
                     meta: viewModel.suggestionMeta(suggestion),
+                    isRightToLeft: locale.isRTL,
+                    onUseNaturalVersion: { viewModel.useNaturalVersion(suggestion) },
+                    onUndoNaturalVersion: { viewModel.undoNaturalVersion(suggestion) },
                     onDismiss: { viewModel.dismissSuggestion(suggestion) },
                     onUseAndEdit: { viewModel.useAndEditSuggestion(suggestion) },
                     onAccept: { viewModel.acceptSuggestion(suggestion) }

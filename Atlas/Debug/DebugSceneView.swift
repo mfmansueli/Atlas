@@ -29,7 +29,7 @@ import SwiftUI
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
 /// `ProductPagesDebugScenes`, `TourDebugScenes`, `AutopilotButtonDebugScenes`, `MenuBarDebugScenes`,
-/// `DesignSystemDebugScenes`, `LoadingDebugScenes`, `PaywallDebugScenes`). Canvas names for states drawn
+/// `DesignSystemDebugScenes`, `LoadingDebugScenes`, `PaywallDebugScenes`, `TranslationsDebugScenes`). Canvas names for states drawn
 /// under another id resolve through `DesignSceneAliases`.
 struct DebugSceneView: View {
     let id: String
@@ -122,6 +122,7 @@ struct DebugSceneView: View {
             LoadingDebugScenes.view(for:),
             PaywallDebugScenes.view(for:),
             MCPGapsDebugScenes.view(for:),
+            TranslationsDebugScenes.view(for:),
         ]
         return areas.lazy.compactMap { $0(id) }.first
     }

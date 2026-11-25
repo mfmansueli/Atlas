@@ -24,7 +24,7 @@ struct ProposeInAppTextsTool: MCPTool {
         Accepted proposals are queued for the person to review in Atlas (status "queued"); a locale App \
         Store Connect doesn't have yet is created when they push, and needs a name (blockedReason says so). \
         Nothing reaches App Store Connect until they push. For a product's Review Notes for App Review (e.g. when \
-        a release changes what it unlocks), use propose_in_app_review_note.
+        a release changes what it unlocks), use propose_in_app_review_note. \(MCPToolDefinition.translationText)
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withConfidence([
@@ -81,7 +81,12 @@ struct ProposeInAppTextsTool: MCPTool {
         } ?? [Proposal(arguments)]
 
         var draft = try await MCPInAppTextsDraft.load(app: arguments.string("appId"), in: context.workspace)
-        let outcomes = proposals.map { draft.propose($0.text, column: $0.column, locale: $0.locale, by: context.clientName) }
+        let outcomes = proposals.map { proposal -> MCPInAppTextsDraft.Outcome in
+            if let field = draft.column(id: proposal.column)?.field, let refusal = MCPNaturalCheck.refusal(proposal.layers, for: field) {
+                return .refused(reason: refusal)
+            }
+            return draft.propose(proposal.text, column: proposal.column, locale: proposal.locale, by: context.clientName)
+        }
         let committed = draft.commit(to: context.workspace.changes)
 
         var results: [JSONValue] = []

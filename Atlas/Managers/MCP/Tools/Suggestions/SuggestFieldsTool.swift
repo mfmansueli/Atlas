@@ -33,8 +33,10 @@ struct SuggestFieldsTool: MCPTool {
         language). Give a one-sentence reason (at most \(AssistantTextLimits.why) characters: the strongest evidence; the \
         rest goes in details, at most \(AssistantTextLimits.details)), how sure you are as confidence 1–3, for a value not \
         in English a gloss (what it means in English, at most \(AssistantTextLimits.gloss)), and \
-        evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. A reason, details \
-        or gloss over its limit refuses the call with the reason. Per item, \
+        evidence such as {kind: "git", ref: "v1.3..4f2c91a"} or {kind: "code", ref: "File.swift:18"}. \
+        \(MCPToolDefinition.translationText) Keywords take means only; URLs none. A reason, details, gloss or means \
+        over its limit refuses the call with the reason; a natural over the field's limit or against App Review's \
+        rules refuses the item (invalid_value). Per item, \
         status is queued, unchanged (the field already has that value or you suggested it already), updated (you \
         suggested that value already and it took your new reason, evidence, details, confidence or gloss, same id), replaced (your older open \
         suggestion for the field was replaced: send a field again to change your value or its reason) or refused \

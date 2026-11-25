@@ -10,13 +10,19 @@ import SwiftUI
 /// blur (`ArrivingText`), together with the card's arrival; otherwise, and
 /// once they have arrived, it's plain text. Freshness is the card's own
 /// (`ArrivalLedger`, same key and date), read before the card claims it.
+/// `marks`: phrases that read like a translation (board 77), underlined in
+/// amber once the words have arrived, with `markHelp` as the tooltip.
 struct SuggestedText: View {
     let text: String
+    var marks: [String] = []
+    var markHelp: String = ""
 
     @State private var arrives: Bool
 
-    init(_ text: String, arrivalKey: String, arrivedAt: Date?, ledger: ArrivalLedger = .shared) {
+    init(_ text: String, arrivalKey: String, arrivedAt: Date?, marks: [String] = [], markHelp: String = "", ledger: ArrivalLedger = .shared) {
         self.text = text
+        self.marks = marks
+        self.markHelp = markHelp
         _arrives = State(initialValue: Self.isArriving(arrivalKey: arrivalKey, arrivedAt: arrivedAt, ledger: ledger))
     }
 
@@ -28,8 +34,11 @@ struct SuggestedText: View {
                     try? await Task.sleep(for: .seconds(ArrivingText.duration(wordCount: words) + 0.1))
                     arrives = false
                 }
-        } else {
+        } else if marks.isEmpty {
             Text(text)
+        } else {
+            Text(TranslationMarks.marked(text, phrases: marks))
+                .help(markHelp)
         }
     }
 

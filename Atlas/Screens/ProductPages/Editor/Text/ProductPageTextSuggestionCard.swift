@@ -53,16 +53,36 @@ struct ProductPageTextSuggestionCard: View {
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.ai)
                         .frame(width: 74, alignment: .leading)
-                    SuggestedText(suggestion.text, arrivalKey: arrivalKey, arrivedAt: suggestion.createdAt)
-                        .font(.callout)
-                        .textSelection(.enabled)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
-                        .accessibilityIdentifier("pages.textSuggestion.value")
+                    SuggestedText(
+                        suggestion.text,
+                        arrivalKey: arrivalKey,
+                        arrivedAt: suggestion.createdAt,
+                        marks: shownTranslation?.markedPhrases ?? [],
+                        markHelp: shownTranslation?.markHelp ?? ""
+                    )
+                    .font(.callout)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
+                    .accessibilityIdentifier("pages.textSuggestion.value")
+                }
+                if lines.showsMeans, let means = suggestion.layers?.means {
+                    GridRow {
+                        TranslationMeansLabel()
+                            .frame(width: 74, alignment: .leading)
+                        TranslationMeansText(means: means, drift: suggestion.layers?.translation.flatMap { $0.usesNaturalVersion ? nil : $0.drift } ?? [])
+                    }
                 }
             }
-            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
+            if let translation = shownTranslation {
+                TranslationSoundsBlock(
+                    translation: translation,
+                    client: suggestion.source,
+                    onUseNaturalVersion: suggestion.isRefused ? nil : { viewModel.useNaturalVersion(suggestion) },
+                    onUndoNaturalVersion: { viewModel.undoNaturalVersion(suggestion) }
+                )
+            }
             HStack(spacing: Spacing.xSmall) {
                 Text("\(suggestion.text.count) / \(ProductPageField.promotionalTextLimit)")
                     .font(.footnote.monospacedDigit())
@@ -86,6 +106,17 @@ struct ProductPageTextSuggestionCard: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Suggested promotional text from \(suggestion.source)"))
         .accessibilityIdentifier("pages.textSuggestion")
+    }
+
+    /// Board 77's lines for the page's language.
+    private var lines: TranslationLines {
+        TranslationLines.lines(locale: suggestion.locale, kind: .text)
+    }
+
+    private var shownTranslation: TranslationReading? {
+        guard lines.showsSounds, let translation = suggestion.layers?.translation,
+              translation.sounds != nil || translation.usesNaturalVersion else { return nil }
+        return translation
     }
 
     /// The text it shows: a new suggestion in its place arrives again.

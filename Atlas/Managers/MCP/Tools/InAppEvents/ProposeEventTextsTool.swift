@@ -25,8 +25,9 @@ struct ProposeEventTextsTool: MCPTool {
         winter event isn't one where December is summer), in the voice of that language's store page. `why` is one \
         sentence for the person on why it reads this way (at most \(AssistantTextLimits.why) characters; the rest goes in \
         `details`, at most \(AssistantTextLimits.details)), `confidence` how sure you are (1–3) and `gloss` what the name \
-        means in English (at most \(AssistantTextLimits.gloss)). Over a limit, that language is refused with its count: \
-        shorten it and send it again. A \
+        means in English (at most \(AssistantTextLimits.gloss)); means, sounds and notes say what all three say and \
+        how natural they read, from a second read as a native speaker (no natural: there are three texts). \
+        Over a limit, that language is refused with its count: shorten it and send it again. A \
         language get_in_app_events lists in `queuedTexts` already has texts waiting in Review & Push and is refused: \
         leave it. Only \
         events that get_in_app_events marks editable take texts. Sending a language again replaces its waiting \
@@ -58,7 +59,7 @@ struct ProposeEventTextsTool: MCPTool {
                             "longDescription": MCPToolDefinition.string("At most 120 characters."),
                             "why": MCPToolDefinition.why("Why it reads this way."),
                             "revise": ["type": "boolean", "description": "Revise this language's written texts."],
-                        ], gloss: true)),
+                        ], gloss: true, natural: false)),
                     ],
                 ],
                 "revise": [
