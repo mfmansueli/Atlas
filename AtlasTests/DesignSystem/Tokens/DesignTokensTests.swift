@@ -207,6 +207,8 @@ struct DesignTokensTests {
         let tokens: [String: MotionToken] = [
             "fast": MotionTiming.fast, "base": MotionTiming.base, "slow": MotionTiming.slow, "step": MotionTiming.step,
             "layout": MotionTiming.layout, "tick": MotionTiming.tick, "breathe": MotionTiming.breathe,
+            "sentLift": MotionTiming.sentLift, "sentFlyX": MotionTiming.sentFlyX, "sentFlyY": MotionTiming.sentFlyY,
+            "sentLand": MotionTiming.sentLand, "sentRing": MotionTiming.sentRing,
         ]
         for (name, token) in tokens {
             let entry = try #require(motion[name] as? [String: Any], "motion.\(name)")
@@ -235,6 +237,12 @@ struct DesignTokensTests {
         #expect(MotionTiming.staggerLimit == 6)
         #expect(MotionTiming.sweep == 2.8)
         #expect(MotionTiming.breathe == MotionToken(duration: 1.5, curve: .bezier(x1: 0.42, y1: 0, x2: 0.58, y2: 1)))
+        // Board 80: sent to Review & Push.
+        #expect(MotionTiming.sentLift == MotionToken(duration: 0.12, curve: .bezier(x1: 0.2, y1: 0.7, x2: 0.2, y2: 1)))
+        #expect(MotionTiming.sentFlyX == MotionToken(duration: 0.6, curve: .bezier(x1: 0.25, y1: 0.7, x2: 0.35, y2: 1)))
+        #expect(MotionTiming.sentFlyY == MotionToken(duration: 0.6, curve: .bezier(x1: 0.65, y1: 0, x2: 0.85, y2: 0.55)))
+        #expect(MotionTiming.sentLand.curve == .spring(response: 0.5, dampingFraction: 0.5))
+        #expect(MotionTiming.sentRing == MotionToken(duration: 0.7, curve: .easeOut))
     }
 
     // MARK: - Helpers

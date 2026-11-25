@@ -7,8 +7,8 @@ import SwiftUI
 
 /// The detail column for the selected app: the toolbar (board 57: the
 /// section's title over its state, with “N not pushed” opening Review &
-/// Push on that section; the Autopilot button, Refresh, Activity and
-/// Review & Push; while the sidebar is hidden the section menu first) over
+/// Push on that section; the Autopilot button, Refresh and Activity; while
+/// the sidebar is hidden the section menu first) over
 /// the current section, and the window's toasts (Suggest Everything's
 /// total when it finishes).
 struct AppWorkspaceView: View {
@@ -82,6 +82,15 @@ struct AppWorkspaceView: View {
                 // section, above the toast while one shows (the workspace's or
                 // the section's own: Pricing's, Store Page's…).
                 .overlayPreferenceValue(ToastShownPreferenceKey.self, alignment: .bottomTrailing) { chatCorner(isSectionToastShown: $0) }
+                // Review & Push at the bottom (board 80). The Autopilot
+                // bar's dock takes it into its trailing slot.
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    HStack {
+                        Spacer(minLength: 0)
+                        ReviewPushPill()
+                    }
+                    .padding(Spacing.medium)
+                }
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
         // “4.7 ★” in Ratings & Reviews' line, from the answers the
@@ -182,17 +191,6 @@ struct AppWorkspaceView: View {
                         .reportsToolbarRoom(.proButton)
                 }
                 .sharedBackgroundVisibility(.hidden)
-            }
-            ToolbarSpacer(.fixed, placement: .primaryAction)
-            ToolbarItem(placement: .primaryAction) {
-                ReviewPushToolbarButton(
-                    count: changes.totalCount + push.screenshots.imageCount + push.screenshots.extras.itemCount,
-                    sending: push.sendingProgress,
-                    isCompact: toolbarLayout.isReviewCompact
-                ) {
-                    navigator.isReviewPresented = true
-                }
-                .tourTip(.reviewPush, arrowEdge: .bottom)
             }
         }
         // The items say how much room they take; the labels fold only

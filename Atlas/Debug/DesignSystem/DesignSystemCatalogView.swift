@@ -23,6 +23,7 @@ struct DesignSystemCatalogView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.xxxLarge) {
                 CatalogEffectsSection()
+                CatalogSentSection()
                 CatalogButtonsSection()
                 CatalogBadgesSection()
                 CatalogLoadingSection()
