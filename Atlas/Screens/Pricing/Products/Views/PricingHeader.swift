@@ -6,10 +6,10 @@
 import SwiftUI
 
 /// The top of Pricing's Prices page: what Pricing changes, Prices |
-/// Retention with the Prices count, Add Subscription…, and More (Add In-App
-/// Purchase…, the pricing mode, Customize…, every price of a product, and
-/// Restore Dismissed). The prototype's header holds only the segments and
-/// Add Subscription…, so the rest waits in More.
+/// Retention with the Prices count, and More (Add In-App Purchase…, the
+/// pricing mode, Customize…, every price of a product, and Restore
+/// Dismissed). The prototype's header holds only the segments, so the rest
+/// waits in More; Add Subscription… is the toolbar's page action (board 80).
 struct PricingHeader: View {
     @Bindable var viewModel: PricingViewModel
 
@@ -27,13 +27,6 @@ struct PricingHeader: View {
             )
             .controlSize(.small)
             .accessibilityIdentifier("pricing.page")
-            Button {
-                viewModel.isNewSubscriptionSheetPresented = true
-            } label: {
-                Label("Add Subscription…", systemImage: "plus")
-            }
-            .buttonBorderShape(.capsule)
-            .accessibilityIdentifier("pricing.addSubscription")
             moreMenu
         }
     }

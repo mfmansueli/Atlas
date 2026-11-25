@@ -6,8 +6,8 @@
 import SwiftUI
 
 /// No pages yet (board 74 · 2): the three uses of a custom product page in
-/// one sentence, naming New Page… at the top (beside "0 of 70") and the
-/// toolbar's Suggest Pages…, and Apple's limit in the small line. No
+/// one sentence, naming New Page… in the toolbar (board 80) and
+/// Autopilot's Suggest Pages…, and Apple's limit in the small line. No
 /// button of its own: both are already on screen.
 struct ProductPagesEmptyView: View {
     let appName: String

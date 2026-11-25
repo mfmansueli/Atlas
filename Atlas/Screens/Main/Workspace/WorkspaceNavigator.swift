@@ -89,6 +89,10 @@ final class WorkspaceNavigator {
     /// sidebar, the section menu, ⌘1–⌘9): a section showing one item's
     /// page goes back to its list (Pricing's product page, board 73).
     private(set) var sectionChosenAgainCount = 0
+    /// How each section's page action in the toolbar shows (board 80), as
+    /// its page reports it (`reportsPageAction(_:for:)`); a section that
+    /// hasn't reported has it on.
+    var pageActionStates: [AppWorkspaceSection: WorkspacePageActionState] = [:]
 
     init(section: AppWorkspaceSection = .overview) {
         self.section = section

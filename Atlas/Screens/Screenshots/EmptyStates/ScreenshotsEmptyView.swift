@@ -5,9 +5,9 @@
 
 import SwiftUI
 
-/// No screenshots yet (board 74 · 4). Screenshots has no create button at
-/// the top, so Add Screenshots… is in the middle; the toolbar's Make
-/// Screenshots… is the other way, named in the sentence.
+/// No screenshots yet (board 74 · 4): Add Screenshots… is the toolbar's
+/// page action (board 80) and Make Screenshots… is Autopilot's, both named
+/// in the sentence. No button of its own: both are already on screen.
 struct ScreenshotsEmptyView: View {
     @Bindable var viewModel: ScreenshotsViewModel
 
@@ -21,13 +21,9 @@ struct ScreenshotsEmptyView: View {
                 systemImage: AppWorkspaceSection.screenshots.systemImage,
                 text: String(localized: """
                 Each device \(viewModel.app.name) runs on needs at least one screenshot, and can have up to 10 in each language. \
-                Add your own, or click Make Screenshots and Autopilot makes them from the app.
+                Click Add Screenshots to add your own, or Make Screenshots and Autopilot makes them from the app.
                 """, comment: "kind:description")
-            ) {
-                Button(String(localized: "Add Screenshots…", comment: "kind:button")) { viewModel.addScreenshotsByHand() }
-                    .primaryButton()
-                    .accessibilityIdentifier("screenshots.empty.add")
-            }
+            )
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.top, Spacing.small)

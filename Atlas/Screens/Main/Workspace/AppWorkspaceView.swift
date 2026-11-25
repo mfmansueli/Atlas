@@ -148,6 +148,7 @@ struct AppWorkspaceView: View {
             }
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
+            pageActionItem
             // Its own capsule, drawn by the button so the light can run
             // along its edge: a request's token lands on it.
             ToolbarItem(placement: .primaryAction) {
@@ -428,6 +429,21 @@ struct AppWorkspaceView: View {
             InAppEventsSectionView(app: app, services: services)
         case .nominations:
             NominationsSectionView(app: app, services: services)
+        }
+    }
+}
+
+// MARK: - Page action
+
+extension AppWorkspaceView {
+    /// The page's own create action (board 80), where the Autopilot button
+    /// was: New Page…, New Event…; sections without one have only the title.
+    @ToolbarContentBuilder
+    private var pageActionItem: some ToolbarContent {
+        if let action = navigator.section.pageAction, let state = navigator.pageActionState(for: navigator.section), state.isShown {
+            ToolbarItem(placement: .primaryAction) {
+                WorkspacePageActionItem(action: action, state: state) { navigator.runPageAction(appID: app.id) }
+            }
         }
     }
 }

@@ -39,6 +39,9 @@ extension PricingViewModel {
             try? await Task.sleep(for: .milliseconds(400))
             if (matrix?.pendingCount ?? 0) > 0 { openSchedule() }
             return true
+        case .pageAction:
+            startPageAction()
+            return true
         default:
             return handleFromAnalytics(intent)
         }

@@ -43,6 +43,8 @@ struct ScreenshotsSectionView: View {
         .background(Palette.content)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.screenshots")
+        // Add Screenshots… in the toolbar: off until the sets are read.
+        .reportsPageAction(pageActionState, for: .screenshots)
         .task(id: app.id) { await open() }
         .onChange(of: navigator.refreshCount) {
             Task {
@@ -50,6 +52,12 @@ struct ScreenshotsSectionView: View {
             }
         }
         .onChange(of: navigator.intent) { handleIntent() }
+    }
+
+    /// Add Screenshots… in the toolbar, for this app's sets.
+    private var pageActionState: WorkspacePageActionState {
+        guard let model = shownModel, model.app.id == app.id, let screenshots = model.screenshots else { return .disabled(reason: nil) }
+        return screenshots.pageActionState
     }
 
     /// The kept model before `open()` has run, so a section read ahead (or
@@ -126,6 +134,11 @@ struct ScreenshotsSectionView: View {
             default: nil
             }
             screenshots.studio.openGuidedAutopilot(making: part)
+        case .pageAction:
+            // The toolbar's Add Screenshots…, once the sets are read.
+            guard let screenshots = model?.screenshots, screenshots.isLoaded else { return }
+            navigator.consume(intent)
+            screenshots.startPageAction()
         default:
             break
         }

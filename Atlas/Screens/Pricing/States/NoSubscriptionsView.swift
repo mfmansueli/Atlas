@@ -6,8 +6,8 @@
 import SwiftUI
 
 /// What Pricing shows for an app that sells nothing yet (board 74, README-DS
-/// §14): Add Subscription… at the top as on every Pricing page, without
-/// Prices | Retention, then the empty state with the assistant's Ask,
+/// §14): Add Subscription… in the toolbar as on every Pricing page (board
+/// 80), no Prices | Retention, then the empty state with the assistant's Ask,
 /// Add In-App Purchase… and the new subscriptions and in-app purchases
 /// already waiting in Review & Push.
 struct NoSubscriptionsView: View {
@@ -15,17 +15,9 @@ struct NoSubscriptionsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SectionHeader(subtitle: String(localized: "What \(viewModel.app.name) costs, in each country and region.", comment: "kind:description")) {
-                Button {
-                    viewModel.isNewSubscriptionSheetPresented = true
-                } label: {
-                    Label(String(localized: "Add Subscription…", comment: "kind:button"), systemImage: "plus")
-                }
-                .primaryButton(isDefault: false)
-                .accessibilityIdentifier("pricing.createSubscription")
-            }
-            .padding(.horizontal, Spacing.xLarge)
-            .padding(.top, Spacing.large)
+            SectionHeader(subtitle: String(localized: "What \(viewModel.app.name) costs, in each country and region.", comment: "kind:description")) {}
+                .padding(.horizontal, Spacing.xLarge)
+                .padding(.top, Spacing.large)
             if let appPriceAvailability = viewModel.appPriceAvailability {
                 // A new app has no price or availability either: they come
                 // first, as on App Store Connect's Pricing and Availability.

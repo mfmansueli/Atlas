@@ -31,10 +31,27 @@ struct NominationsSectionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.nominations")
+        // New Nomination… in the toolbar: off until they're read.
+        .reportsPageAction(pageActionState, for: .nominations)
         .task(id: app.id) { await start() }
         .onChange(of: navigator.refreshCount) {
             Task { await viewModel?.load(force: true) }
         }
+        .onChange(of: navigator.intent) { handleIntent() }
+    }
+
+    /// New Nomination… in the toolbar, for this app's nominations.
+    private var pageActionState: WorkspacePageActionState {
+        guard let viewModel, viewModel.app.id == app.id else { return .disabled(reason: nil) }
+        return viewModel.pageActionState
+    }
+
+    /// The toolbar's New Nomination…, once the nominations are read.
+    private func handleIntent() {
+        guard let viewModel, viewModel.app.id == app.id, viewModel.state.value != nil, navigator.intent == .pageAction,
+              navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
+        navigator.consume(.pageAction)
+        viewModel.startPageAction()
     }
 
     private var store: NominationsStore { injectedStore ?? .shared }
@@ -85,6 +102,7 @@ struct NominationsSectionView: View {
         #if DEBUG
         launch?.apply(to: model)
         #endif
+        handleIntent()
     }
 
     /// Change Key…: Settings → Accounts.

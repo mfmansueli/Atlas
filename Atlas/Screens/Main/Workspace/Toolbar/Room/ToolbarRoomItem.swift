@@ -21,11 +21,13 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     case reviewLabel
     /// Pro, while the person is on Free.
     case proButton
+    /// The section's page action (board 80): New Page…, Add Subscription….
+    case pageAction
 
     /// An item of its own, with a gap beside it; a label grows its button.
     var isItem: Bool {
         switch self {
-        case .proButton: true
+        case .proButton, .pageAction: true
         case .title, .sectionMenu, .autopilotLabel, .reviewLabel: false
         }
     }
@@ -34,7 +36,7 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     var isLabel: Bool {
         switch self {
         case .autopilotLabel, .reviewLabel: true
-        case .title, .sectionMenu, .proButton: false
+        case .title, .sectionMenu, .proButton, .pageAction: false
         }
     }
 
@@ -42,7 +44,7 @@ enum ToolbarRoomItem: Hashable, CaseIterable, Sendable {
     var isLead: Bool {
         switch self {
         case .title, .sectionMenu: true
-        case .autopilotLabel, .reviewLabel, .proButton: false
+        case .autopilotLabel, .reviewLabel, .proButton, .pageAction: false
         }
     }
 }

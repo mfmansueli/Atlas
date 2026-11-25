@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// No nominations yet (board 74 · 1): what a nomination is and how to
-/// start, naming New Nomination… at the top and the toolbar's Suggest a
+/// start, naming New Nomination… in the toolbar (board 80) and Suggest a
 /// Nomination…, with what Apple says back (nothing) in the small line. No
 /// button of its own: both are already on screen.
 struct NominationsEmptyState: View {

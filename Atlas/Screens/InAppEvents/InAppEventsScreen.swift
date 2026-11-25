@@ -42,18 +42,11 @@ struct InAppEventsScreen: View {
             if viewModel.state.value != nil {
                 // Nothing to write texts for yet: the toolbar's Suggest an
                 // Event… is the assistant's (board 74 · 3).
+                // New Event… is the toolbar's page action (board 80).
                 if !viewModel.showsEmptyState {
                     InAppEventsAskButton(app: viewModel.app)
                         .buttonBorderShape(.capsule)
                 }
-                Button {
-                    viewModel.isNewEventPresented = true
-                } label: {
-                    Label("New Event…", systemImage: "plus")
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .accessibilityIdentifier("events.new")
             }
         }
     }
