@@ -5,8 +5,9 @@
 
 import SwiftUI
 
-/// The Autopilot bar's shape (board 80): a raised rounded surface over the
-/// page. Closed it holds the strip and the field; open, the conversation,
+/// The Autopilot bar's shape (board 80): a rounded Liquid Glass surface
+/// over the page, which shows through it as it scrolls under (solid with
+/// Reduce Transparency). Closed it holds the strip and the field; open, the conversation,
 /// as tall as `openHeight`. It's anchored at its bottom, so it grows up
 /// (`AutopilotBarOpening`). Its edge is purple while the assistant waits
 /// for the person and amber when it stopped.
@@ -21,6 +22,7 @@ struct AutopilotBarSurface<Closed: View, Open: View>: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     private var shape: RoundedRectangle {
         RoundedRectangle(cornerRadius: Radius.sheet, style: .continuous)
@@ -38,12 +40,23 @@ struct AutopilotBarSurface<Closed: View, Open: View>: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isOpen ? openHeight : nil, alignment: .bottom)
-        .background(Palette.raised, in: shape)
+        .background { surface }
         .overlay { shape.strokeBorder(edgeColor, lineWidth: edgeWidth) }
         .clipShape(shape)
         .depth(.popover)
         .animation(opening.animation(opening: isOpen), value: isOpen)
         .animation(MotionTiming.base.animation, value: stripKind)
+    }
+
+    /// The system's Liquid Glass, so the page shows through; solid with
+    /// Reduce Transparency.
+    @ViewBuilder
+    private var surface: some View {
+        if reduceTransparency {
+            shape.fill(Palette.raised)
+        } else {
+            shape.fill(.clear).glassEffect(.regular, in: shape)
+        }
     }
 
     private var edgeColor: Color {

@@ -84,7 +84,7 @@ struct AutopilotBarClosedField<More: View>: View {
                 Text("More", comment: "kind:button · the Autopilot bar's other actions")
             }
             .menuStyle(.button)
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .controlSize(.large)
             .menuIndicator(.hidden)
             .fixedSize()

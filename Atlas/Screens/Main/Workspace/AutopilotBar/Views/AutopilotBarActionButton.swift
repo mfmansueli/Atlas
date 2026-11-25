@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// One of the two actions beside the closed bar's field (board 80): it
-/// starts AI work, so it's a secondary button with a purple label (README
-/// — Design system §4), never filled. A click sends the request like a
+/// starts AI work, so it's never filled: the Toolbar button (README —
+/// Design system §4), native Liquid Glass like More and Review & Push
+/// beside it, with a purple label. A click sends the request like a
 /// message. On Free, an action that's part of Pro carries PRO and opens
 /// the paywall.
 struct AutopilotBarActionButton: View {
@@ -23,7 +24,8 @@ struct AutopilotBarActionButton: View {
                 if item.isPro { ProChip() }
             }
         }
-        .secondaryButton()
+        .buttonStyle(.glass)
+        .controlSize(.large)
         .fixedSize()
         .disabled(!item.isEnabled)
         .help(Text("\(item.action.subtitle ?? item.title) · sends it to Autopilot", comment: "kind:tooltip · an action beside the Autopilot bar's field"))
