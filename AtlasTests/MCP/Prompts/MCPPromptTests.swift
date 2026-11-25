@@ -25,7 +25,7 @@ struct MCPPromptTests {
         let named = MCPPrompt.translateMissing.message(app: "Lumen Journal")
         let text = named["messages"]?.arrayValue?.first?["content"]?["text"]?.stringValue ?? ""
         #expect(text.contains("the app “Lumen Journal”"))
-        #expect(text.contains("propose_listing_text"))
+        #expect(text.contains("suggest_fields"))
 
         let unnamed = MCPPrompt.whatsNewFromGit.message(app: nil)
         let unnamedText = unnamed["messages"]?.arrayValue?.first?["content"]?["text"]?.stringValue ?? ""

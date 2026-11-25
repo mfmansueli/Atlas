@@ -109,7 +109,7 @@ enum MCPEndpoint {
     get_review_risks: each risk names its guideline and the propose_ tool that fixes it; confirm or clear the \
     project checks with report_review_risk. Read only what you need: whole answers can outgrow what you take in at \
     once, so get_listing takes locales and fields (e.g. fields: ["whatsNew"]) and get_in_app_events takes eventId \
-    and include. \(StoreTextRules.summary) Screenshot Autopilot runs are driven by you: once the person \
+    and include. \(StoreTextRules.summary) \(NativeTranslationFlow.instructions) Screenshot Autopilot runs are driven by you: once the person \
     starts one, call get_capture_plan, then next_step after each step until it says done. A simulator this Mac \
     lacks while its runtime is installed, Atlas makes itself (next_step waits meanwhile): report a device with \
     affectsDevice only when its runtime is missing. When the app's \

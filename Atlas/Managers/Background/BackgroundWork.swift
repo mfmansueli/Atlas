@@ -193,7 +193,8 @@ final class BackgroundWork {
         }
         if let run = suggestions.run, run.isRunning {
             jobs.append(BackgroundJob(
-                id: "suggest-everything", kind: .suggestEverything, title: String(localized: "Suggest Everything"),
+                id: "suggest-everything", kind: .suggestEverything,
+                title: run.kind == .translation ? String(localized: "Translating", comment: "kind:title") : String(localized: "Suggest Everything"),
                 fraction: run.fraction, detail: [appName(run.appID), run.progressText].joined(separator: " · ")
             ))
         }

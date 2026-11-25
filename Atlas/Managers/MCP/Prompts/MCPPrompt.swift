@@ -74,17 +74,22 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
 
     var requiredTools: Set<String> {
         switch self {
-        case .translateMissing: ["list_apps", "list_missing_translations", "get_listing", "propose_listing_text"]
+        case .translateMissing: ["list_apps", "list_missing_translations", "begin_translation", "get_translation_brief", "suggest_fields", "end_suggestions"]
         case .fillPrivacyFromCode: ["list_apps", "get_privacy_questionnaire", "propose_privacy_answers"]
         case .fillAgeRating: ["list_apps", "get_age_rating", "propose_age_rating"]
         case .fillCompliance: ["list_apps", "get_compliance", "propose_compliance_answers"]
         case .checkAppReview: ["list_apps", "get_review_risks", "report_review_risk"]
         case .whatsNewFromGit: ["list_apps", "get_listing", "propose_listing_text"]
-        case .translateCaptions: ["list_apps", "get_screenshot_context", "get_captions", "get_capture", "measure_caption", "propose_captions"]
+        case .translateCaptions: [
+                "list_apps", "get_screenshot_context", "get_captions", "get_capture", "measure_caption", "propose_captions", "begin_translation",
+                "get_translation_brief", "end_suggestions",
+            ]
         case .shortenOverflowingCaptions: ["list_apps", "get_captions", "measure_caption", "propose_captions"]
         case .reviseTemplate: ["list_apps", "get_template", "get_captions", "measure_caption", "render_preview", "propose_template"]
         case .suggest: ["list_apps", "get_store_page", "get_app_information", "suggest_fields"]
-        case .suggestAll: ["list_apps", "get_store_page", "get_app_information", "begin_suggestions", "suggest_fields", "end_suggestions"]
+        case .suggestAll: [
+                "list_apps", "get_store_page", "get_app_information", "begin_suggestions", "suggest_fields", "end_suggestions", "get_translation_brief",
+            ]
         case .runScreenshots: [
                 "list_apps", "get_capture_plan", "update_capture_plan", "report_capture", "report_capture_problem", "next_step",
                 "get_design_brief", "propose_direction", "revise_direction", "propose_captions", "report_app_support",
@@ -143,12 +148,13 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case nil:
             "Store Page text (What’s New, promotional text, subtitle) and App Information and App Review details"
         }
+        let languages = area == .appInformation ? "" : NativeTranslationFlow.otherLanguages(withRun: false) + " "
         return """
         Suggest \(what) for \(appPhrase) in Atlas. Call list_apps to get its appId, then get_store_page \
         (each language's texts, the limits in characters or bytes, and the suggestions already open, so you don't \
         repeat them) and get_app_information (copyright, categories, content rights, release and App Review contact and notes). \
-        Read the project: git log since the last release tag for What’s New, the README and the app's strings for \
-        promotional text and subtitles, and the code for App Review notes such as sign-in, demo data and hidden \
+        \(languages)Read the project: git log since the last release tag for What’s New, the README and the app's \
+        strings for promotional text and subtitles, and the code for App Review notes such as sign-in, demo data and hidden \
         features. If App Review's contact (first name, last name, phone, email) is empty, suggest it from what \
         the project shows, such as a support or contact email in the app or its docs, or the git author (git \
         config user.name and user.email), with that as evidence; leave out what you can't find, and never make \
@@ -185,16 +191,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         case .checkAppReview:
             checkAppReviewInstructions(appPhrase: appPhrase)
         case .translateMissing:
-            """
-            Use Atlas to translate the missing store-page fields of \(appPhrase). Call list_apps to get its \
-            appId, then list_missing_translations for the editable version. For each missing field, read the source \
-            text and the character limit, write a natural translation for that locale that fits the limit, and call \
-            propose_listing_text. Keep brand and product names untranslated, as well as any terms in the glossary \
-            get_listing returns. \(StoreTextRules.summary) Leave out what breaks a rule rather than translating \
-            it. If a proposal is refused, read the reason, fix the text and propose again. When \
-            you're done, summarize what you proposed and anything you skipped. The person reviews everything in \
-            Atlas before it's pushed.
-            """
+            Self.translateMissingInstructions(appPhrase: appPhrase)
         case .fillPrivacyFromCode:
             """
             Draft the App Privacy answers of \(appPhrase) from this project, with Atlas. Call \
@@ -282,7 +279,8 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
         entry {area, locale | page, device, field} per field you'll suggest, leaving out locked fields and the ones the \
         person changed; it returns a run and the entries it skipped. Send the suggestions with suggest_fields \
         and that run, in as many calls as you like, each with the value, a one-sentence reason and evidence \
-        (git range, file and line, or review). \(StoreTextRules.summary) Where a field's current text breaks one \
+        (git range, file and line, or review). \(NativeTranslationFlow.otherLanguages(withRun: true)) \
+        \(StoreTextRules.summary) Where a field's current text breaks one \
         (get_store_page's states say so), suggest a version that doesn't. If an item is refused, read the reason, \
         fix it and send it again; run_stopped means the person stopped receiving, so stop. Call end_suggestions when you're \
         done. Then call get_in_app_texts and, for each missing subscription group display name and each missing \
@@ -370,15 +368,7 @@ enum MCPPrompt: String, CaseIterable, Identifiable, Sendable {
             the next version.
             """
         default:
-            """
-            Use Atlas to translate the missing screenshot captions of \(appPhrase). Call list_apps to get \
-            its appId, then get_screenshot_context for the slots, the locales in scope and the primary captions, \
-            and get_captions to find the slots without a caption. Use get_capture to see the screen a caption \
-            describes. Write natural, short marketing captions in each language, keep brand names untranslated, \
-            check each with measure_caption until it fits, and send them with propose_captions, one call per \
-            locale, saying why. \(StoreTextRules.summary) If an item is refused, read how much it’s over, shorten it and propose again. \
-            The person accepts or rejects them in Atlas; nothing is pushed.
-            """
+            Self.translateCaptionsInstructions(appPhrase: appPhrase)
         }
     }
 }

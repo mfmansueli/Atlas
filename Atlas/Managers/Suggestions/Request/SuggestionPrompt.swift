@@ -19,7 +19,7 @@ enum SuggestionPrompt {
             let primary = primaryLanguage ?? String(localized: "the primary language")
             return String(localized: """
             Suggest Store Page text for \(subject) in Atlas: What’s New, promotional text and subtitle, in \
-            \(primary) and in every language that has a translation.
+            \(primary) and in every language that has a translation. \(NativeTranslationFlow.otherLanguages(withRun: false))
             """)
         case .appInformation:
             return String(localized: """

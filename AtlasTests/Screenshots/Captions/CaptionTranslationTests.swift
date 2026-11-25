@@ -188,7 +188,7 @@ struct CaptionTranslationTests {
         let glossary = TranslationGlossary(terms: ["Lumen", "Face ID"])
         let prompt = CaptionAssistantPrompt(appName: "Lumen Journal", versionString: "1.4", glossary: glossary)
         #expect(prompt.slashCommand == "/mcp__atlas__translate_captions Lumen Journal")
-        #expect(prompt.text.hasPrefix("Use Atlas to translate the empty screenshot captions for Lumen Journal 1.4."))
+        #expect(prompt.text.hasPrefix("Use Atlas to translate the missing screenshot captions of Lumen Journal 1.4, one native-speaker agent per language."))
         #expect(prompt.text.contains("Keep “Lumen” and “Face ID” untranslated"))
     }
 }

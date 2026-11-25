@@ -15,7 +15,8 @@ struct ListMissingTranslationsTool: MCPTool {
         Lists the store-listing fields that are empty in a locale while the primary locale has text, for the \
         newest editable version of an app: per locale, each field with its source text in the primary locale and \
         its limit. Fields already proposed or waiting in review don't count as missing. URLs (copyAsIs) are \
-        copied, not translated. Translate each field and send it with propose_listing_text.
+        copied, not translated. For several languages, start begin_translation with them: one native-speaker agent \
+        writes each language. For one field in one language, send it with propose_listing_text.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
