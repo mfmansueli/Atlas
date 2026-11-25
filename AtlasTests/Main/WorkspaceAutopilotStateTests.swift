@@ -100,7 +100,7 @@ struct WorkspaceAutopilotStateTests {
         #expect(five.announcementKey != WorkspaceAutopilotState.running("Localizing · 2 of 18 languages").announcementKey)
         #expect(WorkspaceAutopilotState.needsYou("Choose the Look").announcementKey == "needs:Choose the Look")
         #expect(WorkspaceAutopilotState.idle.announcementKey == nil)
-        #expect(AutopilotToolbarButton.announcement("Making screenshots · 5 of 10 captures") == "Autopilot, Making screenshots, 5 of 10 captures")
+        #expect(AutopilotBarStrip.announcement("Making screenshots · 5 of 10 captures") == "Autopilot, Making screenshots, 5 of 10 captures")
     }
 
     @Test func eachTurnHasTheButtonsWords() {

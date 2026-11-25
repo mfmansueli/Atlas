@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R)
-/// in View, a Product menu with Run Autopilot (⌥⌘A, the toolbar Autopilot
-/// button's action), Review & Push (⇧⌘P) and Activity, plus the
+/// in View, a Product menu with Run Autopilot (⌥⌘A, the Autopilot bar's
+/// own action), Review & Push (⇧⌘P), Activity and the Autopilot bar's
+/// conversation (⌘J), plus the
 /// section-specific commands that work through `WorkspaceIntent`. macOS 26
 /// draws the symbol of every command with one, so each item with a
 /// standard symbol has it (README-DS §13); lists of choices don't.
@@ -69,9 +70,11 @@ struct WorkspaceCommands: Commands {
                 Button("Review & Push…", systemImage: "arrow.up.circle") { navigator?.isReviewPresented = true }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
                 Button("Activity", systemImage: "clock") { navigator?.isActivityPresented = true }
-                // The chat in the window's corner (board 69).
-                Button("Assistant Chat", systemImage: "text.bubble") { AssistantChatCenter.shared.toggle() }
-                    .keyboardShortcut("j")
+                // Opens and closes the Autopilot bar (board 80).
+                Button(String(localized: "Ask Autopilot", comment: "kind:menu-item · opens the Autopilot bar's conversation"), systemImage: "sparkles") {
+                    AssistantChatCenter.shared.toggle()
+                }
+                .keyboardShortcut("j")
             }
             .disabled(navigator == nil)
         }

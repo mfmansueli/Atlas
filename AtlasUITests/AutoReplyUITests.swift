@@ -40,9 +40,9 @@ final class AutoReplyUITests: XCTestCase {
         app.launch(debugScene: "ar")
         let pause = element("autoReply.strip.pause")
         XCTAssertTrue(pause.waitForExistence(timeout: 15))
-        let toolbar = element("workspace.autopilot")
-        // The split button's value is its menu's item; the label says the state.
-        XCTAssertTrue(waitUntil { toolbar.label.contains("1 Review Needs You") }, toolbar.label)
+        let strip = element("autopilotBar.strip")
+        // The Autopilot bar's strip says what needs the person.
+        XCTAssertTrue(waitUntil { strip.label.contains("1 Review Needs You") }, strip.label)
         pause.click()
         XCTAssertTrue(waitUntil { self.text(of: self.element("autoReply.strip.title")) == "Auto-reply is paused" })
         attachScreenshot("Auto-reply paused")

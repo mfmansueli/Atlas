@@ -44,6 +44,14 @@ enum MotionTiming {
     /// → the place of the work.
     static let trailLeg: TimeInterval = 0.7
 
+    /// The Autopilot bar opening (board 80): it grows up from its field,
+    /// 0.34 s on the standard curve, and what's inside comes in
+    /// `openContentDelay` later.
+    static let open = MotionToken(duration: 0.34, curve: .standard)
+    static let openContentDelay: TimeInterval = 0.1
+    /// The bar closing: it shrinks back to its field in 0.24 s.
+    static let close = MotionToken(duration: 0.24, curve: .bezier(x1: 0.4, y1: 0, x2: 0.6, y2: 1))
+
     /// When item `index` of a burst of arrivals starts; nil once the
     /// burst has used its six, so it appears still.
     static func staggerDelay(for index: Int) -> TimeInterval? {

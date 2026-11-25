@@ -26,13 +26,11 @@ final class ToolbarItemFitUITests: XCTestCase {
     func testItemsGetTheirWidthBackAfterTheMinimumWindow() {
         app.launch(debugScene: "nav-ov")
         let reviewPush = element("workspace.reviewPushButton")
-        let autopilot = element("workspace.autopilot")
         XCTAssertTrue(reviewPush.waitForExistence(timeout: 15))
         restoresTheOpenedWidth()
         resizeWindow(toWidth: Self.defaultWidth)
         wait(seconds: 1)
         let reviewPushWidth = reviewPush.frame.width
-        let autopilotWidth = autopilot.frame.width
 
         resizeWindow(toWidth: 600)
         wait(seconds: 1)
@@ -41,7 +39,6 @@ final class ToolbarItemFitUITests: XCTestCase {
         resizeWindow(toWidth: Self.defaultWidth)
         wait(seconds: 1)
         XCTAssertEqual(reviewPush.frame.width, reviewPushWidth, accuracy: 1, "Review & Push has its label again.")
-        XCTAssertEqual(autopilot.frame.width, autopilotWidth, accuracy: 1, "Autopilot has its label again.")
         assertTheTitleIsBesideTheSidebarButton()
         attach("toolbar after the minimum")
     }
@@ -67,7 +64,7 @@ final class ToolbarItemFitUITests: XCTestCase {
     /// The window's `.defaultSize` width.
     private static let defaultWidth: CGFloat = 1200
 
-    /// The title, its status and the Autopilot button as wide as the scene
+    /// The title, its status and the button as wide as the scene
     /// measured them, and the title right of the sidebar button.
     private func assertEveryItemIsAsWideAsItWants(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
         let ideal = text(of: element("tbText.idealWidths")).split(separator: " ").compactMap { Double($0) }
@@ -76,7 +73,7 @@ final class ToolbarItemFitUITests: XCTestCase {
         let title = element("workspace.title").frame
         let status = element("workspace.status").frame
         XCTAssertGreaterThanOrEqual(max(title.width, status.width), ideal[0] - 4, "Title cut at \(name)", file: file, line: line)
-        XCTAssertGreaterThanOrEqual(element("workspace.autopilot").frame.width, ideal[1] - 4, "Autopilot cut at \(name)", file: file, line: line)
+        XCTAssertGreaterThanOrEqual(element("tbText.button").frame.width, ideal[1] - 4, "Button cut at \(name)", file: file, line: line)
         assertTheTitleIsBesideTheSidebarButton(file: file, line: line)
     }
 

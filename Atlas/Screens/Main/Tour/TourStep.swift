@@ -6,7 +6,7 @@
 import Foundation
 
 /// The first-run tour's tips (board 63), one at a time, in order: the app
-/// switcher, the sections, the Autopilot button, Review & Push and the
+/// switcher, the sections, the Autopilot bar, Review & Push and the
 /// sidebar's Settings row.
 enum TourStep: Int, CaseIterable, Identifiable, Hashable, Sendable {
     case apps

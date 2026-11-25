@@ -15,7 +15,7 @@ struct AssistDebugScenesTests {
     @Test(arguments: AssistDebugScenes.ids)
     func everySceneResolves(_ id: String) {
         #expect(AssistDebugScenes.view(for: id) != nil)
-        AutopilotToolbarButton.debugShowsPopover = false
+        WorkspaceAutopilotBar.debugShowsPopover = false
         AssistantSetupSheet.debugStep = nil
         AssistantSetupSheet.debugMethod = nil
         AssistantSetupSheet.debugKey = nil

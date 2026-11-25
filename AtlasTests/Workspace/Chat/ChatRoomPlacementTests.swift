@@ -7,20 +7,20 @@ import SwiftUI
 import Testing
 @testable import Atlas
 
-/// Every page's last content ends above the chat's pill (board 69): a
-/// page's vertical scroll view takes the room as a bottom content margin, a
-/// page pinned to the bottom edge as padding, and nothing gets room where
-/// there's no pill.
+/// Every page's last content ends above the closed Autopilot bar (board
+/// 80): a page's vertical scroll view takes the room as a bottom content
+/// margin, a page pinned to the bottom edge as padding, and nothing gets
+/// room where there's no bar.
 @Suite("Chat · room each page leaves")
 struct ChatRoomPlacementTests {
-    private let room = AssistantChatRoom.pageRoom
+    private let room = AutopilotBarRoom.pageRoom
 
-    @Test func aScrollViewScrollsItsContentPastThePill() {
+    @Test func aScrollViewScrollsItsContentPastTheBar() {
         #expect(ChatRoomPlacement.scrollContent.contentMargin(room: room) == room)
         #expect(ChatRoomPlacement.scrollContent.padding(room: room) == 0)
     }
 
-    @Test func aPagePinnedToTheEdgeEndsAboveThePill() {
+    @Test func aPagePinnedToTheEdgeEndsAboveTheBar() {
         #expect(ChatRoomPlacement.bottomEdge.padding(room: room) == room)
         #expect(ChatRoomPlacement.bottomEdge.contentMargin(room: room) == 0)
     }
@@ -31,7 +31,7 @@ struct ChatRoomPlacementTests {
     }
 
     @Test(arguments: ChatRoomPlacement.allCases)
-    func withoutThePillNoRoomIsLeft(_ placement: ChatRoomPlacement) {
+    func withoutTheBarNoRoomIsLeft(_ placement: ChatRoomPlacement) {
         // Sheets, previews and DEBUG hosts read the environment's default.
         let none = EnvironmentValues().chatCornerRoom
         #expect(placement.contentMargin(room: none) == 0)
@@ -65,10 +65,10 @@ struct ChatRoomPlacementTests {
         return seen.value
     }
 
-    @Test func theLastContentEndsAboveThePillsTop() {
-        let pillTop = AssistantChatRoom.bottomPadding(isToastShown: false) + Metrics.chatPillHeight
-        #expect(ChatRoomPlacement.scrollContent.contentMargin(room: room) > pillTop)
-        #expect(ChatRoomPlacement.bottomEdge.padding(room: room) > pillTop)
+    @Test func theLastContentEndsAboveTheBarsTop() {
+        let barTop = AutopilotBarRoom.bottomInset + Metrics.autopilotBarFieldHeight
+        #expect(ChatRoomPlacement.scrollContent.contentMargin(room: room) > barTop)
+        #expect(ChatRoomPlacement.bottomEdge.padding(room: room) > barTop)
     }
 
     /// What a view inside the page read.

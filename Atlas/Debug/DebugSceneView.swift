@@ -11,7 +11,7 @@ import SwiftUI
 /// - `apps`, `apps-empty`, `apps-error`, `lib-loading`: the main window with
 ///   the sample apps (Lumen Journal selected), none, a failed load, or the
 ///   first sync still running.
-/// - `tb-text`: the toolbar's title and Autopilot texts changing after
+/// - `tb-text`: the toolbar's title and a button's texts changing after
 ///   it measured them (`ToolbarTextChangeDebugScene`).
 /// - `apps-unnamed`: the sample apps under a key the person hasn't named;
 ///   App Store Connect calls its team Northpier Studio.
@@ -28,7 +28,7 @@ import SwiftUI
 /// `ScreenshotsProposalsDebugScenes`, `ScreenshotsHandDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
-/// `ProductPagesDebugScenes`, `TourDebugScenes`, `AutopilotButtonDebugScenes`, `MenuBarDebugScenes`,
+/// `ProductPagesDebugScenes`, `TourDebugScenes`, `AutopilotBarDebugScenes`, `MenuBarDebugScenes`,
 /// `DesignSystemDebugScenes`, `LoadingDebugScenes`, `PaywallDebugScenes`). Canvas names for states drawn
 /// under another id resolve through `DesignSceneAliases`.
 struct DebugSceneView: View {
@@ -98,7 +98,7 @@ struct DebugSceneView: View {
             NewLanguagesDebugScenes.view(for:),
             StudioDebugScenes.view(for:),
             ClaudeCodeDebugScenes.view(for:),
-            AssistantChatDebugScenes.view(for:),
+            AutopilotBarDebugScenes.view(for:),
             ChatRoomDebugScenes.view(for:),
             AnalyticsDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
@@ -116,7 +116,6 @@ struct DebugSceneView: View {
             ProductPagesDebugScenes.view(for:),
             NavigationDebugScenes.view(for:),
             TourDebugScenes.view(for:),
-            AutopilotButtonDebugScenes.view(for:),
             MenuBarDebugScenes.view(for:),
             DesignSystemDebugScenes.view(for:),
             LoadingDebugScenes.view(for:),

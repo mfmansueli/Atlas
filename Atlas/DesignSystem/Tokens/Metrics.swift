@@ -45,19 +45,26 @@ enum Metrics {
     /// The main window's unified toolbar: its content's minimum height is
     /// `minimumWindowHeight` less this, so the whole window gets to 560.
     static let windowToolbarHeight: CGFloat = 52
-    /// The assistant chat in the window's corner (board 69): closed, a
-    /// pill; open, a panel over the content that never reaches the
-    /// toolbar (at most the window's height less `chatPanelClearance`).
-    static let chatPillWidth: CGFloat = 340
-    static let chatPillHeight: CGFloat = 36
-    static let chatPanelWidth: CGFloat = 420
-    static let chatPanelHeight: CGFloat = 500
-    static let chatPanelClearance: CGFloat = 72
-    /// The send and stop buttons, and the chat's lead mark.
+    /// The Autopilot bar at the bottom of every section (board 80): at
+    /// most this wide, with Review & Push beside it in a dock at most
+    /// `autopilotDockWidth` wide; closed, its field is this tall; open,
+    /// it grows up to `autopilotBarOpenHeight` and never reaches the
+    /// toolbar.
+    static let autopilotBarWidth: CGFloat = 560
+    static let autopilotDockWidth: CGFloat = 720
+    static let autopilotBarFieldHeight: CGFloat = 44
+    static let autopilotBarOpenHeight: CGFloat = 470
+    /// The least the closed field's words keep beside its action buttons:
+    /// below it, the second button goes, then the first.
+    static let autopilotBarPlaceholderWidth: CGFloat = 120
+    /// Its purple edge while the assistant waits for the person.
+    static let autopilotBarNeedsYouBorder: CGFloat = 1.5
+    /// The toolbar's own capsule buttons (Pro), as tall as the glass
+    /// buttons beside them at large size.
+    static let toolbarButtonHeight: CGFloat = 36
+    /// The send and stop buttons, and the conversation's lead mark.
     static let chatButtonSize: CGFloat = 28
     static let chatLeadSize: CGFloat = 18
-    /// A push's meter in the closed chat.
-    static let chatMeterWidth: CGFloat = 44
     /// Overview cards wrap into as many columns as fit at this width.
     static let overviewCardMinimumWidth: CGFloat = 270
     /// A caption's screenshot before → after in the Accept All sheet.

@@ -6,10 +6,10 @@
 import AppKit
 
 /// Starts a request to Claude Code from somewhere with no asking button
-/// of its own on screen: the toolbar's Autopilot button, or a section
-/// acting on one of its actions. Like `ClaudeCodeAskButton`, it sends the
-/// request to the toolbar (board 56) and starts Claude Code; without its
-/// helper it copies the prompt to paste instead.
+/// of its own on screen: the Autopilot bar, or a section acting on one of
+/// its actions. Like `ClaudeCodeAskButton`, it sends the request to the
+/// bar (board 56, board 80) and starts Claude Code; without its helper it
+/// copies the prompt to paste instead.
 @MainActor
 enum AssistantAskStarter {
     enum Outcome: Equatable {

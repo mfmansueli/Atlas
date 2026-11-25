@@ -58,7 +58,7 @@ struct InAppEventArtworkAskTests {
         let id = UUID()
         _ = await launch(center, runID: id)
         center.runEnded(run(id, phase: .failed(.claudeMissing)))
-        #expect(center.finished?.text == "Claude Code stopped before it was done. Its button says why.")
+        #expect(center.finished?.text == "Claude Code stopped before it was done. Autopilot says why.")
     }
 
     @Test func nothingStartedEndsTheRequest() async {

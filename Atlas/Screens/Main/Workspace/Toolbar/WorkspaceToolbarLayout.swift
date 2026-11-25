@@ -11,8 +11,8 @@ import CoreGraphics
 /// everything must fit beside them: an item AppKit can't fit goes into the
 /// toolbar's “»” menu, and the space it leaves stays empty, so the actions
 /// no longer reach the edge. So, as the column narrows, the title truncates
-/// first (`titleRoom`), down to `minimumTitleWidth`; then the Autopilot and
-/// Review & Push labels fold to their icons, their counts staying
+/// first (`titleRoom`), down to `minimumTitleWidth`; then the Review &
+/// Push label folds to its icon, its count staying
 /// (`isCompact`). The room is the fixed part plus what the items reported
 /// (`ToolbarRoomItem`: the title, the labels, the section menu, Pro).
 /// Under 620 points the title goes too.
@@ -22,12 +22,12 @@ struct WorkspaceToolbarLayout: Equatable {
     /// Each item's reported width; 0 or missing takes no room.
     var room: [ToolbarRoomItem: CGFloat] = [:]
 
-    /// The toolbar's actions with both labels folded, measured beside the
-    /// sidebar: Autopilot's icon and arrow (69), Refresh and Activity (72),
-    /// Review & Push's icon and count (81), the gaps between them and the
-    /// title (3 × 8), the edges (2 × 4), and a few points to spare for a
-    /// wider count.
-    static let fixedRoom: CGFloat = 260
+    /// The toolbar's actions with the label folded, measured beside the
+    /// sidebar: Refresh and Activity (72), Review & Push's icon and count
+    /// (81), the gaps between them and the title (2 × 8), the edges
+    /// (2 × 4), and a few points to spare for a wider count. Autopilot is
+    /// the bar at the bottom of the section now (board 80).
+    static let fixedRoom: CGFloat = 183
     /// The window's buttons and the sidebar button, which share the toolbar
     /// while the sidebar is hidden (the section menu reports its own width).
     static let hiddenSidebarRoom: CGFloat = 136
@@ -94,9 +94,6 @@ struct WorkspaceToolbarLayout: Equatable {
 
     /// Review & Push without its label.
     var isReviewCompact: Bool { isCompact }
-
-    /// The Autopilot button without its label.
-    var isAutopilotCompact: Bool { isCompact }
 
     /// Keeps an item's reported width; false when it didn't change, so a
     /// report that changes nothing redraws nothing.

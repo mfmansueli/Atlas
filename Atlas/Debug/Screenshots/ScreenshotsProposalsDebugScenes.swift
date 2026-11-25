@@ -62,7 +62,7 @@ enum ScreenshotsProposalsDebugScenes {
                 model.captures.viewed = CaptureViewerTarget(localeCode: "de-DE", slot: 1)
             }
         case "prop-list":
-            AutopilotToolbarButton.debugShowsPopover = true
+            WorkspaceAutopilotBar.debugShowsPopover = true
             return scene(assistants: .paired) { _ in }
         default:
             return proposalScene(id)

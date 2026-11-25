@@ -6,7 +6,7 @@
 import Testing
 @testable import Atlas
 
-/// What the toolbar's Autopilot button asks Claude Code: proposals only,
+/// What the Autopilot bar's actions ask Claude Code: proposals only,
 /// with the run's purpose the section's asking buttons look for.
 @Suite("WorkspaceAutopilotAsk")
 struct WorkspaceAutopilotAskTests {
@@ -15,13 +15,6 @@ struct WorkspaceAutopilotAskTests {
         #expect(ask.prompt.contains("version 1.4"))
         #expect(ask.prompt.contains("suggest_fields"))
         #expect(ask.subject == "Store Page · What’s New")
-    }
-
-    @Test func somethingElseCarriesThePersonsQuestion() throws {
-        #expect(WorkspaceAutopilotAsk.make(.askSomethingElse, app: "Lumen") == nil)
-        let ask = try #require(WorkspaceAutopilotAsk.make(.askSomethingElse, app: "Lumen", question: "Make the subtitle shorter"))
-        #expect(ask.prompt.contains("Make the subtitle shorter"))
-        #expect(ask.prompt.contains("Don't push anything"))
     }
 
     @Test func sectionAsksShareTheSectionsPurpose() throws {

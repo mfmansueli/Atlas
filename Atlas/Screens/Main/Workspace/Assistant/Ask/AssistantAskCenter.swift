@@ -8,10 +8,10 @@ import SwiftUI
 
 /// The requests sent from asking buttons, one at a time for each app
 /// (board 56). Sending one turns the app's asking buttons to "Claude Code Is
-/// Working…", sends the spark from the button to the toolbar's Autopilot
-/// button and back down to the button (effect 1, Trail), and makes the
-/// Autopilot button say Working…; when the run ends, the
-/// window's toast says what was suggested and where.
+/// Working…", sends the spark from the button to the Autopilot bar and
+/// back to the button (effect 1, Trail), and makes the bar's strip say
+/// what it works on; when the run ends, the strip says what was suggested
+/// and where (board 80).
 @MainActor
 @Observable
 final class AssistantAskCenter {
@@ -19,19 +19,19 @@ final class AssistantAskCenter {
 
     /// The running request of each app.
     private(set) var asks: [StoreApp.ID: AssistantAsk] = [:]
-    /// The last ask that ended with something to say, for the toast.
+    /// The last ask that ended with something to say, for the bar's strip.
     private(set) var finished: AssistantAskFinish?
 
-    /// The toolbar's Autopilot button, where the spark goes first.
-    @ObservationIgnored let toolbarAnchor = AskAnchor()
+    /// The Autopilot bar's field, where the spark goes first.
+    @ObservationIgnored let barAnchor = AskAnchor()
     /// Draws the flight from one frame on screen to the other in a window;
-    /// false when it can't, so the toolbar works at once. Tests give
+    /// false when it can't, so the bar works at once. Tests give
     /// their own.
     @ObservationIgnored var fly: @MainActor (_ from: CGRect?, _ to: CGRect?, _ window: NSWindow?) -> Bool
-    /// How long the spark takes to reach the toolbar, which then says
-    /// Working….
+    /// How long the spark takes to reach the bar, which then says what
+    /// it works on.
     @ObservationIgnored var landing: Duration = .milliseconds(Int(TrailPath.toolbarLanding * 1000))
-    /// The last spark on its way, until it reaches the toolbar (tests wait
+    /// The last spark on its way, until it reaches the bar (tests wait
     /// for it).
     @ObservationIgnored private(set) var flight: Task<Void, Never>?
     /// Says the send out loud.
@@ -61,7 +61,7 @@ final class AssistantAskCenter {
         asks[ask.appID] = ask
         endings[ask.id] = onRunEnded
         announce(ask.announcement)
-        let flies = !reduceMotion && fly(source?.screenFrame, toolbarAnchor.screenFrame, source?.view?.window)
+        let flies = !reduceMotion && fly(source?.screenFrame, barAnchor.screenFrame, source?.view?.window)
         guard flies else {
             arrive(ask.id, appID: ask.appID)
             return true
@@ -74,7 +74,7 @@ final class AssistantAskCenter {
         return true
     }
 
-    /// The spark reached the toolbar: it works.
+    /// The spark reached the bar: it works.
     private func arrive(_ id: AssistantAsk.ID, appID: StoreApp.ID) {
         guard asks[appID]?.id == id else { return }
         asks[appID]?.phase = .working
@@ -86,12 +86,13 @@ final class AssistantAskCenter {
         asks[appID]?.runID = runID
     }
 
-    /// Ends the ask; `text` goes in the window's toast.
-    func finish(_ id: AssistantAsk.ID, text: String?) {
+    /// Ends the ask; `text` goes on the bar's strip. `failed`: its run
+    /// stopped with a problem, which the strip says instead.
+    func finish(_ id: AssistantAsk.ID, text: String?, failed: Bool = false) {
         guard let (appID, ask) = asks.first(where: { $0.value.id == id }) else { return }
         asks[appID] = nil
         endings[id] = nil
-        if let text { finished = AssistantAskFinish(appID: appID, subject: ask.subject, text: text) }
+        if let text { finished = AssistantAskFinish(appID: appID, subject: ask.subject, text: text, isFailure: failed) }
     }
 
     /// Ends the ask without a toast: nothing was sent after all.
@@ -102,15 +103,19 @@ final class AssistantAskCenter {
     func runEnded(_ run: ClaudeCodeRun) {
         guard let ask = asks.values.first(where: { $0.runID == run.id }) else { return }
         let text = endings[ask.id]?(run)
-        finish(ask.id, text: text)
+        if case .failed = run.phase {
+            finish(ask.id, text: text, failed: true)
+        } else {
+            finish(ask.id, text: text)
+        }
     }
 
-    /// The toast's text for an ask whose run ended: `done` when it
+    /// The strip's text for an ask whose run ended: `done` when it
     /// finished, why when it failed, nothing when the person stopped it.
     static func endingText(_ run: ClaudeCodeRun, client: String, done: String) -> String? {
         switch run.phase {
         case .finished: done
-        case .failed: String(localized: "\(client) stopped before it was done. Its button says why.")
+        case .failed: String(localized: "\(client) stopped before it was done. Autopilot says why.", comment: "kind:status · a request's run stopped with a problem")
         case .stopped, .starting, .working: nil
         }
     }

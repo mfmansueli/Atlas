@@ -49,7 +49,7 @@ struct AssistantAskCenterTests {
         let (center, box) = center(flies: false)
         center.send(ask(subject: "In-App Events · Winter Reflection 2026"), from: nil, reduceMotion: false)
         #expect(center.ask(for: "1")?.phase == .working)
-        #expect(box.said == ["Sent to Claude Code: In-App Events, Winter Reflection 2026. The Autopilot button shows progress."])
+        #expect(box.said == ["Sent to Claude Code: In-App Events, Winter Reflection 2026. The Autopilot bar shows progress."])
         #expect(center.ask(for: "1")?.toolbarLabel == "Autopilot, Claude Code is working on In-App Events, Winter Reflection 2026")
         #expect(center.ask(for: "1")?.busyTitle == "Claude Code Is Working…")
     }

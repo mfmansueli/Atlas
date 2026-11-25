@@ -36,7 +36,7 @@ enum SuggestionsDebugScenes {
         case "ov-connected":
             return with(.connected, DebugMainScene(section: .overview, suggestions: SuggestionsDebugData.store()))
         case "asst-pop":
-            AutopilotToolbarButton.debugShowsPopover = true
+            WorkspaceAutopilotBar.debugShowsPopover = true
             return with(.connected, DebugMainScene(section: .overview, suggestions: SuggestionsDebugData.store()))
         case "ov-refused", "ov-elsewhere", "ov-unattached", "asst-pop-refused":
             return connectionScene(id)
@@ -51,7 +51,7 @@ enum SuggestionsDebugScenes {
     /// in Tempo's folder only, or in one Lumen wasn't given.
     @MainActor
     private static func connectionScene(_ id: String) -> AnyView {
-        AutopilotToolbarButton.debugShowsPopover = id == "asst-pop-refused"
+        WorkspaceAutopilotBar.debugShowsPopover = id == "asst-pop-refused"
         let state: AssistantState = switch id {
         case "ov-elsewhere": .elsewhere
         case "ov-unattached": .unattached

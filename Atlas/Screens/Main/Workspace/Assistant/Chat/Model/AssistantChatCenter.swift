@@ -6,9 +6,9 @@
 import Foundation
 import Observation
 
-/// The chat with the assistant in the window's corner (board 69): each
-/// app's conversation, whether the panel is open, and the Claude Code
-/// runs that answer. Each question is one run; a follow-up resumes the
+/// The conversation in the Autopilot bar at the bottom of every section
+/// (board 80, from board 69's chat): each app's conversation, whether the
+/// bar is open, and the Claude Code runs that answer. Each question is one run; a follow-up resumes the
 /// session of the one before, so the assistant remembers the chat.
 /// Changes come back as suggestions in their sections: the chat never
 /// sends anything to Apple.
@@ -31,7 +31,7 @@ final class AssistantChatCenter {
     }
 
     private(set) var chats: [StoreApp.ID: AssistantChat] = [:]
-    /// The panel is open (⌘J).
+    /// The Autopilot bar is open (⌘J).
     private(set) var isOpen = false
     /// The app the window shows: what arrives for it while the panel is
     /// open is seen.
@@ -62,6 +62,12 @@ final class AssistantChatCenter {
     private func markSeenIfOpen() {
         guard isOpen, let shownAppID, chats[shownAppID]?.isUnseen == true else { return }
         chats[shownAppID]?.isUnseen = false
+    }
+
+    /// The person closed the bar's “done” strip: the answer counts as seen.
+    func markSeen(_ appID: StoreApp.ID) {
+        guard chats[appID]?.isUnseen == true else { return }
+        chats[appID]?.isUnseen = false
     }
 
     func setDraft(_ text: String, for appID: StoreApp.ID) {

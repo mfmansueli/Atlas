@@ -26,7 +26,7 @@ struct AssistantChatPersonBubble: View {
             .accessibilityElement(children: .contain)
             .accessibilityLabel(Text("You", comment: "kind:accessibility · the person's message in the chat"))
             .accessibilityIdentifier("chat.person")
-            .frame(maxWidth: Metrics.chatPanelWidth * 0.75, alignment: .trailing)
+            .frame(maxWidth: Metrics.autopilotBarWidth * 0.75, alignment: .trailing)
             .frame(maxWidth: .infinity, alignment: .trailing)
     }
 
@@ -39,6 +39,6 @@ struct AssistantChatPersonBubble: View {
 
 #Preview {
     AssistantChatPersonBubble(text: "Which countries lose the most sales?")
-        .frame(width: Metrics.chatPanelWidth)
+        .frame(width: Metrics.autopilotBarWidth)
         .padding()
 }

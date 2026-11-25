@@ -26,7 +26,8 @@ final class AssistantWorkspaceUITests: XCTestCase {
         launch(scene: "ai-streaming")
         let autopilot = app.autopilotButton
         XCTAssertTrue(autopilot.waitForExistence(timeout: 10))
-        XCTAssertEqual(autopilot.label, "Autopilot, Claude Code is working")
+        XCTAssertTrue(app.autopilotStrip.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.autopilotStrip.label, "Autopilot, Claude Code is working")
 
         app.openAssistantStatus()
         let popover = element("workspace.assistantPopover")
