@@ -22,7 +22,9 @@ struct PriceFactorResolver: Sendable {
         self.medians = medians
     }
 
-    /// The first link of the chain with data. The chosen index's region
+    /// The first link of the chain with data: the chosen index's exact or
+    /// fallback value (marked as a fallback), the next index, then the region
+    /// median. The chosen index's region
     /// median falls back to World Bank's when the index has nothing in that
     /// region; equalized (factor 1) is the last resort.
     func resolve(_ territory: Territory, strategy: PricingStrategy) -> ResolvedFactor {
@@ -31,10 +33,12 @@ struct PriceFactorResolver: Sendable {
             switch step {
             case let .index(source):
                 if let factor = factor(source, territoryID: territory.id, baseTerritoryID: base) {
+                    let level = snapshot.index(source)?.levelProvenance(for: territory.id)
                     let provenance = PriceProvenance(
                         kind: .index(source),
-                        isFallback: source != strategy.indexSource,
-                        edition: snapshot.index(source)?.edition
+                        isFallback: source != strategy.indexSource || level?.isFallback == true,
+                        edition: snapshot.index(source)?.edition,
+                        level: level
                     )
                     return ResolvedFactor(factor: factor, provenance: provenance)
                 }

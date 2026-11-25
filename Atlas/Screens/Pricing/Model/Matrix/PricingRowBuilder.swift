@@ -9,6 +9,11 @@ import Foundation
 /// territory the product is sold in, with its suggestion and strategy price.
 /// Suggestions depend only on the sheet, so callers keep them while the
 /// strategy changes and only the strategy prices are worked out again.
+///
+/// No territory suggests a price on a simulated ladder: only where Apple's
+/// own points are here (`ProductPriceSheet.hasRealGrid`), and only once the
+/// product's read of them finished (`isGridReady`), so counts don't grow
+/// as batches land.
 struct PricingRowBuilder {
     let catalog: TerritoryCatalog
     let calculator: PriceCalculator
@@ -17,20 +22,42 @@ struct PricingRowBuilder {
     let showsSuggestions: Bool
     /// The push has a start date (`PriceSchedule`).
     var isScheduled = false
+    /// The product's Apple price points have been read (`PriceGridState`).
+    var isGridReady = true
+    /// Suggests only on Apple's own points. A subscription that doesn't
+    /// exist yet has none to read (`NewSubscriptionRecommendation`).
+    var requiresRealGrid = true
+    /// A new base price waiting in Review & Push. Suggestions and strategy
+    /// prices are worked out from it, so accepting them fits the price about
+    /// to be pushed (Alba, 25 Nov 2026: US$ 4.99 → 6.19 waiting, while 47
+    /// suggestions still stood on US$ 4.99). Apple's equalized prices scale
+    /// with it: equalization is proportional to the base point, give or take
+    /// one point of rounding.
+    var queuedBasePrice: Decimal?
 
     func rows(queued: [String: QueuedPrice] = [:]) -> [PricingRow] {
-        rows(recommendations: recommendations(), queued: queued)
+        var builder = self
+        builder.queuedBasePrice = queuedBasePrice ?? queued[sheet.baseTerritoryID]?.price
+        return builder.rows(recommendations: builder.recommendations(), queued: queued)
+    }
+
+    /// The base price suggestions start from: the one waiting to be pushed,
+    /// else today's.
+    var effectiveBasePrice: Decimal {
+        guard let queuedBasePrice, queuedBasePrice > 0, sheet.basePrice > 0 else { return sheet.basePrice }
+        return queuedBasePrice
     }
 
     /// The suggestion per territory, or none while Pricing keeps your prices.
     func recommendations() -> [String: Recommendation] {
         guard showsSuggestions else { return [:] }
         let recommender = PriceRecommender(calculator: calculator, baseTerritoryID: sheet.baseTerritoryID)
+        let pooling = sheet.sales.pooling(in: catalog)
         var result: [String: Recommendation] = [:]
-        for territory in catalog.territories {
+        for territory in catalog.territories where suggests(in: territory.id) {
             guard let input = input(for: territory) else { continue }
-            let recommendation = recommender.recommend(input, evidence: sheet.sales.evidence(for: territory.id))
-            result[territory.id] = Self.explainingSales(recommendation, sheet.sales.availability)
+            let evidence = sheet.sales.evidence(for: territory.id, pooling: pooling, hasRealGrid: sheet.hasRealGrid(territory.id))
+            result[territory.id] = recommender.recommend(input, evidence: evidence)
         }
         return result
     }
@@ -51,31 +78,30 @@ struct PricingRowBuilder {
                 usesCustomStrategy: strategy.isCustom,
                 pageViews: sheet.sales.pageViews(in: territory.id),
                 queued: queued[territory.id],
-                isScheduled: isScheduled
+                isScheduled: isScheduled,
+                hasRealGrid: suggests(in: territory.id)
             )
         }
     }
 
+    /// Whether the territory may suggest a price: on Apple's own points.
+    func suggests(in territoryID: String) -> Bool {
+        guard requiresRealGrid else { return true }
+        return isGridReady && sheet.hasRealGrid(territoryID)
+    }
+
     func input(for territory: Territory) -> PriceCalculationInput? {
         guard let price = sheet.prices[territory.id] else { return nil }
-        return PriceCalculationInput(
+        let scale = sheet.basePrice > 0 ? effectiveBasePrice / sheet.basePrice : 1
+        var input = PriceCalculationInput(
             territory: territory,
-            basePrice: sheet.basePrice,
-            equalizedPrice: price.equalized.customerPrice,
+            basePrice: effectiveBasePrice,
+            equalizedPrice: price.equalized.customerPrice * scale,
             ladder: sheet.ladder(for: territory, commission: calculator.commission),
             currentPrice: price.current.customerPrice,
             equalizationMultiplier: price.equalizationMultiplier
         )
-    }
-
-    /// The engine says the key's role can't read sales; when Atlas
-    /// simply doesn't read them, say that instead.
-    private static func explainingSales(_ recommendation: Recommendation, _ availability: PricingSalesData.Availability) -> Recommendation {
-        guard availability == .notRead else { return recommendation }
-        var copy = recommendation
-        copy.basis = recommendation.basis.map { line in
-            line == PriceRecommender.cantReadSalesLine ? String(localized: "Sales: not read, so purchasing power alone") : line
-        }
-        return copy
+        input.hasRealLadder = sheet.hasRealGrid(territory.id)
+        return input
     }
 }

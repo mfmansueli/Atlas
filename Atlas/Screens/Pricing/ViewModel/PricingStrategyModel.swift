@@ -123,10 +123,13 @@ final class PricingStrategyModel {
         importPreview = nil
     }
 
-    /// The index publishers have no API Atlas can read, so the bundled
-    /// snapshot is the newest data; say so instead of pretending to fetch.
+    /// Publishers update once or twice a year, so the index is bundled per
+    /// release (`scripts/price-index`) rather than fetched; say so instead
+    /// of pretending to fetch. Exchange rates refresh daily on their own.
     func updateIndexData() {
         let date = PricingText.date(snapshot.snapshotDate)
-        updateMessage = String(localized: "Newest bundled index data (\(date)). Approximate; new editions come with app updates.")
+        updateMessage = snapshot.isApproximate
+            ? String(localized: "Newest bundled index data (\(date)). Approximate; new editions come with app updates.")
+            : String(localized: "Newest bundled index data (\(date)). New editions come with app updates.", comment: "kind:hint")
     }
 }

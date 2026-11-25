@@ -18,8 +18,12 @@ struct SubscriberFact: Hashable, Sendable, Codable {
     var refunds = 0
     /// After Apple's commission and taxes, in US dollars; refunds taken off.
     var proceeds: Decimal = 0
+    /// The subscription's Apple ID, from "Subscription Apple ID"; nil in
+    /// facts read before Atlas kept it.
+    var subscriptionID: String?
 
     private enum CodingKeys: String, CodingKey {
         case day = "d", appID = "a", subscription = "s", territory = "t", charges = "c", refunds = "r", proceeds = "p", device = "v"
+        case subscriptionID = "i"
     }
 }

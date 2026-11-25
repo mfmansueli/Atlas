@@ -49,6 +49,8 @@ final class PricingViewModel {
     /// selection, the view and the open price popover
     /// (`PricingViewModel+PricesByCountry`).
     let pricesByCountry = PricesByCountryState()
+    /// Price tests and their sheets (board 76, `PricingViewModel+PriceTests`).
+    let priceTests: PriceTestsModel
     /// Existing subscribers per territory for the schedule's warning; nil
     /// until loaded, or when Atlas can't read them.
     private(set) var subscribers: [String: Int]?
@@ -82,6 +84,10 @@ final class PricingViewModel {
     var toast: ToastMessage?
     @ObservationIgnored var toastUndo: (() -> Void)?
     @ObservationIgnored var productsTask: Task<Void, Never>?
+    /// Set while the section is read ahead off screen: Apple's price points
+    /// are then read only while the hourly quota leaves room. Nil on
+    /// screen, where they're always read (`PricingViewModel+PriceGrid`).
+    @ObservationIgnored var gridReadAhead: PricingGridReadAhead?
     /// The app's own price and availability, the cards above the products;
     /// nil where the section has no services for them (tests).
     var appPriceAvailability: AppPriceAvailabilityModel?
@@ -109,6 +115,7 @@ final class PricingViewModel {
         self.services = services
         self.queue = queue
         self.modes = modes
+        priceTests = PriceTestsModel(appID: app.id, queue: queue)
         // The app's own strategy (Customize…), else Settings → Pricing's.
         strategy = PricingStrategyModel(snapshot: services.indexSnapshot(), commission: commission, strategy: modes.strategy(for: app.id))
     }
@@ -146,6 +153,7 @@ final class PricingViewModel {
         loadGeneration += 1
         let generation = loadGeneration
         catalogState = .loading
+        await forgetPushedLadders()
         do {
             let catalog = try await services.catalog(for: app)
             guard generation == loadGeneration else { return }
@@ -228,6 +236,7 @@ final class PricingViewModel {
             isFollowing: followedProductIDs.contains(product.id)
         )
         matrix.onError = { [weak self] error in self?.reportLoadError(error) }
+        matrix.priceTestTerritories = priceTests.liveTest(productID: product.id, on: today())?.territoryIDs ?? []
         return matrix
     }
 

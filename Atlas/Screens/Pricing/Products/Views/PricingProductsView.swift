@@ -154,7 +154,9 @@ struct PricingProductsView: View {
                             }
                         },
                         settlesOnAccept: !(card.suggestedCount > 1 && pro.isFree),
-                        setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product))
+                        setupRow: AnyView(PurchaseSetupCardRow(viewModel: viewModel, product: product)),
+                        onRetryGrid: { Task { await viewModel.retryGrid(productID: product.id) } },
+                        priceTestTip: viewModel.priceTests.pillTip(productID: product.id, on: viewModel.today())
                     )
                     // Effect 2: the spark sits still on the card being
                     // captured.

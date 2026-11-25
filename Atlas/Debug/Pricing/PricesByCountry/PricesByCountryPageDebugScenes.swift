@@ -23,16 +23,25 @@ import SwiftUI
 ///   subscribers keeping their price or not (the amber note).
 /// - `pr-prod-start`: price changes starting on a date, in the footer.
 /// - `pr-prod-results`, `pr-prod-results-none`: the Results tab four weeks
-///   after a push, or with nothing to compare.
+///   after a push (Portugal too few to tell, its line saying "5 starts ·
+///   needs 30"), or with nothing to compare.
 /// - `pr-prod-filters`: Europe and Increases Only, the Filters popover open.
 /// - `pr-prod-cols`: every column the Columns menu adds.
 /// - `pr-prod-fallback`: Fallback Only, with the Source column.
 /// - `pr-prod-up`: a strategy that raises some prices, the biggest rise first.
+/// - `pr-prod-checking`: Apple's price points still being read: "Checking
+///   Apple’s prices…" as a plain line in the banner's place (no surface,
+///   board 76) and grey Change cells, today's prices shown (they never
+///   arrive).
+/// - `pr-prod-grid-error`: Apple's price points failed (a 500): the error
+///   with Try Again in the banner's place, no suggestions.
+/// - `pr-prod-cards-checking`: the product cards while the points are read.
 enum PricesByCountryPageDebugScenes {
     static let ids = [
         "pr-prod-why", "pr-prod-adjusted", "pr-prod-map", "pr-prod-map-sug", "pr-prod-hist", "pr-prod-strat", "pr-prod-keep",
         "pr-prod-insp", "pr-prod-acc", "pr-prod-acc-off", "pr-prod-start", "pr-prod-results", "pr-prod-results-none",
-        "pr-prod-filters", "pr-prod-cols", "pr-prod-fallback", "pr-prod-up",
+        "pr-prod-filters", "pr-prod-cols", "pr-prod-fallback", "pr-prod-up", "pr-prod-checking", "pr-prod-grid-error",
+        "pr-prod-cards-checking",
     ]
 
     private static let annual = DebugPricingCatalog.lumenAnnualID
@@ -105,7 +114,26 @@ enum PricesByCountryPageDebugScenes {
         case "pr-prod-results-none":
             PricingDebugScenes.scene(launch: launch(PricingDebugLaunch(productTab: .results)), pushRecords: [])
         default:
-            nil
+            gridScene(id)
+        }
+    }
+
+    /// Apple's price points still being read, or failed.
+    @MainActor
+    private static func gridScene(_ id: String) -> AnyView? {
+        var services = DebugPricingServices(simulatesGrid: true)
+        switch id {
+        case "pr-prod-checking":
+            services.laddersDelay = .seconds(3600)
+            return PricingDebugScenes.scene(services: services, launch: launch(PricingDebugLaunch()))
+        case "pr-prod-grid-error":
+            services.laddersError = .server(statusCode: 500, code: "UNEXPECTED_ERROR", detail: "An unexpected error occurred on the server side.")
+            return PricingDebugScenes.scene(services: services, launch: launch(PricingDebugLaunch()))
+        case "pr-prod-cards-checking":
+            services.laddersDelay = .seconds(3600)
+            return PricingDebugScenes.scene(services: services, launch: PricingDebugLaunch(showsProducts: true))
+        default:
+            return nil
         }
     }
 

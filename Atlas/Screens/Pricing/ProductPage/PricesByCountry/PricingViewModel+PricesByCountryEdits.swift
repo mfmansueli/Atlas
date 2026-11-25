@@ -45,13 +45,6 @@ extension PricingViewModel {
         AcceptAllPricesPlan(rows: countryRows(productID: productID) ?? [])
     }
 
-    /// The banner's how sure: the least sure of the open suggestions.
-    func countriesHowSure(productID: String) -> HowSure {
-        let confidences = (countryRows(productID: productID) ?? []).filter(\.hasSuggestion).compactMap(\.confidence)
-        if confidences.contains(.low) || confidences.isEmpty { return .notVerySure }
-        return confidences.contains(.medium) ? .fairlySure : .sure
-    }
-
     /// A row's Dismiss: that country's suggestion goes until Restore Dismissed.
     func dismissCountrySuggestion(productID: String, territoryID: String) {
         modes.dismissCountrySuggestion(territoryID: territoryID, productID: productID, appID: app.id)

@@ -45,10 +45,10 @@ struct MCPPricePointWindow: Hashable, Sendable {
         return GetPricePointsTool.points(in: ladder, around: center)
     }
 
-    /// About `dollars` in the currency, from approximate rates, rounded to
+    /// About `dollars` in the currency, from the day's exchange rates, rounded to
     /// the currency's minor units (a division leaves 55.000…024).
     static func price(ofDollars dollars: Decimal, currency: String) -> Decimal? {
-        guard let perDollar = ExchangeRates.approximate.dollars(1, currency: currency), perDollar > 0 else { return nil }
+        guard let perDollar = ExchangeRates.current.dollars(1, currency: currency), perDollar > 0 else { return nil }
         return (dollars / perDollar).rounded(scale: CurrencyFormat.forCurrency(currency).decimals)
     }
 

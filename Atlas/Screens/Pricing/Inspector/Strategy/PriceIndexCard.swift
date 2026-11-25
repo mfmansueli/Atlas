@@ -31,7 +31,7 @@ struct PriceIndexCard: View {
                             .font(.subheadline)
                             .foregroundStyle(Palette.label2)
                         if let index {
-                            Text(index.coverageLabel(of: territoryCount))
+                            Text(coverageText(index))
                                 .font(.subheadline)
                                 .foregroundStyle(Palette.label2)
                         }
@@ -68,6 +68,14 @@ struct PriceIndexCard: View {
         return "\(index.publisher) · \(index.edition.label)"
     }
 
+    /// "169 of 175 territories · 17 fallback".
+    private func coverageText(_ index: PriceIndex) -> String {
+        let coverage = index.coverageLabel(of: territoryCount)
+        let fallbacks = index.fallbackCount
+        guard fallbacks > 0 else { return coverage }
+        return coverage + " · " + String(localized: "\(fallbacks) fallback", comment: "kind:hint")
+    }
+
     private var badges: some View {
         HStack(spacing: Spacing.xSmall) {
             if let edition = index?.edition {
@@ -77,7 +85,7 @@ struct PriceIndexCard: View {
                     Pill(text: String(localized: "Older than a year"), style: .warning)
                 }
             }
-            if let url = source.sourceURL {
+            if let url = index?.edition.url ?? source.sourceURL {
                 Link(destination: url) {
                     Label("Source", systemImage: "arrow.up.right")
                         .labelStyle(.titleAndIcon)

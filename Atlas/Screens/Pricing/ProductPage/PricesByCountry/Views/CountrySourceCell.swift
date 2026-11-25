@@ -12,7 +12,7 @@ struct CountrySourceCell: View {
 
     var body: some View {
         HStack(spacing: Spacing.xSmall) {
-            Text(row.source.title)
+            Text(row.sourceText)
                 .atlasTextStyle(.callout)
                 .foregroundStyle(row.source == .automatic ? Palette.label2 : Palette.label)
                 .lineLimit(1)

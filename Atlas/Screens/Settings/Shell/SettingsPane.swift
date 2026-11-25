@@ -86,7 +86,8 @@ enum SettingsPane: String, CaseIterable, Identifiable, Hashable, Sendable {
              "accept", "translate", "privacy", "age rating", "compliance"]
         case .pricing:
             ["pricing mode", "sales data", "base country", "rounding", "world bank", "purchasing power", "strength",
-             "lower prices", "lowest", "highest", "raise", "price data", "commission", "proceeds", "small business"]
+             "lower prices", "lowest", "highest", "raise", "price data", "exchange rates", "update now", "commission", "proceeds",
+             "small business"]
         case .screenshots: ["artwork", "event", "claude design", "words", "moving", "motion", "loop"]
         case .notifications: ["notifications", "sound", "dot", "badge", "dock", "app review", "status", "push", "reviews", "analytics"]
         case .pro: ["pro", "free", "plan", "subscription", "renew", "restore", "purchase", "redeem", "code"]

@@ -20,6 +20,14 @@ struct FallbackChainSection: View {
                     .fixedSize(horizontal: false, vertical: true)
                 HStack {
                     Text(strategy.indexSource.name).font(.callout.weight(.medium))
+                    if let index = model.index(strategy.indexSource),
+                       let edition = PriceSourceText.editionPart(strategy.indexSource, edition: index.edition)
+                    {
+                        Text(verbatim: "· \(edition)")
+                            .atlasTextStyle(.subheadline)
+                            .foregroundStyle(Palette.label2)
+                            .lineLimit(1)
+                    }
                     Spacer()
                     Pill(text: String(localized: "Chosen"), style: .accent)
                 }
@@ -30,6 +38,14 @@ struct FallbackChainSection: View {
                             .font(.footnote.monospacedDigit())
                             .foregroundStyle(Palette.label2)
                         Text(step.title(chosen: strategy.indexSource)).font(.callout)
+                        if case let .index(source) = step, let index = model.index(source),
+                           let edition = PriceSourceText.editionPart(source, edition: index.edition)
+                        {
+                            Text(verbatim: "· \(edition)")
+                                .atlasTextStyle(.subheadline)
+                                .foregroundStyle(Palette.label2)
+                                .lineLimit(1)
+                        }
                         Spacer(minLength: Spacing.xSmall)
                         Button { move(step, by: -1) } label: { Image(systemName: "arrow.up") }
                             .disabled(position == 0)

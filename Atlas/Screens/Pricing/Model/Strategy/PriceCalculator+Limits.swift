@@ -56,7 +56,7 @@ extension PriceCalculator {
         }
         var minimum: Decimal?
         if let proceeds = strategy.minimumProceeds, proceeds > 0 {
-            let local = commission.customerPrice(forProceeds: proceeds * input.equalizationMultiplier, taxRate: input.territory.taxRate)
+            let local = minimumPrice(forProceeds: proceeds * input.equalizationMultiplier, input: input)
             minimum = local
             if value < local {
                 value = local
@@ -72,6 +72,16 @@ extension PriceCalculator {
         return LimitedTarget(
             value: value, adjustment: adjustment ?? .aboveFloor, steps: steps, floor: floor, minimum: minimum, raisedToFloor: raisedToFloor
         )
+    }
+
+    /// The lowest local price that earns `proceeds` (local currency): on
+    /// Apple's own ladder, the cheapest point whose proceeds reach it;
+    /// otherwise worked out from the tax rate and commission.
+    func minimumPrice(forProceeds proceeds: Decimal, input: PriceCalculationInput) -> Decimal {
+        if input.hasRealLadder, let point = input.ladder.lowest(withProceedsAtLeast: proceeds) {
+            return point.customerPrice
+        }
+        return commission.customerPrice(forProceeds: proceeds, taxRate: input.territory.taxRate)
     }
 
     /// Nearest point with the preferred ending. A price raised to the floor

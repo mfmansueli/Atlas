@@ -19,7 +19,9 @@ struct GetPricingStrategyTool: MCPTool {
         proceeds, discounts only, never raise, tiers, rounding, region multipliers, countries kept at Apple's price). \
         from says whose it is: app (set in Pricing → Customize…) or settings (Settings → Pricing's defaults). \
         get_prices' suggestions and propose_prices' checks use this strategy. Also returns the limits each setting \
-        takes and the strategy suggestion waiting for the person, if any. Read-only; change it with \
+        takes and the strategy suggestion waiting for the person, if any, and data: each index's edition \
+        (published, dataYear, fetched, coverage, fallbacks, stale; approximate for sample values), the exchange \
+        rates' date and source, and the thresholds of how sure (howSureRule). Read-only; change it with \
         propose_pricing_strategy.
         """,
         inputSchema: MCPToolDefinition.schema(
@@ -49,6 +51,7 @@ struct GetPricingStrategyTool: MCPTool {
                 "regionMultipliers": Self.range(MCPPricingStrategyJSON.regionRange),
             ],
         ]
+        result["data"] = MCPPricingDataJSON.json(snapshot: context.workspace.services.pricing.indexSnapshot(), rates: .current)
         if let suggestion = modes.strategySuggestion(for: app.id) {
             result["suggestionWaiting"] = Self.json(suggestion)
         }

@@ -10,7 +10,7 @@ import Foundation
 struct GetPricesTool: MCPTool {
     static let hint = """
     Each territory: `territory` (App Store Connect's three-letter code), `name`, `region`, `currency`, `price` \
-    (today's customer price, tax included), `usd` (about that many US dollars, from approximate rates) and \
+    (today's customer price, tax included), `usd` (about that many US dollars, at ExchangeRate-API's daily rates) and \
     `proceeds` (what the developer receives at the commission set in Atlas, after tax), in that currency. \
     `setBy` is how it's set: basePrice, automatic (Apple's price, which follows the base price), setByYou or \
     acceptedSuggestion; `automaticPrice` is Apple's automatic price where today's differs. `suggested` and \
@@ -19,7 +19,18 @@ struct GetPricesTool: MCPTool {
     & Push (`queuedAutomatic` when it's Apple's automatic price) and `queuedBy` who proposed it; `alternative` \
     is another assistant's or the person's competing version. Prices \
     must be one of Apple's price points: use get_price_points, then propose_prices (one country, a list, or \
-    territories such as "europe", "suggested" or "all").
+    territories such as "europe", "suggested" or "all"). \
+    `howSure` is how sure Atlas is of a price there ({level, word, confidence 1–3, reason}): Not very sure on \
+    purchasing power alone (no sales, an approximate or old index, Apple's points not read yet), Fairly sure with \
+    300 page views and 10 trials in 90 days in the country or its region, Sure after an earlier change there with \
+    a clear result; propose_prices refuses a higher confidence. `evidence` has the sales Atlas reads: days90 and \
+    days28 (pageViews, downloads, starts, trialStarts, paidStarts, proceedsUSD), `borrowedFrom` the region a thin \
+    country borrows from, `earlierChange` the 28 days either side of the last change. With include: `index` \
+    (basis, source, label, edition, dataYear, method exact or fallback, trust exact, fallback, approximate, stale \
+    or missing, factor), `exchangeRate` (perDollar, on exchangeRates' date) and `grid` (real: Apple's own points, \
+    readAt, suggestedPoint's customerPrice and proceeds). Each product's `trust`: `sales` (availability \
+    available, noSalesYet, roleCannotRead, turnedOff or notRead, the line Atlas shows, readThrough), \
+    `suggestions`, the suggestions' traffic-weighted `howSure`, or `matchLine` when none.
     """
 
     let definition = MCPToolDefinition(
@@ -31,12 +42,16 @@ struct GetPricesTool: MCPTool {
         review, how each is set (base, automatic or chosen) and about how many US dollars it is, plus the app's \
         pricing mode (keepPrices, showSuggestions or applyRecommended). Apps set to keepPrices refuse every price \
         proposal. Pass productId to read one product and territories (codes, "all", a region, "currency:EUR", \
-        "suggested", "setByYou", "automatic") to read only those countries; `hint` explains the fields.
+        "suggested", "setByYou", "automatic") to read only those countries; `hint` explains the fields. Each \
+        country also says how sure Atlas is of a price there and why (howSure) and the sales behind it (evidence); \
+        include adds the index value, exchange rate and Apple's price grid, or "all". Read howSure before \
+        propose_prices: a higher confidence is refused. Earlier changes and their results: get_price_history.
         """,
         inputSchema: MCPToolDefinition.schema(
             [
                 "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
                 "productId": MCPToolDefinition.string("A product's Apple ID, product ID or name. Leave it out for every product."),
+                "include": MCPPriceInclude.property,
             ].merging(MCPCountrySelection.properties) { first, _ in first },
             required: ["appId"]
         )
@@ -45,6 +60,7 @@ struct GetPricesTool: MCPTool {
     func call(_ arguments: MCPToolArguments, in context: MCPToolContext) async throws -> MCPToolOutcome {
         let catalog = try await MCPPriceCatalog.load(app: arguments.string("appId"), in: context.workspace)
         let selection = try MCPCountrySelection.parse(arguments)
+        let include = try MCPPriceInclude.parse(arguments)
         let products = try arguments.optionalString("productId").map { try [catalog.requireProduct($0)] } ?? catalog.catalog.products
         var entries: [JSONValue] = []
         for product in products {
@@ -65,10 +81,17 @@ struct GetPricesTool: MCPTool {
             var entry = sheet.productJSON
             let countries = sheet.countryRows()
             let shown = selection.map { $0.resolve(in: countries).rows } ?? countries
-            let rows = Dictionary(uniqueKeysWithValues: sheet.rows().map { ($0.id, $0) })
+            let matrix = sheet.rows()
+            let rows = Dictionary(uniqueKeysWithValues: matrix.map { ($0.id, $0) })
             let dismissed = sheet.dismissedSuggestionTerritoryIDs
+            let trust = MCPPriceTrustReader(sheet: sheet, include: include)
+            entry["trust"] = trust.product(countries: countries, rows: matrix)
             entry["territories"] = .array(shown.compactMap { country in
-                rows[country.id].map { Self.entry(for: $0, country: country, dismissed: dismissed, in: sheet) }
+                rows[country.id].map { row in
+                    var territory = Self.entry(for: row, country: country, dismissed: dismissed, in: sheet).objectValue ?? [:]
+                    territory.merge(trust.fields(for: row)) { first, _ in first }
+                    return .object(territory)
+                }
             })
             entries.append(.object(entry))
         }
@@ -76,6 +99,7 @@ struct GetPricesTool: MCPTool {
             "appId": .string(catalog.app.id),
             "app": .string(catalog.app.name),
             "pricingMode": .string(catalog.mode.rawValue),
+            "exchangeRates": MCPPriceTrustJSON.exchangeRates(.current),
             "hint": .string(Self.hint),
             "products": .array(entries),
         ]

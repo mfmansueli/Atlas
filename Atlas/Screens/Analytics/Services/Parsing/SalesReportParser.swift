@@ -25,13 +25,14 @@ enum SalesReportParser {
                 paidPeriods: table.int("Consecutive Paid Periods", in: row),
                 daysBeforeCanceling: Int(canceling),
                 reason: table.value("Cancellation Reason", in: row),
-                quantity: max(table.int("Quantity", in: row), 1)
+                quantity: max(table.int("Quantity", in: row), 1),
+                subscriptionID: subscriptionID(table, row)
             )
         }
     }
 
     /// Charges, refunds and proceeds, added up per subscription and territory.
-    static func subscribers(_ table: DelimitedTable, fallbackDay: AnalyticsDay, rates: ExchangeRates = .approximate) -> [SubscriberFact] {
+    static func subscribers(_ table: DelimitedTable, fallbackDay: AnalyticsDay, rates: ExchangeRates = .current) -> [SubscriberFact] {
         var byKey: [SubscriberFact: SubscriberFact] = [:]
         for row in table.rows {
             let key = SubscriberFact(
@@ -39,7 +40,8 @@ enum SalesReportParser {
                 appID: table.value("App Apple ID", in: row),
                 subscription: table.value("Subscription Name", in: row),
                 territory: ReportTerritory.alpha2(table.value("Country", in: row)),
-                device: table.value("Device", in: row)
+                device: table.value("Device", in: row),
+                subscriptionID: subscriptionID(table, row)
             )
             guard !key.appID.isEmpty else { continue }
             let units = Decimal(string: table.value("Units", in: row)) ?? 1
@@ -81,7 +83,8 @@ enum SalesReportParser {
                 day: day,
                 appID: table.value("App Apple ID", in: row),
                 subscription: table.value("Subscription Name", in: row),
-                territory: ReportTerritory.alpha2(table.value("Country", in: row))
+                territory: ReportTerritory.alpha2(table.value("Country", in: row)),
+                subscriptionID: subscriptionID(table, row)
             )
             guard !key.appID.isEmpty else { continue }
             var fact = byKey[key] ?? key
@@ -90,5 +93,12 @@ enum SalesReportParser {
             byKey[key] = fact
         }
         return byKey.values.sorted { ($0.appID, $0.subscription, $0.territory) < ($1.appID, $1.subscription, $1.territory) }
+    }
+
+    /// "Subscription Apple ID", which Pricing matches a product by; nil
+    /// when the report has no such column.
+    private static func subscriptionID(_ table: DelimitedTable, _ row: [String]) -> String? {
+        let id = table.value("Subscription Apple ID", in: row)
+        return id.isEmpty ? nil : id
     }
 }

@@ -7,7 +7,9 @@ import Foundation
 
 /// The Details tab's rows (board 73): type, product ID, subscription group,
 /// base price, where it's available, Family Sharing, Apple's commission
-/// (the rate Proceeds use, from Settings) and the tax category. A row whose
+/// (the rate Proceeds use, from Settings), the exchange rates In US$ and
+/// Proceeds use (board 76: here and in the footer, never in the banner)
+/// and the tax category. A row whose
 /// fact is still being read has no value yet (a skeleton); one that
 /// couldn't be read, or that doesn't apply (an in-app purchase's group), is
 /// left out. App Store Connect's API has no tax category for subscriptions
@@ -34,7 +36,8 @@ struct PricingProductDetails: Equatable, Sendable {
         isReadingPrices: Bool,
         facts: LoadState<PricingProductFacts>,
         territoryTotal: Int,
-        commission: Commission = .standard
+        commission: Commission = .standard,
+        exchangeRates: ExchangeRates? = nil
     ) -> Self {
         var rows = [
             Row(kind: .type, title: String(localized: "Type", comment: "kind:label"), value: typeText(product)),
@@ -64,6 +67,9 @@ struct PricingProductDetails: Equatable, Sendable {
             break
         }
         rows.append(Row(kind: .commission, title: String(localized: "Apple’s commission", comment: "kind:label"), value: commission.title))
+        if let exchangeRates {
+            rows.append(Row(kind: .exchangeRates, title: String(localized: "Exchange rates", comment: "kind:label"), value: exchangeRates.sourceLine))
+        }
         rows.append(Row(
             kind: .taxCategory,
             title: String(localized: "Tax category", comment: "kind:field-label"),

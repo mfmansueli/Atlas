@@ -87,7 +87,7 @@ struct ResultsReportView: View {
     }
 
     private var table: some View {
-        Table(model.results) {
+        Table(model.tableResults) {
             TableColumn("Territory") { result in
                 HStack(spacing: Spacing.small) {
                     FlagTile(regionCode: result.territory.alpha2)
@@ -114,17 +114,43 @@ struct ResultsReportView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 90, ideal: 115)
-            TableColumn("Result") { result in
-                Pill(text: result.verdict.title, style: result.verdict == .worse ? .warning : .neutral)
-                    .help(result.verdict.title)
-            }
-            .width(min: 80, ideal: 100)
+            TableColumn("Result") { result in resultCell(result) }
+                .width(min: 110, ideal: 130)
             TableColumn("") { result in restoreCell(result) }
                 .width(min: 76, ideal: 80)
         }
         // Rows hold row-sized (24 pt) controls.
         .controlSize(.regular)
         .accessibilityIdentifier("pricing.results.table")
+    }
+
+    /// The verdict's pill; too few to tell says under it which threshold
+    /// isn't met, with the count ("12 starts · needs 30").
+    private func resultCell(_ result: PriceChangeResult) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.tiny) {
+            Pill(text: result.verdict.title, style: Self.pillStyle(result.verdict))
+                .fixedSize()
+            if let shortfall = result.shortfall {
+                Text(shortfall.text)
+                    .atlasTextStyle(.subheadline)
+                    .foregroundStyle(Palette.label2)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .accessibilityIdentifier("pricing.results.shortfall.\(result.id)")
+            }
+        }
+        .padding(.vertical, result.shortfall == nil ? 0 : Spacing.tiny)
+        .help(Text(verbatim: [result.verdict.title, result.shortfall?.text].compactMap(\.self).joined(separator: " · ")))
+        .accessibilityElement(children: .combine)
+    }
+
+    /// Worse is amber, too few to tell outlined, the rest neutral.
+    static func pillStyle(_ verdict: ResultVerdict) -> PillStyle {
+        switch verdict {
+        case .worse: .warning
+        case .tooLittleData: .outline
+        case .better, .aboutTheSame: .neutral
+        }
     }
 
     private func priceCell(_ result: PriceChangeResult) -> some View {
@@ -171,15 +197,15 @@ struct ResultsReportView: View {
         }
     }
 
+    /// The caveat. Territories with too few to tell are rows, each saying
+    /// what it's short of, so the footnote doesn't count them.
     private var footnote: String {
-        let caveat = String(localized: """
-        Seasons, featuring and marketing also move these numbers. “Better”: more starts, same or higher proceeds. “Worse” offers to \
-        restore the old price through Review & Push.
-        """)
-        guard let count = model.summary?.tooLittleDataCount, count > 0 else { return caveat }
-        let hidden = count == 1
-            ? String(localized: "1 more territory had too few sales to tell.")
-            : String(localized: "\(count) more territories had too few sales to tell.")
-        return hidden + " " + caveat
+        String(
+            localized: """
+            Seasons, featuring and marketing also move these numbers. “Better”: page view → start conversion up, 90% sure, and \
+            proceeds no lower. “Worse” offers to restore the old price through Review & Push.
+            """,
+            comment: "kind:description"
+        )
     }
 }

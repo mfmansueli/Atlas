@@ -86,6 +86,13 @@ struct PricePointLadder: Sendable {
             ?? points.last
     }
 
+    /// The cheapest point whose proceeds reach `proceeds`: the lowest price
+    /// that still earns the minimum, by Apple's own numbers. Nil when no
+    /// point earns that much.
+    func lowest(withProceedsAtLeast proceeds: Decimal) -> PricePoint? {
+        points.first { $0.proceeds >= proceeds - Self.epsilon }
+    }
+
     /// Moves `steps` points of the rounding's ending up (positive) or down
     /// from `price`, which needn't be a point itself. Stops at the last point
     /// in that direction; nil when there's none.

@@ -50,7 +50,8 @@ struct SectionPrefetchModifier: ViewModifier {
             services: services, queue: changes, summaries: summaries, push: push, suggestions: suggestions, preferences: preferences,
             modes: pricingModes, navigator: navigator, history: history, reviews: reviews, events: events, productPages: productPages,
             analytics: analytics, artwork: artwork, sellerName: session?.currentKeyID.flatMap { session?.teamNames[$0] },
-            keyID: session?.currentKeyID, isPro: !pro.isFree
+            keyID: session?.currentKeyID, isPro: !pro.isFree,
+            quota: { [keyID] in keyID.flatMap { AppStoreConnectQuota.shared.rateLimit(keyID: $0) } }
         )
         await SectionPrefetcher(models: sectionModels).prefetch(
             app,

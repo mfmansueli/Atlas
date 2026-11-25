@@ -106,7 +106,8 @@ struct PricingViewModelViewsTests {
         model.pushRecords = { [DebugPricingResults.annualPush()].compactMap(\.self) }
         await model.loadResults()
         let first = try #require(model.results)
-        #expect(first.summary?.countedCount == 17)
+        #expect(first.summary?.territoryCount == DebugPricingResults.annualPush()?.pushed.count)
+        #expect(first.results.contains { $0.territory.alpha2 == "JP" && $0.verdict == .worse })
 
         await model.loadResults()
         #expect(model.results === first)

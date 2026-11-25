@@ -8,9 +8,12 @@ import SwiftUI
 /// The Change cell (board 73): the open suggestion in the assistant's
 /// colour ("→ R$ 129,90" with its change pill) and Accept and Dismiss for
 /// this country; a waiting change's "was R$ 249,90", its pill and Undo; or
-/// a dash when nothing changes.
+/// a dash when nothing changes, or a grey line while Apple's price points
+/// are read.
 struct CountryChangeCell: View {
     let row: CountryPriceRow
+    /// Apple's price points are being read: no suggestion yet.
+    var isCheckingPrices = false
     let onOpen: () -> Void
     let onAccept: () -> Void
     let onDismiss: () -> Void
@@ -46,6 +49,15 @@ struct CountryChangeCell: View {
                     .help(Text("Dismiss", comment: "kind:help"))
                     .accessibilityLabel(Text("Dismiss the suggestion for \(row.territory.name)", comment: "kind:label"))
                     .accessibilityIdentifier("countries.dismiss.\(row.id)")
+            } else if let change = row.testChange, let was = row.wasText {
+                // A running price test: the price before it and the move.
+                Text(was)
+                    .atlasTextStyle(.subheadline)
+                    .foregroundStyle(Palette.label2)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                PriceChangePill(change: change)
+                Spacer(minLength: Spacing.xxSmall)
             } else if let was = row.wasText {
                 Text(was)
                     .atlasTextStyle(.subheadline)
@@ -60,6 +72,10 @@ struct CountryChangeCell: View {
                     .plainButton()
                     .accessibilityLabel(Text("Undo the change in \(row.territory.name)", comment: "kind:label"))
                     .accessibilityIdentifier("countries.undo.\(row.id)")
+            } else if isCheckingPrices, !row.isBase {
+                SkeletonLine(fraction: SkeletonPattern.cardTitle, height: Metrics.skeletonBodyLine)
+                    .accessibilityElement()
+                    .accessibilityLabel(Text(PriceGridState.checkingText))
             } else {
                 Text(verbatim: "—")
                     .foregroundStyle(Palette.label3)

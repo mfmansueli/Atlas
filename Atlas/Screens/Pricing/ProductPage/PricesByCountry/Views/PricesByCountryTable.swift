@@ -91,6 +91,7 @@ struct PricesByCountryTable: View {
     private var dollarsColumn: some Column {
         TableColumn(PricesByCountryColumn.dollars.title, value: \CountryPriceRow.dollarsSortKey) { (row: CountryPriceRow) in
             secondary(row.dollarsText)
+                .help(ExchangeRates.current.detailText)
         }
         .width(min: 56, ideal: Metrics.countriesDollarsColumnWidth)
         .alignment(.trailing)
@@ -141,8 +142,8 @@ struct PricesByCountryTable: View {
 
     private var reasonColumn: some PlainColumn {
         TableColumn(PricesByCountryColumn.reason.title) { (row: CountryPriceRow) in
-            secondary(row.reason ?? "—")
-                .help(row.reason ?? "")
+            secondary(row.reasonText ?? "—")
+                .help([row.reasonText, row.howSureTip].compactMap(\.self).joined(separator: "\n"))
         }
         .width(min: 120, ideal: 220)
         .customizationID(PricesByCountryColumn.reason.customizationID)
@@ -177,6 +178,7 @@ struct PricesByCountryTable: View {
     private func changeCell(_ row: CountryPriceRow) -> some View {
         CountryChangeCell(
             row: row,
+            isCheckingPrices: viewModel.countriesGrid(productID: productID)?.isChecking == true,
             onOpen: { open(row) },
             onAccept: { onAccept(row) },
             onDismiss: { viewModel.dismissCountrySuggestion(productID: productID, territoryID: row.id) },

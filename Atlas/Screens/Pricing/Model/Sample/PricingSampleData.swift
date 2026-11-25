@@ -23,7 +23,8 @@ struct PricingSampleData: Sendable {
     static let customIndexImportDate = date("2026-10-20")
 
     let catalog: TerritoryCatalog
-    /// The bundled snapshot plus the sample custom index.
+    /// The sample snapshot (the prototype's approximate values) plus the
+    /// sample custom index.
     let snapshot: PriceIndexSnapshot
     let commission: Commission
     let calculator: PriceCalculator
@@ -32,7 +33,7 @@ struct PricingSampleData: Sendable {
     let ladders: [String: PricePointLadder]
 
     init(catalog: TerritoryCatalog = .standard, snapshot: PriceIndexSnapshot? = nil, commission: Commission = .smallBusiness) {
-        let base = snapshot ?? (try? PriceIndexSnapshot.bundled()) ?? .empty
+        let base = snapshot ?? (try? PriceIndexSnapshot.sample()) ?? .empty
         let snapshot = base.adding(Self.customIndex(catalog: catalog))
         self.catalog = catalog
         self.snapshot = snapshot
@@ -103,7 +104,8 @@ struct PricingSampleData: Sendable {
             canReadSales: true,
             signal: Self.sales[territory.alpha2],
             baseSignal: Self.sales["US"],
-            priorChange: priorChange(for: territory)
+            priorChange: priorChange(for: territory),
+            recentSignal: Self.sales[territory.alpha2]
         )
     }
 

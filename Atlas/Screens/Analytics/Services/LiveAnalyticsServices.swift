@@ -79,13 +79,14 @@ struct LiveAnalyticsServices: AnalyticsServices {
 
     func downloadSales(vendorNumber: String, days: [AnalyticsDay], activeDays: [AnalyticsDay]) async throws -> SalesDownload {
         let client = client
+        try await Self.checkVendorNumber(vendorNumber, before: days + activeDays, client: client)
         let jobs = days.map { SalesJob(day: $0, isActive: false) } + activeDays.map { SalesJob(day: $0, isActive: true) }
         return try await withThrowingTaskGroup(of: SalesDownload.self) { group in
             var result = SalesDownload()
             var iterator = jobs.makeIterator()
             var running = 0
             while running < Self.width, let job = iterator.next() {
-                group.addTask { try await Self.read(job, vendorNumber: vendorNumber, client: client) }
+                group.addTask { try await Self.readKeepingFailure(job, vendorNumber: vendorNumber, client: client) }
                 running += 1
             }
             while let part = try await group.next() {
@@ -94,8 +95,10 @@ struct LiveAnalyticsServices: AnalyticsServices {
                 result.subscribers += part.subscribers
                 result.activeDays += part.activeDays
                 result.active += part.active
+                result.failedDays += part.failedDays
+                result.failure = result.failure ?? part.failure
                 if let job = iterator.next() {
-                    group.addTask { try await Self.read(job, vendorNumber: vendorNumber, client: client) }
+                    group.addTask { try await Self.readKeepingFailure(job, vendorNumber: vendorNumber, client: client) }
                 }
             }
             return result
@@ -206,27 +209,85 @@ struct LiveAnalyticsServices: AnalyticsServices {
         return ReportBatch(instanceID: instance.id, kind: instance.kind, processing: instance.processing, facts: ReportFact.merged(facts))
     }
 
+    /// One day's reports. A day that fails no longer throws the whole read
+    /// away (Alba's 180 days were lost to it): it's left unread and named,
+    /// and the days that loaded are kept. A key that's refused stops all.
+    private static func readKeepingFailure(_ job: SalesJob, vendorNumber: String, client: AppStoreConnectClient) async throws -> SalesDownload {
+        do {
+            return try await read(job, vendorNumber: vendorNumber, client: client)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as AppStoreConnectError where stopsEveryDay(error) {
+            throw error
+        } catch {
+            var failed = SalesDownload()
+            if !job.isActive { failed.failedDays = [job.day] }
+            failed.failure = AppleErrorCopy(String(localized: "Sales didn’t load.", comment: "kind:error"), error: error)
+            return failed
+        }
+    }
+
+    /// A refused or unknown key fails every day the same way.
+    private static func stopsEveryDay(_ error: AppStoreConnectError) -> Bool {
+        switch error {
+        case .unauthorized, .forbidden: true
+        default: false
+        }
+    }
+
+    /// Apple answers "Invalid vendor number specified" (400) to the
+    /// subscriber and active-subscription reports of a vendor with nobody
+    /// subscribed yet, though the same number reads the event report.
+    /// The event report still fails on a number that's really wrong.
+    private static func meansNobodySubscribed(_ error: any Error) -> Bool {
+        guard case let AppStoreConnectError.server(statusCode, code, detail) = error, statusCode == 400 else { return false }
+        return (code ?? "").hasPrefix("PARAMETER_ERROR.INVALID") && (detail ?? "").localizedCaseInsensitiveContains("vendor")
+    }
+
+    /// Apple's subscription reports answer "Invalid vendor number" both to
+    /// a wrong number and to a vendor nobody subscribed to yet (Alba). The
+    /// Sales report tells them apart: it knows every vendor that has
+    /// downloads, so a number it takes is right and the 400s mean "no
+    /// subscriptions yet".
+    private static func checkVendorNumber(_ vendorNumber: String, before days: [AnalyticsDay], client: AppStoreConnectClient) async throws {
+        guard let newest = days.max() else { return }
+        do {
+            _ = try await client.salesReport(vendorNumber: vendorNumber, type: "SALES", subType: "SUMMARY", version: "1_0", date: newest.adding(-1).iso)
+        } catch where meansNobodySubscribed(error) {
+            throw SalesVendorNumberError(vendorNumber: vendorNumber)
+        }
+    }
+
+    /// A report that's empty for a vendor nobody subscribed to yet.
+    private static func optionalReport(_ read: () async throws -> Data?) async throws -> Data? {
+        do {
+            return try await read()
+        } catch where meansNobodySubscribed(error) {
+            return nil
+        }
+    }
+
     private static func read(_ job: SalesJob, vendorNumber: String, client: AppStoreConnectClient) async throws -> SalesDownload {
         let date = job.day.iso
+        func report(_ type: String, _ subType: String) async throws -> DelimitedTable? {
+            let data = try await optionalReport {
+                try await client.salesReport(vendorNumber: vendorNumber, type: type, subType: subType, version: "1_3", date: date)
+            }
+            return data.flatMap(DelimitedTable.init(data:))
+        }
         var result = SalesDownload()
         if job.isActive {
             result.activeDays = [job.day]
-            if let data = try await client.salesReport(vendorNumber: vendorNumber, type: "SUBSCRIPTION", subType: "SUMMARY", version: "1_3", date: date),
-               let table = DelimitedTable(data: data)
-            {
+            if let table = try await report("SUBSCRIPTION", "SUMMARY") {
                 result.active = SalesReportParser.active(table, day: job.day)
             }
             return result
         }
         result.days = [job.day]
-        if let data = try await client.salesReport(vendorNumber: vendorNumber, type: "SUBSCRIPTION_EVENT", subType: "SUMMARY", version: "1_3", date: date),
-           let table = DelimitedTable(data: data)
-        {
+        if let table = try await report("SUBSCRIPTION_EVENT", "SUMMARY") {
             result.events = SalesReportParser.events(table, fallbackDay: job.day)
         }
-        if let data = try await client.salesReport(vendorNumber: vendorNumber, type: "SUBSCRIBER", subType: "DETAILED", version: "1_3", date: date),
-           let table = DelimitedTable(data: data)
-        {
+        if let table = try await report("SUBSCRIBER", "DETAILED") {
             result.subscribers = SalesReportParser.subscribers(table, fallbackDay: job.day)
         }
         return result

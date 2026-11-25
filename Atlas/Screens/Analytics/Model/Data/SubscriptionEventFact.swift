@@ -26,9 +26,12 @@ struct SubscriptionEventFact: Hashable, Sendable, Codable {
     /// Apple's reason, on cancellations: "Canceled", "Billing Issue", …
     var reason: String = ""
     var quantity = 1
+    /// The subscription's Apple ID (App Store Connect's resource ID), from
+    /// "Subscription Apple ID"; nil in facts read before Atlas kept it.
+    var subscriptionID: String?
 
     private enum CodingKeys: String, CodingKey {
         case day = "d", appID = "a", kind = "k", subscription = "s", territory = "t", offerType = "o"
-        case paidPeriods = "p", daysBeforeCanceling = "c", reason = "r", quantity = "q", device = "v"
+        case paidPeriods = "p", daysBeforeCanceling = "c", reason = "r", quantity = "q", device = "v", subscriptionID = "i"
     }
 }

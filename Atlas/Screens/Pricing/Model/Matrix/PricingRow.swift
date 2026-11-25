@@ -22,6 +22,13 @@ struct PricingRow: Identifiable, Hashable, Sendable {
     var queued: QueuedPrice?
     /// The subscription's push has a start date, so changes read Scheduled.
     var isScheduled = false
+    /// Apple's own price points are here for this territory (and the
+    /// product's read of them finished), so it may suggest a price. On a
+    /// simulated ladder it never does (`PricingRowBuilder`).
+    var hasRealGrid = true
+    /// The country is in a running price test (board 76): no suggestion
+    /// here, and Accept All leaves it out.
+    var isInPriceTest = false
 
     var id: String { territory.id }
 
@@ -30,11 +37,20 @@ struct PricingRow: Identifiable, Hashable, Sendable {
     // MARK: - Proposal
 
     /// What “Apply” and following the strategy would set: the custom
-    /// strategy's price, else the suggestion. The base territory never moves.
+    /// strategy's price, else the suggestion. The base territory never
+    /// moves, and nothing moves on a simulated ladder.
     var target: PricePoint {
-        if isBase { return current }
+        if isBase || !hasRealGrid || isInPriceTest { return current }
         if usesCustomStrategy { return calculation.price }
         return recommendation?.price ?? current
+    }
+
+    /// A suggestion the price test holds back: what the strategy would
+    /// set without the test.
+    var isHeldBackByPriceTest: Bool {
+        guard isInPriceTest, !isBase, hasRealGrid else { return false }
+        let untested = usesCustomStrategy ? calculation.price : recommendation?.price ?? current
+        return Self.differs(untested.customerPrice, current.customerPrice)
     }
 
     var targetOrigin: PriceChangeOrigin { usesCustomStrategy ? .custom : .recommended }
@@ -63,8 +79,8 @@ struct PricingRow: Identifiable, Hashable, Sendable {
 
     // MARK: - Facts
 
-    /// Approximate, from bundled exchange rates.
-    var dollars: Decimal? { ExchangeRates.approximate.dollars(current.customerPrice, currency: territory.currencyCode) }
+    /// Roughly, at the day's exchange rates (`ExchangeRates.current`).
+    var dollars: Decimal? { ExchangeRates.current.dollars(current.customerPrice, currency: territory.currencyCode) }
 
     var isCustomPrice: Bool { Self.differs(current.customerPrice, equalized) }
 

@@ -11,6 +11,8 @@ import SwiftUI
 struct PricesByCountryStrategyMenu: View {
     let viewModel: PricingViewModel
 
+    @Environment(ProGate.self) private var pro: ProGate?
+
     var body: some View {
         Menu {
             Section(String(localized: "Prices for \(viewModel.app.name)", comment: "kind:field-label")) {
@@ -31,6 +33,18 @@ struct PricesByCountryStrategyMenu: View {
             }
             .disabled(viewModel.mode == .keepPrices)
             .accessibilityIdentifier("countries.strategy.customize")
+            if let product = testedProduct {
+                // Board 76: the product's own choice, under the app-wide ones.
+                Section(String(localized: "For \(product.name)", comment: "kind:field-label")) {
+                    Button {
+                        pro.require(.priceTest) { viewModel.openPriceTest(productID: product.id) }
+                    } label: {
+                        Text("Test a Price…", comment: "kind:menu-item")
+                        Text("One region, 28 days, to make suggestions sure", comment: "kind:menu-item")
+                    }
+                    .accessibilityIdentifier("countries.strategy.testPrice")
+                }
+            }
         } label: {
             Text(viewModel.mode.strategyTitle)
         }
@@ -40,5 +54,12 @@ struct PricesByCountryStrategyMenu: View {
         .accessibilityLabel(Text("Strategy", comment: "kind:accessibility-label"))
         .accessibilityValue(Text(viewModel.mode.strategyTitle))
         .accessibilityIdentifier("countries.strategy")
+    }
+
+    /// The subscription whose Prices by Country is open.
+    private var testedProduct: PricingProduct? {
+        guard let id = viewModel.pricesByCountry.productID, let product = viewModel.countriesProduct(productID: id),
+              !product.isInAppPurchase else { return nil }
+        return product
     }
 }

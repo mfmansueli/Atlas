@@ -106,7 +106,8 @@ extension PricingViewModel {
             isReadingPrices: card == nil && productErrors[product.id] == nil,
             facts: productFacts.state(for: product.id),
             territoryTotal: TerritoryCatalog.standard.count,
-            commission: strategy.commission
+            commission: strategy.commission,
+            exchangeRates: .current
         )
     }
 

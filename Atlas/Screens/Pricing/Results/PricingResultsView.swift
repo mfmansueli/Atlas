@@ -10,10 +10,17 @@ import SwiftUI
 struct PricingResultsView: View {
     let viewModel: PricingViewModel
 
+    @Environment(ProGate.self) private var pro: ProGate?
+
     var body: some View {
         // A stack rather than a Group, so the tab's identifier stays on the
         // tab instead of replacing each state's own.
         VStack(spacing: 0) {
+            if let productID {
+                PriceTestResultsSection(viewModel: viewModel, productID: productID, isFree: pro.isFree) {
+                    pro.require(.priceTest) { viewModel.openPriceTest(productID: productID) }
+                }
+            }
             if let model = viewModel.results {
                 content(model)
             } else {
@@ -22,8 +29,14 @@ struct PricingResultsView: View {
             }
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .modifier(PriceTestSheetsModifier(viewModel: viewModel))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pricing.results")
+    }
+
+    /// The product whose Results these are.
+    private var productID: PricingProduct.ID? {
+        viewModel.productRoute?.productID ?? viewModel.selectedProduct?.id
     }
 
     @ViewBuilder
@@ -36,16 +49,22 @@ struct PricingResultsView: View {
             EmptyStateView(
                 String(localized: "No price changes to compare yet", comment: "kind:empty"),
                 systemImage: "chart.bar",
-                text: String(localized: "Push new prices to compare 28 days before and after: starts, conversion and proceeds.", comment: "kind:empty")
+                text: String(localized: "Push a price change, or try one first with Test a Price…: one region pays it for 28 days.", comment: "kind:empty")
             )
             .accessibilityIdentifier("pricing.results.none")
         case let .tooEarly(changedOn, day, arrivesOn):
             ResultsWaitingView(changedOn: changedOn, day: day, arrivesOn: arrivesOn)
         case let .salesUnavailable(changedOn):
             ContentUnavailableView {
-                Label("Results need sales data", systemImage: "chart.line.uptrend.xyaxis")
+                Label(String(localized: "Results need sales data", comment: "kind:empty"), systemImage: "chart.line.uptrend.xyaxis")
             } description: {
-                Text("Prices changed on \(PricingText.date(changedOn)). Atlas can’t read Sales and Trends or App Analytics yet to compare.")
+                Text(String(
+                    localized: """
+                    Prices changed on \(PricingText.date(changedOn)). To compare, set up Sales and Trends in Analytics and keep sales \
+                    data on in Settings → Pricing.
+                    """,
+                    comment: "kind:empty"
+                ))
             }
             .accessibilityIdentifier("pricing.results.noSales")
         case let .ready(changedOn):

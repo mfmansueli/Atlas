@@ -15,29 +15,56 @@ struct ResultsEvaluatorTests {
 
     // MARK: - Verdicts
 
-    @Test func moreStartsAndProceedsIsBetter() {
-        #expect(ResultsEvaluator.verdict(before: window(31, 1053), after: window(68, 1155)) == .better)
-        #expect(ResultsEvaluator.verdict(before: window(31, 1053), after: window(68, 1053)) == .better)
+    @Test func conversionUpAndProceedsNoLowerIsBetter() {
+        #expect(ResultsEvaluator.verdict(before: window(31, 1053, views: 4800), after: window(68, 1155, views: 4950)) == .better)
+        #expect(ResultsEvaluator.verdict(before: window(31, 1053, views: 4800), after: window(68, 1053, views: 4950)) == .better)
     }
 
-    @Test func moreStartsLessProceedsIsNeutral() {
-        let verdict = ResultsEvaluator.verdict(before: window(92, 2986), after: window(98, 2704))
-        #expect(verdict == .moreStartsLessProceeds)
+    @Test func conversionUpForLessProceedsIsAboutTheSame() {
+        let verdict = ResultsEvaluator.verdict(before: window(31, 1053, views: 4800), after: window(68, 1000, views: 4950))
+        #expect(verdict == .aboutTheSame)
         #expect(!verdict.offersRestore)
-        #expect(verdict.title == "More starts, less proceeds")
+        #expect(verdict.title == "About the same")
     }
 
-    @Test func noMoreStartsIsWorseAndOffersRestore() {
-        let verdict = ResultsEvaluator.verdict(before: window(37, 1144), after: window(34, 841))
+    @Test func conversionDownAndProceedsNoHigherIsWorseAndOffersRestore() {
+        let verdict = ResultsEvaluator.verdict(before: window(90, 1144, views: 3000), after: window(55, 702, views: 3100))
         #expect(verdict == .worse)
         #expect(verdict.offersRestore)
-        #expect(ResultsEvaluator.verdict(before: window(20, 100), after: window(20, 200)) == .worse)
+        #expect(ResultsEvaluator.verdict(before: window(90, 1144, views: 3000), after: window(55, 1300, views: 3100)) == .aboutTheSame)
     }
 
-    @Test func underTenStartsOnBothSidesIsTooLittleData() {
-        #expect(ResultsEvaluator.verdict(before: window(9, 10), after: window(9, 10)) == .tooLittleData)
+    @Test func aDifferenceTheIntervalCantTellFromChanceIsAboutTheSame() {
+        let verdict = ResultsEvaluator.verdict(before: window(92, 2986, views: 4600), after: window(98, 2704, views: 4740))
+        #expect(verdict == .aboutTheSame)
+        let change = ResultsEvaluator.conversionChange(before: window(92, 2986, views: 4600), after: window(98, 2704, views: 4740))
+        #expect(change.outcome == .same)
+    }
+
+    @Test func under30StartsOr28DaysOnASideIsTooFewToTell() {
+        #expect(ResultsEvaluator.verdict(before: window(29, 10, views: 3000), after: window(90, 900, views: 3000)) == .tooLittleData)
+        #expect(ResultsEvaluator.verdict(before: window(90, 10, views: 3000), after: window(29, 9, views: 3000)) == .tooLittleData)
+        var short = window(90, 900, views: 3000)
+        short.days = 27
+        #expect(ResultsEvaluator.verdict(before: window(30, 100, views: 3000), after: short) == .tooLittleData)
         #expect(!ResultVerdict.tooLittleData.hasEnoughData)
-        #expect(ResultsEvaluator.verdict(before: window(6, 179), after: window(13, 120)) == .moreStartsLessProceeds)
+        #expect(ResultVerdict.tooLittleData.title == "Too few to tell")
+    }
+
+    @Test func fewPageViewsOrMoreStartsThanViewsIsTooFewToTell() {
+        // Under Analytics' 100 page views a side.
+        #expect(ResultsEvaluator.verdict(before: window(30, 100, views: 90), after: window(60, 200, views: 95)) == .tooLittleData)
+        // Starts from outside the page (offer codes) make the rate meaningless.
+        #expect(ResultsEvaluator.verdict(before: window(40, 100, views: 30), after: window(60, 200, views: 3000)) == .tooLittleData)
+    }
+
+    @Test func windowsFromSignalsKeepTheirDays() {
+        let window = SalesWindow(signal: SalesSignal(pageViews: 300, starts: 12, proceeds: 40), days: 11)
+        #expect(window.pageViews == 300)
+        #expect(window.starts == 12)
+        #expect(window.proceeds == 40)
+        #expect(window.days == 11)
+        #expect(SalesWindow(pageViews: 1, starts: 0, proceeds: 0).days == ResultsEvaluator.windowDays)
     }
 
     // MARK: - Availability
@@ -79,20 +106,20 @@ struct ResultsEvaluatorTests {
         #expect(brazil.priceChange.percentText == "−50%")
     }
 
-    @Test func sampleResultsMatchThePrototype() {
+    @Test func sampleResultsCountOnlyTerritoriesWithThirtyStartsEachSide() {
         let results = PricingFixtures.sample.results()
         let summary = ResultsEvaluator.summarize(results)
         #expect(summary.territoryCount == 164)
-        #expect(summary.countedCount == 17)
-        #expect(summary.betterCount == 6)
-        #expect(summary.worseCount == 3)
-        #expect(summary.startsBefore == 566)
-        #expect(summary.startsAfter == 739)
-        #expect(summary.startsChange.percentText == "+31%")
-        #expect(CurrencyFormat.usd.formatWhole(summary.proceedsBefore) == "$17,646")
-        #expect(summary.proceedsChange.direction == .decrease)
+        #expect(summary.countedCount + summary.tooLittleDataCount == summary.territoryCount)
+        for result in results where result.verdict.hasEnoughData {
+            #expect(result.before.starts >= 30 && result.after.starts >= 30)
+        }
+        for result in results where result.before.starts < 30 || result.after.starts < 30 {
+            #expect(result.verdict == .tooLittleData)
+        }
+        // Japan: 37 → 34 starts on about the same page views.
+        #expect(results.first { $0.territory.alpha2 == "JP" }?.verdict == .aboutTheSame)
         #expect(results.first?.territory.alpha2 == "IN")
-        #expect(results.first { $0.territory.alpha2 == "JP" }?.verdict == .worse)
     }
 
     @Test func proceedsAreConvertedToDollars() throws {

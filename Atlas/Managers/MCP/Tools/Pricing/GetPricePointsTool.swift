@@ -43,7 +43,7 @@ struct GetPricePointsTool: MCPTool {
         Lists Apple's price points for one product in one territory (or several with territories) around today's \
         price, around near (in the territory's currency) or nearUsd (US dollars), or every point between min and \
         max: each point's customer price, proceeds (at the commission set in Atlas, after tax), pricePointId and \
-        usd (about that many US dollars, from approximate rates). Marks the current point, Apple's automatic one \
+        usd (about that many US dollars, at ExchangeRate-API's daily rates). Marks the current point, Apple's automatic one \
         and the open suggestion. Only these prices can be proposed with propose_prices (price or pricePointId). A \
         subscription without a price in the United States yet lists its US points only (current is null): its US \
         price sets its starting price.
@@ -122,7 +122,7 @@ struct GetPricePointsTool: MCPTool {
             "proceeds": MCPPriceValue.json(point.proceeds.rounded(scale: 2)),
         ]
         if let id = point.appStoreConnectID { entry["pricePointId"] = .string(id) }
-        if let usd = ExchangeRates.approximate.dollars(point.customerPrice, currency: currency) {
+        if let usd = ExchangeRates.current.dollars(point.customerPrice, currency: currency) {
             entry["usd"] = MCPPriceValue.json(usd.rounded(scale: 2))
         }
         return entry

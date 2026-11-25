@@ -8,10 +8,11 @@ import Foundation
 /// The index data the app ships with (`PriceIndexSnapshot.json`), so pricing
 /// works offline, plus any custom index the person imported.
 ///
-/// The bundled values are approximate sample data from the design prototype
-/// (`isApproximate`), not the publishers' figures.
+/// `bundled()` holds the publishers' figures (World Bank, IMF, Big Mac),
+/// each value with its year and method; `sample()` holds the design
+/// prototype's approximate values (`isApproximate`) for DEBUG and tests.
 struct PriceIndexSnapshot: Hashable, Sendable {
-    /// True while the bundled values are illustrative rather than published.
+    /// True for illustrative values (the sample), not published ones.
     var isApproximate: Bool
     /// Where the values come from and how far to trust them.
     var note: String
@@ -29,7 +30,7 @@ struct PriceIndexSnapshot: Hashable, Sendable {
         indices[source]?.level(for: territoryID)
     }
 
-    /// Territories with a value in a source: 74 for Big Mac, 165 for World Bank.
+    /// Territories with a value in a source, e.g. 74 for Big Mac.
     func coverage(of source: PriceIndexSource) -> Int {
         indices[source]?.coverage ?? 0
     }

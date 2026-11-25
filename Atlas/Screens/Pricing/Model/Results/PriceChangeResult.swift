@@ -19,6 +19,11 @@ struct PriceChangeResult: Hashable, Sendable, Identifiable {
         ResultsEvaluator.verdict(before: before, after: after)
     }
 
+    /// Why it's too few to tell, for the line under the pill; nil with a verdict.
+    var shortfall: ResultShortfall? {
+        verdict == .tooLittleData ? ResultShortfall.of(before: before, after: after) : nil
+    }
+
     var priceChange: PriceChange {
         PriceChange(old: oldPrice, new: newPrice)
     }

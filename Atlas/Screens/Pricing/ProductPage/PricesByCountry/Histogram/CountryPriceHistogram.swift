@@ -50,7 +50,7 @@ struct CountryPriceHistogram: Hashable, Sendable {
         var bins = Self.count(now, edges: edges, series: .now)
         if hasSuggestions { bins += Self.count(suggested, edges: edges, series: .suggested) }
         self.bins = bins
-        baseDollars = basePrice.flatMap { ExchangeRates.approximate.dollars($0, currency: baseCurrency)?.doubleValue }
+        baseDollars = basePrice.flatMap { ExchangeRates.current.dollars($0, currency: baseCurrency)?.doubleValue }
     }
 
     var maximumCount: Int { bins.map(\.count).max() ?? 0 }

@@ -5,18 +5,28 @@
 
 import Foundation
 
-/// Market exchange rates as units of each currency per US dollar, for the
-/// "USD equivalent" column and the tile map.
+/// Market exchange rates as units of each currency per US dollar, for In
+/// US$, the map, the histogram, proceeds and "feels like".
 ///
-/// `approximate` holds the design prototype's illustrative rates, not live
-/// quotes. App Store Connect doesn't publish exchange rates, so a live source
-/// would have to come from elsewhere.
+/// App Store Connect doesn't publish exchange rates. Live code reads
+/// `current`: ExchangeRate-API's daily rates, bundled with each release
+/// (`ExchangeRatesSnapshot.json`) and refreshed once a day by
+/// `ExchangeRateStore`. `approximate` holds the design prototype's
+/// illustrative rates, for DEBUG scenes and the sample world only.
 struct ExchangeRates: Hashable, Sendable {
     /// Units of the currency per US dollar, e.g. `"BRL": 5.5`.
     var unitsPerDollar: [String: Decimal]
+    /// The day the source published these rates.
+    var date: Date?
+    /// When Atlas (or the snapshot script) downloaded them.
+    var fetchDate: Date?
+    var source: ExchangeRateSource = .sample
+
+    /// The rates live code uses: `ExchangeRateStore.shared`'s.
+    static var current: ExchangeRates { ExchangeRateStore.shared.rates }
 
     /// The prototype's illustrative rates (approximate, October 2026).
-    static let approximate = ExchangeRates(unitsPerDollar: approximateRates.mapValues { Decimal(exactly: $0) })
+    static let approximate = ExchangeRates(unitsPerDollar: approximateRates.mapValues { Decimal(exactly: $0) }, source: .sample)
 
     private static let approximateRates: [String: Double] = [
         "USD": 1,
@@ -67,5 +77,39 @@ struct ExchangeRates: Hashable, Sendable {
     func dollars(_ amount: Decimal, currency code: String) -> Decimal? {
         guard let rate = unitsPerDollar[code.uppercased()], rate > 0 else { return nil }
         return amount / rate
+    }
+
+    /// Usable rates: the dollar is 1 and every rate is positive.
+    var isValid: Bool {
+        unitsPerDollar["USD"] == 1 && !unitsPerDollar.isEmpty && unitsPerDollar.values.allSatisfy { $0 > 0 }
+    }
+
+    /// Published later than `other`, or as late and fetched later.
+    func isNewer(than other: ExchangeRates) -> Bool {
+        let mine = date ?? .distantPast, theirs = other.date ?? .distantPast
+        if mine != theirs { return mine > theirs }
+        return (fetchDate ?? .distantPast) > (other.fetchDate ?? .distantPast)
+    }
+
+    /// Where the rates come from and their day, the Source column's pattern
+    /// (board 76): "Rates by ExchangeRate-API · 25 Nov 2026", or "Sample
+    /// exchange rates, not live quotes". Settings → Price data, the Prices
+    /// by Country footer and the product's Details say it this way.
+    var sourceLine: String {
+        guard source != .sample, let date else {
+            return String(localized: "Sample exchange rates, not live quotes", comment: "kind:hint")
+        }
+        let day = date.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, timeZone: .gmt))
+        return String(localized: "\(source.attribution) · \(day)", comment: "kind:hint")
+    }
+
+    /// The details line: "Exchange rates of 25 Nov 2026 · Rates by
+    /// ExchangeRate-API", or "Sample exchange rates, not live quotes".
+    var detailText: String {
+        guard source != .sample, let date else {
+            return String(localized: "Sample exchange rates, not live quotes", comment: "kind:hint")
+        }
+        let day = date.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, timeZone: .gmt))
+        return String(localized: "Exchange rates of \(day) · \(source.attribution)", comment: "kind:hint")
     }
 }

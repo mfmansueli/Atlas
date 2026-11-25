@@ -8,6 +8,9 @@ import Testing
 @testable import Atlas
 
 /// The suggestions on the prototype's sample data (design README, section 11).
+/// The sample's grid is simulated, so every suggestion here is Not very sure
+/// (HowSure itself is in `PriceConfidenceRuleTests` and
+/// `PriceRecommenderConfidenceTests`).
 @Suite("PriceRecommender")
 struct PriceRecommenderTests {
     private let sample = PricingFixtures.sample
@@ -24,7 +27,8 @@ struct PriceRecommenderTests {
         let brazil = try recommendation("BR")
         #expect(brazil.price.customerPrice == money("109.90"))
         #expect(brazil.currentPrice == money("219.90"))
-        #expect(brazil.confidence == .medium)
+        #expect(brazil.confidence == .low)
+        #expect(!brazil.howSureReason.isEmpty)
         #expect(brazil.reason == "Feels like 2.0× the US price · many page views, few starts")
         #expect(brazil.feelsLikeText == "$80")
         #expect(brazil.feelsLikeSuggestedText == "$40")
@@ -35,15 +39,16 @@ struct PriceRecommenderTests {
         #expect(brazil.summary == "R$ 219,90 equalized × 0.5 = R$ 109,95 → above floor → R$ 109,90")
         #expect(brazil.basis == [
             "Purchasing power: World Bank 2024 price level 0.50",
-            "Your sales, last 28 days: 4,800 page views · 31 starts · 0.65% (US 2.39%)",
+            "Your sales, last 90 days: 4,800 page views · 31 starts · 0.65% (US 2.39%)",
         ])
     }
 
-    @Test func mexicosEarlierCutGivesHighConfidence() throws {
+    @Test func mexicosEarlierCutIsInWhatItsBasedOn() throws {
         let mexico = try recommendation("MX")
         #expect(mexico.currentPrice == 549)
         #expect(mexico.price.customerPrice == 439)
-        #expect(mexico.confidence == .high)
+        // 16 → 22 starts: under 30 a side, and the grid is simulated.
+        #expect(mexico.confidence == .low)
         #expect(mexico.reason == "Feels like 1.2× the US price")
         #expect(!mexico.isHolding)
         #expect(mexico.basis.last == "Earlier change, Jul 14, 2026: MX$ 739.00 → MX$ 549.00, starts 16 → 22 in 28 days")
@@ -54,7 +59,7 @@ struct PriceRecommenderTests {
         #expect(turkiye.isHolding)
         #expect(turkiye.isUnchanged)
         #expect(turkiye.price.customerPrice == money("1199.99"))
-        #expect(turkiye.confidence == .high)
+        #expect(turkiye.confidence == .low)
         #expect(turkiye.reason == "Last cut didn’t lift starts · holding")
         #expect(turkiye.summary == "Holding at ₺1.199,99")
         #expect(!turkiye.likelyHoldsPeopleBack)
@@ -92,6 +97,8 @@ struct PriceRecommenderTests {
         #expect(brazil.confidence == .low)
         #expect(brazil.reason == "Feels like 2.0× the US price")
         #expect(brazil.basis.last == "Sales: this key’s role can’t read Sales and Trends")
+        #expect(brazil.howSureReason == "Purchasing power only: this key’s role can’t read sales.")
+        #expect(brazil.evidence == nil)
         let turkiye = try recommendation("TR", canReadSales: false)
         #expect(!turkiye.isHolding)
         #expect(turkiye.confidence == .low)

@@ -35,6 +35,8 @@ struct AnalyticsMCPContext {
             \(app.name)'s reports can't be asked for: the API key isn't an Admin key. The person adds one in Settings → Accounts.
             """))
         }
+        // A Mac that never read a day of sales reads them before answering.
+        if store.hasNeverReadSales { await store.refreshSales(services: workspace.services.analytics) }
         let summary = try? await workspace.services.pricing.summary(for: app)
         let dataset = store.dataset(for: app, sellsSubscriptions: summary.map { $0.subscriptionCount > 0 } ?? true)
         let context: AnalyticsContext = if let fixed = workspace.services.analytics.fixedContext {
@@ -81,6 +83,7 @@ struct AnalyticsMCPContext {
         case .keyCannotRead: notes.append("Trials, paid starts and proceeds are missing: the API key's role can't read Sales and Trends.")
         case .waiting: notes.append("Trials, paid starts and proceeds are missing: Sales and Trends hasn't been downloaded yet.")
         }
+        if let error = store.salesError { notes.append("Sales and Trends: \(error)") }
         if case .waiting = dataset.engagementState {
             notes.append("Impressions, page views and downloads are missing: Apple's analytics reports haven't arrived.")
         }

@@ -58,6 +58,12 @@ struct LimitsSection: View {
                         .multilineTextAlignment(.trailing)
                         .accessibilityLabel(String(localized: "Minimum proceeds per territory, in dollars"))
                 }
+                if strategy.minimumProceeds != nil {
+                    Text("Checked against what each of Apple’s price points earns, after tax and commission.", comment: "kind:hint")
+                        .atlasTextStyle(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 VStack(alignment: .leading, spacing: 2) {
                     Toggle(isOn: viewModel.strategyBinding(\.discountOnly)) {
                         Text("Discount only").font(.callout)

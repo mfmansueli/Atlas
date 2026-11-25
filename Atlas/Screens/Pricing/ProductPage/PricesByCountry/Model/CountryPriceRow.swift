@@ -44,6 +44,15 @@ struct CountryPriceRow: Identifiable, Hashable, Sendable {
     /// The price likely holds people back (it feels at least 25% above the
     /// base price and the suggestion would change it).
     var likelyHeldBack = false
+    /// The country's page views in 90 days, which weigh its how sure in
+    /// the banner's; nil without sales.
+    var pageViews: Int?
+    /// How sure's one line: "Europe: 2,100 page views and 24 trials in 90 days."
+    var howSureReason: String?
+    /// The sales behind the suggestion.
+    var evidence: PriceEvidenceSummary?
+    /// In a running price test, or its comparison (board 76).
+    var priceTest: CountryPriceTestNote?
 
     var id: Territory.ID { territory.id }
 
@@ -62,7 +71,21 @@ struct CountryPriceRow: Identifiable, Hashable, Sendable {
             if let suggested, PricingRow.differs(suggested.customerPrice, queued.price) { return .adjustedSuggestion }
             return .acceptedSuggestion
         }
+        if priceTest?.role == .test { return .priceTest }
         return followsAppleToday ? .automatic : .setByYou
+    }
+
+    /// How it's set: "Price test · until Dec 23" in a test country.
+    var sourceText: String {
+        if source == .priceTest, let note = priceTest { return note.sourceText }
+        return source.title
+    }
+
+    /// The price before the test, while the test price is today's.
+    var testChange: PriceChange? {
+        guard !isPending, priceTest?.role == .test, let old = priceTest?.oldPrice else { return nil }
+        let change = PriceChange(old: old, new: current.customerPrice)
+        return change.direction == PriceChange.Direction.none ? nil : change
     }
 
     /// Waits in Review & Push: the "Not pushed" pill, "was …" and Undo.
@@ -72,6 +95,7 @@ struct CountryPriceRow: Identifiable, Hashable, Sendable {
 
     /// "was R$ 249,90", while a change waits.
     var wasText: String? {
+        if let change = testChange { return String(localized: "was \(currency.format(change.old))", comment: "kind:label") }
         guard isPending else { return nil }
         return String(localized: "was \(currency.format(current.customerPrice))", comment: "kind:label")
     }
@@ -88,8 +112,25 @@ struct CountryPriceRow: Identifiable, Hashable, Sendable {
 
     /// What the Change column shows: the open suggestion, else what waits.
     var shownChange: PriceChange? {
-        let change = suggestionChange ?? pendingChange
+        let change = suggestionChange ?? pendingChange ?? testChange
         return change?.direction == PriceChange.Direction.none ? nil : change
+    }
+
+    /// The Reason column: the reason, then the sales behind it ("Feels like
+    /// 2.1× the US price · Uses Europe’s sales").
+    var reasonText: String? {
+        guard let reason else { return nil }
+        guard let short = evidence?.short else { return reason }
+        return "\(reason) · \(short)"
+    }
+
+    /// The how-sure tip (the Analytics sureTip pattern): the reason, then
+    /// the country's 28 days or why it uses its region's sales. Nil
+    /// without a level.
+    var howSureTip: String? {
+        guard confidence != nil else { return nil }
+        let lines = [howSureReason, evidence?.tip].compactMap(\.self).filter { !$0.isEmpty }
+        return lines.isEmpty ? nil : lines.joined(separator: "\n")
     }
 
     /// The factor came from a fallback, not the chosen index.
@@ -97,9 +138,9 @@ struct CountryPriceRow: Identifiable, Hashable, Sendable {
 
     // MARK: - Dollars
 
-    /// About how many US dollars a price is, from bundled exchange rates.
+    /// About how many US dollars a price is, at the day's exchange rates.
     func dollars(_ price: Decimal) -> Decimal? {
-        ExchangeRates.approximate.dollars(price, currency: territory.currencyCode)
+        ExchangeRates.current.dollars(price, currency: territory.currencyCode)
     }
 
     /// "≈ $46" for the shown price.

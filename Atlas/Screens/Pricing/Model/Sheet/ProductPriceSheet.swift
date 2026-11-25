@@ -52,6 +52,12 @@ struct ProductPriceSheet: Sendable {
         return SimulatedPriceLadder.make(territory: territory, equalizationMultiplier: multiplier, commission: commission)
     }
 
+    /// Whether the territory's price points are Apple's own, fetched for this
+    /// product, not simulated. No suggestion is shown on a simulated grid.
+    func hasRealGrid(_ territoryID: String) -> Bool {
+        exactLadderIDs.contains(territoryID)
+    }
+
     /// Territories that still need Apple's ladder before a price there can be pushed.
     func missingLadders(in territoryIDs: some Sequence<String>) -> [String] {
         territoryIDs.filter { !exactLadderIDs.contains($0) && prices[$0] != nil }

@@ -23,6 +23,8 @@ struct CountryPriceRowBuilder {
     /// An in-app purchase's queued prices (`InAppPurchaseCountryPrices`);
     /// a subscription's come with its matrix rows.
     var inAppPurchaseQueued: [String: QueuedCountryPrice] = [:]
+    /// Countries in a running price test or its comparison (board 76).
+    var priceTestNotes: [String: CountryPriceTestNote] = [:]
     var territories = TerritoryCatalog.standard
 
     func build() -> [CountryPriceRow] {
@@ -51,7 +53,11 @@ struct CountryPriceRowBuilder {
             factor: row.recommendation?.factor ?? row.calculation.factor,
             reason: row.isBase ? nil : row.recommendation?.reason,
             confidence: row.recommendation?.confidence,
-            likelyHeldBack: knowsSuggestions && row.likelyHeldBack
+            likelyHeldBack: knowsSuggestions && row.likelyHeldBack,
+            pageViews: row.pageViews,
+            howSureReason: row.isBase ? nil : row.recommendation?.howSureReason,
+            evidence: row.isBase ? nil : row.recommendation?.evidence,
+            priceTest: row.isBase ? nil : priceTestNotes[row.id]
         )
     }
 
@@ -70,10 +76,12 @@ struct CountryPriceRowBuilder {
         return QueuedCountryPrice(price: queued.price, isAutomatic: isAutomatic, source: queued.source)
     }
 
-    /// The shown price's proceeds: today's point's, or the queued price's
-    /// point when Apple's points for the country are here.
+    /// The shown price's proceeds: today's point's (Apple's, read with the
+    /// price), or the queued price's point when Apple's points for the
+    /// country are here; never a simulated point's estimate.
     private func proceeds(_ row: PricingRow, queued: QueuedCountryPrice?) -> Decimal? {
         guard let queued else { return row.current.proceeds }
+        guard sheet.hasRealGrid(row.id) else { return nil }
         return sheet.ladders[row.id]?.point(at: queued.price)?.proceeds
     }
 

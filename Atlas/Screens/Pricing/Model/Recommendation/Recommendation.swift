@@ -43,6 +43,11 @@ struct Recommendation: Hashable, Sendable {
     var steps: [String]
     /// The calculation behind the price; nil for the base territory.
     var calculation: PriceCalculation?
+    /// How sure's one line, one number (`PriceConfidenceRule`): "Europe:
+    /// 2,100 page views and 24 trials in 90 days."
+    var howSureReason = ""
+    /// The sales behind it, for the popover's tip and the Reason column.
+    var evidence: PriceEvidenceSummary?
 
     /// "Likely holds people back": it feels at least 25% above the base
     /// price and the suggestion would change it.

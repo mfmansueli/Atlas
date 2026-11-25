@@ -15,4 +15,9 @@ struct SalesDownload: Hashable, Sendable {
     var subscribers: [SubscriberFact] = []
     var activeDays: [AnalyticsDay] = []
     var active: [ActiveSubscriptionsFact] = []
+    /// Days whose event report failed: left unread, so the next check
+    /// asks again, while the days that did load are kept.
+    var failedDays: [AnalyticsDay] = []
+    /// Why the first failed day failed, with Apple's code for Details.
+    var failure: AppleErrorCopy?
 }

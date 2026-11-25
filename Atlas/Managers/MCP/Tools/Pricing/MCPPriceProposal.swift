@@ -19,16 +19,22 @@ struct MCPPriceProposal: Hashable, Sendable {
     /// Apple's price point ID from get_price_points, instead of `price`;
     /// the tool turns it into the point's price once the points are read.
     var pricePointID: String?
+    /// How sure the assistant is of this price: the item's own, else the
+    /// call's. Never above what Atlas's evidence supports there
+    /// (`MCPPriceProposalCheck`).
+    var confidence: HowSure?
 
-    init(territory: String, price: Decimal, isAutomatic: Bool = false, pricePointID: String? = nil) {
+    init(territory: String, price: Decimal, isAutomatic: Bool = false, pricePointID: String? = nil, confidence: HowSure? = nil) {
         self.territory = territory
         self.price = price
         self.isAutomatic = isAutomatic
         self.pricePointID = pricePointID
+        self.confidence = confidence
     }
 
     init(_ arguments: MCPToolArguments) throws {
         territory = try arguments.string("territory")
+        confidence = try arguments.layers()?.confidence
         if try arguments.optionalBool("automatic") == true {
             price = 0
             isAutomatic = true
@@ -49,11 +55,14 @@ struct MCPPriceProposal: Hashable, Sendable {
     /// `territory` and `price`.
     static func list(from arguments: MCPToolArguments) throws -> (proposals: [MCPPriceProposal], isBatch: Bool) {
         guard let items = try arguments.optionalArray("prices") else { return try ([MCPPriceProposal(arguments)], false) }
+        let callConfidence = try arguments.layers()?.confidence
         let expected = String(localized: "a non-empty list of {territory, price}, {territory, pricePointId} or {territory, automatic: true} objects")
         guard !items.isEmpty else { throw MCPToolError.invalidArgument(name: "prices", expected: expected) }
         let proposals = try items.map { item in
             guard let object = item.objectValue else { throw MCPToolError.invalidArgument(name: "prices", expected: expected) }
-            return try MCPPriceProposal(MCPToolArguments(object))
+            var proposal = try MCPPriceProposal(MCPToolArguments(object))
+            proposal.confidence = proposal.confidence ?? callConfidence
+            return proposal
         }
         return (proposals, true)
     }

@@ -16,6 +16,9 @@ struct PricesByCountrySuggestionBanner: View {
     let suggestion: PricingProductCard.Suggestion
     let productName: String
     let howSure: HowSure
+    /// What the suggestions stand on, by sales state
+    /// (`PricingViewModel.countriesBaseline`).
+    let baseline: String
     let isFree: Bool
     let isCompact: Bool
     let onDismissAll: () -> Void
@@ -33,7 +36,7 @@ struct PricesByCountrySuggestionBanner: View {
                     Spacer(minLength: Spacing.small)
                     actions
                 }
-                .help(Text(verbatim: "\(suggestion.reason) \(Self.baseline)"))
+                .help(Text(verbatim: "\(suggestion.reason) \(baseline)"))
             } else {
                 HStack(alignment: .top, spacing: Spacing.medium) {
                     VStack(alignment: .leading, spacing: Spacing.xxSmall) {
@@ -43,7 +46,7 @@ struct PricesByCountrySuggestionBanner: View {
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("countries.banner.why")
-                        Text(Self.baseline)
+                        Text(baseline)
                             .atlasTextStyle(.subheadline)
                             .foregroundStyle(Palette.label2)
                             .fixedSize(horizontal: false, vertical: true)
@@ -61,10 +64,6 @@ struct PricesByCountrySuggestionBanner: View {
         .overlay(shape.strokeBorder(Palette.aiEdge, lineWidth: 0.5))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("countries.banner")
-    }
-
-    static var baseline: String {
-        String(localized: "Based on purchasing power alone: Atlas doesn’t read Sales and Trends yet.", comment: "kind:banner")
     }
 
     /// "Suggested prices in 104 countries."

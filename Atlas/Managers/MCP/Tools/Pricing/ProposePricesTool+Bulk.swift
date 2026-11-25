@@ -19,6 +19,7 @@ extension ProposePricesTool {
         in context: MCPToolContext
     ) async throws -> MCPToolOutcome {
         let layers = try arguments.layers()
+        let evidence = try MCPPriceEvidence.read(arguments.values["evidence"])
         let catalog = try await MCPPriceCatalog.load(app: appID, in: context.workspace)
         let target = "\(catalog.app.name) · \(productID)"
         if let refusal = Self.refusal(for: productID, in: catalog), request.action != .withdraw || catalog.product(matching: productID) == nil {
@@ -35,6 +36,8 @@ extension ProposePricesTool {
         if case .price = request.action, let refusal = MCPPriceBulkAction.currencyRefusal(resolution.rows) {
             return .refused(refusal, target: sheet.target)
         }
+        let problems = request.action == .withdraw ? [] : MCPPriceEvidence.problems(evidence, sales: sheet.sheet.sales, productName: product.name)
+        guard problems.isEmpty else { return .refused(problems.joined(separator: " "), target: sheet.target) }
 
         var run = MCPPriceRun()
         run.reportsWithdrawals = request.action == .withdraw
@@ -53,9 +56,14 @@ extension ProposePricesTool {
             }
             return run.outcome(isBatch: request.isBatch)
         }
-        let items = resolution.rows.map { Self.item(for: $0, action: request.action) }
-        run.propose(items, sheet: sheet, source: context.source)
-        context.workspace.changes.attach(layers, to: run.queuedIDs)
+        let check = MCPPriceProposalCheck(sheet: sheet, evidence: evidence)
+        let items = resolution.rows.map { row in
+            var item = Self.item(for: row, action: request.action)
+            item.proposal.confidence = layers?.confidence
+            return check.checked(item)
+        }
+        run.propose(items, sheet: sheet, source: context.source, details: MCPPriceEvidence.details(evidence) ?? layers?.details)
+        run.attachLayers(to: context.workspace.changes)
         return run.outcome(isBatch: request.isBatch)
     }
 

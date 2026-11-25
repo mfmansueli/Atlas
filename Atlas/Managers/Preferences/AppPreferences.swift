@@ -23,6 +23,10 @@ final class AppPreferences {
         didSet { defaults?.set(usesSalesData, forKey: Key.usesSalesData) }
     }
 
+    /// Where `usesSalesData` is kept: Pricing's live services read it when
+    /// they read a product's sales.
+    nonisolated static let usesSalesDataKey = "usesSalesData"
+
     /// Pricing → the strategy a subscription starts from: base territory,
     /// rounding, index, fallback chain, intensity, limits.
     var pricingDefaults: PricingStrategy {
@@ -208,7 +212,7 @@ final class AppPreferences {
 
     private enum Key {
         static let defaultPricingMode = "defaultPricingMode"
-        static let usesSalesData = "usesSalesData"
+        static let usesSalesData = AppPreferences.usesSalesDataKey
         static let pricingDefaults = PricingModeStore.pricingDefaultsKey
         static let commissionRate = "commissionRate"
         static let pushConfirmation = "pushConfirmation"

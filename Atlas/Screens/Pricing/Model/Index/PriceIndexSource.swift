@@ -72,7 +72,7 @@ enum PriceIndexSource: String, CaseIterable, Codable, Hashable, Sendable, Identi
     var sourceURL: URL? {
         switch self {
         case .bigMac: URL(string: "https://www.economist.com/big-mac-index")
-        case .worldBank: URL(string: "https://data.worldbank.org/indicator/PA.NUS.PPPC.RF")
+        case .worldBank: URL(string: "https://data.worldbank.org/indicator/PA.NUS.PPP")
         case .imf: URL(string: "https://www.imf.org/external/datamapper/PPPEX@WEO")
         case .custom: nil
         }

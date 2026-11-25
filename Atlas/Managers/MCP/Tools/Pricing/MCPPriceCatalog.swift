@@ -67,7 +67,14 @@ struct MCPPriceCatalog {
         do {
             let sheet = try await services.priceSheet(for: product, commission: commission)
             let calculator = PriceCalculator(catalog: .standard, snapshot: services.indexSnapshot(), commission: commission)
-            return MCPPriceSheet(app: app, product: product, mode: mode, sheet: sheet, calculator: calculator, workspace: workspace)
+            var result = MCPPriceSheet(app: app, product: product, mode: mode, sheet: sheet, calculator: calculator, workspace: workspace)
+            // No suggestion stands on a simulated ladder: Apple's points
+            // first, from the cache Pricing and the push share. Without
+            // them the territories list today's prices and no suggestion.
+            if result.showsSuggestions {
+                try? await result.loadExactLadders(for: Array(sheet.prices.keys))
+            }
+            return result
         } catch PricingSheetError.noStartingPrice {
             return nil
         } catch let error as PricingSheetError {

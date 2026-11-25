@@ -19,6 +19,10 @@ struct PriceCalculationInput: Sendable {
     var ladder: PricePointLadder
     /// What the territory charges today, for "never raise" and suggestions.
     var currentPrice: Decimal?
+    /// `ladder` is Apple's own, so its points' proceeds are Apple's (after
+    /// tax and commission) and the minimum proceeds is checked against
+    /// them instead of worked out from the tax rate.
+    var hasRealLadder = false
 
     init(
         territory: Territory,

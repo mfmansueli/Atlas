@@ -32,6 +32,9 @@ struct WorkspaceSectionWarmer: SectionWarming {
     let keyID: String?
     /// Suggested review replies are Pro.
     let isPro: Bool
+    /// The hourly quota last reported, nil when unknown: Pricing reads
+    /// Apple's price points ahead only while it leaves room.
+    var quota: @Sendable () -> AppStoreConnectRateLimit? = { nil }
 
     func needsWarming(_ section: AppWorkspaceSection, of app: StoreApp, kept: AppSectionModels, refreshCount: Int) -> Bool {
         switch section {
@@ -123,6 +126,7 @@ struct WorkspaceSectionWarmer: SectionWarming {
     /// ones are read the first time, Retention when it shows.
     private func warmPricing(_ app: StoreApp, kept: AppSectionModels, refreshCount: Int) async {
         if let model = kept.pricing, let retention = kept.retention, model.catalog != nil {
+            model.gridReadAhead = PricingGridReadAhead(quota: quota)
             await PricingSectionView.read(model, retention: retention, into: kept, refreshCount: refreshCount)
             return
         }
@@ -134,6 +138,7 @@ struct WorkspaceSectionWarmer: SectionWarming {
         PricingSectionView.attachAppPriceAvailability(to: model, services: services.appPriceAvailability, queue: queue, navigator: navigator)
         kept.pricing = model
         kept.retention = retention
+        model.gridReadAhead = PricingGridReadAhead(quota: quota)
         await PricingSectionView.read(model, retention: nil, into: kept, refreshCount: refreshCount)
     }
 }

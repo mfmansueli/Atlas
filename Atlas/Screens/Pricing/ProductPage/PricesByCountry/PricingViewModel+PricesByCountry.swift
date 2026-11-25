@@ -32,7 +32,8 @@ extension PricingViewModel {
             showsSuggestions: isOpen && matrix.showsSuggestions,
             knowsSuggestions: matrix.showsSuggestions,
             dismissedTerritoryIDs: modes.dismissedCountries(productID: productID, appID: app.id),
-            inAppPurchaseQueued: product.isInAppPurchase ? inAppPurchaseQueued(matrix) : [:]
+            inAppPurchaseQueued: product.isInAppPurchase ? inAppPurchaseQueued(matrix) : [:],
+            priceTestNotes: priceTests.notes(productID: productID, on: today())
         )
         .build()
     }
@@ -47,7 +48,8 @@ extension PricingViewModel {
             showsSuggestions: card(for: product)?.suggestion != nil && matrix.showsSuggestions,
             knowsSuggestions: matrix.showsSuggestions,
             dismissedTerritoryIDs: modes.dismissedCountries(productID: productID, appID: app.id),
-            inAppPurchaseQueued: product.isInAppPurchase ? inAppPurchaseQueued(matrix) : [:]
+            inAppPurchaseQueued: product.isInAppPurchase ? inAppPurchaseQueued(matrix) : [:],
+            priceTestNotes: priceTests.notes(productID: productID, on: today())
         )
         .build().first
     }

@@ -11,9 +11,21 @@ import Foundation
 /// person's edits in Prices by Country, for review in Atlas.
 struct ProposePricesTool: MCPTool {
     /// The arguments, typed apart so the definition type-checks quickly.
-    private static let properties: [String: JSONValue] = MCPToolDefinition.withConfidence(Self.priceProperties
+    private static let properties: [String: JSONValue] = Self.priceProperties
         .merging(MCPCountrySelection.properties) { first, _ in first }
-        .merging(MCPPriceBulkAction.properties) { first, _ in first })
+        .merging(MCPPriceBulkAction.properties) { first, _ in first }
+        .merging(["confidence": Self.confidenceProperty, "evidence": MCPPriceEvidence.property]) { first, _ in first }
+
+    /// `confidence`, with the cap Atlas puts on it.
+    static let confidenceProperty: JSONValue = [
+        "type": "integer",
+        "minimum": .int(AssistantTextLimits.confidence.lowerBound),
+        "maximum": .int(AssistantTextLimits.confidence.upperBound),
+        "description": """
+        Optional: how sure you are, 1 (not very sure), 2 (fairly sure) or 3 (sure), at most the country's howSure in \
+        get_prices (a higher one is refused with the reason), unless evidence has a project source. Shown as a small meter.
+        """,
+    ]
 
     private static let priceProperties: [String: JSONValue] = [
         "appId": MCPToolDefinition.string("The app's Apple ID, bundle ID, SKU or name, from list_apps."),
@@ -31,6 +43,7 @@ struct ProposePricesTool: MCPTool {
                     "price": ["type": "number", "description": "The new customer price."],
                     "pricePointId": MCPToolDefinition.string("Apple's price point ID, instead of price."),
                     "automatic": ["type": "boolean", "description": "true for Apple's automatic price, instead of a price."],
+                    "confidence": Self.confidenceProperty,
                 ],
                 required: ["territory"]
             ),
@@ -55,7 +68,12 @@ struct ProposePricesTool: MCPTool {
         that territory. A subscription without a price in the United States yet takes only its US price, queued \
         as its starting price: Apple equalizes it in every other country or region. When prices start is \
         propose_price_schedule. Unknown territories or products and every price for an app set to Keep my prices \
-        are refused (status "refused") with the reason.
+        are refused (status "refused") with the reason. confidence (the call's, or each price's own) can't be higher \
+        than what Atlas's evidence supports in that country, get_prices' howSure (with no sales yet, purchasing power \
+        alone: 1), and a country whose Apple price points can't be read yet is refused: try again in a minute. \
+        evidence says what the price is based on ({source, detail}, e.g. analytics "Brazil, 28 days: 31 trials", \
+        project "Products.storekit:42 says $4.99"); the person sees it as the change's details. Sales evidence for a \
+        product Atlas reads no sales of is refused.
         """,
         inputSchema: MCPToolDefinition.schema(Self.properties, required: ["appId", "productId"]),
         proposalKind: .prices
@@ -69,6 +87,8 @@ struct ProposePricesTool: MCPTool {
         }
         let (proposals, isBatch) = try MCPPriceProposal.list(from: arguments)
         let layers = try arguments.layers()
+        let evidence = try MCPPriceEvidence.read(arguments.values["evidence"])
+        let details = MCPPriceEvidence.details(evidence) ?? layers?.details
         let catalog = try await MCPPriceCatalog.load(app: appID, in: context.workspace)
 
         var run = MCPPriceRun()
@@ -81,6 +101,8 @@ struct ProposePricesTool: MCPTool {
         let product = try catalog.requireProduct(productID)
         guard var sheet = try await catalog.sheetIfPriced(for: product) else {
             if product.isInAppPurchase { throw MCPToolError.unavailable(catalog.noStartingPriceMessage(product)) }
+            let problems = MCPPriceEvidence.problems(evidence, sales: nil, productName: product.name)
+            guard problems.isEmpty else { return .refused(problems.joined(separator: " "), target: "\(catalog.app.name) · \(product.name)") }
             let starting = try await MCPStartingPriceProposer.load(catalog: catalog, product: product, source: context.source)
             for proposal in proposals {
                 let outcome: MCPPriceProposer.Outcome = if proposal.isAutomatic {
@@ -93,15 +115,21 @@ struct ProposePricesTool: MCPTool {
                 let territoryID = MCPStartingPriceProposer.isUnitedStates(proposal.territory) ? MCPStartingPriceProposer.territoryID : nil
                 run.add(proposal, territoryID: territoryID, outcome, target: starting.target)
             }
-            context.workspace.changes.attach(layers, to: run.queuedIDs)
+            let startingLayers = SuggestionLayers(details: details, confidence: layers?.confidence, gloss: layers?.gloss)
+            context.workspace.changes.attach(startingLayers.nonEmpty, to: run.queuedIDs)
             return run.outcome(isBatch: isBatch)
         }
+        let problems = MCPPriceEvidence.problems(evidence, sales: sheet.sheet.sales, productName: product.name)
+        guard problems.isEmpty else { return .refused(problems.joined(separator: " "), target: sheet.target) }
         let territories = proposals.map { sheet.territory(matching: $0.territory) }
         let waiting = product.isInAppPurchase ? MCPInAppPurchasePriceProposer(sheet: sheet, source: context.source).queuedTerritoryIDs : []
         try await sheet.loadExactLadders(for: territories.compactMap { $0?.id } + waiting)
-        let items = zip(proposals, territories).map { proposal, territory in MCPPriceRun.Item.prepare(proposal, territory: territory, sheet: sheet) }
-        run.propose(items, sheet: sheet, source: context.source)
-        context.workspace.changes.attach(layers, to: run.queuedIDs)
+        let check = MCPPriceProposalCheck(sheet: sheet, evidence: evidence)
+        let items = zip(proposals, territories).map { proposal, territory in
+            check.checked(MCPPriceRun.Item.prepare(proposal, territory: territory, sheet: sheet))
+        }
+        run.propose(items, sheet: sheet, source: context.source, details: details)
+        run.attachLayers(to: context.workspace.changes)
         return run.outcome(isBatch: isBatch)
     }
 

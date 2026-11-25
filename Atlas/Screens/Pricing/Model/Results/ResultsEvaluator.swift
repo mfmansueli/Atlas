@@ -6,16 +6,38 @@
 import Foundation
 
 /// Before-and-after rules for the Results tab: 28-day windows either side of
-/// a change, plain verdicts, and "too little data" under 10 starts.
+/// a change, plain verdicts, and "too few to tell" under 28 days or 30
+/// starts on a side (HowSure's "Sure" asks the same).
 enum ResultsEvaluator {
     static let windowDays = 28
-    /// Fewer starts than this on both sides is too little data.
-    static let minimumStarts = 10
+    /// Fewer starts than this on either side is too few to tell.
+    static let minimumStarts = 30
 
+    /// Conversion decides, with Analytics' two-proportion test at 90% (the
+    /// 90% interval for the change excludes zero); proceeds can only hold a
+    /// verdict back: more starts for less money, or fewer starts for more,
+    /// is about the same.
     static func verdict(before: SalesWindow, after: SalesWindow) -> ResultVerdict {
-        if before.starts < minimumStarts, after.starts < minimumStarts { return .tooLittleData }
-        guard after.starts > before.starts else { return .worse }
-        return after.proceeds >= before.proceeds ? .better : .moreStartsLessProceeds
+        guard before.days >= windowDays, after.days >= windowDays,
+              before.starts >= minimumStarts, after.starts >= minimumStarts,
+              // Starts from outside the page (offer codes, the web) would
+              // make the rate meaningless.
+              before.starts <= before.pageViews, after.starts <= after.pageViews
+        else { return .tooLittleData }
+        switch conversionChange(before: before, after: after).outcome {
+        case .tooFew: return .tooLittleData
+        case .same: return .aboutTheSame
+        case .higher: return after.proceeds >= before.proceeds ? .better : .aboutTheSame
+        case .lower: return after.proceeds <= before.proceeds ? .worse : .aboutTheSame
+        }
+    }
+
+    /// Page view → start conversion after the change against before it.
+    static func conversionChange(before: SalesWindow, after: SalesWindow) -> PeriodComparison {
+        AnalyticsStatistics.compare(
+            count: after.starts, total: after.pageViews, previousCount: before.starts, previousTotal: before.pageViews,
+            minimumCount: minimumStarts
+        )
     }
 
     /// Too early until 28 days have passed since the change (the change day
@@ -51,7 +73,7 @@ enum ResultsEvaluator {
         price: Decimal,
         territory: Territory,
         commission: Commission,
-        rates: ExchangeRates = .approximate
+        rates: ExchangeRates = .current
     ) -> Decimal {
         let local = commission.proceeds(customerPrice: price, taxRate: territory.taxRate) * Decimal(starts)
         return rates.dollars(local, currency: territory.currencyCode) ?? local

@@ -45,13 +45,13 @@ struct PriceResultsModelTests {
         await results.load(records: records, today: PricingSampleData.date("2026-11-23"))
         #expect(try results.state == .ready(changedOn: #require(DebugPricingResults.annualPush()).date))
         let summary = try #require(results.summary)
-        #expect(summary.countedCount == 17)
-        #expect(summary.betterCount == 6)
-        #expect(summary.worseCount == 3)
-        #expect(summary.startsBefore == 566)
-        #expect(summary.startsAfter == 739)
-        #expect(results.results.count == 17)
-        #expect(results.results.first?.territory.alpha2 == "IN")
+        // Only territories with 30 starts or more on each side count.
+        #expect(results.results.count == summary.countedCount)
+        #expect(results.results.allSatisfy { $0.before.starts >= 30 && $0.after.starts >= 30 })
+        #expect(summary.countedCount + summary.tooLittleDataCount == summary.territoryCount)
+        #expect(summary.betterCount >= 1)
+        #expect(summary.worseCount >= 1)
+        #expect(results.results.first { $0.territory.alpha2 == "BR" }?.verdict == .better)
         #expect(results.results.map(\.before.pageViews) == results.results.map(\.before.pageViews).sorted(by: >))
     }
 

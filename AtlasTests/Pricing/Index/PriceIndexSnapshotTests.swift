@@ -13,13 +13,15 @@ struct PriceIndexSnapshotTests {
         PricingFixtures.money(text)
     }
 
+    /// The prototype's sample snapshot, which these design numbers check.
+    /// The published one is checked in `BundledPriceIndexSnapshotTests`.
     private func bundled() throws -> PriceIndexSnapshot {
-        try PriceIndexSnapshot.bundled()
+        try PriceIndexSnapshot.sample()
     }
 
-    // MARK: - Bundled snapshot
+    // MARK: - Sample snapshot
 
-    @Test func bundledSnapshotIsMarkedApproximate() throws {
+    @Test func sampleSnapshotIsMarkedApproximate() throws {
         let snapshot = try bundled()
         #expect(snapshot.isApproximate)
         #expect(!snapshot.note.isEmpty)
@@ -84,6 +86,9 @@ struct PriceIndexSnapshotTests {
     @Test func missingResourceThrows() {
         #expect(throws: PriceIndexSnapshot.LoadingError.missingResource) {
             try PriceIndexSnapshot.bundled(in: Bundle(for: NSString.self))
+        }
+        #expect(throws: PriceIndexSnapshot.LoadingError.missingResource) {
+            try PriceIndexSnapshot.sample(in: Bundle(for: NSString.self))
         }
     }
 

@@ -7,8 +7,8 @@ import Foundation
 
 /// Fallbacks for services that only feed the overview, such as the test
 /// doubles that count summary fetches: they have no catalog to price. The
-/// live services use the last three too, since Atlas doesn't read
-/// offers, subscribers or sales from App Store Connect yet.
+/// live services use the offers one too; they read subscribers, sales and
+/// the price history from what Analytics downloaded.
 extension PricingServices {
     func catalog(for _: StoreApp) async throws -> PricingCatalog {
         .empty
@@ -22,6 +22,14 @@ extension PricingServices {
         [:]
     }
 
+    /// Services that keep no ladders can't say when they were read.
+    func ladderReadDates(for _: String, commission _: Commission) -> [String: Date] {
+        [:]
+    }
+
+    /// Services that keep no ladders have nothing to drop.
+    func forgetLadders(for _: String, fetchedBefore _: Date) async {}
+
     /// The snapshot bundled with the app.
     func indexSnapshot() -> PriceIndexSnapshot {
         (try? PriceIndexSnapshot.bundled()) ?? .empty
@@ -32,13 +40,18 @@ extension PricingServices {
         []
     }
 
-    /// Subscriber counts need Sales and Trends, which Atlas doesn't read yet.
+    /// No subscriber counts without Sales and Trends.
     func subscribers(for _: PricingProduct) async throws -> [String: Int]? {
         nil
     }
 
-    /// Results need Sales and Trends and App Analytics, which Atlas doesn't read yet.
+    /// No results without Sales and Trends and App Analytics.
     func salesComparison(for _: PricingProduct, territoryIDs _: [String], changedOn _: Date) async throws -> [String: SalesComparison]? {
         nil
+    }
+
+    /// No price history: Results compare pushes alone.
+    func priceHistory(for _: PricingProduct) -> [PriceChangeRecord] {
+        []
     }
 }

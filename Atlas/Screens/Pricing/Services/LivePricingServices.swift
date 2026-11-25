@@ -5,12 +5,18 @@
 
 import Foundation
 
-/// The real `PricingServices`, backed by App Store Connect. Sales and Trends
-/// aren't read, so live suggestions use purchasing power alone.
+/// The real `PricingServices`, backed by App Store Connect, with the sales
+/// Analytics already downloaded (`LivePricingSales`). Apple's price point
+/// ladders are kept in `cache` (memory and this Mac), which the Pricing
+/// screen, get_price_points and the push all read through
+/// `ladders(for:territoryIDs:commission:)`.
 @MainActor
 struct LivePricingServices: PricingServices {
     let client: AppStoreConnectClient
-    let cache = LivePricingCache()
+    var cache = LivePricingCache()
+    /// App Analytics and Sales and Trends from `AnalyticsStore`, and the
+    /// price history.
+    let sales = LivePricingSales()
     var catalog = TerritoryCatalog.standard
     var baseTerritoryID = "USA"
     var today: () -> Date = { .now }
@@ -41,6 +47,7 @@ struct LivePricingServices: PricingServices {
         let groups = try await client.pricedSubscriptionGroups(appID: app.id)
         let purchases = try await client.pricedInAppPurchases(appID: app.id)
         var result = LivePricingMapper.catalog(groups: groups, inAppPurchases: purchases)
+        sales.register(result, appID: app.id)
         for groupIndex in result.groups.indices {
             for productIndex in result.groups[groupIndex].products.indices {
                 let product = result.groups[groupIndex].products[productIndex]
@@ -76,7 +83,8 @@ struct LivePricingServices: PricingServices {
         ) else {
             throw AppStoreConnectError.unexpectedPayload
         }
-        sheet.merge(cache.ladders(for: cacheKey(product, commission), territoryIDs: Array(sheet.prices.keys)))
+        await sheet.merge(cache.ladders(for: product.id, commission: commission, territoryIDs: sheet.prices.keys))
+        sales.fill(&sheet, product: product, startDays: LivePricingMapper.currentStartDays(prices, today: dayString(today())))
         return sheet
     }
 
@@ -112,37 +120,47 @@ struct LivePricingServices: PricingServices {
         // ones, and a new schedule keeps the hand-set ones.
         sheet.manualTerritoryIDs = LivePricingMapper.inAppPurchaseManualTerritoryIDs(manual, commission: commission, today: day)
         sheet.laterManualPriceCount = LivePricingMapper.laterInAppPurchasePriceCount(manual, today: day)
-        sheet.merge(cache.ladders(for: cacheKey(product, commission), territoryIDs: Array(sheet.prices.keys)))
+        await sheet.merge(cache.ladders(for: product.id, commission: commission, territoryIDs: sheet.prices.keys))
+        sales.fill(&sheet, product: product)
         return sheet
     }
 
+    /// Apple's ladders for the territories: the cached ones, then the rest
+    /// from App Store Connect in batches of
+    /// `AppStoreConnectClient.pricePointTerritoryBatch`, each kept as it
+    /// arrives so a read that fails partway keeps what it got. One read
+    /// at a time per product: a second caller waits and reads only what
+    /// the first didn't.
     func ladders(for product: PricingProduct, territoryIDs: [String], commission: Commission) async throws -> [String: PricePointLadder] {
-        let key = cacheKey(product, commission)
-        var result = cache.ladders(for: key, territoryIDs: territoryIDs)
-        let missing = territoryIDs.filter { result[$0] == nil }
-        var start = missing.startIndex
-        while start < missing.endIndex {
-            let end = min(start + AppStoreConnectClient.pricePointTerritoryBatch, missing.endIndex)
-            let batch = Array(missing[start..<end])
-            let points = if product.isInAppPurchase {
-                try await LivePricingMapper.inAppPurchasePointsByTerritory(
-                    client.inAppPurchasePricePoints(purchaseID: product.id, territoryIDs: batch), commission: commission
-                )
-            } else {
-                try await LivePricingMapper.pointsByTerritory(
-                    client.subscriptionPricePoints(subscriptionID: product.id, territoryIDs: batch), commission: commission
-                )
+        try await cache.serialized(productID: product.id) {
+            var result = await cache.ladders(for: product.id, commission: commission, territoryIDs: territoryIDs)
+            let missing = territoryIDs.filter { result[$0] == nil }
+            for batch in Self.batches(missing) {
+                let fetched = try await fetchLadders(of: product, territoryIDs: batch, commission: commission)
+                cache.store(fetched, for: product.id, commission: commission)
+                result.merge(fetched) { _, new in new }
             }
-            var fetched: [String: PricePointLadder] = [:]
-            for (territoryID, points) in points {
-                guard let territory = catalog.territory(alpha3: territoryID) else { continue }
-                fetched[territoryID] = PricePointLadder(territoryID: territoryID, currencyCode: territory.currencyCode, points: points)
-            }
-            cache.store(fetched, for: key)
-            result.merge(fetched) { _, new in new }
-            start = end
+            return result
         }
-        return result
+    }
+
+    /// When each kept ladder of the product was read.
+    func ladderReadDates(for productID: String, commission: Commission) -> [String: Date] {
+        cache.fetchDates(productID: productID, commission: commission)
+    }
+
+    /// After a push that changed the product's prices.
+    func forgetLadders(for productID: String, fetchedBefore date: Date) async {
+        await cache.forget(productID: productID, fetchedBefore: date)
+    }
+
+    /// The territories in request-sized batches, in order, without repeats.
+    static func batches(_ territoryIDs: [String], size: Int = AppStoreConnectClient.pricePointTerritoryBatch) -> [[String]] {
+        var seen = Set<String>()
+        let unique = territoryIDs.filter { seen.insert($0).inserted }
+        return stride(from: 0, to: unique.count, by: max(size, 1)).map { start in
+            Array(unique[start..<min(start + max(size, 1), unique.count)])
+        }
     }
 
     // MARK: - Private
@@ -181,8 +199,26 @@ struct LivePricingServices: PricingServices {
         return (price, catalog.territory(alpha3: baseID)?.currencyCode ?? "USD")
     }
 
-    private func cacheKey(_ product: PricingProduct, _ commission: Commission) -> String {
-        product.id + "." + commission.rawValue
+    /// One batch of territories' ladders. Subscription proceeds follow the
+    /// commission (`LivePricingMapper.pricePoint`: `proceedsYear2` in the
+    /// Small Business Program, `proceeds` at 30%); an in-app purchase's
+    /// are the account's own rate already and are never rescaled.
+    private func fetchLadders(of product: PricingProduct, territoryIDs: [String], commission: Commission) async throws -> [String: PricePointLadder] {
+        let points = if product.isInAppPurchase {
+            try await LivePricingMapper.inAppPurchasePointsByTerritory(
+                client.inAppPurchasePricePoints(purchaseID: product.id, territoryIDs: territoryIDs), commission: commission
+            )
+        } else {
+            try await LivePricingMapper.pointsByTerritory(
+                client.subscriptionPricePoints(subscriptionID: product.id, territoryIDs: territoryIDs), commission: commission
+            )
+        }
+        var fetched: [String: PricePointLadder] = [:]
+        for (territoryID, points) in points {
+            guard let territory = catalog.territory(alpha3: territoryID) else { continue }
+            fetched[territoryID] = PricePointLadder(territoryID: territoryID, currencyCode: territory.currencyCode, points: points)
+        }
+        return fetched
     }
 
     private func dayString(_ date: Date) -> String {

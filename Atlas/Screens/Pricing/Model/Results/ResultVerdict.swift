@@ -8,21 +8,24 @@ import Foundation
 /// How a changed territory did, in plain words. Results compare; they don't
 /// prove a price caused anything.
 enum ResultVerdict: String, CaseIterable, Hashable, Sendable {
-    /// More starts and at least the same proceeds.
+    /// Page view → start conversion up (90% interval above zero) and
+    /// proceeds no lower.
     case better
-    /// More starts, less proceeds: neutral.
-    case moreStartsLessProceeds
-    /// No more starts. Offers Restore, which queues the old price for review.
+    /// No difference the interval can tell from chance, or conversion and
+    /// proceeds moved in opposite directions.
+    case aboutTheSame
+    /// Conversion down (90% interval below zero) and proceeds no higher.
+    /// Offers Restore, which queues the old price for review.
     case worse
-    /// Fewer than 10 starts on both sides.
+    /// Under 28 days or 30 starts on a side.
     case tooLittleData
 
     var title: String {
         switch self {
-        case .better: String(localized: "Better")
-        case .moreStartsLessProceeds: String(localized: "More starts, less proceeds")
-        case .worse: String(localized: "Worse")
-        case .tooLittleData: String(localized: "Too few to tell")
+        case .better: String(localized: "Better", comment: "kind:label")
+        case .aboutTheSame: String(localized: "About the same", comment: "kind:label")
+        case .worse: String(localized: "Worse", comment: "kind:label")
+        case .tooLittleData: String(localized: "Too few to tell", comment: "kind:label")
         }
     }
 

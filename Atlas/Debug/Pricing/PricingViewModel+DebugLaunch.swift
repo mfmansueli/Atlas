@@ -50,6 +50,7 @@ extension PricingViewModel {
             openInAppPurchaseOffer(sheet.route(for: purchase))
         }
         if let state = launch.reviewShots { await applyReviewShotsDebugLaunch(state) }
+        await applyPriceTestsDebugLaunch(launch.priceTests)
         await applyProductPageDebugLaunch(launch.productPage ?? debugPageRoute(launch))
         await applyCountriesDebugLaunch(launch)
         applyDebugArrival(launch)

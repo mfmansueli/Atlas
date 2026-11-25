@@ -17,6 +17,9 @@ struct AcceptAllPricesSheet: View {
     /// A subscription; an in-app purchase's prices change on push, and keep
     /// no current price.
     let canSchedule: Bool
+    /// "Europe is in a price test until Dec 23: its 14 suggested prices
+    /// are left out." (board 76, `pt-acc`).
+    var priceTestLine: String?
     let onCancel: () -> Void
     let onAdd: (PriceSchedule) -> Void
 
@@ -30,6 +33,7 @@ struct AcceptAllPricesSheet: View {
         productName: String,
         canSchedule: Bool,
         schedule: PriceSchedule,
+        priceTestLine: String? = nil,
         today: Date = .now,
         calendar: Calendar = .current,
         onCancel: @escaping () -> Void,
@@ -38,6 +42,7 @@ struct AcceptAllPricesSheet: View {
         self.plan = plan
         self.productName = productName
         self.canSchedule = canSchedule
+        self.priceTestLine = priceTestLine
         self.onCancel = onCancel
         self.onAdd = onAdd
         let earliest = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: today)) ?? today
@@ -59,6 +64,13 @@ struct AcceptAllPricesSheet: View {
             HStack(alignment: .top, spacing: Spacing.large) {
                 if plan.downCount > 0 { group(plan.downTitle, plan.downExamples) }
                 if plan.upCount > 0 { group(plan.upTitle, plan.upExamples) }
+            }
+            if let priceTestLine {
+                Text(priceTestLine)
+                    .atlasTextStyle(.callout)
+                    .foregroundStyle(Palette.label2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("countries.acceptAll.priceTest")
             }
             if canSchedule {
                 start

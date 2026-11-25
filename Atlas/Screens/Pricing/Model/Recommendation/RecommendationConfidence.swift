@@ -8,11 +8,13 @@ import Foundation
 /// The three-bar confidence badge. Neutral in color: it says what a
 /// suggestion is based on, not whether it's good.
 enum RecommendationConfidence: Int, CaseIterable, Comparable, Hashable, Sendable {
-    /// Purchasing power only.
+    /// Not very sure: purchasing power only, an index value that isn't
+    /// real published data, or a simulated price grid.
     case low = 1
-    /// Backed by the app's sales in the territory.
+    /// Fairly sure: a real index and grid, and enough of the app's sales in
+    /// the territory or its pooled region (`PriceConfidenceRule`).
     case medium
-    /// Backed by an earlier price change there.
+    /// Sure: an earlier price change there with a clear effect.
     case high
 
     /// How many of the three bars are filled.

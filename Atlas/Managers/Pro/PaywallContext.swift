@@ -23,6 +23,8 @@ enum PaywallContext: Hashable, Sendable {
     case templateDevice(String)
     /// Make the Artwork… on an In-App Event.
     case eventArtwork
+    /// Test a Price… in Free (board 76, `pt-res-free`).
+    case priceTest
     case menu
 
     /// The feature highlighted in the paywall's list.
@@ -30,7 +32,7 @@ enum PaywallContext: Hashable, Sendable {
         switch self {
         case .acceptAllLanguages, .acceptAllPages, .translateAll: .acceptAll
         case .autopilot, .eventArtwork: .autopilot
-        case .recommendedPrices: .recommendedPrices
+        case .recommendedPrices, .priceTest: .recommendedPrices
         case .retention: .retention
         case .secondApp, .secondAccount: .multipleApps
         case .template, .templateDevice: .allTemplates
@@ -52,6 +54,7 @@ enum PaywallContext: Hashable, Sendable {
         case .template: String(localized: "This template is part of Pro")
         case let .templateDevice(device): String(localized: "Templates on \(device) are part of Pro", comment: "kind:sheet-title")
         case .eventArtwork: String(localized: "Event artwork is part of Pro")
+        case .priceTest: String(localized: "Price tests are part of Pro", comment: "kind:sheet-title")
         case .menu: nil
         }
     }
@@ -81,6 +84,11 @@ enum PaywallContext: Hashable, Sendable {
             String(localized: "All 14 templates for every device: Mac, iPad, iPhone Duo, Vision Pro, Apple Watch. 3 iPhone and iPad templates stay free.")
         case .eventArtwork:
             String(localized: "A matching event card and details image, in three concepts. Using your own files stays free.")
+        case .priceTest:
+            String(
+                localized: "One region pays a different price for 28 days, compared with another. Setting prices yourself stays free.",
+                comment: "kind:sheet-body"
+            )
         case .menu: nil
         }
     }
@@ -100,6 +108,7 @@ enum PaywallContext: Hashable, Sendable {
         case .template: String(localized: "Use the Template")
         case let .templateDevice(device): String(localized: "Show \(device)", comment: "kind:button")
         case .eventArtwork: String(localized: "Make the Artwork…")
+        case .priceTest: String(localized: "Test a Price…", comment: "kind:button")
         case .menu: nil
         }
     }

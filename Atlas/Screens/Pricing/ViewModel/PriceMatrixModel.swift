@@ -19,6 +19,11 @@ final class PriceMatrixModel {
     private(set) var calculator: PriceCalculator
     private(set) var mode: PricingMode
     private(set) var rows: [PricingRow] = []
+    /// Countries (alpha-3) of this product's running price test: their
+    /// rows suggest nothing until it ends (board 76).
+    var priceTestTerritories: Set<String> = [] {
+        didSet { if priceTestTerritories != oldValue { rebuild(recommendations: false) } }
+    }
 
     /// Whether every territory follows the strategy, as after Apply Suggested Prices….
     private(set) var isFollowing: Bool
@@ -27,6 +32,9 @@ final class PriceMatrixModel {
     private(set) var schedule: PriceSchedule
     /// True while Apple's price points load for an edit.
     private(set) var isLoadingLadders = false
+    /// Whether Apple's price points for every territory are here: no
+    /// suggestion is built until they are (`loadGrid()`).
+    private(set) var grid: PriceGridState
     var onError: (any Error) -> Void = { _ in }
 
     @ObservationIgnored let queue: ChangeQueue
@@ -34,6 +42,7 @@ final class PriceMatrixModel {
     @ObservationIgnored private let territories: TerritoryCatalog
     @ObservationIgnored private var recommendations: [String: Recommendation] = [:]
     @ObservationIgnored private var refollowTask: Task<Void, Never>?
+    @ObservationIgnored private var gridTask: Task<Void, Never>?
 
     init(
         appID: StoreApp.ID,
@@ -58,6 +67,7 @@ final class PriceMatrixModel {
         self.isFollowing = isFollowing
         self.territories = territories
         schedule = PriceSchedule.current(in: queue, appID: appID, productID: product.id)
+        grid = PriceGridState.of(sheet)
         rebuild(recommendations: true)
     }
 
@@ -67,6 +77,20 @@ final class PriceMatrixModel {
     var isReadOnly: Bool { mode == .keepPrices || product.isInAppPurchase }
 
     var showsSuggestions: Bool { mode.showsSuggestions && !product.isInAppPurchase }
+
+    /// Suggestions would show but Apple's price points aren't all here.
+    /// In-app purchases and Keep my prices suggest nothing, so they read
+    /// none ahead (a price you choose reads its country's).
+    var needsGrid: Bool { showsSuggestions && !grid.isReady }
+
+    /// "Checking Apple's prices…" shows instead of suggestions.
+    var isCheckingGrid: Bool { showsSuggestions && grid.isChecking }
+
+    /// Why Apple's price points didn't load, while suggestions would show.
+    var gridFailure: String? { showsSuggestions ? grid.failure : nil }
+
+    /// The same, as the error template shows it (the product card's).
+    var gridFailureCopy: AppleErrorCopy? { showsSuggestions ? grid.failureCopy : nil }
 
     /// Rows with a stepper instead of an Apply button.
     func showsStepper(_ row: PricingRow) -> Bool {
@@ -105,6 +129,8 @@ final class PriceMatrixModel {
         self.mode = mode
         if mode == .keepPrices { isFollowing = false }
         if suggestionsChanged { rebuild(recommendations: true) }
+        // The person asked for suggestions: they need Apple's points.
+        if needsGrid { Task { await loadGrid() } }
     }
 
     /// Re-reads the queue, after this model or anyone else changed it.
@@ -154,17 +180,46 @@ final class PriceMatrixModel {
     func ensureLadders(for territoryIDs: [String]) async -> Bool {
         let missing = sheet.missingLadders(in: territoryIDs)
         guard !missing.isEmpty else { return true }
+        let everyMissing = Set(sheet.missingLadders(in: sheet.prices.keys))
         isLoadingLadders = true
         defer { isLoadingLadders = false }
         do {
             let ladders = try await services.ladders(for: product, territoryIDs: missing, commission: calculator.commission)
             sheet.merge(ladders)
+            // A read of every territory left is the whole grid.
+            if Set(missing).isSuperset(of: everyMissing) { grid = .ready }
             rebuild(recommendations: true)
             return true
         } catch {
             onError(error)
             return false
         }
+    }
+
+    /// Reads Apple's price points for every territory still on a simulated
+    /// ladder, once: a caller while it runs waits for the same read, and the
+    /// services read each product once at a time. Suggestions are built
+    /// when they arrive; a failure keeps today's prices, suggests nothing
+    /// and says why (`grid`). The read runs to its end even when the view
+    /// that asked goes away, so its points are kept.
+    func loadGrid() async {
+        if let gridTask {
+            await gridTask.value
+            return
+        }
+        let missing = sheet.missingLadders(in: sheet.prices.keys)
+        guard !missing.isEmpty else {
+            grid = .ready
+            return
+        }
+        grid = .checking
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await readGrid(missing)
+        }
+        gridTask = task
+        await task.value
+        gridTask = nil
     }
 
     /// Follows the strategy everywhere: every territory without a hand edit
@@ -177,8 +232,20 @@ final class PriceMatrixModel {
 
     // MARK: - Private
 
+    private func readGrid(_ territoryIDs: [String]) async {
+        do {
+            let ladders = try await services.ladders(for: product, territoryIDs: territoryIDs, commission: calculator.commission)
+            sheet.merge(ladders)
+            // Done: a territory Apple sent no points for suggests nothing.
+            grid = .ready
+        } catch {
+            grid = .failed(AppleErrorCopy(PriceGridState.failureTitle, error: error))
+        }
+        rebuild(recommendations: true)
+    }
+
     private var builder: PricingRowBuilder {
-        PricingRowBuilder(
+        var builder = PricingRowBuilder(
             catalog: territories,
             calculator: calculator,
             sheet: sheet,
@@ -186,12 +253,27 @@ final class PriceMatrixModel {
             showsSuggestions: showsSuggestions,
             isScheduled: schedule.isScheduled
         )
+        builder.isGridReady = grid.isReady
+        return builder
     }
 
+    /// The base price waiting in Review & Push the suggestions were last
+    /// worked out from (`PricingRowBuilder.queuedBasePrice`).
+    @ObservationIgnored private var suggestedFromBase: Decimal?
+
     private func rebuild(recommendations recompute: Bool) {
-        let builder = builder
-        if recompute { recommendations = builder.recommendations() }
-        rows = builder.rows(recommendations: recommendations, queued: queuedPrices())
+        let queued = queuedPrices()
+        var builder = builder
+        builder.queuedBasePrice = queued[sheet.baseTerritoryID]?.price
+        if recompute || builder.queuedBasePrice != suggestedFromBase {
+            recommendations = builder.recommendations()
+            suggestedFromBase = builder.queuedBasePrice
+        }
+        rows = builder.rows(recommendations: recommendations, queued: queued).map { row in
+            var row = row
+            row.isInPriceTest = priceTestTerritories.contains(row.id)
+            return row
+        }
     }
 
     private func queuedPrices() -> [String: QueuedPrice] {

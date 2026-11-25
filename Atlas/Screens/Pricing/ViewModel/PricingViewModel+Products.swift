@@ -39,6 +39,9 @@ extension PricingViewModel {
             guard !Task.isCancelled else { return }
         }
         areProductsLoaded = true
+        // Today's prices show on every card first; then Apple's price
+        // points, one product at a time, before any suggestion.
+        await loadGrids()
     }
 
     /// A card's Try Again, after Apple's server failed on its prices: reads
@@ -99,6 +102,10 @@ extension PricingViewModel {
             isDismissed: modes.isPriceSuggestionDismissed(productID: product.id, appID: app.id)
         )
         card.isSettingStartingPrices = isSettingStartingPrices
+        if !isSettingStartingPrices, !modes.isPriceSuggestionDismissed(productID: product.id, appID: app.id) {
+            card.isCheckingPrices = matrix.isCheckingGrid
+            card.gridFailure = matrix.gridFailureCopy
+        }
         return card
     }
 

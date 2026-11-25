@@ -74,5 +74,7 @@ struct PricingDebugLaunch {
     var strategySuggestion: PricingStrategySuggestion?
     /// What Prices by Country opens with (`pr-prod-*`).
     var countries: PricesByCountryDebugLaunch?
+    /// Lumen Plus Annual's price tests (board 76, `pt-*`).
+    var priceTests: PriceTestDebugLaunch?
 }
 #endif

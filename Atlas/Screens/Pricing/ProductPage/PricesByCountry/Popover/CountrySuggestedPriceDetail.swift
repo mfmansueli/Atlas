@@ -9,7 +9,7 @@ import SwiftUI
 /// price points with the change pill and US dollars, then why ("At R$ 129,90
 /// it feels like $43 for local incomes, 1.1× the US price; you get ≈ $20.",
 /// "Why: R$ 249,90 feels like 2.1× the US price there.") and what it's
-/// based on ("World Bank PPP price level · factor 0.56 · Not very sure"),
+/// based on ("World Bank 2025 · factor 0.56 · Not very sure"),
 /// or "Adjusted from R$ 129,90" once stepped.
 struct CountrySuggestedPriceDetail: View {
     let row: CountryPriceRow
@@ -92,18 +92,28 @@ struct CountrySuggestedPriceDetail: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let howSure = row.confidence?.howSure {
-                    HowSureMeter(confidence: howSure)
+                    HowSureMeter(confidence: howSure, detail: row.howSureTip)
                 }
             }
+            // The evidence lives in the how-sure tip, not a new line
+            // (board 73: the popover is already tall at 860 × 560).
+            .help(Text(verbatim: basisHelp))
             .accessibilityElement(children: .combine)
         }
     }
 
-    /// "World Bank PPP price level · factor 0.56 · Not very sure".
+    /// The basis line's tip: the line, then how sure's reason and the sales
+    /// behind it ("Brazil · 28 days: 1,240 page views, 31 trials, 12 paid").
+    private var basisHelp: String {
+        [basisText, row.howSureTip].compactMap(\.self).joined(separator: "\n")
+    }
+
+    /// "World Bank · 2025 · factor 0.56 · Not very sure", naming the real
+    /// edition the way the Source column does (`PriceSourceText`).
     private var basisText: String {
         var parts: [String] = []
         if let provenance = row.provenance {
-            parts.append(provenance.source?.name ?? provenance.badge)
+            parts.append(PriceSourceText.text(provenance))
         }
         if let factor = row.factor {
             parts.append(String(localized: "factor \(factor.fixed(2))", comment: "kind:hint"))

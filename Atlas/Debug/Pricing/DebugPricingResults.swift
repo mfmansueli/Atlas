@@ -31,11 +31,17 @@ enum DebugPricingResults {
         )
     }
 
-    /// Each pushed territory's 28 days before and after.
+    /// Each pushed territory's 28 days before and after: the sample's, with
+    /// one territory per verdict where the push has it (Brazil better,
+    /// Japan worse, Germany about the same, Portugal too few to tell).
     static func salesComparison(commission: Commission = .smallBusiness) -> [String: SalesComparison] {
         let prices = Dictionary(uniqueKeysWithValues: followedRows(commission: commission).map { ($0.id, $0.target.customerPrice) })
         let results = DebugPriceSheets.sample(for: commission).results(pushing: prices)
-        return Dictionary(uniqueKeysWithValues: results.map { ($0.territory.id, SalesComparison(before: $0.before, after: $0.after)) })
+        var sales = Dictionary(uniqueKeysWithValues: results.map { ($0.territory.id, SalesComparison(before: $0.before, after: $0.after)) })
+        for (territoryID, comparison) in DebugPricingSales.resultWindows where sales[territoryID] != nil {
+            sales[territoryID] = comparison
+        }
+        return sales
     }
 
     private static var annualProduct: PricingProduct? {

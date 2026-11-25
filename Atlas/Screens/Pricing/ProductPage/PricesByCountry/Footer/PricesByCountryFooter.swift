@@ -6,25 +6,39 @@
 import SwiftUI
 
 /// Under the table (board 73, `pr-prod-start`): "175 countries and regions
-/// · 12 likely held back by price · 3 not pushed", and when the price
-/// changes start: Right Away, or On a Date… (the subscription price's
-/// `startDate`). An in-app purchase's change starts right away.
+/// · 12 likely held back by price · 3 not pushed", where the exchange
+/// rates come from (board 76: here and in Details, never in the banner),
+/// and when the price changes start: Right Away, or On a Date… (the
+/// subscription price's `startDate`). An in-app purchase's change starts
+/// right away.
 struct PricesByCountryFooter: View {
     let totals: PricesByCountryTotals
     let schedule: PriceSchedule
     let canSchedule: Bool
     let onRightAway: () -> Void
     let onDate: () -> Void
+    /// "Rates by ExchangeRate-API · 25 Nov 2026", linked to the provider.
+    var rates: ExchangeRates = .current
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: Spacing.medium) {
                 totalsText
+                ratesText
                 Spacer(minLength: Spacing.small)
                 start
             }
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+                HStack(spacing: Spacing.medium) {
+                    totalsText
+                    Spacer(minLength: Spacing.small)
+                    start
+                }
+                ratesText
+            }
+            VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 totalsText
+                ratesText
                 start
             }
         }
@@ -39,6 +53,25 @@ struct PricesByCountryFooter: View {
             .monospacedDigit()
             .lineLimit(1)
             .accessibilityIdentifier("countries.footer.totals")
+    }
+
+    @ViewBuilder private var ratesText: some View {
+        if let url = rates.source.url {
+            Link(destination: url) {
+                Text(rates.sourceLine)
+                    .atlasTextStyle(.subheadline)
+                    .lineLimit(1)
+            }
+            .fixedSize()
+            .accessibilityIdentifier("countries.footer.rates")
+        } else {
+            Text(rates.sourceLine)
+                .atlasTextStyle(.subheadline)
+                .foregroundStyle(Palette.label2)
+                .lineLimit(1)
+                .fixedSize()
+                .accessibilityIdentifier("countries.footer.rates")
+        }
     }
 
     private var start: some View {

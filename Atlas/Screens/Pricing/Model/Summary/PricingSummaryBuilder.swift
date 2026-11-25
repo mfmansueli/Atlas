@@ -45,9 +45,10 @@ struct PricingSummaryBuilder {
     }
 
     /// Territories where the recommended price is well below today's: likely
-    /// held back by price.
+    /// held back by price. Unknown (nil) until Apple's price points are
+    /// read, since no suggestion stands on a simulated ladder.
     private func heldBackCount() -> Int? {
-        guard let sheet, !sheet.prices.isEmpty else { return nil }
+        guard let sheet, !sheet.prices.isEmpty, !sheet.exactLadderIDs.isEmpty else { return nil }
         let builder = PricingRowBuilder(
             catalog: territories,
             calculator: PriceCalculator(catalog: territories, snapshot: snapshot),

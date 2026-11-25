@@ -62,6 +62,12 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
     /// Its starting prices are still being pushed (or stopped partway), so
     /// it suggests nothing yet (`PricingViewModel.isSettingStartingPrices`).
     var isSettingStartingPrices = false
+    /// Apple's price points are being read: no suggestion until they're
+    /// here ("Checking Apple’s prices…").
+    var isCheckingPrices = false
+    /// Why Apple's price points didn't load, so it suggests nothing: the
+    /// error template in amber, with Try Again (board 76).
+    var gridFailure: AppleErrorCopy?
 
     /// What the card says instead of a suggestion while its starting
     /// prices are being set.
@@ -116,7 +122,7 @@ struct PricingProductCard: Identifiable, Equatable, Sendable {
                 now: row.currency.format(row.current.customerPrice),
                 next: next.map(row.currency.format),
                 isQueued: row.isChanged,
-                dollars: ExchangeRates.approximate.dollars(next ?? row.current.customerPrice, currency: row.territory.currencyCode)
+                dollars: ExchangeRates.current.dollars(next ?? row.current.customerPrice, currency: row.territory.currencyCode)
             )
         }
         let open = rows.filter(isOpen)

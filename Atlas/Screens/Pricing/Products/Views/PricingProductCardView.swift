@@ -24,6 +24,11 @@ struct PricingProductCardView: View {
     var settlesOnAccept = true
     /// Its review screenshot and introductory offer.
     var setupRow: AnyView?
+    /// Try Again after Apple's price points didn't load: reads this
+    /// product's points again.
+    var onRetryGrid: () -> Void = {}
+    /// A price test is queued or running: the pill's tooltip (board 76).
+    var priceTestTip: String?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isSettling = false
@@ -47,6 +52,17 @@ struct PricingProductCardView: View {
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("pricing.card.settingStartingPrices")
+            } else if card.isCheckingPrices {
+                // No suggestion stands on a simulated ladder: grey, no AI motion.
+                VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                    LoadingLine(text: PriceGridState.checkingText)
+                    SkeletonLine(fraction: SkeletonPattern.cardTitle, height: Metrics.skeletonBodyLine)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(PriceGridState.checkingText))
+                .accessibilityIdentifier("pricing.card.checkingPrices")
+            } else if let failure = card.gridFailure {
+                PricingCardGridError(copy: failure, onRetry: onRetryGrid)
             }
             if let setupRow { setupRow }
         }
@@ -74,6 +90,7 @@ struct PricingProductCardView: View {
                             Pill(text: String(localized: "Not pushed"), style: .accent)
                                 .fixedSize()
                         }
+                        if let priceTestTip { PriceTestPill(tip: priceTestTip) }
                     }
                     Text("\(card.kindText) · \(card.product.productID)")
                         .font(.subheadline)

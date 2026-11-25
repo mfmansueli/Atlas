@@ -29,14 +29,21 @@ struct MCPPriceSheet {
 
     /// Every territory with a price, in catalog order.
     func rows() -> [PricingRow] {
-        PricingRowBuilder(
+        rowBuilder.rows(queued: queuedPrices())
+    }
+
+    /// Builds the rows, and each territory's calculation input, from the
+    /// base price waiting in Review & Push when there is one.
+    var rowBuilder: PricingRowBuilder {
+        var builder = PricingRowBuilder(
             catalog: territories,
             calculator: calculator,
             sheet: sheet,
             strategy: strategy,
             showsSuggestions: showsSuggestions
         )
-        .rows(queued: queuedPrices())
+        builder.queuedBasePrice = queuedPrices()[sheet.baseTerritoryID]?.price
+        return builder
     }
 
     /// The territory an assistant means: its alpha-3 or alpha-2 code, or
@@ -61,7 +68,8 @@ struct MCPPriceSheet {
             let ladders = try await workspace.services.pricing.ladders(for: product, territoryIDs: missing, commission: calculator.commission)
             sheet.merge(ladders)
         } catch {
-            throw MCPToolError.unavailable(String(localized: "Couldn’t read Apple’s price points for \(product.name): \(error.localizedDescription)"))
+            let what = String(localized: "Apple’s price points for \(product.name) didn’t load.", comment: "kind:other")
+            throw MCPToolError.unavailable(AppleErrorCopy(what, error: error).text)
         }
     }
 

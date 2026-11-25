@@ -62,6 +62,12 @@ struct CountryPricePopover: View {
             } else {
                 choices
             }
+            if let note = row.priceTest {
+                // Board 76: a test country's new price ends the test; the
+                // comparison's makes the result less sure.
+                InlineMessage.warning(note.popoverWarning(countryName: row.territory.name))
+                    .accessibilityIdentifier("countries.popover.priceTest")
+            }
             Text("Waits in Review & Push. Nothing changes on the App Store until you push.", comment: "kind:label")
                 .atlasTextStyle(.subheadline)
                 .foregroundStyle(Palette.label2)
@@ -127,8 +133,16 @@ struct CountryPricePopover: View {
                 .secondaryButton()
                 .keyboardShortcut(.cancelAction)
                 .accessibilityIdentifier("countries.popover.cancel")
-            Button(choice.primaryTitle(for: row)) {
+            Button(endsTest ? String(localized: "End Test and Set…", comment: "kind:button") : choice.primaryTitle(for: row)) {
                 guard let edit = choice.edit(for: row) else { return }
+                if endsTest {
+                    let price = switch edit {
+                    case .automatic: row.automatic.customerPrice
+                    case let .price(value): value
+                    }
+                    viewModel.askToEndPriceTest(productID: productID, territoryID: row.id, price: price)
+                    return
+                }
                 let source = choice.source(for: row)
                 Task { await viewModel.setCountryPrice(edit, productID: productID, territoryID: row.id, source: source) }
             }
@@ -136,6 +150,11 @@ struct CountryPricePopover: View {
             .disabled(choice.edit(for: row) == nil)
             .accessibilityIdentifier("countries.popover.set")
         }
+    }
+
+    /// A new price here ends the country's running price test.
+    private var endsTest: Bool {
+        row.priceTest?.role == .test
     }
 
     private func select(_ mode: CountryPriceChoice.Mode, price: Decimal?) {
@@ -148,8 +167,10 @@ struct CountryPricePopover: View {
         choice.price = price
     }
 
+    /// What `price` earns by Apple's own point; nil on estimated points.
     private func proceeds(at price: Decimal) -> Decimal? {
-        points.first { !PricingRow.differs($0.customerPrice, price) }?.proceeds
+        guard viewModel.hasCountryPricePoints(productID: productID, territoryID: row.id) else { return nil }
+        return points.first { !PricingRow.differs($0.customerPrice, price) }?.proceeds
     }
 
     private var productName: String {

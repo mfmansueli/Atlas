@@ -29,6 +29,10 @@ struct MCPPriceRun {
     private(set) var results: [JSONValue] = []
     private(set) var outcomes: [MCPPriceProposer.Outcome] = []
     private(set) var logLines: [MCPToolOutcome.LogLine] = []
+    /// What each queued change carries: the evidence line and the lowest
+    /// how sure of the proposals in it (an in-app purchase's countries
+    /// share one change).
+    private(set) var queuedLayers: [PendingChange.ID: SuggestionLayers] = [:]
     /// A withdraw call: what left reads "withdrawn", counted apart.
     var reportsWithdrawals = false
 
@@ -45,7 +49,7 @@ struct MCPPriceRun {
 
     /// Runs the items through the product's proposer: a subscription's one
     /// country at a time, an in-app purchase's together as its schedule.
-    mutating func propose(_ items: [Item], sheet: MCPPriceSheet, source: ChangeSource) {
+    mutating func propose(_ items: [Item], sheet: MCPPriceSheet, source: ChangeSource, details: String? = nil) {
         var decided: [MCPPriceProposer.Outcome?] = items.map(\.preset)
         if sheet.product.isInAppPurchase {
             let open = items.indices.filter { decided[$0] == nil }
@@ -70,7 +74,23 @@ struct MCPPriceRun {
         for (item, outcome) in zip(items, decided) {
             guard let outcome else { continue }
             add(item.proposal, territoryID: item.territory?.id, outcome, target: sheet.target(item.territory?.name ?? item.proposal.territory))
+            if case let .queued(changeID, _) = outcome { noteLayers(of: item.proposal, details: details, on: changeID) }
         }
+    }
+
+    /// Puts each queued change's details and how sure on it.
+    func attachLayers(to queue: ChangeQueue) {
+        for (changeID, layers) in queuedLayers {
+            queue.attach(layers.nonEmpty, to: changeID)
+        }
+    }
+
+    /// The lowest how sure wins: a change is only as sure as its least
+    /// sure country.
+    private mutating func noteLayers(of proposal: MCPPriceProposal, details: String?, on changeID: PendingChange.ID) {
+        let earlier = queuedLayers[changeID]?.confidence
+        let confidence = [earlier, proposal.confidence].compactMap(\.self).min()
+        queuedLayers[changeID] = SuggestionLayers(details: details, confidence: confidence)
     }
 
     /// One proposal's result, or a batch's results with counts.

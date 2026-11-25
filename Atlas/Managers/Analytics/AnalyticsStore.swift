@@ -36,6 +36,9 @@ final class AnalyticsStore {
     /// What went wrong reading sales that isn't the key's role, e.g. a
     /// vendor number Apple doesn't know.
     private(set) var salesError: String?
+    /// Sales and Trends was asked for since launch. A Mac that never read a
+    /// day of sales asks again at the next launch, not the next day.
+    var askedForSalesThisLaunch = false
     /// What went wrong reading the newer reports; the funnel still shows.
     var reportsError: String?
 

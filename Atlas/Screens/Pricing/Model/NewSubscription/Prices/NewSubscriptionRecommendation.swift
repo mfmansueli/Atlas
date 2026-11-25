@@ -93,7 +93,10 @@ struct NewSubscriptionRecommendation: Hashable, Sendable {
         let sheet = priceSheet(basePrice: basePrice, reference: reference, commission: calculator.commission, catalog: catalog)
         var effective = strategy
         effective.baseTerritoryID = baseID
-        let builder = PricingRowBuilder(catalog: catalog, calculator: calculator, sheet: sheet, strategy: effective, showsSuggestions: true)
+        // A subscription that doesn't exist yet has no price points of its
+        // own to read: its starting prices land on Apple's when it's pushed.
+        var builder = PricingRowBuilder(catalog: catalog, calculator: calculator, sheet: sheet, strategy: effective, showsSuggestions: true)
+        builder.requiresRealGrid = false
         let places = builder.rows().filter { !$0.isBase }.map { row in
             Place(territory: row.territory, equalized: row.equalized, recommended: row.target.customerPrice)
         }

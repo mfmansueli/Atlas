@@ -7,12 +7,12 @@ import SwiftUI
 
 /// Settings → Pricing (board 48): the pricing mode new apps start in, the
 /// strategy every subscription starts from (`AppPreferences.pricingDefaults`),
-/// what the bundled price data is, and Apple's commission for proceeds.
+/// the price data (bundled indexes and exchange rates, with Update Now:
+/// `PriceDataSettingsSection`), and Apple's commission for proceeds.
 /// Each subscription can still change its own strategy in Pricing's
 /// inspector.
 struct PricingSettingsPane: View {
     @Environment(AppPreferences.self) private var preferences
-    @State private var snapshot = try? PriceIndexSnapshot.bundled()
     @State private var isEditingFallback = false
     @State private var isEditingLimits = false
 
@@ -44,7 +44,7 @@ struct PricingSettingsPane: View {
                 }
             }
             indexDefaults
-            indexData
+            PriceDataSettingsSection()
             proceeds
         }
         .formStyle(.grouped)
@@ -122,22 +122,6 @@ struct PricingSettingsPane: View {
         }
     }
 
-    private var indexData: some View {
-        Section("Price data") {
-            LabeledContent {
-                Text("Works offline")
-                    .foregroundStyle(Palette.label2)
-            } label: {
-                SettingsRowLabel(title: "Bundled with Atlas", caption: snapshotSummary)
-            }
-            if snapshot?.isApproximate == true {
-                Text("The bundled values are approximate sample data, not the publishers’ figures. New editions arrive with app updates.")
-                    .font(.subheadline)
-                    .foregroundStyle(Palette.label2)
-            }
-        }
-    }
-
     // MARK: - Values
 
     private static let territories = TerritoryCatalog.standard.territories.sorted { $0.name < $1.name }
@@ -154,15 +138,6 @@ struct PricingSettingsPane: View {
             }
         }
         .joined(separator: " → ")
-    }
-
-    /// "Apr 30, 2026 · Big Mac Jan 2026 · World Bank 2024 · IMF Apr 2026".
-    private var snapshotSummary: String {
-        guard let snapshot else { return String(localized: "Couldn’t read the bundled index data") }
-        let editions = [PriceIndexSource.bigMac, .worldBank, .imf].compactMap { source in
-            snapshot.index(source).map { "\(source.shortName) \($0.edition.label)" }
-        }
-        return ([snapshot.snapshotDate.formatted(date: .abbreviated, time: .omitted)] + editions).joined(separator: " · ")
     }
 
     static func title(for rounding: PriceRounding) -> String {

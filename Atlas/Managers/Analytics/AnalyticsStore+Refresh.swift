@@ -95,6 +95,7 @@ extension AnalyticsStore {
     func refreshSales(services: any AnalyticsServices) async {
         let vendorNumber = settings.vendorNumber
         guard !vendorNumber.isEmpty else { return }
+        askedForSalesThisLaunch = true
         let yesterday = AnalyticsDay(now()).adding(-1)
         let reread = Set((0..<Self.salesRereadDays).map { yesterday.adding(-$0).number })
         let days = (0..<Self.salesHistoryDays)
@@ -105,19 +106,39 @@ extension AnalyticsStore {
         do {
             let download = try await services.downloadSales(vendorNumber: vendorNumber, days: days, activeDays: activeDays)
             apply(download)
-            setSalesProblem(keyCannotRead: false, error: nil)
+            setSalesProblem(keyCannotRead: false, error: Self.salesProblem(in: download))
         } catch AppStoreConnectError.forbidden {
             setSalesProblem(keyCannotRead: true, error: nil)
+        } catch let error as SalesVendorNumberError {
+            setSalesProblem(keyCannotRead: settings.keyCannotReadSales, error: error.localizedDescription)
         } catch {
             let copy = AppleErrorCopy(String(localized: "Sales didn’t load.", comment: "kind:error"), error: error)
             setSalesProblem(keyCannotRead: settings.keyCannotReadSales, error: copy.text)
         }
     }
 
+    /// "Sales for 12 days didn’t load…" with Apple's words in Details, when
+    /// some days failed; the days that loaded are already kept.
+    static func salesProblem(in download: SalesDownload) -> String? {
+        let count = download.failedDays.count
+        guard count > 0 else { return nil }
+        let what = count == 1
+            ? String(localized: "Sales for one day didn’t load. Atlas asks again at the next check.", comment: "kind:error")
+            : String(localized: "Sales for \(count) days didn’t load. Atlas asks again at the next check.", comment: "kind:error")
+        return AppleErrorCopy(summary: what, details: download.failure?.details).text
+    }
+
+    /// A vendor number with not one day of sales read, not asked for yet
+    /// since launch: a failed first read shouldn't wait a whole day.
+    var hasNeverReadSales: Bool {
+        !settings.vendorNumber.isEmpty && sales.days.isEmpty && !settings.keyCannotReadSales && !askedForSalesThisLaunch
+    }
+
     /// Whether `appID`'s reports should be checked now: never checked, or
     /// not yet today.
     func isDue(_ appID: StoreApp.ID) -> Bool {
         guard record(for: appID).askedOn != nil else { return false }
+        if hasNeverReadSales { return true }
         guard let last = record(for: appID).lastChecked else { return true }
         return AnalyticsDay(last) < AnalyticsDay(now())
     }

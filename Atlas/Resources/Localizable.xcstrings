@@ -37,6 +37,9 @@
     " or " : {
       "comment" : "kind:error"
     },
+    " until %@" : {
+      "comment" : "kind:error"
+    },
     " with %@" : {
       "comment" : "kind:error"
     },
@@ -65,7 +68,7 @@
       "comment" : "kind:progress-step"
     },
     " · approximate" : {
-      "comment" : "kind:other"
+      "comment" : "kind:hint"
     },
     " · checking soon" : {
       "comment" : "kind:other"
@@ -105,6 +108,17 @@
     },
     "%@ %@" : {
       "comment" : "kind:label"
+    },
+    "%@ %@ WEO" : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ WEO"
+          }
+        }
+      }
     },
     "%@ %@ crashes more" : {
       "comment" : "kind:notification"
@@ -162,6 +176,9 @@
     },
     "%@ (bundled)" : {
       "comment" : "kind:hint"
+    },
+    "%@ (comparison)" : {
+      "comment" : "kind:label"
     },
     "%@ (did you mean %@?)" : {
       "comment" : "kind:sheet-body"
@@ -391,6 +408,17 @@
     "%@ at %@" : {
       "comment" : "kind:other"
     },
+    "%@ at %@ ends the test. The other %lld go back to their old prices." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ at %2$@ ends the test. The other %3$lld go back to their old prices."
+          }
+        }
+      }
+    },
     "%@ available" : {
       "comment" : "kind:hint"
     },
@@ -508,6 +536,20 @@
     "%@ criteria" : {
       "comment" : "kind:accessibility-label"
     },
+    "%@ data" : {
+      "comment" : "kind:hint"
+    },
+    "%@ data, published %@" : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ data, published %2$@"
+          }
+        }
+      }
+    },
     "%@ declares it in a privacy manifest. The reason is kept with the worksheet." : {
       "comment" : "kind:sheet-body"
     },
@@ -591,6 +633,17 @@
     },
     "%@ equalized → kept" : {
       "comment" : "kind:description"
+    },
+    "%@ evidence can’t be checked here. %@ Base it on priceIndex, exchangeRates, project or outside." : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ evidence can’t be checked here. %2$@ Base it on priceIndex, exchangeRates, project or outside."
+          }
+        }
+      }
     },
     "%@ failed with error %lld. Try again in a minute." : {
       "comment" : "kind:error"
@@ -699,6 +752,9 @@
     },
     "%@ has a visionOS version" : {
       "comment" : "kind:other"
+    },
+    "%@ has an exclamation mark, which Atlas never writes." : {
+      "comment" : "kind:error"
     },
     "%@ has no %@ screenshots of its own (the App Store shows the primary language’s), so there’s nothing to delete or move." : {
       "comment" : "kind:other"
@@ -842,6 +898,9 @@
     "%@ has no retention message “%@”. %@ Leave messageId out to make a new one." : {
       "comment" : "kind:other"
     },
+    "%@ has no sales yet, so there are no trials or proceeds to cite. Use analytics page views, priceIndex, project or outside." : {
+      "comment" : "kind:other"
+    },
     "%@ has no saved Autopilot run, so its App Preview’s recordings and moments can’t be recorded again; the captures are asked for without them. To make the App Preview again, the person runs Autopilot with it." : {
       "comment" : "kind:other"
     },
@@ -896,6 +955,9 @@
     "%@ has the base price, which the others follow; it stays." : {
       "comment" : "kind:other"
     },
+    "%@ has “!”, which Atlas never writes." : {
+      "comment" : "kind:other"
+    },
     "%@ hasn’t made its settings folder yet. Open it once, then try again." : {
       "comment" : "kind:error"
     },
@@ -930,6 +992,17 @@
     },
     "%@ in %@, Apple’s average." : {
       "comment" : "kind:description"
+    },
+    "%@ in %lld countries · %@" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ in %2$lld countries · %3$@"
+          }
+        }
+      }
     },
     "%@ in %lld languages" : {
       "comment" : "kind:other"
@@ -996,6 +1069,17 @@
     "%@ is %lld characters; at most %lld. Keep one sentence." : {
       "comment" : "kind:error"
     },
+    "%@ is %lld characters; at most %lld. Keep the number that decides it." : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is %2$lld characters; at most %3$lld. Keep the number that decides it."
+          }
+        }
+      }
+    },
     "%@ is %lld characters; at most %lld. Keep the numbers that decide it." : {
       "comment" : "kind:error"
     },
@@ -1028,6 +1112,28 @@
     },
     "%@ is already a %@: the three concepts differ in kind (a place, a viewpoint and a wildcard)." : {
       "comment" : "kind:description"
+    },
+    "%@ is already in the %@ price test%@: one test per region at a time." : {
+      "comment" : "kind:error",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is already in the %2$@ price test%3$@: one test per region at a time."
+          }
+        }
+      }
+    },
+    "%@ is already in the %@ price test. One test per region at a time." : {
+      "comment" : "kind:inline-warning",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is already in the %2$@ price test. One test per region at a time."
+          }
+        }
+      }
     },
     "%@ is already on Apple’s automatic price; nothing was queued." : {
       "comment" : "kind:other"
@@ -1113,6 +1219,9 @@
     "%@ is empty: say what changes or what you saw." : {
       "comment" : "kind:error"
     },
+    "%@ is empty: say what you read, with its number, e.g. “Brazil, 28 days: 31 trials”." : {
+      "comment" : "kind:other"
+    },
     "%@ is full at %lld App Previews. Nothing was sent." : {
       "comment" : "kind:error"
     },
@@ -1121,6 +1230,28 @@
     },
     "%@ is in %@, so Apple asks whether it’s a regulated medical device. Most apps answer No. Declare it in App Store Connect." : {
       "comment" : "kind:description"
+    },
+    "%@ is in %@, the comparison for the %@ test. A new price here makes the result less sure." : {
+      "comment" : "kind:inline-warning",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is in %2$@, the comparison for the %3$@ test. A new price here makes the result less sure."
+          }
+        }
+      }
+    },
+    "%@ is in the %@ price test until %@. A new price here ends the test in all %lld countries." : {
+      "comment" : "kind:inline-warning",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is in the %2$@ price test until %3$@. A new price here ends the test in all %4$lld countries."
+          }
+        }
+      }
     },
     "%@ is in the app menu. Reading its store page, screenshots and prices…" : {
       "comment" : "kind:toast"
@@ -1389,6 +1520,9 @@
     "%@ isn’t sold in the European Union, so its page shows no trader details." : {
       "comment" : "kind:description"
     },
+    "%@ isn’t taken: only the person starts, changes or ends a price test. Send region and step; they set it up from the card in Results." : {
+      "comment" : "kind:error"
+    },
     "%@ isn’t the version being prepared or on its way anymore." : {
       "comment" : "kind:error"
     },
@@ -1565,6 +1699,31 @@
     "%@ over %lld days, from %@ to %@." : {
       "comment" : "kind:description"
     },
+    "%@ page views" : {
+      "comment" : "kind:label"
+    },
+    "%@ page views · needs %lld" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ page views · needs %2$lld"
+          }
+        }
+      }
+    },
+    "%@ page views, %@ starts" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ page views, %2$@ starts"
+          }
+        }
+      }
+    },
     "%@ paid" : {
       "comment" : "kind:other"
     },
@@ -1583,6 +1742,9 @@
     "%@ picks the screens" : {
       "comment" : "kind:section-title"
     },
+    "%@ points" : {
+      "comment" : "kind:label"
+    },
     "%@ points above default" : {
       "comment" : "kind:other"
     },
@@ -1597,6 +1759,9 @@
     },
     "%@ price" : {
       "comment" : "kind:other"
+    },
+    "%@ price test" : {
+      "comment" : "kind:title"
     },
     "%@ priced apart but not among the offer’s countries or regions." : {
       "comment" : "kind:error"
@@ -1900,6 +2065,20 @@
     "%@ source, opens in your browser" : {
       "comment" : "kind:accessibility-label"
     },
+    "%@ starts" : {
+      "comment" : "kind:label"
+    },
+    "%@ starts · needs %lld" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ starts · needs %2$lld"
+          }
+        }
+      }
+    },
     "%@ stay as they are." : {
       "comment" : "kind:description"
     },
@@ -2094,6 +2273,17 @@
     "%@ to %@ are still arriving (Apple takes up to 4 days), so these numbers end %@." : {
       "comment" : "kind:description"
     },
+    "%@ to %@ points" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ to %2$@ points"
+          }
+        }
+      }
+    },
     "%@ to Review & Push. Nothing is public until you push and submit." : {
       "comment" : "kind:progress-step"
     },
@@ -2105,6 +2295,9 @@
     },
     "%@ translated %@ into %@" : {
       "comment" : "kind:history-entry"
+    },
+    "%@ trials" : {
+      "comment" : "kind:other"
     },
     "%@ tried twice, and a check failed both times. Nothing was sent." : {
       "comment" : "kind:description"
@@ -2132,6 +2325,28 @@
     },
     "%@ uses the %@ screenshots." : {
       "comment" : "kind:banner"
+    },
+    "%@ uses “%@”, which Atlas never writes. Say what you found plainly." : {
+      "comment" : "kind:error",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ uses “%2$@”, which Atlas never writes. Say what you found plainly."
+          }
+        }
+      }
+    },
+    "%@ uses “%@”, which Atlas never writes. Say what you read plainly." : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ uses “%2$@”, which Atlas never writes. Say what you read plainly."
+          }
+        }
+      }
     },
     "%@ views is too few to compare" : {
       "comment" : "kind:description"
@@ -2203,7 +2418,7 @@
       "comment" : "kind:other"
     },
     "%@ · %@" : {
-      "comment" : "kind:label"
+      "comment" : "kind:hint"
     },
     "%@ · %@ for %@, set by country" : {
       "comment" : "kind:description"
@@ -2243,8 +2458,30 @@
         }
       }
     },
+    "%@ · %@ · 28 days" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@ · 28 days"
+          }
+        }
+      }
+    },
     "%@ · %@ · App Preview and %lld of %lld screenshots. Select a screenshot to replace, move or delete it, or drop files to add them." : {
       "comment" : "kind:description"
+    },
+    "%@ · %@ · Price test" : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@ · Price test"
+          }
+        }
+      }
     },
     "%@ · %@ · needs %@%@" : {
       "comment" : "kind:sheet-title"
@@ -2431,6 +2668,9 @@
     "%@ · PRO" : {
       "comment" : "kind:button"
     },
+    "%@ · Price history" : {
+      "comment" : "kind:other"
+    },
     "%@ · Pricing strategy" : {
       "comment" : "kind:other"
     },
@@ -2526,6 +2766,17 @@
     },
     "%@ · continues from slot %lld" : {
       "comment" : "kind:description"
+    },
+    "%@ · day %lld of %lld · ends %@" : {
+      "comment" : "kind:tooltip",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · day %2$lld of %3$lld · ends %4$@"
+          }
+        }
+      }
     },
     "%@ · deactivated" : {
       "comment" : "kind:other"
@@ -2680,6 +2931,9 @@
     "%@ · version %@" : {
       "comment" : "kind:other"
     },
+    "%@ · waits in Review & Push" : {
+      "comment" : "kind:tooltip"
+    },
     "%@ · within Apple’s 15–30 seconds" : {
       "comment" : "kind:description"
     },
@@ -2741,6 +2995,17 @@
     },
     "%@, %@ and %lld other languages" : {
       "comment" : "kind:description"
+    },
+    "%@, %@ in %lld countries in %@." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@ in %3$lld countries in %4$@."
+          }
+        }
+      }
     },
     "%@, %@ on %@" : {
       "comment" : "kind:error"
@@ -2852,8 +3117,14 @@
     "%@, price changes" : {
       "comment" : "kind:accessibility-label"
     },
+    "%@, price unchanged" : {
+      "comment" : "kind:label"
+    },
     "%@, prices loading" : {
       "comment" : "kind:accessibility-label"
+    },
+    "%@, same 28 days, price unchanged." : {
+      "comment" : "kind:sheet-body"
     },
     "%@, same as the default page" : {
       "comment" : "kind:description"
@@ -2932,8 +3203,14 @@
     "%@. Nothing else can go on: open it to retry the problem or leave its part out." : {
       "comment" : "kind:description"
     },
+    "%@. One region pays a different price for 28 days; Results says what it did." : {
+      "comment" : "kind:sheet-body"
+    },
     "%@. Only a version App Review approved and that waits for the person (Pending Developer Release) can be released." : {
       "comment" : "kind:other"
+    },
+    "%@. Rounded to Apple’s price points." : {
+      "comment" : "kind:sheet-body"
     },
     "%@. Test it by canceling a sandbox subscription once Apple approves it." : {
       "comment" : "kind:description"
@@ -2955,6 +3232,17 @@
     },
     "%@: %@ Code alone can’t prove support; check it with the feature on." : {
       "comment" : "kind:description"
+    },
+    "%@: %@ and %@ in 90 days." : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@ and %3$@ in 90 days."
+          }
+        }
+      }
     },
     "%@: %@ is hard to read on what’s behind it (%@; aim for 3:1 or more)." : {
       "comment" : "kind:description"
@@ -3300,6 +3588,9 @@
     "%@’s suggestion dismissed." : {
       "comment" : "kind:description"
     },
+    "%@’s suggestions can now be Sure: the test counts as a measured change." : {
+      "comment" : "kind:description"
+    },
     "%@’s version %@ can’t change, so no language can be added. Propose a new version with propose_app_version first." : {
       "comment" : "kind:error",
       "localizations" : {
@@ -3596,16 +3887,38 @@
       "comment" : "kind:error"
     },
     "%lld countries" : {
-      "comment" : "kind:other"
+      "comment" : "kind:label"
+    },
+    "%lld countries %@ for 28 days from when you push, then the old prices. Both go in this push." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld countries %2$@ for 28 days from when you push, then the old prices. Both go in this push."
+          }
+        }
+      }
     },
     "%lld countries and regions" : {
-      "comment" : "kind:sheet-body"
+      "comment" : "kind:label"
     },
     "%lld countries and regions could pay less. Apple’s prices are live meanwhile." : {
       "comment" : "kind:banner"
     },
     "%lld countries and regions have a recommended price. Apple’s prices are live meanwhile." : {
       "comment" : "kind:banner"
+    },
+    "%lld countries go back to %@, the prices of the test. They wait in Review & Push." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld countries go back to %2$@, the prices of the test. They wait in Review & Push."
+          }
+        }
+      }
     },
     "%lld countries or regions" : {
       "comment" : "kind:description"
@@ -3627,6 +3940,17 @@
     },
     "%lld days free" : {
       "comment" : "kind:description"
+    },
+    "%lld days · needs %lld" : {
+      "comment" : "kind:label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld days · needs %2$lld"
+          }
+        }
+      }
     },
     "%lld deleted" : {
       "comment" : "kind:label"
@@ -3691,6 +4015,9 @@
     "%lld failed. Their live screenshots weren’t touched." : {
       "comment" : "kind:description"
     },
+    "%lld fallback" : {
+      "comment" : "kind:hint"
+    },
     "%lld features: %@" : {
       "comment" : "kind:description"
     },
@@ -3711,6 +4038,9 @@
     },
     "%lld fps" : {
       "comment" : "kind:other"
+    },
+    "%lld from an older year or other figures" : {
+      "comment" : "kind:hint"
     },
     "%lld go down" : {
       "comment" : "kind:sheet-body"
@@ -3773,7 +4103,7 @@
       "comment" : "kind:other"
     },
     "%lld likely held back by price" : {
-      "comment" : "kind:description"
+      "comment" : "kind:label"
     },
     "%lld lines" : {
       "comment" : "kind:other"
@@ -3922,7 +4252,7 @@
       "comment" : "kind:banner"
     },
     "%lld not pushed" : {
-      "comment" : "kind:other"
+      "comment" : "kind:label"
     },
     "%lld not sent" : {
       "comment" : "kind:progress-step"
@@ -4486,6 +4816,12 @@
     "%lld%%" : {
       "comment" : "kind:progress-step"
     },
+    "%lld%% higher" : {
+      "comment" : "kind:label"
+    },
+    "%lld%% lower" : {
+      "comment" : "kind:label"
+    },
     "%lld%% of people with automatic updates have %@. Anyone can download it." : {
       "comment" : "kind:other"
     },
@@ -4787,10 +5123,13 @@
       "comment" : "kind:error"
     },
     "1 country" : {
-      "comment" : "kind:other"
+      "comment" : "kind:label"
     },
     "1 country or region" : {
-      "comment" : "kind:other"
+      "comment" : "kind:label"
+    },
+    "1 day · needs %lld" : {
+      "comment" : "kind:label"
     },
     "1 declaration goes live when pushed" : {
       "comment" : "kind:description"
@@ -4993,6 +5332,12 @@
     "1 page suggested" : {
       "comment" : "kind:suggestion-title"
     },
+    "1 page view" : {
+      "comment" : "kind:other"
+    },
+    "1 page view · needs %lld" : {
+      "comment" : "kind:label"
+    },
     "1 phrase" : {
       "comment" : "kind:other"
     },
@@ -5128,6 +5473,12 @@
     "1 star" : {
       "comment" : "kind:other"
     },
+    "1 start" : {
+      "comment" : "kind:other"
+    },
+    "1 start · needs %lld" : {
+      "comment" : "kind:label"
+    },
     "1 still to review. Accept All can be undone." : {
       "comment" : "kind:hint"
     },
@@ -5175,6 +5526,9 @@
     },
     "1 to 2 days" : {
       "comment" : "kind:progress-step"
+    },
+    "1 trial" : {
+      "comment" : "kind:other"
     },
     "1 value skipped." : {
       "comment" : "kind:error"
@@ -5290,6 +5644,31 @@
     "28 days before each change vs 28 days after. This shows what changed, not why." : {
       "comment" : "kind:description"
     },
+    "28 days · ends about %@" : {
+      "comment" : "kind:sheet-body"
+    },
+    "28 days: %@, %@" : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "28 days: %1$@, %2$@"
+          }
+        }
+      }
+    },
+    "28 days: %@, %@, %@ paid" : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "28 days: %1$@, %2$@, %3$@ paid"
+          }
+        }
+      }
+    },
     "2nd renewal" : {
       "comment" : "kind:other"
     },
@@ -5355,6 +5734,9 @@
     },
     "90% confidence. “About the same” means the difference could be chance." : {
       "comment" : "kind:description"
+    },
+    "90% range" : {
+      "comment" : "kind:label"
     },
     "99+" : {
       "comment" : "kind:pill"
@@ -5577,6 +5959,9 @@
     },
     "A newer draft is in App Store Connect, not yet on the product page." : {
       "comment" : "kind:hint"
+    },
+    "A nomination tells Apple’s editors about a launch, a big update or an In-App Event before it happens. Click New Nomination to start one, or Suggest a Nomination to have your assistant draft it." : {
+      "comment" : "kind:description"
     },
     "A nomination tells Apple’s editors about a launch, big update or event, weeks ahead." : {
       "comment" : "kind:description"
@@ -5804,7 +6189,7 @@
       "comment" : "kind:other"
     },
     "About the same" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "About the same as before %@: %@." : {
       "comment" : "kind:description"
@@ -5834,7 +6219,7 @@
       "comment" : "kind:button\nkind:help"
     },
     "Accept %@" : {
-      "comment" : "kind:accessibility-label"
+      "comment" : "kind:button"
     },
     "Accept %@ in %@" : {
       "comment" : "kind:label",
@@ -6065,6 +6450,9 @@
     "Accepted suggestion" : {
       "comment" : "kind:label"
     },
+    "Accepted suggestions and edited fields wait here until you push them to App Store Connect." : {
+      "comment" : "kind:description"
+    },
     "Accepted the %@. Nothing is sent until you push." : {
       "comment" : "kind:toast"
     },
@@ -6204,7 +6592,7 @@
       "comment" : "kind:button"
     },
     "Add In-App Purchase…" : {
-      "comment" : "kind:menu-item"
+      "comment" : "kind:button"
     },
     "Add Introductory Offer…" : {
       "comment" : "kind:button"
@@ -6270,7 +6658,7 @@
       "comment" : "kind:accessibility-label"
     },
     "Add Screenshots…" : {
-      "comment" : "kind:menu-item"
+      "comment" : "kind:button"
     },
     "Add Shape" : {
       "comment" : "kind:section-title"
@@ -6900,6 +7288,9 @@
     "An Admin key" : {
       "comment" : "kind:section-title"
     },
+    "An In-App Event is a card on the App Store, in search and on Today, for something timely in %@: a challenge, a new season, a live session. Click New Event to start one, or Suggest an Event to have your assistant draft it." : {
+      "comment" : "kind:description"
+    },
     "An Issuer ID is a UUID: 8-4-4-4-12 hexadecimal characters. It’s shown above the keys table." : {
       "comment" : "kind:error"
     },
@@ -6949,7 +7340,7 @@
       "comment" : "kind:other"
     },
     "Analytics" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Analytics Settings…" : {
       "comment" : "kind:button"
@@ -7048,6 +7439,9 @@
       "comment" : "kind:section-title"
     },
     "Another version of %@’s App Store page, with its own link. %@ has none yet." : {
+      "comment" : "kind:description"
+    },
+    "Another version of %@’s page with its own link: use it in an ad or a newsletter, show it for the searches you choose, and change the screenshots people see first. Click New Page to make one, or Suggest Pages for ideas from your assistant." : {
       "comment" : "kind:description"
     },
     "Answer" : {
@@ -7780,6 +8174,9 @@
     "Apple counts an event’s page views, opens and downloads in App Store Connect’s App Analytics. Atlas doesn’t read them yet." : {
       "comment" : "kind:description"
     },
+    "Apple counts only people who agree to share analytics with developers." : {
+      "comment" : "kind:description"
+    },
     "Apple didn’t answer" : {
       "comment" : "kind:section-title"
     },
@@ -7797,6 +8194,9 @@
     },
     "Apple doesn’t give this number." : {
       "comment" : "kind:description"
+    },
+    "Apple doesn’t know vendor number %@. Copy it again from Payments and Financial Reports." : {
+      "comment" : "kind:error"
     },
     "Apple doesn’t report back on nominations, so nothing changes here after you submit." : {
       "comment" : "kind:description"
@@ -8072,7 +8472,7 @@
       "comment" : "kind:label"
     },
     "Apple’s commission" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "Apple’s count of ratings minus the written reviews in App Store Connect." : {
       "comment" : "kind:help"
@@ -8107,11 +8507,26 @@
     "Apple’s price" : {
       "comment" : "kind:column-header"
     },
+    "Apple’s price point for 1 country isn’t loaded. Refresh, then set it up again." : {
+      "comment" : "kind:error"
+    },
     "Apple’s price point for this price isn’t loaded. Refresh, then set it again." : {
       "comment" : "kind:error"
     },
     "Apple’s price points" : {
       "comment" : "kind:label"
+    },
+    "Apple’s price points didn’t load." : {
+      "comment" : "kind:error"
+    },
+    "Apple’s price points for %@ didn’t load." : {
+      "comment" : "kind:other"
+    },
+    "Apple’s price points for %lld countries aren’t loaded. Refresh, then set it up again." : {
+      "comment" : "kind:error"
+    },
+    "Apple’s price points for this country aren’t read yet." : {
+      "comment" : "kind:description"
     },
     "Apple’s prices are live meanwhile. Review… on its card applies the ones you pick." : {
       "comment" : "kind:hint"
@@ -8671,6 +9086,23 @@
     "Atlas and Claude Code stop. Captures and picks are kept." : {
       "comment" : "kind:description"
     },
+    "Atlas asked Apple for %@’s analytics on %@. The first reports usually take 1 to 2 days, and each view here fills in as its report arrives." : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Atlas asked Apple for %1$@’s analytics on %2$@. The first reports usually take 1 to 2 days, and each view here fills in as its report arrives."
+          }
+        }
+      }
+    },
+    "Atlas asked Apple for %@’s analytics today. The first reports usually take 1 to 2 days, and each view here fills in as its report arrives." : {
+      "comment" : "kind:description"
+    },
+    "Atlas asked Apple for %@’s analytics yesterday. The first reports usually take 1 to 2 days, and each view here fills in as its report arrives." : {
+      "comment" : "kind:description"
+    },
     "Atlas asked the Autopilot run for the variant: call next_step (it says design_variant) and send it with propose_artwork_variant. The test waits in Review & Push for the person, who creates it once the variant is in." : {
       "comment" : "kind:other"
     },
@@ -9144,6 +9576,12 @@
     "Automatic updates over 7 days: 1%, 2%, 5%, 10%, 20%, 50%, then everyone. Anyone can download it. You can pause." : {
       "comment" : "kind:progress-step"
     },
+    "Automatic: %@" : {
+      "comment" : "kind:menu-item"
+    },
+    "Automatic: none with 30 starts" : {
+      "comment" : "kind:menu-item"
+    },
     "Automatically after approval" : {
       "comment" : "kind:section-title"
     },
@@ -9396,8 +9834,37 @@
     "Based on v%lld, but the template is now v%lld. The person rebases it before accepting." : {
       "comment" : "kind:other"
     },
+    "Based on your sales in %lld countries and purchasing power." : {
+      "comment" : "kind:banner"
+    },
+    "Based on your sales in %lld countries · %lld use their region’s" : {
+      "comment" : "kind:banner",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Based on your sales in %1$lld countries · %2$lld use their region’s"
+          }
+        }
+      }
+    },
+    "Based on your sales in %lld countries · 1 uses its region’s" : {
+      "comment" : "kind:banner"
+    },
+    "Based on your sales in 1 country and purchasing power." : {
+      "comment" : "kind:banner"
+    },
+    "Based on your sales in 1 country · %lld use their region’s" : {
+      "comment" : "kind:banner"
+    },
+    "Based on your sales in 1 country · 1 uses its region’s" : {
+      "comment" : "kind:banner"
+    },
     "Based on your sales, not a price test. Results show how many more starts." : {
       "comment" : "kind:hint"
+    },
+    "Based on: %@" : {
+      "comment" : "kind:other"
     },
     "Becomes a %lld-second loop if you choose it · " : {
       "comment" : "kind:hint"
@@ -9463,7 +9930,7 @@
       "comment" : "kind:description"
     },
     "Better" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Better than average" : {
       "comment" : "kind:section-title"
@@ -9477,11 +9944,33 @@
     "Big Mac" : {
       "comment" : "kind:section-title"
     },
+    "Big Mac %@ %@" : {
+      "comment" : "kind:pill",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Big Mac %1$@ %2$@"
+          }
+        }
+      }
+    },
     "Big Mac Index" : {
       "comment" : "kind:section-title"
     },
     "Big Mac Jan 26" : {
       "comment" : "kind:pill"
+    },
+    "Big Mac, %@ %@" : {
+      "comment" : "kind:pill",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Big Mac, %1$@ %2$@"
+          }
+        }
+      }
     },
     "Big Mac, Jan 2026" : {
       "comment" : "kind:pill"
@@ -9583,6 +10072,9 @@
     },
     "Both images go to Review & Push, for every language" : {
       "comment" : "kind:tooltip"
+    },
+    "Both price changes go in one push. Nothing changes on the App Store until you push." : {
+      "comment" : "kind:sheet-body"
     },
     "Bottom safe area" : {
       "comment" : "kind:section-title"
@@ -9693,7 +10185,7 @@
       "comment" : "kind:section-title"
     },
     "Built-in" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:pill"
     },
     "Built-in checks and suggestions" : {
       "comment" : "kind:section-title"
@@ -9705,10 +10197,13 @@
       "comment" : "kind:accessibility-label"
     },
     "Bundled snapshot from %@ · works offline" : {
-      "comment" : "kind:description"
+      "comment" : "kind:hint"
     },
     "Bundled with Atlas" : {
       "comment" : "kind:field-label"
+    },
+    "Bundled with Atlas on %@ · works offline" : {
+      "comment" : "kind:hint"
     },
     "Business" : {
       "comment" : "kind:section-title"
@@ -10175,7 +10670,7 @@
       "comment" : "kind:progress-step"
     },
     "Changed only" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "Changed: %@" : {
       "comment" : "kind:section-title"
@@ -10288,6 +10783,9 @@
     "Checked again whenever %@’s category, age rating or countries change." : {
       "comment" : "kind:description"
     },
+    "Checked against what each of Apple’s price points earns, after tax and commission." : {
+      "comment" : "kind:hint"
+    },
     "Checked before the dates changed. %@" : {
       "comment" : "kind:description"
     },
@@ -10308,6 +10806,12 @@
     },
     "Checking App Store Connect" : {
       "comment" : "kind:section-title"
+    },
+    "Checking Apple’s prices in %@ first. Try again in a minute." : {
+      "comment" : "kind:other"
+    },
+    "Checking Apple’s prices…" : {
+      "comment" : "kind:hint"
     },
     "Checking Apple’s reports" : {
       "comment" : "kind:loading"
@@ -10960,7 +11464,7 @@
       "comment" : "kind:other"
     },
     "Columns" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:accessibility-label\nkind:button\nkind:help"
     },
     "Columns: %@" : {
       "comment" : "kind:section-title"
@@ -11009,6 +11513,9 @@
     },
     "Compare the pages with get_analytics_breakdown by productPage, and look for new audiences by source, language and territory." : {
       "comment" : "kind:other"
+    },
+    "Compared with" : {
+      "comment" : "kind:label"
     },
     "Comparisons start after a full period. Until then: counts and rates only." : {
       "comment" : "kind:description"
@@ -11837,7 +12344,7 @@
       "comment" : "kind:section-title"
     },
     "Currency" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:column"
     },
     "Currency and tax conversion only." : {
       "comment" : "kind:description"
@@ -11903,7 +12410,7 @@
       "comment" : "kind:section-title"
     },
     "Custom strategy" : {
-      "comment" : "kind:pill"
+      "comment" : "kind:accessibility-label"
     },
     "Customer Support" : {
       "comment" : "kind:section-title"
@@ -11990,7 +12497,7 @@
       "comment" : "kind:progress-step"
     },
     "Day %lld of %lld" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:pill"
     },
     "Day %lld of %lld · final on %@" : {
       "comment" : "kind:description"
@@ -12580,6 +13087,9 @@
     "Done. Texts are in In-App Events." : {
       "comment" : "kind:done-state"
     },
+    "Done. The event waits in Review & Push to be made." : {
+      "comment" : "kind:toast"
+    },
     "Done. The finding is in Analytics." : {
       "comment" : "kind:done-state"
     },
@@ -12656,7 +13166,7 @@
       "comment" : "kind:section-title"
     },
     "Draft" : {
-      "comment" : "kind:pill · the chat kept what you were writing"
+      "comment" : "kind:pill"
     },
     "Draft App Privacy from the project" : {
       "comment" : "kind:other"
@@ -12774,6 +13284,12 @@
     },
     "Each currency’s usual ending" : {
       "comment" : "kind:section-title"
+    },
+    "Each device %@ runs on needs at least one screenshot, and can have up to 10 in each language. Add your own, or click Make Screenshots and Autopilot makes them from the app." : {
+      "comment" : "kind:description"
+    },
+    "Each event goes to App Review and can run for up to 31 days." : {
+      "comment" : "kind:description"
     },
     "Each event is a card in search, Today and on %@’s page. Open one to write it, add artwork and send it to App Review." : {
       "comment" : "kind:description"
@@ -12973,6 +13489,18 @@
     "End" : {
       "comment" : "kind:section-title"
     },
+    "End Test" : {
+      "comment" : "kind:button"
+    },
+    "End Test Early…" : {
+      "comment" : "kind:menu-item"
+    },
+    "End Test and Set Price" : {
+      "comment" : "kind:button"
+    },
+    "End Test and Set…" : {
+      "comment" : "kind:button"
+    },
     "End card" : {
       "comment" : "kind:section-title"
     },
@@ -12985,14 +13513,32 @@
     "End on Week, shorter captions" : {
       "comment" : "kind:placeholder"
     },
+    "End the %@" : {
+      "comment" : "kind:title"
+    },
+    "End the %@ Price Test Early?" : {
+      "comment" : "kind:sheet-title"
+    },
+    "End the %@ Price Test?" : {
+      "comment" : "kind:sheet-title"
+    },
+    "End the test any time in Results. The old prices come back when you push." : {
+      "comment" : "kind:sheet-body"
+    },
     "Ended" : {
       "comment" : "kind:pill"
     },
     "Ended %@" : {
       "comment" : "kind:section-title"
     },
+    "Ending the test waits in Review & Push. The old prices come back when you push." : {
+      "comment" : "kind:status"
+    },
     "Ends" : {
       "comment" : "kind:section-title"
+    },
+    "Ends the test: no result" : {
+      "comment" : "kind:label"
     },
     "Ends · optional" : {
       "comment" : "kind:description"
@@ -13017,6 +13563,9 @@
     },
     "English interface" : {
       "comment" : "kind:section-title"
+    },
+    "Enough to tell a change of about %@ points." : {
+      "comment" : "kind:sheet-body"
     },
     "Enter %@ to %@ codes." : {
       "comment" : "kind:error"
@@ -13324,6 +13873,9 @@
     "Every review" : {
       "comment" : "kind:field-label"
     },
+    "Every review has a reply" : {
+      "comment" : "kind:empty-state"
+    },
     "Every review that needs a reply has one." : {
       "comment" : "kind:description"
     },
@@ -13414,6 +13966,23 @@
     "Example, to a 5★ review" : {
       "comment" : "kind:sheet-title"
     },
+    "Exchange rates" : {
+      "comment" : "kind:label"
+    },
+    "Exchange rates didn’t update." : {
+      "comment" : "kind:error"
+    },
+    "Exchange rates of %@ · %@" : {
+      "comment" : "kind:hint",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Exchange rates of %1$@ · %2$@"
+          }
+        }
+      }
+    },
     "Exclude %@ from the index" : {
       "comment" : "kind:section-title"
     },
@@ -13438,7 +14007,16 @@
     "Existing declaration · %@" : {
       "comment" : "kind:section-title"
     },
+    "Existing subscribers" : {
+      "comment" : "kind:field-label"
+    },
+    "Existing subscribers keep their price. Only new subscribers pay the test price." : {
+      "comment" : "kind:sheet-body"
+    },
     "Existing subscribers keep what they pay; new ones get the higher price." : {
+      "comment" : "kind:sheet-body"
+    },
+    "Existing subscribers keep what they pay; new ones pay the test price." : {
       "comment" : "kind:sheet-body"
     },
     "Exit Full Screen" : {
@@ -13535,7 +14113,7 @@
       "comment" : "kind:section-title"
     },
     "Fallback only" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "Fallback: %@" : {
       "comment" : "kind:tooltip"
@@ -13631,7 +14209,7 @@
       "comment" : "kind:field-label"
     },
     "Filters" : {
-      "comment" : "kind:button\nkind:tooltip"
+      "comment" : "kind:accessibility-label\nkind:button\nkind:tooltip"
     },
     "Filters %lld" : {
       "comment" : "kind:button"
@@ -13861,6 +14439,9 @@
       "comment" : "kind:section-title"
     },
     "For" : {
+      "comment" : "kind:field-label"
+    },
+    "For %@" : {
       "comment" : "kind:field-label"
     },
     "For %@, choose the treatment’s image from the app’s library there." : {
@@ -14147,6 +14728,17 @@
     },
     "From version %@’s %@ keywords, the last approved. You can’t add new words here." : {
       "comment" : "kind:description"
+    },
+    "From when you push (about %@) to %@. Then the old prices come back on their own." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "From when you push (about %1$@) to %2$@. Then the old prices come back on their own."
+          }
+        }
+      }
     },
     "From your header, animated by %@. Checked: first and last frames match; the name stays still." : {
       "comment" : "kind:description"
@@ -14581,7 +15173,7 @@
       "comment" : "kind:section-title"
     },
     "Histogram" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:segment"
     },
     "Histogram of prices in US dollars" : {
       "comment" : "kind:accessibility-label"
@@ -14656,7 +15248,7 @@
       "comment" : "kind:progress-step"
     },
     "How sure" : {
-      "comment" : "kind:accessibility-label"
+      "comment" : "kind:section-title"
     },
     "How sure: %@" : {
       "comment" : "kind:section-title"
@@ -14700,11 +15292,33 @@
     "IMF" : {
       "comment" : "kind:section-title"
     },
+    "IMF %@ %@" : {
+      "comment" : "kind:pill",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IMF %1$@ %2$@"
+          }
+        }
+      }
+    },
     "IMF Apr 26" : {
       "comment" : "kind:pill"
     },
     "IMF implied PPP rate" : {
       "comment" : "kind:section-title"
+    },
+    "IMF, %@ %@" : {
+      "comment" : "kind:pill",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IMF, %1$@ %2$@"
+          }
+        }
+      }
     },
     "IMF, Apr 2026" : {
       "comment" : "kind:pill"
@@ -14738,6 +15352,9 @@
     },
     "Images" : {
       "comment" : "kind:section-title"
+    },
+    "Images people swipe through on the App Store, per language and device." : {
+      "comment" : "kind:description"
     },
     "Implied PPP conversion rate divided by the market rate. Broad coverage, updated every April and October." : {
       "comment" : "kind:description"
@@ -14853,6 +15470,28 @@
     "In %@%@." : {
       "comment" : "kind:description"
     },
+    "In %@, how sure can be at most %@ (%lld): %@ Send confidence %lld or leave it out." : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "In %1$@, how sure can be at most %2$@ (%3$lld): %4$@ Send confidence %5$lld or leave it out."
+          }
+        }
+      }
+    },
+    "In %@, how sure can be at most %@ (%lld): %@ Send confidence %lld or lower." : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "In %1$@, how sure can be at most %2$@ (%3$lld): %4$@ Send confidence %5$lld or lower."
+          }
+        }
+      }
+    },
     "In %@, same as the default page." : {
       "comment" : "kind:hint"
     },
@@ -14961,6 +15600,9 @@
     "In a phased release, pause it while you fix it." : {
       "comment" : "kind:suggestion-why"
     },
+    "In a test" : {
+      "comment" : "kind:pill"
+    },
     "In each country’s time zone" : {
       "comment" : "kind:description"
     },
@@ -15065,6 +15707,9 @@
     "In-App Events · New" : {
       "comment" : "kind:section-title"
     },
+    "In-App Events · a new event" : {
+      "comment" : "kind:other"
+    },
     "In-App Events · texts" : {
       "comment" : "kind:section-title"
     },
@@ -15132,7 +15777,7 @@
       "comment" : "kind:menu-item"
     },
     "Increases only" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "Index" : {
       "comment" : "kind:label"
@@ -15518,6 +16163,9 @@
     "Its messages are %@." : {
       "comment" : "kind:other"
     },
+    "Its newest figure for this country" : {
+      "comment" : "kind:hint"
+    },
     "Its own" : {
       "comment" : "kind:section-title"
     },
@@ -15662,6 +16310,9 @@
     "Keep Running" : {
       "comment" : "kind:confirmation"
     },
+    "Keep Test Prices…" : {
+      "comment" : "kind:button"
+    },
     "Keep Yours · %@" : {
       "comment" : "kind:button"
     },
@@ -15691,6 +16342,9 @@
     },
     "Keep the Captures" : {
       "comment" : "kind:button"
+    },
+    "Keep the Test Prices in %@?" : {
+      "comment" : "kind:sheet-title"
     },
     "Keep the current price for existing subscribers" : {
       "comment" : "kind:sheet-body"
@@ -15753,7 +16407,7 @@
       "comment" : "kind:description"
     },
     "Kept" : {
-      "comment" : "kind:other"
+      "comment" : "kind:pill"
     },
     "Kept %@" : {
       "comment" : "kind:section-title"
@@ -15905,6 +16559,17 @@
     "Last 28 days, through %@, as in Analytics → Break It Down → Product Page. %@" : {
       "comment" : "kind:hint"
     },
+    "Last 28 days: %@ page views, %@ starts (%@)." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Last 28 days: %1$@ page views, %2$@ starts (%3$@)."
+          }
+        }
+      }
+    },
     "Last checked %@" : {
       "comment" : "kind:section-title"
     },
@@ -15999,7 +16664,7 @@
       "comment" : "kind:description"
     },
     "Length" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:field-label"
     },
     "Let %@ go freely" : {
       "comment" : "kind:progress-step"
@@ -16887,7 +17552,7 @@
       "comment" : "kind:section-title"
     },
     "More" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:accessibility-label"
     },
     "More Autopilot actions" : {
       "comment" : "kind:accessibility-label"
@@ -16897,6 +17562,9 @@
     },
     "More snow" : {
       "comment" : "kind:section-title"
+    },
+    "More starts than page views" : {
+      "comment" : "kind:label"
     },
     "More starts, less proceeds" : {
       "comment" : "kind:section-title"
@@ -17309,6 +17977,9 @@
     "New reviews are drafted and wait for you until you resume." : {
       "comment" : "kind:description"
     },
+    "New reviews that need one show up here." : {
+      "comment" : "kind:description"
+    },
     "New screen" : {
       "comment" : "kind:section-title"
     },
@@ -17357,6 +18028,15 @@
     "New subscribers get it" : {
       "comment" : "kind:section-title"
     },
+    "New subscribers in %@ only. Existing subscribers keep their price." : {
+      "comment" : "kind:sheet-body"
+    },
+    "New subscribers in %@, and those who renew during the test. Apple asks them to accept the old price back." : {
+      "comment" : "kind:sheet-body"
+    },
+    "New subscribers in %@, and those who renew during the test. They keep the test price afterward." : {
+      "comment" : "kind:sheet-body"
+    },
     "New subscribers of %@ get it in %@." : {
       "comment" : "kind:description"
     },
@@ -17401,6 +18081,9 @@
     },
     "Newest bundled index data (%@). Approximate; new editions come with app updates." : {
       "comment" : "kind:description"
+    },
+    "Newest bundled index data (%@). New editions come with app updates." : {
+      "comment" : "kind:hint"
     },
     "News" : {
       "comment" : "kind:section-title"
@@ -17489,6 +18172,9 @@
     "No %@ text yet, so people there see %@." : {
       "comment" : "kind:description"
     },
+    "No 1 or 2 star reviews" : {
+      "comment" : "kind:empty-state"
+    },
     "No 5-star App Store reviews in %@ yet; this slot shows its capture" : {
       "comment" : "kind:description"
     },
@@ -17535,6 +18221,9 @@
     },
     "No Billing Grace Period suggestion of yours waits for %@." : {
       "comment" : "kind:error"
+    },
+    "No Comparison" : {
+      "comment" : "kind:menu-item"
     },
     "No In-App Events" : {
       "comment" : "kind:section-title"
@@ -17671,6 +18360,12 @@
     "No codes yet" : {
       "comment" : "kind:description"
     },
+    "No comparison: before against during only" : {
+      "comment" : "kind:label"
+    },
+    "No comparison: before against during only. Less sure." : {
+      "comment" : "kind:sheet-body"
+    },
     "No concept “%@” in this run; it has %@." : {
       "comment" : "kind:error"
     },
@@ -17681,13 +18376,16 @@
       "comment" : "kind:other"
     },
     "No country or region matches “%@”." : {
-      "comment" : "kind:empty"
+      "comment" : "kind:empty-state"
     },
     "No crash rate for %@ yet" : {
       "comment" : "kind:banner"
     },
     "No custom page has numbers yet: look for audiences in get_analytics_breakdown by source (search, or links from other apps and websites), by language and by territory (large markets whose rates are worse than average)." : {
       "comment" : "kind:error"
+    },
+    "No custom product pages yet" : {
+      "comment" : "kind:empty-state"
     },
     "No data" : {
       "comment" : "kind:section-title"
@@ -17849,7 +18547,7 @@
       "comment" : "kind:error"
     },
     "No nominations yet" : {
-      "comment" : "kind:description"
+      "comment" : "kind:empty-state"
     },
     "No numbers yet" : {
       "comment" : "kind:section-title"
@@ -17891,7 +18589,10 @@
       "comment" : "kind:other"
     },
     "No price changes to compare yet" : {
-      "comment" : "kind:description"
+      "comment" : "kind:empty"
+    },
+    "No price in %@ would change. Try another step." : {
+      "comment" : "kind:inline-warning"
     },
     "No price in the United States yet. Propose one of these with propose_prices to set its starting price; Apple equalizes it in every other country or region." : {
       "comment" : "kind:error"
@@ -17938,6 +18639,9 @@
     "No purchase needed" : {
       "comment" : "kind:section-title"
     },
+    "No purchasing power figure for this country." : {
+      "comment" : "kind:description"
+    },
     "No purpose: App Store Connect asks who the event is for." : {
       "comment" : "kind:description"
     },
@@ -17971,11 +18675,17 @@
     "No renewals came due in this period." : {
       "comment" : "kind:description"
     },
+    "No replies yet" : {
+      "comment" : "kind:empty-state"
+    },
     "No reply suggested yet." : {
       "comment" : "kind:description"
     },
+    "No result before the end: early numbers swing. Ends %@, then the old prices come back." : {
+      "comment" : "kind:status"
+    },
     "No results for “%@”" : {
-      "comment" : "kind:help-article"
+      "comment" : "kind:empty"
     },
     "No retention message is live." : {
       "comment" : "kind:description"
@@ -17992,11 +18702,23 @@
     "No reviews" : {
       "comment" : "kind:section-title"
     },
+    "No reviews about this" : {
+      "comment" : "kind:empty-state"
+    },
     "No reviews here." : {
+      "comment" : "kind:empty-state"
+    },
+    "No reviews in this country" : {
+      "comment" : "kind:empty-state"
+    },
+    "No reviews yet" : {
       "comment" : "kind:empty-state"
     },
     "No sRGB color space." : {
       "comment" : "kind:description"
+    },
+    "No sales yet, so purchasing power alone." : {
+      "comment" : "kind:banner"
     },
     "No saved run: planned from the set’s %lld captures" : {
       "comment" : "kind:history-entry"
@@ -18026,7 +18748,7 @@
       "comment" : "kind:description"
     },
     "No screenshots yet" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:empty-state"
     },
     "No settings match “%@”." : {
       "comment" : "kind:description"
@@ -18054,6 +18776,9 @@
     },
     "No suggested prices left." : {
       "comment" : "kind:empty"
+    },
+    "No suggested test of yours waits for %@." : {
+      "comment" : "kind:error"
     },
     "No suggestion of yours waits on this page." : {
       "comment" : "kind:error"
@@ -19009,6 +19734,9 @@
     "Old images are deleted only after new ones are in." : {
       "comment" : "kind:progress-step"
     },
+    "Old prices" : {
+      "comment" : "kind:label"
+    },
     "Old screenshots were kept on this Mac. Restore them from Activity." : {
       "comment" : "kind:description"
     },
@@ -19052,7 +19780,7 @@
       "comment" : "kind:menu-item"
     },
     "On a date" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "On a page. Remove it there before deleting." : {
       "comment" : "kind:tooltip"
@@ -19238,6 +19966,12 @@
     },
     "One purchase" : {
       "comment" : "kind:section-title"
+    },
+    "One region pays a different price for 28 days, compared with another. Setting prices yourself stays free." : {
+      "comment" : "kind:sheet-body"
+    },
+    "One region, 28 days, to make suggestions sure" : {
+      "comment" : "kind:menu-item"
     },
     "One request to Apple, once per app" : {
       "comment" : "kind:description"
@@ -19843,6 +20577,9 @@
     "Outdoor, health, travel, wellness" : {
       "comment" : "kind:section-title"
     },
+    "Outside source" : {
+      "comment" : "kind:label"
+    },
     "Over 10 · skipped" : {
       "comment" : "kind:sheet-title"
     },
@@ -19928,7 +20665,21 @@
       "comment" : "kind:field-label"
     },
     "Page view → start" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
+    },
+    "Page view → start %@ against %@." : {
+      "comment" : "kind:status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Page view → start %1$@ against %2$@."
+          }
+        }
+      }
+    },
+    "Page view → start %@, before against during." : {
+      "comment" : "kind:status"
     },
     "Page views" : {
       "comment" : "kind:section-title"
@@ -20234,6 +20985,12 @@
     },
     "People who never bought" : {
       "comment" : "kind:section-title"
+    },
+    "People who paid the test price keep it." : {
+      "comment" : "kind:sheet-body"
+    },
+    "People who pay the test price keep it afterward" : {
+      "comment" : "kind:sheet-body"
     },
     "People who saw the app in search results" : {
       "comment" : "kind:description"
@@ -20652,6 +21409,9 @@
     "Price index" : {
       "comment" : "kind:section-title"
     },
+    "Price indexes" : {
+      "comment" : "kind:label"
+    },
     "Price level ratio of PPP conversion factor to market exchange rate. Broadest coverage and deeper discounts in emerging markets; runs a year or two behind." : {
       "comment" : "kind:description"
     },
@@ -20667,8 +21427,23 @@
     "Price suggestions for 1 product. Review below or accept here." : {
       "comment" : "kind:banner"
     },
+    "Price test" : {
+      "comment" : "kind:pill"
+    },
+    "Price test · until %@" : {
+      "comment" : "kind:label"
+    },
+    "Price test: %@" : {
+      "comment" : "kind:accessibility-label"
+    },
+    "Price tests are for subscriptions; %@ is an in-app purchase." : {
+      "comment" : "kind:error"
+    },
+    "Price tests are part of Pro" : {
+      "comment" : "kind:sheet-title"
+    },
     "Prices" : {
-      "comment" : "kind:other"
+      "comment" : "kind:label"
     },
     "Prices Didn’t Load" : {
       "comment" : "kind:error"
@@ -20693,6 +21468,9 @@
     },
     "Prices changed on %@. Results arrive %@: 28 days covers a monthly billing cycle and Apple’s report delay." : {
       "comment" : "kind:description"
+    },
+    "Prices changed on %@. To compare, set up Sales and Trends in Analytics and keep sales data on in Settings → Pricing." : {
+      "comment" : "kind:empty"
     },
     "Prices couldn’t load" : {
       "comment" : "kind:error"
@@ -20762,6 +21540,28 @@
     },
     "Pricing · %@" : {
       "comment" : "kind:title"
+    },
+    "Pricing · %@ · %@" : {
+      "comment" : "kind:title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pricing · %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Pricing · %@ · End the %@" : {
+      "comment" : "kind:title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pricing · %1$@ · End the %2$@"
+          }
+        }
+      }
     },
     "Pricing · App price" : {
       "comment" : "kind:section-title"
@@ -20845,7 +21645,7 @@
       "comment" : "kind:description"
     },
     "Proceeds" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:column"
     },
     "Proceeds %@" : {
       "comment" : "kind:section-title"
@@ -20854,7 +21654,7 @@
       "comment" : "kind:section-title"
     },
     "Proceeds, 28 days" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Processing" : {
       "comment" : "kind:section-title"
@@ -20918,6 +21718,9 @@
     },
     "Progress" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Project" : {
+      "comment" : "kind:label"
     },
     "Project %@" : {
       "comment" : "kind:sheet-title"
@@ -21054,6 +21857,42 @@
     "Purchases" : {
       "comment" : "kind:section-title"
     },
+    "Purchasing power" : {
+      "comment" : "kind:label"
+    },
+    "Purchasing power alone: Atlas hasn’t read your sales yet." : {
+      "comment" : "kind:banner"
+    },
+    "Purchasing power alone: sales data is off in Settings → Pricing." : {
+      "comment" : "kind:banner"
+    },
+    "Purchasing power alone: this key’s role can’t read Sales and Trends." : {
+      "comment" : "kind:banner"
+    },
+    "Purchasing power from an index edition over 18 months old." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power from the %@ edition, too old to be sure." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power here is an estimate, not a published figure." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power only: Atlas hasn’t read your sales yet." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power only: no page views here in 90 days." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power only: no sales yet." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power only: sales data is off in Settings." : {
+      "comment" : "kind:description"
+    },
+    "Purchasing power only: this key’s role can’t read sales." : {
+      "comment" : "kind:description"
+    },
     "Purchasing power only; too few sales here to say more." : {
       "comment" : "kind:hint"
     },
@@ -21111,6 +21950,9 @@
     "Push Selected" : {
       "comment" : "kind:button"
     },
+    "Push a price change, or try one first with Test a Price…: one region pays it for 28 days." : {
+      "comment" : "kind:empty"
+    },
     "Push and Submit for Review" : {
       "comment" : "kind:section-title"
     },
@@ -21151,7 +21993,7 @@
       "comment" : "kind:tooltip"
     },
     "Push to create them, then refresh to set their prices here." : {
-      "comment" : "kind:description"
+      "comment" : "kind:empty"
     },
     "Push when you’re ready" : {
       "comment" : "kind:section-title"
@@ -21321,6 +22163,9 @@
     "Rate limited" : {
       "comment" : "kind:error"
     },
+    "Rates by ExchangeRate-API" : {
+      "comment" : "kind:hint"
+    },
     "Rating" : {
       "comment" : "kind:field-label"
     },
@@ -21356,6 +22201,9 @@
     },
     "Ratings & Reviews" : {
       "comment" : "kind:section-title"
+    },
+    "Ratings without a written review count toward the average but don’t show here." : {
+      "comment" : "kind:description"
     },
     "Raw index, not GDP-adjusted. Easy to explain; fewer countries, milder discounts. The euro area is one entry shared by 21 territories." : {
       "comment" : "kind:description"
@@ -21601,7 +22449,7 @@
       "comment" : "kind:section-title"
     },
     "Reason" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:column"
     },
     "Rebase it onto v%lld first." : {
       "comment" : "kind:error"
@@ -21619,7 +22467,7 @@
       "comment" : "kind:sheet-title"
     },
     "Recommended" : {
-      "comment" : "kind:pill"
+      "comment" : "kind:column-header"
     },
     "Recommended for your key" : {
       "comment" : "kind:section-title"
@@ -21730,7 +22578,7 @@
       "comment" : "kind:section-title"
     },
     "Region median" : {
-      "comment" : "kind:pill"
+      "comment" : "kind:label"
     },
     "Region median of %@" : {
       "comment" : "kind:section-title"
@@ -22082,6 +22930,9 @@
     "Replies to reviews can’t include marketing" : {
       "comment" : "kind:description"
     },
+    "Replies you send show up here." : {
+      "comment" : "kind:description"
+    },
     "Reply Automatically" : {
       "comment" : "kind:sheet-title"
     },
@@ -22283,8 +23134,14 @@
     "Result" : {
       "comment" : "kind:progress-step"
     },
+    "Result in 1–2 days" : {
+      "comment" : "kind:pill"
+    },
     "Results" : {
-      "comment" : "kind:menu-item"
+      "comment" : "kind:segment"
+    },
+    "Results compares the 28 days after, like any price change." : {
+      "comment" : "kind:sheet-body"
     },
     "Results couldn’t load" : {
       "comment" : "kind:section-title"
@@ -22293,7 +23150,7 @@
       "comment" : "kind:error"
     },
     "Results need sales data" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:empty"
     },
     "Resume" : {
       "comment" : "kind:section-title"
@@ -22490,11 +23347,17 @@
     "Reviews" : {
       "comment" : "kind:section-title"
     },
+    "Reviews about it show up here." : {
+      "comment" : "kind:description"
+    },
     "Reviews couldn’t be read, so they aren’t sent: %@" : {
       "comment" : "kind:description"
     },
     "Reviews didn’t load." : {
       "comment" : "kind:error"
+    },
+    "Reviews from every country show up here." : {
+      "comment" : "kind:description"
     },
     "Reviews not read in %@; this slot shows its capture" : {
       "comment" : "kind:description"
@@ -22502,11 +23365,17 @@
     "Reviews on %@: %@★ from %lld" : {
       "comment" : "kind:description"
     },
+    "Reviews people write there show up here." : {
+      "comment" : "kind:description"
+    },
     "Reviews slot" : {
       "comment" : "kind:section-title"
     },
     "Reviews unread" : {
       "comment" : "kind:section-title"
+    },
+    "Reviews with 1 or 2 stars show up here." : {
+      "comment" : "kind:description"
     },
     "Reviews you already replied to are left out." : {
       "comment" : "kind:sheet-body"
@@ -22676,6 +23545,9 @@
     "Safe areas and caption box" : {
       "comment" : "kind:field-label"
     },
+    "Sales" : {
+      "comment" : "kind:label"
+    },
     "Sales and Trends" : {
       "comment" : "kind:sheet-title"
     },
@@ -22697,14 +23569,32 @@
     "Sales didn’t load." : {
       "comment" : "kind:error"
     },
+    "Sales for %lld days didn’t load. Atlas asks again at the next check." : {
+      "comment" : "kind:error"
+    },
+    "Sales for one day didn’t load. Atlas asks again at the next check." : {
+      "comment" : "kind:error"
+    },
     "Sales readable with key %@." : {
       "comment" : "kind:hint"
+    },
+    "Sales: none yet, so purchasing power alone" : {
+      "comment" : "kind:description"
+    },
+    "Sales: not read yet, so purchasing power alone" : {
+      "comment" : "kind:description"
     },
     "Sales: not read, so purchasing power alone" : {
       "comment" : "kind:description"
     },
+    "Sales: off in Settings → Pricing, so purchasing power alone" : {
+      "comment" : "kind:description"
+    },
     "Sales: this key’s role can’t read Sales and Trends" : {
       "comment" : "kind:description"
+    },
+    "Same 28 days at its usual price. It takes seasons and featuring out of the result." : {
+      "comment" : "kind:sheet-body"
     },
     "Same as Default" : {
       "comment" : "kind:section-title"
@@ -22721,11 +23611,20 @@
     "Same steps as your first setup, for the other team. %@ stays connected; switch teams in the app switcher." : {
       "comment" : "kind:description"
     },
+    "Sample" : {
+      "comment" : "kind:label"
+    },
     "Sample data" : {
       "comment" : "kind:section-title"
     },
     "Sample data in each language" : {
       "comment" : "kind:section-title"
+    },
+    "Sample exchange rates, not live quotes" : {
+      "comment" : "kind:hint"
+    },
+    "Sample rates" : {
+      "comment" : "kind:hint"
     },
     "Sandbox, for testing" : {
       "comment" : "kind:section-title"
@@ -23159,6 +24058,9 @@
     "Seasons, featuring and marketing also move these numbers. “Better”: more starts, same or higher proceeds. “Worse” offers to restore the old price through Review & Push." : {
       "comment" : "kind:hint"
     },
+    "Seasons, featuring and marketing also move these numbers. “Better”: page view → start conversion up, 90% sure, and proceeds no lower. “Worse” offers to restore the old price through Review & Push." : {
+      "comment" : "kind:description"
+    },
     "Secondary" : {
       "comment" : "kind:section-title"
     },
@@ -23378,6 +24280,9 @@
     "Send at least one screen, each with a name, why and the steps." : {
       "comment" : "kind:description"
     },
+    "Send at most %lld evidence items, strongest first." : {
+      "comment" : "kind:other"
+    },
     "Send delete alone: a deleted page takes no other change." : {
       "comment" : "kind:other"
     },
@@ -23389,6 +24294,9 @@
     },
     "Send iphone, iphone_duo, ipad or mac." : {
       "comment" : "kind:other"
+    },
+    "Send it a few weeks ahead, up to 3 months for a launch. Apple doesn’t reply, and a nomination isn’t a promise of featuring." : {
+      "comment" : "kind:description"
     },
     "Send it to App Review once it’s made" : {
       "comment" : "kind:field-label"
@@ -23561,6 +24469,9 @@
     "Set Up Availability…" : {
       "comment" : "kind:button"
     },
+    "Set Up Test…" : {
+      "comment" : "kind:button"
+    },
     "Set Up Your Assistant" : {
       "comment" : "kind:sheet-title"
     },
@@ -23726,11 +24637,14 @@
     "Show All Pages" : {
       "comment" : "kind:button"
     },
+    "Show All Reviews" : {
+      "comment" : "kind:button"
+    },
     "Show Atlas in the menu bar" : {
       "comment" : "kind:section-title"
     },
     "Show Countries" : {
-      "comment" : "kind:button"
+      "comment" : "kind:button\nkind:menu-item"
     },
     "Show Default Columns" : {
       "comment" : "kind:menu-item"
@@ -23791,6 +24705,9 @@
     },
     "Show Suggestions From" : {
       "comment" : "kind:field-label"
+    },
+    "Show Test" : {
+      "comment" : "kind:button"
     },
     "Show Translation" : {
       "comment" : "kind:section-title"
@@ -24201,7 +25118,7 @@
       "comment" : "kind:button"
     },
     "Source" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:column"
     },
     "Source code is never sent. App Review notes and category checks need an assistant that reads it, like Claude Code." : {
       "comment" : "kind:progress-step"
@@ -24300,7 +25217,7 @@
       "comment" : "kind:tooltip"
     },
     "Start date" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "Start date %@: Apple suggests a few weeks ahead" : {
       "comment" : "kind:description"
@@ -24331,6 +25248,9 @@
     },
     "Start rate" : {
       "comment" : "kind:section-title"
+    },
+    "Start the %@ Price Test?" : {
+      "comment" : "kind:sheet-title"
     },
     "Start time %@ (your time) has passed" : {
       "comment" : "kind:description"
@@ -24645,7 +25565,7 @@
       "comment" : "kind:description"
     },
     "Strategy" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:accessibility-label"
     },
     "Strength" : {
       "comment" : "kind:field-label"
@@ -24761,6 +25681,12 @@
     "Subscribers keep access while Apple retries failed renewals, for every subscription in production, from the next failed renewal. Turn it off in App Store Connect." : {
       "comment" : "kind:description"
     },
+    "Subscribers there pay the lower price when they renew." : {
+      "comment" : "kind:sheet-body"
+    },
+    "Subscribers there who renew during the test pay the lower price." : {
+      "comment" : "kind:sheet-body"
+    },
     "Subscribers your app offers it to · %@ · %@" : {
       "comment" : "kind:description"
     },
@@ -24771,7 +25697,7 @@
       "comment" : "kind:section-title"
     },
     "Subscription Pricing · %@" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Subscription Pricing · %lld territories" : {
       "comment" : "kind:other"
@@ -24896,11 +25822,25 @@
     "Suggest a featuring nomination for %@ in Atlas. Read get_nominations for what's already there, get_app_versions and get_listing with fields [\"whatsNew\"] for the version being prepared, and get_in_app_events for what's coming. Pick what Apple's editors would care about most: a new app is APP_LAUNCH, a version with real new features APP_ENHANCEMENTS, an event or season NEW_CONTENT. Send one with propose_nomination: a name, a description of what people can do (no links: links go in supplementalMaterialsUris), the start date, the devices, and the linked events. Say why in one sentence with how far ahead it starts. Never submit; the person does." : {
       "comment" : "kind:other"
     },
+    "Suggest a first In-App Event for %@ in Atlas. Read get_in_app_events for what's queued already, get_app_versions and get_listing with fields [\"whatsNew\"] for what's coming, and this project for something timely people can do in the app: a challenge, a new season, a live session, a major update. Send one with propose_in_app_event: a reference name, the badge, the dates (starting at least 2 days from now for App Review, lasting at most 31 days) and the texts in the primary language, with its deep link when you know it. Say why in one sentence. Never submit; the person pushes it and adds the images. %@" : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Suggest a first In-App Event for %1$@ in Atlas. Read get_in_app_events for what's queued already, get_app_versions and get_listing with fields [\"whatsNew\"] for what's coming, and this project for something timely people can do in the app: a challenge, a new season, a live session, a major update. Send one with propose_in_app_event: a reference name, the badge, the dates (starting at least 2 days from now for App Review, lasting at most 31 days) and the texts in the primary language, with its deep link when you know it. Say why in one sentence. Never submit; the person pushes it and adds the images. %2$@"
+          }
+        }
+      }
+    },
     "Suggest a page with propose_product_page: who it's for, its own evidence Atlas can show (those numbers, get_reviews, the approved keywords), keywords from keywords.<locale>.free that its audience searches (search results show the page's first three screenshots, not its text), promotional text in every language and the screens it leads with. Write promotional text for a page's languages with propose_product_page_texts. Don't suggest a dismissed suggestion again; send one of yours that's open again under its name to improve it. The person accepts, pushes and submits; you can't push, submit or make a page visible." : {
       "comment" : "kind:other"
     },
     "Suggest a template revision that keeps every locale fitting" : {
       "comment" : "kind:other"
+    },
+    "Suggest an Event…" : {
+      "comment" : "kind:menu-item"
     },
     "Suggest and edit drafts" : {
       "comment" : "kind:suggestion-title"
@@ -24957,7 +25897,7 @@
       "comment" : "kind:other"
     },
     "Suggested" : {
-      "comment" : "kind:pill\nkind:segment"
+      "comment" : "kind:label\nkind:pill\nkind:section-title"
     },
     "Suggested %@" : {
       "comment" : "kind:accessibility-label"
@@ -25014,13 +25954,16 @@
       "comment" : "kind:section-title"
     },
     "Suggested price" : {
-      "comment" : "kind:accessibility-label\nkind:field-label"
+      "comment" : "kind:accessibility-label"
     },
     "Suggested price for %@" : {
       "comment" : "kind:accessibility-label"
     },
     "Suggested price in 1 country." : {
       "comment" : "kind:banner"
+    },
+    "Suggested price test: %@" : {
+      "comment" : "kind:accessibility-label"
     },
     "Suggested price, reason and confidence per territory. Nothing changes until you apply it." : {
       "comment" : "kind:description"
@@ -25065,6 +26008,9 @@
           }
         }
       }
+    },
+    "Suggested test" : {
+      "comment" : "kind:label"
     },
     "Suggested test · %@" : {
       "comment" : "kind:section-title"
@@ -25268,7 +26214,7 @@
       "comment" : "kind:placeholder"
     },
     "Table" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:segment"
     },
     "Take %@ back from App Review" : {
       "comment" : "kind:section-title"
@@ -25375,7 +26321,16 @@
     "Test" : {
       "comment" : "kind:suggestion-title"
     },
+    "Test Again…" : {
+      "comment" : "kind:button"
+    },
     "Test Connection" : {
+      "comment" : "kind:button"
+    },
+    "Test a Price" : {
+      "comment" : "kind:sheet-title"
+    },
+    "Test a Price…" : {
       "comment" : "kind:button"
     },
     "Test copied. Paste it into %@; the suggestion arrives in Store Page, marked as a test." : {
@@ -25383,6 +26338,9 @@
     },
     "Test created as a draft" : {
       "comment" : "kind:section-title"
+    },
+    "Test price" : {
+      "comment" : "kind:label"
     },
     "Test request" : {
       "comment" : "kind:section-title"
@@ -25571,6 +26529,9 @@
     },
     "The %@ page’s phrase ‘%@’ has no words yet in %@: send them with phrases [{phrase, locale, text}]." : {
       "comment" : "kind:error"
+    },
+    "The %@ price stays: it’s the base price." : {
+      "comment" : "kind:sheet-body"
     },
     "The %@ price there is %@× the purchasing-power price." : {
       "comment" : "kind:suggestion-why"
@@ -25829,7 +26790,7 @@
       "comment" : "kind:description"
     },
     "The bundled values are approximate sample data, not the publishers’ figures. New editions arrive with app updates." : {
-      "comment" : "kind:description"
+      "comment" : "kind:hint"
     },
     "The caption for %@: %@" : {
       "comment" : "kind:other"
@@ -26386,6 +27347,15 @@
     "The old price waits in Review & Push." : {
       "comment" : "kind:tooltip"
     },
+    "The old prices are back. The result arrives when Apple’s reports cover the 28 days, in 1–2 days." : {
+      "comment" : "kind:status"
+    },
+    "The old prices come back in %lld countries when you push." : {
+      "comment" : "kind:sheet-body"
+    },
+    "The old prices come back in %lld countries when you push. No result." : {
+      "comment" : "kind:sheet-body"
+    },
     "The old screenshot couldn’t be deleted, so the set shows both for now." : {
       "comment" : "kind:description"
     },
@@ -26769,6 +27739,9 @@
     "The same %lld screens as the default page, with other captions." : {
       "comment" : "kind:progress-step"
     },
+    "The same 28 days Results compares. Then the old prices come back on their own." : {
+      "comment" : "kind:sheet-body"
+    },
     "The same as Apple’s automatic prices everywhere." : {
       "comment" : "kind:hint"
     },
@@ -26936,6 +27909,12 @@
     "The test didn’t arrive: %@" : {
       "comment" : "kind:section-title"
     },
+    "The test price now, the old prices on day 28" : {
+      "comment" : "kind:label"
+    },
+    "The test prices wait in Review & Push as a price change. Results compares it like any other." : {
+      "comment" : "kind:status"
+    },
     "The test ran on another simulator than the one recorded: run it on iPhone Duo’s, as start_display_recording said." : {
       "comment" : "kind:other"
     },
@@ -27049,6 +28028,9 @@
     },
     "Then the introductory offer too" : {
       "comment" : "kind:section-title"
+    },
+    "Then the old price is an increase for them. Apple tells them, and in some countries they must agree or the subscription ends." : {
+      "comment" : "kind:inline-warning"
     },
     "There’s no %@ variant yet, and Atlas can’t ask for one: the app has no finished Autopilot run. The person runs Autopilot (with the header and search artwork) first." : {
       "comment" : "kind:description"
@@ -27276,7 +28258,7 @@
       "comment" : "kind:tooltip"
     },
     "This key can’t create nominations." : {
-      "comment" : "kind:banner\nkind:error"
+      "comment" : "kind:error"
     },
     "This key can’t do that. Use an Admin or App Manager key." : {
       "comment" : "kind:error"
@@ -27443,6 +28425,9 @@
     "To submit: %@. No new version needed." : {
       "comment" : "kind:hint"
     },
+    "To undo" : {
+      "comment" : "kind:label"
+    },
     "To your assistant" : {
       "comment" : "kind:section-title"
     },
@@ -27451,6 +28436,9 @@
     },
     "Today, categories and charts" : {
       "comment" : "kind:description"
+    },
+    "Today’s prices" : {
+      "comment" : "kind:label"
     },
     "Token" : {
       "comment" : "kind:other"
@@ -27461,17 +28449,68 @@
     "Too early to tell" : {
       "comment" : "kind:section-title"
     },
+    "Too few" : {
+      "comment" : "kind:pill"
+    },
+    "Too few people in the 28 days to tell what the price did." : {
+      "comment" : "kind:status"
+    },
+    "Too few people to tell: %@ had %@ page views in 28 days, and a test needs %lld." : {
+      "comment" : "kind:inline-warning",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Too few people to tell: %1$@ had %2$@ page views in 28 days, and a test needs %3$lld."
+          }
+        }
+      }
+    },
+    "Too few people to tell: %@ had %lld starts in 28 days, and a test needs %lld." : {
+      "comment" : "kind:inline-warning",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Too few people to tell: %1$@ had %2$lld starts in 28 days, and a test needs %3$lld."
+          }
+        }
+      }
+    },
     "Too few reviews to compare with before %@ (%@)." : {
       "comment" : "kind:description"
     },
+    "Too few sales here, so Atlas uses Africa & Middle East’s." : {
+      "comment" : "kind:tooltip"
+    },
+    "Too few sales here, so Atlas uses Asia Pacific’s." : {
+      "comment" : "kind:tooltip"
+    },
+    "Too few sales here, so Atlas uses Europe’s." : {
+      "comment" : "kind:tooltip"
+    },
+    "Too few sales here, so Atlas uses the Americas’." : {
+      "comment" : "kind:tooltip"
+    },
     "Too few to tell" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Too few to tell from chance: %@ before, %@ after." : {
       "comment" : "kind:description"
     },
     "Too few to tell: %@ of %@. Rates this small move by chance." : {
       "comment" : "kind:description"
+    },
+    "Too few yet: %@ and %@ in 90 days." : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Too few yet: %1$@ and %2$@ in 90 days."
+          }
+        }
+      }
     },
     "Too long" : {
       "comment" : "kind:section-title"
@@ -27681,6 +28720,12 @@
     },
     "Try Again" : {
       "comment" : "kind:button"
+    },
+    "Try a bigger region." : {
+      "comment" : "kind:inline-warning"
+    },
+    "Try a percentage for the whole region." : {
+      "comment" : "kind:inline-warning"
     },
     "Try again in a minute." : {
       "comment" : "kind:error"
@@ -27940,6 +28985,9 @@
     "Up to 70 pages, each reviewed alone, with no new app version." : {
       "comment" : "kind:description"
     },
+    "Up to 70 pages. Each is reviewed on its own, with no new app version." : {
+      "comment" : "kind:description"
+    },
     "Up to Date" : {
       "comment" : "kind:button"
     },
@@ -27960,6 +29008,9 @@
     "Update Index Data" : {
       "comment" : "kind:button"
     },
+    "Update Now" : {
+      "comment" : "kind:button"
+    },
     "Update the draft" : {
       "comment" : "kind:other"
     },
@@ -27971,6 +29022,9 @@
     },
     "Updated %@" : {
       "comment" : "kind:section-title"
+    },
+    "Updating…" : {
+      "comment" : "kind:button"
     },
     "Upgrade to Atlas Pro" : {
       "comment" : "kind:tooltip"
@@ -28239,17 +29293,29 @@
     "Uses %@ screenshots" : {
       "comment" : "kind:section-title"
     },
+    "Uses Africa & Middle East’s sales" : {
+      "comment" : "kind:label"
+    },
+    "Uses Asia Pacific’s sales" : {
+      "comment" : "kind:label"
+    },
     "Uses Atlas’s data and what you attach or paste. Sees your code only if you give access." : {
       "comment" : "kind:description"
     },
     "Uses English (U.S.)" : {
       "comment" : "kind:section-title"
     },
+    "Uses Europe’s sales" : {
+      "comment" : "kind:label"
+    },
     "Uses each language’s own rules" : {
       "comment" : "kind:section-title"
     },
     "Uses encryption" : {
       "comment" : "kind:other"
+    },
+    "Uses the Americas’ sales" : {
+      "comment" : "kind:label"
     },
     "Uses the assistant connected in AI Assistants, on its own plan. No API key here." : {
       "comment" : "kind:description"
@@ -28459,7 +29525,7 @@
       "comment" : "kind:section-title"
     },
     "View" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "View %@ full size" : {
       "comment" : "kind:accessibility-label"
@@ -28527,6 +29593,9 @@
     "Voluntary · Required later" : {
       "comment" : "kind:pill"
     },
+    "WB %@" : {
+      "comment" : "kind:pill"
+    },
     "WB 2024" : {
       "comment" : "kind:pill"
     },
@@ -28569,6 +29638,9 @@
     "Waiting for Apple · asked %@" : {
       "comment" : "kind:description"
     },
+    "Waiting for Apple’s first reports" : {
+      "comment" : "kind:empty-state"
+    },
     "Waiting for Export Compliance" : {
       "comment" : "kind:section-title"
     },
@@ -28607,6 +29679,9 @@
     },
     "Waits in Review & Push" : {
       "comment" : "kind:description"
+    },
+    "Waits in Review & Push. It starts when you push and ends 28 days later." : {
+      "comment" : "kind:status"
     },
     "Waits in Review & Push. Nothing changes on the App Store until you push." : {
       "comment" : "kind:label"
@@ -28678,7 +29753,7 @@
       "comment" : "kind:history-entry"
     },
     "What" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "What %@ collects" : {
       "comment" : "kind:section-title"
@@ -28739,6 +29814,9 @@
     },
     "What do people complain about most?" : {
       "comment" : "kind:button · a chat starter question"
+    },
+    "What each price change and price test did, country by country." : {
+      "comment" : "kind:description"
     },
     "What event artwork from Claude starts with." : {
       "comment" : "kind:description"
@@ -28915,7 +29993,7 @@
       "comment" : "kind:hint"
     },
     "When" : {
-      "comment" : "kind:field-label"
+      "comment" : "kind:label"
     },
     "When %@ has no value for a territory, try in order:" : {
       "comment" : "kind:description"
@@ -28931,6 +30009,9 @@
     },
     "When a reply is written" : {
       "comment" : "kind:field-label"
+    },
+    "When people review %@ in any country, their reviews show up here, translated, with a suggested reply in their language." : {
+      "comment" : "kind:description"
     },
     "When should the next event start?" : {
       "comment" : "kind:button · a chat starter question"
@@ -29031,6 +30112,9 @@
     "White text has the contrast it needs." : {
       "comment" : "kind:description"
     },
+    "Who" : {
+      "comment" : "kind:label"
+    },
     "Who Apple contacts and what reviewers need to test %@." : {
       "comment" : "kind:description"
     },
@@ -29109,6 +30193,17 @@
     "With %@" : {
       "comment" : "kind:section-title"
     },
+    "With %lld of %lld days, there’s no result. Everything waits in Review & Push." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "With %1$lld of %2$lld days, there’s no result. Everything waits in Review & Push."
+          }
+        }
+      }
+    },
     "With Atlas’s template" : {
       "comment" : "kind:section-title"
     },
@@ -29148,6 +30243,9 @@
     "With usesEncryption true, say whether it's exempt: exempt true or false." : {
       "comment" : "kind:other"
     },
+    "Without a comparison, seasons and featuring can look like the price. The result is less sure." : {
+      "comment" : "kind:inline-warning"
+    },
     "Without a deep link: %@." : {
       "comment" : "kind:error"
     },
@@ -29177,6 +30275,9 @@
     },
     "Words repeated between name, subtitle and keywords" : {
       "comment" : "kind:suggestion-title"
+    },
+    "Worked out from GDP figures" : {
+      "comment" : "kind:hint"
     },
     "Working" : {
       "comment" : "kind:pill · the chat's assistant answers"
@@ -29217,6 +30318,9 @@
     "World Bank" : {
       "comment" : "kind:section-title"
     },
+    "World Bank %@" : {
+      "comment" : "kind:pill"
+    },
     "World Bank 2024" : {
       "comment" : "kind:pill"
     },
@@ -29227,7 +30331,7 @@
       "comment" : "kind:section-title"
     },
     "Worse" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:label"
     },
     "Worse than average" : {
       "comment" : "kind:section-title"
@@ -29498,6 +30602,28 @@
     "You're offline" : {
       "comment" : "kind:section-title"
     },
+    "Your %@ change: %lld → %lld starts, 90%% range %@ to %@ points." : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your %1$@ change: %2$lld → %3$lld starts, 90%% range %4$@ to %5$@ points."
+          }
+        }
+      }
+    },
+    "Your %@ price test: %lld → %lld starts, 90%% range %@ to %@ points." : {
+      "comment" : "kind:description",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your %1$@ price test: %2$lld → %3$lld starts, 90%% range %4$@ to %5$@ points."
+          }
+        }
+      }
+    },
     "Your %lld apps are ready" : {
       "comment" : "kind:done-state"
     },
@@ -29636,6 +30762,12 @@
     "Your plan." : {
       "comment" : "kind:description"
     },
+    "Your price matches local purchasing power in 1 country." : {
+      "comment" : "kind:description"
+    },
+    "Your prices match local purchasing power in %lld countries." : {
+      "comment" : "kind:description"
+    },
     "Your proposal for %@ was withdrawn." : {
       "comment" : "kind:other"
     },
@@ -29650,6 +30782,17 @@
     },
     "Your sales, last 28 days: %@ page views · %lld starts · %@" : {
       "comment" : "kind:other"
+    },
+    "Your sales, last 90 days: %@ page views · %lld starts · %@" : {
+      "comment" : "kind:other",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your sales, last 90 days: %1$@ page views · %2$lld starts · %3$@"
+          }
+        }
+      }
     },
     "Your sales: too few in this territory to count" : {
       "comment" : "kind:description"
@@ -29801,6 +30944,9 @@
     "a list of decorations" : {
       "comment" : "kind:other"
     },
+    "a list of howSure, evidence, index, exchangeRate, grid or all" : {
+      "comment" : "kind:other"
+    },
     "a list of locale codes, or all" : {
       "comment" : "kind:other"
     },
@@ -29841,6 +30987,9 @@
       "comment" : "kind:other"
     },
     "a list of {productId, note} objects" : {
+      "comment" : "kind:other"
+    },
+    "a list of {source, detail} objects, source one of analytics, sales, priceIndex, exchangeRates, project or outside" : {
       "comment" : "kind:other"
     },
     "a list of {type, collected, purposes, …} objects" : {
@@ -30447,6 +31596,9 @@
     },
     "at most %lld words" : {
       "comment" : "kind:description"
+    },
+    "at suggested prices" : {
+      "comment" : "kind:label"
     },
     "audience has %lld characters; it holds %lld: say who it's for in a sentence." : {
       "comment" : "kind:other"
@@ -31861,6 +33013,9 @@
     "territory code → local price" : {
       "comment" : "kind:sheet-title"
     },
+    "territory codes such as BRA or BR, or names" : {
+      "comment" : "kind:other"
+    },
     "the %@ %@ in %@" : {
       "comment" : "kind:description"
     },
@@ -32417,7 +33572,7 @@
       "comment" : "kind:description"
     },
     "“%@”" : {
-      "comment" : "kind:other"
+      "comment" : "kind:error\nkind:other"
     },
     "“%@”\n%@" : {
       "comment" : "kind:other"

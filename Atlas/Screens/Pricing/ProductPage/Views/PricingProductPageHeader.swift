@@ -26,6 +26,9 @@ struct PricingProductPageHeader: View {
                     .truncationMode(.middle)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            if let tip = viewModel.priceTests.pillTip(productID: product.id, on: viewModel.today()) {
+                PriceTestPill(tip: tip)
+            }
             if let card, card.hasQueuedChanges {
                 Pill(text: notPushedText(card.queuedCount), style: .accent)
                     .fixedSize()

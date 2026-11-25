@@ -47,6 +47,9 @@ final class PushController {
     var transport: (any PushTransport)?
     /// The app names Activity records carry.
     var appName: (StoreApp.ID) -> String = { $0 }
+    /// Pricing's price history: each pushed subscription price change is
+    /// recorded there.
+    @ObservationIgnored var priceHistory = PriceChangeHistoryStore.shared
     /// Called with the apps whose values changed, so their numbers reload.
     var onPushed: (Set<StoreApp.ID>) -> Void = { _ in }
     /// Every push that ends: how many changes landed and how many didn't
@@ -444,7 +447,7 @@ final class PushController {
         for (appID, appItems) in byApp {
             let pushed = appItems.filter { $0.status == .done }.map(\.change)
             let failed = appItems.compactMap { item in failures[item.id].map { (item.id, $0) } }
-            history.add(PushRecord(
+            let record = PushRecord(
                 date: date,
                 appID: appID,
                 appName: appName(appID),
@@ -452,7 +455,11 @@ final class PushController {
                 pushed: pushed,
                 failures: Dictionary(uniqueKeysWithValues: failed),
                 failedChanges: appItems.filter { failures[$0.id] != nil }.map(\.change)
-            ))
+            )
+            history.add(record)
+            // Pricing's history keeps each price change and, later, the
+            // 28 days either side for Results and HowSure.
+            recordPricing(record)
         }
     }
 
@@ -512,7 +519,8 @@ extension PushController {
     /// language created earlier in the push (`{eventLocalization:…}`), a retention
     /// image and placement group, and `{createdID:<type>}` filled in.
     private func resolvingSetupPlaceholders(_ request: PushRequest, at index: Int, transport: any PushTransport) async throws -> PushRequest {
-        var request = request
+        // A price test's old prices come back on day 28 from today.
+        var request = PriceTestReturnDay.resolving(request)
         if let event = NewInAppEventEverywhere(request) {
             request = try await event.request(territoryIDs: everyTerritory(transport: transport))
         }

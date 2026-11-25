@@ -115,17 +115,64 @@ struct LiveAnalyticsServicesTests {
         let transport = FakeHTTPTransport([
             CannedHTTPResponse(body: events),
             CannedHTTPResponse(statusCode: 404, body: #"{"errors":[{"detail":"There were no sales for the date specified."}]}"#),
-        ])
+        ], routes: [(Self.salesProbe, Self.noSales)])
         let download = try await services(transport).downloadSales(vendorNumber: "85012345", days: [day], activeDays: [])
         #expect(download.days == [day])
         #expect(download.events.first?.kind == .paidStart)
         #expect(download.events.first?.quantity == 2)
         #expect(download.subscribers.isEmpty)
-        let query = transport.requests.first?.url?.query(percentEncoded: false) ?? ""
+        let query = transport.requests.compactMap { $0.url?.query(percentEncoded: false) }.first { $0.contains("SUBSCRIPTION_EVENT") } ?? ""
         #expect(query.contains("filter[vendorNumber]=85012345"))
         #expect(query.contains("filter[reportType]=SUBSCRIPTION_EVENT"))
         #expect(query.contains("filter[version]=1_3"))
         #expect(query.contains("filter[reportDate]=2026-11-09"))
+    }
+
+    // MARK: - A vendor nobody subscribed to yet (Alba, 25 Nov)
+
+    /// The Sales report Atlas checks the vendor number with.
+    private static let salesProbe = "reportType]=SALES&"
+    private static let noSales = CannedHTTPResponse(statusCode: 404, body: #"{"errors":[{"detail":"There were no sales for the date specified."}]}"#)
+    private static let invalidVendor = CannedHTTPResponse(
+        statusCode: 400,
+        body: #"{"errors":[{"status":"400","code":"PARAMETER_ERROR.INVALID","detail":"Invalid vendor number specified. Try again."}]}"#
+    )
+
+    @Test func aVendorNobodySubscribedToReadsEmptyDays() async throws {
+        let day = try #require(AnalyticsDay(iso: "2026-11-09"))
+        let probe = CannedHTTPResponse(body: "Provider\tUnits\n")
+        let transport = FakeHTTPTransport([Self.invalidVendor, Self.invalidVendor], routes: [(Self.salesProbe, probe)])
+        let download = try await services(transport).downloadSales(vendorNumber: "93207042", days: [day], activeDays: [])
+        #expect(download.days == [day])
+        #expect(download.events.isEmpty)
+        #expect(download.subscribers.isEmpty)
+        #expect(download.failedDays.isEmpty)
+        let asked = transport.requests.first?.url?.query(percentEncoded: false) ?? ""
+        #expect(asked.contains("filter[reportType]=SALES"))
+        #expect(asked.contains("filter[reportDate]=2026-11-08"))
+    }
+
+    @Test func aWrongVendorNumberIsNamed() async throws {
+        let day = try #require(AnalyticsDay(iso: "2026-11-09"))
+        let transport = FakeHTTPTransport([], routes: [(Self.salesProbe, Self.invalidVendor)])
+        await #expect(throws: SalesVendorNumberError(vendorNumber: "12345678")) {
+            _ = try await services(transport).downloadSales(vendorNumber: "12345678", days: [day], activeDays: [])
+        }
+    }
+
+    @Test func aDayThatFailsKeepsTheOthers() async throws {
+        let good = try #require(AnalyticsDay(iso: "2026-11-10"))
+        let bad = try #require(AnalyticsDay(iso: "2026-11-05"))
+        let refused = CannedHTTPResponse(statusCode: 400, body: #"{"errors":[{"code":"PARAMETER_ERROR.INVALID","detail":"Unexpected date"}]}"#)
+        let transport = FakeHTTPTransport([], routes: [
+            (Self.salesProbe, Self.noSales),
+            ("reportDate]=2026-11-05", refused),
+            ("reportDate]=2026-11-10", Self.noSales),
+        ])
+        let download = try await services(transport).downloadSales(vendorNumber: "85012345", days: [good, bad], activeDays: [])
+        #expect(download.days == [good])
+        #expect(download.failedDays == [bad])
+        #expect(download.failure?.details?.contains("Unexpected date") == true)
     }
 
     @Test func aKeyThatCantReadSalesIsRefused() async throws {

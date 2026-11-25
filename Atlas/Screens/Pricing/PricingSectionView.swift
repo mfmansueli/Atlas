@@ -86,7 +86,8 @@ struct PricingSectionView: View {
 
     private var suggestionCount: Int? {
         guard let viewModel, viewModel.areProductsLoaded else { return nil }
-        return viewModel.openPriceSuggestionCount
+        // A price test's verdict counts once it arrives (board 76).
+        return viewModel.openPriceSuggestionCount + viewModel.priceTests.readyCount(on: viewModel.today())
     }
 
     /// The kept models before `start()` has run, so prices read ahead (or
@@ -110,6 +111,10 @@ struct PricingSectionView: View {
         // The window keeps the models while other sections show: the
         // prices are there when the person comes back.
         if let model = kept?.pricing, let retentionModel = kept?.retention, model.catalog != nil {
+            // On screen: Apple's price points the read-ahead left for later
+            // are read now, whatever the quota.
+            model.gridReadAhead = nil
+            Task { await model.loadGrids() }
             self.retentionModel = retentionModel
             Self.attachAppPriceAvailability(to: model, services: appPriceAvailability, queue: changes, navigator: navigator)
             viewModel = model

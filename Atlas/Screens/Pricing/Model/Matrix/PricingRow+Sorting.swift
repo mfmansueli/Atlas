@@ -5,16 +5,16 @@
 
 import Foundation
 
-/// The values the matrix sorts by. Money sorts by its approximate dollar
+/// The values the matrix sorts by. Money sorts by its rough dollar
 /// value so territories in different currencies compare.
 extension PricingRow {
     var regionTitle: String { territory.region.title }
 
     var currentSortKey: Decimal { dollars ?? 0 }
 
-    var proceedsSortKey: Decimal { ExchangeRates.approximate.dollars(current.proceeds, currency: territory.currencyCode) ?? 0 }
+    var proceedsSortKey: Decimal { ExchangeRates.current.dollars(current.proceeds, currency: territory.currencyCode) ?? 0 }
 
-    var equalizedSortKey: Decimal { ExchangeRates.approximate.dollars(equalized, currency: territory.currencyCode) ?? 0 }
+    var equalizedSortKey: Decimal { ExchangeRates.current.dollars(equalized, currency: territory.currencyCode) ?? 0 }
 
     var feelsLikeSortKey: Decimal { recommendation?.feelsLike ?? 0 }
 
@@ -27,7 +27,7 @@ extension PricingRow {
 
     var sourceSortKey: String { calculation.provenance.badge }
 
-    var proposedSortKey: Decimal { ExchangeRates.approximate.dollars(shownPrice, currency: territory.currencyCode) ?? 0 }
+    var proposedSortKey: Decimal { ExchangeRates.current.dollars(shownPrice, currency: territory.currencyCode) ?? 0 }
 
     var changeSortKey: Int { change?.percent ?? 0 }
 

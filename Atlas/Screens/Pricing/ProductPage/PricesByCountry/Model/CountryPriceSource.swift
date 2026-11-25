@@ -20,6 +20,8 @@ enum CountryPriceSource: String, CaseIterable, Hashable, Sendable {
     case acceptedSuggestion
     /// A suggestion stepped to a nearby price point before it was accepted.
     case adjustedSuggestion
+    /// The test price of a running price test, until day 28 (board 76).
+    case priceTest
 
     var title: String {
         switch self {
@@ -28,6 +30,7 @@ enum CountryPriceSource: String, CaseIterable, Hashable, Sendable {
         case .setByYou: String(localized: "Set by you", comment: "kind:label")
         case .acceptedSuggestion: String(localized: "Accepted suggestion", comment: "kind:label")
         case .adjustedSuggestion: String(localized: "Adjusted suggestion", comment: "kind:field-label")
+        case .priceTest: String(localized: "Price test", comment: "kind:label")
         }
     }
 

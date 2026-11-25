@@ -30,8 +30,11 @@ struct PricesByCountryView: View {
             if viewModel.countriesMatrix(productID: productID) == nil, viewModel.productsTask == nil {
                 await viewModel.retryProduct(productID: productID)
             }
+            // The person is looking: Apple's price points are read now.
+            await viewModel.loadPageGrid(productID: productID)
         }
         .sheet(isPresented: acceptAllPresented) { acceptAllSheet }
+        .modifier(PriceTestSheetsModifier(viewModel: viewModel))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("countries")
     }
@@ -60,17 +63,34 @@ struct PricesByCountryView: View {
         let isCompact = state.isCompact
         let suggestion = viewModel.countriesSuggestion(productID: productID)
         return VStack(alignment: .leading, spacing: isCompact ? Spacing.small : Spacing.medium) {
-            if let suggestion {
+            priceTestStatus
+            if let grid = viewModel.countriesGrid(productID: productID), !grid.isReady {
+                // No suggestion stands on a simulated ladder.
+                PricesByCountryGridStatus(state: grid) {
+                    Task { await viewModel.retryGrid(productID: productID) }
+                }
+            } else if let suggestion {
                 PricesByCountrySuggestionBanner(
                     viewModel: viewModel,
                     suggestion: suggestion,
                     productName: viewModel.countriesProduct(productID: productID)?.name ?? "",
                     howSure: viewModel.countriesHowSure(productID: productID),
+                    baseline: viewModel.countriesBaseline(productID: productID),
                     isFree: pro.isFree,
                     isCompact: isCompact,
                     onDismissAll: { viewModel.dismissPriceSuggestion(productID: productID) },
                     onAcceptAll: { state.isAcceptAllPresented = true }
                 )
+            } else if let match = viewModel.countriesMatchLine(productID: productID) {
+                // No suggestion to make: no banner, the summary line
+                // (README-DS §10), grey since nothing waits (board 76).
+                Text(match)
+                    .atlasTextStyle(.headline)
+                    .foregroundStyle(Palette.label2)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .help(Text(verbatim: match))
+                    .accessibilityIdentifier("countries.summary")
             }
             PricesByCountryToolbar(
                 search: $state.search,
@@ -118,6 +138,14 @@ struct PricesByCountryView: View {
                 )
                 .padding(.bottom, Spacing.xSmall)
             }
+        }
+    }
+
+    /// A running price test (board 76): a line, not a banner.
+    @ViewBuilder
+    private var priceTestStatus: some View {
+        if let line = viewModel.priceTestStatusLine(productID: productID) {
+            PriceTestStatusLine(text: line) { viewModel.showPriceTest(productID: productID) }
         }
     }
 
@@ -194,6 +222,7 @@ struct PricesByCountryView: View {
             productName: viewModel.countriesProduct(productID: productID)?.name ?? "",
             canSchedule: viewModel.countriesCanSchedule(productID: productID),
             schedule: viewModel.countriesSchedule(productID: productID),
+            priceTestLine: viewModel.priceTestAcceptAllLine(productID: productID),
             onCancel: { viewModel.pricesByCountry.isAcceptAllPresented = false },
             onAdd: { schedule in
                 let count = viewModel.acceptAllPlan(productID: productID).count

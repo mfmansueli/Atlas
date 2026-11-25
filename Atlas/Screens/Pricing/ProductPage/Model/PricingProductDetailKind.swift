@@ -14,5 +14,6 @@ enum PricingProductDetailKind: String, Sendable {
     case availability
     case familySharing
     case commission
+    case exchangeRates
     case taxCategory
 }
