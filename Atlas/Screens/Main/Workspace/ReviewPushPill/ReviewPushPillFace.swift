@@ -66,8 +66,8 @@ struct ReviewPushPillFace: View {
             .accessibilityIdentifier("workspace.reviewPushBadge")
     }
 
-    /// Liquid Glass, tinted with the accent while something waits, as the
-    /// toolbar's Review & Push was; solid with Reduce Transparency.
+    /// Liquid Glass you see the page through, tinted with the see-through
+    /// accent while something waits; solid with Reduce Transparency.
     @ViewBuilder
     private var surface: some View {
         if reduceTransparency {
@@ -77,7 +77,7 @@ struct ReviewPushPillFace: View {
         } else {
             Capsule()
                 .fill(.clear)
-                .glassEffect(state.isProminent ? .regular.tint(Palette.accent).interactive() : .regular.interactive(), in: Capsule())
+                .glassEffect(state.isProminent ? .regular.tint(Palette.accentGlass).interactive() : .regular.interactive(), in: Capsule())
         }
     }
 }

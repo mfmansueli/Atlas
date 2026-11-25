@@ -13,6 +13,12 @@
       "highContrastLight": "#0040DD",
       "highContrastDark": "#8CC4FF"
     },
+    "accentGlass": {
+      "light": "#0071E39E",
+      "dark": "#0A72E89E",
+      "highContrastLight": "#0040DDE0",
+      "highContrastDark": "#0A64D6E0"
+    },
     "accentTint": {
       "light": "#0071E31F",
       "dark": "#4DA3FF2E",
