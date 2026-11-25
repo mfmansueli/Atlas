@@ -79,7 +79,7 @@ struct WorkspaceSectionStatusTests {
     @Test func draftsWithoutAnImageNeedArtwork() {
         let draft = InAppEvent(id: "1", referenceName: "Winter", state: .draft)
         let rejected = InAppEvent(id: "2", referenceName: "Spring", state: .rejected)
-        let live = InAppEvent(id: "3", referenceName: "Summer", state: .live)
+        let live = InAppEvent(id: "3", referenceName: "Summer", state: .published)
         #expect(WorkspaceSectionStatus.Facts.eventsNeedingArtwork([draft, rejected, live]) == 2)
         #expect(!WorkspaceSectionStatus.Facts.waitsForArtwork(live))
     }

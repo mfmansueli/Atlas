@@ -50,12 +50,12 @@ struct PriceGridGateTests {
     @Test func aSimulatedGridSuggestsNothing() throws {
         let builder = try builder(simulatedSheet())
         #expect(builder.recommendations().isEmpty)
-        #expect(!builder.rows().contains(where: \.hasSuggestion))
+        #expect(!builder.rows().contains { $0.hasSuggestion })
     }
 
     @Test func aCustomStrategyDoesntMoveSimulatedPricesEither() throws {
         let builder = try builder(simulatedSheet(), strategy: Fixtures.premiumStrategy)
-        #expect(!builder.rows().contains(where: \.hasSuggestion))
+        #expect(!builder.rows().contains { $0.hasSuggestion })
     }
 
     @Test func onlyTerritoriesWithApplesPointsSuggest() throws {
@@ -70,10 +70,10 @@ struct PriceGridGateTests {
 
     @Test func aGridStillBeingReadSuggestsNothing() throws {
         var builder = try builder(DebugPriceSheets.sheet(for: Fixtures.annual(), commission: Fixtures.commission, canReadSales: true))
-        #expect(builder.rows().contains(where: \.hasSuggestion))
+        #expect(builder.rows().contains { $0.hasSuggestion })
         builder.isGridReady = false
         #expect(builder.recommendations().isEmpty)
-        #expect(!builder.rows().contains(where: \.hasSuggestion))
+        #expect(!builder.rows().contains { $0.hasSuggestion })
     }
 
     @Test func aNewSubscriptionSuggestsWithoutAGrid() throws {
@@ -89,13 +89,13 @@ struct PriceGridGateTests {
         let matrix = try matrix(services)
         #expect(matrix.grid == .checking)
         #expect(matrix.isCheckingGrid)
-        #expect(!matrix.rows.contains(where: \.hasSuggestion))
+        #expect(!matrix.rows.contains { $0.hasSuggestion })
         // Today's prices show meanwhile.
         #expect(!matrix.rows.isEmpty)
 
         await matrix.loadGrid()
         #expect(matrix.grid == .ready)
-        #expect(matrix.rows.contains(where: \.hasSuggestion))
+        #expect(matrix.rows.contains { $0.hasSuggestion })
         #expect(services.calls.ladderRequests.count == 1)
     }
 
@@ -119,7 +119,7 @@ struct PriceGridGateTests {
         let failure = try #require(matrix.gridFailure)
         #expect(failure.hasPrefix(PriceGridState.failureTitle))
         #expect(!failure.contains("UNEXPECTED_ERROR"))
-        #expect(!matrix.rows.contains(where: \.hasSuggestion))
+        #expect(!matrix.rows.contains { $0.hasSuggestion })
     }
 
     @Test func keepMyPricesReadsNoGrid() throws {

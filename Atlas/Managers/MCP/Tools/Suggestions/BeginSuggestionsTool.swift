@@ -85,7 +85,7 @@ struct BeginSuggestionsTool: MCPTool {
 
     /// Fields the run leaves to others: an Ask for one page that's still
     /// going, or the assistant's own suggestion that's still open.
-    private static func leftToOthers(
+    static func leftToOthers(
         _ target: SuggestionTarget,
         store: FieldSuggestionStore,
         appID: StoreApp.ID,

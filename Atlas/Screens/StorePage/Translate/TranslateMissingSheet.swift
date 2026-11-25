@@ -46,9 +46,9 @@ struct TranslateMissingSheet: View {
                             appID: viewModel.app.id,
                             appName: viewModel.app.name,
                             explanation: String(localized: """
-                            Claude Code translates the missing fields. Its suggestions appear in the coverage grid, \
-                            tagged with its name, and wait in Review & Push.
-                            """),
+                            Claude Code gives each language its own native-speaker writer. Each language’s suggestions \
+                            show on its page as soon as it’s done.
+                            """, comment: "kind:body"),
                             onRetried: { launchedRunID = $0 },
                             identifierPrefix: "storePage.translate"
                         )
@@ -271,10 +271,17 @@ struct TranslateMissingSheet: View {
     // MARK: - Assistant
 
     private var assistantPrompt: AssistantTranslatePrompt {
-        AssistantTranslatePrompt(
+        let plan = translation.selectedPlan
+        var fields: [ListingField] = []
+        for item in plan.items where !fields.contains(item.key.field) {
+            fields.append(item.key.field)
+        }
+        return AssistantTranslatePrompt(
             appName: viewModel.app.name,
             versionString: viewModel.content?.version.versionString ?? "",
-            glossary: translation.glossary
+            glossary: translation.glossary,
+            locales: plan.locales,
+            fields: fields
         )
     }
 

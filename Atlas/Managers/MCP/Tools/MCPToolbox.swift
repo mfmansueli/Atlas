@@ -78,6 +78,8 @@ struct MCPToolbox {
             WithdrawSuggestionTool(),
             BeginSuggestionsTool(),
             EndSuggestionsTool(),
+            BeginTranslationTool(),
+            GetTranslationBriefTool(),
             GetCapturePlanTool(),
             UpdateCapturePlanTool(),
             ProposeScreensTool(),

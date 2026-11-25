@@ -328,9 +328,13 @@ final class FieldSuggestionStore {
 
     /// `begin_suggestions`: the assistant's plan. It takes over the run
     /// Suggest Everything… left waiting for the same app and client, else
-    /// starts its own; an empty plan is over at once.
+    /// starts its own; an empty plan is over at once. `begin_translation`
+    /// starts a `.translation` run with its `languages`, which goes on until
+    /// each language has ended, even without fields (captions only).
     @discardableResult
-    func startRun(appID: StoreApp.ID, client: String, plan: [SuggestionTarget]) -> SuggestionRun {
+    func startRun(
+        appID: StoreApp.ID, client: String, plan: [SuggestionTarget], kind: SuggestionRun.Kind = .everything, languages: [String] = []
+    ) -> SuggestionRun {
         var started = run.flatMap { $0.phase == .waiting && $0.appID == appID && $0.client == client ? $0 : nil }
             ?? SuggestionRun(id: nextRunID(), appID: appID, client: client, prompt: "", phase: .waiting, startedAt: now(), lastActivityAt: now())
         var planned: [SuggestionTarget] = []
@@ -338,7 +342,10 @@ final class FieldSuggestionStore {
             planned.append(target)
         }
         started.plan = planned
-        started.phase = planned.isEmpty ? .finished : .running
+        started.kind = kind
+        started.languages = languages
+        started.endedLanguages = []
+        started.phase = planned.isEmpty && languages.isEmpty ? .finished : .running
         started.lastActivityAt = now()
         run = started
         return started
@@ -348,6 +355,17 @@ final class FieldSuggestionStore {
     func endRun(id: SuggestionRun.ID) {
         guard run?.id == id, run?.isRunning == true else { return }
         run?.phase = .finished
+    }
+
+    /// `end_suggestions` with a locale: one of a translation's languages is
+    /// done; the run finishes with its last. Nil when no such run goes on
+    /// or the language isn't one of its.
+    @discardableResult
+    func endLanguage(_ code: String, inRun id: SuggestionRun.ID) -> SuggestionRun? {
+        guard var run, run.id == id, run.isRunning, run.endLanguage(code, at: now()) else { return nil }
+        if run.isComplete { run.phase = .finished }
+        self.run = run
+        return run
     }
 
     /// Stop Receiving: what arrived stays; calls with the run are refused.

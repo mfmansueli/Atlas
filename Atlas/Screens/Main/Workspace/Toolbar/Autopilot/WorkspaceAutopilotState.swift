@@ -66,6 +66,9 @@ enum WorkspaceAutopilotState: Equatable {
         /// What stopped the app's last Claude Code run, until the person
         /// opens or forgets it.
         var failure: String?
+        /// Texts in several languages, counted by language: “Translating ·
+        /// 4 of 12 languages” (`SuggestionRun.progressText`).
+        var translating: String?
     }
 
     /// What needs the person first, then what runs, else idle.
@@ -93,6 +96,7 @@ enum WorkspaceAutopilotState: Equatable {
     private static func working(_ inputs: Inputs) -> Self? {
         if let working = inputs.screenshotRunWorking { return .running(working, isScreenshotRun: true) }
         if let working = inputs.reviewShotsWorking { return .capturing(working, progress: inputs.reviewShotsProgress) }
+        if let translating = inputs.translating { return .running(translating) }
         if let subject = inputs.askSubject { return .running(String(localized: "Working · \(subject)")) }
         if inputs.isSuggestingEverything { return .running(String(localized: "Suggesting everything")) }
         if let client = inputs.workingClient { return .running(String(localized: "\(client) is working")) }

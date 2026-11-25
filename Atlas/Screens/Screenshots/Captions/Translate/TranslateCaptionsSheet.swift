@@ -190,7 +190,8 @@ struct TranslateCaptionsSheet: View {
         CaptionAssistantPrompt(
             appName: viewModel.app.name,
             versionString: viewModel.context.version.versionString,
-            glossary: translation.glossary
+            glossary: translation.glossary,
+            locales: translation.selectedPlan.locales
         )
     }
 

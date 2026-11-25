@@ -271,10 +271,11 @@ struct AppWorkspaceView: View {
         var inputs = WorkspaceAutopilotState.Inputs(
             askSubject: askCenter.ask(for: app.id)?.subject,
             workingClient: assistants.isWorking ? assistants.workingClient : nil,
-            isSuggestingEverything: suggestions.run.map { $0.isRunning && $0.appID == app.id } ?? false,
+            isSuggestingEverything: suggestions.run.map { $0.isRunning && $0.appID == app.id && $0.kind == .everything } ?? false,
             launchedRuns: launcher.activeRuns.count { $0.appID == app.id },
             autoReplyNeeds: autoReply.needsYouCount(for: app.id),
-            failure: failedRun?.failure?.title
+            failure: failedRun?.failure?.title,
+            translating: suggestions.run.flatMap { $0.isRunning && $0.appID == app.id && $0.kind == .translation ? $0.progressText : nil }
         )
         if let run {
             if run.stage.isRunning, run.finishedAt == nil {

@@ -56,7 +56,10 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     var tools: [String] {
         switch self {
         case .atlasOnly: []
-        case .readProject, .chat, .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
+        // Agent: one native-speaker agent per language (`NativeTranslationFlow`),
+        // with the same tools and rules as the run.
+        case .readProject, .chat: ["Read", "Grep", "Glob", "Bash", Self.agentTool]
+        case .autopilot, .eventArtwork, .deepLinkCheck, .pageCaptures, .reviewShots: ["Read", "Grep", "Glob", "Bash"]
         case .deepLinkWork, .reviewShotsStoreKit, .encryptionKey: ["Read", "Grep", "Glob", "Edit", "Write", "Bash"]
         }
     }
@@ -69,7 +72,7 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
         case .atlasOnly:
             return atlas
         case .readProject, .chat:
-            return atlas + reading
+            return atlas + reading + [Self.agentTool]
         case .eventArtwork:
             // Art goes to the event art upload link, and nowhere else.
             return atlas + reading + Self.uploadRules(port: port, path: "/event-artwork/")
@@ -178,6 +181,10 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
     /// would).
     static let stopRecordingCommand = "killall -INT simctl"
 
+    /// Claude Code's subagent tool: a run that writes several languages
+    /// starts one agent per language with it.
+    static let agentTool = "Agent"
+
     /// Read-only git subcommands.
     static let gitCommands = ["log", "show", "diff", "tag", "describe", "rev-parse", "ls-files", "status", "branch"]
 
@@ -198,6 +205,12 @@ enum ClaudeCodePermissions: Hashable, Sendable, CaseIterable {
             lines.append(
                 "Find files with Glob and Grep and read them with Read. Run each allowed command on its own: "
                     + "a pipe, ;, && or cd in front of it is refused."
+            )
+        }
+        if tools.contains(Self.agentTool) {
+            lines.append(
+                "Start subagents with the Agent tool only when Atlas's instructions ask for one agent per language; "
+                    + "each has your tools and rules, and gets only its own language's brief."
             )
         }
         if self == .eventArtwork {

@@ -77,8 +77,9 @@ struct WorkspaceAutopilotAsk: Equatable {
             Write What’s New for \(app)’s \(which) in Atlas. Read get_app_versions and get_listing with fields ["whatsNew"] for \
             what earlier versions said, and this project's history since the last release (git log, the changed screens) for \
             what really changed. Write it for the people who use the app: what they can do now, what was fixed, in short lines, \
-            no internal names. Send it with suggest_fields for whatsNew in the primary language, then in every language the \
-            app has, each in that language's own words. Describe only what this version does.
+            no internal names. Send it with suggest_fields for whatsNew in the primary language. Describe only what this \
+            version does. Then have it written in every other language the app has (get_store_page lists them) by native \
+            speakers: \(NativeTranslationFlow.coordinatorSteps(locales: nil, fields: ["whatsNew"]))
             """),
             subject: String(localized: "Store Page · What’s New"),
             done: String(localized: "Done. What’s New is in Store Page, every language.")
