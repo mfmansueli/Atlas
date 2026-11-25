@@ -188,6 +188,7 @@ struct MCPSuggestionSession {
             {
                 throw .invalidValue(reason)
             }
+            if let refusal = MCPNaturalCheck.refusal(item.layers, for: field) { throw .invalidValue(refusal) }
             return (field, locale)
         }
     }

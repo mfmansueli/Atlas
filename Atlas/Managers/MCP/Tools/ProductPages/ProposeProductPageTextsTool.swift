@@ -27,7 +27,7 @@ struct ProposeProductPageTextsTool: MCPTool {
         details, confidence, gloss}]: ≤170 characters, written for the page's audience in that language, `reason` one \
         sentence for the person on why it reads this way (at most \(AssistantTextLimits.why) characters; the call's \
         `reason` when left out; the rest goes in `details`, the call's when left out), `confidence` how sure you are \
-        (1–3), `gloss` what the text means in English. `evidence` [{source, detail}] is optional, from \
+        (1–3), `gloss` what the text means in English. \(MCPToolDefinition.translationText) `evidence` [{source, detail}] is optional, from \
         analytics, reviews or keywords as in propose_product_page. Each shows on that language of the page with Dismiss, \
         Use and Edit, and Accept; sending a language again replaces its waiting suggestion. Skipped, with why: a \
         language the app doesn't have, an empty text or one over 170, the page's own text again, or a language whose \
@@ -121,10 +121,14 @@ struct ProposeProductPageTextsTool: MCPTool {
             let ownLayers = try MCPToolArguments(item.objectValue ?? [:]).layers()
             let layers = SuggestionLayers(
                 details: ownLayers?.details ?? callLayers?.details, confidence: ownLayers?.confidence ?? callLayers?.confidence,
-                gloss: ownLayers?.gloss
+                gloss: ownLayers?.gloss, translation: ownLayers?.translation
             ).nonEmpty
             func skip(_ message: String) { skipped.append(["locale": .string(code), "reason": .string(message)]) }
             if let refusal = AssistantTextLimits.whyRefusal(why, field: "Its reason") {
+                skip(refusal)
+                continue
+            }
+            if let refusal = naturalRefusal(layers, locale: code, state: state) {
                 skip(refusal)
                 continue
             }
@@ -155,5 +159,18 @@ struct ProposeProductPageTextsTool: MCPTool {
             }
         }
         return (kept, skipped, notOffered)
+    }
+
+    /// A natural version (board 77) is checked like the promotional text it
+    /// can replace: the limit and App Review's rules.
+    private static func naturalRefusal(_ layers: SuggestionLayers?, locale: String, state: MCPProductPages) -> String? {
+        layers?.translation?.naturalRefusal { natural in
+            switch MCPPromotionalText.check(locale: locale, text: natural, in: state) {
+            case .offered: nil
+            case let .problem(problem): problem
+            case .empty: String(localized: "The text is empty.", comment: "kind:error")
+            case let .notOffered(_, _, issues): String(localized: "\(issues.assistantReason) Rewrite it and send it again.", comment: "kind:error")
+            }
+        }
     }
 }

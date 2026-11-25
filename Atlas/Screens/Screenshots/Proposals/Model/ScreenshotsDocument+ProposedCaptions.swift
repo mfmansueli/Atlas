@@ -20,7 +20,8 @@ extension ScreenshotsDocument {
                 let suggestion = ProposedCaption(
                     proposalID: proposal.id, item: item, client: proposal.client, reason: proposal.reason, receivedAt: proposal.receivedAt,
                     layers: SuggestionLayers(
-                        details: proposal.layers?.details, confidence: proposal.layers?.confidence, gloss: item.gloss
+                        details: proposal.layers?.details, confidence: proposal.layers?.confidence, gloss: item.gloss,
+                        translation: item.translation
                     ).nonEmpty
                 )
                 if let kept = newest[item.key], kept.receivedAt > proposal.receivedAt { continue }

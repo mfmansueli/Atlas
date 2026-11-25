@@ -39,7 +39,13 @@ struct InAppEventSuggestionCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("events.suggestion.why")
             }
-            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
+            if lines.showsMeans, let means = suggestion.layers?.means {
+                TranslationMeansLine(means: means, drift: suggestion.layers?.translation?.drift ?? [])
+            }
+            if lines.showsSounds, let translation = suggestion.layers?.translation, translation.sounds != nil {
+                // Three texts at once: no natural version to swap in.
+                TranslationSoundsBlock(translation: translation, client: suggestion.source)
+            }
             if let over = suggestion.overLimit {
                 InlineMessage.warning(String(localized: "\(over.field.title) is \(over.count) characters; the limit is \(over.field.limit). Accept it and shorten it."))
                     .font(.subheadline)
@@ -61,6 +67,11 @@ struct InAppEventSuggestionCard: View {
         .suggestionSurface(isSettling: isSettling, arrivalKey: arrivalKey, arrivedAt: suggestion.date)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("events.suggestion")
+    }
+
+    /// Board 77's lines for the event's language.
+    private var lines: TranslationLines {
+        TranslationLines.lines(locale: suggestion.locale, kind: .text)
     }
 
     private var arrivalKey: String { "\(suggestion.id)|\(suggestion.date.timeIntervalSinceReferenceDate)" }

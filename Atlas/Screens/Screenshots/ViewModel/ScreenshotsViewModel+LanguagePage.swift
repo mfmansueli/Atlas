@@ -180,6 +180,7 @@ extension ScreenshotsViewModel {
                         suggested: proposedPreview(for: caption, on: display)
                     )
                 )
+                .reading(caption.layers, lines: TranslationLines.lines(locale: caption.locale, kind: .text))
             }
             guard !items.isEmpty else { return nil }
             return AcceptAllGroup(id: locale.code, title: locale.name, regionCode: locale.regionCode, isRightToLeft: locale.isRTL, items: items)
@@ -194,10 +195,14 @@ extension ScreenshotsViewModel {
             isAcceptAllCaptionsPresented = true
             return
         }
-        let captions = proposedCaptions
-        await decide(Set(captions.map(\.id)), accept: true, toast: AcceptAllKind.screenshots.acceptedText(
-            captions.count, groups: Set(captions.map(\.locale)).count, withoutAsking: true
-        ))
+        // What sounds off to a native speaker waits for the person (board 77).
+        let all = proposedCaptions
+        let captions = all.filter { caption in
+            !(TranslationLines.lines(locale: caption.locale, kind: .text).showsSounds && caption.layers?.soundsOff == true)
+        }
+        var text = AcceptAllKind.screenshots.acceptedText(captions.count, groups: Set(captions.map(\.locale)).count, withoutAsking: true)
+        if captions.count < all.count { text += " " + AcceptAllKind.screenshots.soundsOffLeftText(all.count - captions.count) }
+        await decide(Set(captions.map(\.id)), accept: true, toast: text)
     }
 
     /// The sheet's Accept: what was left ticked.

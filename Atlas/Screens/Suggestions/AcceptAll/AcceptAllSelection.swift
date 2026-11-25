@@ -5,7 +5,8 @@
 
 import Foundation
 
-/// The Accept All sheet's state: every suggestion starts ticked, the person
+/// The Accept All sheet's state: every suggestion starts ticked except one
+/// that sounds off to a native speaker (board 77), the person
 /// unticks a language, a page or a single field, and only what's ticked is
 /// accepted.
 struct AcceptAllSelection: Equatable, Sendable {
@@ -19,7 +20,7 @@ struct AcceptAllSelection: Equatable, Sendable {
     init(kind: AcceptAllKind, groups: [AcceptAllGroup], focus: String? = nil) {
         self.kind = kind
         self.groups = groups
-        selected = Set(groups.flatMap(\.items).map(\.id))
+        selected = Set(groups.flatMap(\.items).filter { !$0.soundsOff }.map(\.id))
         focusedGroupID = groups.contains { $0.id == focus } ? focus : groups.first?.id
     }
 

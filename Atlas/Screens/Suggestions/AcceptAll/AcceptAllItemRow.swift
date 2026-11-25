@@ -26,10 +26,23 @@ struct AcceptAllItemRow: View {
                     Text(item.title)
                         .font(.subheadline.weight(.semibold))
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    if let sounds = item.sounds {
+                        Pill(text: sounds.word, style: sounds.pillStyle)
+                            .fixedSize()
+                            .accessibilityIdentifier("acceptAll.item.sounds")
+                    }
                     SuggestionSourceTag(source: item.source)
                 }
                 values
                     .opacity(isSelected ? 1 : 0.5)
+                if let reason = item.soundsOffReason {
+                    Text(reason)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Palette.warn)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .environment(\.layoutDirection, .leftToRight)
+                        .accessibilityIdentifier("acceptAll.item.soundsOff")
+                }
                 Text(item.reason)
                     .font(.footnote)
                     .foregroundStyle(Palette.label2)
@@ -68,6 +81,13 @@ struct AcceptAllItemRow: View {
                     .foregroundStyle(Palette.ai)
                 value(item.suggested, isRightToLeft: isRightToLeft)
                     .lineLimit(6)
+            }
+            if let means = item.means {
+                GridRow {
+                    TranslationMeansLabel()
+                    TranslationMeansText(means: means)
+                        .lineLimit(4)
+                }
             }
         }
     }

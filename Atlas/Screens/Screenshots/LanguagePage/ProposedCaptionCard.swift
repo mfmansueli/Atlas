@@ -14,6 +14,9 @@ struct ProposedCaptionCard: View {
     /// What the caption reads now; "" reads "Empty".
     let current: String
     let isRightToLeft: Bool
+    /// Use Natural Version and its Undo (board 77); nil hides the button.
+    var onUseNaturalVersion: (() -> Void)?
+    var onUndoNaturalVersion: (() -> Void)?
     let onDismiss: () -> Void
     let onUseAndEdit: () -> Void
     let onAccept: () -> Void
@@ -47,7 +50,17 @@ struct ProposedCaptionCard: View {
                 text(String(localized: "Now"), current.isEmpty ? String(localized: "Empty") : current, isEmpty: current.isEmpty)
                 text(String(localized: "Suggested"), caption.item.headline, isSuggested: true)
             }
-            if let gloss = caption.layers?.gloss { GlossLine(gloss: gloss) }
+            if lines.showsMeans, let means = caption.layers?.means {
+                TranslationMeansLine(means: means, drift: caption.layers?.translation.flatMap { $0.usesNaturalVersion ? nil : $0.drift } ?? [])
+            }
+            if let translation = shownTranslation {
+                TranslationSoundsBlock(
+                    translation: translation,
+                    client: caption.client,
+                    onUseNaturalVersion: onUseNaturalVersion,
+                    onUndoNaturalVersion: onUndoNaturalVersion
+                )
+            }
             HStack(spacing: Spacing.small) {
                 Spacer()
                 Button("Dismiss") { AIDecided.dismiss(reduceMotion: reduceMotion, commit: onDismiss) }
@@ -71,6 +84,17 @@ struct ProposedCaptionCard: View {
         .accessibilityIdentifier("screenshots.page.caption.\(caption.slot)")
     }
 
+    /// Board 77's lines for the caption's language: MEANS and Sounds.
+    private var lines: TranslationLines {
+        TranslationLines.lines(locale: caption.locale, kind: .text)
+    }
+
+    private var shownTranslation: TranslationReading? {
+        guard lines.showsSounds, let translation = caption.layers?.translation,
+              translation.sounds != nil || translation.usesNaturalVersion else { return nil }
+        return translation
+    }
+
     private var shape: RoundedRectangle {
         RoundedRectangle(cornerRadius: Radius.banner, style: .continuous)
     }
@@ -90,7 +114,13 @@ struct ProposedCaptionCard: View {
                 .foregroundStyle(isSuggested ? AnyShapeStyle(Palette.ai) : AnyShapeStyle(Palette.label2))
             Group {
                 if isSuggested {
-                    SuggestedText(value, arrivalKey: caption.id, arrivedAt: caption.receivedAt)
+                    SuggestedText(
+                        value,
+                        arrivalKey: caption.id,
+                        arrivedAt: caption.receivedAt,
+                        marks: shownTranslation?.markedPhrases ?? [],
+                        markHelp: shownTranslation?.markHelp ?? ""
+                    )
                 } else {
                     Text(value)
                 }

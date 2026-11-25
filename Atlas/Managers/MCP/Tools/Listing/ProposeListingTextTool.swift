@@ -32,7 +32,8 @@ struct ProposeListingTextTool: MCPTool {
         Review & Push, go into it right after Atlas creates it, and are discarded with it. \
         To add a language the App Store page doesn't have, name it in addLanguages and send its texts (name and \
         description at least) in the same call: its page waits in Review & Push until the person accepts it, and is \
-        created when they push. platform (ios, macos, visionos, tvos) writes another platform's version.
+        created when they push. platform (ios, macos, visionos, tvos) writes another platform's version. \
+        \(MCPToolDefinition.translationText)
         """,
         inputSchema: MCPToolDefinition.schema(
             MCPToolDefinition.withConfidence([
@@ -83,6 +84,9 @@ struct ProposeListingTextTool: MCPTool {
             }
             self.field = field
             text = try arguments.string("text")
+            if let refusal = MCPNaturalCheck.refusal(layers, for: field) {
+                throw MCPToolError.invalidArgument(name: "natural", expected: String(localized: "a text the field takes (\(refusal))"))
+            }
         }
     }
 

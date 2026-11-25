@@ -16,4 +16,7 @@ struct AcceptAllGroup: Identifiable, Hashable, Sendable {
     var isNewPage = false
     var isRightToLeft = false
     var items: [AcceptAllItem]
+
+    /// "1 sounds off" beside the language (board 77).
+    var soundsOffCount: Int { items.count(where: \.soundsOff) }
 }

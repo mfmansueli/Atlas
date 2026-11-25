@@ -19,6 +19,8 @@ enum PillStyle: Sendable {
     case machineTranslated
     /// Accent tint: "Edited", "Changes with your next push".
     case accent
+    /// Green: a state that's fine, e.g. "Sounds native".
+    case ok
 
     var foreground: Color {
         switch self {
@@ -29,6 +31,7 @@ enum PillStyle: Sendable {
         case .warning: Palette.warn
         case .machineTranslated: Palette.ai
         case .accent: Palette.accentText
+        case .ok: Palette.ok
         }
     }
 
@@ -42,6 +45,7 @@ enum PillStyle: Sendable {
         case .warning: Palette.warnTint
         case .machineTranslated: Palette.aiSurface
         case .accent: Palette.accentTint
+        case .ok: Palette.okTint
         }
     }
 

@@ -133,8 +133,10 @@ struct AcceptAllSheet: View {
     }
 
     private func groupCaption(_ group: AcceptAllGroup) -> String {
-        let count = String(localized: "\(selection.selectedCount(in: group)) of \(group.items.count)")
-        return group.isNewPage ? "\(count) · \(String(localized: "new page"))" : count
+        var parts = [String(localized: "\(selection.selectedCount(in: group)) of \(group.items.count)")]
+        if group.isNewPage { parts.append(String(localized: "new page")) }
+        if group.soundsOffCount > 0 { parts.append(String(localized: "\(group.soundsOffCount) sounds off", comment: "kind:badge")) }
+        return parts.joined(separator: " · ")
     }
 
     @ViewBuilder

@@ -58,6 +58,14 @@ enum AcceptAllKind: Hashable, Sendable {
             : String(localized: "Next time, Accept All Languages won’t ask first.")
     }
 
+    /// Added to the toast when Accept All Languages, without asking, left
+    /// out what sounds off (board 77): it waits for the person.
+    func soundsOffLeftText(_ count: Int) -> String {
+        count == 1
+            ? String(localized: "1 that sounds off waits for you.", comment: "kind:toast")
+            : String(localized: "\(count) that sound off wait for you.", comment: "kind:toast")
+    }
+
     /// The toast after accepting from the sheet, or right away.
     func acceptedText(_ count: Int, groups: Int, withoutAsking: Bool = false, turnedOffAsking: Bool = false) -> String {
         let unit = unit(groups)

@@ -8,7 +8,9 @@ import SwiftUI
 /// A suggestion under its field, in the same form row so it scrolls and
 /// reflows with it: the purple "Suggested" pill, who suggested it and why,
 /// Now and Suggested on two rows, the limit after the change, and Dismiss,
-/// Use and Edit, Accept. It never changes the field by itself. Landing
+/// Use and Edit, Accept. In a language that isn't the interface's it also
+/// has board 77's MEANS row and Sounds line, where Use Natural Version
+/// swaps the text on the card. It never changes the field by itself. Landing
 /// while the person looks it arrives (effect 2); accepted it settles
 /// (effect 5): the tint goes, a check draws, and it closes.
 struct FieldSuggestionCard: View {
@@ -22,6 +24,12 @@ struct FieldSuggestionCard: View {
     var meta: String?
     /// Picked values (categories, release) have nothing to edit.
     var canUseAndEdit = true
+    /// The suggested text reads right to left (Hebrew, Arabic); MEANS and
+    /// the notes stay left to right.
+    var isRightToLeft = false
+    /// Use Natural Version and its Undo; nil hides the button.
+    var onUseNaturalVersion: (() -> Void)?
+    var onUndoNaturalVersion: (() -> Void)?
     let onDismiss: () -> Void
     let onUseAndEdit: () -> Void
     let onAccept: () -> Void
@@ -34,7 +42,14 @@ struct FieldSuggestionCard: View {
         VStack(alignment: .leading, spacing: Spacing.xSmall) {
             header
             values
-            if let gloss = suggestion.layers?.gloss { GlossLine(gloss: gloss) }
+            if let translation = shownTranslation {
+                TranslationSoundsBlock(
+                    translation: translation,
+                    client: suggestion.source.title,
+                    onUseNaturalVersion: onUseNaturalVersion,
+                    onUndoNaturalVersion: onUndoNaturalVersion
+                )
+            }
             actions
             if let details = suggestion.layers?.details { SuggestionDetailsDisclosure(details: details) }
         }
@@ -49,6 +64,16 @@ struct FieldSuggestionCard: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Suggestion for \(fieldTitle) from \(suggestion.source.title)"))
         .accessibilityIdentifier("suggestion.card")
+    }
+
+    /// Board 77's lines for this suggestion's language and field.
+    private var lines: TranslationLines { suggestion.translationLines() }
+
+    /// The Sounds line's reading, when it shows.
+    private var shownTranslation: TranslationReading? {
+        guard lines.showsSounds, let translation = suggestion.layers?.translation,
+              translation.sounds != nil || translation.usesNaturalVersion else { return nil }
+        return translation
     }
 
     private var edge: Color {
@@ -100,12 +125,26 @@ struct FieldSuggestionCard: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Palette.ai)
                     .frame(width: 74, alignment: .leading)
-                SuggestedText(suggested, arrivalKey: suggestion.id, arrivedAt: suggestion.arrivedAt)
-                    .font(.callout)
-                    .textSelection(.enabled)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityIdentifier("suggestion.value")
+                SuggestedText(
+                    suggested,
+                    arrivalKey: suggestion.id,
+                    arrivedAt: suggestion.arrivedAt,
+                    marks: shownTranslation?.markedPhrases ?? [],
+                    markHelp: shownTranslation?.markHelp ?? ""
+                )
+                .font(.callout)
+                .textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, isRightToLeft ? .rightToLeft : .leftToRight)
+                .accessibilityIdentifier("suggestion.value")
+            }
+            if lines.showsMeans, let means = suggestion.layers?.means {
+                GridRow {
+                    TranslationMeansLabel()
+                        .frame(width: 74, alignment: .leading)
+                    TranslationMeansText(means: means, drift: suggestion.layers?.translation.flatMap { $0.usesNaturalVersion ? nil : $0.drift } ?? [])
+                }
             }
         }
     }
