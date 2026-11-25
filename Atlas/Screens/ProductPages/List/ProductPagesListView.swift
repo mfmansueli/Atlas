@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// Board 50: the header (the count of 70, Suggest Pages, New Page…), what
+/// Board 50: the header (the count of 70; New Page… is in the toolbar), what
 /// stops changes (the limit, offline, a key that can't change pages), the
 /// suggested pages, and the table: the default page first as the
 /// reference, then every page with its status and numbers.
@@ -44,7 +44,7 @@ struct ProductPagesListView: View {
             Spacer(minLength: 0)
         case .loaded where viewModel.pages.isEmpty && viewModel.pageSuggestions.isEmpty:
             // Board 74: the banners, then the empty state in the middle of
-            // what's left; New Page… stays at the top.
+            // what's left; New Page… stays in the toolbar.
             ProductPagesListBanners(viewModel: viewModel)
                 .padding(.horizontal, Spacing.xLarge)
             ProductPagesEmptyView(appName: viewModel.app.name)

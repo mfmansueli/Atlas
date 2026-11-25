@@ -50,6 +50,8 @@ struct InAppEventsSectionView: View {
             Task { await reload() }
         }
         .onChange(of: navigator.intent) { handleIntent() }
+        // New Event… in the toolbar: off until the events are read.
+        .reportsPageAction(pageActionState, for: .inAppEvents)
         .onChange(of: summaries.storePage[app.id]?.value) { configure() }
         .onChange(of: releases.archive) { configure() }
         .onChange(of: viewModel?.artworkRequest) { handleArtworkRequest() }
@@ -133,6 +135,12 @@ struct InAppEventsSectionView: View {
     /// The version on its way to the App Store, read by the main window.
     private var release: ReleaseViewModel? {
         sectionModels?.models(for: app.id).release
+    }
+
+    /// New Event… in the toolbar, for this app's events.
+    private var pageActionState: WorkspacePageActionState {
+        guard let model = shownModel, model.app.id == app.id else { return .disabled(reason: nil) }
+        return model.pageActionState
     }
 
     /// The kept model before `start()` has run, so a section read ahead (or
@@ -232,6 +240,9 @@ struct InAppEventsSectionView: View {
                 return
             }
             viewModel.requestArtwork(.make, for: event)
+        case .pageAction:
+            navigator.consume(.pageAction)
+            viewModel.startPageAction()
         default:
             return
         }

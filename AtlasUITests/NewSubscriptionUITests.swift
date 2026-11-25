@@ -22,7 +22,7 @@ final class NewSubscriptionUITests: XCTestCase {
 
     func testCreatingASubscriptionQueuesItForReview() {
         app.launch(debugScene: "pricing-nosubs")
-        let create = app.buttons["pricing.createSubscription"]
+        let create = app.buttons["pricing.addSubscription"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["pricing.newSubscription.ask"].exists)
         let before = reviewCount()
@@ -66,7 +66,7 @@ final class NewSubscriptionUITests: XCTestCase {
     /// 110–118 pt wide each).
     func testEmptyStateButtonsShowTheirWholeTitles() {
         app.launch(debugScene: "pricing-nosubs")
-        let create = app.buttons["pricing.createSubscription"]
+        let create = app.buttons["pricing.addSubscription"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))
         XCTAssertFalse(element("pricing.page").exists)
         let buttons = [app.buttons["pricing.newSubscription.ask"], app.buttons["pricing.createInAppPurchase"]]
@@ -85,7 +85,7 @@ final class NewSubscriptionUITests: XCTestCase {
     /// Review Later and Apple's automatic prices beside it.
     func testThePriceChoicesShowTheRecommendedPrices() {
         app.launch(debugScene: "pricing-nosubs")
-        let create = app.buttons["pricing.createSubscription"]
+        let create = app.buttons["pricing.addSubscription"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))
         create.click()
         XCTAssertTrue(element("pricing.newSubscription").waitForExistence(timeout: 5))

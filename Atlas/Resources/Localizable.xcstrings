@@ -234,6 +234,9 @@
     "%@ Fix it and send the animated pages again." : {
       "comment" : "kind:other"
     },
+    "%@ has 10 screenshots on %@, Apple’s most." : {
+      "comment" : "kind:tooltip"
+    },
     "%@ Is Working…" : {
       "comment" : "kind:other"
     },
@@ -5807,8 +5810,14 @@
     "A CSV of territory code → factor, or a local reference price. Unmatched codes are listed when you import." : {
       "comment" : "kind:description"
     },
+    "A custom product page for one audience" : {
+      "comment" : "kind:tooltip"
+    },
     "A Key ID is 10 capital letters and digits, like 2X9R4HXF34." : {
       "comment" : "kind:error"
+    },
+    "A new subscription, priced in every country" : {
+      "comment" : "kind:tooltip"
     },
     "A SCHEDULED release needs releaseDate (ISO 8601, on the hour)." : {
       "comment" : "kind:other"
@@ -6151,6 +6160,9 @@
     },
     "AI provider · %@" : {
       "comment" : "kind:sheet-title"
+    },
+    "An In-App Event, in every language" : {
+      "comment" : "kind:tooltip"
     },
     "API key" : {
       "comment" : "kind:section-title"
@@ -13285,7 +13297,7 @@
     "Each currency’s usual ending" : {
       "comment" : "kind:section-title"
     },
-    "Each device %@ runs on needs at least one screenshot, and can have up to 10 in each language. Add your own, or click Make Screenshots and Autopilot makes them from the app." : {
+    "Each device %@ runs on needs at least one screenshot, and can have up to 10 in each language. Click Add Screenshots to add your own, or Make Screenshots and Autopilot makes them from the app." : {
       "comment" : "kind:description"
     },
     "Each event goes to App Review and can run for up to 31 days." : {
@@ -20630,6 +20642,9 @@
     },
     "Own screenshots in %lld of %lld languages" : {
       "comment" : "kind:description"
+    },
+    "PNG or JPEG files, for this language and device" : {
+      "comment" : "kind:tooltip"
     },
     "PNG or JPEG, %@, no transparency." : {
       "comment" : "kind:sheet-body"

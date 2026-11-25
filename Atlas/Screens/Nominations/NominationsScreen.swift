@@ -67,22 +67,8 @@ struct NominationsScreen: View {
     }
 
     private var galleryHeader: some View {
-        SectionHeader(subtitle: String(localized: "Tell Apple’s editors about launches, updates and events, weeks ahead.", comment: "kind:description")) {
-            if viewModel.state.value != nil {
-                Button {
-                    viewModel.newNomination()
-                } label: {
-                    Label("New Nomination…", systemImage: "plus")
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .disabled(viewModel.keyCannotWrite)
-                .help(viewModel.keyCannotWrite
-                    ? String(localized: "This key can’t create nominations", comment: "kind:tooltip")
-                    : String(localized: "Start a draft. Nothing is sent until you push.", comment: "kind:tooltip"))
-                .accessibilityIdentifier("nominations.new")
-            }
-        }
+        // New Nomination… is the toolbar's page action (board 80).
+        SectionHeader(subtitle: String(localized: "Tell Apple’s editors about launches, updates and events, weeks ahead.", comment: "kind:description")) {}
     }
 
     @ViewBuilder

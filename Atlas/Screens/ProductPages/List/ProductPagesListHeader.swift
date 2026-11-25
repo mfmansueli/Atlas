@@ -5,10 +5,10 @@
 
 import SwiftUI
 
-/// The list's header: what custom product pages are, how many of Apple's
-/// 70 the app uses, and New Page…, off at the limit, offline, while
-/// reading and with a key that can't change pages. Suggest Pages… is the
-/// toolbar's Autopilot (board 57).
+/// The list's header: what custom product pages are and how many of
+/// Apple's 70 the app uses. New Page… is the toolbar's page action
+/// (board 80), off at the limit, offline, while reading and with a key that
+/// can't change pages; Suggest Pages… is Autopilot's.
 struct ProductPagesListHeader: View {
     @Bindable var viewModel: ProductPagesViewModel
 
@@ -24,15 +24,6 @@ struct ProductPagesListHeader: View {
                     .accessibilityLabel(Text("\(viewModel.pageCount) of 70 custom product pages allowed"))
                     .accessibilityIdentifier("pages.count")
             }
-            Button {
-                viewModel.isNewPagePresented = true
-            } label: {
-                Label("New Page…", systemImage: "plus")
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .disabled(!viewModel.canMakePages)
-            .accessibilityIdentifier("pages.new")
         }
     }
 }

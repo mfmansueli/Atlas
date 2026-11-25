@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// No In-App Events yet (board 74 · 3): what an event is and how to start,
-/// naming New Event… at the top and the toolbar's Suggest an Event…, with
+/// naming New Event… in the toolbar (board 80) and Suggest an Event…, with
 /// App Review and the 31 days in the small line. No button of its own.
 struct InAppEventsEmptyState: View {
     let appName: String

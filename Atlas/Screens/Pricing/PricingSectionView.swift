@@ -56,6 +56,8 @@ struct PricingSectionView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.subscriptionPricing")
+        // Add Subscription… in the toolbar: off until the products are read.
+        .reportsPageAction(shownModel?.pageActionState ?? .disabled(reason: nil), for: .subscriptionPricing)
         .task { await start() }
         .onChange(of: navigator.refreshCount) {
             Task {

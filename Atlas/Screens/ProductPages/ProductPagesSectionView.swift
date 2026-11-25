@@ -42,6 +42,8 @@ struct ProductPagesSectionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("workspace.productPages")
+        // New Page… in the toolbar: off until the pages are read.
+        .reportsPageAction(pageActionState, for: .productPages)
         .task(id: app.id) { await start() }
         .onChange(of: app.icon) { shownModel?.takeIcon(app.icon) }
         .onChange(of: navigator.refreshCount) {
@@ -171,6 +173,12 @@ struct ProductPagesSectionView: View {
         }
     }
 
+    /// New Page… in the toolbar, for this app's pages.
+    private var pageActionState: WorkspacePageActionState {
+        guard let model = shownModel, model.app.id == app.id else { return .disabled(reason: nil) }
+        return model.pageActionState
+    }
+
     /// The kept model before `start()` has run, so a section read ahead (or
     /// opened before) shows its content from the first frame, not a
     /// skeleton.
@@ -221,7 +229,7 @@ struct ProductPagesSectionView: View {
     }
 
     /// Analytics' Open Page, or the Overview's card; the toolbar's Suggest
-    /// Pages… and Make Screenshots for a Page….
+    /// Pages…, Make Screenshots for a Page… and New Page….
     private func handleIntent() {
         guard let viewModel, let intent = navigator.intent, viewModel.state.value != nil,
               navigator.requestedAppID.map({ $0 == app.id }) ?? true else { return }
@@ -242,6 +250,9 @@ struct ProductPagesSectionView: View {
         case let .makePageScreenshots(name):
             navigator.consume(intent)
             makeScreenshots(forPageNamed: name, viewModel)
+        case .pageAction:
+            navigator.consume(intent)
+            viewModel.startPageAction()
         default:
             break
         }

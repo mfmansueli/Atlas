@@ -74,6 +74,11 @@ enum WorkspaceIntent: Hashable, Sendable {
     /// it, and its screenshots, from an Analytics finding's Make
     /// Screenshots for This Page….
     case makePageScreenshots(name: String)
+    /// Custom Product Pages, In-App Events, Nominations, Pricing or
+    /// Screenshots: the toolbar's page action (board 80), the sheet New
+    /// Page…, New Event…, New Nomination…, Add Subscription… or Add
+    /// Screenshots… opens.
+    case pageAction
     /// Any section: focus its search field.
     case search
     /// Screenshots, Custom Product Pages or In-App Events: run one of the

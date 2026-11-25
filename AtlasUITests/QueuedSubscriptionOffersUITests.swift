@@ -66,7 +66,7 @@ final class QueuedSubscriptionOffersUITests: XCTestCase {
 
     /// Create Subscription with its description and price, queued.
     private func createSubscription() {
-        let create = app.buttons["pricing.createSubscription"]
+        let create = app.buttons["pricing.addSubscription"]
         XCTAssertTrue(create.waitForExistence(timeout: 10))
         create.click()
         XCTAssertTrue(element("pricing.newSubscription").waitForExistence(timeout: 5))
