@@ -41,6 +41,7 @@ struct LanguagePageThumbnail: View {
             } isTargeted: { isTargeted = $0 }
             Pill(text: status.title, style: pillStyle(status.isSuggested))
                 .fixedSize()
+            if isInSearch { StoreArtworkInSearchMark() }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(accessibilityText(status.isSuggested)))
@@ -162,10 +163,16 @@ struct LanguagePageThumbnail: View {
         return preview == nil ? 0.5 : 2.5
     }
 
-    /// "Screenshot 2, German, Replaced · not pushed, selected".
+    /// Screenshots 1–3 on iPhone: what search results show (board 78).
+    private var isInSearch: Bool {
+        !item.isDeleted && StoreArtworkRules.marksInSearch(keptIndex: item.position, display: cell.key.displayType)
+    }
+
+    /// "Screenshot 2, German, Replaced · not pushed, in search, selected".
     private func accessibilityText(_ isSuggested: Bool) -> String {
         var parts = [String(localized: "Screenshot \(item.position + 1)"), localeName]
         parts.append(isSuggested ? String(localized: "caption suggested") : cell.state.title)
+        if isInSearch { parts.append(String(localized: "in search", comment: "kind:label")) }
         if item.isSelected { parts.append(String(localized: "selected")) }
         return parts.joined(separator: ", ")
     }

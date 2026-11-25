@@ -123,9 +123,7 @@ extension ScreenshotPushController {
         do {
             var document = try await workspace.screenshots.loadDocument(for: app, primaryLocale: context.primaryLocale)
             guard document.extras != nil else { return }
-            var pushed = document.extras?.pushedChecksums ?? [:]
-            pushed[item.id] = extras.fileID(of: item)
-            document.extras?.pushedChecksums = pushed
+            document.extras?.notePushed(item.id, fileID: extras.fileID(of: item))
             try await workspace.screenshots.saveDocument(document, for: app)
         } catch {
             extras.recordError = String(localized: "Pushed, but couldn’t note it in \(app.name)’s set: \(error.localizedDescription)")
@@ -141,12 +139,12 @@ extension ScreenshotPushController {
             do {
                 var document = try await workspace.screenshots.loadDocument(for: app, primaryLocale: context.primaryLocale)
                 guard document.extras != nil else { continue }
-                var pushed = document.extras?.pushedChecksums ?? [:]
                 for item in done {
-                    pushed[item.id] = extras.fileID(of: item)
+                    document.extras?.notePushed(item.id, fileID: extras.fileID(of: item))
                 }
-                document.extras?.pushedChecksums = pushed
                 try await workspace.screenshots.saveDocument(document, for: app)
+                // The page's header and search changed: previews read them again.
+                LiveArtworkMemo.shared.forget(appID: appID)
                 planExtras(for: app, document: document, context: context)
                 bumpRevision(for: appID)
                 changed.insert(appID)

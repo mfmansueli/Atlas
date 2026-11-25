@@ -20,6 +20,10 @@ enum ExtrasPushKind: Hashable, Sendable {
     /// A video shown first among the device's App Previews, with its
     /// poster frame at this time code, e.g. `00:00:05:00`.
     case appPreview(posterTimeCode: String)
+    /// Takes what's placed under each of these placement types off the
+    /// page: a header or search image deleted on the Screenshots page.
+    /// Nothing is uploaded.
+    case removal(placementTypes: [String])
 
     static let productPageHeader = "PRODUCT_PAGE_HEADER_ASSET"
     static let searchResults = "APP_STORE_SEARCH_RESULTS_ASSET"
@@ -32,14 +36,14 @@ enum ExtrasPushKind: Hashable, Sendable {
 
     var media: AssetLibraryMedia {
         switch self {
-        case .artwork: .image
+        case .artwork, .removal: .image
         case .motionArtwork, .appPreview: .video
         }
     }
 
     var placementTypes: [String] {
         switch self {
-        case let .artwork(placementTypes), let .motionArtwork(placementTypes): placementTypes
+        case let .artwork(placementTypes), let .motionArtwork(placementTypes), let .removal(placementTypes): placementTypes
         case .appPreview: [Self.appPreviewPlacement]
         }
     }
@@ -47,7 +51,7 @@ enum ExtrasPushKind: Hashable, Sendable {
     /// The library category the asset is uploaded under.
     var category: String {
         switch self {
-        case .artwork, .motionArtwork: "CREATIVE_ASSETS"
+        case .artwork, .motionArtwork, .removal: "CREATIVE_ASSETS"
         case .appPreview: "APP_SCREENSHOTS_AND_PREVIEWS"
         }
     }

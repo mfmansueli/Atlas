@@ -127,7 +127,8 @@ struct OverviewPageAndWaiting<Lead: View, VersionNotice: View>: View {
             screenshots: link(.screenshots),
             pricing: link(.subscriptionPricing),
             inAppEvent: { navigator.open(.inAppEvents, intent: .showInAppEvents(eventID: $0)) },
-            appPreview: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: $1)) }
+            appPreview: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: $1)) },
+            artwork: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: .iPhone)) }
         )
     }
 

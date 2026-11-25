@@ -105,6 +105,12 @@ final class ScreenshotsViewModel {
     var notice: String?
     /// Why chosen App Previews can't go in the set, each with its fix.
     var appPreviewProblems: [String] = []
+    /// Each language's live header and search artwork, once read
+    /// (`ScreenshotsViewModel+StoreArtwork`).
+    var liveArtwork = LiveStoreArtworkSet()
+    /// The version's store texts, for the page's On the App Store preview;
+    /// nil until the section has read them.
+    var storeContent: StorePageContent?
 
     init(app: StoreApp, services: any ScreenshotsServices, context: ScreenshotsContext, locales: [StoreLocale] = StoreLocaleCatalog.all) {
         self.app = app

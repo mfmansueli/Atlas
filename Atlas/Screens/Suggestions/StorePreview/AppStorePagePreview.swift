@@ -19,6 +19,8 @@ struct AppStorePagePreview<Shots: View>: View {
     var links: AppStorePreviewLinks?
     /// Name, ratings and screenshots only: the Overview's smaller preview.
     var isCompact = false
+    /// The language's header at the top, when it has one (board 78).
+    var headerArt: AppStorePreviewHeaderArt?
     @ViewBuilder var shots: () -> Shots
     /// The part under the pointer, by its link's title: it lights.
     @State private var hovered: String?
@@ -27,6 +29,12 @@ struct AppStorePagePreview<Shots: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if let headerArt {
+                // Edge to edge: the page's inset is outside it.
+                headerArt
+                    .padding([.horizontal, .top], -Spacing.xSmall)
+                    .padding(.bottom, Spacing.xxSmall)
+            }
             row(link: links?.storePage) { header }
             divider
             row(link: links?.appInformation, vertical: 8) { stats }

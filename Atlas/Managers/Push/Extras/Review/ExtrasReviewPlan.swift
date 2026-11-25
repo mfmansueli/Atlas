@@ -76,7 +76,7 @@ struct ExtrasReviewPlan: Hashable, Sendable {
 
     /// "4 images and 2 App Previews", "1 image".
     var countTitle: String {
-        let images = items.count { $0.artworkKind != nil }
+        let images = items.count { $0.artworkKind != nil || $0.isRemoval }
         let previews = items.count - images
         let imageText = images == 1 ? String(localized: "1 image") : String(localized: "\(images) images")
         let previewText = previews == 1 ? String(localized: "1 App Preview") : String(localized: "\(previews) App Previews")

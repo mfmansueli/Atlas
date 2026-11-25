@@ -26,6 +26,17 @@ protocol ScreenshotsServices {
     /// the file).
     func captureImage(_ capture: ScreenshotCapture, for app: StoreApp, pixelWidth: Int) async -> CGImage?
 
+    /// Each language's header and search artwork on its version
+    /// localization's page. Empty by default.
+    func liveArtwork(for app: StoreApp, localizations: [StoreLocale: String]) async throws -> LiveStoreArtworkSet
+
+    /// A live header or search image, about `pixelWidth` pixels wide,
+    /// through `RemoteImageCache` by default.
+    func liveArtworkImage(_ image: LiveArtworkImage, pixelWidth: Int) async -> CGImage?
+
+    /// `liveArtworkImage` without waiting, for a view's first frame.
+    func keptLiveArtworkImage(_ image: LiveArtworkImage, pixelWidth: Int) -> CGImage?
+
     /// A live screenshot's image, about `pixelWidth` pixels wide.
     func liveImage(_ screenshot: LiveScreenshot, pixelWidth: Int) async -> CGImage?
 

@@ -48,6 +48,9 @@ final class DebugScreenshotsServices: ScreenshotsServices {
     var drawsPushedLiveSets = false
     /// The live sets without App Previews, as for an app that has none.
     var hidesAppPreviews = false
+    /// Lumen's live header and search artwork (board 78); none unless a
+    /// scene sets it (`DebugStoreArtwork.live`).
+    var storeArtwork = LiveStoreArtworkSet()
     private let store = InMemoryScreenshotsDocumentStore()
     private let captures = MockLumenCaptureRenderer()
 

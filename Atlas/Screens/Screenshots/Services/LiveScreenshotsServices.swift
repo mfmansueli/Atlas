@@ -45,6 +45,17 @@ struct LiveScreenshotsServices: ScreenshotsServices {
         return live
     }
 
+    /// One request per language for its header and search placements; a
+    /// language whose placements can't be read shows none.
+    func liveArtwork(for _: StoreApp, localizations: [StoreLocale: String]) async throws -> LiveStoreArtworkSet {
+        var artwork = LiveStoreArtworkSet()
+        for (locale, id) in localizations.sorted(by: { $0.key.code < $1.key.code }) {
+            try Task.checkCancellation()
+            if let read = try? await client.liveStoreArtwork(localizationID: id) { artwork.byLocale[locale.code] = read }
+        }
+        return artwork
+    }
+
     /// Imported captures are PNGs named by capture ID in the app's
     /// `Captures` folder.
     func captureImage(_ capture: ScreenshotCapture, for app: StoreApp, pixelWidth: Int) async -> CGImage? {

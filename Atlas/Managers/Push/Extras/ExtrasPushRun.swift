@@ -227,6 +227,22 @@ final class ExtrasPushRun {
         let began = environment.now()
         activities[item.id] = ExtrasPushActivity(itemID: item.id, startedAt: began, stepStartedAt: began)
         enter(.preparing, for: item.id)
+        if case let .removal(placementTypes) = item.kind {
+            // Nothing goes up: what's placed comes off, in turn with the
+            // placements.
+            do {
+                try await inTurn {
+                    self.enter(.placing, for: item.id)
+                    try await self.removePlacements(of: item, placementTypes: placementTypes)
+                    self.statuses[item.id] = .done(assetID: "", placementIDs: [])
+                    await self.onItemDone(item)
+                }
+            } catch {
+                statuses[item.id] = status(for: error)
+            }
+            end(item, began: began)
+            return nil
+        }
         do {
             let targets = try await targets(for: item)
             if case .appPreview = item.kind { try await checkPreviewRoom(for: item, in: targets) }

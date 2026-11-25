@@ -13,6 +13,8 @@ struct ExtrasReviewItem: Hashable, Sendable, Identifiable {
     enum Content: Hashable, Sendable {
         case artwork(AutopilotArtworkKind)
         case appPreview(ScreenshotDisplayType, posterTimeCode: String)
+        /// A live header or search image deleted on the Screenshots page.
+        case artworkRemoval(StoreArtworkPlace)
     }
 
     /// The extra's ID in the document (`header-de-DE`, `iphone-de-DE`),
@@ -66,7 +68,14 @@ struct ExtrasReviewItem: Hashable, Sendable, Identifiable {
         switch content {
         case let .artwork(kind): "\(kind.title) \(kind.ratioTitle)"
         case let .appPreview(display, _): String(localized: "\(display.shortTitle) App Preview")
+        case let .artworkRemoval(place): String(localized: "\(place.title) deleted", comment: "kind:label")
         }
+    }
+
+    /// A deletion: nothing is uploaded, what's live comes off.
+    var isRemoval: Bool {
+        if case .artworkRemoval = content { return true }
+        return false
     }
 
     /// "German · Header 21:9".
@@ -84,6 +93,7 @@ struct ExtrasReviewItem: Hashable, Sendable, Identifiable {
         case let .artwork(artwork) where isMotion: .motionArtwork(placementTypes: artwork.placementTypes)
         case let .artwork(artwork): .artwork(placementTypes: artwork.placementTypes)
         case let .appPreview(_, posterTimeCode): .appPreview(posterTimeCode: posterTimeCode)
+        case let .artworkRemoval(place): .removal(placementTypes: [place.placementType])
         }
         let name = isMotion ? (fileName as NSString).deletingPathExtension + "." + ExtrasArtworkLoop.pathExtension : fileName
         let motion = isMotion ? String(localized: " · motion") : ""

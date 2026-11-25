@@ -47,6 +47,9 @@ struct ScreenshotExtras: Codable, Hashable, Sendable {
     /// Product Page Optimization tests assistants proposed, decided or
     /// not, oldest first; nil when none was.
     var testProposals: [ProductPageTestProposal]?
+    /// Live header and search images marked to be deleted with the next
+    /// push (`ScreenshotExtras+StoreArtwork`); nil when none is.
+    var artworkRemovals: [ExtrasArtworkRemoval]?
 
     var hasArtwork: Bool { artworkSize != nil && !artwork.isEmpty }
     var hasPreviews: Bool { !previews.isEmpty }

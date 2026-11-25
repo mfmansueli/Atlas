@@ -91,6 +91,7 @@ struct DebugSceneView: View {
             ExtrasPushDebugScenes.view(for:),
             ScreenshotsProposalsDebugScenes.view(for:),
             ScreenshotsHandDebugScenes.view(for:),
+            StoreArtworkDebugScenes.view(for:),
             AppPreviewHandDebugScenes.view(for:),
             AssistantDebugScenes.view(for:),
             SuggestionsDebugScenes.view(for:),
