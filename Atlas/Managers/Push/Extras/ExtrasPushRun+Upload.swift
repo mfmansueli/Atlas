@@ -108,6 +108,9 @@ extension ExtrasPushRun {
                     referenceName: referenceName, previewFrameTimeCode: ExtrasPushKind.loopPosterTimeCode
                 )
             }
+        case .removal:
+            // A deletion uploads nothing (`ExtrasPushRun+Removal`).
+            throw ExtrasPushFailure.file(detail: String(localized: "A deletion has no file to upload.", comment: "kind:error"))
         case let .appPreview(posterTimeCode):
             return try await call {
                 try await library.reserveAssetLibraryVideo(

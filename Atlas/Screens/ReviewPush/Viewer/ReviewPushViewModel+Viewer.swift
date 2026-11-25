@@ -85,6 +85,11 @@ extension ReviewPushViewModel {
             return ReviewViewerItem(
                 id: "extra.\(item.id)", title: item.title, subtitle: parts.joined(separator: " · "), content: .artwork(item)
             )
+        case .artworkRemoval:
+            let parts = [String(localized: "Comes off the App Store page when you push", comment: "kind:label"), kept].compactMap(\.self)
+            return ReviewViewerItem(
+                id: "extra.\(item.id)", title: item.title, subtitle: parts.joined(separator: " · "), content: .artwork(item)
+            )
         case .appPreview:
             let file = previewFile(for: item)
             let length = file.seconds > 0 ? file.lengthTitle : nil

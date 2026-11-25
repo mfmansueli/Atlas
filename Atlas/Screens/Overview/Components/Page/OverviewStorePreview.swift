@@ -41,16 +41,28 @@ struct OverviewStorePreview: View {
                     languagePicker
                 }
             }
-            AppStorePagePreview(model: model, appName: app.name, icon: app.icon, links: links, isCompact: true) {
-                AppStorePreviewShots(
-                    services: screenshots,
-                    app: app,
-                    localizations: content.ids.versionLocalizations,
-                    locale: locale,
-                    primary: content.primaryLocale,
-                    width: 84,
-                    onPlay: links.appPreview
-                )
+            let model = model
+            let openArtwork = links.artwork.map { open in { open(locale.code) } }
+            AppStorePreviewArtworkReader(
+                services: screenshots, app: app, localizations: content.ids.versionLocalizations, locale: locale, primary: content.primaryLocale
+            ) { artwork in
+                VStack(spacing: Spacing.small) {
+                    AppStorePagePreview(
+                        model: model, appName: app.name, icon: app.icon, links: links, isCompact: true,
+                        headerArt: .shown(artwork, services: screenshots, app: app, onOpen: openArtwork)
+                    ) {
+                        AppStorePreviewShots(
+                            services: screenshots,
+                            app: app,
+                            localizations: content.ids.versionLocalizations,
+                            locale: locale,
+                            primary: content.primaryLocale,
+                            width: 84,
+                            onPlay: links.appPreview
+                        )
+                    }
+                    AppStorePreviewSearchCard(services: screenshots, app: app, model: model, artwork: artwork, onOpen: openArtwork)
+                }
             }
             Text("Click a part to edit it.")
                 .font(.callout)

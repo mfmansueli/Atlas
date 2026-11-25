@@ -19,27 +19,39 @@ struct ScreenshotsLanguagePage: View {
     @Environment(AppPreferences.self) private var preferences
     /// Nil in previews and scenes without the app's gate.
     @Environment(ProGate.self) private var pro: ProGate?
+    /// Nil until measured: no preview on the first frame.
+    @State private var pageWidth: CGFloat?
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.medium) {
-                ScreenshotsPageHeader(viewModel: viewModel)
-                languageBar
-                if viewModel.pageShowsAll {
-                    ScreenshotsLanguageList(viewModel: viewModel)
-                } else {
-                    controls
-                    shots
-                    if viewModel.takesAppPreviews(viewModel.displayType) {
-                        ScreenshotAppPreviewsSection(viewModel: viewModel, locale: locale)
+        HStack(alignment: .top, spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.medium) {
+                    ScreenshotsPageHeader(viewModel: viewModel)
+                    languageBar
+                    if viewModel.pageShowsAll {
+                        ScreenshotsLanguageList(viewModel: viewModel)
+                    } else {
+                        // Board 78: header and search first, then the screenshots.
+                        StoreArtworkSection(viewModel: viewModel, locale: locale)
+                        controls
+                        shots
+                        if viewModel.takesAppPreviews(viewModel.displayType) {
+                            ScreenshotAppPreviewsSection(viewModel: viewModel, locale: locale)
+                        }
+                        suggestions
                     }
-                    suggestions
                 }
+                .padding(.horizontal, Spacing.xLarge)
+                .padding(.vertical, Spacing.large)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, Spacing.xLarge)
-            .padding(.vertical, Spacing.large)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            if showsPreview {
+                StoreArtworkPreviewAside(viewModel: viewModel, locale: locale)
+                    .padding(.top, Spacing.large)
+                    .padding(.trailing, Spacing.xLarge)
+            }
         }
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { pageWidth = $0 })
         .leavesChatRoom()
         .accessibilityIdentifier("screenshots.page")
         .sheet(item: $viewModel.handSheet) { sheet in
@@ -48,6 +60,12 @@ struct ScreenshotsLanguagePage: View {
     }
 
     private var locale: StoreLocale { viewModel.currentPageLocale }
+
+    /// The On the App Store column, on one language when the page is wide
+    /// enough; it carries Now · Suggested then.
+    private var showsPreview: Bool {
+        !viewModel.pageShowsAll && pageWidth.map(StoreArtworkRules.showsPreview(pageWidth:)) == true
+    }
 
     private var languageBar: some View {
         let model = viewModel.languageBarModel(acceptsRightAway: preferences.acceptsAllWithoutAsking)
@@ -76,6 +94,9 @@ struct ScreenshotsLanguagePage: View {
 
     private var controls: some View {
         FlowLayout(spacing: Spacing.small) {
+            Text("Screenshots", comment: "kind:section-title")
+                .atlasTextStyle(.headline)
+                .accessibilityAddTraits(.isHeader)
             if viewModel.pageDisplays.count > 1 {
                 Picker("Device", selection: $viewModel.displayType) {
                     ForEach(viewModel.pageDisplays, id: \.self) { display in
@@ -93,14 +114,16 @@ struct ScreenshotsLanguagePage: View {
                     .foregroundStyle(Palette.label2)
                     .lineLimit(1)
             }
-            Picker("Captions", selection: $viewModel.showsSuggestedCaptions) {
-                Text("Now").tag(false)
-                Text("Suggested").tag(true)
+            if !showsPreview {
+                Picker("Captions", selection: $viewModel.showsSuggestedCaptions) {
+                    Text("Now").tag(false)
+                    Text("Suggested").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+                .accessibilityIdentifier("screenshots.page.mode")
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .fixedSize()
-            .accessibilityIdentifier("screenshots.page.mode")
             ScreenshotHandManageMenu(viewModel: viewModel, locale: locale)
         }
         // The prototype's small segmented controls (`.seg.sm`) on this row.

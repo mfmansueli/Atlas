@@ -19,9 +19,14 @@ struct ExtrasArtworkFile: Codable, Hashable, Sendable, Identifiable {
     var checks: [ArtworkCheck]?
     /// The 20-second motion loop the PNG is the poster of; nil for a still.
     var loop: ExtrasArtworkLoop?
+    /// Given by hand on the Screenshots page; nil for a file Autopilot
+    /// made.
+    var byHand: ExtrasArtworkHandFile?
 
     var id: String { "\(kind.rawValue)-\(locale)" }
-    var pixelSize: PixelSize { kind.pixelSize }
+    /// The kind's size, or a file given by hand's own (search takes any
+    /// 3:2 size up to 3840 × 2560).
+    var pixelSize: PixelSize { byHand?.pixelSize ?? kind.pixelSize }
     var fileName: String { "\(kind.rawValue)-\(locale).png" }
 
     var errors: [ArtworkCheck] { (checks ?? []).filter(\.isError) }

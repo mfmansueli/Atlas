@@ -18,4 +18,7 @@ struct AppStorePreviewLinks {
     /// The App Preview's play button: Screenshots on that language and
     /// device.
     var appPreview: ((_ locale: String, _ displayType: ScreenshotDisplayType) -> Void)?
+    /// The header and the "In search results" card: Screenshots in that
+    /// language, where both are changed.
+    var artwork: ((_ locale: String) -> Void)?
 }

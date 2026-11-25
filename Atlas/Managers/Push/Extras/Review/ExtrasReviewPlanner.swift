@@ -13,7 +13,8 @@ struct ExtrasReviewPlanner {
     var fileURL: (_ fileID: String, _ pathExtension: String) -> URL
 
     func plan(appID: StoreApp.ID, appName: String, extras: ScreenshotExtras?, context: ScreenshotsContext) -> ExtrasReviewPlan? {
-        guard let extras, extras.hasArtwork || extras.hasPreviews || !extras.openTestProposals.isEmpty else { return nil }
+        guard let extras, extras.hasArtwork || extras.hasPreviews || !extras.openTestProposals.isEmpty || extras.artworkRemovals?.isEmpty == false
+        else { return nil }
         let pushed = extras.pushedChecksums ?? [:]
         let discarded = extras.discardedChecksums ?? [:]
         let localizations = Dictionary(context.localizations.map { ($0.key.code, $0.value) }, uniquingKeysWith: { first, _ in first })
@@ -36,6 +37,7 @@ struct ExtrasReviewPlanner {
                 loopFileURL: file.loop.map { fileURL($0.fileID, ExtrasArtworkLoop.pathExtension) }
             ))
         }
+        items += removals(extras, appID: appID, localizations: localizations, primary: context.primaryLocale.code)
         for preview in extras.previews.sorted(by: Self.previewOrder(primary: context.primaryLocale.code)) {
             guard pushed[preview.id] != preview.fileID else {
                 pushedCount += 1
@@ -58,6 +60,24 @@ struct ExtrasReviewPlanner {
             musicTitle: extras.hasPreviews ? extras.previewMusic?.title : nil,
             blockedReason: Self.blockedReason(context), testProposals: extras.openTestProposals
         )
+    }
+
+    /// Each live image marked to be deleted, by language: nothing goes up,
+    /// so there's no file (the tile shows an empty box).
+    private func removals(
+        _ extras: ScreenshotExtras, appID: StoreApp.ID, localizations: [String: String], primary: String
+    ) -> [ExtrasReviewItem] {
+        (extras.artworkRemovals ?? [])
+            .sorted { lhs, rhs in
+                lhs.locale == rhs.locale ? lhs.place.rawValue < rhs.place.rawValue : Self.localeOrder(lhs.locale, rhs.locale, primary: primary)
+            }
+            .map { removal in
+                ExtrasReviewItem(
+                    id: removal.id, appID: appID, content: .artworkRemoval(removal.place), locale: removal.locale,
+                    localeName: Self.name(of: removal.locale), fileID: removal.id, fileURL: fileURL(removal.id, "png"),
+                    fileName: "", pixelSize: removal.place.kind.pixelSize, localizationID: localizations[removal.locale]
+                )
+            }
     }
 
     private static func blockedReason(_ context: ScreenshotsContext) -> String? {

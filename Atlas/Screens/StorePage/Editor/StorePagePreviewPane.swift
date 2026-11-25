@@ -42,16 +42,31 @@ struct StorePagePreviewPane: View {
                 .accessibilityIdentifier("storePreview.mode")
             }
             ScrollView {
-                AppStorePagePreview(model: model, appName: viewModel.app.name, icon: viewModel.app.icon, links: links) {
-                    AppStorePreviewShots(
-                        services: viewModel.services.screenshots,
-                        app: viewModel.app,
-                        localizations: viewModel.content?.ids.versionLocalizations ?? [:],
-                        locale: locale,
-                        primary: viewModel.listing?.primaryLocale ?? locale,
-                        showsSuggested: showsSuggested,
-                        onPlay: links?.appPreview
-                    )
+                let services = viewModel.services.screenshots
+                let localizations = viewModel.content?.ids.versionLocalizations ?? [:]
+                let primary = viewModel.listing?.primaryLocale ?? locale
+                let model = model
+                let openArtwork = links?.artwork.map { open in { open(locale.code) } }
+                AppStorePreviewArtworkReader(
+                    services: services, app: viewModel.app, localizations: localizations, locale: locale, primary: primary
+                ) { artwork in
+                    VStack(spacing: Spacing.medium) {
+                        AppStorePagePreview(
+                            model: model, appName: viewModel.app.name, icon: viewModel.app.icon, links: links,
+                            headerArt: .shown(artwork, services: services, app: viewModel.app, onOpen: openArtwork)
+                        ) {
+                            AppStorePreviewShots(
+                                services: services,
+                                app: viewModel.app,
+                                localizations: localizations,
+                                locale: locale,
+                                primary: primary,
+                                showsSuggested: showsSuggested,
+                                onPlay: links?.appPreview
+                            )
+                        }
+                        AppStorePreviewSearchCard(services: services, app: viewModel.app, model: model, artwork: artwork, onOpen: openArtwork)
+                    }
                 }
                 .padding(2)
                 .padding(.bottom, 18)
@@ -83,7 +98,8 @@ struct StorePagePreviewPane: View {
         return AppStorePreviewLinks(
             screenshots: AppStorePreviewLink(title: screenshots.title, count: 0) { navigator.open(screenshots) },
             inAppEvent: { navigator.open(.inAppEvents, intent: .showInAppEvents(eventID: $0)) },
-            appPreview: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: $1)) }
+            appPreview: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: $1)) },
+            artwork: { navigator.open(.screenshots, intent: .showScreenshotsLanguage($0, displayType: .iPhone)) }
         )
     }
 }

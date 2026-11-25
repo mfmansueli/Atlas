@@ -33,6 +33,8 @@ extension ExtrasPushRun {
                 let limit = limit(of: target, default: 1)
                 let id = try await put(asset, item: item, target: target, mine: mine, replacing: others, hasRoom: others.count < limit)
                 placementIDs.append(id)
+            case .removal:
+                continue
             case .appPreview:
                 let replaced = others.filter { item.replacesPlacementIDs.contains($0.id) }
                 let kept = others.filter { !item.replacesPlacementIDs.contains($0.id) }

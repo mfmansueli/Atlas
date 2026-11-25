@@ -56,6 +56,7 @@ final class ScreenshotsSectionModel {
                 self.screenshots = screenshots
             }
             screenshots?.studio.storeTexts = StudioStoreTexts(content: loaded)
+            screenshots?.storeContent = loaded
         } catch {
             errorMessage = StorePageErrorReporter.report(error, to: push)
         }

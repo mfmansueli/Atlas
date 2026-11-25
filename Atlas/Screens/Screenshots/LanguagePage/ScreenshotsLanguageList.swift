@@ -30,10 +30,13 @@ struct ScreenshotsLanguageList: View {
     private func row(_ locale: StoreLocale) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             header(locale)
-            LanguageListThumbnails(viewModel: viewModel, locale: locale) { open(locale) }
-                .padding(.leading, Spacing.medium + Self.tileWidth + Spacing.medium)
-                .padding(.trailing, Spacing.medium)
-                .padding(.bottom, Spacing.small)
+            HStack(alignment: .top, spacing: Spacing.medium) {
+                StoreArtworkMiniRow(viewModel: viewModel, locale: locale)
+                LanguageListThumbnails(viewModel: viewModel, locale: locale) { open(locale) }
+            }
+            .padding(.leading, Spacing.medium + Self.tileWidth + Spacing.medium)
+            .padding(.trailing, Spacing.medium)
+            .padding(.bottom, Spacing.small)
         }
     }
 
