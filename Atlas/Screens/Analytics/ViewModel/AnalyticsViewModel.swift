@@ -43,6 +43,10 @@ final class AnalyticsViewModel {
     var selectedRowID: BreakdownRow.ID?
     var findingsFilter = FindingsFilter.open
     var selectedChangeID: MeasuredChange.ID?
+    /// Break It Down opened from the Overview's Proceeds number: the
+    /// banner saying where the amount comes from shows (closable) and the
+    /// Proceeds column is highlighted.
+    var showsProceedsBanner = false
     var isSettingsPresented = false
     var settingsFocus: AnalyticsSettingsFocus?
     /// The key Atlas is using, to name it where its role matters.
