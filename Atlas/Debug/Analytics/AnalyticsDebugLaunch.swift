@@ -12,7 +12,7 @@ struct AnalyticsDebugLaunch {
     /// Taken by the section when it builds its view model.
     @MainActor static var pending: AnalyticsDebugLaunch?
 
-    var tab = AnalyticsTab.funnel
+    var tab = AnalyticsTab.overview
     var days = 28
     var stage: FunnelStage?
     var dimension = BreakdownDimension.territory

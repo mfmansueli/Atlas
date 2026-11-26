@@ -67,7 +67,7 @@ struct FunnelView: View {
             HStack {
                 Text("What to try next").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
                 Spacer()
-                Button(open.count == 1 ? String(localized: "1 Finding") : String(localized: "All \(open.count) Findings")) { viewModel.tab = .findings }
+                Button(open.count == 1 ? String(localized: "1 Finding") : String(localized: "All \(open.count) Findings")) { viewModel.tab = .whatToTry }
                     .buttonStyle(.plain)
                     .foregroundStyle(Palette.accentText)
                     .font(.callout)

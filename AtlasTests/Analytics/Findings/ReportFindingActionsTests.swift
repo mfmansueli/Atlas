@@ -110,7 +110,7 @@ struct ReportFindingActionsTests {
         #expect(FindingAction.offerMessage.area == .retention)
         #expect(FindingAction.retentionLanguages(count: 3).area == .retention)
         #expect(FindingAction.pageScreenshots(name: "Mood tracking").area == .productPages)
-        #expect(FindingAction.changes.analyticsTab == .changes)
+        #expect(FindingAction.changes.analyticsTab == .afterChanges)
         #expect(FindingAction.changes.isInsideAnalytics)
         #expect(FindingAction.billing.analyticsTab == .subscriptions)
         #expect(FindingAction.stability.analyticsTab == .stability)
@@ -118,7 +118,7 @@ struct ReportFindingActionsTests {
     }
 
     @Test func eachActionOpensWhatThePrototypeOpens() {
-        let origin = AnalyticsOrigin(appID: "app", text: "A finding", tab: .findings)
+        let origin = AnalyticsOrigin(appID: "app", text: "A finding", tab: .whatToTry)
         let navigator = WorkspaceNavigator()
 
         navigator.follow(.offerMessage, origin: origin)
@@ -136,7 +136,7 @@ struct ReportFindingActionsTests {
 
         navigator.follow(.changes, origin: origin)
         #expect(navigator.section == .analytics)
-        #expect(navigator.requestedAnalyticsTab == .changes)
+        #expect(navigator.requestedAnalyticsTab == .afterChanges)
     }
 }
 #endif

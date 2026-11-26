@@ -6,12 +6,16 @@
 import SwiftUI
 
 /// The top of a section's page, under the toolbar that names it (board
-/// 57): one sentence about what it changes on the App Store, and the
-/// page's own controls on the right. Under the sentence, the section's
-/// summary line when something waits (`\.sectionSummary`). The section's
-/// title and state are in the toolbar, not here.
-struct SectionHeader<Trailing: View>: View {
+/// 57, board 88): one sentence about what it changes on the App Store,
+/// and the page's own controls on the right. Under the sentence a second
+/// line: the page's `detail` when given (App Information's "19
+/// suggestions · about 10 min", Analytics' range and "Data through Nov
+/// 9"), else the section's summary line when something waits
+/// (`\.sectionSummary`). The section's title and state are in the
+/// toolbar, not here.
+struct SectionHeader<Detail: View, Trailing: View>: View {
     let subtitle: String
+    @ViewBuilder var detail: () -> Detail
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
@@ -23,7 +27,11 @@ struct SectionHeader<Trailing: View>: View {
                     .lineLimit(2)
                     .truncationMode(.tail)
                     .accessibilityIdentifier("section.description")
-                SectionSummaryLine()
+                if Detail.self == EmptyView.self {
+                    SectionSummaryLine()
+                } else {
+                    detail()
+                }
             }
             Spacer(minLength: Spacing.small)
             HStack(spacing: Spacing.small) {
@@ -32,6 +40,13 @@ struct SectionHeader<Trailing: View>: View {
             .fixedSize()
         }
         .frame(minHeight: 32)
+    }
+}
+
+extension SectionHeader where Detail == EmptyView {
+    /// The sentence over the section's summary line.
+    init(subtitle: String, @ViewBuilder trailing: @escaping () -> Trailing) {
+        self.init(subtitle: subtitle, detail: { EmptyView() }, trailing: trailing)
     }
 }
 

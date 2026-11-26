@@ -701,5 +701,13 @@
       "decrease": "neutral gray pill with arrowtriangle.down.fill",
       "increase": "warn pill (amber) with arrowtriangle.up.fill — increases can cost subscribers"
     }
+  },
+  "pageCardStrip": {
+    "$description": "Board 88 / README-DS §16: the strip of page cards that scrolls sideways (App Information's pages, Analytics' views). Card 46 tall, at least 150 wide, symbol tile 26, fades out over 44 on the right with a 24 round arrow; the open card has the accent's tint and edge.",
+    "height": 46,
+    "minWidth": 150,
+    "tile": 26,
+    "fade": 44,
+    "scrollButton": 24
   }
 }

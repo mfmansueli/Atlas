@@ -40,6 +40,14 @@ final class WorkspaceNavigator {
     var autopilotDetail: WorkspaceAutopilotDetail?
     /// Activity history (the toolbar clock).
     var isActivityPresented = false
+    /// The tab Review & Push shows (README-DS §15): To Push or Activity.
+    var reviewTab = ReviewPushTab.toPush
+    /// The push Activity highlights: the one that just ended ("Show in
+    /// Activity" at the end of a push).
+    var highlightedPushID: PushRecord.ID?
+    /// Where the window's Refresh stands; the sidebar's Refresh button and
+    /// the toolbar's status line show it (board 90).
+    var refreshState = RefreshState.idle
     /// Set by Activity's "Restore Previous Values": Review & Push opens once
     /// Activity has closed (macOS shows one sheet at a time).
     var opensReviewAfterActivity = false
@@ -237,6 +245,14 @@ final class WorkspaceNavigator {
     /// Reloads everything from App Store Connect.
     func refresh() {
         refreshCount += 1
+    }
+
+    /// Review & Push on its Activity tab (⌘Y), highlighting `pushID` when
+    /// given.
+    func openActivity(highlighting pushID: PushRecord.ID? = nil) {
+        reviewTab = .activity
+        highlightedPushID = pushID
+        isReviewPresented = true
     }
 
     var hidesSidebar: Bool { sidebarHider != nil }

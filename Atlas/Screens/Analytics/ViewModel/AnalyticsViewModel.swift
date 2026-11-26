@@ -15,7 +15,7 @@ final class AnalyticsViewModel {
     let store: AnalyticsStore
     let services: any AnalyticsServices
 
-    var tab = AnalyticsTab.funnel { didSet { tabChanged(from: oldValue) } }
+    var tab = AnalyticsTab.overview { didSet { tabChanged(from: oldValue) } }
     /// 7, 28 or 90.
     var days = 28 { didSet { if days != oldValue { recompute() } } }
     /// The step whose rate the chart shows.
@@ -153,7 +153,7 @@ final class AnalyticsViewModel {
         guard sellsSubscriptions != self.sellsSubscriptions || changes != self.changes else { return }
         self.sellsSubscriptions = sellsSubscriptions
         self.changes = changes
-        if !tabs.contains(tab) { tab = .funnel }
+        if !tabs.contains(tab) { tab = .overview }
         recompute()
     }
 
@@ -174,7 +174,7 @@ final class AnalyticsViewModel {
 
     func show(_ change: MeasuredChange.ID) {
         selectedChangeID = change
-        tab = .changes
+        tab = .afterChanges
     }
 
     func show(_ pane: SubscriptionsPane) {
@@ -184,7 +184,7 @@ final class AnalyticsViewModel {
 
     func breakDown(by dimension: BreakdownDimension) {
         self.dimension = dimension
-        tab = .breakdown
+        tab = .breakDown
     }
 
     func openSettings(focus: AnalyticsSettingsFocus? = nil) {
@@ -256,7 +256,7 @@ final class AnalyticsViewModel {
         stability = StabilityReport.make(dataset.reports, now: AnalyticsDay(store.now()))
         afterDownload = period.map { AfterDownloadNumbers.make(dataset.reports, period: $0) }.flatMap { $0.isEmpty ? nil : $0 }
         webPreview = period.flatMap { WebPreviewReport.make(dataset.reports, period: $0) }
-        if !tabs.contains(tab) { tab = .funnel }
+        if !tabs.contains(tab) { tab = .overview }
         results = Dictionary(
             changes.compactMap { change in ChangeResult.make(change, dataset: dataset, context: context).map { (change.id, $0) } },
             uniquingKeysWith: { first, _ in first }
@@ -290,6 +290,6 @@ final class AnalyticsViewModel {
 
     private func tabChanged(from old: AnalyticsTab) {
         // Reading the findings clears the section's count.
-        if tab == .findings, old != .findings { store.markFindingsSeen(for: app.id) }
+        if tab == .whatToTry, old != .whatToTry { store.markFindingsSeen(for: app.id) }
     }
 }

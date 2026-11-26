@@ -61,7 +61,7 @@ enum FindingAction: Hashable, Sendable, Codable {
         switch self {
         case .stability: .stability
         case .billing: .subscriptions
-        case .changes: .changes
+        case .changes: .afterChanges
         default: nil
         }
     }

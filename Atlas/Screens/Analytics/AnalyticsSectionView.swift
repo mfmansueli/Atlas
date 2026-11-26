@@ -30,7 +30,7 @@ struct AnalyticsSectionView: View {
     var body: some View {
         Group {
             if let viewModel = shownModel {
-                AnalyticsScreen(
+                AnalyticsView(
                     viewModel: viewModel,
                     waitingCount: waitingCount,
                     onAct: { action, text in

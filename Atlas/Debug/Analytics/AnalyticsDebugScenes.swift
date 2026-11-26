@@ -52,21 +52,21 @@ enum AnalyticsDebugScenes {
         case "an-crash": return scene(launch: AnalyticsDebugLaunch(tab: .stability))
         case "an-sub2": return scene(launch: AnalyticsDebugLaunch(tab: .subscriptions))
         case "an-set-stop": return scene(launch: AnalyticsDebugLaunch(opensSettings: true, settingsFocus: .stopReports(AppIDs.lumen)))
-        case "an-bd-dev-ipad": return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .device, selectedRow: "iPad"))
+        case "an-bd-dev-ipad": return scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .device, selectedRow: "iPad"))
         case "an-bd-src-browse":
-            return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .source, selectedRow: BreakdownInspectorFacts.browse))
+            return scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .source, selectedRow: BreakdownInspectorFacts.browse))
         case "an-jump-br":
             let text = "Brazil’s trials convert at a third of Lumen’s average. Annual costs 2.4× the purchasing-power price there."
-            return scene(launch: AnalyticsDebugLaunch(tab: .findings, follow: .pricing(territory: "BR"), followText: text))
+            return scene(launch: AnalyticsDebugLaunch(tab: .whatToTry, follow: .pricing(territory: "BR"), followText: text))
         case "an-jump":
             let text = "Germany downloads half as much as the U.S. on a machine-translated page."
-            return scene(launch: AnalyticsDebugLaunch(tab: .findings, follow: .storePage(locale: "de-DE"), followText: text))
+            return scene(launch: AnalyticsDebugLaunch(tab: .whatToTry, follow: .storePage(locale: "de-DE"), followText: text))
         case "an-funnel-s":
             NavigationDebugLaunch.hidesSidebar = true
             return scene()
         case "an-bd-s":
             NavigationDebugLaunch.hidesSidebar = true
-            return scene(launch: AnalyticsDebugLaunch(tab: .breakdown, selectedRow: "DE"))
+            return scene(launch: AnalyticsDebugLaunch(tab: .breakDown, selectedRow: "DE"))
         default: return nil
         }
     }
@@ -129,13 +129,13 @@ enum AnalyticsDebugScenes {
     @MainActor
     private static func breakdownScene(_ id: String) -> AnyView? {
         switch id {
-        case "an-bd": scene(launch: AnalyticsDebugLaunch(tab: .breakdown))
-        case "an-bd-de": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, selectedRow: "DE"))
-        case "an-bd-br": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, selectedRow: "BR", sort: .viewRate))
-        case "an-bd-lang": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .language))
-        case "an-bd-src": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .source, selectedRow: "App Store Search"))
-        case "an-bd-dev": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .device))
-        case "an-bd-ppo": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .productPage))
+        case "an-bd": scene(launch: AnalyticsDebugLaunch(tab: .breakDown))
+        case "an-bd-de": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, selectedRow: "DE"))
+        case "an-bd-br": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, selectedRow: "BR", sort: .viewRate))
+        case "an-bd-lang": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .language))
+        case "an-bd-src": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .source, selectedRow: "App Store Search"))
+        case "an-bd-dev": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .device))
+        case "an-bd-ppo": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .productPage))
         default: nil
         }
     }
@@ -144,17 +144,17 @@ enum AnalyticsDebugScenes {
     private static func findingsScene(_ id: String) -> AnyView? {
         switch id {
         case "an-find":
-            return scene(launch: AnalyticsDebugLaunch(tab: .findings))
+            return scene(launch: AnalyticsDebugLaunch(tab: .whatToTry))
         case "an-find-wait":
             let waiting = PendingChange(
                 id: "pricing.debug.annual.BR", appID: AppIDs.lumen, section: .subscriptionPricing, group: "Subscription Pricing · Annual",
                 title: "Brazil", flagRegion: "BR", oldValue: "R$ 249,90", newValue: "R$ 104,90", requests: []
             )
-            return scene(launch: AnalyticsDebugLaunch(tab: .findings), pendingChanges: [waiting])
+            return scene(launch: AnalyticsDebugLaunch(tab: .whatToTry), pendingChanges: [waiting])
         case "an-find-done":
             let store = Data.store()
             store.updateFindings({ $0.actedOn["territory.downloads.DE"] = Data.date(month: 9, day: 30) }, for: AppIDs.lumen)
-            return scene(store: store, launch: AnalyticsDebugLaunch(tab: .findings, findingsFilter: .actedOn))
+            return scene(store: store, launch: AnalyticsDebugLaunch(tab: .whatToTry, findingsFilter: .actedOn))
         case "an-find-dis":
             let store = Data.store()
             let finding = AnalyticsFinding(
@@ -162,9 +162,9 @@ enum AnalyticsDebugScenes {
                 sureness: "Rough", surenessDetail: "", action: .storePage(locale: "ko")
             )
             store.updateFindings({ $0.dismissed = [DismissedFinding(finding: finding, date: Data.date(month: 11, day: 2))] }, for: AppIDs.lumen)
-            return scene(store: store, launch: AnalyticsDebugLaunch(tab: .findings, findingsFilter: .dismissed))
+            return scene(store: store, launch: AnalyticsDebugLaunch(tab: .whatToTry, findingsFilter: .dismissed))
         case "an-find-none":
-            return scene(app: AppIDs.parcel, launch: AnalyticsDebugLaunch(tab: .findings))
+            return scene(app: AppIDs.parcel, launch: AnalyticsDebugLaunch(tab: .whatToTry))
         default:
             return nil
         }
@@ -173,10 +173,10 @@ enum AnalyticsDebugScenes {
     @MainActor
     private static func otherScene(_ id: String) -> AnyView? {
         switch id {
-        case "an-chg": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .searchText))
-        case "an-chg-wait": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .screenshots))
-        case "an-chg-few": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .searchText, picksLastChange: true))
-        case "an-chg-price": scene(launch: AnalyticsDebugLaunch(tab: .changes, change: .prices))
+        case "an-chg": scene(launch: AnalyticsDebugLaunch(tab: .afterChanges, change: .searchText))
+        case "an-chg-wait": scene(launch: AnalyticsDebugLaunch(tab: .afterChanges, change: .screenshots))
+        case "an-chg-few": scene(launch: AnalyticsDebugLaunch(tab: .afterChanges, change: .searchText, picksLastChange: true))
+        case "an-chg-price": scene(launch: AnalyticsDebugLaunch(tab: .afterChanges, change: .prices))
         case "an-sub": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions))
         case "an-sub-ret": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .retention))
         case "an-sub-ret-few": scene(app: AppIDs.quiet, launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .retention))
@@ -185,8 +185,8 @@ enum AnalyticsDebugScenes {
         case "an-sub-billing": scene(launch: AnalyticsDebugLaunch(tab: .subscriptions, pane: .billing))
         case "an-stab": scene(launch: AnalyticsDebugLaunch(tab: .stability))
         case "an-stab-counts": scene(store: crashesOnlyStore(), launch: AnalyticsDebugLaunch(tab: .stability))
-        case "an-bd-page-sub": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .productPage, columnGroup: .afterDownload))
-        case "an-bd-camp": scene(launch: AnalyticsDebugLaunch(tab: .breakdown, dimension: .campaign, columnGroup: .afterDownload))
+        case "an-bd-page-sub": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .productPage, columnGroup: .afterDownload))
+        case "an-bd-camp": scene(launch: AnalyticsDebugLaunch(tab: .breakDown, dimension: .campaign, columnGroup: .afterDownload))
         case "an-reports": scene(launch: AnalyticsDebugLaunch(opensReports: true))
         case "an-preparing": scene(app: AppIDs.tempo)
         case "an-reviews-crash": scene(section: .reviews)

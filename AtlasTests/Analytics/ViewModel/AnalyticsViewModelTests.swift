@@ -55,7 +55,7 @@ struct AnalyticsViewModelTests {
     @Test func theBreakdownSortsAndSelects() {
         let model = model()
         model.breakDown(by: .source)
-        #expect(model.tab == .breakdown)
+        #expect(model.tab == .breakDown)
         #expect(model.table?.dimension == .source)
         #expect(model.sortedRows.first?.id == "App Store Search")
         model.dimension = .territory
@@ -81,7 +81,7 @@ struct AnalyticsViewModelTests {
         #expect(ids.contains("step.pageViews"))
         #expect(ids.contains("territory.downloads.DE"))
         #expect(store.newFindingCount(for: AppIDs.lumen) == ids.count)
-        model.tab = .findings
+        model.tab = .whatToTry
         #expect(store.newFindingCount(for: AppIDs.lumen) == 0)
 
         let germany = try #require(model.openFindings.first { $0.id == "territory.downloads.DE" })
@@ -118,7 +118,7 @@ struct AnalyticsViewModelTests {
         let prices = try #require(model.changes.first { $0.kind == .prices })
         #expect(model.results[prices.id] == nil)
         model.show(screenshots.id)
-        #expect(model.tab == .changes)
+        #expect(model.tab == .afterChanges)
         #expect(model.selectedChange?.id == screenshots.id)
     }
 
