@@ -5,8 +5,11 @@
 
 import SwiftUI
 
-/// What to Try: the open findings, the ones acted on with their result,
-/// and the dismissed ones.
+/// What to Try (board 92): the open findings (new ones marked, and the ones
+/// whose change waits in Review & Push saying so), the ones acted on with
+/// their result, and the dismissed ones. Each finding's button opens the
+/// section where the change is made, under a "From Analytics" bar. With
+/// none yet, a small empty state says why.
 struct FindingsView: View {
     @Bindable var viewModel: AnalyticsViewModel
     /// Changes of the finding's area waiting in Review & Push.
@@ -16,15 +19,19 @@ struct FindingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.medium) {
-                if viewModel.dataset.dayCount < 28, viewModel.findings.open.isEmpty, viewModel.findings.dismissed.isEmpty {
-                    notYet
-                } else {
+                let state = viewModel.findingsListState
+                if state == .list {
                     header
                     switch viewModel.findingsFilter {
                     case .open: openList
                     case .actedOn: actedList
                     case .dismissed: dismissedList
                     }
+                } else {
+                    EmptyStateView(
+                        state.title, systemImage: AnalyticsTab.whatToTry.systemImage, text: state.text(appName: viewModel.dataset.appName), size: .inline
+                    )
+                    .accessibilityIdentifier("analytics.findings.none")
                 }
             }
             .padding(.bottom, Spacing.xLarge)
@@ -36,16 +43,18 @@ struct FindingsView: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("What to try next").font(.body.weight(.semibold)).accessibilityAddTraits(.isHeader)
-                Text("Last 28 days, from Atlas’s rules and your assistant. Each opens its section.")
-                    .font(.callout)
+            VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+                Text(FindingsText.heading(count: viewModel.findingsCount(.open), days: FindingsListState.fullPeriod))
+                    .atlasTextStyle(.title3)
+                    .accessibilityAddTraits(.isHeader)
+                Text(FindingsText.subheading)
+                    .atlasTextStyle(.callout)
                     .foregroundStyle(Palette.label2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: Spacing.medium)
             AnalyticsSegments(
-                label: String(localized: "Show"),
+                label: String(localized: "Show", comment: "kind:label · What to Try filter"),
                 plain: FindingsFilter.allCases.map { ($0, title(of: $0)) },
                 selection: $viewModel.findingsFilter,
                 identifier: "analytics.findings.filter"
@@ -55,47 +64,23 @@ struct FindingsView: View {
 
     /// "Open · 3": each view with how many it holds.
     private func title(of filter: FindingsFilter) -> String {
-        let count = switch filter {
-        case .open: viewModel.openFindings.count
-        case .actedOn: viewModel.actedFindings.count
-        case .dismissed: viewModel.findings.dismissed.count
-        }
-        return String(localized: "\(filter.title) · \(count)", comment: "kind:segment")
-    }
-
-    private var notYet: some View {
-        let days = viewModel.dataset.dayCount
-        let first = viewModel.dataset.firstDay.map { AnalyticsText.day($0.adding(28).date) }
-        return ContentUnavailableView {
-            Label("No findings yet", systemImage: "lightbulb")
-        } description: {
-            if let first {
-                Text("Findings need a full 28 days. \(viewModel.dataset.appName) has \(days); the first come around \(first).")
-            } else {
-                Text("Findings need a full 28 days.")
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 300)
-        .accessibilityIdentifier("analytics.findings.none")
+        String(localized: "\(filter.title) · \(viewModel.findingsCount(filter))", comment: "kind:segment · What to Try filter")
     }
 
     @ViewBuilder
     private var openList: some View {
         let findings = viewModel.openFindings
         if findings.isEmpty {
-            Text("Nothing open. New findings come with Apple’s next reports.")
-                .font(.callout)
+            Text("Nothing open. New findings come with Apple’s next reports.", comment: "kind:empty-state · What to Try")
+                .atlasTextStyle(.callout)
                 .foregroundStyle(Palette.label2)
                 .accessibilityIdentifier("analytics.findings.empty")
         }
         ForEach(findings) { finding in
-            let waiting = waitingCount(finding)
             FindingCard(
                 finding: finding,
                 isNew: viewModel.findings.isNew(finding),
-                state: waiting == 0 ? nil : waiting == 1
-                    ? String(localized: "1 change in \(finding.area.title) is waiting in Review & Push.")
-                    : String(localized: "\(waiting) changes in \(finding.area.title) are waiting in Review & Push.")
+                state: FindingsText.waiting(count: waitingCount(finding), area: finding.area)
             ) {
                 viewModel.dismiss(finding)
             } onSecondAction: {
@@ -110,8 +95,8 @@ struct FindingsView: View {
     private var actedList: some View {
         let findings = viewModel.actedFindings
         if findings.isEmpty {
-            Text("Nothing yet. Push a change from a finding’s section; its result shows after 28 days.")
-                .font(.callout)
+            Text("Nothing yet. Push a change from a finding’s section; its result shows after 28 days.", comment: "kind:empty-state · What to Try")
+                .atlasTextStyle(.callout)
                 .foregroundStyle(Palette.label2)
         }
         ForEach(findings) { finding in
@@ -120,23 +105,24 @@ struct FindingsView: View {
                     HStack(spacing: Spacing.small) {
                         FindingSourceMark(source: finding.source)
                         Pill(text: finding.area.title, style: .outline)
-                        Pill(text: String(localized: "Acted on"))
+                        Pill(text: String(localized: "Acted on", comment: "kind:pill · What to Try"))
                     }
-                    Text(finding.title).font(.body.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                    Text("You pushed “\(change.title)” on \(AnalyticsText.day(change.date)). \(change.stageTitle):")
-                        .font(.callout)
+                    Text(finding.title).atlasTextStyle(.headline).fixedSize(horizontal: false, vertical: true)
+                    Text("You pushed “\(change.title)” on \(AnalyticsText.day(change.date)). \(change.stageTitle):", comment: "kind:description · What to Try")
+                        .atlasTextStyle(.callout)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                     Text("\(result.beforeAfterText) · \(result.statusText)")
-                        .font(.callout.weight(.semibold))
+                        .atlasTextStyle(.headline)
                         .monospacedDigit()
                     HStack {
                         Spacer()
-                        Button("See the Result") { viewModel.show(change.id) }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.regular)
+                        Button(String(localized: "See the Result", comment: "kind:button · What to Try")) { viewModel.show(change.id) }
+                            .rowActionButton()
+                            .accessibilityIdentifier("analytics.findings.seeResult")
                     }
                 }
+                .accessibilityIdentifier("analytics.findings.acted.\(finding.id)")
             }
         }
     }
@@ -145,16 +131,18 @@ struct FindingsView: View {
     private var dismissedList: some View {
         let dismissed = viewModel.findings.dismissed
         if dismissed.isEmpty {
-            Text("Nothing dismissed.").font(.callout).foregroundStyle(Palette.label2)
+            Text("Nothing dismissed.", comment: "kind:empty-state · What to Try").atlasTextStyle(.callout).foregroundStyle(Palette.label2)
         } else {
             VStack(spacing: 0) {
                 ForEach(dismissed) { item in
                     HStack(spacing: Spacing.small) {
                         FindingSourceMark(source: item.finding.source)
-                        Text(item.finding.title).font(.callout).lineLimit(2)
+                        Text(item.finding.title).atlasTextStyle(.callout).lineLimit(2)
                         Spacer(minLength: Spacing.small)
-                        Text("Dismissed \(AnalyticsText.day(item.date))").font(.subheadline).foregroundStyle(Palette.label2)
-                        Button("Restore") { viewModel.restore(item.id) }
+                        Text("Dismissed \(AnalyticsText.day(item.date))", comment: "kind:status · What to Try")
+                            .atlasTextStyle(.subheadline)
+                            .foregroundStyle(Palette.label2)
+                        Button(String(localized: "Restore", comment: "kind:button · What to Try")) { viewModel.restore(item.id) }
                             .controlSize(.regular)
                             .accessibilityIdentifier("analytics.findings.restore")
                     }
@@ -165,8 +153,8 @@ struct FindingsView: View {
             }
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5) }
-            Text("A dismissed finding comes back only if its numbers change a lot.")
-                .font(.subheadline)
+            Text("A dismissed finding comes back only if its numbers change a lot.", comment: "kind:hint · What to Try")
+                .atlasTextStyle(.subheadline)
                 .foregroundStyle(Palette.label2)
         }
     }

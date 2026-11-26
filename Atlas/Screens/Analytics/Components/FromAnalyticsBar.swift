@@ -5,8 +5,10 @@
 
 import SwiftUI
 
-/// At the top of the section a finding led to: the finding in a sentence,
-/// and the way back.
+/// At the top of the section a finding led to (board 92: Store Page in
+/// German, Pricing for Brazil): "From Analytics:" and the finding in a
+/// sentence, Back to Analytics, which returns to the view it came from,
+/// and ✕.
 struct FromAnalyticsBar: View {
     let origin: AnalyticsOrigin
     let onBack: () -> Void
@@ -15,22 +17,29 @@ struct FromAnalyticsBar: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             Image(systemName: AppWorkspaceSection.analytics.systemImage)
-                .font(.subheadline.weight(.medium))
+                .atlasTextStyle(.subheadline)
                 .foregroundStyle(.white)
-                .frame(width: 22, height: 22)
+                .frame(width: Metrics.analyticsOriginTile, height: Metrics.analyticsOriginTile)
                 .background(Palette.sectionAnalytics, in: RoundedRectangle(cornerRadius: Radius.menuRow, style: .continuous))
                 .accessibilityHidden(true)
-            Text("\(Text("From Analytics").fontWeight(.semibold)) \(Text(origin.text).foregroundStyle(Palette.label2))")
-                .font(.callout)
+            Text("\(Text("From Analytics:", comment: "kind:banner · From Analytics bar").fontWeight(.semibold)) \(Text(origin.text).foregroundStyle(Palette.label2))")
+                .atlasTextStyle(.callout)
                 .lineLimit(2)
-            Spacer(minLength: Spacing.small)
-            Button("Back to Analytics", action: onBack)
-                .controlSize(.regular)
-                .accessibilityIdentifier("analytics.origin.back")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityIdentifier("analytics.origin.text")
+            Button(action: onBack) {
+                Label(String(localized: "Back to Analytics", comment: "kind:button · From Analytics bar"), systemImage: "chevron.left")
+            }
+            .controlSize(.regular)
+            .fixedSize()
+            .help(Text("Back to \(origin.tab.title) in Analytics", comment: "kind:tooltip · From Analytics bar"))
+            .accessibilityIdentifier("analytics.origin.back")
             Button(action: onClose) { Image(systemName: "xmark") }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
                 .foregroundStyle(Palette.label2)
-                .accessibilityLabel(Text("Hide"))
+                .help(Text("Hide", comment: "kind:tooltip · From Analytics bar"))
+                .accessibilityLabel(Text("Hide", comment: "kind:accessibility-label · From Analytics bar"))
+                .accessibilityIdentifier("analytics.origin.close")
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)

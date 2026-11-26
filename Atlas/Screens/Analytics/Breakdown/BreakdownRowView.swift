@@ -25,20 +25,23 @@ struct BreakdownRowView: View {
                 HStack(spacing: Spacing.small) {
                     if let region = row.regionCode { FlagTile(regionCode: region) }
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(row.name).font(.callout).lineLimit(1)
+                        Text(row.name).atlasTextStyle(.callout).lineLimit(1)
                         if let detail = row.detail {
-                            Text(detail).font(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
+                            Text(detail).atlasTextStyle(.subheadline).foregroundStyle(Palette.label2).lineLimit(1)
                         }
                     }
                 }
                 .padding(.trailing, onOpenPage == nil ? 0 : Self.openPageWidth)
                 .frame(minWidth: BreakdownColumnLayout.nameMinimum, maxWidth: .infinity, alignment: .leading)
                 ForEach(layout.columns) { column in
-                    cell(column).frame(width: layout.width(of: column), alignment: .trailing)
+                    cell(column)
+                        .frame(width: layout.width(of: column), alignment: .trailing)
+                        .frame(minHeight: rowHeight)
+                        .background(layout.isHighlighted(column) ? Palette.accentTint : Color.clear)
                 }
             }
             .padding(.horizontal, Spacing.medium)
-            .frame(minHeight: row.detail == nil ? 30 : 38)
+            .frame(minHeight: rowHeight)
             .background(isSelected ? Palette.accentTint : Color.clear)
             .contentShape(Rectangle())
         }
@@ -60,13 +63,16 @@ struct BreakdownRowView: View {
         }
     }
 
+    /// A row with a second line is taller.
+    private var rowHeight: CGFloat { row.detail == nil ? 30 : 38 }
+
     @ViewBuilder
     private func cell(_ column: BreakdownColumn) -> some View {
         if let rate = row.rate(column) {
             RateLabel(rate: rate, detail: rate.detail(averageName: String(localized: "The app"), average: average(column)))
         } else {
             Text(text(column))
-                .font(.callout)
+                .atlasTextStyle(.callout)
                 .monospacedDigit()
                 .lineLimit(1)
                 .foregroundStyle(text(column) == "—" ? Palette.label3 : Palette.label)
