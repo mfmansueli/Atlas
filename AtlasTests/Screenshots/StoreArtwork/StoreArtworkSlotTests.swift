@@ -82,6 +82,27 @@ struct StoreArtworkSlotTests {
         #expect(slot.state == .live)
     }
 
+    /// Alba's English (U.S.) header: made with a motion loop, pushed (so it
+    /// no longer waits) and live as a video placement. The tile shows it
+    /// live, not "No header".
+    @Test func aPushedMovingHeaderShowsLiveNotNoHeader() throws {
+        let file = Fixtures.madeFile(.header, "en-US")
+        var extras = Fixtures.extras()
+        extras.artwork = [file]
+        extras.notePushed(file.id, fileID: file.fileID)
+        let json = """
+        {"data":[{"type":"appAssetLibraryPlacements","id":"p1","attributes":{"mediaType":"VIDEO","placementType":"PRODUCT_PAGE_HEADER_ASSET"},
+          "relationships":{"video":{"data":{"type":"appAssetLibraryVideos","id":"v1"}}}}],
+         "included":[{"type":"appAssetLibraryVideos","id":"v1","attributes":{"previewFrameImage":{"image":{"templateUrl":"https://a/{w}x{h}.{f}"}}}}]}
+        """
+        let live = try LiveStoreArtwork(images: AssetLibraryRequests.placedArtwork(in: Data(json.utf8)))
+        let slot = StoreArtworkSlot(place: .header, locale: "en-US", live: live.header, extras: extras)
+        #expect(slot.pending == nil, "Pushed: nothing waits")
+        #expect(slot.state == .live)
+        #expect(slot.content == live.header.map(StoreArtworkSlot.Content.live))
+        #expect(slot.storeContent != nil, "The App Store preview draws it too")
+    }
+
     @Test func aWideFileShowsInBothPlacesButTheOwnKindWins() {
         var extras = Fixtures.extras()
         extras.artwork = [Fixtures.madeFile(.header, fileID: "header"), ExtrasArtworkFile(

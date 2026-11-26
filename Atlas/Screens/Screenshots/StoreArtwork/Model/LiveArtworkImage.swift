@@ -11,7 +11,8 @@ struct LiveArtworkImage: Codable, Hashable, Sendable {
     var placementID: String
     var placementType: String
     var placementGroup: String?
-    /// Apple's image URL with `{w}`, `{h}` and `{f}` to fill in.
+    /// Apple's image URL with `{w}`, `{h}` and `{f}` to fill in: the
+    /// image's, or a moving one's poster frame.
     var templateURL: String
     var pixelSize: PixelSize?
 
