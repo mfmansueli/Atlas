@@ -76,6 +76,22 @@ final class RefreshUITests: XCTestCase {
         XCTAssertTrue(offline.exists)
     }
 
+    /// The toolbar's own icon button, like Hide Sidebar beside it: the same
+    /// glass circle, right next to it. A borderless 28 pt frame drew a
+    /// narrower pill, and `DefaultToolbarItem(kind: .sidebarToggle)` an
+    /// empty item between them that stretched Refresh's glass.
+    func testRefreshIsTheSameSizeAsHideSidebarAndBesideIt() {
+        app.launch(debugScene: "rf-slow")
+        let refresh = app.buttons["sidebar.refresh"]
+        XCTAssertTrue(refresh.waitForExistence(timeout: 10))
+        let toggle = sidebarToggle
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5), "Hide Sidebar shows")
+        XCTAssertEqual(refresh.frame.width, toggle.frame.width, accuracy: 1, "Refresh at \(refresh.frame), Hide Sidebar at \(toggle.frame)")
+        XCTAssertEqual(refresh.frame.height, toggle.frame.height, accuracy: 1, "Refresh at \(refresh.frame), Hide Sidebar at \(toggle.frame)")
+        let gap = toggle.frame.minX - refresh.frame.maxX
+        XCTAssertTrue((0...12).contains(gap), "\(gap) pt between Refresh and Hide Sidebar")
+    }
+
     func testWithTheSidebarHiddenRefreshIsInTheToolbar() {
         app.launch(debugScene: "rf-side")
         XCTAssertTrue(app.buttons["workspace.refreshButton"].waitForExistence(timeout: 10))
@@ -86,6 +102,12 @@ final class RefreshUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    /// The window's own button that shows and hides the sidebar.
+    private var sidebarToggle: XCUIElement {
+        let named = NSPredicate(format: "label CONTAINS[c] %@ OR identifier CONTAINS[c] %@", "sidebar", "toggleSidebar")
+        return app.windows.firstMatch.toolbars.buttons.matching(named).firstMatch
     }
 
     private func waitUntil(_ element: XCUIElement, isEnabled: Bool, timeout: TimeInterval) -> Bool {

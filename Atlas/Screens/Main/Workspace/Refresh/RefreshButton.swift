@@ -5,9 +5,11 @@
 
 import SwiftUI
 
-/// Refresh (README-DS §15, board 90): a borderless icon button, in the
+/// Refresh (README-DS §15, board 90): an icon-only toolbar button, in the
 /// sidebar's top row left of Hide Sidebar, or in the toolbar after the
-/// section menu while the sidebar is hidden. Clicking it (or ⌘R) reads App
+/// section menu while the sidebar is hidden. It takes the toolbar's own
+/// button style, so its glass is the same 36 pt circle as Hide Sidebar's:
+/// no size of its own (a borderless 28 pt frame drew a narrower pill). Clicking it (or ⌘R) reads App
 /// Store Connect again. While it reads the arrow turns (the system's
 /// rotate effect) and the button is off, so a second click does nothing;
 /// with Reduce Motion it doesn't turn, it dims, and the tooltip and
@@ -29,13 +31,16 @@ struct RefreshButton: View {
             Button {
                 navigator.refresh()
             } label: {
-                Image(systemName: "arrow.clockwise")
-                    .symbolEffect(.rotate, isActive: state.isRefreshing && !reduceMotion)
-                    .frame(width: Metrics.refreshButtonSize, height: Metrics.refreshButtonSize)
-                    .overlay(alignment: .topTrailing) { dot(for: state) }
-                    .contentShape(Rectangle())
+                // The name shows only in the toolbar's overflow menu.
+                Label {
+                    Text("Refresh", comment: "kind:accessibility-label · the sidebar's Refresh button")
+                } icon: {
+                    Image(systemName: "arrow.clockwise")
+                        .symbolEffect(.rotate, isActive: state.isRefreshing && !reduceMotion)
+                        .overlay(alignment: .topTrailing) { dot(for: state) }
+                }
+                .labelStyle(.iconOnly)
             }
-            .buttonStyle(.borderless)
             .disabled(state.isRefreshing)
             .help(text.tooltip(state))
             .accessibilityLabel(Text(text.accessibilityLabel(state)))

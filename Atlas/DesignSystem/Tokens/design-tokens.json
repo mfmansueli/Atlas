@@ -717,8 +717,7 @@
     "funnelCardMinWidth": 112
   },
   "refresh": {
-    "$description": "Board 90 / README-DS §15: Refresh is a borderless 28 pt icon button (arrow.clockwise) in the sidebar's top row, left of Hide Sidebar; a 6 pt dot on its corner says the last refresh failed (amber) or found no network (grey). The status line explains it.",
-    "buttonSize": 28,
+    "$description": "Board 90 / README-DS §15: Refresh is an icon-only toolbar button (arrow.clockwise) in the sidebar's top row, left of Hide Sidebar, in the toolbar's own style: the same 36 pt glass circle as Hide Sidebar, no size of its own. A 6 pt dot on its icon's corner says the last refresh failed (amber) or found no network (grey). The status line explains it.",
     "dotSize": 6
   },
   "pageCardStrip": {
