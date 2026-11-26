@@ -13,7 +13,6 @@ import Testing
 @Suite("Refresh tokens")
 struct RefreshTokensTests {
     private static let metrics: [String: CGFloat] = [
-        "buttonSize": Metrics.refreshButtonSize,
         "dotSize": Metrics.refreshDotSize,
     ]
 
