@@ -124,12 +124,16 @@ final class WorkspaceNavigator {
         }
     }
 
-    /// Follows an Analytics finding to the section where the fix is made.
+    /// Follows an Analytics finding to the section where the fix is made;
+    /// that section shows where the person came from (`analyticsOrigin`)
+    /// until Back to Analytics or its ✕.
     func follow(_ action: FindingAction, origin: AnalyticsOrigin) {
         if let tab = action.analyticsTab {
             openAnalytics(tab, pane: action == .billing ? .billing : nil, appID: origin.appID)
             return
         }
+        var origin = origin
+        origin.section = action.section
         analyticsOrigin = origin
         switch action {
         case let .storePage(locale): open(.storePage, intent: locale.map(WorkspaceIntent.showLanguage), appID: origin.appID)
@@ -138,6 +142,7 @@ final class WorkspaceNavigator {
         case let .screenshotsOnDevice(displayType, locale):
             open(.screenshots, intent: .showScreenshotsLanguage(locale, displayType: displayType), appID: origin.appID)
         case let .pricing(territory): open(.subscriptionPricing, intent: territory.map(WorkspaceIntent.showTerritoryPrice), appID: origin.appID)
+        case .pricingResults: open(.subscriptionPricing, intent: .showResults, appID: origin.appID)
         case .retention, .retentionLanguages: open(.subscriptionPricing, intent: .showRetention, appID: origin.appID)
         case .offerMessage: open(.subscriptionPricing, intent: .newRetentionMessage, appID: origin.appID)
         case .inAppTexts: open(.storePage, appID: origin.appID)

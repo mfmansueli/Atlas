@@ -13,6 +13,9 @@ enum FindingAction: Hashable, Sendable, Codable {
     /// language's, from a device row in Break It Down).
     case screenshotsOnDevice(ScreenshotDisplayType, locale: String)
     case pricing(territory: String?)
+    /// Pricing → Results: a price change's result, per territory, from
+    /// After Changes.
+    case pricingResults
     case retention
     /// Pricing → Retention with a new message started, for an offer:
     /// "Try an Offer Message…".
@@ -46,7 +49,7 @@ enum FindingAction: Hashable, Sendable, Codable {
         switch self {
         case .storePage: .storePage
         case .screenshots, .screenshotsOnDevice: .screenshots
-        case .pricing: .pricing
+        case .pricing, .pricingResults: .pricing
         case .retention, .offerMessage, .retentionLanguages: .retention
         case .inAppTexts: .inAppTexts
         case .productPage, .pageScreenshots: .productPages
@@ -79,6 +82,7 @@ enum FindingAction: Hashable, Sendable, Codable {
         case let .pricing(territory):
             if let name = territory.flatMap(TerritoryCatalog.standard.territory(alpha2:))?.name { return String(localized: "Open Pricing for \(name)") }
             return String(localized: "Open Pricing")
+        case .pricingResults: return String(localized: "Open Pricing Results", comment: "kind:button")
         case .retention: return String(localized: "Open Retention")
         case .offerMessage: return String(localized: "Try an Offer Message…", comment: "kind:button")
         case let .retentionLanguages(count):

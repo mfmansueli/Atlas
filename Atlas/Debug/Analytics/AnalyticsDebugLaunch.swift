@@ -32,6 +32,9 @@ struct AnalyticsDebugLaunch {
     /// opens, with the "From Analytics" bar saying `followText`.
     var follow: FindingAction?
     var followText = ""
+    /// Break It Down as the Overview's Proceeds number opens it: by
+    /// territory, sorted by proceeds, with the proceeds banner.
+    var showsProceeds = false
 
     @MainActor
     func apply(to model: AnalyticsViewModel) {
@@ -48,6 +51,7 @@ struct AnalyticsDebugLaunch {
         model.subscriptionsPane = pane
         model.columnGroup = columnGroup
         model.tab = tab
+        if showsProceeds { model.showProceedsByCountry() }
         if opensSettings { model.openSettings(focus: settingsFocus) }
         if opensReports { model.isReportsPresented = true }
     }

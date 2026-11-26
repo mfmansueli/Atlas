@@ -63,7 +63,7 @@ struct AppWorkspaceView: View {
                     navigator.isReviewPresented = true
                 }
             }
-            if let origin = navigator.analyticsOrigin, origin.appID == app.id, navigator.section != .analytics {
+            if let origin = navigator.analyticsOrigin, origin.isShown(in: navigator.section, of: app.id) {
                 FromAnalyticsBar(origin: origin) {
                     navigator.backToAnalytics()
                 } onClose: {

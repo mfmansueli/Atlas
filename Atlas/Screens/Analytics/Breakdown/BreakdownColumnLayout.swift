@@ -5,13 +5,39 @@
 
 import SwiftUI
 
-/// The breakdown table's columns and their widths. With the inspector
-/// open (or a narrow window) the counts behind the rates move into the
-/// inspector, and the table keeps page views, the three rates and proceeds.
+/// The breakdown table's columns and their widths. Under
+/// `Metrics.breakdownCompactWidth`, or with the inspector open beside the
+/// table, the counts behind the rates (Impressions, Downloads, Starts) move
+/// into the inspector, and the table keeps page views, the three rates and
+/// proceeds.
 struct BreakdownColumnLayout: Equatable {
     var isCompact: Bool
     var hasSales: Bool
     var group = BreakdownColumnGroup.funnel
+    /// The column with the accent's tint: Proceeds, from the Overview's
+    /// Proceeds number.
+    var highlighted: BreakdownColumn?
+
+    /// The layout for Break It Down `width` wide.
+    static func make(
+        width: CGFloat, hasInspector: Bool, hasSales: Bool, group: BreakdownColumnGroup = .funnel, highlighted: BreakdownColumn? = nil
+    ) -> BreakdownColumnLayout {
+        BreakdownColumnLayout(
+            isCompact: hasInspector || isNarrow(width), hasSales: hasSales, group: group, highlighted: highlighted
+        )
+    }
+
+    /// Under `Metrics.breakdownCompactWidth`: the counts hide, and the
+    /// inspector slides over the table instead of sitting beside it.
+    static func isNarrow(_ width: CGFloat) -> Bool {
+        width < Metrics.breakdownCompactWidth
+    }
+
+    /// Whether the inspector covers the table's right side rather than
+    /// taking room beside it.
+    static func inspectorOverlays(width: CGFloat) -> Bool {
+        isNarrow(width)
+    }
 
     var columns: [BreakdownColumn] {
         BreakdownColumn.allCases.filter { column in
@@ -19,6 +45,10 @@ struct BreakdownColumnLayout: Equatable {
             if isCompact, column.isCount { return false }
             return true
         }
+    }
+
+    func isHighlighted(_ column: BreakdownColumn) -> Bool {
+        highlighted == column
     }
 
     /// The name column never gets narrower than this.

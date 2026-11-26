@@ -100,16 +100,18 @@ final class AnalyticsUITests: XCTestCase {
     func testTheBreakdownSwitchesDimensionAndSorts() {
         app.launch(debugScene: "an-bd")
         XCTAssertTrue(element("analytics.breakdown.row.US").waitForExistence(timeout: 15))
-        // Source.
-        element("analytics.breakdown.dimension.2").click()
+        // Source, in the segmented control (Country, Language, Source, Device, Product Page).
+        element("analytics.breakdown.dimension").radioButtons["Source"].click()
         XCTAssertTrue(element("analytics.breakdown.row.App Store Search").waitForExistence(timeout: 5))
         XCTAssertFalse(element("analytics.breakdown.row.US").exists)
         element("analytics.breakdown.sort.viewRate").click()
         XCTAssertTrue(element("analytics.breakdown.footer").exists)
-        // Referrer and Campaign, from the Detailed reports.
-        element("analytics.breakdown.dimension.5").click()
+        // Referrer and Campaign, from the Detailed reports, in More.
+        element("analytics.breakdown.more").click()
+        app.menuItems["Referrer"].click()
         XCTAssertTrue(element("analytics.breakdown.row.instagram.com").waitForExistence(timeout: 5))
-        element("analytics.breakdown.dimension.6").click()
+        element("analytics.breakdown.more").click()
+        app.menuItems["Campaign"].click()
         XCTAssertTrue(element("analytics.breakdown.row.spring_ig").waitForExistence(timeout: 5))
     }
 

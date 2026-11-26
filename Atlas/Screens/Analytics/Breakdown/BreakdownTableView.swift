@@ -5,8 +5,10 @@
 
 import SwiftUI
 
-/// The breakdown as a ranked table: a sortable header, the app's totals,
-/// then one row per territory, language, source, device or page.
+/// The breakdown as a ranked table: a sortable header, the totals row
+/// ("All territories"), one row per territory, language, source, device or
+/// page, and the footer with what the numbers leave out and what the marks
+/// mean.
 struct BreakdownTableView: View {
     @Bindable var viewModel: AnalyticsViewModel
     let table: BreakdownTable
@@ -24,7 +26,7 @@ struct BreakdownTableView: View {
             ScrollView {
                 if viewModel.sortedRows.isEmpty {
                     Text(table.dimension.emptyText)
-                        .font(.callout)
+                        .atlasTextStyle(.callout)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -37,22 +39,14 @@ struct BreakdownTableView: View {
                             row: row, layout: layout, table: table, isSelected: viewModel.selectedRowID == row.id,
                             onOpenPage: openPage(row)
                         ) {
-                            viewModel.selectedRowID = viewModel.selectedRowID == row.id ? nil : row.id
+                            viewModel.toggleRow(row.id)
                         }
                         Divider()
                     }
                 }
             }
-            Text(table.footer)
-                .font(.subheadline)
-                .foregroundStyle(Palette.label2)
-                // Not fixedSize: outside a scroll view that's measured near
-                // zero wide and grows the window's minimum height.
-                .lineLimit(4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, Spacing.medium)
-                .padding(.vertical, Spacing.small)
-                .accessibilityIdentifier("analytics.breakdown.footer")
+            Divider()
+            footer
         }
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5) }
@@ -68,58 +62,91 @@ struct BreakdownTableView: View {
         return { navigator.open(.productPages, intent: .showProductPage(name: row.name), appID: appID) }
     }
 
+    /// Apple's gaps and splits, then the legend (board 92: in the
+    /// table's footer, not above it).
+    private var footer: some View {
+        VStack(alignment: .leading, spacing: Spacing.xSmall) {
+            Text(table.footer)
+                .atlasTextStyle(.subheadline)
+                .foregroundStyle(Palette.label2)
+                // Not fixedSize: outside a scroll view that's measured near
+                // zero wide and grows the window's minimum height.
+                .lineLimit(4)
+                .accessibilityIdentifier("analytics.breakdown.footer")
+            BreakdownLegend(appName: viewModel.dataset.appName)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, Spacing.medium)
+        .padding(.vertical, Spacing.small)
+    }
+
     private var header: some View {
         HStack(spacing: 0) {
-            headerButton(.name, title: table.dimension.title)
+            headerButton(.name, title: table.dimension.columnTitle)
                 .frame(minWidth: BreakdownColumnLayout.nameMinimum, maxWidth: .infinity, alignment: .leading)
             ForEach(layout.columns) { column in
                 headerButton(column, title: column.title)
                     .frame(width: layout.width(of: column), alignment: .trailing)
+                    .frame(maxHeight: .infinity)
+                    .background(layout.isHighlighted(column) ? Palette.accentTint : Color.clear)
             }
         }
         .padding(.horizontal, Spacing.medium)
         .frame(height: Metrics.tableHeaderHeight)
         .background(Palette.fill1)
+        // VoiceOver reads the headers before the rows.
+        .accessibilityElement(children: .contain)
+        .accessibilitySortPriority(1)
     }
 
     private func headerButton(_ column: BreakdownColumn, title: String) -> some View {
         let isSorted = viewModel.sortColumn == column
+        let ascending = viewModel.sortAscending
         return Button {
             viewModel.sort(by: column)
         } label: {
             HStack(spacing: 2) {
                 Text(title)
                 if isSorted {
-                    Image(systemName: viewModel.sortAscending ? "chevron.up" : "chevron.down").imageScale(.small)
+                    Image(systemName: BreakdownSortLabel.systemImage(ascending: ascending)).imageScale(.small)
                 }
             }
-            .font(.subheadline.weight(isSorted ? .semibold : .medium))
+            .atlasTextStyle(.subheadline)
+            .fontWeight(isSorted ? .semibold : .medium)
             .foregroundStyle(isSorted ? Palette.label : Palette.label2)
             .lineLimit(1)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(Text(isSorted ? String(localized: "\(title), sorted") : String(localized: "Sort by \(title)")))
+        .help(Text(BreakdownSortLabel.hint(title: title, isSorted: isSorted, ascending: ascending)))
+        .accessibilityLabel(Text(BreakdownSortLabel.label(title: title, isSorted: isSorted, ascending: ascending)))
+        .accessibilityHint(Text(BreakdownSortLabel.hint(title: title, isSorted: isSorted, ascending: ascending)))
+        .accessibilityAddTraits(.isHeader)
         .accessibilityIdentifier("analytics.breakdown.sort.\(column.rawValue)")
     }
 
     private var totals: some View {
         HStack(spacing: 0) {
-            Text("All of \(viewModel.dataset.appName)")
-                .font(.callout.weight(.semibold))
+            Text(table.dimension.totalsTitle)
+                .atlasTextStyle(.callout)
+                .fontWeight(.semibold)
                 .lineLimit(1)
                 .frame(minWidth: BreakdownColumnLayout.nameMinimum, maxWidth: .infinity, alignment: .leading)
             ForEach(layout.columns) { column in
                 Text(Self.text(column, totals: table.totals, subscribers: table.subscribers, after: table.afterDownload))
-                    .font(.callout.weight(.medium))
+                    .atlasTextStyle(.callout)
+                    .fontWeight(.medium)
                     .monospacedDigit()
                     .lineLimit(1)
                     .frame(width: layout.width(of: column), alignment: .trailing)
+                    .frame(maxHeight: .infinity)
+                    .background(layout.isHighlighted(column) ? Palette.accentTint : Color.clear)
             }
         }
         .padding(.horizontal, Spacing.medium)
-        .frame(height: 30)
+        .frame(height: Metrics.tableHeaderHeight)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("analytics.breakdown.totals")
     }
 
     /// A cell's text, the funnel's or the newer reports'.

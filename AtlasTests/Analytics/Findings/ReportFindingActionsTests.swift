@@ -132,7 +132,8 @@ struct ReportFindingActionsTests {
         navigator.follow(.pageScreenshots(name: "Mood tracking"), origin: origin)
         #expect(navigator.section == .productPages)
         #expect(navigator.intent == .makePageScreenshots(name: "Mood tracking"))
-        #expect(navigator.analyticsOrigin == origin)
+        #expect(navigator.analyticsOrigin?.text == origin.text)
+        #expect(navigator.analyticsOrigin?.section == .productPages)
 
         navigator.follow(.changes, origin: origin)
         #expect(navigator.section == .analytics)

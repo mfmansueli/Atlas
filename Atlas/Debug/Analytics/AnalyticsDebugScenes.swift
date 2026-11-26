@@ -36,6 +36,8 @@ import SwiftUI
 ///   (Pricing's Annual page on Brazil under "From Analytics"), `an-jump`
 ///   (Store Page in German under it), and with the sidebar hidden
 ///   `an-funnel-s` and `an-bd-s`.
+/// - Board 92's Break It Down from the Overview's Proceeds number:
+///   `an-bd-proc` (the proceeds banner, Proceeds tinted).
 enum AnalyticsDebugScenes {
     typealias AppIDs = DebugFixtures.AppID
     typealias Data = DebugAnalyticsData
@@ -67,6 +69,8 @@ enum AnalyticsDebugScenes {
         case "an-bd-s":
             NavigationDebugLaunch.hidesSidebar = true
             return scene(launch: AnalyticsDebugLaunch(tab: .breakDown, selectedRow: "DE"))
+        case "an-bd-proc":
+            return scene(launch: AnalyticsDebugLaunch(tab: .overview, showsProceeds: true))
         default: return nil
         }
     }
