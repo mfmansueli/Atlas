@@ -49,7 +49,6 @@ struct ScreenshotsLanguagePage: View {
                 // Its own scroll view reaches the top, so the toolbar's hard
                 // edge runs over it too, up to Add Screenshots….
                 StoreArtworkPreviewAside(viewModel: viewModel, locale: locale)
-                    .padding(.trailing, Spacing.xLarge)
             }
         }
         // The width the window offers, not the page's own: measured after

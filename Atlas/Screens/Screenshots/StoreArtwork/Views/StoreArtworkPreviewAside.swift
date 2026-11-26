@@ -28,8 +28,11 @@ struct StoreArtworkPreviewAside: View {
             }
         }
         .contentMargins(.top, Spacing.large, for: .scrollContent)
+        // The page's trailing margin inside the scroll view, so the
+        // toolbar's edge reaches the window's right edge.
+        .contentMargins(.trailing, Spacing.xLarge, for: .scrollContent)
         .scrollIndicators(.never)
-        .frame(width: Metrics.storePreviewColumnWidth)
+        .frame(width: Metrics.storePreviewColumnWidth + Spacing.xLarge)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.page.storePreview")
     }
