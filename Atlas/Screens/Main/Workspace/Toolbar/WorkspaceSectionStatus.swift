@@ -39,6 +39,10 @@ struct WorkspaceSectionStatus: Equatable {
         var withoutReply: Int?
         /// Analytics: the days the section shows.
         var days: Int?
+        /// Analytics: what it's doing before the first reports (“Waiting
+        /// for Apple’s first reports”), or a new app's “Since Nov 1 · 9
+        /// days of data”; nil for the usual line.
+        var analyticsStatus: String?
 
         /// A draft or rejected event: the ones whose tile says an image is
         /// missing.
@@ -167,10 +171,15 @@ struct WorkspaceSectionStatus: Equatable {
         return parts
     }
 
-    /// “Last 28 days · 2 new findings”.
+    /// “Last 28 days · 2 new findings”; before the first reports what
+    /// Analytics is doing (`AnalyticsAvailability.toolbarText`).
     private var analyticsParts: [String] {
         var parts: [String] = []
-        if let days = facts.days { parts.append(String(localized: "Last \(days) days", comment: "kind:status")) }
+        if let status = facts.analyticsStatus {
+            parts.append(status)
+        } else if let days = facts.days {
+            parts.append(String(localized: "Last \(days) days", comment: "kind:status"))
+        }
         if waiting > 0 {
             parts.append(waiting == 1 ? String(localized: "1 new finding") : String(localized: "\(waiting) new findings"))
         }

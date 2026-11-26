@@ -7,10 +7,24 @@ import SwiftUI
 
 /// The page before the first reports (README-DS §16): Ask Apple for
 /// Reports, waiting for Apple, a key without Admin, the first download.
+/// While it shows, the Autopilot bar offers only “Ask What Analytics
+/// Shows…”.
 struct AnalyticsSetupContent: View {
     @Bindable var viewModel: AnalyticsViewModel
 
+    /// The window's navigator; nil in previews.
+    @Environment(WorkspaceNavigator.self) private var navigator: WorkspaceNavigator?
+
     var body: some View {
+        page
+            .onAppear { navigator?.autopilotDetail = .analyticsBeforeReports }
+            .onDisappear {
+                if navigator?.autopilotDetail == .analyticsBeforeReports { navigator?.autopilotDetail = nil }
+            }
+    }
+
+    @ViewBuilder
+    private var page: some View {
         switch viewModel.availability {
         case .notSetUp:
             centered {

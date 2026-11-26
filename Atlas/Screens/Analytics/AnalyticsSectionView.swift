@@ -24,6 +24,7 @@ struct AnalyticsSectionView: View {
     @Environment(ChangeQueue.self) private var changes
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(AppSession.self) private var session: AppSession?
+    @Environment(ReviewsStore.self) private var reviewsStore: ReviewsStore?
     /// The window's kept models; nil in previews without the main window.
     @Environment(WorkspaceSectionModels.self) private var sectionModels: WorkspaceSectionModels?
 
@@ -36,7 +37,9 @@ struct AnalyticsSectionView: View {
                     onAct: { action, text in
                         navigator.follow(action, origin: AnalyticsOrigin(appID: app.id, text: text, tab: viewModel.tab))
                     },
-                    stabilityRelease: stabilityRelease
+                    stabilityRelease: stabilityRelease,
+                    loadRating: loadRating,
+                    onOpenReviews: { navigator.open(.reviews, appID: app.id) }
                 )
                 .sheet(isPresented: Binding(get: { viewModel.isSettingsPresented }, set: { viewModel.isSettingsPresented = $0 })) {
                     AnalyticsSettingsSheet(
@@ -153,6 +156,18 @@ struct AnalyticsSectionView: View {
             openVersion: { navigator.openVersion(submitting: false) },
             pause: { Task { await release?.perform(.pause) } }
         )
+    }
+
+    /// The Overview's Rating: the App Store's average as Ratings & Reviews
+    /// reads it (each storefront's answer is kept a day), and the written
+    /// reviews by version.
+    private var loadRating: (@MainActor () async -> OverviewRating?)? {
+        guard let reviewsStore else { return nil }
+        return { [app, services] in
+            let archive = reviewsStore.archive(for: app.id)
+            let average = await RatingsSummary.average(of: app, archive: archive, services: services.reviews)
+            return OverviewRating.make(average: average, reviews: archive.reviews, currentVersion: archive.currentVersion)
+        }
     }
 
     private func waitingCount(_ finding: AnalyticsFinding) -> Int {

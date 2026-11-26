@@ -25,6 +25,8 @@ extension WorkspaceAutopilotAction {
             String(localized: "Check App Review", comment: "kind:button · the Autopilot bar's button for Check It Will Pass App Review…")
         case .replyAutomatically: String(localized: "Auto-Reply", comment: "kind:button · the Autopilot bar's button for Reply Automatically…")
         case .makePageScreenshots: String(localized: "Page Screenshots", comment: "kind:button · the Autopilot bar's button for Make Screenshots for a Page…")
+        case .askWhatAnalyticsShows:
+            String(localized: "Ask What It Shows", comment: "kind:button · the Autopilot bar's button for Ask What Analytics Shows…")
         default: fullTitle.hasSuffix("…") ? String(fullTitle.dropLast()) : fullTitle
         }
     }
@@ -59,6 +61,7 @@ extension WorkspaceAutopilotAction {
         case .summarizeRequests: String(localized: "Reviews grouped by request", comment: "kind:description · an Autopilot action")
         case .findWhatToTry: String(localized: "From the last 4 weeks of reports", comment: "kind:description · an Autopilot action")
         case .explainChange: String(localized: "Pick a mark on the chart", comment: "kind:description · an Autopilot action")
+        case .askWhatAnalyticsShows: String(localized: "What the reports will tell, and when", comment: "kind:description · an Autopilot action")
         }
     }
 }

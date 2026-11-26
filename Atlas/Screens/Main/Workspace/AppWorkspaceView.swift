@@ -577,7 +577,7 @@ extension AppWorkspaceView {
         let rule = autoReply.rule(for: app.id)
         let note = section == .reviews && rule.isOn && !pro.isFree
             ? (rule.isPaused ? String(localized: "auto-reply paused") : String(localized: "auto-reply on")) : nil
-        let waiting = section == .analytics ? analytics?.newFindingCount(for: app.id) ?? 0 : counts.count(for: section)
+        let waiting = section == .analytics ? analytics?.findingsBadgeCount(for: app.id) ?? 0 : counts.count(for: section)
         return WorkspaceSectionStatus(
             section: section, waiting: waiting, notPushed: notPushed, lead: lead, note: note, facts: sectionFacts(for: section)
         )
@@ -609,6 +609,11 @@ extension AppWorkspaceView {
             if let archive = reviewsStore?.archive(for: app.id), archive.fetchedAt != nil { facts.withoutReply = archive.needsReplyCount }
         case .analytics:
             facts.days = kept?.analytics?.days
+            facts.analyticsStatus = if let model = kept?.analytics {
+                model.availability.toolbarText
+            } else {
+                analytics?.availability(for: app.id).toolbarText
+            }
         default:
             break
         }

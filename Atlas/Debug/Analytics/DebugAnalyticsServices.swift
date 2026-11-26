@@ -14,6 +14,9 @@ struct DebugAnalyticsServices: AnalyticsServices {
     var keyCannotAsk = false
     /// A download that never ends, for the loading scene.
     var neverFinishes = false
+    /// Check Now finds Lumen's store-page reports (an-flow: asked, waiting,
+    /// then the Overview).
+    var deliversOnCheck = false
     var fixedContext: AnalyticsContext? = DebugAnalyticsData.context
 
     func requestStatus(appID _: StoreApp.ID) async throws -> AnalyticsRequestStatus {
@@ -27,7 +30,14 @@ struct DebugAnalyticsServices: AnalyticsServices {
 
     func stopReports(appID _: StoreApp.ID) async throws {}
 
-    func downloadEngagement(appID _: StoreApp.ID, known _: Set<String>) async throws -> [EngagementBatch] { [] }
+    func downloadEngagement(appID _: StoreApp.ID, known: Set<String>) async throws -> [EngagementBatch] {
+        guard deliversOnCheck, !known.contains(Self.flowInstance) else { return [] }
+        let archive = DebugAnalyticsData.lumenArchive
+        guard let last = archive.lastDay else { return [] }
+        return [EngagementBatch(instanceID: Self.flowInstance, kind: .engagement, isDetailed: false, processing: last, facts: archive.facts)]
+    }
+
+    private static let flowInstance = "debug-flow"
 
     func downloadSales(vendorNumber _: String, days _: [AnalyticsDay], activeDays _: [AnalyticsDay]) async throws -> SalesDownload {
         SalesDownload()
