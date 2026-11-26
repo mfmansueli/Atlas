@@ -31,6 +31,7 @@ enum PushFlightLabel {
         let kind = switch item.content {
         case let .artwork(kind): kind.title
         case .appPreview: String(localized: "App Preview", comment: "kind:label")
+        case let .artworkRemoval(place): String(localized: "Remove \(place.title)", comment: "kind:label · a live header or search image deleted")
         }
         return "\(kind) · \(item.localeName)"
     }

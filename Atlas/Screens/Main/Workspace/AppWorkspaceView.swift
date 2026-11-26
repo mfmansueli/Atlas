@@ -394,6 +394,7 @@ extension AppWorkspaceView {
             }
         }
     }
+}
 
 // MARK: - Autopilot bar
 
