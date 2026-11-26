@@ -29,8 +29,15 @@ final class PricingViewsUITests: XCTestCase {
             .matching(NSPredicate(format: "identifier ENDSWITH %@", ".reviewScreenshotMissing"))
             .firstMatch
         XCTAssertTrue(missing.waitForExistence(timeout: 20))
-        let button = app.buttons.matching(NSPredicate(format: "identifier ENDSWITH %@", ".reviewScreenshot")).firstMatch
+        // The queued product's button, not a live product's Replace…; under
+        // the fold at 1200 × 780, so scroll it up first.
+        let button = app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH %@ AND identifier ENDSWITH %@", "pricing.newSubscriptions.", ".reviewScreenshot")
+        ).firstMatch
         XCTAssertTrue(button.exists)
+        for _ in 0..<10 where !button.isHittable {
+            app.windows.firstMatch.scroll(byDeltaX: 0, deltaY: -200)
+        }
         button.click()
         XCTAssertTrue(app.sheets.firstMatch.waitForExistence(timeout: 5))
     }

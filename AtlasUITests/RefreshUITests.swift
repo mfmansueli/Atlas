@@ -51,12 +51,13 @@ final class RefreshUITests: XCTestCase {
         refresh.click()
         XCTAssertTrue(element("refresh.status").waitForExistence(timeout: 25))
         XCTAssertTrue(app.staticTexts["Couldn’t update"].exists)
-        app.buttons["refresh.details"].click()
+        // A link-styled button: VoiceOver reads it as a link.
+        element("refresh.details").click()
 
         XCTAssertTrue(element("refresh.error").waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Couldn’t Update from App Store Connect"].exists)
         XCTAssertFalse(element("refresh.error.code").exists, "the code shows only under Show Details")
-        app.buttons["refresh.error.details"].click()
+        element("refresh.error.details").click()
         XCTAssertTrue(element("refresh.error.code").waitForExistence(timeout: 5))
         app.buttons["refresh.error.close"].click()
         XCTAssertTrue(element("refresh.error").waitForNonExistence(timeout: 5))
@@ -69,7 +70,9 @@ final class RefreshUITests: XCTestCase {
         XCTAssertTrue(waitUntil(refresh, isEnabled: true, timeout: 10))
         refresh.click()
         XCTAssertTrue(element("refresh.status").waitForExistence(timeout: 25))
-        let offline = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Offline · from ")).firstMatch
+        // A Text's words are its value on macOS, not its label.
+        let prefix = "Offline · from "
+        let offline = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@ OR value BEGINSWITH %@", prefix, prefix)).firstMatch
         XCTAssertTrue(offline.exists)
     }
 

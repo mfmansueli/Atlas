@@ -44,7 +44,11 @@ struct AppInformationContentView: View {
                 .accessibilityIdentifier("appInformation.pageContent")
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        // minHeight 0: lines that wrap, measured at their narrowest, made the
+        // page's smallest height taller than the window (App Privacy's top
+        // and bar), which then cut off the top and the sidebar.
+        .frame(minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Palette.content)
         .overlay(alignment: .bottom) {
             if let toast = viewModel.suggestionToast {

@@ -41,8 +41,10 @@ final class AnalyticsSubscriptionsStabilityUITests: XCTestCase {
         XCTAssertTrue(element("analytics.subscriptions.seeOffers").waitForExistence(timeout: 15))
         element("analytics.subscriptions.seeOffers").click()
         XCTAssertTrue(element("analytics.offers").waitForExistence(timeout: 10))
-        app.typeKey("[", modifierFlags: .command)
-        XCTAssertTrue(element("analytics.subscriptions").waitForExistence(timeout: 10), "⌘[ goes back to the summary")
+        // ⌘[ is the back link's shortcut, but typeKey can't type "[" on a
+        // layout without its own key for it (Italian, German…): click it.
+        element("analytics.subscriptions.back").click()
+        XCTAssertTrue(element("analytics.subscriptions").waitForExistence(timeout: 10), "Back on the summary")
     }
 
     func testBillingOpensFromItsNotice() {

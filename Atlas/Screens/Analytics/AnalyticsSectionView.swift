@@ -88,7 +88,6 @@ struct AnalyticsSectionView: View {
         model.recompute()
         viewModel = model
         configure()
-        takeRequestedTab()
         #if DEBUG
         let launch = AnalyticsDebugLaunch.pending
         launch?.apply(to: model)
@@ -97,6 +96,9 @@ struct AnalyticsSectionView: View {
             navigator.follow(action, origin: AnalyticsOrigin(appID: app.id, text: launch?.followText ?? "", tab: model.tab))
         }
         #endif
+        // After a DEBUG scene's launch, so a tab asked for later (See
+        // Stability on the Overview) wins over the scene's first tab.
+        takeRequestedTab()
         await summaries.load(app)
         configure()
         async let refresh: Void = model.refresh()

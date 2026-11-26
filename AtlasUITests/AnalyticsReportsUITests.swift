@@ -43,7 +43,9 @@ final class AnalyticsReportsUITests: XCTestCase {
     func testTurningOnTheGracePeriodAsksFirst() {
         app.launch(debugScene: "an-sub-billing")
         XCTAssertTrue(element("analytics.billing").waitForExistence(timeout: 15))
-        element("analytics.billing.turnOn").click()
+        // The notice's button asks first; analytics.billing.turnOn is the
+        // confirmation's own Turn On.
+        app.buttons["Turn On Billing Grace Period…"].firstMatch.click()
         XCTAssertTrue(element("analytics.billing.duration").waitForExistence(timeout: 5), "Picks the length before anything changes")
         app.typeKey(.escape, modifierFlags: [])
     }

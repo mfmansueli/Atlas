@@ -10,11 +10,20 @@ import SwiftUI
 struct ExportCompliancePageView: View {
     @Bindable var viewModel: AppInformationViewModel
 
+    /// "Version 1.0 isn’t on the App Store yet. …", for a version that
+    /// isn't live; nil otherwise.
+    private var notOnTheStoreYet: String? {
+        guard let version = viewModel.content?.version, !version.state.isLive else { return nil }
+        return AppInformationPage.exportCompliance.whereShown(appName: viewModel.app.name, version: version)
+    }
+
     var body: some View {
         if let answers = viewModel.exportAnswers {
             VStack(alignment: .leading, spacing: Spacing.large) {
-                // Each question says only Apple sees it (board 88).
-                AppInformationPageTools(whereShown: nil) {
+                // Each question says only Apple sees it (board 88); a version
+                // not on the App Store yet says so once, so "only Apple"
+                // isn't read as the app's state.
+                AppInformationPageTools(whereShown: notOnTheStoreYet) {
                     Pill(text: answers.status)
                         .fixedSize()
                         .accessibilityIdentifier("appInformation.export.status")

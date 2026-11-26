@@ -18,7 +18,7 @@ struct PrivacyURLsSuggestionBar: View {
                     "Only for User Privacy Choices URLs. You review App Privacy answers one by one in the worksheet.",
                     comment: "kind:caption · App Privacy, what the suggestions on Privacy URLs cover"
                 )
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1...3)
             } icon: {
                 Image(systemName: "lock")
                     .imageScale(.small)

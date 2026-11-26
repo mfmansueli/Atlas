@@ -24,7 +24,11 @@ struct AppPrivacyPageView: View {
             case .urls: PrivacyURLsTab(viewModel: viewModel)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // minHeight 0: the window asks for the page's smallest height, and
+        // wrapping lines measured at their narrowest made it taller than the
+        // window, which then cut off the top bar and the sidebar.
+        .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity)
         .sheet(isPresented: $viewModel.isExportSheetPresented) {
             PrivacyExportSheet(viewModel: viewModel)
         }

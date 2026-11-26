@@ -90,7 +90,17 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertTrue(element("analytics.breakdown.inspector").waitForExistence(timeout: 5))
         let open = app.buttons["Open Store Page in German"]
         XCTAssertTrue(open.exists)
-        open.click()
+        // The inspector's actions are at its end, under the fold at 1200 × 780.
+        // The inspector is an overlay, and accessibility hit-testing finds the
+        // table under it, so XCUITest never calls its buttons hittable: scroll
+        // and click at the button.
+        let window = app.windows.firstMatch
+        let corner = window.coordinate(withNormalizedOffset: .zero)
+        func at(_ frame: CGRect) -> XCUICoordinate {
+            corner.withOffset(CGVector(dx: frame.midX - window.frame.minX, dy: frame.midY - window.frame.minY))
+        }
+        at(element("analytics.breakdown.inspector").frame).scroll(byDeltaX: 0, deltaY: -600)
+        at(open.frame).click()
 
         // The Store Page, saying where the person came from.
         XCTAssertTrue(element("analytics.origin").waitForExistence(timeout: 10))
@@ -154,7 +164,12 @@ final class AnalyticsUITests: XCTestCase {
         app.launch(debugScene: "an-sub")
         XCTAssertTrue(element("analytics.subscriptions").waitForExistence(timeout: 15))
         XCTAssertTrue(app.staticTexts["Active subscribers"].exists)
-        element("analytics.subscriptions.openRetention").click()
+        let openRetention = element("analytics.subscriptions.openRetention")
+        // Under the fold at 1200 × 780: scroll the summary up first.
+        for _ in 0..<10 where !openRetention.isHittable {
+            element("analytics.subscriptions").scroll(byDeltaX: 0, deltaY: -200)
+        }
+        openRetention.click()
         XCTAssertTrue(element("analytics.origin").waitForExistence(timeout: 10))
     }
 

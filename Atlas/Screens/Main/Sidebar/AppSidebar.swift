@@ -120,13 +120,15 @@ struct AppSidebar: View {
     /// Hide Sidebar, which macOS 26 puts at the sidebar's top right. The
     /// toggle is placed here only while the sidebar shows; hidden, macOS
     /// puts it back by the window's buttons, and Refresh moves to the
-    /// toolbar after the section menu (`AppWorkspaceView`).
+    /// toolbar after the section menu (`AppWorkspaceView`). Hidden, the
+    /// sidebar's toolbar items stay in the window's toolbar, so its Refresh
+    /// goes too: otherwise there are two.
     @ToolbarContentBuilder
     private var topRow: some ToolbarContent {
-        ToolbarItem {
-            RefreshButton(identifier: "sidebar.refresh")
-        }
         if navigator.isSidebarShown {
+            ToolbarItem {
+                RefreshButton(identifier: "sidebar.refresh")
+            }
             DefaultToolbarItem(kind: .sidebarToggle)
         }
     }

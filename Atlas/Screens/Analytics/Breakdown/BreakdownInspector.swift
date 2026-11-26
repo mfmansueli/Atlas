@@ -27,11 +27,14 @@ struct BreakdownInspector: View {
                     if let region = row.regionCode { FlagTile(regionCode: region, size: 16) }
                     Text(row.name).font(.body.weight(.semibold)).lineLimit(2)
                     Spacer(minLength: 0)
-                    Button(action: onClose) { Image(systemName: "xmark") }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Palette.label2)
-                        .accessibilityLabel(Text("Close inspector"))
-                        .accessibilityIdentifier("analytics.breakdown.inspector.close")
+                    Button(action: onClose) {
+                        Image(systemName: "xmark").contentShape(Rectangle())
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(Palette.label2)
+                    .help(Text("Close", comment: "kind:tooltip · Break It Down's inspector"))
+                    .accessibilityLabel(Text("Close inspector"))
+                    .accessibilityIdentifier("analytics.breakdown.inspector.close")
                 }
                 Text(table.period.text)
                     .font(.subheadline)
@@ -79,7 +82,9 @@ struct BreakdownInspector: View {
         .frame(width: width)
         .frame(maxWidth: width == nil ? .infinity : nil)
         .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
-        .overlay { RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5) }
+        .overlay {
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).strokeBorder(Palette.separator, lineWidth: 0.5).allowsHitTesting(false)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(row.name))
         .accessibilityIdentifier("analytics.breakdown.inspector")

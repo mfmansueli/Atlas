@@ -42,7 +42,12 @@ final class AnalyticsBreakDownUITests: XCTestCase {
         row.click()
         let inspector = element("analytics.breakdown.inspector")
         XCTAssertTrue(inspector.waitForExistence(timeout: 5))
-        element("analytics.breakdown.inspector.close").click()
+        // A real click at the button: the inspector is an overlay, and
+        // accessibility hit-testing finds the table's header under it, so
+        // XCUITest calls the button not hittable though it's on top.
+        let close = element("analytics.breakdown.inspector.close")
+        XCTAssertTrue(close.exists)
+        close.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).click()
         XCTAssertTrue(inspector.waitForNonExistence(timeout: 5))
     }
 

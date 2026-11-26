@@ -8,7 +8,8 @@ import SwiftUI
 
 /// Subscriptions and Stability with nothing to show yet (board 92, row 8),
 /// as Apple's rules make them: `an-sub-none` (Lumen before its first
-/// sale), `an-sub-trial` (Quiet Timer: one trial, nobody paid),
+/// sale), `an-sub-trial` (Lumen: one trial, nobody paid; Quiet Timer
+/// sells no subscription, so it has no Subscriptions view),
 /// `an-sub-few` (Parcel Pal: 4 subscribers, too few for rates),
 /// `an-crash-wait` (Lumen 1.4 used by 3 people who share analytics),
 /// `an-crash-new` (Parcel Pal: 9 days, App Crashes sent empty) and
@@ -21,7 +22,7 @@ enum AnalyticsEmptyDebugScenes {
     static func view(for id: String) -> AnyView? {
         switch id {
         case "an-sub-none": scene(store: lumenBeforeTheFirstSale(), tab: .subscriptions)
-        case "an-sub-trial": scene(app: AppIDs.quiet, tab: .subscriptions)
+        case "an-sub-trial": scene(store: lumenWithOneTrial(), tab: .subscriptions)
         case "an-sub-few": scene(app: AppIDs.parcel, tab: .subscriptions)
         case "an-crash-wait": scene(store: lumen(reports: versionTooNew), tab: .stability)
         case "an-crash-new": scene(app: AppIDs.parcel, tab: .stability)
@@ -39,6 +40,23 @@ enum AnalyticsEmptyDebugScenes {
         sales.events.removeAll { $0.appID == AppIDs.lumen }
         sales.subscribers.removeAll { $0.appID == AppIDs.lumen }
         sales.active.removeAll { $0.appID == AppIDs.lumen }
+        store.load(sales: sales, vendorNumber: "85012345")
+        return store
+    }
+
+    /// The sample store with one free trial for Lumen, three days ago,
+    /// and nothing paid.
+    @MainActor
+    private static func lumenWithOneTrial() -> AnalyticsStore {
+        let store = Data.store()
+        var sales = Data.sales
+        sales.events.removeAll { $0.appID == AppIDs.lumen }
+        sales.subscribers.removeAll { $0.appID == AppIDs.lumen }
+        sales.active.removeAll { $0.appID == AppIDs.lumen }
+        sales.events.append(SubscriptionEventFact(
+            day: Data.through.adding(-3), appID: AppIDs.lumen, kind: .trialStart, subscription: "Lumen Plus Monthly", territory: "US",
+            offerType: "Free Trial", quantity: 1
+        ))
         store.load(sales: sales, vendorNumber: "85012345")
         return store
     }

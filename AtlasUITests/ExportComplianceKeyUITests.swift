@@ -56,7 +56,7 @@ final class ExportComplianceKeyUITests: XCTestCase {
     func testClaudeCodesReportShowsWhereItWasAdded() {
         app.launch(debugScene: "info-key-added")
         XCTAssertTrue(element("appInformation.export.key.status").waitForExistence(timeout: 20))
-        XCTAssertTrue(text(containing: "Added in project.pbxproj (Lumen) — builds uploaded from now on answer it").exists)
+        XCTAssertTrue(text(containing: "Added in project.pbxproj (Lumen) · future builds answer it").exists)
         XCTAssertTrue(text(containing: "By Claude Code").exists)
         XCTAssertTrue(text(containing: "commit 4f2a9c1e7b").exists)
         XCTAssertFalse(element("appInformation.export.addKey").exists)
@@ -81,7 +81,7 @@ final class ExportComplianceKeyUITests: XCTestCase {
         app.launch(debugScene: "info-key-inferred")
         XCTAssertTrue(element("appInformation.export.key.status").waitForExistence(timeout: 20))
         XCTAssertTrue(text(containing: "Builds already answer it").exists)
-        XCTAssertTrue(text(containing: "this is inferred").exists)
+        XCTAssertTrue(text(containing: "Inferred only").exists)
         XCTAssertTrue(app.buttons["Check in the Project…"].exists || text(containing: "Check in the Project…").exists)
         XCTAssertFalse(element("appInformation.export.copyKey").exists)
         attach("info-key-inferred")

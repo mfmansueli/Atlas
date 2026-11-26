@@ -43,6 +43,9 @@ struct AcceptAllSheet: View {
             footer
         }
         .frame(width: 780, height: 620)
+        // A container: without it the sheet's identifier replaces every
+        // control's own (acceptAll.accept, acceptAll.cancel…).
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("acceptAll.sheet")
     }
 

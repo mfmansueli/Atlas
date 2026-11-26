@@ -179,7 +179,8 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertTrue(acceptHere.exists)
         acceptHere.click()
         XCTAssertTrue(waitUntil { !card.descendants(matching: .any)["suggestion.accept"].firstMatch.exists })
-        XCTAssertTrue(element("appInformation.toast").waitForExistence(timeout: 5))
+        // Accept n on This Page says it with the shared toast (board 88).
+        XCTAssertTrue(element("toast.text").waitForExistence(timeout: 5) || element("appInformation.toast").exists)
     }
 
     /// The bar's arrows go to the language with a suggestion and say which.
