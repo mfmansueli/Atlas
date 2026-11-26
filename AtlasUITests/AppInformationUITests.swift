@@ -22,15 +22,18 @@ final class AppInformationUITests: XCTestCase {
         app.terminate()
     }
 
-    func testThePageColumnSwitchesPages() {
+    func testThePageStripSwitchesPages() {
         launch(scene: "info-general")
         XCTAssertTrue(element("appInformation.general").waitForExistence(timeout: 10))
-        element("appInformation.pageRow.ageRating").click()
+        openPage("ageRating")
         XCTAssertTrue(element("appInformation.ageRating").waitForExistence(timeout: 5))
-        element("appInformation.pageRow.exportCompliance").click()
+        openPage("exportCompliance")
         XCTAssertTrue(element("appInformation.exportCompliance").waitForExistence(timeout: 5))
-        element("appInformation.pageRow.appPrivacy").click()
+        openPage("appPrivacy")
         XCTAssertTrue(element("appInformation.appPrivacy.notASync").waitForExistence(timeout: 5))
+        // App Privacy has its own columns, under the same top and strip.
+        XCTAssertTrue(element("appInformation.top").exists)
+        XCTAssertTrue(element("appInformation.page").exists)
     }
 
     func testEditingCopyrightQueuesAChange() {
@@ -161,18 +164,18 @@ final class AppInformationUITests: XCTestCase {
         XCTAssertTrue(waitUntil { !accept.exists })
     }
 
-    /// Privacy URLs has the suggestion bar for its URLs, saying the
-    /// answers are never in it; Accept 1 on This Page takes the German URL.
+    /// Privacy URLs says the answers are never in its suggestions; Accept
+    /// 1 on This Page, at the top, takes the German URL.
     func testAppPrivacysBarAcceptsItsURLSuggestions() {
         launch(scene: "info-choices-suggested")
         let urls = element("appInformation.appPrivacy.urls")
         XCTAssertTrue(urls.waitForExistence(timeout: 15))
-        let bar = urls.descendants(matching: .any)["appInformation.pageBar"]
+        let bar = urls.descendants(matching: .any)["appInformation.appPrivacy.suggestionBar"]
         XCTAssertTrue(bar.waitForExistence(timeout: 5))
         XCTAssertTrue(element("appInformation.appPrivacy.barNote").exists)
         let card = element("appInformation.suggestions.appPrivacy.de-DE.privacyChoicesUrl")
         XCTAssertTrue(card.waitForExistence(timeout: 5))
-        let acceptHere = bar.buttons["appInformation.acceptHere"]
+        let acceptHere = app.buttons["appInformation.acceptHere"]
         XCTAssertTrue(acceptHere.exists)
         acceptHere.click()
         XCTAssertTrue(waitUntil { !card.descendants(matching: .any)["suggestion.accept"].firstMatch.exists })
@@ -210,7 +213,7 @@ final class AppInformationUITests: XCTestCase {
     /// the window's bottom edge, where a click lands outside the window:
     /// the page scrolls until `target` is fully in view.
     private func reveal(_ target: XCUIElement) {
-        let page = element("appInformation.page")
+        let page = element("appInformation.pageContent")
         guard page.exists else { return }
         var tries = 0
         while tries < 12 {
@@ -218,6 +221,16 @@ final class AppInformationUITests: XCTestCase {
             page.scroll(byDeltaX: 0, deltaY: target.frame.minY < page.frame.minY ? 200 : -200)
             tries += 1
         }
+    }
+
+    /// Clicks a page's card in the strip, scrolling the strip on first
+    /// when the card is past its right edge.
+    private func openPage(_ page: String) {
+        let card = element("appInformation.page.\(page)")
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        let more = app.buttons["appInformation.page.more"]
+        if !card.isHittable, more.exists { more.click() }
+        card.click()
     }
 
     private func element(_ identifier: String) -> XCUIElement {

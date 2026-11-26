@@ -9,7 +9,7 @@ import Testing
 @testable import Atlas
 
 /// Assistant answers on App Compliance: they wait on their cards, count in
-/// the page column, give the card's own answer when accepted, and are
+/// the page strip, give the card's own answer when accepted, and are
 /// never taken by Accept All.
 @MainActor
 @Suite("App Compliance suggestions")
@@ -33,7 +33,7 @@ struct ComplianceSuggestionTests {
         let vm = await loaded()
         #expect(vm.complianceSuggestions.map(\.rule) == [.traderStatus, .icpFilingNumber, .securityAssessment, .aiGeneratedContent, .medicalDevice])
         #expect(vm.suggestionCount(on: .appCompliance) == 5)
-        #expect(vm.pageColumnStatus(for: .appCompliance) == "5 need you · 5 suggested")
+        #expect(vm.pageStatus(for: .appCompliance).state == .suggested(5))
         #expect(vm.complianceSuggestionBanner?.client == "Claude Code")
         #expect(vm.complianceSuggestionBanner?.text.hasPrefix("suggested 5 answers") == true)
         // Suggestions don't answer: the page still needs the person.

@@ -6,10 +6,14 @@
 import SwiftUI
 
 /// One row of an `AppInformationFormSection`: a label (with an optional
-/// second line) on the left, its control on the right.
+/// second line, and the line that says where the field shows) on the left,
+/// its control on the right.
 struct AppInformationFormRow<Control: View>: View {
     let label: String
     var detail: String?
+    /// "In the Information section of the page", "Only Apple sees this"
+    /// (`AppInformationFieldPlacement`, board 88).
+    var whereShown: String?
     @ViewBuilder var control: () -> Control
 
     var body: some View {
@@ -20,6 +24,12 @@ struct AppInformationFormRow<Control: View>: View {
                 if let detail {
                     Text(detail)
                         .font(.subheadline)
+                        .foregroundStyle(Palette.label2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if let whereShown {
+                    Text(whereShown)
+                        .atlasTextStyle(.subheadline)
                         .foregroundStyle(Palette.label2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -34,7 +44,7 @@ struct AppInformationFormRow<Control: View>: View {
 }
 
 #Preview {
-    AppInformationFormRow(label: "Copyright") {
+    AppInformationFormRow(label: "Copyright", whereShown: "In the Information section of the page") {
         TextField("Copyright", text: .constant("© 2026 Northpier Studio"))
             .labelsHidden()
             .frame(width: 260)

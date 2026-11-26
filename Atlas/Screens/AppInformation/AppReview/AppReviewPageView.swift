@@ -14,14 +14,13 @@ struct AppReviewPageView: View {
     var body: some View {
         if let content = viewModel.content, let review = viewModel.review {
             VStack(alignment: .leading, spacing: Spacing.xLarge) {
-                AppInformationPageHeader(
-                    title: AppInformationPage.appReview.title,
-                    subtitle: AppInformationPage.appReview.summary(appName: viewModel.app.name, version: content.version?.versionString)
-                ) {
+                // Each field says only Apple sees it (board 88).
+                AppInformationPageTools(whereShown: nil) {
                     Pill(
                         text: review.isComplete ? String(localized: "Complete") : String(localized: "Incomplete"),
                         style: review.isComplete ? .neutral : .warning
                     )
+                    .fixedSize()
                     .accessibilityIdentifier("appInformation.review.status")
                     if let version = content.version {
                         AppInformationVersionMenu(versions: content.versions, selected: version) { id in
@@ -32,7 +31,6 @@ struct AppReviewPageView: View {
                 if let version = content.version, !content.isVersionEditable {
                     ReadOnlyVersionNote(version: version, editable: content.editableVersion)
                 }
-                AppInformationPageBar(viewModel: viewModel, page: .appReview)
                 AppInformationSuggestionsPanel(viewModel: viewModel, page: .appReview)
                 Group {
                     if !contactFields.isEmpty {
@@ -78,7 +76,11 @@ struct AppReviewPageView: View {
 
     private func signInSection(_ review: AppReviewValues) -> some View {
         AppInformationFormSection(title: String(localized: "Sign-in")) {
-            AppInformationFormRow(label: AppReviewField.signInRequired.title, detail: String(localized: "App Review needs a demo account to get past it")) {
+            AppInformationFormRow(
+                label: AppReviewField.signInRequired.title,
+                detail: String(localized: "App Review needs a demo account to get past it"),
+                whereShown: AppInformationFieldPlacement.onlyApple
+            ) {
                 Toggle(AppReviewField.signInRequired.title, isOn: Binding(get: { review.signInRequired }, set: { viewModel.setSignInRequired($0) }))
                     .toggleStyle(.switch)
                     .labelsHidden()
@@ -93,7 +95,7 @@ struct AppReviewPageView: View {
             }
             if review.signInRequired {
                 Divider()
-                AppInformationFormRow(label: AppReviewField.password.title) {
+                AppInformationFormRow(label: AppReviewField.password.title, whereShown: AppInformationFieldPlacement.onlyApple) {
                     PasswordField(title: AppReviewField.password.title, text: review.password, isVisible: $viewModel.isPasswordVisible) {
                         viewModel.setReviewText($0, for: .password)
                     }
@@ -118,6 +120,9 @@ struct AppReviewPageView: View {
                     .accessibilityLabel(Text("\(count) of \(AppReviewField.notesLimit) characters"))
                     .accessibilityIdentifier("appInformation.review.notesCount")
             }
+            Text(AppInformationFieldPlacement.onlyApple)
+                .atlasTextStyle(.subheadline)
+                .foregroundStyle(Palette.label2)
             TextEditor(text: Binding(get: { review.notes }, set: { viewModel.setReviewText($0, for: .notes) }))
                 .font(.body)
                 .scrollContentBackground(.hidden)
@@ -142,7 +147,7 @@ struct AppReviewPageView: View {
     }
 
     private func textRow(_ field: AppReviewField, _ review: AppReviewValues) -> some View {
-        AppInformationFormRow(label: field.title) {
+        AppInformationFormRow(label: field.title, whereShown: AppInformationFieldPlacement.onlyApple) {
             TextField(field.title, text: Binding(get: { review.text(field) }, set: { viewModel.setReviewText($0, for: field) }))
                 .labelsHidden()
                 .textContentType(field == .userName ? .username : nil)

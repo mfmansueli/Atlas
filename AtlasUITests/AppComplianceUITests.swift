@@ -31,14 +31,14 @@ final class AppComplianceUITests: XCTestCase {
         XCTAssertTrue(element("appInformation.compliance.trader.question").exists)
         XCTAssertTrue(app.buttons["appInformation.compliance.icp.addNumber"].exists)
         XCTAssertEqual(value(of: "appInformation.compliance.vietnamGameLicense.title"), "Vietnam Game License · not needed")
-        // Compliance takes no suggestions: no Accept All on this page.
-        XCTAssertFalse(app.buttons["appInformation.acceptAll"].exists)
+        // Compliance takes no suggestions: nothing to accept on this page.
+        XCTAssertFalse(app.buttons["appInformation.acceptHere"].exists)
     }
 
-    func testThePageIsReachedFromThePageColumn() {
+    func testThePageIsReachedFromThePageStrip() {
         launch(scene: "info-general")
         XCTAssertTrue(element("appInformation.general").waitForExistence(timeout: 10))
-        element("appInformation.pageRow.appCompliance").click()
+        element("appInformation.page.appCompliance").click()
         XCTAssertTrue(element("appInformation.appCompliance").waitForExistence(timeout: 5))
         XCTAssertTrue(element("appInformation.compliance.banner").exists)
     }
@@ -51,8 +51,6 @@ final class AppComplianceUITests: XCTestCase {
 
         XCTAssertTrue(element("appInformation.compliance.trader.answered").waitForExistence(timeout: 5))
         XCTAssertTrue(value(of: "appInformation.compliance.trader.answer").hasPrefix("Trader, with these details."))
-        showThePreview()
-        XCTAssertTrue(value(of: "appInformation.preview.trader.details").hasPrefix("Northpier Studio Ltd"))
         XCTAssertTrue(pageRowSays("4 need you"), rowLabel)
 
         app.buttons["appInformation.compliance.trader.change"].click()
@@ -98,7 +96,6 @@ final class AppComplianceUITests: XCTestCase {
         stopSelling.click()
         XCTAssertTrue(element("appInformation.compliance.icp.stops").waitForExistence(timeout: 5))
         XCTAssertTrue(pageRowSays("2 need you"), rowLabel)
-        XCTAssertTrue(pageRowSays("not pushed"), rowLabel)
 
         app.buttons["workspace.reviewPushButton"].click()
         XCTAssertTrue(element("review.row.appAvailability.\(lumen).CHN").waitForExistence(timeout: 5))
@@ -107,7 +104,8 @@ final class AppComplianceUITests: XCTestCase {
     func testEverythingAnsweredLeavesWhatIsForAppStoreConnect() {
         launch(scene: "info-comp-done")
         XCTAssertTrue(element("appInformation.compliance.trader.answered").waitForExistence(timeout: 10))
-        XCTAssertTrue(pageRowSays("3 to finish at Apple"), rowLabel)
+        // Answered here, still to enter in App Store Connect: they need you there.
+        XCTAssertTrue(pageRowSays("3 need you"), rowLabel)
         XCTAssertTrue(value(of: "appInformation.compliance.headline").hasPrefix("3 to enter in App Store Connect · 3 checked."))
         XCTAssertEqual(value(of: "appInformation.compliance.medicalDevice.title"), "Regulated Medical Devices · declared")
 
@@ -124,22 +122,22 @@ final class AppComplianceUITests: XCTestCase {
         let traderAnswer = "appInformation.compliance.traderStatus.suggestion.answer"
         XCTAssertTrue(element(traderAnswer).waitForExistence(timeout: 10))
         XCTAssertEqual(value(of: traderAnswer), "Trader, with these details")
-        XCTAssertTrue(pageRowSays("5 need you · 5 suggested"), rowLabel)
+        // Suggestions come first on the card, in purple.
+        XCTAssertTrue(pageRowSays("5 suggested"), rowLabel)
         XCTAssertTrue(element("appInformation.compliance.suggestions").exists)
-        // Suggested, never taken by Accept All.
-        XCTAssertFalse(app.buttons["appInformation.acceptAll"].exists)
+        // Suggested, never taken by Accept n on This Page.
+        XCTAssertFalse(app.buttons["appInformation.acceptHere"].exists)
 
         app.buttons["appInformation.compliance.traderStatus.suggestion.accept"].click()
         XCTAssertTrue(element("appInformation.compliance.trader.answered").waitForExistence(timeout: 5))
-        showThePreview()
-        XCTAssertTrue(value(of: "appInformation.preview.trader.details").contains("14 Harbour Road"))
-        XCTAssertTrue(pageRowSays("4 need you · 4 suggested"), rowLabel)
+        XCTAssertTrue(value(of: "appInformation.compliance.trader.answer").hasPrefix("Trader, with these details."))
+        XCTAssertTrue(pageRowSays("4 suggested"), rowLabel)
 
         let dismiss = app.buttons["appInformation.compliance.medicalDevice.suggestion.dismiss"]
         reveal(dismiss)
         dismiss.click()
         XCTAssertFalse(element("appInformation.compliance.medicalDevice.suggestion").waitForExistence(timeout: 2))
-        XCTAssertTrue(pageRowSays("4 need you · 3 suggested"), rowLabel)
+        XCTAssertTrue(pageRowSays("3 suggested"), rowLabel)
     }
 
     func testChinaMainlandsAIDeclarationTakesItsFiling() {
@@ -190,20 +188,12 @@ final class AppComplianceUITests: XCTestCase {
         app.launch(debugScene: scene)
     }
 
-    /// The App Store preview shows beside a page 760 pt wide or more: in
-    /// the test's 1200 pt window, only with the sidebar hidden.
-    private func showThePreview() {
-        guard !element("appInformation.preview.trader").exists else { return }
-        app.typeKey("s", modifierFlags: [.control, .command])
-        XCTAssertTrue(element("appInformation.preview.trader").waitForExistence(timeout: 5), "The preview shows with the sidebar hidden")
-    }
-
-    /// The App Compliance row in the page column, whose label carries its
+    /// App Compliance's card in the page strip, whose label carries its
     /// status: "App Compliance, 5 need you".
-    private var rowLabel: String { element("appInformation.pageRow.appCompliance").label }
+    private var rowLabel: String { element("appInformation.page.appCompliance").label }
 
     private func pageRowSays(_ status: String) -> Bool {
-        let row = element("appInformation.pageRow.appCompliance")
+        let row = element("appInformation.page.appCompliance")
         let says = NSPredicate(format: "label CONTAINS %@", status)
         return XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: says, object: row)], timeout: 5) == .completed
     }
@@ -219,7 +209,7 @@ final class AppComplianceUITests: XCTestCase {
     /// Scrolls the page until `target` is fully in view, so a click on a
     /// lower card lands inside the window.
     private func reveal(_ target: XCUIElement) {
-        let page = element("appInformation.page")
+        let page = element("appInformation.pageContent")
         guard page.exists else { return }
         var tries = 0
         while tries < 12 {

@@ -5,11 +5,11 @@
 
 import Foundation
 
-// The page bar: how many suggestions wait on each page, Accept n on This
-// Page, and Accept All Pages, which shows them first unless the person said
-// not to.
+// The top of the section: how many suggestions wait on each page, Accept n
+// on This Page, and Accept All Pages, which shows them first unless the
+// person said not to.
 extension AppInformationViewModel {
-    /// Every page's suggestions, in the page column's order.
+    /// Every page's suggestions, in the strip's order.
     private var allPageSuggestions: [FieldSuggestion] {
         Self.slotPages.flatMap { visibleSuggestions(on: $0) }
     }
@@ -22,49 +22,6 @@ extension AppInformationViewModel {
             otherPageCount: others.count,
             acceptsRightAway: acceptsRightAway
         )
-    }
-
-    /// "7 suggested · 7 unanswered", "Exempt · done", "Up to date": a page's
-    /// status in the page column, when its suggestions and answers say it.
-    func pageColumnStatus(for page: AppInformationPage) -> String? {
-        let suggested = suggestionCount(on: page)
-        if page == .appCompliance {
-            // What still needs the person comes first: suggestions don't answer.
-            guard let status = status(for: page) else { return nil }
-            return suggested > 0 ? String(localized: "\(status) · \(suggested) suggested") : status
-        }
-        let unanswered = unansweredCount(on: page)
-        if suggested > 0 {
-            return unanswered > 0
-                ? String(localized: "\(suggested) suggested · \(unanswered) unanswered")
-                : String(localized: "\(suggested) suggested")
-        }
-        if unanswered > 0 { return String(localized: "\(unanswered) unanswered") }
-        switch page {
-        case .appPrivacy, .appCompliance: return status(for: page)
-        case .exportCompliance:
-            guard let status = status(for: page) else { return nil }
-            return exportAnswers?.usesNonExemptEncryption == false ? String(localized: "\(status) · done") : status
-        case .general, .ageRating, .accessibility, .appReview:
-            return isPageLoaded(page) ? String(localized: "Up to date") : nil
-        }
-    }
-
-    /// The green check beside a page: nothing to decide and nothing missing.
-    func isPageUpToDate(_ page: AppInformationPage) -> Bool {
-        guard page != .appPrivacy, isPageLoaded(page) else { return false }
-        if page == .exportCompliance { return exportAnswers?.usesNonExemptEncryption != nil }
-        if page == .appCompliance { return complianceReport?.isUpToDate ?? false }
-        return suggestionCount(on: page) == 0 && unansweredCount(on: page) == 0
-    }
-
-    private func isPageLoaded(_ page: AppInformationPage) -> Bool {
-        page == .accessibility ? accessibility.value != nil : isLoaded
-    }
-
-    private func unansweredCount(on page: AppInformationPage) -> Int {
-        guard page == .ageRating, isLoaded else { return 0 }
-        return AgeRatingQuestion.allCases.count { suggestionValue(.ageRating($0)).isEmpty }
     }
 
     /// What Accept All Pages offers, the open page first in focus.

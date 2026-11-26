@@ -76,6 +76,6 @@ struct AccessibilityCard: Identifiable, Hashable, Sendable {
     /// Delete Draft: only a draft saved in App Store Connect can be deleted.
     var canDeleteDraft: Bool { draftID != nil && !isDeletionQueued }
 
-    /// The page column's word for it.
+    /// The page strip's word for it.
     var isPublished: Bool { published != nil }
 }

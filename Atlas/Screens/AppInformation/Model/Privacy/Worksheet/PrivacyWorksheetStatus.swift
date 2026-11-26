@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Where App Privacy stands, for the page's pill, the page column and the
+/// Where App Privacy stands, for the page's pill, the page strip and the
 /// overview: Not started → In progress → Done → Marked published, and Out
 /// of date when App Store Connect may no longer match.
 enum PrivacyWorksheetStatus: Hashable, Sendable {

@@ -73,22 +73,6 @@ extension AppInformationViewModel {
         notes.compliance.trader = nil
     }
 
-    /// What the preview's "In the EU" block shows, with what's suggested
-    /// on top when `showsSuggested`.
-    func traderPreview(showsSuggested: Bool) -> TraderPreview {
-        guard let report = complianceReport else { return .hidden }
-        switch report.trader {
-        case .noCountriesYet, .notSoldInEU: return .hidden
-        case .declared, .verificationFailed, .verificationMissing: return .declaredAtApple
-        case .notProvided: break
-        }
-        switch report.answers.trader {
-        case .trader: return .details(traderDetails.summary, isSuggested: false)
-        case .nonTrader: return .nonTrader
-        case nil: return showsSuggested && report.suggestsTrader ? .details(traderDetails.summary, isSuggested: true) : .nonTrader
-        }
-    }
-
     // MARK: - ICP Filing Number
 
     /// The chosen answer; "Stop selling" is the change in Review & Push,

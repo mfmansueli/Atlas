@@ -182,7 +182,7 @@ final class SuggestionsUITests: XCTestCase {
 
     func testAppInformationShowsSuggestionsUnderTheirFields() {
         app.launch(debugScene: "in-general")
-        let general = element("appInformation.pageRow.general")
+        let general = element("appInformation.page.general")
         XCTAssertTrue(general.waitForExistence(timeout: 10))
         XCTAssertTrue(general.label.contains("3 suggested"), general.label)
 

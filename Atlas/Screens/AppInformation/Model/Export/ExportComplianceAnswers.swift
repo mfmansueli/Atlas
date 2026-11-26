@@ -35,7 +35,7 @@ struct ExportComplianceAnswers: Hashable, Codable, Sendable {
         }
     }
 
-    /// The page column's line: "Exempt", "Docs needed", "Not answered".
+    /// The page strip's line: "Exempt", "Docs needed", "Not answered".
     var status: String {
         switch usesNonExemptEncryption {
         case false?: String(localized: "Exempt")

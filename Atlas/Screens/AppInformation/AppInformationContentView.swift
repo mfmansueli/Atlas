@@ -5,58 +5,46 @@
 
 import SwiftUI
 
-/// The page column and the chosen page, with the accessibility editor
-/// sheet and the toast. App Privacy lays out its own columns and scrolling.
+/// App Information as board 88 lays it out: the top (the page's sentence,
+/// how many suggestions wait, Accept n on This Page and Accept All Pages),
+/// the strip of the seven pages, then the open page with its fields the
+/// whole width, with the accessibility editor sheet and the toast. App
+/// Privacy lays out its own columns and scrolling under the same top and
+/// strip.
 struct AppInformationContentView: View {
     @Bindable var viewModel: AppInformationViewModel
-
-    /// The window is too narrow for the preview under this.
-    private static let previewMinimumWidth: CGFloat = 760
 
     @Environment(\.undoManager) private var undoManager
     @Environment(AppPreferences.self) private var preferences
     @Environment(WorkspaceNavigator.self) private var navigator
-    @State private var width: CGFloat = 0
 
     var body: some View {
-        HStack(spacing: 0) {
-            AppInformationPageColumn(viewModel: viewModel)
-            Divider()
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: Spacing.medium) {
+                AppInformationTopBar(viewModel: viewModel)
+                AppInformationPageStrip(viewModel: viewModel)
+                AppInformationAcceptsRightAwayLine(viewModel: viewModel)
+            }
+            .padding(.horizontal, Spacing.xLarge)
+            .padding(.top, Spacing.small)
             if viewModel.page == .appPrivacy {
                 AppPrivacyPageView(viewModel: viewModel.privacy)
             } else {
-                // The two scroll views touch, with their gaps inside them, so
-                // the toolbar's hard scroll edge is one band across both
-                // instead of two blocks with the background between them.
-                HStack(alignment: .top, spacing: 0) {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: Spacing.large) {
-                            refreshBanner
-                            page
-                        }
-                        .padding(.vertical, Spacing.large + 2)
-                        .padding(.horizontal, 2)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                        .padding(.leading, Self.sideMargin)
-                        .padding(.trailing, showsPreview ? Spacing.large : Self.sideMargin)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Spacing.large) {
+                        refreshBanner
+                        page
                     }
-                    .leavesChatRoom()
-                    .accessibilityElement(children: .contain)
-                    .accessibilityIdentifier("appInformation.page")
-                    if showsPreview {
-                        ScrollView {
-                            AppInformationPreviewPane(viewModel: viewModel)
-                                .padding(.vertical, Spacing.large + 2)
-                                .padding(.trailing, Self.sideMargin)
-                        }
-                        .leavesChatRoom()
-                        .scrollIndicators(.never)
-                        .frame(width: 236 + Self.sideMargin)
-                    }
+                    .padding(.vertical, Spacing.large)
+                    .padding(.horizontal, Spacing.xLarge)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
-                .onGeometryChange(for: CGFloat.self, of: \.size.width) { width = $0 - 2 * Self.sideMargin }
+                .leavesChatRoom()
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("appInformation.pageContent")
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.content)
         .overlay(alignment: .bottom) {
             if let toast = viewModel.suggestionToast {
@@ -92,14 +80,6 @@ struct AppInformationContentView: View {
                 viewModel.acceptSuggestions(ids: ids, turnedOffAsking: dontAskAgain)
             }
         }
-    }
-
-    /// The space between the columns and the window's edges.
-    private static let sideMargin: CGFloat = 20
-
-    /// Age Rating keeps its own preview beside the questions.
-    private var showsPreview: Bool {
-        viewModel.isLoaded && viewModel.page != .ageRating && width >= Self.previewMinimumWidth
     }
 
     @ViewBuilder

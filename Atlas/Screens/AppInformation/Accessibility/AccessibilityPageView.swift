@@ -13,17 +13,14 @@ struct AccessibilityPageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            AppInformationPageHeader(
-                title: AppInformationPage.accessibility.title,
-                subtitle: AppInformationPage.accessibility.summary(appName: viewModel.app.name, version: nil)
-            ) {
+            AppInformationPageTools(whereShown: AppInformationPage.accessibility.whereShown(appName: viewModel.app.name)) {
                 Pill(text: String(localized: "Voluntary · Required later"))
+                    .fixedSize()
                 ExternalLinkButton(title: String(localized: "About the Labels"), url: AccessibilityFeature.overviewURL)
                     .controlSize(.regular)
+                    .fixedSize()
                     .accessibilityIdentifier("appInformation.accessibility.about")
             }
-            .padding(.bottom, Spacing.xxSmall)
-            AppInformationPageBar(viewModel: viewModel, page: .accessibility)
             switch viewModel.accessibility {
             case .idle, .loading:
                 grid(Array(0..<4)) { _ in AccessibilitySkeletonCard() }

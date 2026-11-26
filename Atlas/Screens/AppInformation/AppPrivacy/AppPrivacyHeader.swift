@@ -5,8 +5,8 @@
 
 import SwiftUI
 
-/// The top of App Privacy, as the canvas lays it out: the page's title,
-/// the line that says this is a worksheet Atlas can't push, then the
+/// The top of App Privacy, under the section's top and page strip (board
+/// 88): the line that says this is a worksheet Atlas can't push, then the
 /// three tabs (the worksheet's with what waits in it), the status and
 /// Export….
 struct AppPrivacyHeader: View {
@@ -14,10 +14,6 @@ struct AppPrivacyHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            AppInformationPageHeader(
-                title: AppInformationPage.appPrivacy.title,
-                subtitle: AppInformationPage.appPrivacy.summary(appName: viewModel.appShortName, version: nil)
-            )
             notASync
             HStack(alignment: .center, spacing: Spacing.small) {
                 BadgedSegments(label: String(localized: "App Privacy view"), options: tabs, selection: $viewModel.tab)
@@ -34,7 +30,7 @@ struct AppPrivacyHeader: View {
             }
         }
         .padding(.horizontal, Spacing.xLarge)
-        .padding(.top, Spacing.large)
+        .padding(.top, Spacing.medium)
         .padding(.bottom, Spacing.medium)
     }
 
