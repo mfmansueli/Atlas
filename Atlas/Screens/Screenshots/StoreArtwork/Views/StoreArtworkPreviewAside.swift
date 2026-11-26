@@ -14,32 +14,44 @@ struct StoreArtworkPreviewAside: View {
     let locale: StoreLocale
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(spacing: Spacing.small) {
-                Text("On the App Store", comment: "kind:section-title")
-                    .atlasTextStyle(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityAddTraits(.isHeader)
-                Picker(String(localized: "Captions", comment: "kind:label"), selection: $viewModel.showsSuggestedCaptions) {
-                    Text("Now", comment: "kind:segment").tag(false)
-                    Text("Suggested", comment: "kind:segment").tag(true)
+        // One scroll view from the top of the page, so the toolbar's hard
+        // edge spans this column too; the title and switch stay pinned.
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: Spacing.small, pinnedViews: .sectionHeaders) {
+                Section {
+                    page
+                        .padding(Spacing.tiny)
+                        .padding(.bottom, Spacing.large)
+                } header: {
+                    header
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .controlSize(.small)
-                .fixedSize()
-                .accessibilityIdentifier("screenshots.page.mode")
             }
-            ScrollView {
-                page
-                    .padding(Spacing.tiny)
-                    .padding(.bottom, Spacing.large)
-            }
-            .scrollIndicators(.never)
         }
+        .contentMargins(.top, Spacing.large, for: .scrollContent)
+        .scrollIndicators(.never)
         .frame(width: Metrics.storePreviewColumnWidth)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.page.storePreview")
+    }
+
+    private var header: some View {
+        HStack(spacing: Spacing.small) {
+            Text("On the App Store", comment: "kind:section-title")
+                .atlasTextStyle(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
+            Picker(String(localized: "Captions", comment: "kind:label"), selection: $viewModel.showsSuggestedCaptions) {
+                Text("Now", comment: "kind:segment").tag(false)
+                Text("Suggested", comment: "kind:segment").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .controlSize(.small)
+            .fixedSize()
+            .accessibilityIdentifier("screenshots.page.mode")
+        }
+        .padding(.bottom, Spacing.small)
+        .background(Palette.content)
     }
 
     @ViewBuilder

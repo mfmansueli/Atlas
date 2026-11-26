@@ -46,11 +46,16 @@ struct ScreenshotsLanguagePage: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             if showsPreview {
+                // Its own scroll view reaches the top, so the toolbar's hard
+                // edge runs over it too, up to Add Screenshots….
                 StoreArtworkPreviewAside(viewModel: viewModel, locale: locale)
-                    .padding(.top, Spacing.large)
                     .padding(.trailing, Spacing.xLarge)
             }
         }
+        // The width the window offers, not the page's own: measured after
+        // the fact, a page held wider by the preview kept measuring wide
+        // enough for it and pushed the sidebar off the window's edge.
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .topLeading)
         .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { pageWidth = $0 })
         .leavesChatRoom()
         .accessibilityIdentifier("screenshots.page")

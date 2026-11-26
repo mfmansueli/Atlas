@@ -62,6 +62,25 @@ final class NarrowWindowLayoutUITests: XCTestCase {
         }
     }
 
+    /// One language's Screenshots page with On the App Store beside it.
+    /// The page measured its own width: once held wider by the preview
+    /// (and the header and search tiles side by side), it kept measuring
+    /// wide enough for both and cut the sidebar on the left at the user's
+    /// 1,166 pt window. It now decides from the width the window offers.
+    func testTheScreenshotsPageAndItsPreviewFitTheWindow() {
+        continueAfterFailure = true
+        app.launch(debugScene: "shots-page")
+        XCTAssertTrue(element("screenshots.artwork").waitForExistence(timeout: 15))
+        restoresTheOpenedWidth()
+        for width: CGFloat in [1400, 1166, 1060, 943, 600, 1166] {
+            resizeWindow(toWidth: width)
+            wait(seconds: 1.5)
+            let name = "Screenshots at \(Int(app.windows.firstMatch.frame.width)) pt"
+            assertTheContentFitsTheWindow(name)
+            attach(name)
+        }
+    }
+
     // MARK: - Checks
 
     /// The split view as wide as the window, and the sidebar's rows from

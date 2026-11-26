@@ -7,13 +7,13 @@ import SwiftUI
 
 /// The top of a language's Screenshots page (board 78): the product page
 /// header and the search results artwork, optional, side by side at the
-/// same height, one under the other when the column is too narrow.
+/// same height, one under the other when the column is too narrow. The
+/// tiles wrap by the width they're offered (`FlowLayout`), never by one
+/// measured after the fact: a measured width held the side-by-side tiles
+/// (603 pt) and pushed the page wider than the window.
 struct StoreArtworkSection: View {
     @Bindable var viewModel: ScreenshotsViewModel
     let locale: StoreLocale
-
-    /// Nil until measured: side by side on the first frame.
-    @State private var columnWidth: CGFloat?
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -31,22 +31,13 @@ struct StoreArtworkSection: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
             }
-            if stacks {
-                VStack(alignment: .leading, spacing: Spacing.medium) { tiles }
-            } else {
-                HStack(alignment: .top, spacing: Spacing.medium) { tiles }
-            }
+            FlowLayout(spacing: Spacing.medium) { tiles }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { columnWidth = $0 })
         .environment(\.layoutDirection, locale.isRTL ? .rightToLeft : .leftToRight)
         .task(id: viewModel.liveArtworkKey) { await viewModel.loadLiveArtwork() }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("screenshots.artwork")
-    }
-
-    private var stacks: Bool {
-        columnWidth.map(StoreArtworkRules.stacksArtwork(columnWidth:)) ?? false
     }
 
     private var tiles: some View {

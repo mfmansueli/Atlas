@@ -18,13 +18,6 @@ struct StoreArtworkRulesTests {
         #expect(StoreArtworkRules.showsPreview(pageWidth: 1280))
     }
 
-    @Test func headerAndSearchStackWhenTheyDontFitSideBySide() {
-        // 360 + 12 + 231 = 603.
-        #expect(StoreArtworkRules.stacksArtwork(columnWidth: 602))
-        #expect(!StoreArtworkRules.stacksArtwork(columnWidth: 603))
-        #expect(!StoreArtworkRules.stacksArtwork(columnWidth: 800))
-    }
-
     @Test func screenshotsOneToThreeOnIPhoneAreInSearch() {
         #expect((0..<5).map { StoreArtworkRules.marksInSearch(keptIndex: $0, display: .iPhone) } == [true, true, true, false, false])
         #expect(!StoreArtworkRules.marksInSearch(keptIndex: nil, display: .iPhone), "A deleted one isn't")
