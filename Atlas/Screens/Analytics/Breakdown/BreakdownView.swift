@@ -36,30 +36,56 @@ struct BreakdownView: View {
         .accessibilityIdentifier("analytics.breakdown")
     }
 
+    /// The splits and the column groups: one row when they fit, the
+    /// column groups on a second row when not, and menus in a narrow
+    /// window. Segmented controls never shrink, so without the fallbacks
+    /// they widen the page past the window (1,066 pt in one row).
     private var controls: some View {
-        HStack(spacing: Spacing.medium) {
-            Picker(String(localized: "Break down by", comment: "kind:label · Break It Down"), selection: dimension) {
-                ForEach(BreakdownDimension.segmented) { dimension in
-                    Text(dimension.segmentTitle).tag(BreakdownDimension?.some(dimension))
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.medium) {
+                dimensionPicker.pickerStyle(.segmented).fixedSize()
+                moreMenu
+                columnsPicker.pickerStyle(.segmented).fixedSize()
+                Spacer(minLength: 0)
+            }
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                HStack(spacing: Spacing.medium) {
+                    dimensionPicker.pickerStyle(.segmented).fixedSize()
+                    moreMenu
+                }
+                columnsPicker.pickerStyle(.segmented).fixedSize()
+            }
+            HStack(spacing: Spacing.medium) {
+                dimensionPicker.pickerStyle(.menu).fixedSize()
+                moreMenu
+                columnsPicker.pickerStyle(.menu).fixedSize()
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private var dimensionPicker: some View {
+        Picker(String(localized: "Break down by", comment: "kind:label · Break It Down"), selection: dimension) {
+            ForEach(BreakdownDimension.segmented) { dimension in
+                Text(dimension.segmentTitle).tag(BreakdownDimension?.some(dimension))
+            }
+        }
+        .labelsHidden()
+        .accessibilityIdentifier("analytics.breakdown.dimension")
+    }
+
+    /// Store funnel or subscribers and after download, once the newer
+    /// reports are in.
+    @ViewBuilder
+    private var columnsPicker: some View {
+        if table.subscribers != nil || table.afterDownload != nil {
+            Picker(String(localized: "Columns", comment: "kind:label · Break It Down"), selection: $viewModel.columnGroup) {
+                ForEach(BreakdownColumnGroup.allCases, id: \.self) { group in
+                    Text(group.title).tag(group)
                 }
             }
-            .pickerStyle(.segmented)
             .labelsHidden()
-            .fixedSize()
-            .accessibilityIdentifier("analytics.breakdown.dimension")
-            moreMenu
-            if table.subscribers != nil || table.afterDownload != nil {
-                Picker(String(localized: "Columns", comment: "kind:label · Break It Down"), selection: $viewModel.columnGroup) {
-                    ForEach(BreakdownColumnGroup.allCases, id: \.self) { group in
-                        Text(group.title).tag(group)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
-                .accessibilityIdentifier("analytics.breakdown.columns")
-            }
-            Spacer(minLength: 0)
+            .accessibilityIdentifier("analytics.breakdown.columns")
         }
     }
 

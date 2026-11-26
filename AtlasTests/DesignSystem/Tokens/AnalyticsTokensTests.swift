@@ -24,6 +24,7 @@ struct AnalyticsTokensTests {
     private static let metrics: [String: CGFloat] = [
         "breakdownCompactWidth": Metrics.breakdownCompactWidth,
         "inspectorWidth": Metrics.inspectorWidth,
+        "breakdownFooterMinWidth": Metrics.breakdownFooterMinWidth,
         "changeChartHeight": Metrics.changeChartHeight,
         "changeResultsRowWidth": Metrics.changeResultsRowWidth,
         "originTile": Metrics.analyticsOriginTile,

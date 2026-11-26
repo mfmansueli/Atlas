@@ -75,7 +75,7 @@ struct BreakdownTableView: View {
                 .accessibilityIdentifier("analytics.breakdown.footer")
             BreakdownLegend(appName: viewModel.dataset.appName)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minWidth: Metrics.breakdownFooterMinWidth, maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
     }

@@ -28,7 +28,7 @@ extension FindingRules {
                 if let billing = billingFinding(lifecycle, gracePeriod: dataset.gracePeriod, now: now) { findings.append(billing) }
                 findings += offerFindings(lifecycle, now: now)
             }
-            findings += pageFindings(reports, period: period, appName: dataset.appName, now: now)
+            findings += pageFindings(reports, period: period, now: now)
         }
         if let stability = StabilityReport.make(reports, now: AnalyticsDay(now)) {
             if let crash = crashFinding(stability, now: now) {
@@ -143,7 +143,7 @@ extension FindingRules {
 
     /// A custom page whose downloads are deleted within 30 days clearly
     /// more often than the default page's.
-    private static func pageFindings(_ reports: ReportsArchive, period: AnalyticsPeriod, appName: String, now: Date) -> [AnalyticsFinding] {
+    private static func pageFindings(_ reports: ReportsArchive, period: AnalyticsPeriod, now: Date) -> [AnalyticsFinding] {
         let defaultName = ProductPageNumbers.defaultPageName
         let byPage = Dictionary(grouping: reports.records(.installs).within(period)) { ReportsArchive.pageName($0, defaultName: defaultName) ?? "" }
         guard byPage[defaultName] != nil else { return [] }
@@ -160,7 +160,7 @@ extension FindingRules {
             let base = reference.deletedWithin30
             return AnalyticsFinding(
                 id: "page.deletes.\(page)", source: .builtIn,
-                title: pageDeletesTitle(page: page, appName: appName, rate: rate, base: base),
+                title: pageDeletesTitle(page: page, rate: rate, base: base),
                 why: String(localized: """
                 \(rate.text) delete it within 30 days, \(base.text) from the default page. The page may promise what the app \
                 doesn’t show.
@@ -179,12 +179,16 @@ extension FindingRules {
     // MARK: - Versions
 
     private static func crashFinding(_ report: StabilityReport, now: Date) -> AnalyticsFinding? {
-        guard let headline = report.headline, case let .higher(confidence) = report.comparison, let previous = report.previous else { return nil }
+        guard report.headline != nil, let times = report.times, case let .higher(confidence) = report.comparison, let previous = report.previous
+        else { return nil }
         let new = report.latest.perThousand.map(AnalyticsText.perThousand) ?? "—"
         let old = previous.perThousand.map(AnalyticsText.perThousand) ?? "—"
         return AnalyticsFinding(
             id: "stability.crashes.\(report.latest.version)", source: .builtIn,
-            title: headline,
+            // At most 8 words: the banner's headline says "on the same days".
+            title: String(
+                localized: "\(report.latest.version) crashes \(AnalyticsText.times(times)) as often as \(previous.version)", comment: "kind:suggestion-title"
+            ),
             why: report.mostAffected.map { String(localized: "Most of it is on \($0.device). In a phased release, pausing stops it reaching more people.") }
                 ?? String(localized: "In a phased release, pause it while you fix it."),
             numbers: [
@@ -241,13 +245,14 @@ extension FindingRules {
         }
     }
 
-    /// “People from “Mood tracking” delete Lumen twice as often”.
-    private static func pageDeletesTitle(page: String, appName: String, rate: AnalyticsRate, base: AnalyticsRate) -> String {
+    /// “People from “Mood tracking” delete twice as often”: no app name,
+    /// which can be several words, so the title stays within 8.
+    private static func pageDeletesTitle(page: String, rate: AnalyticsRate, base: AnalyticsRate) -> String {
         switch times(rate.fraction, over: base.fraction) {
-        case 2: String(localized: "People from “\(page)” delete \(appName) twice as often", comment: "kind:suggestion-title")
-        case 3: String(localized: "People from “\(page)” delete \(appName) 3× as often", comment: "kind:suggestion-title")
-        case 4: String(localized: "People from “\(page)” delete \(appName) 4× as often", comment: "kind:suggestion-title")
-        default: String(localized: "People from “\(page)” delete \(appName) more often", comment: "kind:suggestion-title")
+        case 2: String(localized: "People from “\(page)” delete twice as often", comment: "kind:suggestion-title")
+        case 3: String(localized: "People from “\(page)” delete 3× as often", comment: "kind:suggestion-title")
+        case 4: String(localized: "People from “\(page)” delete 4× as often", comment: "kind:suggestion-title")
+        default: String(localized: "People from “\(page)” delete more often", comment: "kind:suggestion-title")
         }
     }
 

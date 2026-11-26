@@ -93,7 +93,8 @@ struct PriceResultsModelTests {
 
         let change = try #require(queue.change(id: "price.\(DebugPricingCatalog.lumenAnnualID).JPN"))
         #expect(change.source == .restore)
-        #expect(change.oldValue == "¥4,800")
+        // The Oct 26 push's price, on the real grid since 267b0d28.
+        #expect(change.oldValue == "¥4,750")
         #expect(change.newValue == "¥6,000")
         #expect(change.groupNote == PriceSchedule.immediate.note)
         #expect(results.isRestoreQueued("JPN"))

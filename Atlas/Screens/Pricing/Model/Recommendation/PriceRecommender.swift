@@ -33,6 +33,7 @@ import Foundation
 /// - A price at most 5% under the floor (`floorTolerance`) is already at
 ///   the floor (Bhutan US$ 1.49 against a US$ 1.50 floor), not raised a
 ///   whole point to US$ 1.99. Alba, 25 Nov 2026: 101 suggestions → 47.
+///   A price above the floor still comes down to it.
 struct PriceRecommender: Sendable {
     /// The basis line when the key's role can't read sales.
     static let cantReadSalesLine = String(localized: "Sales: this key’s role can’t read Sales and Trends", comment: "kind:description")
@@ -116,7 +117,9 @@ struct PriceRecommender: Sendable {
         let floor = strategy.floor * input.basePrice * input.equalizationMultiplier
         let keepsCurrent = facts.isHolding
             || (calculation.raisedToFloor
-                ? Self.isAtFloor(current, floor: floor)
+                // Only a raise to the floor: a price far above it still
+                // comes down to the floor (India ₹2,499 → ₹1,049).
+                ? Self.isAtFloor(current, floor: floor) && current <= calculation.price.customerPrice
                 : !Self.isMeaningfulChange(from: current, to: calculation.price.customerPrice)
                 || Self.matchesTarget(ratio: ratio)
                 || !Self.movesCloser(from: ratio, to: candidateRatio))

@@ -432,6 +432,7 @@
     "$description": "Board 92 / README-DS §16: under 940 pt Break It Down hides Impressions, Downloads and Starts, and its 300 pt inspector slides over the table from the right; After Changes' chart is 200 tall, and its three results stack under 640 pt (so at 860 × 560). The From Analytics bar starts with the section's 22 pt tile.",
     "breakdownCompactWidth": 940,
     "inspectorWidth": 300,
+    "breakdownFooterMinWidth": 280,
     "changeChartHeight": 200,
     "changeResultsRowWidth": 640,
     "originTile": 22

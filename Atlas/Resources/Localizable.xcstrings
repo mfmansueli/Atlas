@@ -601,6 +601,17 @@
     "%@ couldn’t find the paywall" : {
       "comment" : "kind:banner"
     },
+    "%@ crashes %@ as often as %@" : {
+      "comment" : "kind:suggestion-title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ crashes %2$@ as often as %3$@"
+          }
+        }
+      }
+    },
     "%@ crashes in %@ sessions against %@ in %@, a sample" : {
       "comment" : "kind:suggestion-why"
     },
@@ -22686,6 +22697,18 @@
       "comment" : "kind:suggestion-title"
     },
     "People from “%@” delete %@ twice as often" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "People from “%@” delete 3× as often" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "People from “%@” delete 4× as often" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "People from “%@” delete more often" : {
+      "comment" : "kind:suggestion-title"
+    },
+    "People from “%@” delete twice as often" : {
       "comment" : "kind:suggestion-title"
     },
     "People hold one subscription per group and can switch, like Monthly to Annual." : {

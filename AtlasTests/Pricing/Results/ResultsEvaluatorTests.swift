@@ -109,7 +109,8 @@ struct ResultsEvaluatorTests {
     @Test func sampleResultsCountOnlyTerritoriesWithThirtyStartsEachSide() {
         let results = PricingFixtures.sample.results()
         let summary = ResultsEvaluator.summarize(results)
-        #expect(summary.territoryCount == 164)
+        // Every territory the sample push changed (the 5% and floor rules).
+        #expect(summary.territoryCount == 153)
         #expect(summary.countedCount + summary.tooLittleDataCount == summary.territoryCount)
         for result in results where result.verdict.hasEnoughData {
             #expect(result.before.starts >= 30 && result.after.starts >= 30)

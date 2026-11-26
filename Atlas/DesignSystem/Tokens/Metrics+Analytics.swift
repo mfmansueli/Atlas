@@ -13,6 +13,10 @@ extension Metrics {
     /// Downloads, Starts) and the inspector slides over the table from the
     /// right instead of squeezing it.
     static let breakdownCompactWidth: CGFloat = 940
+    /// Break It Down's footer is never measured narrower than this: its
+    /// legend wraps, and at SwiftUI's near-zero minimum-size probe it
+    /// stacked ~800 pt tall and pushed the page past the window.
+    static let breakdownFooterMinWidth: CGFloat = 280
     /// After Changes' chart of the measured step around the push.
     static let changeChartHeight: CGFloat = 200
     /// Under this width of the result, its three numbers (the step, the

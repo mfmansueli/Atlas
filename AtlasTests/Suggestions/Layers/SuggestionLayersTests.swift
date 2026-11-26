@@ -36,7 +36,7 @@ struct SuggestionLayersTests {
     @Test func layersAreListedBesideTheReason() {
         var entry: [String: JSONValue] = ["reason": "Why."]
         SuggestionLayers(details: "D", confidence: .sure, gloss: "G").add(to: &entry)
-        #expect(entry == ["reason": "Why.", "details": "D", "confidence": 3, "gloss": "G"])
+        #expect(entry == ["reason": "Why.", "details": "D", "confidence": 3, "gloss": "G", "means": "G"])
     }
 
     @Test func aFieldSuggestionSavedBeforeLayersStillReads() throws {

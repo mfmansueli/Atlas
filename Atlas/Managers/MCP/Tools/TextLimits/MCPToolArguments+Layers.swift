@@ -49,7 +49,7 @@ extension MCPToolArguments {
         } else {
             sounds = nil
         }
-        let notes = try (optionalArray("notes") ?? []).enumerated().map { index, entry in
+        let notes = try translationNotes().enumerated().map { index, entry in
             try Self.note(entry, at: index)
         }
         let drift = try (optionalArray("drift") ?? []).map { entry in
@@ -67,6 +67,17 @@ extension MCPToolArguments {
             throw MCPToolError.invalidArgument(name: problem.field, expected: problem.expected)
         }
         return reading.nonEmpty
+    }
+
+    /// `notes` as translation notes: a list of {phrase, natural, why}.
+    /// Tools whose own field is called `notes` (a nomination's notes, a
+    /// batch of review notes) send a text or a list of other objects;
+    /// those aren't translation notes and are left to the tool.
+    private func translationNotes() -> [JSONValue] {
+        guard let entries = values["notes"]?.arrayValue,
+              entries.allSatisfy({ $0.objectValue?["phrase"] != nil })
+        else { return [] }
+        return entries
     }
 
     private static func note(_ entry: JSONValue, at index: Int) throws -> TranslationNote {

@@ -68,7 +68,8 @@ struct ProposeScreenshotFileTextTests {
         #expect(unread.result["status"] == "queued")
     }
 
-    @Test(.timeLimit(.minutes(1)))
+    // Vision under the whole suite's load takes over a minute.
+    @Test(.timeLimit(.minutes(3)))
     func visionReadsOtherPlatformsInARenderedFile() async throws {
         let (outcome, _) = try await propose(["Get it on", "Google Play"])
         #expect(outcome.result["status"] == "refused")

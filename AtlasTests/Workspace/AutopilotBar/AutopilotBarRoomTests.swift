@@ -3,6 +3,7 @@
 //  AtlasTests
 //
 
+import CoreGraphics
 import Testing
 @testable import Atlas
 

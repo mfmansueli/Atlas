@@ -77,11 +77,18 @@ struct TranslationFieldsMCPTests {
         #expect(captions?["natural"] != nil)
     }
 
+    @Test func anotherToolsNotesArentTranslationNotes() throws {
+        // A nomination's notes and a batch of review notes share the name.
+        #expect(try layers(["notes": "New notes."]) == nil)
+        #expect(try layers(["notes": [["productId": "p1", "note": "Locked."]]]) == nil)
+    }
+
     @Test func aNaturalVersionFollowsTheFieldsRules() throws {
         func refusal(_ natural: String, field: ListingField) throws -> String? {
             try MCPNaturalCheck.refusal(layers(["sounds": "off", "natural": .string(natural)]), for: field)
         }
-        #expect(try refusal("Dziennik nastroju i podpowiedzi", field: .subtitle) == nil)
+        // The subtitle's 30 characters exactly.
+        #expect(try refusal("Dziennik nastroju, podpowiedzi", field: .subtitle) == nil)
         #expect(try refusal(String(repeating: "a", count: 31), field: .subtitle)?.hasPrefix("natural:") == true)
         #expect(try refusal("Dziennik nastroju — free", field: .subtitle) != nil)
     }

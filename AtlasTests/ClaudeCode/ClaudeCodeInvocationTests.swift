@@ -53,7 +53,7 @@ struct ClaudeCodeInvocationTests {
     @Test func toolsComeLastBecauseTheyreVariadic() throws {
         let arguments = invocation().claudeArguments
         let index = try #require(arguments.firstIndex(of: "--tools"))
-        #expect(Array(arguments[(index + 1)...]) == ["Read", "Grep", "Glob", "Bash"])
+        #expect(Array(arguments[(index + 1)...]) == ["Read", "Grep", "Glob", "Bash", ClaudeCodePermissions.agentTool])
 
         let testArguments = invocation(.atlasOnly).claudeArguments
         #expect(Array(testArguments.suffix(2)) == ["--tools", ""])

@@ -77,7 +77,7 @@ enum TranslationsDebugData {
                 .off, "Mood journal and inspirations",
                 drift: [MeaningDrift(phrase: "inspirations", original: "prompts")],
                 notes: [TranslationNote(phrase: "inspiracje", natural: "podpowiedzi", why: "\(subtitleOff) Polish journaling apps say “podpowiedzi”.")],
-                natural: "Dziennik nastroju i podpowiedzi", naturalMeans: "Mood journal and prompts"
+                natural: "Dziennik nastroju, podpowiedzi", naturalMeans: "Mood journal, prompts"
             )),
             (.storePage(.polish, .promotionalText), layers(
                 .native, "Write a little every day. Lumen keeps your entries private and syncs them on all your devices."
