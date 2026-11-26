@@ -6,10 +6,9 @@
 #if DEBUG
 import SwiftUI
 
-/// `tb-text`: the workspace toolbar's title and Autopilot button with
-/// texts that change after the toolbar has measured them: the status line
-/// arrives late and grows, and the button goes idle → working → done →
-/// needs you → idle, with short and long words. Every step lasts
+/// `tb-text`: the workspace toolbar's title and a button with texts that
+/// change after the toolbar has measured them: the status line arrives
+/// late and grows, and the button's words go short → long → short. Every step lasts
 /// `ToolbarTextChangeDebugScene.stepDuration`; `-tbTextStopAt <n>` stops
 /// at step n (from 0) instead of going round.
 struct ToolbarTextChangeDebugScene: View {
@@ -17,26 +16,23 @@ struct ToolbarTextChangeDebugScene: View {
     static let stepDuration: Duration = .seconds(3)
 
     /// The steps the scene goes round, in order.
-    static let steps: [(status: WorkspaceSectionStatus, look: AutopilotButtonLook, title: String)] = [
-        (WorkspaceSectionStatus(section: .overview), .idle, "Suggest…"),
-        (
-            WorkspaceSectionStatus(section: .overview, lead: "Alba: Daily Motivation · Version 1.2.2 · Not submitted yet"),
-            .idle, "Suggest Everything…"
-        ),
+    static let steps: [(status: WorkspaceSectionStatus, title: String)] = [
+        (WorkspaceSectionStatus(section: .overview), "New…"),
+        (WorkspaceSectionStatus(section: .overview, lead: "Alba: Daily Motivation · Version 1.2.2 · Not submitted yet"), "New Page…"),
         (
             WorkspaceSectionStatus(section: .overview, waiting: 32, notPushed: 3, lead: "Alba: Daily Motivation · Version 1.2.2"),
-            .working("Making screenshots · 5 of 10 captures", progress: 0.5), "Suggest Everything…"
+            "New Custom Product Page…"
         ),
-        (WorkspaceSectionStatus(section: .overview, waiting: 1), .done("Done"), "Suggest Everything…"),
-        (WorkspaceSectionStatus(section: .overview, notPushed: 12), .needsYou("Choose the Look for every device"), "Suggest Everything…"),
+        (WorkspaceSectionStatus(section: .overview, waiting: 1), "New Event…"),
+        (WorkspaceSectionStatus(section: .overview, notPushed: 12), "New In-App Event…"),
     ]
 
     @State private var step = 0
 
-    /// The widths the title and the Autopilot button want, measured off
+    /// The widths the title and the button want, measured off
     /// the toolbar; the step's text reports them for the UI test.
     @State private var idealTitleWidth: CGFloat = 0
-    @State private var idealAutopilotWidth: CGFloat = 0
+    @State private var idealButtonWidth: CGFloat = 0
 
     var body: some View {
         let current = Self.steps[step]
@@ -49,7 +45,7 @@ struct ToolbarTextChangeDebugScene: View {
             VStack(spacing: 8) {
                 Text("Step \(step + 1) of \(Self.steps.count)")
                     .accessibilityIdentifier("tbText.step")
-                Text(verbatim: "\(Int(idealTitleWidth.rounded(.up))) \(Int(idealAutopilotWidth.rounded(.up)))")
+                Text(verbatim: "\(Int(idealTitleWidth.rounded(.up))) \(Int(idealButtonWidth.rounded(.up)))")
                     .accessibilityIdentifier("tbText.idealWidths")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -63,11 +59,9 @@ struct ToolbarTextChangeDebugScene: View {
             .sharedBackgroundVisibility(.hidden)
             ToolbarSpacer(.flexible)
             ToolbarItem(placement: .primaryAction) {
-                face(current)
-                    .accessibilityElement(children: .contain)
-                    .accessibilityIdentifier("workspace.autopilot")
+                button(current.title)
+                    .accessibilityIdentifier("tbText.button")
             }
-            .sharedBackgroundVisibility(.hidden)
             ToolbarItem(placement: .primaryAction) {
                 Button {} label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
@@ -85,21 +79,23 @@ struct ToolbarTextChangeDebugScene: View {
         }
     }
 
-    private func face(_ current: (status: WorkspaceSectionStatus, look: AutopilotButtonLook, title: String)) -> some View {
-        AutopilotButtonFace(look: current.look, title: current.title, accessibilityLabel: current.title, onMain: {}, menu: {
-            Button("Cancel Run…") {}
-        })
+    private func button(_ title: String) -> some View {
+        Button {} label: {
+            Label(title, systemImage: "plus")
+                .labelStyle(.titleAndIcon)
+        }
+        .controlSize(.large)
     }
 
     /// Hidden copies at their ideal size.
-    private func measurements(_ current: (status: WorkspaceSectionStatus, look: AutopilotButtonLook, title: String)) -> some View {
+    private func measurements(_ current: (status: WorkspaceSectionStatus, title: String)) -> some View {
         ZStack(alignment: .topLeading) {
             WorkspaceToolbarTitle(title: "Overview", status: current.status) {}
                 .fixedSize()
                 .onGeometryChange(for: CGFloat.self, of: \.size.width) { idealTitleWidth = $0 }
-            face(current)
+            button(current.title)
                 .fixedSize()
-                .onGeometryChange(for: CGFloat.self, of: \.size.width) { idealAutopilotWidth = $0 }
+                .onGeometryChange(for: CGFloat.self, of: \.size.width) { idealButtonWidth = $0 }
         }
         .hidden()
         .accessibilityHidden(true)

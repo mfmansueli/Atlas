@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// One app's conversation in the chat in the window's corner (board 69):
+/// One app's conversation in the Autopilot bar (board 80, from board 69):
 /// its turns, the Claude Code session its follow-ups continue, the draft
 /// kept while the panel is closed, and whether something arrived unseen.
 struct AssistantChat: Hashable, Sendable {

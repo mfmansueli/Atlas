@@ -11,6 +11,10 @@ struct AppInformationToast: View {
     let text: String
     let onDismiss: () -> Void
 
+    /// The closed Autopilot bar's room at the page's bottom: the toast
+    /// sits above it (0 where there's no bar).
+    @Environment(\.chatCornerRoom) private var barRoom
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Image(systemName: "checkmark.circle.fill")
@@ -34,13 +38,12 @@ struct AppInformationToast: View {
         .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("appInformation.toast")
-        // The chat in the workspace's corner moves above it.
-        .preference(key: ToastShownPreferenceKey.self, value: true)
         .task(id: text) {
             AccessibilityNotification.Announcement(text).post()
             try? await Task.sleep(for: .seconds(6))
             onDismiss()
         }
+        .padding(.bottom, barRoom)
     }
 }
 

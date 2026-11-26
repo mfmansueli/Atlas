@@ -7,10 +7,11 @@ import SwiftUI
 
 /// The detail column for the selected app: the toolbar (board 57: the
 /// section's title over its state, with “N not pushed” opening Review &
-/// Push on that section; the Autopilot button, Refresh and Activity; while
-/// the sidebar is hidden the section menu first) over
-/// the current section, and the window's toasts (Suggest Everything's
-/// total when it finishes).
+/// Push on that section; the page's create action, Refresh and Activity;
+/// while the sidebar is hidden the section menu first) over the current
+/// section, the Autopilot bar at its bottom with Review & Push beside it
+/// (board 80), and the window's toasts (Suggest Everything's total when it
+/// finishes).
 struct AppWorkspaceView: View {
     let app: StoreApp
     /// Every app in the library.
@@ -36,7 +37,8 @@ struct AppWorkspaceView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var toolbarLayout = WorkspaceToolbarLayout()
-    @State private var isAskingQuestion = false
+    /// The room the closed Autopilot bar takes at the page's bottom.
+    @State private var barRoom = AutopilotBarRoom.pageRoom
     /// The App Store's average, for Ratings & Reviews' line.
     @State private var ratingAverage: Double?
     /// The guided runs, which the menu bar icon reads too.
@@ -45,6 +47,8 @@ struct AppWorkspaceView: View {
     private var autoReply: AutoReplyCenter { .shared }
 
     private var askCenter: AssistantAskCenter { askCenterOverride ?? .shared }
+    /// What the Autopilot bar keeps: requests sent, what finished today.
+    private var barCenter: AutopilotBarCenter { .shared }
     /// Make Review Screenshots… runs, which Pricing starts.
     private var reviewShots: ReviewShotsRunCenter { .shared }
 
@@ -73,24 +77,14 @@ struct AppWorkspaceView: View {
             content
                 // The line under the section's description: what waits.
                 .environment(\.sectionSummary, sectionSummary)
-                // A bar on a page's bottom edge ends above the chat's pill.
-                .environment(\.chatCornerRoom, AssistantChatRoom.pageRoom)
+                // A bar on a page's bottom edge ends above the Autopilot bar.
+                .environment(\.chatCornerRoom, barRoom)
                 .pageControlSize()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scrollEdgeEffectStyle(.hard, for: .top)
-                // The assistant chat in the corner (board 69), over the
-                // section, above the toast while one shows (the workspace's or
-                // the section's own: Pricing's, Store Page's…).
-                .overlayPreferenceValue(ToastShownPreferenceKey.self, alignment: .bottomTrailing) { chatCorner(isSectionToastShown: $0) }
-                // Review & Push at the bottom (board 80). The Autopilot
-                // bar's dock takes it into its trailing slot.
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    HStack {
-                        Spacer(minLength: 0)
-                        ReviewPushPill()
-                    }
-                    .padding(Spacing.medium)
-                }
+                // The Autopilot bar (board 80), over the section: closed it
+                // keeps its room at the bottom, open it grows up over the page.
+                .overlay { bottomBar }
         }
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { toolbarLayout.detailWidth = $0 }
         // “4.7 ★” in Ratings & Reviews' line, from the answers the
@@ -109,10 +103,13 @@ struct AppWorkspaceView: View {
                 } onDismiss: {
                     if navigator.toast?.id == toast.id { navigator.toast = nil }
                 }
-                .padding(Spacing.large)
+                .padding(.horizontal, Spacing.large)
+                .padding(.bottom, barRoom)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             } else {
-                NewArrivalsBelowNotice().padding(Spacing.large)
+                NewArrivalsBelowNotice()
+                    .padding(.horizontal, Spacing.large)
+                    .padding(.bottom, barRoom)
             }
         }
         .animation(.default, value: navigator.toast?.id)
@@ -120,18 +117,15 @@ struct AppWorkspaceView: View {
             guard let new, new.phase == .finished, old?.id != new.id || old?.phase != .finished else { return }
             navigator.toast = .finished(new)
         }
-        // An asking button's request ended: where its suggestions are.
+        // A request ended: the Autopilot bar's strip says where its
+        // suggestions are.
         .onChange(of: askCenter.finished) { _, finished in
             guard let finished else { return }
             // Make Review Screenshots… says what it made, not where it waits.
             let ending = finished.subject == ReviewShotsAskPrompt.subject ? reviewShots.runEnded(appID: finished.appID) : nil
-            navigator.toast = WorkspaceToast(message: ToastMessage(text: ending ?? finished.text))
-        }
-        .sheet(isPresented: $isAskingQuestion) {
-            AutopilotQuestionSheet(client: clientName, appName: app.name) { question in
-                startAsk(.askSomethingElse, question: question)
-            }
-            .pageControlSize()
+            barCenter.finish(
+                appID: finished.appID, subject: finished.subject, text: ending ?? finished.text, failed: finished.isFailure, section: navigator.section
+            )
         }
         .navigationTitle(app.name)
         .navigationSubtitle(app.bundleID)
@@ -158,14 +152,6 @@ struct AppWorkspaceView: View {
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
             pageActionItem
-            // Its own capsule, drawn by the button so the light can run
-            // along its edge: a request's token lands on it.
-            ToolbarItem(placement: .primaryAction) {
-                autopilotButton
-                    .tourTip(.autopilot, arrowEdge: .bottom)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     navigator.refresh()
@@ -174,7 +160,7 @@ struct AppWorkspaceView: View {
                 }
                 .help("Refresh from App Store Connect (⌘R)")
                 .accessibilityIdentifier("workspace.refreshButton")
-                // As tall as Autopilot and Review & Push beside them.
+                // As tall as Review & Push beside them.
                 .controlSize(.large)
                 Button {
                     navigator.isActivityPresented = true
@@ -206,41 +192,6 @@ struct AppWorkspaceView: View {
     }
 
     // MARK: - Autopilot
-
-    /// The toolbar's Autopilot button.
-    private var autopilotButton: some View {
-        let run = autopilot.run(for: app.id)
-        return AutopilotToolbarButton(
-            items: autopilotItems,
-            everythingTitle: navigator.section == .overview ? nil : String(localized: "Everything for \(app.name)…"),
-            state: autopilotState(run: run),
-            runProgress: runProgress(run),
-            isCompact: toolbarLayout.isAutopilotCompact,
-            onAction: runAutopilot,
-            onOpenRun: openNeeds,
-            onCancelRun: cancelRun(run),
-            autoReplyPaused: autoReply.rule(for: app.id).isOn && !pro.isFree ? autoReply.rule(for: app.id).isPaused : nil,
-            onPauseAutoReply: { autoReply.setPaused($0, for: app.id) },
-            onAutoReplySettings: { navigator.open(.reviews, intent: .autopilot(.replyAutomatically), appID: app.id) },
-            activity: assistantActivity,
-            status: assistants.assistantStatus,
-            client: assistants.assistantClient,
-            connection: assistants.connection(appID: app.id, appName: app.name, launcher: launcher),
-            editsDrafts: assistants.editsDrafts,
-            recentCalls: assistants.leadingClient.map { assistants.recentCalls(of: $0.name) } ?? [],
-            center: screenshotDocuments,
-            appName: push.appName,
-            onReview: { client in navigator.reviewProposals(from: client) },
-            isSuggestingEverything: suggestions.run?.isRunning == true,
-            canAskAboutPage: navigator.section == .storePage || navigator.section == .appInformation,
-            onAsk: askForSuggestions,
-            onSuggestEverything: suggestEverything,
-            onSetUp: { navigator.isAssistantSetupPresented = true },
-            ask: askCenter.ask(for: app.id),
-            failedRunID: failedRun?.id,
-            onForgetFailure: { if let id = failedRun?.id { launcher.dismiss(id) } }
-        )
-    }
 
     /// The app's last Claude Code run, when it stopped with a problem and
     /// the person hasn't opened it yet.
@@ -332,7 +283,6 @@ struct AppWorkspaceView: View {
         case .translateNewLanguage: navigator.open(.storePage, intent: .translateMissing, appID: app.id)
         case .suggestAnswers: navigator.open(.appInformation, intent: .askForSuggestions(.appInformation), appID: app.id)
         case .checkPrivacy: navigator.open(.appInformation, intent: .openAppInformationPage(.appPrivacy), appID: app.id)
-        case .askSomethingElse: isAskingQuestion = true
         case .makeScreenshots, .makeAppPreview, .makeArtwork, .suggestPages, .makePageScreenshots, .makeEventArtwork, .replyAutomatically,
              .makeReviewScreenshots:
             if let section = action.section { navigator.open(section, intent: .autopilot(action), appID: app.id) }
@@ -345,12 +295,11 @@ struct AppWorkspaceView: View {
         assistants.sessions.first?.displayName ?? MCPClientKind.claudeCode.title
     }
 
-    /// Asks Claude Code from the toolbar, or copies the request to paste.
-    private func startAsk(_ action: WorkspaceAutopilotAction, question: String? = nil) {
+    /// Asks Claude Code from the Autopilot bar, or copies the request to
+    /// paste.
+    private func startAsk(_ action: WorkspaceAutopilotAction) {
         let language = app.primaryLocale.flatMap { Locale.current.localizedString(forIdentifier: $0) }
-        guard let ask = WorkspaceAutopilotAsk.make(
-            action, app: app.name, version: version?.versionString, sourceLanguage: language, question: question
-        ) else { return }
+        guard let ask = WorkspaceAutopilotAsk.make(action, app: app.name, version: version?.versionString, sourceLanguage: language) else { return }
         let client = clientName
         switch AssistantAskStarter.start(ask, app: app, client: client, launcher: launcher, askCenter: askCenter, reduceMotion: reduceMotion) {
         case .sent: break
@@ -445,6 +394,63 @@ extension AppWorkspaceView {
             }
         }
     }
+
+// MARK: - Autopilot bar
+
+extension AppWorkspaceView {
+    /// The bottom of the section: the Autopilot bar, and Review & Push
+    /// beside it.
+    private var bottomBar: some View {
+        GeometryReader { proxy in
+            WorkspaceBottomBar {
+                autopilotBar(openHeight: AutopilotBarRoom.openHeight(in: proxy.size.height))
+            } trailing: {
+                ReviewPushPill()
+            }
+        }
+    }
+
+    /// The Autopilot bar (board 80).
+    private func autopilotBar(openHeight: CGFloat) -> some View {
+        let run = autopilot.run(for: app.id)
+        return WorkspaceAutopilotBar(
+            context: chatContext,
+            actions: AutopilotBarActions(
+                items: autopilotItems, everythingTitle: AutopilotBarActions.everythingTitle(section: navigator.section, appName: app.name)
+            ),
+            state: autopilotState(run: run),
+            runProgress: runProgress(run),
+            canAsk: canChat,
+            openHeight: openHeight,
+            onCancelRun: cancelRun(run),
+            autoReplyPaused: autoReply.rule(for: app.id).isOn && !pro.isFree ? autoReply.rule(for: app.id).isPaused : nil,
+            onPauseAutoReply: { autoReply.setPaused($0, for: app.id) },
+            onAutoReplySettings: { navigator.open(.reviews, intent: .autopilot(.replyAutomatically), appID: app.id) },
+            activity: assistantActivity,
+            status: assistants.assistantStatus,
+            client: assistants.assistantClient,
+            connection: assistants.connection(appID: app.id, appName: app.name, launcher: launcher),
+            editsDrafts: assistants.editsDrafts,
+            recentCalls: assistants.leadingClient.map { assistants.recentCalls(of: $0.name) } ?? [],
+            documents: screenshotDocuments,
+            appName: push.appName,
+            onReviewProposals: { client in navigator.reviewProposals(from: client) },
+            isSuggestingEverything: suggestions.run?.isRunning == true,
+            canAskAboutPage: navigator.section == .storePage || navigator.section == .appInformation,
+            onAskAboutPage: askForSuggestions,
+            onSuggestEverything: suggestEverything,
+            onSetUp: { navigator.isAssistantSetupPresented = true },
+            failedRunID: failedRun?.id,
+            onForgetFailure: { if let id = failedRun?.id { launcher.dismiss(id) } },
+            onAction: runAutopilot,
+            onOpenRun: openNeeds,
+            onShow: { navigator.open($0, intent: AssistantChatSuggestions.intent(showing: $0), appID: app.id) },
+            onReview: { section in
+                if let section { navigator.review(section: section) } else { navigator.isReviewPresented = true }
+            },
+            onRoom: { room in if barRoom != room { barRoom = room } }
+        )
+    }
 }
 
 // MARK: - Section summary
@@ -533,21 +539,7 @@ extension AppWorkspaceView {
 // MARK: - Chat
 
 extension AppWorkspaceView {
-    private func chatCorner(isSectionToastShown: Bool) -> some View {
-        AssistantChatCorner(
-            context: chatContext, client: MCPClientKind.claudeCode.title, canAsk: canChat,
-            onConnect: { navigator.isAssistantSetupPresented = true },
-            onShow: { navigator.open($0, intent: AssistantChatSuggestions.intent(showing: $0), appID: app.id) },
-            onReview: { section in
-                if let section { navigator.review(section: section) } else { navigator.isReviewPresented = true }
-            }
-        )
-        .padding(.trailing, AssistantChatRoom.trailingInset)
-        .padding(.bottom, AssistantChatRoom.bottomPadding(isToastShown: navigator.toast != nil || isSectionToastShown))
-        .animation(MotionTiming.fast.animation, value: isSectionToastShown)
-    }
-
-    /// Where the chat's questions are asked from.
+    /// Where the Autopilot bar's questions are asked from.
     private var chatContext: AssistantChatContext {
         AssistantChatContext(appID: app.id, appName: app.name, section: navigator.section, version: version?.versionString, country: chatCountry)
     }

@@ -18,6 +18,9 @@ struct ActionToast: View {
     let onDismiss: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// The closed Autopilot bar's room at a section's bottom: the toast
+    /// sits above it (0 where there's no bar).
+    @Environment(\.chatCornerRoom) private var barRoom
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
@@ -54,14 +57,13 @@ struct ActionToast: View {
         .depth(.popover)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("toast")
-        // The chat in the workspace's corner moves above it.
-        .preference(key: ToastShownPreferenceKey.self, value: true)
         .task(id: message.id) {
             AccessibilityNotification.Announcement(message.text).post()
             try? await Task.sleep(for: duration ?? (message.canUndo || message.actionTitle != nil ? .seconds(10) : .seconds(6)))
             guard !Task.isCancelled else { return }
             onDismiss()
         }
+        .padding(.bottom, barRoom)
     }
 }
 

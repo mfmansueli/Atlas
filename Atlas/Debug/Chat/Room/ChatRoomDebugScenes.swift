@@ -6,9 +6,9 @@
 #if DEBUG
 import SwiftUI
 
-/// Every section in the main window with the chat's pill in the corner
-/// (board 69), to check that each page's last content, or its bar, scrolls
-/// up above the pill: `room-<section>`, e.g. `room-storePage`,
+/// Every section in the main window with the closed Autopilot bar at the
+/// bottom (board 80), to check that each page's last content, or its bar,
+/// scrolls up above it: `room-<section>`, e.g. `room-storePage`,
 /// `room-appInformation`. Analytics, Reviews and In-App Events open as
 /// their navigation scenes do (`nav-an`, `nav-rv`, `nav-ev`), with
 /// their sample data. Scroll to the bottom, or make the window short.

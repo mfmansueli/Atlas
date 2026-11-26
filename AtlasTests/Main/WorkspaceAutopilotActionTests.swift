@@ -6,7 +6,7 @@
 import Testing
 @testable import Atlas
 
-/// The toolbar Autopilot button's actions, section by section (board 57).
+/// Autopilot's actions, section by section (board 57; the bar of board 80).
 @Suite("WorkspaceAutopilotAction")
 struct WorkspaceAutopilotActionTests {
     @Test func eachSectionLeadsWithWhatAutopilotMakesThere() {
@@ -27,6 +27,13 @@ struct WorkspaceAutopilotActionTests {
         case .reviews: "Draft Replies…"
         case .analytics: "Find What to Try…"
         }
+    }
+
+    /// Board 80: Store Page's two buttons are Suggest Texts and Translate;
+    /// there's no “Ask Something Else…”, since the bar's field asks.
+    @Test func theStorePageLeadsWithTextsThenTranslation() {
+        let actions = WorkspaceAutopilotAction.actions(for: .storePage)
+        #expect(Array(actions.prefix(2)) == [.suggestTexts, .translateNewLanguage])
     }
 
     @Test func noActionIsListedTwiceInASection() {
@@ -61,11 +68,11 @@ struct WorkspaceAutopilotActionTests {
     }
 
     /// A section's flow runs there; every other action is a request the
-    /// toolbar sends Claude Code, with a prompt.
+    /// Autopilot bar sends Claude Code, with a prompt.
     @Test func everyActionEitherRunsASectionsFlowOrAsks() {
         let all = Set(AppWorkspaceSection.allCases.flatMap(WorkspaceAutopilotAction.actions(for:)))
         for action in all {
-            let ask = WorkspaceAutopilotAsk.make(action, app: "Lumen", version: "1.4", sourceLanguage: "English", question: "Why?")
+            let ask = WorkspaceAutopilotAsk.make(action, app: "Lumen", version: "1.4", sourceLanguage: "English")
             if action.section != nil {
                 #expect(ask == nil, "\(action)")
                 #expect(!action.asksAssistant)

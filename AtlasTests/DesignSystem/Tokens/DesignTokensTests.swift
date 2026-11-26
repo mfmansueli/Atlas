@@ -209,6 +209,7 @@ struct DesignTokensTests {
             "layout": MotionTiming.layout, "tick": MotionTiming.tick, "breathe": MotionTiming.breathe,
             "sentLift": MotionTiming.sentLift, "sentFlyX": MotionTiming.sentFlyX, "sentFlyY": MotionTiming.sentFlyY,
             "sentLand": MotionTiming.sentLand, "sentRing": MotionTiming.sentRing,
+            "open": MotionTiming.open, "close": MotionTiming.close,
         ]
         for (name, token) in tokens {
             let entry = try #require(motion[name] as? [String: Any], "motion.\(name)")
@@ -221,6 +222,7 @@ struct DesignTokensTests {
         #expect(stagger["limit"] as? Int == MotionTiming.staggerLimit)
         #expect((motion["sweep"] as? [String: Any])?["duration"] as? Double == MotionTiming.sweep)
         #expect((motion["trailLeg"] as? [String: Any])?["duration"] as? Double == MotionTiming.trailLeg)
+        #expect((motion["open"] as? [String: Any])?["contentDelay"] as? Double == MotionTiming.openContentDelay)
     }
 
     /// The README's own numbers, so the JSON can't drift from it either.

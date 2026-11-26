@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// "Pro" in the toolbar while the person is on Free: opens the plans. As
-/// tall as the toolbar's other buttons (`AutopilotButtonFace.height`), and
+/// tall as the toolbar's other buttons (`Metrics.toolbarButtonHeight`), and
 /// glass like them.
 struct ProToolbarButton: View {
     let action: () -> Void
@@ -18,7 +18,7 @@ struct ProToolbarButton: View {
                 .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, Spacing.medium)
-                .frame(height: AutopilotButtonFace<EmptyView>.height)
+                .frame(height: Metrics.toolbarButtonHeight)
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)

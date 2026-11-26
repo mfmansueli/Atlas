@@ -52,20 +52,22 @@ final class ClaudeCodeLaunchUITests: XCTestCase {
 
     // MARK: - Runs
 
-    /// Ask sends the request to the toolbar (boards 56–57): the Autopilot
-    /// button says Claude Code is working, and no page has an Ask button of
-    /// its own; its popover has the run, its output and Stop, which ends
-    /// the request.
+    /// Ask sends the request to the Autopilot bar (boards 56, 80): its strip
+    /// quotes what Claude Code works on, and no page has an Ask button of
+    /// its own; the assistant's status has the run, its output and Stop,
+    /// which ends the request.
     func testAskStartsClaudeCodeAndShowOutputCanStopIt() {
         launch(scene: "cc-ask")
         let autopilot = app.autopilotButton
         XCTAssertTrue(autopilot.waitForExistence(timeout: 10))
-        XCTAssertTrue(waitForLabel("Autopilot, Claude Code is working on Store Page", of: autopilot))
+        let quote = element("autopilotBar.strip.subtitle")
+        XCTAssertTrue(quote.waitForExistence(timeout: 10))
+        XCTAssertTrue(text(of: quote).contains("Store Page"), text(of: quote))
         XCTAssertFalse(app.buttons["suggestions.ask"].exists)
         XCTAssertFalse(element("ask.popover").exists)
 
-        // While a request runs, a click shows what it's doing.
-        autopilot.click()
+        // While a request runs, the assistant's status shows what it's doing.
+        app.openAssistantStatus()
         XCTAssertTrue(element("workspace.assistantPopover.ask").waitForExistence(timeout: 5))
         let show = app.buttons["assistant.runs.show"].firstMatch
         XCTAssertTrue(show.waitForExistence(timeout: 5))

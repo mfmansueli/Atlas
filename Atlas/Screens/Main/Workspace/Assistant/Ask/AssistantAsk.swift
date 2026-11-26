@@ -7,13 +7,13 @@ import Foundation
 
 /// One request sent to the person's assistant from an asking button
 /// ("Ask Claude Code…", Suggest Pages…): what it's about, and whether it's
-/// still on its way to the toolbar or being worked on. One at a time for
+/// still on its way to the Autopilot bar or being worked on. One at a time for
 /// each app (`AssistantAskCenter`).
 struct AssistantAsk: Identifiable, Hashable, Sendable {
     enum Phase: Hashable, Sendable {
-        /// The token is flying to the toolbar's Autopilot button.
+        /// The token is flying to the Autopilot bar.
         case sending
-        /// The assistant works on it: the toolbar says Working….
+        /// The assistant works on it: the bar's strip says so.
         case working
     }
 
@@ -31,10 +31,10 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
     /// The subject as VoiceOver says it: commas, not dots.
     var spokenSubject: String { subject.replacingOccurrences(of: " · ", with: ", ") }
 
-    /// "Sent to Claude Code: Store Page. The Autopilot button in the
-    /// toolbar shows it’s working."
+    /// "Sent to Claude Code: Store Page. The Autopilot bar shows
+    /// progress."
     var announcement: String {
-        String(localized: "Sent to \(client): \(spokenSubject). The Autopilot button shows progress.")
+        String(localized: "Sent to \(client): \(spokenSubject). The Autopilot bar shows progress.", comment: "kind:accessibility")
     }
 
     /// The asking buttons' title meanwhile: "Claude Code Is Working…".
@@ -44,13 +44,13 @@ struct AssistantAsk: Identifiable, Hashable, Sendable {
         String(localized: "\(client) Is Working…")
     }
 
-    /// The toolbar button's label: "Autopilot, Claude Code is working on
+    /// What VoiceOver says for it: "Autopilot, Claude Code is working on
     /// Store Page".
     var toolbarLabel: String {
         String(localized: "Autopilot, \(client) is working on \(spokenSubject)")
     }
 
-    /// What the toolbar's popover says about it.
+    /// What the assistant's status popover says about it.
     var popoverText: String {
         String(localized: "\(client) is working on \(subject). Suggestions show in purple.")
     }

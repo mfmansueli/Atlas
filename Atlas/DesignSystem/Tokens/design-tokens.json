@@ -527,6 +527,25 @@
     "sentRing": {
       "duration": 0.7,
       "curve": "easeOut"
+    },
+    "open": {
+      "duration": 0.34,
+      "curve": [
+        0.2,
+        0.7,
+        0.2,
+        1
+      ],
+      "contentDelay": 0.1
+    },
+    "close": {
+      "duration": 0.24,
+      "curve": [
+        0.4,
+        0,
+        0.6,
+        1
+      ]
     }
   },
   "symbol": {

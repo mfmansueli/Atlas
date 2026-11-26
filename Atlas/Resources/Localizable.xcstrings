@@ -1245,6 +1245,17 @@
         }
       }
     },
+    "%@ is in a price test until %@: its %lld suggested prices are left out." : {
+      "comment" : "kind:sheet-body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is in a price test until %2$@: its %3$lld suggested prices are left out."
+          }
+        }
+      }
+    },
     "%@ is in the %@ price test until %@. A new price here ends the test in all %lld countries." : {
       "comment" : "kind:inline-warning",
       "localizations" : {
@@ -2106,6 +2117,9 @@
     "%@ stopped" : {
       "comment" : "kind:title · a chat answer that failed"
     },
+    "%@ stopped before it was done. Autopilot says why." : {
+      "comment" : "kind:status · a request's run stopped with a problem"
+    },
     "%@ stopped before it was done. Its button says why." : {
       "comment" : "kind:description"
     },
@@ -2674,6 +2688,9 @@
     "%@ · Price history" : {
       "comment" : "kind:other"
     },
+    "%@ · Price tests" : {
+      "comment" : "kind:other"
+    },
     "%@ · Pricing strategy" : {
       "comment" : "kind:other"
     },
@@ -2752,6 +2769,9 @@
     "%@ · bundled" : {
       "comment" : "kind:other"
     },
+    "%@ · changes come back as suggestions" : {
+      "comment" : "kind:footnote · the open Autopilot bar"
+    },
     "%@ · checking which are on a page, %lld of %lld" : {
       "comment" : "kind:description"
     },
@@ -2777,6 +2797,17 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ · day %2$lld of %3$lld · ends %4$@"
+          }
+        }
+      }
+    },
+    "%@ · day %lld of %lld · ends %@, then the old prices come back" : {
+      "comment" : "kind:status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · day %2$lld of %3$lld · ends %4$@, then the old prices come back"
           }
         }
       }
@@ -2885,6 +2916,9 @@
     },
     "%@ · search results · 3:2" : {
       "comment" : "kind:description"
+    },
+    "%@ · sends it to Autopilot" : {
+      "comment" : "kind:tooltip · an action beside the Autopilot bar's field"
     },
     "%@ · sent when you push" : {
       "comment" : "kind:sheet-body"
@@ -3231,7 +3265,7 @@
       "comment" : "kind:description"
     },
     "%@: %@" : {
-      "comment" : "kind:other"
+      "comment" : "kind:accessibility · the assistant's name, then what its chat says"
     },
     "%@: %@ Code alone can’t prove support; check it with the feature on." : {
       "comment" : "kind:description"
@@ -5729,6 +5763,9 @@
     "6.9″" : {
       "comment" : "kind:error"
     },
+    "7 countries there feel over 2× the US price. A test would make their suggestions sure." : {
+      "comment" : "kind:suggestion-why"
+    },
     "8 digits, e.g. 85012345" : {
       "comment" : "kind:sheet-body"
     },
@@ -5933,6 +5970,9 @@
     "A matching event card and details image, in three concepts. Using your own files stays free." : {
       "comment" : "kind:description"
     },
+    "A message and an offer when people cancel" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "A new App Store language for %@" : {
       "comment" : "kind:description"
     },
@@ -6136,6 +6176,9 @@
     },
     "A trader needs a name: send traderDetails.name." : {
       "comment" : "kind:other"
+    },
+    "A whole page, in a new language" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "A word is wider than the box at %lld u" : {
       "comment" : "kind:description"
@@ -6383,6 +6426,9 @@
     },
     "Accept suggestions on every App Information page" : {
       "comment" : "kind:suggestion-title"
+    },
+    "Accept them here or in %@. Nothing is sent until you push." : {
+      "comment" : "kind:footnote · under an Autopilot answer's suggestions"
     },
     "Accept them in %@. Nothing is sent until you push." : {
       "comment" : "kind:footnote · under a chat answer's suggestions"
@@ -7063,6 +7109,9 @@
     "Age Rating, Accessibility, App Review and categories need an assistant that reads the code." : {
       "comment" : "kind:description"
     },
+    "Age Rating, Privacy, Accessibility" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Age assurance" : {
       "comment" : "kind:section-title"
     },
@@ -7464,6 +7513,9 @@
     },
     "Answer in the order App Store Connect asks. Atlas on the left, Safari on the right." : {
       "comment" : "kind:description"
+    },
+    "Answer ready" : {
+      "comment" : "kind:done-state · the Autopilot bar's strip"
     },
     "Answer the age rating questionnaire" : {
       "comment" : "kind:other"
@@ -8876,6 +8928,9 @@
     "Ask Apple for Reports" : {
       "comment" : "kind:button"
     },
+    "Ask Autopilot" : {
+      "comment" : "kind:menu-item · opens the Autopilot bar's conversation"
+    },
     "Ask Claude Code Something Else…" : {
       "comment" : "kind:section-title"
     },
@@ -8886,10 +8941,10 @@
       "comment" : "kind:button"
     },
     "Ask a follow-up…" : {
-      "comment" : "kind:placeholder · the chat's field"
+      "comment" : "kind:placeholder · the Autopilot bar's field"
     },
     "Ask about %@…" : {
-      "comment" : "kind:placeholder · the chat's field"
+      "comment" : "kind:placeholder · the Autopilot bar's field"
     },
     "Ask anything about %@. Changes come back as suggestions; nothing is sent until you push." : {
       "comment" : "kind:empty · the chat before the first question"
@@ -8926,6 +8981,12 @@
     },
     "Ask for the %@ Variant" : {
       "comment" : "kind:button"
+    },
+    "Ask or tell Autopilot" : {
+      "comment" : "kind:accessibility · the Autopilot bar's field"
+    },
+    "Ask or tell Autopilot…" : {
+      "comment" : "kind:placeholder · the Autopilot bar's field"
     },
     "Ask to Capture" : {
       "comment" : "kind:button"
@@ -9564,6 +9625,9 @@
     "Auto" : {
       "comment" : "kind:section-title"
     },
+    "Auto-Reply" : {
+      "comment" : "kind:button · the Autopilot bar's button for Reply Automatically…"
+    },
     "Auto-Reply Settings…" : {
       "comment" : "kind:button"
     },
@@ -9598,7 +9662,7 @@
       "comment" : "kind:section-title"
     },
     "Autopilot" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:accessibility · the bar at the bottom of every section\nkind:title · the open Autopilot bar"
     },
     "Autopilot captures %@ in %@, and uses those captures under every language’s captions." : {
       "comment" : "kind:description"
@@ -9685,7 +9749,7 @@
       "comment" : "kind:section-title"
     },
     "Autopilot, %@" : {
-      "comment" : "kind:button"
+      "comment" : "kind:accessibility · the Autopilot bar says what happens"
     },
     "Autopilot, %@ is working on %@" : {
       "comment" : "kind:description"
@@ -10235,6 +10299,9 @@
     "By hand, in App Store Connect" : {
       "comment" : "kind:description"
     },
+    "By purchasing power and your sales" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "By region" : {
       "comment" : "kind:section-title"
     },
@@ -10547,6 +10614,9 @@
     "Captures the screens in Simulator" : {
       "comment" : "kind:section-title"
     },
+    "Captures, design, every language" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Capturing" : {
       "comment" : "kind:section-title"
     },
@@ -10732,6 +10802,9 @@
     "Check Again" : {
       "comment" : "kind:button"
     },
+    "Check App Review" : {
+      "comment" : "kind:button · the Autopilot bar's button for Check It Will Pass App Review…"
+    },
     "Check It Will Pass App Review…" : {
       "comment" : "kind:description"
     },
@@ -10740,6 +10813,9 @@
     },
     "Check Now" : {
       "comment" : "kind:button"
+    },
+    "Check Privacy" : {
+      "comment" : "kind:button · the Autopilot bar's button for Check Privacy Against the Code…"
     },
     "Check Privacy Against the Code…" : {
       "comment" : "kind:section-title"
@@ -12583,6 +12659,9 @@
     "Deep link" : {
       "comment" : "kind:placeholder"
     },
+    "Deep links, dates and texts" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Default page" : {
       "comment" : "kind:section-title"
     },
@@ -13064,7 +13143,7 @@
       "comment" : "kind:other"
     },
     "Done · %@" : {
-      "comment" : "kind:done-state"
+      "comment" : "kind:done-state · the Autopilot bar's strip once a request ends"
     },
     "Done · Apple is processing" : {
       "comment" : "kind:progress-step"
@@ -13345,6 +13424,9 @@
     "Earlier change, %@: %@ → %@, starts %lld → %lld in 28 days" : {
       "comment" : "kind:other"
     },
+    "Earlier today" : {
+      "comment" : "kind:title · the open Autopilot bar's finished requests"
+    },
     "Early read; numbers often move until %@." : {
       "comment" : "kind:description"
     },
@@ -13543,6 +13625,9 @@
     "Ended %@" : {
       "comment" : "kind:section-title"
     },
+    "Ending the %@ price test is in Review & Push." : {
+      "comment" : "kind:toast"
+    },
     "Ending the test waits in Review & Push. The old prices come back when you push." : {
       "comment" : "kind:status"
     },
@@ -13648,6 +13733,9 @@
     "Event" : {
       "comment" : "kind:section-title"
     },
+    "Event Artwork" : {
+      "comment" : "kind:button · the Autopilot bar's button for Make Event Artwork…"
+    },
     "Event Card" : {
       "comment" : "kind:section-title"
     },
@@ -13656,6 +13744,9 @@
     },
     "Event Name" : {
       "comment" : "kind:section-title"
+    },
+    "Event Texts" : {
+      "comment" : "kind:button · the Autopilot bar's button for Write Event Texts…"
     },
     "Event and header artwork" : {
       "comment" : "kind:other"
@@ -13798,6 +13889,9 @@
     "Every direction has arrived. Revise one with revise_direction when next_step asks." : {
       "comment" : "kind:other"
     },
+    "Every event, every language" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Every field below is suggested. Change anything before you accept." : {
       "comment" : "kind:suggestion-why"
     },
@@ -13809,6 +13903,9 @@
     },
     "Every field in scope" : {
       "comment" : "kind:sheet-title"
+    },
+    "Every field in this language" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "Every hour" : {
       "comment" : "kind:section-title"
@@ -13900,6 +13997,9 @@
     "Every screenshot shows %@ in its own language: %@ captured in all %lld (%@)" : {
       "comment" : "kind:description"
     },
+    "Every section, every language" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Every size Apple needs" : {
       "comment" : "kind:section-title"
     },
@@ -13930,6 +14030,9 @@
     "Everything" : {
       "comment" : "kind:done-state"
     },
+    "Everything Autopilot can do in %@" : {
+      "comment" : "kind:accessibility · the Autopilot bar's More"
+    },
     "Everything answered or checked" : {
       "comment" : "kind:done-state"
     },
@@ -13940,7 +14043,7 @@
       "comment" : "kind:done-state"
     },
     "Everything for %@…" : {
-      "comment" : "kind:done-state"
+      "comment" : "kind:menu-item · Suggest Everything, from the Autopilot bar"
     },
     "Everything from this run is reviewed." : {
       "comment" : "kind:done-state"
@@ -14474,6 +14577,9 @@
     "For %lld periods" : {
       "comment" : "kind:sheet-title"
     },
+    "For App Review, one per product" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "For What’s New and privacy, use Claude Code. Claude Desktop sees code only with access." : {
       "comment" : "kind:hint"
     },
@@ -14513,8 +14619,14 @@
     "For people about to cancel. Up to %lld per subscription; Apple picks who’s eligible and shows the best." : {
       "comment" : "kind:description"
     },
+    "For the event you open" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "For the next run: %@ from %@." : {
       "comment" : "kind:description"
+    },
+    "For the page you open" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "For this page’s audience, in %lld languages." : {
       "comment" : "kind:progress-step"
@@ -14687,6 +14799,9 @@
     "From Atlas’s starters, in the app icon’s colors%@." : {
       "comment" : "kind:description"
     },
+    "From What’s New and your events" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "From a sample of people who share analytics with you." : {
       "comment" : "kind:tooltip"
     },
@@ -14704,6 +14819,12 @@
     },
     "From people who share analytics; days complete up to 5 days later. Versions compared on shared days." : {
       "comment" : "kind:description"
+    },
+    "From real captures" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
+    "From reviews, analytics and keywords" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "From templates" : {
       "comment" : "kind:section-title"
@@ -14732,14 +14853,26 @@
     "From the app’s own design: its design docs, theme, fonts and icon%@." : {
       "comment" : "kind:description"
     },
+    "From the commits since the last version" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
+    "From the last 4 weeks of reports" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "From the last Submit (%@):" : {
       "comment" : "kind:error"
     },
     "From the library: %@" : {
       "comment" : "kind:sheet-title"
     },
+    "From the next version and your events" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "From version %@’s %@ keywords, the last approved. You can’t add new words here." : {
       "comment" : "kind:description"
+    },
+    "From what’s coming in the next version" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "From when you push (about %@) to %@. Then the old prices come back on their own." : {
       "comment" : "kind:sheet-body",
@@ -14965,6 +15098,9 @@
     "Header 21:9 only" : {
       "comment" : "kind:section-title"
     },
+    "Header Art" : {
+      "comment" : "kind:button · the Autopilot bar's button for Make Header and Search Artwork…"
+    },
     "Header above, search result left. A sketch of the scene type in %@’s colors; %@ makes the real one." : {
       "comment" : "kind:description"
     },
@@ -15110,7 +15246,7 @@
       "comment" : "kind:hint"
     },
     "Hide" : {
-      "comment" : "kind:accessibility-label"
+      "comment" : "kind:button"
     },
     "Hide %@" : {
       "comment" : "kind:accessibility-label"
@@ -16214,6 +16350,9 @@
     "Its subtitle, categories, description, the keywords in each language and the icon’s colors, so the idea, the scene and the search headline are about what this app does, not any app in its category." : {
       "comment" : "kind:other"
     },
+    "Its suggestions show up in purple where they go." : {
+      "comment" : "kind:status · under a request the Autopilot bar sent"
+    },
     "Its video can’t be decoded." : {
       "comment" : "kind:description"
     },
@@ -17209,6 +17348,9 @@
     "Make Again rebuilds it from your choices, no new design. Or approve the rest without it." : {
       "comment" : "kind:description"
     },
+    "Make Autopilot smaller" : {
+      "comment" : "kind:accessibility"
+    },
     "Make Event Artwork…" : {
       "comment" : "kind:section-title"
     },
@@ -17265,6 +17407,9 @@
     },
     "Make its pages with the pages prompt and send them with propose_artwork_concept, concept {\"id\": \"%@\"} and artworkDesign: %@ still to come." : {
       "comment" : "kind:other"
+    },
+    "Make smaller (⌘J)" : {
+      "comment" : "kind:tooltip · closes the open Autopilot bar"
     },
     "Make the %@ simulator in Xcode › Window › Devices and Simulators, then retry." : {
       "comment" : "kind:description"
@@ -17456,7 +17601,7 @@
       "comment" : "kind:section-title"
     },
     "Message" : {
-      "comment" : "kind:accessibility · the chat's field"
+      "comment" : "kind:accessibility · the Autopilot bar's field"
     },
     "Message %lld" : {
       "comment" : "kind:section-title"
@@ -17564,7 +17709,7 @@
       "comment" : "kind:section-title"
     },
     "More" : {
-      "comment" : "kind:accessibility-label"
+      "comment" : "kind:button · the Autopilot bar's other actions"
     },
     "More Autopilot actions" : {
       "comment" : "kind:accessibility-label"
@@ -17992,6 +18137,9 @@
     "New reviews that need one show up here." : {
       "comment" : "kind:description"
     },
+    "New reviews, with rules you set" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "New screen" : {
       "comment" : "kind:section-title"
     },
@@ -18277,7 +18425,7 @@
       "comment" : "kind:empty-state"
     },
     "No assistant connected" : {
-      "comment" : "kind:placeholder · the chat's field"
+      "comment" : "kind:placeholder · the Autopilot bar's field"
     },
     "No assistant connected. The local server is on; connect Claude Code from %@’s folder." : {
       "comment" : "kind:description"
@@ -19318,6 +19466,9 @@
     "Nothing changed in App Store Connect." : {
       "comment" : "kind:done-state"
     },
+    "Nothing changed in Atlas." : {
+      "comment" : "kind:status · under the Autopilot bar's stopped strip"
+    },
     "Nothing changed since App Store Connect’s" : {
       "comment" : "kind:description"
     },
@@ -20084,6 +20235,9 @@
     "Only the person can choose their own file. Pick one of the library’s tracks, or leave the music as it is." : {
       "comment" : "kind:other"
     },
+    "Only the screens that changed" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Only these captures change. The new ones are picked; click the one before to keep it." : {
       "comment" : "kind:description"
     },
@@ -20139,7 +20293,7 @@
       "comment" : "kind:description"
     },
     "Open" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:button · the Autopilot bar's strip"
     },
     "Open %@" : {
       "comment" : "kind:section-title"
@@ -20183,6 +20337,9 @@
     },
     "Open %@’s page" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Open (⌘J)" : {
+      "comment" : "kind:tooltip · opens the Autopilot bar"
     },
     "Open **Users and Access**, then **Integrations**." : {
       "comment" : "kind:description"
@@ -20373,6 +20530,9 @@
     "Open this product page" : {
       "comment" : "kind:accessibility-label"
     },
+    "Open to read the answer" : {
+      "comment" : "kind:status · under the Autopilot bar's done strip"
+    },
     "Open with search, shorter second caption" : {
       "comment" : "kind:placeholder"
     },
@@ -20448,6 +20608,9 @@
     "Opens the chat" : {
       "comment" : "kind:accessibility"
     },
+    "Opens the conversation" : {
+      "comment" : "kind:accessibility"
+    },
     "Opens the editor" : {
       "comment" : "kind:accessibility-label"
     },
@@ -20491,7 +20654,7 @@
       "comment" : "kind:progress-step"
     },
     "Or write your answer…" : {
-      "comment" : "kind:placeholder · the chat's field"
+      "comment" : "kind:placeholder · the Autopilot bar's field"
     },
     "Or, in any MCP client:" : {
       "comment" : "kind:sheet-body"
@@ -20672,6 +20835,9 @@
     },
     "Page" : {
       "comment" : "kind:section-title"
+    },
+    "Page Screenshots" : {
+      "comment" : "kind:button · the Autopilot bar's button for Make Screenshots for a Page…"
     },
     "Page text" : {
       "comment" : "kind:section-title"
@@ -21102,6 +21268,9 @@
     },
     "Pick a New Date…" : {
       "comment" : "kind:button"
+    },
+    "Pick a mark on the chart" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "Pick a template" : {
       "comment" : "kind:empty-state"
@@ -21648,7 +21817,7 @@
       "comment" : "kind:section-title"
     },
     "Pro" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:accessibility"
     },
     "Pro groups every review, in every language: what’s broken, wanted or loved. Each group ends with a next step." : {
       "comment" : "kind:description"
@@ -22399,6 +22568,9 @@
     },
     "Reads fastlane/screenshots, one folder per locale." : {
       "comment" : "kind:description"
+    },
+    "Reads the project for data use" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "Reads the project you start it in." : {
       "comment" : "kind:description"
@@ -23191,6 +23363,9 @@
     "Retention Messaging" : {
       "comment" : "kind:section-title"
     },
+    "Retention Offer" : {
+      "comment" : "kind:button · the Autopilot bar's button for Write a Retention Offer…"
+    },
     "Retention is part of Pro" : {
       "comment" : "kind:section-title"
     },
@@ -23287,6 +23462,9 @@
     "Review Screenshot" : {
       "comment" : "kind:segment"
     },
+    "Review Screenshots" : {
+      "comment" : "kind:button · the Autopilot bar's button for Make Review Screenshots…"
+    },
     "Review Screenshots Ready" : {
       "comment" : "kind:section-title"
     },
@@ -23376,6 +23554,9 @@
     },
     "Reviews from every country show up here." : {
       "comment" : "kind:description"
+    },
+    "Reviews grouped by request" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "Reviews not read in %@; this slot shows its capture" : {
       "comment" : "kind:description"
@@ -24424,6 +24605,17 @@
     "Sent to %@: %@" : {
       "comment" : "kind:history-entry"
     },
+    "Sent to %@: %@. The Autopilot bar shows progress." : {
+      "comment" : "kind:accessibility",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sent to %1$@: %2$@. The Autopilot bar shows progress."
+          }
+        }
+      }
+    },
     "Sent to %@: %@. The Autopilot button shows progress." : {
       "comment" : "kind:accessibility-label"
     },
@@ -24593,7 +24785,7 @@
       "comment" : "kind:progress-step"
     },
     "Settings…" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:button"
     },
     "Setup test" : {
       "comment" : "kind:section-title"
@@ -24632,13 +24824,16 @@
       "comment" : "kind:hint"
     },
     "Show" : {
-      "comment" : "kind:label"
+      "comment" : "kind:button · a finished Autopilot request"
     },
     "Show %@" : {
       "comment" : "kind:button"
     },
     "Show %@’s review screenshot larger" : {
       "comment" : "kind:accessibility-label"
+    },
+    "Show %lld" : {
+      "comment" : "kind:button · shows the Autopilot actions"
     },
     "Show %lld Countries" : {
       "comment" : "kind:button"
@@ -25798,6 +25993,9 @@
     "Suggest Everything with %@" : {
       "comment" : "kind:sheet-title"
     },
+    "Suggest Everything, in every section" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "Suggest Everything…" : {
       "comment" : "kind:button"
     },
@@ -26135,6 +26333,9 @@
     "Suggestions, translations, privacy" : {
       "comment" : "kind:section-title"
     },
+    "Summarize" : {
+      "comment" : "kind:button · the Autopilot bar's button for Summarize What People Ask For…"
+    },
     "Summarize What People Ask For…" : {
       "comment" : "kind:section-title"
     },
@@ -26366,6 +26567,9 @@
     "Test sent to App Review" : {
       "comment" : "kind:section-title"
     },
+    "Test suggested prices in Asia Pacific" : {
+      "comment" : "kind:suggestion-title"
+    },
     "Test with Product Page Optimization" : {
       "comment" : "kind:sheet-title"
     },
@@ -26551,6 +26755,9 @@
     "The %@ price stays: it’s the base price." : {
       "comment" : "kind:sheet-body"
     },
+    "The %@ price test is in Review & Push. Nothing is sent yet." : {
+      "comment" : "kind:toast"
+    },
     "The %@ price there is %@× the purchasing-power price." : {
       "comment" : "kind:suggestion-why"
     },
@@ -26568,6 +26775,9 @@
     },
     "The %@ takes letters, digits, “_” and “.”, up to 64 characters, and can’t be changed later." : {
       "comment" : "kind:error"
+    },
+    "The %@ test prices are in Review & Push." : {
+      "comment" : "kind:toast"
     },
     "The %lld products are as they were." : {
       "comment" : "kind:banner"
@@ -27619,6 +27829,9 @@
     "The price didn’t load." : {
       "comment" : "kind:error"
     },
+    "The primary language; the others follow" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "The primary language’s name and descriptions aren’t all written." : {
       "comment" : "kind:description"
     },
@@ -28165,7 +28378,7 @@
       "comment" : "kind:sheet-body"
     },
     "They wait in Review & Push. Nothing is sent until you push." : {
-      "comment" : "kind:footnote · under a chat answer's suggestions"
+      "comment" : "kind:footnote · under an Autopilot answer's suggestions"
     },
     "They're removed from this Mac. Nothing in App Store Connect changes." : {
       "comment" : "kind:confirmation"
@@ -28563,6 +28776,9 @@
     "Trader, with these details. Enter them in App Store Connect: Apple’s API doesn’t take them." : {
       "comment" : "kind:description"
     },
+    "Translate" : {
+      "comment" : "kind:button · the Autopilot bar's button for Translate into a New Language…"
+    },
     "Translate %lld" : {
       "comment" : "kind:section-title"
     },
@@ -28858,6 +29074,9 @@
     },
     "Ultra 3" : {
       "comment" : "kind:description"
+    },
+    "Unanswered reviews, in their language" : {
+      "comment" : "kind:description · an Autopilot action"
     },
     "Unchanged" : {
       "comment" : "kind:section-title"
@@ -29969,7 +30188,7 @@
       "comment" : "kind:confirmation"
     },
     "What’s New" : {
-      "comment" : "kind:section-title"
+      "comment" : "kind:button · the Autopilot bar's button for Write What’s New…"
     },
     "What’s New from your commits, promotional text, subtitles, keywords" : {
       "comment" : "kind:progress-step"
@@ -30225,6 +30444,9 @@
     "With Atlas’s template" : {
       "comment" : "kind:section-title"
     },
+    "With Claude Design, in this app’s look" : {
+      "comment" : "kind:description · an Autopilot action"
+    },
     "With YES, give complianceCode: the approved encryption declaration's codeValue (ITSEncryptionExportComplianceCode)." : {
       "comment" : "kind:error"
     },
@@ -30298,7 +30520,7 @@
       "comment" : "kind:hint"
     },
     "Working" : {
-      "comment" : "kind:pill · the chat's assistant answers"
+      "comment" : "kind:pill · the assistant answers"
     },
     "Working in %@" : {
       "comment" : "kind:section-title"
@@ -30431,6 +30653,9 @@
     },
     "Writing" : {
       "comment" : "kind:section-title"
+    },
+    "Writing suggestions…" : {
+      "comment" : "kind:loading · a request's last step: the assistant writes what it suggests"
     },
     "Writing the answer…" : {
       "comment" : "kind:loading · the chat's last step: the assistant writes its reply"
@@ -33946,6 +34171,9 @@
     },
     "“%@” · submitted on %@" : {
       "comment" : "kind:other"
+    },
+    "“%@” · they show up in purple" : {
+      "comment" : "kind:status · under the Autopilot bar's working strip"
     },
     "“%@”: %@ Change “%@” on the event’s page (Fix…), then Submit again." : {
       "comment" : "kind:description"

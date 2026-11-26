@@ -79,6 +79,11 @@ struct AssistantChatProgress: Equatable, Sendable {
 
     /// VoiceOver: “Claude Code: Read prices…, 2 of 3”.
     func accessibilityLabel(client: String) -> String {
-        [AssistantChatPillLine.named(client, text(client: client)), countLabel].compactMap(\.self).joined(separator: ", ")
+        [Self.named(client, text(client: client)), countLabel].compactMap(\.self).joined(separator: ", ")
+    }
+
+    /// “Claude Code: Writing the answer…”.
+    static func named(_ client: String, _ text: String) -> String {
+        String(localized: "\(client): \(text)", comment: "kind:accessibility · the assistant's name, then what its chat says")
     }
 }

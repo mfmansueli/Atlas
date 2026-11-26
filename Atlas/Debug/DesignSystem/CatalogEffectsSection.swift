@@ -232,16 +232,14 @@ struct CatalogEffectsSection: View {
     // MARK: - 5 · Needs you
 
     private struct NeedsYouDemo: View {
-        @State private var look: AutopilotButtonLook = .working("Capturing Annual · 2 of 3", progress: 2.0 / 3)
+        @State private var strip = AutopilotBarStrip(
+            kind: .working, source: .run, key: "demo", title: "Capturing Annual", detail: "2 of 3", progress: 2.0 / 3, action: .show
+        )
         @State private var failure: String?
 
         var body: some View {
             VStack(alignment: .leading, spacing: Spacing.medium) {
-                AutopilotButtonFace(
-                    look: look, title: "Make Screenshots…", accessibilityLabel: look.text ?? "",
-                    onMain: {}, menu: { Button("Show Run…") {} }
-                )
-                .fixedSize()
+                AutopilotBarStripView(strip: strip, onAction: {}, onChoice: { _ in }, onStop: {}, onDismiss: {})
                 ZStack(alignment: .topLeading) {
                     if failure != nil {
                         Label("Claude Code couldn’t find the paywall. Say where it is, then Try Again.", systemImage: "exclamationmark.triangle.fill")
@@ -254,7 +252,7 @@ struct CatalogEffectsSection: View {
             }
             .task {
                 try? await Task.sleep(for: .milliseconds(800))
-                look = .needsYou("Show It the Paywall")
+                strip = AutopilotBarStrip(kind: .needsYou, source: .run, key: "demo", title: "Show It the Paywall", action: .show)
                 try? await Task.sleep(for: .milliseconds(1200))
                 failure = "paywall"
             }

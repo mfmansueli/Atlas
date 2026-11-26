@@ -40,7 +40,7 @@ enum AssistDebugScenes {
                 model.requestsAsk = true
             })
         case "asst-pop-key":
-            AutopilotToolbarButton.debugShowsPopover = true
+            WorkspaceAutopilotBar.debugShowsPopover = true
             return withKey(DebugMainScene(section: .overview, suggestions: keyStore()))
         case "in-age":
             return SuggestionsDebugScenes.appInformationScene(page: .ageRating, store: codeStore()) { $0.showsOnlySuggestedFields = true }
