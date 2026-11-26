@@ -14,7 +14,9 @@ import Observation
 @MainActor
 @Observable
 final class ScreenshotsViewModel {
-    let app: StoreApp
+    /// Kept while other sections show, so the section hands it the icon
+    /// that arrives after it was made (`takeIcon`).
+    private(set) var app: StoreApp
     let services: any ScreenshotsServices
     let renderQueue: ScreenshotRenderQueue
     /// Capture images for the editors' live previews.
@@ -136,6 +138,14 @@ final class ScreenshotsViewModel {
         services.documentCenter?.observe(app.id, owner: self) { [weak self] document in
             Task { await self?.adopt(document) }
         }
+    }
+
+    /// The app's icon once it's known: a model made (or read ahead) before
+    /// the icons arrived would otherwise draw its letter on the App Store
+    /// preview for good.
+    func takeIcon(_ icon: AppIcon?) {
+        guard let icon, app.icon != icon else { return }
+        app.icon = icon
     }
 
     // MARK: - Loading

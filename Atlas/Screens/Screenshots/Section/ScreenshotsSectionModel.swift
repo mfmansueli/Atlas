@@ -13,7 +13,9 @@ import Observation
 @MainActor
 @Observable
 final class ScreenshotsSectionModel {
-    let app: StoreApp
+    /// Kept while other sections show, so the section hands it the icon
+    /// that arrives after it was made (`takeIcon`).
+    private(set) var app: StoreApp
     let services: any StorePageServices
     private(set) var content: StorePageContent?
     private(set) var screenshots: ScreenshotsViewModel?
@@ -25,6 +27,15 @@ final class ScreenshotsSectionModel {
         self.app = app
         self.services = services
         self.push = push
+    }
+
+    /// The app's icon once it's known, for the section and its screenshots
+    /// model: both may have been made (or read ahead) before the sidebar
+    /// found the icons, and would otherwise draw the app's letter.
+    func takeIcon(_ icon: AppIcon?) {
+        guard let icon else { return }
+        if app.icon != icon { app.icon = icon }
+        screenshots?.takeIcon(icon)
     }
 
     /// Reads the version's texts and IDs, then makes the screenshots model

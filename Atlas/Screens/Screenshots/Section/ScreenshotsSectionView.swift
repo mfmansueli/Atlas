@@ -46,6 +46,7 @@ struct ScreenshotsSectionView: View {
         // Add Screenshots… in the toolbar: off until the sets are read.
         .reportsPageAction(pageActionState, for: .screenshots)
         .task(id: app.id) { await open() }
+        .onChange(of: app.icon) { shownModel?.takeIcon(app.icon) }
         .onChange(of: navigator.refreshCount) {
             Task {
                 if let model { await load(model) }
@@ -75,6 +76,7 @@ struct ScreenshotsSectionView: View {
         // The window keeps the model while other sections show: the sets,
         // renders and captures are there when the person comes back.
         if let model = kept?.screenshots, model.screenshots != nil {
+            model.takeIcon(app.icon)
             self.model = model
             handleIntent()
             if kept?.needsLoad(.screenshots, refreshCount: navigator.refreshCount) == true { await load(model) }

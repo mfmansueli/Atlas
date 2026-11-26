@@ -57,6 +57,7 @@ struct WorkspaceSectionWarmer: SectionWarming {
             await warmStorePage(app, kept: kept, refreshCount: refreshCount)
         case .screenshots:
             let model = kept.screenshots ?? ScreenshotsSectionModel(app: app, services: services.storePage, push: push)
+            model.takeIcon(app.icon)
             kept.screenshots = model
             await ScreenshotsSectionView.read(model, into: kept, refreshCount: refreshCount, includingSets: true)
         case .productPages:
