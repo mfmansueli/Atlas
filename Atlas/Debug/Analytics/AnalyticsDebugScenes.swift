@@ -11,7 +11,8 @@ import SwiftUI
 /// 11, 2026.
 ///
 /// - Setup: `an-off`, `an-waiting` (Habitat, asked Nov 10), `an-norole`,
-///   `an-loading`.
+///   `an-loading`, and `an-flow` (Lumen not set up; asking, then Check
+///   Now, finds its store-page reports and opens the Overview).
 /// - What's missing: `an-novendor`, `an-nosales`, `an-part-eng` (sales not
 ///   yet), `an-part-sales` (store-page reports not yet), `an-stale`.
 /// - Funnel: `an-funnel`, `an-funnel-7`, `an-funnel-dl` (90 days, trials
@@ -79,6 +80,10 @@ enum AnalyticsDebugScenes {
             let store = Data.store(hasSales: false)
             store.load(appID: AppIDs.lumen, record: AnalyticsAppRecord())
             return scene(store: store)
+        case "an-flow":
+            let store = Data.store(hasSales: false)
+            store.load(appID: AppIDs.lumen, record: AnalyticsAppRecord())
+            return scene(store: store, services: DebugAnalyticsServices(deliversOnCheck: true))
         case "an-waiting":
             return scene(app: AppIDs.habitat)
         case "an-norole":

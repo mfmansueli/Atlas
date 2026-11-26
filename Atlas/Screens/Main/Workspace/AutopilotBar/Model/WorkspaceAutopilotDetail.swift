@@ -18,12 +18,16 @@ enum WorkspaceAutopilotDetail: Hashable, Sendable {
     /// In-App Events with no event yet (board 74 · 3): Suggest an Event…,
     /// not Make Event Artwork….
     case noEvents
+    /// Analytics before the first reports (README-DS §16): only “Ask What
+    /// Analytics Shows…”.
+    case analyticsBeforeReports
 
     /// The section it belongs to; elsewhere it doesn't count.
     var section: AppWorkspaceSection {
         switch self {
         case .event, .noEvents: .inAppEvents
         case .productPage: .productPages
+        case .analyticsBeforeReports: .analytics
         }
     }
 }

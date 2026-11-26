@@ -702,6 +702,11 @@
       "increase": "warn pill (amber) with arrowtriangle.up.fill — increases can cost subscribers"
     }
   },
+  "analyticsOverview": {
+    "$description": "Board 92 / README-DS §16: Analytics → Overview. The four number cards are at least 128 wide (as many in a row as fit); a funnel step card at least 112, with a 12 chevron column between steps; under that the funnel scrolls sideways.",
+    "kpiMinWidth": 128,
+    "funnelCardMinWidth": 112
+  },
   "pageCardStrip": {
     "$description": "Board 88 / README-DS §16: the strip of page cards that scrolls sideways (App Information's pages, Analytics' views). Card 46 tall, at least 150 wide, symbol tile 26, fades out over 44 on the right with a 24 round arrow; the open card has the accent's tint and edge.",
     "height": 46,

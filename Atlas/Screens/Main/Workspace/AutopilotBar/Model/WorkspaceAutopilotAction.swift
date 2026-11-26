@@ -55,6 +55,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
     // Analytics
     case findWhatToTry
     case explainChange
+    /// Before the first reports, the only action (README-DS §16).
+    case askWhatAnalyticsShows
 
     /// The section's actions, the bar's two buttons first.
     static func actions(for section: AppWorkspaceSection) -> [Self] {
@@ -78,10 +80,13 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
     static func actions(for section: AppWorkspaceSection, detail: WorkspaceAutopilotDetail?) -> [Self] {
         let actions = actions(for: section)
         guard let detail, detail.section == section else { return actions }
+        // Nothing to find or explain before Apple's first reports.
+        if detail == .analyticsBeforeReports { return [.askWhatAnalyticsShows] }
         let lead: Self = switch detail {
         case .event: .makeEventArtwork
         case .productPage: .makePageScreenshots
         case .noEvents: .suggestEvent
+        case .analyticsBeforeReports: .askWhatAnalyticsShows
         }
         return [lead] + actions.filter { $0 != lead }
     }
@@ -131,6 +136,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
             .summarizeRequests: String(localized: "Summarize What People Ask For…"),
             .findWhatToTry: String(localized: "Find What to Try…"),
             .explainChange: String(localized: "Explain a Change…"),
+            .askWhatAnalyticsShows: String(localized: "Ask What Analytics Shows…", comment: "kind:menu-item · Analytics before the first reports"),
         ]
     }
 
@@ -151,6 +157,7 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .summarizeRequests: "doc.text"
         case .findWhatToTry: "lightbulb"
         case .explainChange: "questionmark.circle"
+        case .askWhatAnalyticsShows: "questionmark.bubble"
         case .suggestEverything, .suggestTexts, .suggestSourceLanguageOnly, .suggestPages, .suggestEvent, .suggestNomination,
              .suggestAnswers, .suggestPrices, .makeReviewScreenshots:
             "sparkles"
@@ -183,7 +190,8 @@ enum WorkspaceAutopilotAction: Hashable, Sendable {
         case .replyAutomatically: .reviews
         case .writeEventTexts, .checkEventsForReview, .suggestEvent, .suggestNomination, .writeNominationDescription, .writeWhatsNew,
              .suggestSourceLanguageOnly, .recaptureSome,
-             .suggestPrices, .writeRetentionOffer, .draftReplies, .summarizeRequests, .findWhatToTry, .explainChange:
+             .suggestPrices, .writeRetentionOffer, .draftReplies, .summarizeRequests, .findWhatToTry, .explainChange,
+             .askWhatAnalyticsShows:
             nil
         }
     }

@@ -20,12 +20,27 @@ struct AnalyticsView: View {
     /// Stability's banner buttons: the version's card and its phased
     /// release.
     var stabilityRelease: StabilityReleaseActions = .none
+    /// Reads the Overview's Rating number (the App Store's average and the
+    /// current version's reviews); nil leaves it out of reach.
+    var loadRating: (@MainActor () async -> OverviewRating?)?
+    /// Rating's blue line: Ratings & Reviews.
+    var onOpenReviews: () -> Void = {}
+
+    @State private var rating: OverviewRating?
+    @State private var isRatingLoading = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             header
             if viewModel.availability.showsStrip {
                 AnalyticsTabStrip(viewModel: viewModel)
+            }
+            if let notice = viewModel.notice {
+                AnalyticsNoticeBanner(
+                    notice: notice, appName: viewModel.app.name, now: viewModel.store.now(), isChecking: viewModel.activity.isLoading
+                ) { action in
+                    Task { await viewModel.handle(action) }
+                }
             }
             content
         }
@@ -35,6 +50,14 @@ struct AnalyticsView: View {
         .background(Palette.content)
         .sheet(isPresented: $viewModel.isReportsPresented) {
             ReportsFromAppleSheet(viewModel: viewModel)
+        }
+        .task(id: viewModel.app.id) {
+            guard let loadRating else {
+                isRatingLoading = false
+                return
+            }
+            rating = await loadRating()
+            isRatingLoading = false
         }
     }
 
@@ -94,7 +117,9 @@ struct AnalyticsView: View {
         } else if let funnel = viewModel.funnel {
             switch viewModel.tab {
             case .overview:
-                AnalyticsOverviewView(viewModel: viewModel, report: funnel) { finding, action in
+                AnalyticsOverviewView(
+                    viewModel: viewModel, report: funnel, rating: rating, isRatingLoading: isRatingLoading, onOpenReviews: onOpenReviews
+                ) { finding, action in
                     viewModel.markActed(finding)
                     onAct(action, finding.title)
                 }

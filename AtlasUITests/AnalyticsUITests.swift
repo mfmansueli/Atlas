@@ -27,7 +27,7 @@ final class AnalyticsUITests: XCTestCase {
     func testAskingAppleMovesFromOffToWaiting() {
         app.launch(debugScene: "an-off")
         XCTAssertTrue(element("analytics.setup.off").waitForExistence(timeout: 15))
-        XCTAssertFalse(element("analytics.tab.0").exists, "No views before there are numbers")
+        XCTAssertFalse(element("analytics.tab.overview").exists, "No views before there are numbers")
         element("analytics.askButton").click()
         XCTAssertTrue(element("analytics.setup.waiting").waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Waiting for Apple’s first reports"].exists)
@@ -53,19 +53,21 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertTrue(element("analytics.funnel.chart").exists)
         XCTAssertFalse(element("analytics.stale").exists)
 
-        element("analytics.funnel.rate.trials").click()
+        element("analytics.funnel.step.trials").click()
         XCTAssertTrue(app.staticTexts["Trials per download, daily"].waitForExistence(timeout: 5))
+        XCTAssertTrue(element("analytics.funnel.step.trials").isSelected)
         // 90 days.
-        element("analytics.period.2").click()
+        element("analytics.period").radioButtons["90 days"].click()
         XCTAssertTrue(element("analytics.funnel.strip").waitForExistence(timeout: 5))
     }
 
-    func testWithoutTheVendorNumberTheStepsSayWhatTheyNeed() {
+    func testWithoutTheVendorNumberTheNoticeSaysWhatIsNeeded() {
         app.launch(debugScene: "an-novendor")
         XCTAssertTrue(element("analytics.funnel.strip").waitForExistence(timeout: 15))
-        XCTAssertTrue(element("analytics.funnel.note").exists)
-        let fix = element("analytics.funnel.fixGap")
-        XCTAssertTrue(fix.exists, "Add Vendor Number… right under the steps that need it")
+        XCTAssertTrue(element("analytics.notice.vendorNumber").exists, "One notice above the page")
+        XCTAssertFalse(element("analytics.funnel.note").exists, "The note under the steps waits for sales")
+        let fix = element("analytics.notice.addVendorNumber")
+        XCTAssertTrue(fix.exists)
         fix.click()
         XCTAssertTrue(app.textFields["analytics.settings.vendorNumber"].waitForExistence(timeout: 5))
         element("analytics.settings.done").click()

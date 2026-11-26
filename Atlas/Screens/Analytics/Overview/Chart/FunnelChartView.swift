@@ -37,7 +37,7 @@ struct FunnelChartView: View {
                     .accessibilityLabel(Text(chart.accessibilityText))
                 marks
             }
-            Text("Click a rate in the funnel to chart it. Click a change to see its result.")
+            Text("Click a step above to chart it. Click a mark to see how that push did.", comment: "kind:footnote · Analytics Overview chart")
                 .font(.subheadline)
                 .foregroundStyle(Palette.label2)
         }

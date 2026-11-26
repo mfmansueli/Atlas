@@ -285,7 +285,7 @@ struct MainView: View {
             screenshots: services.screenshots.documentCenter,
             pricing: SectionBadgeCounts.pricingCount(appID: app.id, summaries: summaries, modes: pricingModes, changes: changes, retention: .shared),
             extras: SectionBadgeCounts.Extras(
-                newFindings: navigator.section == .analytics ? 0 : analytics.newFindingCount(for: app.id),
+                newFindings: navigator.section == .analytics ? 0 : analytics.findingsBadgeCount(for: app.id),
                 // Suggested replies are Pro: in Free there are none to accept.
                 reviewReplies: pro.isFree ? 0 : reviews.suggestionCount(for: app.id),
                 eventLanguages: events.count(for: app.id, changes: changes.changes(for: app.id, section: .inAppEvents)),

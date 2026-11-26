@@ -5,9 +5,10 @@
 
 import SwiftUI
 
-/// The first download (an-loading): a static skeleton of the funnel over
-/// what's being read, each of Apple's reports ticked as it arrives. No
-/// spinner: the steps are the progress, counted.
+/// The first download (an-loading): a static grey skeleton of the
+/// Overview's number cards and funnel over what's being read, each of
+/// Apple's reports ticked as it arrives. No spinner: the steps are the
+/// progress, counted.
 struct AnalyticsLoadingView: View {
     let appName: String
     /// Steps already finished.
@@ -16,6 +17,13 @@ struct AnalyticsLoadingView: View {
     var body: some View {
         let message = LoadingCopy.analytics(appName: appName)
         VStack(spacing: Spacing.large) {
+            HStack(spacing: Spacing.small) {
+                ForEach(AnalyticsKPI.Kind.allCases, id: \.self) { _ in
+                    SkeletonCard(height: Metrics.skeletonFunnelStageHeight, lines: 1)
+                }
+            }
+            .frame(minWidth: 0)
+            .accessibilityHidden(true)
             HStack(spacing: Spacing.small) {
                 ForEach(0..<5, id: \.self) { _ in
                     SkeletonBlock(height: Metrics.skeletonFunnelStageHeight, cornerRadius: Radius.card)

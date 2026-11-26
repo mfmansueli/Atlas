@@ -44,6 +44,7 @@ struct WorkspaceAutopilotAsk: Equatable {
             .summarizeRequests: requests(app:),
             .findWhatToTry: whatToTry(app:),
             .explainChange: change(app:),
+            .askWhatAnalyticsShows: analyticsShows(app:),
         ]
     }
 
@@ -168,6 +169,22 @@ struct WorkspaceAutopilotAsk: Equatable {
             """),
             subject: String(localized: "Analytics · what to try"),
             done: String(localized: "Done. The findings are in Analytics.")
+        )
+    }
+
+    /// Before the first reports: what Analytics will tell, and what it
+    /// still needs.
+    private static func analyticsShows(app: String) -> WorkspaceAutopilotAsk {
+        WorkspaceAutopilotAsk(
+            purpose: .ask(area: String(localized: "Analytics")),
+            prompt: String(localized: """
+            Say what Analytics in Atlas will show for \(app) once Apple's first reports arrive. Read get_analytics_funnel for \
+            where it stands: not set up, waiting for Apple, or downloading. In a few short lines, say what each step from \
+            impression to paid will tell, when the first reports usually arrive, and whether a vendor number or an Admin key is \
+            still missing. Don't propose changes and don't add findings yet.
+            """),
+            subject: String(localized: "Analytics · what it shows"),
+            done: String(localized: "Done. The answer is in this conversation.")
         )
     }
 

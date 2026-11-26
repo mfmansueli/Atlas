@@ -21,13 +21,13 @@ struct AnalyticsTabStrip: View {
     }
 
     private func item(_ tab: AnalyticsTab) -> PageCardItem<AnalyticsTab> {
-        let availability = viewModel.availability(for: tab)
+        let summary = viewModel.summary(for: tab)
         return PageCardItem(
             id: tab,
             title: tab.title,
             systemImage: tab.systemImage,
-            status: availability.isAvailable ? nil : availability.cardSummary,
-            tone: .neutral,
+            status: summary.text.isEmpty ? nil : summary.text,
+            tone: summary.tone,
             identifier: tab.rawValue
         )
     }

@@ -53,7 +53,8 @@ struct SectionBadgeCounts: Equatable {
 
     /// The counts that don't come from field suggestions.
     struct Extras: Equatable {
-        /// New Analytics findings to read.
+        /// New Analytics findings to read; none before Apple's first
+        /// reports (`AnalyticsStore.findingsBadgeCount(for:)`).
         var newFindings = 0
         /// Replies an assistant suggested, waiting for Send Reply.
         var reviewReplies = 0
