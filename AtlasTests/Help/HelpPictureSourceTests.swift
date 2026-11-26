@@ -10,6 +10,7 @@ import Testing
 /// Help's pictures of App Store Connect are drawn, not bundled
 /// (README-Welcome's "Connect to App Store Connect").
 @Suite("Help pictures")
+@MainActor
 struct HelpPictureSourceTests {
     @Test func theConnectPicturesAreDrawings() {
         #expect(HelpPictureSource(name: "help-connect-1") == .drawing(.connectIntegrations))

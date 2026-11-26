@@ -10,6 +10,7 @@ import Testing
 /// In the newer tables only "worse" gets a colour (README-An2): Better is
 /// drawn like any label, About the same in the secondary label.
 @Suite("Analytics · only worse gets a colour")
+@MainActor
 struct VerdictColorTests {
     @Test func outcomesStandAgainstTheReference() {
         #expect(ComparisonOutcome.higher(.sure).standing == .better)

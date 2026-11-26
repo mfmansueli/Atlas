@@ -12,6 +12,7 @@ import Testing
 /// something is wrong. Times are written as this Mac writes them, so the
 /// checks build them with the same formatter.
 @Suite("Refresh · words")
+@MainActor
 struct RefreshTextTests {
     private let now = Date(timeIntervalSince1970: 1_793_000_000)
     private var text: RefreshText {

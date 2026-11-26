@@ -9,6 +9,7 @@ import Testing
 
 /// Atlas Help's bundled articles (board 49) and searching them.
 @Suite("Help library")
+@MainActor
 struct HelpLibraryTests {
     private let library = HelpLibrary(bundle: Bundle(for: AppPreferences.self))
 

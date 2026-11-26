@@ -30,8 +30,10 @@ struct RefreshRunTests {
 
     @Test func aPartEndsOnce() {
         var run = RefreshRun(lastUpdated: nil)
-        #expect(run.finish(.apps))
-        #expect(!run.finish(.apps), "the second report changes nothing")
+        let first = run.finish(.apps)
+        let second = run.finish(.apps)
+        #expect(first)
+        #expect(!second, "the second report changes nothing")
         #expect(run.finished == [.apps])
     }
 

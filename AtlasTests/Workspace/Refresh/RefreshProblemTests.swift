@@ -19,14 +19,20 @@ struct RefreshProblemTests {
 
     @Test func aTimeoutIsAppleNotAnsweringInTime() throws {
         let problem = try #require(RefreshProblem.make(for: URLError(.timedOut)))
-        guard case let .failed(copy) = problem else { return Issue.record("a timeout isn't offline") }
+        guard case let .failed(copy) = problem else {
+            Issue.record("a timeout isn't offline")
+            return
+        }
         #expect(copy.summary == "App Store Connect didn’t answer in time.")
         #expect(copy.details?.contains("-1001") == true, "the code only in the details")
     }
 
     @Test func appleSErrorsAreInAtlassWords() throws {
         let problem = try #require(RefreshProblem.make(for: AppStoreConnectError.server(statusCode: 503, detail: nil)))
-        guard case let .failed(copy) = problem else { return Issue.record("a 503 isn't offline") }
+        guard case let .failed(copy) = problem else {
+            Issue.record("a 503 isn't offline")
+            return
+        }
         #expect(copy.summary == "Apple didn’t answer. Try again in a minute.")
         #expect(copy.details?.contains("503") == true)
         #expect(!copy.summary.contains("503"), "Apple's code never in the message")
