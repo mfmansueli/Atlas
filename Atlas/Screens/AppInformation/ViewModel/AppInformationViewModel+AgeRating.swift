@@ -15,23 +15,6 @@ extension AppInformationViewModel {
 
     var ratingPreview: AgeRatingPreview? { ageRating?.preview }
 
-    /// The App Store preview's Age Rating: as it is (with what waits in
-    /// Review & Push), or with the open answer suggestions on top; nil
-    /// while loading.
-    func agePreviewText(showsSuggested: Bool) -> AppStorePreviewText? {
-        guard let values = ageRating else { return nil }
-        let answered = Set(AgeRatingQuestion.allCases.filter { !suggestionValue(.ageRating($0)).isEmpty })
-        var suggested: [AgeRatingQuestion: AgeRatingAnswer] = [:]
-        if showsSuggested {
-            for question in AgeRatingQuestion.allCases {
-                if let suggestion = shownSuggestion(.ageRating(question)), let answer = AgeRatingAnswer(rawValue: suggestion.value) {
-                    suggested[question] = answer
-                }
-            }
-        }
-        return AgeRatingPreviewLine.text(values: values, answered: answered, suggested: suggested)
-    }
-
     /// The rating changes with the next push.
     var ratingChanges: Bool {
         guard let content, let preview = ratingPreview else { return false }

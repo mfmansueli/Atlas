@@ -30,7 +30,7 @@ struct GeneralValues: Hashable, Sendable {
     /// Games is the secondary category: it takes subcategories of its own.
     var isSecondaryGame: Bool { secondaryCategory == AppCategory.gamesID }
 
-    /// The page column's line: "Lifestyle · Health & Fitness".
+    /// The page strip's line: "Lifestyle · Health & Fitness".
     var categorySummary: String {
         [primaryCategory, secondaryCategory].compactMap(\.self).map { AppCategory.name(for: $0) }.joined(separator: " · ")
     }

@@ -40,12 +40,12 @@ struct PrivacyURLsTab: View {
 
     private func content(_ table: PrivacyURLsTable) -> some View {
         VStack(spacing: 0) {
-            // The User Privacy Choices URLs' suggestions: Accept, Dismiss and
-            // the arrows; never the answers.
-            if let owner = viewModel.owner, owner.showsSuggestions(on: .appPrivacy) {
-                AppInformationPageBar(viewModel: owner, page: .appPrivacy)
+            // The User Privacy Choices URLs' suggestions: the arrows to them;
+            // never the answers. Accepting them is at the section's top.
+            if let owner = viewModel.owner, owner.showsSuggestions(on: .appPrivacy), owner.suggestionCount(on: .appPrivacy) > 0 {
+                PrivacyURLsSuggestionBar(viewModel: owner)
                     .padding(.horizontal, Spacing.large)
-                    .padding(.top, Spacing.small + 2)
+                    .padding(.top, Spacing.small)
             }
             HStack(alignment: .center, spacing: Spacing.small) {
                 Text(String(localized: "\(viewModel.urlsCoverageText ?? "") · app-level, pushed via Review & Push"))

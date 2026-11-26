@@ -39,7 +39,7 @@ struct AppInformationChangeBuilder: Hashable, Sendable {
         change.section == .appInformation && change.appID == appID && change.id.hasPrefix(idPrefix)
     }
 
-    /// The page a change belongs to, for the page column's dot.
+    /// The page a change belongs to, for the page strip's dot.
     func page(of change: PendingChange) -> AppInformationPage? {
         guard owns(change) else { return nil }
         let rest = change.id.dropFirst(idPrefix.count)

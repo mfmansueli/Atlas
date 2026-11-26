@@ -13,12 +13,8 @@ struct GeneralPageView: View {
 
     var body: some View {
         if let content = viewModel.content, let general = viewModel.general {
+            // Each field says where it shows (board 88).
             VStack(alignment: .leading, spacing: Spacing.xLarge) {
-                AppInformationPageHeader(
-                    title: AppInformationPage.general.title,
-                    subtitle: AppInformationPage.general.summary(appName: viewModel.app.name, version: content.version?.versionString)
-                )
-                AppInformationPageBar(viewModel: viewModel, page: .general)
                 AppInformationSuggestionsPanel(viewModel: viewModel, page: .general)
                 if showsCategories {
                     categorySection(general)
@@ -54,7 +50,10 @@ struct GeneralPageView: View {
     private func categorySection(_ general: GeneralValues) -> some View {
         AppInformationFormSection(title: String(localized: "Category")) {
             if viewModel.showsField(.primaryCategory) {
-                AppInformationFormRow(label: String(localized: "Primary")) {
+                AppInformationFormRow(
+                    label: String(localized: "Primary"),
+                    whereShown: AppInformationFieldPlacement.primaryCategory(appName: viewModel.app.name)
+                ) {
                     CategoryPicker(title: String(localized: "Primary category"), selection: general.primaryCategory, categories: AppCategory.all) {
                         viewModel.setPrimaryCategory($0)
                     }
@@ -64,7 +63,11 @@ struct GeneralPageView: View {
             }
             if viewModel.showsField(.secondaryCategory) {
                 if viewModel.showsField(.primaryCategory) { Divider() }
-                AppInformationFormRow(label: String(localized: "Secondary"), detail: String(localized: "· optional")) {
+                AppInformationFormRow(
+                    label: String(localized: "Secondary"),
+                    detail: String(localized: "· optional"),
+                    whereShown: AppInformationFieldPlacement.secondaryCategory(appName: viewModel.app.name)
+                ) {
                     CategoryPicker(
                         title: String(localized: "Secondary category"),
                         selection: general.secondaryCategory,
@@ -94,7 +97,8 @@ struct GeneralPageView: View {
         let identifier = secondary ? "appInformation.general.secondaryGamesSubcategory" : "appInformation.general.gamesSubcategory"
         AppInformationFormRow(
             label: secondary ? String(localized: "Secondary Games subcategories") : String(localized: "Games subcategories"),
-            detail: String(localized: "· up to two")
+            detail: String(localized: "· up to two"),
+            whereShown: AppInformationFieldPlacement.gamesSubcategories(appName: viewModel.app.name)
         ) {
             // Side by side, or one under the other where two don't fit.
             ViewThatFits(in: .horizontal) {
@@ -123,7 +127,10 @@ struct GeneralPageView: View {
 
     private func contentRightsSection(_ general: GeneralValues) -> some View {
         AppInformationFormSection(title: String(localized: "Content rights")) {
-            AppInformationFormRow(label: String(localized: "Does the app contain, show or access third-party content?")) {
+            AppInformationFormRow(
+                label: String(localized: "Does the app contain, show or access third-party content?"),
+                whereShown: AppInformationFieldPlacement.onlyApple
+            ) {
                 YesNoPicker(title: String(localized: "Third-party content"), value: general.contentRights.map { $0 == .usesThirdPartyContent }) {
                     viewModel.setContentRights($0 ? .usesThirdPartyContent : .doesNotUseThirdPartyContent)
                 }
@@ -148,7 +155,7 @@ struct GeneralPageView: View {
     private func versionSection(_ general: GeneralValues, content: AppInformationContent, version: StorePageVersion) -> some View {
         AppInformationFormSection(title: String(localized: "Version \(version.versionString)")) {
             if viewModel.showsField(.copyright) {
-                AppInformationFormRow(label: String(localized: "Copyright")) {
+                AppInformationFormRow(label: String(localized: "Copyright"), whereShown: AppInformationFieldPlacement.informationSection) {
                     TextField(
                         String(localized: "Copyright"),
                         text: Binding(get: { general.copyright }, set: { viewModel.setCopyright($0) }),
@@ -180,7 +187,7 @@ struct GeneralPageView: View {
 
     @ViewBuilder
     private func releaseRows(_ general: GeneralValues, content: AppInformationContent) -> some View {
-        AppInformationFormRow(label: String(localized: "Release")) {
+        AppInformationFormRow(label: String(localized: "Release"), whereShown: AppInformationFieldPlacement.onlyApple) {
             let selection = Binding(get: { general.release }, set: { $0.map(viewModel.setRelease) })
             // Segments as wide as their titles: SwiftUI's segmented style
             // makes all three as wide as "Automatically after approval",

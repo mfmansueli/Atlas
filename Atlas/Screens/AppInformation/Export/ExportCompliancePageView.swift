@@ -13,14 +13,12 @@ struct ExportCompliancePageView: View {
     var body: some View {
         if let answers = viewModel.exportAnswers {
             VStack(alignment: .leading, spacing: Spacing.large) {
-                AppInformationPageHeader(
-                    title: AppInformationPage.exportCompliance.title,
-                    subtitle: AppInformationPage.exportCompliance.summary(appName: viewModel.app.name, version: nil)
-                ) {
+                // Each question says only Apple sees it (board 88).
+                AppInformationPageTools(whereShown: nil) {
                     Pill(text: answers.status)
+                        .fixedSize()
                         .accessibilityIdentifier("appInformation.export.status")
                 }
-                AppInformationPageBar(viewModel: viewModel, page: .exportCompliance)
                 if let evidence = viewModel.notes.exportEvidence {
                     assistantBanner(evidence)
                 }
@@ -31,7 +29,7 @@ struct ExportCompliancePageView: View {
                 AppInformationFormSection(title: String(localized: "Encryption")) {
                     ForEach(Array(answers.visibleQuestions.enumerated()), id: \.element) { index, question in
                         if index > 0 { Divider() }
-                        AppInformationFormRow(label: question.title, detail: question.subtitle) {
+                        AppInformationFormRow(label: question.title, detail: question.subtitle, whereShown: AppInformationFieldPlacement.onlyApple) {
                             YesNoPicker(title: question.title, value: answers[question]) {
                                 viewModel.setExportAnswer($0, for: question)
                             }

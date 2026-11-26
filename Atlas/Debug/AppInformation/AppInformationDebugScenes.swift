@@ -45,13 +45,16 @@ import SwiftUI
 /// - `a11y-pushing`: iPhone published, iPad held at "Publishing…".
 /// - `priv-*` and `info-privacy-draft`: App Privacy, in
 ///   `AppInformationDebugScenes+Privacy.swift`.
+/// - `info-accept-all`: every page done but for its suggestions, so
+///   Accept All Pages leaves every card Ready (board 88), in
+///   `AppInformationDebugScenes+AcceptAll.swift`.
 enum AppInformationDebugScenes {
     static let ids = [
         "info-general", "info-age", "info-age-override", "info-review", "info-export", "info-signin-suggested", "info-choices-suggested",
         "info-comp", "info-comp-edit", "info-comp-icp", "info-comp-done", "info-comp-china", "info-comp-suggested",
         "info-comp-outside-china", "a11y-empty", "a11y-loading", "a11y-error", "a11y-editor", "a11y-editor-watch", "a11y-draft", "a11y-published",
         "a11y-pending", "a11y-nolive", "a11y-url", "a11y-review", "a11y-pushing",
-    ] + privacyIDs + encryptionKeyIDs
+    ] + privacyIDs + encryptionKeyIDs + acceptAllIDs
 
     @MainActor
     static func view(for id: String) -> AnyView? {
@@ -123,6 +126,8 @@ enum AppInformationDebugScenes {
             return scene { complianceOpening(id, on: $0) }
         case "info-comp-outside-china":
             return scene(lumenCompliance: DebugAppInformationContent.complianceOutsideChina) { complianceOpening(id, on: $0) }
+        case "info-accept-all":
+            return acceptAllScene()
         default:
             return privacyScene(id)
         }

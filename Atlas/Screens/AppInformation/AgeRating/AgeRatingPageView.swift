@@ -19,11 +19,7 @@ struct AgeRatingPageView: View {
     var body: some View {
         if let ageRating = viewModel.ageRating {
             VStack(alignment: .leading, spacing: Spacing.large) {
-                AppInformationPageHeader(
-                    title: AppInformationPage.ageRating.title,
-                    subtitle: AppInformationPage.ageRating.summary(appName: viewModel.app.name, version: nil)
-                )
-                AppInformationPageBar(viewModel: viewModel, page: .ageRating)
+                AppInformationPageTools(whereShown: AppInformationPage.ageRating.whereShown(appName: viewModel.app.name))
                 SideColumnLayout(sideWidth: 236, minimumMainWidth: Self.minimumQuestionnaireWidth) {
                     questionnaire(ageRating)
                         .frame(maxWidth: .infinity, alignment: .leading)

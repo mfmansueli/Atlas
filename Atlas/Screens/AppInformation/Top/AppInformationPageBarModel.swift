@@ -5,8 +5,9 @@
 
 import Foundation
 
-/// What the bar under an App Information page's title says: how many wait
-/// here and on the other pages.
+/// What the top of App Information says about suggestions (board 88): how
+/// many wait on the open page and on every page, for Accept n on This Page
+/// and Accept All Pages.
 struct AppInformationPageBarModel: Equatable, Sendable {
     var hereCount: Int
     var totalCount: Int

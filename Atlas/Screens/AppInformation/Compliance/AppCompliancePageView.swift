@@ -20,11 +20,7 @@ struct AppCompliancePageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.large) {
-            AppInformationPageHeader(
-                title: AppInformationPage.appCompliance.title,
-                subtitle: AppInformationPage.appCompliance.summary(appName: viewModel.app.name, version: nil)
-            )
-            AppInformationPageBar(viewModel: viewModel, page: .appCompliance)
+            AppInformationPageTools(whereShown: AppInformationPage.appCompliance.whereShown(appName: viewModel.app.name))
             if let report = viewModel.complianceReport {
                 loaded(report)
             } else if case let .failed(message) = viewModel.compliance {

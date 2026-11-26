@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// One page in App Information's page column, in the column's order.
+/// One page of App Information, in the order of the page strip.
 enum AppInformationPage: String, CaseIterable, Identifiable, Hashable, Sendable {
     case general
     case appCompliance
@@ -29,7 +29,26 @@ enum AppInformationPage: String, CaseIterable, Identifiable, Hashable, Sendable 
         }
     }
 
-    /// The line under the page's title.
+    /// The card's symbol in the page strip (board 88).
+    var systemImage: String {
+        switch self {
+        case .general: "info.circle"
+        case .appCompliance: "checkmark.shield"
+        case .ageRating: "person.crop.square"
+        case .accessibility: "accessibility"
+        case .appPrivacy: "hand.raised"
+        case .appReview: "person.text.rectangle"
+        case .exportCompliance: "lock"
+        }
+    }
+
+    /// Never on the App Store: only App Review and Apple read it. The strip
+    /// puts these after its "Only Apple sees" separator.
+    var isSeenOnlyByApple: Bool {
+        self == .appReview || self == .exportCompliance
+    }
+
+    /// The sentence at the top of the section while the page is open.
     func summary(appName: String, version: String?) -> String {
         let version = version ?? ""
         switch self {
@@ -49,7 +68,7 @@ enum AppInformationPage: String, CaseIterable, Identifiable, Hashable, Sendable 
         }
     }
 
-    /// In the page's bar: what it changes on the App Store. Export
+    /// Over the page's cards, where they show on the App Store. Export
     /// Compliance says whether `version` is on the App Store yet, so
     /// "Not on the App Store" isn't read as the app's state.
     func whereShown(appName: String, version: StorePageVersion? = nil) -> String {

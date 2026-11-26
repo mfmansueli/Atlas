@@ -5,9 +5,9 @@
 
 import XCTest
 
-/// Age Rating fits its window: the suggestion bar wraps and the rating
+/// Age Rating fits its window: the top's buttons stay in it and the rating
 /// preview goes above the questions rather than making the page wider than
-/// the window, which pushed the sidebar and the page column off the
+/// the window, which pushed the sidebar and the page strip off the
 /// window's left edge and the preview off its right one.
 @MainActor
 final class AgeRatingLayoutUITests: XCTestCase {
@@ -79,20 +79,19 @@ final class AgeRatingLayoutUITests: XCTestCase {
         edge.click(forDuration: 0.2, thenDragTo: edge.withOffset(CGVector(dx: dragsRight ? delta : -delta, dy: 0)))
     }
 
-    /// The sidebar, the page column, the bar with its buttons and the
-    /// preview are inside the window, side by side, none under another.
+    /// The sidebar, the top with its buttons, the page strip and the
+    /// preview are inside the window, the page beside the sidebar, not
+    /// under it.
     private func assertEverythingFits(file: StaticString = #filePath, line: UInt = #line) {
         let window = app.windows.firstMatch.frame.insetBy(dx: -1, dy: -1)
         let sidebar = element("sidebar.sections").frame
-        let pageColumn = element("appInformation.pageColumn").frame
-        let parts = ["sidebar.sections", "appInformation.pageColumn", "appInformation.pageBar", "appInformation.acceptAll", "appInformation.age.preview"]
+        let parts = ["sidebar.sections", "appInformation.top", "appInformation.page", "appInformation.acceptAll", "appInformation.age.preview"]
         for identifier in parts {
             let frame = element(identifier).frame
             XCTAssertTrue(window.minX <= frame.minX && frame.maxX <= window.maxX, "\(identifier) at \(frame) spills out of the window at \(window).", file: file, line: line)
         }
-        XCTAssertGreaterThanOrEqual(pageColumn.minX, sidebar.maxX - 1, "The page column slid under the sidebar.", file: file, line: line)
-        let pageBar = element("appInformation.pageBar").frame
-        XCTAssertGreaterThanOrEqual(pageBar.minX, pageColumn.maxX, "The page slid under the page column.", file: file, line: line)
+        let strip = element("appInformation.page").frame
+        XCTAssertGreaterThanOrEqual(strip.minX, sidebar.maxX - 1, "The page strip slid under the sidebar.", file: file, line: line)
     }
 
     private func element(_ identifier: String) -> XCUIElement {

@@ -122,7 +122,7 @@ extension AppInformationViewModel {
         visibleSuggestions(in: scope, filter: .all).count
     }
 
-    /// "2 suggestions" under a page in the page column; Accessibility's
+    /// "2 suggestions" under a page in the page strip; Accessibility's
     /// devices together, and App Compliance's assistant answers.
     func suggestionCount(on page: AppInformationPage) -> Int {
         if page == .appCompliance { return complianceSuggestions.count }
@@ -147,7 +147,7 @@ extension AppInformationViewModel {
         suggestionRun?.comingCount(in: [scope]) ?? 0
     }
 
-    /// "· 4 coming" under a page in the page column.
+    /// "· 4 coming" under a page in the page strip.
     func comingCount(on page: AppInformationPage) -> Int {
         guard Self.slotPages.contains(page) else { return 0 }
         return suggestionRun?.comingCount(in: suggestionScopes(on: page)) ?? 0
@@ -159,7 +159,7 @@ extension AppInformationViewModel {
         isLoaded && Self.suggestionPages.contains(page)
     }
 
-    /// The pages that take suggestions, in the page column's order. App
+    /// The pages that take suggestions, in the page strip's order. App
     /// Privacy's are its User Privacy Choices URLs only: its answers are
     /// never in a bar, Accept All or Accept All Pages.
     static let suggestionPages: [AppInformationPage] = [.general, .ageRating, .accessibility, .appPrivacy, .appReview]

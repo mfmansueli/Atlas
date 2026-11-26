@@ -37,8 +37,7 @@ struct AppComplianceViewModelTests {
         #expect(report.state(of: .vietnamGameLicense) == .passes)
         #expect(report.medicalDevice == .category("HEALTH_AND_FITNESS"))
         #expect(vm.status(for: .appCompliance) == "5 need you")
-        #expect(vm.pageColumnStatus(for: .appCompliance) == "5 need you")
-        #expect(!vm.isPageUpToDate(.appCompliance))
+        #expect(vm.pageStatus(for: .appCompliance).state == .needsYou(5))
         #expect(!vm.hasPendingChanges(on: .appCompliance))
     }
 
@@ -54,7 +53,7 @@ struct AppComplianceViewModelTests {
         vm.setDeclared(true, for: .securityAssessment)
         vm.setDeclared(true, for: .aiGeneratedContent)
         #expect(vm.status(for: .appCompliance) == "Up to date")
-        #expect(vm.isPageUpToDate(.appCompliance))
+        #expect(vm.pageStatus(for: .appCompliance).isReady)
     }
 
     @Test func complianceIsNeverSuggestedOrTakenByAcceptAll() async {
@@ -138,18 +137,6 @@ struct AppComplianceViewModelTests {
         #expect(vm.complianceReport?.state(of: .traderStatus) == .needsAnswer)
     }
 
-    @Test func thePreviewShowsTheTradersDetailsOnceDecided() async {
-        let vm = await loaded()
-        vm.sellerName = "Northpier Studio Ltd"
-        #expect(vm.traderPreview(showsSuggested: true) == .nonTrader)
-
-        vm.decideTrader(.trader)
-        #expect(vm.traderPreview(showsSuggested: false) == .details("Northpier Studio Ltd · +39 011 555 0142 · review@northpier.dev", isSuggested: false))
-
-        vm.decideTrader(.nonTrader)
-        #expect(vm.traderPreview(showsSuggested: true) == .nonTrader)
-    }
-
     // MARK: - ICP Filing Number
 
     @Test func aNumberIsCheckedForItsFormatAndKeptHere() async {
@@ -222,7 +209,8 @@ struct AppComplianceViewModelTests {
         vm.chooseChina(.no, for: .securityAssessment)
         vm.chooseChina(.no, for: .aiGeneratedContent)
         #expect(vm.status(for: .appCompliance) == "4 to finish at Apple")
-        #expect(!vm.isPageUpToDate(.appCompliance))
+        // Still to enter in App Store Connect: the card says they need you.
+        #expect(vm.pageStatus(for: .appCompliance).state == .needsYou(4))
         #expect(vm.complianceReport?.headline == "4 to enter in App Store Connect · 2 checked")
     }
 }

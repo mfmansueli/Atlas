@@ -5,10 +5,10 @@
 
 import Foundation
 
-// What the App Compliance page says: the page's status in the page column,
+// What the App Compliance page says: the page's status in the page strip,
 // the line at the top, and each regulation's explanation.
 extension ComplianceReport {
-    /// The page column's line: "2 need you", "1 to finish at Apple",
+    /// The page strip's line: "2 need you", "1 to finish at Apple",
     /// "Up to date".
     var status: String {
         if needCount > 0 {
