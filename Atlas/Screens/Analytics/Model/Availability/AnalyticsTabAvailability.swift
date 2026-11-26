@@ -30,6 +30,11 @@ enum AnalyticsTabAvailability: Hashable, Sendable {
     /// Fewer than 5 opted-in people had a crash.
     case noCrashes
 
+    /// Apple leaves out rows with fewer people than this, and shows a
+    /// version's crashes only once this many people who share analytics
+    /// with developers had one.
+    static let minimumPeople = 5
+
     var isAvailable: Bool { self == .available }
 
     /// The empty state's title.

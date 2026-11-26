@@ -104,6 +104,7 @@ struct DebugSceneView: View {
             AutopilotBarDebugScenes.view(for:),
             ChatRoomDebugScenes.view(for:),
             AnalyticsDebugScenes.view(for:),
+            AnalyticsEmptyDebugScenes.view(for:),
             ReviewsDebugScenes.view(for:),
             EmptyStatesDebugScenes.view(for:),
             AutoReplyDebugScenes.view(for:),

@@ -94,7 +94,8 @@ final class AnalyticsViewModel {
         AnalyticsTab.allCases.filter { tab in
             switch tab {
             case .subscriptions: sellsSubscriptions
-            case .stability: stability != nil
+            // Also with no report yet when Apple's rules say why (no crashes reported, too new).
+            case .stability: stability != nil || !availability(for: .stability).isAvailable
             default: true
             }
         }

@@ -45,6 +45,32 @@ struct SubscriptionsView: View {
                 }
                 if let retention, !retention.isEmpty {
                     RetentionSummaryBlock(report: retention) { onShow(.retention) }
+                } else {
+                    SubscriptionsSectionRow(
+                        title: String(localized: "Retention", comment: "kind:section-title · Analytics → Subscriptions"),
+                        detail: String(localized: "When someone taps Cancel Subscription", comment: "kind:description · Analytics → Subscriptions"),
+                        button: String(localized: "See Retention", comment: "kind:button"),
+                        identifier: "analytics.subscriptions.seeRetention"
+                    ) { onShow(.retention) }
+                }
+                AdaptiveGridLayout(minimumWidth: 340, spacing: Spacing.medium) {
+                    if !showsBillingNotice {
+                        SubscriptionsSectionRow(
+                            title: String(localized: "Billing", comment: "kind:section-title · Analytics → Subscriptions"),
+                            detail: String(localized: "Subscribers Apple couldn’t charge", comment: "kind:description · Analytics → Subscriptions"),
+                            button: String(localized: "See Billing and Plans", comment: "kind:button"),
+                            identifier: "analytics.subscriptions.seeBilling"
+                        ) { onShow(.billing) }
+                    }
+                    SubscriptionsSectionRow(
+                        title: String(localized: "Offers", comment: "kind:section-title · Analytics → Subscriptions"),
+                        detail: String(
+                            localized: "Introductory, promotional and win-back offers, and how many people take them",
+                            comment: "kind:description · Analytics → Subscriptions"
+                        ),
+                        button: String(localized: "See Offers", comment: "kind:button"),
+                        identifier: "analytics.subscriptions.seeOffers"
+                    ) { onShow(.offers) }
                 }
                 AdaptiveGridLayout(minimumWidth: 340, spacing: Spacing.medium) {
                     renewals
@@ -69,7 +95,7 @@ struct SubscriptionsView: View {
 
     @ViewBuilder
     private var notices: some View {
-        if let lifecycle, gracePeriod?.isOn == false, lifecycle.lost > 0 {
+        if showsBillingNotice, let lifecycle {
             AnalyticsNotice(
                 tone: .warning,
                 text: String(localized: "\(AnalyticsText.count(lifecycle.lost)) subscribers left in \(lifecycle.period.length) days because Apple couldn’t charge them. Billing Grace Period is off for \(appName)."),
@@ -85,6 +111,12 @@ struct SubscriptionsView: View {
                 identifier: "analytics.subscriptions.originNotice"
             )
         }
+    }
+
+    /// Subscribers lost to failed charges while Billing Grace Period is off.
+    private var showsBillingNotice: Bool {
+        guard let lifecycle else { return false }
+        return gracePeriod?.isOn == false && lifecycle.lost > 0
     }
 
     private var renewals: some View {
