@@ -5,88 +5,101 @@
 
 import SwiftUI
 
-/// One push in Activity: what changed, the app, when and how many, whether
-/// it all succeeded, and Results / Restore Previous Values. A screenshot
-/// push says which sets it kept and offers Restore Previous Screenshots….
+/// One push in Activity (README-DS §15): what changed, the app, when and
+/// how many; "All succeeded" in green or "1 failed" in amber with each
+/// reason in Atlas's words (Apple's text under Details); and its row
+/// actions, neutral: Results after a price change, Restore Previous Values
+/// or, for screenshots, Restore Previous Screenshots…. The push that just
+/// ended has the accent's tint behind it, with no animation.
 struct ActivityRow: View {
     let record: PushRecord
+    /// The push "Show in Activity" came for.
+    var isHighlighted = false
+    var now = Date.now
     let onResults: () -> Void
     let onRestore: () -> Void
     var onRestoreScreenshots: (() -> Void)?
 
     var body: some View {
+        let text = ActivityText(now: now)
         HStack(alignment: .top, spacing: Spacing.medium) {
-            Image(systemName: "arrow.up.circle")
-                .foregroundStyle(Palette.label2)
-                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: Spacing.xxSmall) {
                 Text(record.title)
-                    .font(.body.weight(.semibold))
-                Text(details)
-                    .font(.subheadline)
+                    .atlasTextStyle(.headline)
+                    .lineLimit(2)
+                Text(text.details(of: record))
+                    .atlasTextStyle(.subheadline)
                     .foregroundStyle(Palette.label2)
+                    .lineLimit(1)
                 if let screenshots = record.screenshots {
                     ScreenshotActivityDetails(summary: screenshots)
                 }
-                if record.failedCount > 0 {
-                    Pill(text: String(localized: "\(record.failedCount) failed"), style: .danger)
-                        .padding(.top, 2)
-                } else {
-                    Pill(text: String(localized: "All succeeded"), systemImage: "checkmark", style: .neutral)
-                        .padding(.top, 2)
-                }
+                outcome
+                    .padding(.top, Spacing.xxSmall)
                 ForEach(record.failedChanges) { change in
-                    Text("\(change.title): \(record.failures[change.id] ?? "")")
-                        .font(.subheadline.monospaced())
-                        .foregroundStyle(Palette.err)
-                        .textSelection(.enabled)
+                    ErrorCopyMessage(copy: ActivityText.failure(of: change, in: record))
                 }
             }
-            Spacer()
-            HStack(spacing: Spacing.small) {
-                if record.changedPrices {
-                    Button("Results", action: onResults)
-                        .accessibilityIdentifier("activity.results")
-                }
-                if let screenshots = record.screenshots {
-                    Button {
-                        onRestoreScreenshots?()
-                    } label: {
-                        Label("Restore Previous Screenshots…", systemImage: "arrow.uturn.backward")
-                    }
-                    .disabled(onRestoreScreenshots == nil || screenshots.locales.isEmpty)
-                    .help(String(localized: "Queues this locale’s earlier screenshots in Review & Push."))
-                    .accessibilityIdentifier("activity.restoreScreenshots")
-                }
-                if record.screenshots == nil || !record.pushed.isEmpty {
-                    restoreValuesButton
-                }
-            }
-            .buttonBorderShape(.capsule)
-            .controlSize(.regular)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            actions
         }
         .padding(.horizontal, Spacing.xLarge)
         .padding(.vertical, Spacing.medium)
+        .background(isHighlighted ? Palette.accentTint : .clear)
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("activity.record.\(record.id.uuidString)")
+        .accessibilityLabel(Text(text.accessibilityLabel(of: record)))
+        .accessibilityIdentifier(isHighlighted ? "activity.record.highlighted" : "activity.record.\(record.id.uuidString)")
+    }
+
+    /// Green when everything went, amber when something didn't: state.
+    @ViewBuilder
+    private var outcome: some View {
+        if record.failedCount > 0 {
+            Pill(text: ActivityText.failed(record.failedCount), systemImage: "exclamationmark.triangle.fill", style: .warning)
+        } else {
+            Pill(text: ActivityText.allSucceeded, systemImage: "checkmark", style: .ok)
+        }
+    }
+
+    private var actions: some View {
+        HStack(spacing: Spacing.small) {
+            if record.changedPrices {
+                Button(String(localized: "Results", comment: "kind:button · a price push in Activity"), action: onResults)
+                    .accessibilityIdentifier("activity.results")
+            }
+            if let screenshots = record.screenshots {
+                Button {
+                    onRestoreScreenshots?()
+                } label: {
+                    Label(
+                        String(localized: "Restore Previous Screenshots…", comment: "kind:button · a screenshot push in Activity"),
+                        systemImage: "arrow.uturn.backward"
+                    )
+                }
+                .disabled(onRestoreScreenshots == nil || screenshots.locales.isEmpty)
+                .help(String(localized: "Puts this locale’s earlier screenshots in Review & Push. Nothing is pushed.", comment: "kind:tooltip"))
+                .accessibilityIdentifier("activity.restoreScreenshots")
+            }
+            if record.screenshots == nil || !record.pushed.isEmpty {
+                restoreValuesButton
+            }
+        }
+        // Row actions, neutral (README-DS §4): repeated on every push.
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.regular)
+        .lineLimit(1)
     }
 
     private var restoreValuesButton: some View {
-        Button(action: onRestore) {
-            Label("Restore Previous Values", systemImage: "arrow.uturn.backward")
+        let canRestore = !record.restoringChanges().isEmpty
+        return Button(action: onRestore) {
+            Label(String(localized: "Restore Previous Values", comment: "kind:button · a push in Activity"), systemImage: "arrow.uturn.backward")
         }
-        .disabled(record.restoringChanges().isEmpty)
-        .help(record.restoringChanges().isEmpty
-            ? String(localized: "These values can't be restored from here.")
-            : String(localized: "Queues the values from before this push for review."))
+        .disabled(!canRestore)
+        .help(canRestore
+            ? String(localized: "Puts the values from before this push in Review & Push. Nothing is pushed.", comment: "kind:tooltip")
+            : String(localized: "These values can’t be restored from here.", comment: "kind:tooltip"))
         .accessibilityIdentifier("activity.restore")
-    }
-
-    private var details: String {
-        let date = record.date.formatted(.dateTime.month(.abbreviated).day().year())
-        let time = record.date.formatted(date: .omitted, time: .shortened)
-        guard record.screenshots == nil else { return "\(record.appName) · \(date) · \(time)" }
-        let count = record.changeCount == 1 ? String(localized: "1 change") : String(localized: "\(record.changeCount) changes")
-        return String(localized: "\(record.appName) · \(date) · \(time) · \(count)", comment: "kind:history-entry")
     }
 }

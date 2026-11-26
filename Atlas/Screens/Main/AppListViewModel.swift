@@ -15,6 +15,9 @@ final class AppListViewModel {
     private(set) var apps: [StoreApp] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
+    /// The last load's error, for Refresh's state (offline, or Apple's
+    /// error in Atlas's words); nil after a load that worked.
+    private(set) var lastError: (any Error)?
     /// Whether a load has finished at least once, so an empty account shows
     /// "No apps" instead of a blank sidebar before the first answer.
     private(set) var hasLoaded = false
@@ -51,6 +54,7 @@ final class AppListViewModel {
         guard !isLoading else { return }
         isLoading = true
         errorMessage = nil
+        lastError = nil
         defer {
             isLoading = false
             hasLoaded = true
@@ -64,6 +68,7 @@ final class AppListViewModel {
             lastSyncedAt = .now
             if selectedApp == nil { selectedAppID = apps.first?.id }
         } catch {
+            lastError = error
             errorMessage = AppleErrorCopy(String(localized: "Apps didn’t load.", comment: "kind:error"), error: error).text
         }
     }

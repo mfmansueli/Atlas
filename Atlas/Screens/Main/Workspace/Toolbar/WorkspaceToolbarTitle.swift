@@ -7,9 +7,11 @@ import SwiftUI
 
 /// The section's title in the toolbar, over its state: “32 suggestions in
 /// 6 languages · 3 not pushed”. The not-pushed count is a link that opens
-/// Review & Push showing only this section. It replaces the title row the
-/// pages had under the toolbar. The ? beside the title opens the section's
-/// Help article.
+/// Review & Push showing only this section. When the last Refresh went
+/// wrong, the line ends with what happened (`RefreshStatusLine`:
+/// “Couldn’t update · Details…”, “Offline · from 14:32”, “View only”). It
+/// replaces the title row the pages had under the toolbar. The ? beside
+/// the title opens the section's Help article.
 struct WorkspaceToolbarTitle: View {
     let title: String
     let status: WorkspaceSectionStatus
@@ -17,6 +19,10 @@ struct WorkspaceToolbarTitle: View {
     /// the trailing edge (`WorkspaceToolbarLayout.titleRoom`); nil, as
     /// wide as it wants up to its cap.
     var maxWidth: CGFloat?
+    /// The window's Refresh, whose problems end the status line.
+    var refresh: RefreshState = .idle
+    /// Details… after “Couldn’t update”.
+    var onRefreshDetails: () -> Void = {}
     /// “3 not pushed”: Review & Push for this section.
     let onNotPushed: () -> Void
 
@@ -28,7 +34,7 @@ struct WorkspaceToolbarTitle: View {
             // Pricing has read its products, the version once read) widens
             // the item. Squeezed, it truncates in its place rather than
             // spilling under the sidebar button.
-            .toolbarItemFit([title, status.text, maxWidth.map { "\(Int($0))" } ?? ""])
+            .toolbarItemFit([title, status.text, refreshText, maxWidth.map { "\(Int($0))" } ?? ""])
             // As wide as it wants, measured out of sight, so the toolbar
             // knows how much it would truncate.
             .background {
@@ -75,6 +81,14 @@ struct WorkspaceToolbarTitle: View {
                     Text(status.text)
                         .foregroundStyle(Palette.label2)
                 }
+                if refresh.needsStatusLine {
+                    Text(verbatim: " · ")
+                        .foregroundStyle(Palette.label2)
+                        .accessibilityHidden(true)
+                    RefreshStatusLine(state: refresh, onDetails: onRefreshDetails)
+                        // The section's own words truncate first.
+                        .layoutPriority(1)
+                }
             }
             .font(.subheadline)
             .frame(maxWidth: WorkspaceToolbarLayout.maxTitleWidth, alignment: .leading)
@@ -83,6 +97,11 @@ struct WorkspaceToolbarTitle: View {
         }
         .lineLimit(1)
         .truncationMode(.tail)
+    }
+
+    /// What the status line's end says, so the item regrows when it changes.
+    private var refreshText: String {
+        RefreshText(now: .now).statusLine(refresh) ?? ""
     }
 }
 

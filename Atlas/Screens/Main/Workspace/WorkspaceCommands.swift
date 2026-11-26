@@ -5,9 +5,10 @@
 
 import SwiftUI
 
-/// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R)
-/// in View, a Product menu with Run Autopilot (⌥⌘A, the Autopilot bar's
-/// own action), Review & Push (⇧⌘P), Activity and the Autopilot bar's
+/// Menu bar commands for the main window: sections (⌘1–⌘9) and Refresh (⌘R,
+/// off while one runs) in View, a Product menu with Run Autopilot (⌥⌘A,
+/// the Autopilot bar's own action), Review & Push (⇧⌘P), Activity (⌘Y,
+/// Review & Push on its Activity tab) and the Autopilot bar's
 /// conversation (⌘J), plus the
 /// section-specific commands that work through `WorkspaceIntent`. macOS 26
 /// draws the symbol of every command with one, so each item with a
@@ -25,7 +26,7 @@ struct WorkspaceCommands: Commands {
             Divider()
             Button("Refresh", systemImage: "arrow.clockwise") { navigator?.refresh() }
                 .keyboardShortcut("r")
-                .disabled(navigator == nil)
+                .disabled(navigator == nil || navigator?.refreshState.isRefreshing == true)
             Divider()
         }
         CommandGroup(after: .textEditing) {
@@ -69,7 +70,10 @@ struct WorkspaceCommands: Commands {
                     .keyboardShortcut("a", modifiers: [.command, .option])
                 Button("Review & Push…", systemImage: "arrow.up.circle") { navigator?.isReviewPresented = true }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
-                Button("Activity", systemImage: "clock") { navigator?.isActivityPresented = true }
+                Button(String(localized: "Activity", comment: "kind:menu-item · Review & Push on its Activity tab"), systemImage: "clock") {
+                    navigator?.openActivity()
+                }
+                .keyboardShortcut("y")
                 // Opens and closes the Autopilot bar (board 80).
                 Button(String(localized: "Ask Autopilot", comment: "kind:menu-item · opens the Autopilot bar's conversation"), systemImage: "sparkles") {
                     AssistantChatCenter.shared.toggle()

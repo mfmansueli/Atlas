@@ -27,9 +27,14 @@ struct WorkspaceNavigatorTests {
         #expect(navigator.intent == nil)
     }
 
-    @Test func refreshBumpsTheCounter() {
+    @Test func refreshBumpsTheCounterOncePerRun() {
         let navigator = WorkspaceNavigator()
         navigator.refresh()
+        navigator.refresh()
+        #expect(navigator.refreshCount == 1, "a second click while it runs does nothing")
+        for part in RefreshPart.allCases {
+            navigator.finishRefresh(part, refreshCount: 1)
+        }
         navigator.refresh()
         #expect(navigator.refreshCount == 2)
     }

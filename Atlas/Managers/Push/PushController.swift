@@ -50,7 +50,9 @@ final class PushController {
     /// Pricing's price history: each pushed subscription price change is
     /// recorded there.
     @ObservationIgnored var priceHistory = PriceChangeHistoryStore.shared
-    /// Called with the apps whose values changed, so their numbers reload.
+    /// Called with the apps whose values changed, so their numbers reload:
+    /// the main window runs Refresh after every push that changed
+    /// something (README-DS §15), screenshots and extras included.
     var onPushed: (Set<StoreApp.ID>) -> Void = { _ in }
     /// Every push that ends: how many changes landed and how many didn't
     /// (Settings → Notifications).

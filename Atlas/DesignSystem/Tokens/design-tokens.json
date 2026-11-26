@@ -702,6 +702,11 @@
       "increase": "warn pill (amber) with arrowtriangle.up.fill — increases can cost subscribers"
     }
   },
+  "refresh": {
+    "$description": "Board 90 / README-DS §15: Refresh is a borderless 28 pt icon button (arrow.clockwise) in the sidebar's top row, left of Hide Sidebar; a 6 pt dot on its corner says the last refresh failed (amber) or found no network (grey). The status line explains it.",
+    "buttonSize": 28,
+    "dotSize": 6
+  },
   "pageCardStrip": {
     "$description": "Board 88 / README-DS §16: the strip of page cards that scrolls sideways (App Information's pages, Analytics' views). Card 46 tall, at least 150 wide, symbol tile 26, fades out over 44 on the right with a 24 round arrow; the open card has the accent's tint and edge.",
     "height": 46,

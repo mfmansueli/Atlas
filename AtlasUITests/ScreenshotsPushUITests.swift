@@ -123,7 +123,7 @@ final class ScreenshotsPushUITests: XCTestCase {
 
     func testActivityRestoresAKeptSetThroughReview() {
         launch(scene: "shots-act")
-        XCTAssertTrue(element("activity.sheet").waitForExistence(timeout: 20))
+        XCTAssertTrue(element("review.activity").waitForExistence(timeout: 20))
         XCTAssertTrue(app.staticTexts["Screenshots · 80 images in 8 locales"].exists)
         XCTAssertTrue(app.staticTexts["Kept on this Mac: the 3 sets this push replaced"].exists)
         app.buttons["activity.restoreScreenshots"].click()

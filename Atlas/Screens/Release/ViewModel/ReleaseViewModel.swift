@@ -28,6 +28,8 @@ final class ReleaseViewModel {
     /// The Submit sheet is reading the version and its builds again.
     private(set) var isRefreshingBuilds = false
     private(set) var errorMessage: String?
+    /// The last load's error, for Refresh's state; nil after one that worked.
+    private(set) var loadError: (any Error)?
     /// The version's store page: its languages and What's New.
     private(set) var content: StorePageContent?
     /// The app's In-App Events, for the ones that go with the version.
@@ -122,11 +124,13 @@ final class ReleaseViewModel {
             let loaded = try await services.release.status(for: app, platform: platform ?? status?.version.platform)
             status = loaded
             errorMessage = nil
+            loadError = nil
             if let loaded {
                 if let moved = store.note(loaded, for: app.id) { announce(moved, version: loaded.version.versionString) }
                 await loadDetails(of: loaded)
             }
         } catch {
+            loadError = error
             errorMessage = AppleErrorCopy(String(localized: "The version didn’t load.", comment: "kind:error"), error: error).text
         }
     }

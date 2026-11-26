@@ -28,7 +28,7 @@ import SwiftUI
 /// `ScreenshotsProposalsDebugScenes`, `ScreenshotsHandDebugScenes`, `AssistantDebugScenes`,
 /// `SuggestionsDebugScenes`, `AssistDebugScenes`, `EverythingDebugScenes`, `NativeTranslationDebugScenes`,
 /// `NewLanguagesDebugScenes`, `StudioDebugScenes`, `ClaudeCodeDebugScenes`,
-/// `ProductPagesDebugScenes`, `PageActionDebugScenes`, `TourDebugScenes`, `AutopilotBarDebugScenes`, `MenuBarDebugScenes`,
+/// `ProductPagesDebugScenes`, `RefreshDebugScenes`, `PageActionDebugScenes`, `TourDebugScenes`, `AutopilotBarDebugScenes`, `MenuBarDebugScenes`,
 /// `DesignSystemDebugScenes`, `LoadingDebugScenes`, `PaywallDebugScenes`, `TranslationsDebugScenes`). Canvas names for states drawn
 /// under another id resolve through `DesignSceneAliases`.
 struct DebugSceneView: View {
@@ -118,6 +118,7 @@ struct DebugSceneView: View {
             EventArtworkDebugScenes.view(for:),
             ProductPagesDebugScenes.view(for:),
             NavigationDebugScenes.view(for:),
+            RefreshDebugScenes.view(for:),
             PageActionDebugScenes.view(for:),
             TourDebugScenes.view(for:),
             MenuBarDebugScenes.view(for:),

@@ -8,7 +8,8 @@ import SwiftUI
 /// The bottom of every push's progress. While it runs: Cancel Remaining
 /// (what's in flight finishes) and Minimize (Esc) to keep working, the
 /// toolbar's Review & Push showing how far it got. Once it's over: Retry
-/// Failed, View Results after a price change, and Done.
+/// Failed, View Results after a price change, Show in Activity (the push
+/// that just ended, highlighted in Review & Push's Activity) and Done.
 struct PushProgressFooter: View {
     let summary: PushProgressSummary
     /// Under Done: "Retry sends only the failed ones.", "Live on the App
@@ -21,6 +22,7 @@ struct PushProgressFooter: View {
     let onMinimize: () -> Void
     let onRetryFailed: () -> Void
     let onViewResults: () -> Void
+    let onShowInActivity: () -> Void
     let onDone: () -> Void
 
     var body: some View {
@@ -51,6 +53,9 @@ struct PushProgressFooter: View {
                     Button("View Results", action: onViewResults)
                         .accessibilityIdentifier("push.viewResults")
                 }
+                // Secondary (README-DS §4): beside Done, never filled.
+                Button(String(localized: "Show in Activity", comment: "kind:button · the push sheet's last step"), action: onShowInActivity)
+                    .accessibilityIdentifier("push.showInActivity")
                 Button("Done", action: onDone)
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)

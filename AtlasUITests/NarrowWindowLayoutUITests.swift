@@ -9,10 +9,9 @@ import XCTest
 /// App Store page side by side used to hold the window's content about
 /// 760 pt wider than the sidebar, so narrower windows centred it and cut
 /// the sidebar on its left (“her apps”, “e Listing”), and an instant resize
-/// looped the layout until the app crashed. The toolbar's actions keep the
-/// trailing edge: the title truncates and the labels fold before Activity
-/// would go into the toolbar's overflow menu, leaving a gap. Review & Push
-/// stays at the bottom right, inside the window (board 80).
+/// looped the layout until the app crashed. The toolbar never needs its
+/// overflow menu (Refresh and Activity left it, board 90), and Review &
+/// Push stays at the bottom right, inside the window (board 80).
 @MainActor
 final class NarrowWindowLayoutUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -78,14 +77,12 @@ final class NarrowWindowLayoutUITests: XCTestCase {
         }
     }
 
-    /// Activity in the toolbar, not in its overflow menu, at the window's
-    /// trailing edge; Review & Push at the bottom right, inside the window.
+    /// No toolbar overflow menu; Refresh in the sidebar's top row; Review &
+    /// Push at the bottom right, inside the window.
     private func assertTheActionsAreAtTheTrailingEdge(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
         let window = app.windows.firstMatch.frame
-        let activity = element("workspace.activityButton")
-        XCTAssertTrue(activity.exists && activity.isHittable, "Activity is in the overflow menu at \(name)", file: file, line: line)
-        XCTAssertGreaterThanOrEqual(activity.frame.maxX, window.maxX - 12, "Activity at \(activity.frame) off the trailing edge at \(name)", file: file, line: line)
-        XCTAssertLessThanOrEqual(activity.frame.maxX, window.maxX, file: file, line: line)
+        let refresh = element("sidebar.refresh")
+        XCTAssertTrue(refresh.exists && refresh.isHittable, "Refresh doesn't show in the sidebar at \(name)", file: file, line: line)
         let reviewPush = element("workspace.reviewPushButton")
         XCTAssertTrue(reviewPush.exists && reviewPush.isHittable, "Review & Push doesn't show at \(name)", file: file, line: line)
         XCTAssertLessThanOrEqual(reviewPush.frame.maxX, window.maxX, "Review & Push at \(reviewPush.frame) cut on the right at \(name)", file: file, line: line)
