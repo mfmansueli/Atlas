@@ -7,15 +7,29 @@ import Foundation
 import Observation
 
 /// The main window's navigation state: which section shows, the sheets the
-/// toolbar opens, and a pending intent for the section to act on. Shared
-/// through the environment so menus, quick actions and sections can steer
-/// the window.
+/// toolbar opens, a pending intent for the section to act on, and where
+/// the window's Refresh stands. Shared through the environment so menus,
+/// quick actions and sections can steer the window.
 @MainActor
 @Observable
 final class WorkspaceNavigator {
     var section: AppWorkspaceSection
-    /// Review & Push (⇧⌘P).
-    var isReviewPresented = false
+    /// Review & Push (⇧⌘P). Opening it picks its tab: the one asked for
+    /// (`openActivity(highlighting:)`, `openReview(on:)`), else Activity
+    /// when nothing waits (`ReviewPushTab.opening(pendingCount:)`), also
+    /// when the button says Up to Date.
+    var isReviewPresented = false {
+        didSet {
+            guard isReviewPresented, !oldValue, !isReviewTabChosen else { return }
+            reviewTab = .opening(pendingCount: pendingReviewCount())
+        }
+    }
+
+    /// What waits in Review & Push across all apps, as its button counts
+    /// it; the main window sets it.
+    @ObservationIgnored var pendingReviewCount: @MainActor () -> Int = { 0 }
+    /// Review & Push was asked to open on `reviewTab`, whatever waits.
+    private var isReviewTabChosen = false
     /// The source Review & Push opens filtered to, e.g. one assistant's
     /// proposals; cleared when it closes.
     var reviewSourceFilter: ChangeSourceFilter?
@@ -38,8 +52,6 @@ final class WorkspaceNavigator {
     /// whose action the Autopilot button leads with; the section sets and
     /// clears it.
     var autopilotDetail: WorkspaceAutopilotDetail?
-    /// Activity history (the toolbar clock).
-    var isActivityPresented = false
     /// The tab Review & Push shows (README-DS §15): To Push or Activity.
     var reviewTab = ReviewPushTab.toPush
     /// The push Activity highlights: the one that just ended ("Show in
@@ -48,9 +60,18 @@ final class WorkspaceNavigator {
     /// Where the window's Refresh stands; the sidebar's Refresh button and
     /// the toolbar's status line show it (board 90).
     var refreshState = RefreshState.idle
-    /// Set by Activity's "Restore Previous Values": Review & Push opens once
-    /// Activity has closed (macOS shows one sheet at a time).
-    var opensReviewAfterActivity = false
+    /// The Refresh that runs: the parts it still waits for.
+    private(set) var refreshRun: RefreshRun?
+    /// A push or a change asked for Refresh while one ran: another runs
+    /// once it ends, so what changed is read.
+    private var refreshesAgain = false
+    /// The status line's Details… after a Refresh that failed.
+    var isRefreshDetailsPresented = false
+    /// The time a Refresh ends at; tests set it.
+    @ObservationIgnored var now: () -> Date = { .now }
+    /// The key's role when it can only read, for "View only"; the main
+    /// window sets it (`RefreshRun.readOnlyRole(_:)`).
+    @ObservationIgnored var readOnlyRole: @MainActor () -> String? = { nil }
     /// "Set Up Your Assistant" (the Assistant button, the overview, the
     /// suggestion bars).
     var isAssistantSetupPresented = false
@@ -90,8 +111,9 @@ final class WorkspaceNavigator {
     /// The app to select first, e.g. for Show in Captions on another app's
     /// render; the main window selects it and clears it.
     private(set) var requestedAppID: StoreApp.ID?
-    /// Bumped by Refresh (⌘R). The library and every section reload when it
-    /// changes (`.onChange(of: navigator.refreshCount)`).
+    /// Bumped by Refresh (⌘R). The library, the version and the open section
+    /// read again when it changes (`.onChange(of: navigator.refreshCount)`);
+    /// the other sections when they're next opened (`SectionLoadStamp`).
     private(set) var refreshCount = 0
     /// Bumped when the person chooses the section that already shows (the
     /// sidebar, the section menu, ⌘1–⌘9): a section showing one item's
@@ -226,19 +248,22 @@ final class WorkspaceNavigator {
         reviewsEveryApp = false
         reviewPage = nil
         reviewSection = nil
+        isReviewTabChosen = false
+        highlightedPushID = nil
     }
 
-    /// Closes Activity and opens Review & Push after it.
-    func showReviewAfterActivity() {
-        opensReviewAfterActivity = true
-        isActivityPresented = false
-    }
-
-    /// Called when Activity closed.
-    func activityDidClose() {
-        guard opensReviewAfterActivity else { return }
-        opensReviewAfterActivity = false
+    /// Review & Push on `tab`, whatever waits.
+    func openReview(on tab: ReviewPushTab) {
+        isReviewTabChosen = true
+        reviewTab = tab
         isReviewPresented = true
+    }
+
+    /// Back to To Push, e.g. after Activity's Restore Previous Values put
+    /// the old values there.
+    func showToPush() {
+        reviewTab = .toPush
+        highlightedPushID = nil
     }
 
     /// Overview, starting Suggest Everything.
@@ -247,14 +272,68 @@ final class WorkspaceNavigator {
         requestsSuggestEverything = true
     }
 
-    /// Reloads everything from App Store Connect.
+    // MARK: - Refresh
+
+    /// Refresh (⌘R, the sidebar's button): reads App Store Connect again
+    /// for the app list, the version and the open section. Nothing while
+    /// one runs, so a second click does nothing.
     func refresh() {
+        guard !refreshState.isRefreshing else { return }
+        let lastGood = lastGoodRead
+        refreshRun = RefreshRun(lastUpdated: lastGood)
+        refreshState = lastGood.map { .refreshing(lastUpdated: $0) } ?? refreshState.starting
         refreshCount += 1
     }
 
-    /// Review & Push on its Activity tab (⌘Y), highlighting `pushID` when
-    /// given.
+    /// Refresh after something changed App Store Connect (a push, a
+    /// release action): now, or once the one that runs ends.
+    func refreshAfterChange() {
+        if refreshState.isRefreshing {
+            refreshesAgain = true
+        } else {
+            refresh()
+        }
+    }
+
+    /// One part of Refresh number `refreshCount` ended, with `problem`
+    /// when it didn't read. Once the run is done, the state says how it
+    /// went and the button works again.
+    func finishRefresh(_ part: RefreshPart, problem: RefreshProblem? = nil, refreshCount: Int) {
+        guard refreshCount == self.refreshCount, var run = refreshRun, run.finish(part, problem: problem) else { return }
+        guard run.isDone else {
+            refreshRun = run
+            return
+        }
+        refreshRun = nil
+        refreshState = run.state(at: now(), readOnlyRole: readOnlyRole())
+        if refreshesAgain {
+            refreshesAgain = false
+            refresh()
+        }
+    }
+
+    /// The window's first read of the app list ended: the time it's from,
+    /// or what went wrong, for Refresh's tooltip and the status line.
+    func noteFirstRead(problem: RefreshProblem?) {
+        guard refreshState == .idle else { return }
+        var run = RefreshRun(parts: [.apps], lastUpdated: nil)
+        run.finish(.apps, problem: problem)
+        refreshState = run.state(at: now(), readOnlyRole: readOnlyRole())
+    }
+
+    /// When the window last read App Store Connect well: offline keeps the
+    /// time what shows is from.
+    private var lastGoodRead: Date? {
+        if case let .offline(since) = refreshState { return since }
+        return refreshState.lastUpdated
+    }
+
+    // MARK: - Activity
+
+    /// Review & Push on its Activity tab (⌘Y, Product → Activity, Show in
+    /// Activity at the end of a push), highlighting `pushID` when given.
     func openActivity(highlighting pushID: PushRecord.ID? = nil) {
+        isReviewTabChosen = true
         reviewTab = .activity
         highlightedPushID = pushID
         isReviewPresented = true

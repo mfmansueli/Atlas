@@ -10,7 +10,9 @@ import Testing
 /// The workspace toolbar leads with the section's title and status; the
 /// actions keep the trailing edge: the title truncates first, then the
 /// Review & Push label folds to its icon, and under 620 points the title
-/// goes too. Autopilot is the bar at the bottom of the section (board 80).
+/// goes too. Autopilot is the bar at the bottom of the section (board 80);
+/// Refresh is in the sidebar's top row and Activity in Review & Push
+/// (board 90), so neither takes room beside the sidebar.
 @Suite("WorkspaceToolbarLayout")
 struct WorkspaceToolbarLayoutTests {
     /// A label about as wide as “Review & Push”.
@@ -37,40 +39,40 @@ struct WorkspaceToolbarLayoutTests {
         // A 1,100 pt window with the sidebar showing: 836 pt of column,
         // with room left over even with an item of its own as wide as 121
         // pt. The title's 12 pt off the sidebar's edge count too.
-        #expect(layout(836).widthForLabels == 476)
+        #expect(layout(836).widthForLabels == 404)
         #expect(!layout(836).isCompact)
         var withItem = Self.labels
         withItem[.proButton] = 121
-        #expect(layout(836, room: withItem).widthForLabels == 605)
+        #expect(layout(836, room: withItem).widthForLabels == 533)
         #expect(!layout(836, room: withItem).isCompact)
-        #expect(layout(600, room: withItem).isCompact)
+        #expect(layout(530, room: withItem).isCompact)
     }
 
     @Test func theLabelsFoldOnlyWithoutRoom() {
-        #expect(!layout(476).isCompact)
-        #expect(layout(475).isCompact)
+        #expect(!layout(404).isCompact)
+        #expect(layout(403).isCompact)
         // Pro takes room on Free.
         var free = Self.labels
         free[.proButton] = 72
-        #expect(layout(500, room: free).isCompact)
-        #expect(layout(555, room: free).isCompact)
-        #expect(!layout(556, room: free).isCompact)
+        #expect(layout(430, room: free).isCompact)
+        #expect(layout(483, room: free).isCompact)
+        #expect(!layout(484, room: free).isCompact)
         // An item that went reports 0 and takes no room.
         free[.proButton] = 0
-        #expect(!layout(500, room: free).isCompact)
+        #expect(!layout(430, room: free).isCompact)
     }
 
     @Test func withTheSidebarHiddenTheMinimumWindowKeepsTheLabel() {
-        // The window's buttons, the sidebar button and the section menu
-        // (“Store Page”, 141 pt) share the toolbar: without Autopilot in
-        // it, the 860 pt minimum keeps Review & Push's label.
+        // The window's buttons, the sidebar button, the section menu
+        // (“Store Page”, 141 pt) and Refresh share the toolbar: without
+        // Autopilot in it, the 860 pt minimum keeps Review & Push's label.
         var room = Self.labels
         room[.sectionMenu] = 141
         let hidden = layout(860, sidebar: false, room: room)
         #expect(hidden.showsTitle)
         #expect(!hidden.isReviewCompact)
-        #expect(hidden.widthForLabels == 741)
-        #expect(layout(740, sidebar: false, room: room).isCompact)
+        #expect(hidden.widthForLabels == 713)
+        #expect(layout(712, sidebar: false, room: room).isCompact)
     }
 
     @Test func under620PointsTheTitleGoesToo() {
@@ -101,11 +103,11 @@ struct WorkspaceToolbarLayoutTests {
     @Test func theTitleTruncatesBeforeTheLabelsFold() {
         var room = Self.labels
         room[.title] = 330
-        let layout = layout(516, room: room)
+        let layout = layout(444, room: room)
         #expect(!layout.isCompact)
         let title = layout.titleRoom ?? 0
         #expect(title == 220)
-        #expect(title + WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + 101 <= 516)
+        #expect(title + WorkspaceToolbarLayout.fixedRoom + WorkspaceToolbarLayout.titleInset + 101 <= 444)
         // Wide, it's capped; folded, the labels' room goes to the title.
         #expect(self.layout(1400, room: room).titleRoom == WorkspaceToolbarLayout.maxTitleWidth)
         let folded = self.layout(400, room: room)
@@ -122,11 +124,11 @@ struct WorkspaceToolbarLayoutTests {
     @Test func theLabelsFoldOnceTheTitleIsAtItsLeast() {
         var room = Self.labels
         room[.title] = 330
-        #expect(layout(476, room: room).widthForLabels == 476)
-        #expect(!layout(476, room: room).isCompact)
-        #expect(layout(475, room: room).isCompact)
+        #expect(layout(404, room: room).widthForLabels == 404)
+        #expect(!layout(404, room: room).isCompact)
+        #expect(layout(403, room: room).isCompact)
         room[.title] = 100
-        #expect(layout(396, room: room).widthForLabels == 396)
+        #expect(layout(324, room: room).widthForLabels == 324)
     }
 
     /// Gone under 620 points, the title keeps its room, so the labels
@@ -134,8 +136,8 @@ struct WorkspaceToolbarLayoutTests {
     @Test func aTitleThatWentKeepsItsRoom() {
         var room = Self.labels
         room[.title] = 0
-        #expect(layout(470, room: room).isCompact)
-        #expect(layout(470, room: room).widthForLabels == 476)
+        #expect(layout(400, room: room).isCompact)
+        #expect(layout(400, room: room).widthForLabels == 404)
     }
 
     /// A hidden sidebar with Pro leaves the title little; it's never
@@ -144,9 +146,9 @@ struct WorkspaceToolbarLayoutTests {
         var room = Self.labels
         room[.sectionMenu] = 141
         room[.proButton] = 72
-        // Folded: 183 fixed + 136 + 141 lead + 72 + 8 for Pro = 540.
-        #expect(layout(583, sidebar: false, room: room).titleRoom == WorkspaceToolbarLayout.leastTitleWidth)
-        #expect(layout(631, sidebar: false, room: room).titleRoom == 91)
+        // Folded: 111 fixed + 180 + 141 lead + 72 + 8 for Pro = 512.
+        #expect(layout(555, sidebar: false, room: room).titleRoom == WorkspaceToolbarLayout.leastTitleWidth)
+        #expect(layout(603, sidebar: false, room: room).titleRoom == 91)
     }
 
     @Test func aLabelsRoomIsItsWidthBeyondTheIcon() {

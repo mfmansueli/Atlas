@@ -5,7 +5,8 @@
 
 import SwiftUI
 
-/// The sidebar: "App" over the app being viewed (opening the app menu) at
+/// The sidebar: Refresh in its top row, left of Hide Sidebar (board 90),
+/// "App" over the app being viewed (opening the app menu) at
 /// the top, its sections grouped by what the person is doing, each with
 /// its count, then Settings and Help ▾ side by side over the version's
 /// status at the bottom (board 71), the same at every height. A sidebar
@@ -111,6 +112,22 @@ struct AppSidebar: View {
         .overlay { state }
         .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded() } action: { height in
             if fit.sidebarHeight != height { fit.sidebarHeight = height }
+        }
+        .toolbar { topRow }
+    }
+
+    /// The sidebar's top row (README-DS §15): Refresh, then the system's
+    /// Hide Sidebar, which macOS 26 puts at the sidebar's top right. The
+    /// toggle is placed here only while the sidebar shows; hidden, macOS
+    /// puts it back by the window's buttons, and Refresh moves to the
+    /// toolbar after the section menu (`AppWorkspaceView`).
+    @ToolbarContentBuilder
+    private var topRow: some ToolbarContent {
+        ToolbarItem {
+            RefreshButton(identifier: "sidebar.refresh")
+        }
+        if navigator.isSidebarShown {
+            DefaultToolbarItem(kind: .sidebarToggle)
         }
     }
 

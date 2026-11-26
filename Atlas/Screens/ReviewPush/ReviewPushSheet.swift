@@ -5,20 +5,30 @@
 
 import SwiftUI
 
-/// Review & Push (⇧⌘P, 800 pt): every pending change grouped by app and
-/// section, each as old → new with its source, a checkbox and a discard
-/// button; a click on an image opens it large over the sheet. Once a push
+/// Review & Push (⇧⌘P, 800 pt), in two tabs (README-DS §15, board 90). To
+/// Push: every pending change grouped by app and section, each as old →
+/// new with its source, a checkbox and a discard button; a click on an
+/// image opens it large over the sheet. Activity (⌘Y): every push from
+/// this Mac (`ActivityList`); restoring puts the old values on To Push and
+/// never pushes. It opens on Activity when nothing waits. Once a push
 /// starts, the same sheet shows its progress (`PushProgressSheet`): the
-/// changes, screenshots and extras as one push.
+/// changes, screenshots and extras as one push, ending with Show in
+/// Activity.
 struct ReviewPushSheet: View {
     @State private var viewModel: ReviewPushViewModel
     @State private var pushToConfirm: [PendingChange]?
     /// Images waiting on that confirmation: all of them, or the checked.
     @State private var imagesToConfirm: Bool?
     @State private var isConfirmingDiscard = false
+    /// Restore Previous Screenshots… for one push.
+    @State private var restoringScreenshots: ScreenshotRestorePresentation?
+    /// "The previous values for 23 changes are in Review & Push. Nothing
+    /// was pushed."
+    @State private var toast: ToastMessage?
 
     @Environment(WorkspaceNavigator.self) private var navigator
     @Environment(AppPreferences.self) private var preferences
+    @Environment(PushHistory.self) private var history
     @Environment(\.dismiss) private var dismiss
 
     init(viewModel: ReviewPushViewModel) {
@@ -31,9 +41,11 @@ struct ReviewPushSheet: View {
             // than Cancel and Push, or Minimize and Done.
             Group {
                 if PushProgressSummary.isShowing(viewModel.push) {
-                    PushProgressSheet(viewModel: viewModel, onViewResults: viewResults, onDone: finish, onMinimize: { dismiss() })
+                    PushProgressSheet(
+                        viewModel: viewModel, onViewResults: viewResults, onShowInActivity: showInActivity, onDone: finish, onMinimize: { dismiss() }
+                    )
                 } else {
-                    review
+                    tabs
                 }
             }
             .disabled(viewModel.viewer != nil)
@@ -76,10 +88,59 @@ struct ReviewPushSheet: View {
         viewModel.screenshots.run != nil || viewModel.extras.run != nil || viewModel.showsScreenshots
     }
 
+    // MARK: - Tabs
+
+    /// To Push · Activity, a segmented control over the tab.
+    private var tabs: some View {
+        @Bindable var navigator = navigator
+        return VStack(spacing: 0) {
+            Picker(String(localized: "Review & Push", comment: "kind:accessibility-label · the To Push and Activity tabs"), selection: $navigator.reviewTab) {
+                ForEach(ReviewPushTab.allCases) { tab in
+                    Text(tab.title).tag(tab)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .fixedSize()
+            .padding(.top, Spacing.large)
+            .accessibilityIdentifier("review.tabs")
+            switch navigator.reviewTab {
+            case .toPush: review
+            case .activity: activity
+            }
+        }
+        // Screenshot plans read on either tab, so To Push has them.
+        .modifier(ScreenshotReviewLoader(viewModel: viewModel))
+    }
+
     private var review: some View {
         VStack(alignment: .leading, spacing: 0) {
             ReviewHeader(viewModel: viewModel)
             Divider()
+            changeList
+                .overlay(alignment: .bottom) { toastView }
+            Divider()
+            if viewModel.visibleImages.isEmpty {
+                ReviewFooter(
+                    viewModel: viewModel,
+                    onDiscardAll: discardAll,
+                    onCancel: { dismiss() },
+                    onPush: push
+                )
+            } else {
+                ScreenshotReviewFooter(
+                    viewModel: viewModel,
+                    onDiscardAll: discardAll,
+                    onCancel: { dismiss() },
+                    onPushSelected: { push(viewModel.selectedPushableChanges, imagesSelectedOnly: true) },
+                    onPushAll: { push(viewModel.pushableChanges, imagesSelectedOnly: false) }
+                )
+            }
+        }
+    }
+
+    private var changeList: some View {
+        Group {
             if viewModel.visibleChanges.isEmpty, !ScreenshotReviewContent.hasContent(viewModel) {
                 // Board 74 · 10: the smaller empty state, in a sheet; Push
                 // stays off.
@@ -116,25 +177,88 @@ struct ReviewPushSheet: View {
                     .padding(.vertical, Spacing.medium)
                 }
             }
+        }
+        .frame(maxHeight: .infinity)
+    }
+
+    /// The toast after Restore Previous Values, over the list's foot.
+    @ViewBuilder
+    private var toastView: some View {
+        if let toast {
+            ActionToast(message: toast) {
+                if self.toast?.id == toast.id { self.toast = nil }
+            }
+            .padding(.horizontal, Spacing.large)
+            .padding(.bottom, Spacing.medium)
+        }
+    }
+
+    // MARK: - Activity
+
+    private var activity: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ActivityList(
+                records: history.records,
+                highlightedID: navigator.highlightedPushID,
+                onResults: showResults,
+                onRestore: restore,
+                onRestoreScreenshots: viewModel.push.screenshots.canPush
+                    ? { restoringScreenshots = ScreenshotRestorePresentation(recordID: $0.id) }
+                    : nil
+            )
+            .frame(maxHeight: .infinity)
             Divider()
-            if viewModel.visibleImages.isEmpty {
-                ReviewFooter(
-                    viewModel: viewModel,
-                    onDiscardAll: discardAll,
-                    onCancel: { dismiss() },
-                    onPush: push
-                )
-            } else {
-                ScreenshotReviewFooter(
-                    viewModel: viewModel,
-                    onDiscardAll: discardAll,
-                    onCancel: { dismiss() },
-                    onPushSelected: { push(viewModel.selectedPushableChanges, imagesSelectedOnly: true) },
-                    onPushAll: { push(viewModel.pushableChanges, imagesSelectedOnly: false) }
-                )
+            HStack {
+                Spacer()
+                Button(String(localized: "Done", comment: "kind:button · closes Review & Push from Activity")) { dismiss() }
+                    .primaryButton(isDefault: true)
+                    .buttonBorderShape(.capsule)
+                    .accessibilityIdentifier("activity.done")
+            }
+            .padding(.horizontal, Spacing.xLarge)
+            .padding(.vertical, Spacing.medium)
+        }
+        .sheet(item: $restoringScreenshots) { presentation in
+            if let record = history.records.first(where: { $0.id == presentation.recordID }) {
+                ScreenshotRestoreSheet(record: record, locale: presentation.locale) {
+                    restoringScreenshots = nil
+                    showRestored(record)
+                }
             }
         }
-        .modifier(ScreenshotReviewLoader(viewModel: viewModel))
+        .task(id: viewModel.push.screenshots.workspace?.teamName) {
+            if let pending = viewModel.push.screenshots.pendingRestore {
+                viewModel.push.screenshots.pendingRestore = nil
+                restoringScreenshots = pending
+            }
+        }
+    }
+
+    /// Restore Previous Values: the old values on To Push, and the toast
+    /// that says nothing was pushed.
+    private func restore(_ record: PushRecord) {
+        guard let message = ActivityRestore.restore(record, into: viewModel.queue) else { return }
+        showRestored(record)
+        toast = message
+    }
+
+    /// To Push, on every app's changes when the push was another app's.
+    private func showRestored(_ record: PushRecord) {
+        if record.appID != viewModel.selectedAppID { viewModel.scope = .allApps }
+        navigator.showToPush()
+    }
+
+    private func showResults() {
+        dismiss()
+        navigator.open(.subscriptionPricing, intent: .showResults)
+    }
+
+    /// Show in Activity, at the end of a push: Activity, on the push that
+    /// just ended.
+    private func showInActivity() {
+        let pushID = history.records.first?.id
+        dismissFinishedPushes()
+        navigator.openActivity(highlighting: pushID)
     }
 
     private func push(_ changes: [PendingChange]) {

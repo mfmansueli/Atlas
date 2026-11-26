@@ -10,11 +10,13 @@ import SwiftUI
 /// them it sends. One title and bar, the time, each failure reason once,
 /// a row per change, image or video (a click on a thumbnail opens it
 /// large), and the same buttons whatever it sends: Cancel Remaining and
-/// Minimize (Esc) while it runs; Retry Failed, View Results and Done once
-/// it's over. Each button acts on all three.
+/// Minimize (Esc) while it runs; Retry Failed, View Results, Show in
+/// Activity and Done once it's over. Each button acts on all three.
 struct PushProgressSheet: View {
     let viewModel: ReviewPushViewModel
     let onViewResults: () -> Void
+    /// Review & Push's Activity, on the push that just ended.
+    let onShowInActivity: () -> Void
     let onDone: () -> Void
     /// Hides the sheet while the push goes on; the toolbar's Review & Push
     /// shows how far it got and opens it again.
@@ -48,7 +50,7 @@ struct PushProgressSheet: View {
             PushProgressFooter(
                 summary: summary, doneNote: doneNote(summary), cancelHelp: cancelHelp, changedPrices: push.changedPrices,
                 onCancelRemaining: cancelRemaining, onMinimize: onMinimize, onRetryFailed: retryFailed, onViewResults: onViewResults,
-                onDone: onDone
+                onShowInActivity: onShowInActivity, onDone: onDone
             )
             .padding(.horizontal, Spacing.xLarge)
             .padding(.vertical, Spacing.medium)

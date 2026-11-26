@@ -7,8 +7,9 @@ import SwiftUI
 
 /// The detail column for the selected app: the toolbar (board 57: the
 /// section's title over its state, with “N not pushed” opening Review &
-/// Push on that section; the page's create action, Refresh and Activity;
-/// while the sidebar is hidden the section menu first) over the current
+/// Push on that section and, when the last Refresh went wrong, what
+/// happened; the page's create action; while the sidebar is hidden the
+/// section menu and Refresh first, board 90) over the current
 /// section, the Autopilot bar at its bottom with Review & Push beside it
 /// (board 80), and the window's toasts (Suggest Everything's total when it
 /// finishes).
@@ -138,12 +139,19 @@ struct AppWorkspaceView: View {
                     SectionMenuButton(counts: counts, selection: $navigator.section, startsOpen: Self.opensSectionMenu)
                         .reportsToolbarRoom(.sectionMenu)
                 }
+                // Refresh lives in the sidebar's top row; hidden, it comes
+                // here, right after the section menu (README-DS §15).
+                ToolbarItem(placement: .navigation) {
+                    RefreshButton(identifier: "workspace.refreshButton")
+                }
             }
             if toolbarLayout.showsTitle {
                 ToolbarItem(placement: .navigation) {
-                    WorkspaceToolbarTitle(title: navigator.section.toolbarTitle, status: sectionStatus, maxWidth: toolbarLayout.titleRoom) {
-                        navigator.review(section: navigator.section)
-                    }
+                    WorkspaceToolbarTitle(
+                        title: navigator.section.toolbarTitle, status: sectionStatus, maxWidth: toolbarLayout.titleRoom,
+                        refresh: navigator.refreshState, onRefreshDetails: { navigator.isRefreshDetailsPresented = true },
+                        onNotPushed: { navigator.review(section: navigator.section) }
+                    )
                     // Off the sidebar's edge; after the section menu it has its gap.
                     .padding(.leading, navigator.isSidebarShown ? WorkspaceToolbarLayout.titleInset : 0)
                 }
@@ -152,25 +160,6 @@ struct AppWorkspaceView: View {
             // Keeps the actions at the trailing edge.
             ToolbarSpacer(.flexible)
             pageActionItem
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    navigator.refresh()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-                .help("Refresh from App Store Connect (⌘R)")
-                .accessibilityIdentifier("workspace.refreshButton")
-                // As tall as Review & Push beside them.
-                .controlSize(.large)
-                Button {
-                    navigator.isActivityPresented = true
-                } label: {
-                    Label("Activity", systemImage: "clock")
-                }
-                .help("Activity")
-                .accessibilityIdentifier("workspace.activityButton")
-                .controlSize(.large)
-            }
             // Pro, while the person is on Free.
             if pro.isFree {
                 ToolbarItem(placement: .primaryAction) {

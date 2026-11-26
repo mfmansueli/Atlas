@@ -184,14 +184,54 @@ final class ReviewPushUITests: XCTestCase {
         XCTAssertFalse(app.buttons["review.pushAll"].isEnabled)
     }
 
+    /// Activity is Review & Push's second tab; Restore Previous Values puts
+    /// the old values on To Push, with a toast that nothing was pushed.
     func testActivityRestoresPreviousValuesThroughReview() {
         launch(scene: "activity")
-        XCTAssertTrue(element("activity.sheet").waitForExistence(timeout: 10))
+        XCTAssertTrue(element("review.activity").waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Subscription Pricing · Mexico, Türkiye, India"].exists)
+        XCTAssertTrue(app.staticTexts["All succeeded"].exists)
+        XCTAssertTrue(app.staticTexts["2 failed"].exists)
         app.buttons.matching(identifier: "activity.restore").element(boundBy: 2).click()
-        XCTAssertTrue(element("review.sheet").waitForExistence(timeout: 5))
-        XCTAssertTrue(element("review.row.price.6450100002.MEX").exists)
+        XCTAssertTrue(element("review.row.price.6450100002.MEX").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("review.sheet").exists)
+        XCTAssertFalse(element("review.activity").exists, "Restore switches to To Push")
         XCTAssertTrue(app.staticTexts["Restore"].exists)
+        XCTAssertTrue(app.staticTexts["The previous values for 3 changes are in Review & Push. Nothing was pushed."].exists)
+    }
+
+    /// The segmented control switches between To Push and Activity.
+    func testTheTabsSwitchBetweenToPushAndActivity() {
+        launch(scene: "review")
+        let tabs = element("review.tabs")
+        XCTAssertTrue(tabs.waitForExistence(timeout: 10))
+        XCTAssertTrue(element("review.row.price.6450100002.BRA").exists, "changes wait, so it opens on To Push")
+        tabs.radioButtons["Activity"].click()
+        XCTAssertTrue(element("review.activity").waitForExistence(timeout: 5))
+        tabs.radioButtons["To Push"].click()
+        XCTAssertTrue(element("review.row.price.6450100002.BRA").waitForExistence(timeout: 5))
+    }
+
+    /// ⌘Y (Product → Activity) opens Review & Push on Activity.
+    func testCommandYOpensActivity() {
+        launch(scene: "nav-ov")
+        XCTAssertTrue(app.windows.firstMatch.waitForExistence(timeout: 10))
+        app.typeKey("y", modifierFlags: .command)
+        XCTAssertTrue(element("review.activity").waitForExistence(timeout: 5))
+        app.buttons["activity.done"].click()
+        XCTAssertTrue(element("review.activity").waitForNonExistence(timeout: 5))
+    }
+
+    /// The push sheet's last step: Show in Activity opens Activity on the
+    /// push that just ended, tinted.
+    func testShowInActivityHighlightsThePushThatEnded() {
+        launch(scene: "push-partial")
+        XCTAssertTrue(app.staticTexts["24 pushed · 2 failed"].waitForExistence(timeout: 20))
+        let show = app.buttons["push.showInActivity"]
+        XCTAssertTrue(show.exists)
+        show.click()
+        XCTAssertTrue(element("review.activity").waitForExistence(timeout: 5))
+        XCTAssertTrue(element("activity.record.highlighted").waitForExistence(timeout: 5))
     }
 
     func testOfflineBanner() {

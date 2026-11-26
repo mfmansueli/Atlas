@@ -19,6 +19,7 @@ related: menubar
 | Reviews | ⌘8 |
 | Analytics | ⌘9 |
 | Review & Push | ⇧⌘P |
+| Activity: every push from this Mac | ⌘Y |
 | Switch app | ⌘K |
 | Previous or next language with suggestions | ⌘[ or ⌘] |
 | Read App Store Connect again | ⌘R |

@@ -6,9 +6,10 @@
 import SwiftUI
 
 /// The main window once an API key is connected: the app library in the
-/// sidebar, the selected app's workspace in the detail column, and the
-/// Review & Push and Activity sheets. Right after a key is connected it
-/// shows "Loading your apps…" until the first sync is done. It asks App
+/// sidebar, the selected app's workspace in the detail column, the Review &
+/// Push sheet (To Push and Activity), and Refresh: what it reads again
+/// and how it went (`WorkspaceNavigator.refreshState`). Right after a key
+/// is connected it shows "Loading your apps…" until the first sync is done. It asks App
 /// Store Connect for the team's name once, for the account switcher. With
 /// `prefetchesSections`, the open app's other sections are read ahead in
 /// the background (`SectionPrefetcher`), so they open already loaded.
@@ -128,9 +129,11 @@ struct MainView: View {
         if NavigationDebugLaunch.hidesSidebar { _columnVisibility = State(initialValue: .detailOnly) }
         #endif
         switch presentedSheet {
-        case .review: navigator.isReviewPresented = true
-        case let .proposals(client): navigator.reviewProposals(from: client)
-        case .activity: navigator.isActivityPresented = true
+        case .review: navigator.openReview(on: .toPush)
+        case let .proposals(client):
+            navigator.reviewProposals(from: client)
+            navigator.openReview(on: .toPush)
+        case .activity: navigator.openActivity()
         case .assistantSetup: navigator.isAssistantSetupPresented = true
         case nil: break
         }
@@ -143,10 +146,8 @@ struct MainView: View {
                 ReviewPushSheet(viewModel: reviewViewModel())
                     .pageControlSize()
             }
-            .sheet(isPresented: $navigator.isActivityPresented, onDismiss: navigator.activityDidClose) {
-                ActivitySheet()
-                    .pageControlSize()
-            }
+            // Details… on the status line's "Couldn’t update".
+            .sheet(isPresented: $navigator.isRefreshDetailsPresented) { refreshErrorSheet }
             .sheet(isPresented: $navigator.isAssistantSetupPresented, onDismiss: assistantSetupDidClose, content: {
                 AssistantSetupSheet(
                     assistants: assistants,
@@ -184,9 +185,10 @@ struct MainView: View {
                 pro.require(.secondApp) { viewModel.selectedAppID = new }
             }
             .task { configurePush() }
+            .task { configureRefresh() }
             .task { attachAssistants() }
             .onDisappear { assistants.workspace = nil }
-            .task { await loadLibrary() }
+            .task { await loadLibrary { navigator.noteFirstRead(problem: $0) } }
             // What the menu bar shows and the checks it makes on its own
             // (reviews, versions in flight, analytics reports).
             .task { attachBackgroundWork() }
@@ -195,8 +197,6 @@ struct MainView: View {
             .task(id: viewModel.selectedAppID) { await loadSelectedRelease() }
             // The open app's other sections, read ahead.
             .modifier(SectionPrefetchModifier(app: prefetchesSections && !isSyncing ? viewModel.selectedApp : nil, services: services, keyID: currentAccountID))
-            // Refresh reads the version and its builds again too.
-            .onChange(of: navigator.refreshCount) { Task { await selectedRelease?.load() } }
             .task {
                 if let name = await viewModel.findTeamName() { onTeamNameFound(name) }
             }
@@ -211,11 +211,11 @@ struct MainView: View {
                 viewModel.selectedAppID = appID
                 navigator.consumeAppRequest()
             }
-            .onChange(of: navigator.refreshCount) {
-                summaries.invalidateAll()
-                Task { await loadLibrary() }
-                Task { await selectedRelease?.load() }
-            }
+            // Refresh: the app list, the version and its builds, and the
+            // open section, each saying when it's done.
+            .onChange(of: navigator.refreshCount) { refreshWindow(count: navigator.refreshCount) }
+            // Said once, politely, when a refresh ends.
+            .onChange(of: navigator.refreshState) { old, new in RefreshText.announceEnd(from: old, to: new) }
             // Outermost, so the sheets see them too.
             .environment(cover)
             .environment(navigator)
@@ -316,7 +316,7 @@ struct MainView: View {
         model.onMessage = { [navigator] text in navigator.toast = WorkspaceToast(message: ToastMessage(text: text)) }
         model.onChanged = { [navigator, summaries] in
             summaries.invalidate(app.id)
-            navigator.refresh()
+            navigator.refreshAfterChange()
         }
         kept.release = model
         return model
@@ -358,7 +358,8 @@ struct MainView: View {
         return review
     }
 
-    /// Points Review & Push at this account and reloads what a push changed.
+    /// Points Review & Push at this account and reloads what a push changed:
+    /// every push that changed something runs Refresh.
     private func configurePush() {
         push.transport = services.push
         push.appName = { [viewModel] id in viewModel.apps.first { $0.id == id }?.name ?? id }
@@ -366,7 +367,7 @@ struct MainView: View {
             for appID in appIDs {
                 summaries.invalidate(appID)
             }
-            navigator.refresh()
+            navigator.refreshAfterChange()
         }
         push.screenshots.attach(ScreenshotPushWorkspace(teamName: teamName, services: services, apps: loadedApps))
     }
@@ -463,16 +464,51 @@ extension MainView {
     }
 
     /// The apps, then their summaries and, alongside, their icons: one
-    /// request per app that doesn't hold up the first sync.
-    private func loadLibrary() async {
+    /// request per app that doesn't hold up the first sync. `onAppsRead`
+    /// runs as soon as the list is in, with what went wrong.
+    private func loadLibrary(onAppsRead: (RefreshProblem?) -> Void = { _ in }) async {
         let viewModel = viewModel
         await viewModel.load()
+        onAppsRead(viewModel.lastError.flatMap(RefreshProblem.make(for:)))
         async let icons: Void = viewModel.loadIcons()
         await summaries.prefetch(viewModel.apps)
         if isSyncing, !Task.isCancelled {
             isSyncRead = true
         }
         await icons
+    }
+
+    // MARK: - Refresh
+
+    /// What Refresh needs from the window: the key's role, for View only;
+    /// and what Review & Push counts, so it opens on Activity when nothing
+    /// waits.
+    private func configureRefresh() {
+        navigator.readOnlyRole = { [accounts, currentAccountID] in
+            RefreshRun.readOnlyRole(accounts.first { $0.id == currentAccountID }?.role)
+        }
+        navigator.pendingReviewCount = { [changes, push] in
+            PushQueueSnapshot(
+                changes: changes.changes, imageCount: push.screenshots.imageCount, extras: push.screenshots.extras.orderedPlans.flatMap(\.items)
+            ).count
+        }
+    }
+
+    /// "Couldn’t Update from App Store Connect", from Details….
+    @ViewBuilder
+    private var refreshErrorSheet: some View {
+        if case let .failed(copy, lastUpdated) = navigator.refreshState {
+            RefreshErrorSheet(copy: copy, lastUpdated: lastUpdated) { navigator.refresh() }
+                .pageControlSize()
+        }
+    }
+
+    /// Refresh number `count` (`RefreshWindowReader`).
+    private func refreshWindow(count: Int) {
+        summaries.invalidateAll()
+        RefreshWindowReader.read(
+            count, navigator: navigator, release: selectedRelease, appID: viewModel.selectedAppID, models: sectionModels
+        ) { await loadLibrary(onAppsRead: $0) }
     }
 
     /// Open Atlas, once the first sync read every app.

@@ -7,7 +7,8 @@ import CoreGraphics
 
 /// What the workspace toolbar shows at the detail column's width. It always
 /// leads with the section's title and status; while the sidebar is hidden
-/// the section menu comes first. The actions sit at the trailing edge, and
+/// the section menu and Refresh come first (README-DS §15: Refresh lives in
+/// the sidebar's top row otherwise, and Activity inside Review & Push). The actions sit at the trailing edge, and
 /// everything must fit beside them: an item AppKit can't fit goes into the
 /// toolbar's “»” menu, and the space it leaves stays empty, so the actions
 /// no longer reach the edge. So, as the column narrows, the title truncates
@@ -23,14 +24,16 @@ struct WorkspaceToolbarLayout: Equatable {
     var room: [ToolbarRoomItem: CGFloat] = [:]
 
     /// The toolbar's actions with the label folded, measured beside the
-    /// sidebar: Refresh and Activity (72), Review & Push's icon and count
-    /// (81), the gaps between them and the title (2 × 8), the edges
-    /// (2 × 4), and a few points to spare for a wider count. Autopilot is
-    /// the bar at the bottom of the section now (board 80).
-    static let fixedRoom: CGFloat = 183
-    /// The window's buttons and the sidebar button, which share the toolbar
-    /// while the sidebar is hidden (the section menu reports its own width).
-    static let hiddenSidebarRoom: CGFloat = 136
+    /// sidebar: Review & Push's icon and count (81), the gaps between them
+    /// and the title (2 × 8), the edges (2 × 4), and a few points to spare
+    /// for a wider count. Autopilot is the bar at the bottom of the section
+    /// (board 80); Refresh and Activity left the toolbar (board 90).
+    static let fixedRoom: CGFloat = 111
+    /// The window's buttons, the sidebar button and Refresh (its 28 pt
+    /// button in the toolbar's glass, and its gap), which share the
+    /// toolbar while the sidebar is hidden (the section menu reports its
+    /// own width).
+    static let hiddenSidebarRoom: CGFloat = 136 + 44
     /// Beside the sidebar, the title's room from the sidebar's edge.
     static let titleInset: CGFloat = Spacing.medium
     /// Between an item of its own and the next.
